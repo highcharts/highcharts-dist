@@ -9,14 +9,10 @@
  * */
 'use strict';
 import Axis from './Axis.js';
-import AxisDefaults from './AxisDefaults.js';
-const { xAxis } = AxisDefaults;
 import D from '../Defaults.js';
 const { defaultOptions } = D;
-import H from '../Globals.js';
-const { composed } = H;
 import U from '../Utilities.js';
-const { addEvent, merge, pick, pushUnique, splat } = U;
+const { addEvent, merge, pick, splat } = U;
 /* *
  *
  *  Functions
@@ -38,7 +34,7 @@ function onChartAfterGetAxes() {
         return;
     }
     this.zAxis = [];
-    zAxisOptions.forEach((axisOptions, i) => {
+    zAxisOptions.forEach((axisOptions) => {
         this.addZAxis(axisOptions).setScale();
     });
 }
@@ -61,16 +57,16 @@ class ZAxis extends Axis {
         this.isZAxis = true;
     }
     static compose(ChartClass) {
-        if (pushUnique(composed, this.compose)) {
-            const chartProto = ChartClass.prototype;
-            defaultOptions.zAxis = merge(xAxis, {
+        const chartProto = ChartClass.prototype;
+        if (!chartProto.addZAxis) {
+            defaultOptions.zAxis = merge(defaultOptions.xAxis, {
                 offset: 0,
                 lineWidth: 0
             });
-            addEvent(ChartClass, 'afterGetAxes', onChartAfterGetAxes);
             chartProto.addZAxis = chartAddZAxis;
             chartProto.collectionsWithInit.zAxis = [chartProto.addZAxis];
             chartProto.collectionsWithUpdate.push('zAxis');
+            addEvent(ChartClass, 'afterGetAxes', onChartAfterGetAxes);
         }
     }
     /* *
@@ -89,7 +85,6 @@ class ZAxis extends Axis {
      *
      * */
     getSeriesExtremes() {
-        const chart = this.chart;
         this.hasVisibleSeries = false;
         // Reset properties in case we're redrawing (#3353)
         this.dataMin = this.dataMax = this.ignoreMinPadding = (this.ignoreMaxPadding = void 0);

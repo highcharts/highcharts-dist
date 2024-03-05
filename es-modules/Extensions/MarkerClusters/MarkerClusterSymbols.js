@@ -12,14 +12,6 @@
  *
  * */
 'use strict';
-import U from '../../Core/Utilities.js';
-const { pushUnique } = U;
-/* *
- *
- *  Constants
- *
- * */
-const modifiedMembers = [];
 /* *
  *
  *  Variables
@@ -57,10 +49,8 @@ function cluster(x, y, width, height) {
  * @private
  */
 function compose(SVGRendererClass) {
-    if (pushUnique(modifiedMembers, compose)) {
-        symbols = SVGRendererClass.prototype.symbols;
-        symbols.cluster = cluster;
-    }
+    symbols = SVGRendererClass.prototype.symbols;
+    symbols.cluster = cluster;
 }
 /* *
  *

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.3.0 (2024-01-10)
+ * @license Highstock JS v11.4.0 (2024-03-05)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -129,7 +129,7 @@
          */
         APOIndicator.defaultOptions = merge(EMAIndicator.defaultOptions, {
             /**
-             * Paramters used in calculation of Absolute Price Oscillator
+             * Parameters used in calculation of Absolute Price Oscillator
              * series points.
              *
              * @excluding period
@@ -179,8 +179,9 @@
 
         return APOIndicator;
     });
-    _registerModule(_modules, 'masters/indicators/apo.src.js', [], function () {
+    _registerModule(_modules, 'masters/indicators/apo.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

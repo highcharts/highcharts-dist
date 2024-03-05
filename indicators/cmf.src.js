@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.3.0 (2024-01-10)
+ * @license Highstock JS v11.4.0 (2024-03-05)
  *
  * (c) 2010-2024 Highsoft AS
  * Author: Sebastian Domas
@@ -239,7 +239,7 @@
                 index: void 0,
                 /**
                  * The id of another series to use its data as volume data for the
-                 * indiator calculation.
+                 * indicator calculation.
                  */
                 volumeSeriesID: 'volume'
             }
@@ -271,8 +271,9 @@
 
         return CMFIndicator;
     });
-    _registerModule(_modules, 'masters/indicators/cmf.src.js', [], function () {
+    _registerModule(_modules, 'masters/indicators/cmf.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

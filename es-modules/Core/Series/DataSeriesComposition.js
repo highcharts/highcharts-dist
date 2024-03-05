@@ -94,7 +94,7 @@ class DataSeriesAdditions {
      * @private
      */
     static compose(SeriesClass) {
-        if (pushUnique(composed, this.compose)) {
+        if (pushUnique(composed, 'Core.DataSeries')) {
             const seriesProto = SeriesClass.prototype;
             addEvent(SeriesClass, 'init', function () {
                 this.datas = new DataSeriesAdditions(this);

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v@product.version@ (@product.date@)
  * @module highcharts/modules/pattern-fill
  * @requires highcharts
  *
@@ -16,3 +16,4 @@ import PatternFill from '../../Extensions/PatternFill.js';
 const G = Highcharts;
 G.patterns = PatternFill.patterns;
 PatternFill.compose(G.Chart, G.Series, G.SVGRenderer);
+export default Highcharts;

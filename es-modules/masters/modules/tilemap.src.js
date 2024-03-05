@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v11.3.0 (2024-01-10)
+ * @license Highmaps JS v@product.version@ (@product.date@)
  * @module highcharts/modules/tilemap
  * @requires highcharts
  * @requires highcharts/modules/map
@@ -15,3 +15,4 @@ import Highcharts from '../../Core/Globals.js';
 import TilemapSeries from '../../Series/Tilemap/TilemapSeries.js';
 const G = Highcharts;
 TilemapSeries.compose(G.Axis);
+export default Highcharts;

@@ -28,7 +28,7 @@ import Time from '../Time.js';
 import U from '../Utilities.js';
 import AST from '../Renderer/HTML/AST.js';
 import Tick from '../Axis/Tick.js';
-const { addEvent, attr, createElement, clamp, css, defined, diffObjects, discardElement, erase, error, extend, find, fireEvent, getStyle, isArray, isNumber, isObject, isString, merge, objectEach, pick, pInt, relativeLength, removeEvent, splat, syncTimeout, uniqueKey } = U;
+const { addEvent, attr, createElement, css, defined, diffObjects, discardElement, erase, error, extend, find, fireEvent, getStyle, isArray, isNumber, isObject, isString, merge, objectEach, pick, pInt, relativeLength, removeEvent, splat, syncTimeout, uniqueKey } = U;
 /* *
  *
  *  Class
@@ -58,7 +58,7 @@ const { addEvent, attr, createElement, clamp, css, defined, diffObjects, discard
  *        The chart options structure.
  *
  * @param {Highcharts.ChartCallbackFunction} [callback]
- *        Function to run when the chart has loaded and and all external images
+ *        Function to run when the chart has loaded and all external images
  *        are loaded. Defining a
  *        [chart.events.load](https://api.highcharts.com/highcharts/chart.events.load)
  *        handler is equivalent.
@@ -87,7 +87,7 @@ class Chart {
      * The chart options structure.
      *
      * @param {Highcharts.ChartCallbackFunction} [callback]
-     * Function to run when the chart has loaded and and all external images are
+     * Function to run when the chart has loaded and all external images are
      * loaded. Defining a
      * [chart.events.load](https://api.highcharts.com/highcharts/chart.events.load)
      * handler is equivalent.
@@ -98,7 +98,12 @@ class Chart {
     static chart(a, b, c) {
         return new Chart(a, b, c);
     }
-    constructor(a, b, c) {
+    /** Implementation */
+    constructor(a, 
+    /* eslint-disable @typescript-eslint/no-unused-vars */
+    b, c
+    /* eslint-enable @typescript-eslint/no-unused-vars */
+    ) {
         this.sharedClips = {};
         const args = [
             // ES5 builds fail unless we cast it to an Array
@@ -143,7 +148,7 @@ class Chart {
      *        Custom options.
      *
      * @param {Function} [callback]
-     *        Function to run when the chart has loaded and and all external
+     *        Function to run when the chart has loaded and all external
      *        images are loaded.
      *
      *
@@ -174,8 +179,6 @@ class Chart {
             this.userOptions = extend({}, userOptions);
             this.margin = [];
             this.spacing = [];
-            // Pixel data bounds for touch zoom
-            this.bounds = { h: {}, v: {} };
             // An array of functions that returns labels that should be
             // considered for anti-collision
             this.labelCollectors = [];
@@ -391,12 +394,8 @@ class Chart {
      * Returns true if the given point is inside the plot area.
      */
     isInsidePlot(plotX, plotY, options = {}) {
-        const { inverted, plotBox, plotLeft, plotTop, scrollablePlotBox } = this;
-        let scrollLeft = 0, scrollTop = 0;
-        if (options.visiblePlotOnly && this.scrollingContainer) {
-            ({ scrollLeft, scrollTop } = this.scrollingContainer);
-        }
-        const series = options.series, box = (options.visiblePlotOnly && scrollablePlotBox) || plotBox, x = options.inverted ? plotY : plotX, y = options.inverted ? plotX : plotY, e = {
+        const { inverted, plotBox, plotLeft, plotTop, scrollablePlotBox } = this, { scrollLeft = 0, scrollTop = 0 } = (options.visiblePlotOnly &&
+            this.scrollablePlotArea?.scrollingContainer) || {}, series = options.series, box = (options.visiblePlotOnly && scrollablePlotBox) || plotBox, x = options.inverted ? plotY : plotX, y = options.inverted ? plotX : plotY, e = {
             x,
             y,
             isInsidePlot: true,
@@ -1012,8 +1011,8 @@ class Chart {
         }
         // get the width and height
         chart.getChartSize();
-        const chartWidth = chart.chartWidth;
         const chartHeight = chart.chartHeight;
+        let chartWidth = chart.chartWidth;
         // Allow table cells and flex-boxes to shrink without the chart blocking
         // them out (#6427)
         css(renderTo, { overflow: 'hidden' });
@@ -1047,6 +1046,17 @@ class Chart {
             id: containerId
         }, containerStyle, renderTo);
         chart.container = container;
+        // Adjust width if setting height affected it (#20334)
+        chart.getChartSize();
+        if (chartWidth !== chart.chartWidth) {
+            chartWidth = chart.chartWidth;
+            if (!chart.styledMode) {
+                css(container, {
+                    width: pick(optionsChart.style?.width, chartWidth + 'px')
+                });
+            }
+        }
+        chart.containerBox = chart.getContainerBox();
         // cache the cursor (#1650)
         chart._cursor = container.style.cursor;
         // Initialize the renderer
@@ -1061,7 +1071,6 @@ class Chart {
          * @type {Highcharts.SVGRenderer}
          */
         chart.renderer = new Renderer(container, chartWidth, chartHeight, void 0, optionsChart.forExport, options.exporting && options.exporting.allowHTML, chart.styledMode);
-        chart.containerBox = chart.getContainerBox();
         // Set the initial animation from the options
         setAnimation(void 0, chart);
         chart.setClassName(optionsChart.className);
@@ -1168,7 +1177,7 @@ class Chart {
      */
     reflow(e) {
         const chart = this, oldBox = chart.containerBox, containerBox = chart.getContainerBox();
-        delete chart.pointer.chartPosition;
+        delete chart.pointer?.chartPosition;
         // Width and height checks for display:none. Target is doc in Opera
         // and win in Firefox, Chrome and IE9.
         if (!chart.isPrinting &&
@@ -1656,7 +1665,7 @@ class Chart {
                 !chart.polar) {
                 expectedSpace = options.tickLength;
                 axis.createGroups();
-                // Calculate extecped space based on dummy tick
+                // Calculate expected space based on dummy tick
                 const mockTick = new Tick(axis, 0, '', true), label = mockTick.createLabel('x', labels);
                 mockTick.destroy();
                 if (label &&
@@ -1788,7 +1797,7 @@ class Chart {
     destroy() {
         const chart = this, axes = chart.axes, series = chart.series, container = chart.container, parentNode = container && container.parentNode;
         let i;
-        // fire the chart.destoy event
+        // fire the chart.destroy event
         fireEvent(chart, 'destroy');
         // Delete the chart from charts lookup array
         if (chart.renderer.forExport) {
@@ -1875,7 +1884,7 @@ class Chart {
         // in Highcharts Stock.
         fireEvent(chart, 'beforeRender');
         chart.render();
-        chart.pointer.getChartPosition(); // #14973
+        chart.pointer?.getChartPosition(); // #14973
         // Fire the load event if there are no external images
         if (!chart.renderer.imgCount && !chart.hasLoaded) {
             chart.onload();
@@ -2290,7 +2299,7 @@ class Chart {
             this.options.colors = options.colors;
         }
         if (options.time) {
-            // Maintaining legacy global time. If the chart is instanciated
+            // Maintaining legacy global time. If the chart is instantiated
             // first with global time, then updated with time options, we need
             // to create a new Time instance to avoid mutating the global time
             // (#10536).
@@ -2304,7 +2313,7 @@ class Chart {
             // need to update the chart options separately. #14230.
             merge(true, chart.options.time, options.time);
         }
-        // Some option stuctures correspond one-to-one to chart objects that
+        // Some option structures correspond one-to-one to chart objects that
         // have update methods, for example
         // options.credits => chart.credits
         // options.legend => chart.legend
@@ -2352,7 +2361,7 @@ class Chart {
                     // No match by id found, match by index instead
                     if (!item && chart[coll]) {
                         item = chart[coll][pick(newOptions.index, i)];
-                        // Check if we grabbed an item with an exising but
+                        // Check if we grabbed an item with an existing but
                         // different id (#13541). Check that the item in this
                         // position is not internal (navigator).
                         if (item && ((hasId && defined(item.options.id)) ||
@@ -2477,7 +2486,7 @@ class Chart {
         const chart = this, lang = defaultOptions.lang, btnOptions = chart.zooming.resetButton, theme = btnOptions.theme, alignTo = (btnOptions.relativeTo === 'chart' ||
             btnOptions.relativeTo === 'spacingBox' ?
             null :
-            'scrollablePlotBox');
+            'plotBox');
         /**
          * @private
          */
@@ -2506,58 +2515,7 @@ class Chart {
      * @emits Highcharts.Chart#event:selection
      */
     zoomOut() {
-        fireEvent(this, 'selection', { resetSelection: true }, this.zoom);
-    }
-    /**
-     * Zoom into a given portion of the chart given by axis coordinates.
-     *
-     * @private
-     * @function Highcharts.Chart#zoom
-     * @param {Highcharts.SelectEventObject} event
-     */
-    zoom(event) {
-        const chart = this, pointer = chart.pointer;
-        let displayButton = false, hasZoomed;
-        // If zoom is called with no arguments, reset the axes
-        if (!event || event.resetSelection) {
-            chart.axes.forEach(function (axis) {
-                hasZoomed = axis.zoom();
-            });
-            pointer.initiated = false; // #6804
-        }
-        else { // Else, zoom in on all axes
-            event.xAxis.concat(event.yAxis).forEach(function (axisData) {
-                const axis = axisData.axis, isXAxis = axis.isXAxis, { hasPinched, mouseDownX, mouseDownY } = pointer;
-                // Don't zoom more than minRange
-                if (pointer[isXAxis ? 'zoomX' : 'zoomY'] &&
-                    (defined(mouseDownX) &&
-                        defined(mouseDownY) &&
-                        chart.isInsidePlot(mouseDownX - chart.plotLeft, mouseDownY - chart.plotTop, {
-                            axis,
-                            // Ignore touch positions if pinched on mobile
-                            // #18062
-                            ignoreX: hasPinched,
-                            ignoreY: hasPinched
-                        })) || !defined(chart.inverted ? mouseDownX : mouseDownY)) {
-                    hasZoomed = axis.zoom(axisData.min, axisData.max);
-                    if (axis.displayBtn) {
-                        displayButton = true;
-                    }
-                }
-            });
-        }
-        // Show or hide the Reset zoom button
-        const resetZoomButton = chart.resetZoomButton;
-        if (displayButton && !resetZoomButton) {
-            chart.showResetZoom();
-        }
-        else if (!displayButton && isObject(resetZoomButton)) {
-            chart.resetZoomButton = resetZoomButton.destroy();
-        }
-        // Redraw
-        if (hasZoomed) {
-            chart.redraw(pick(chart.options.chart.animation, event && event.animation, chart.pointCount < 100));
-        }
+        fireEvent(this, 'selection', { resetSelection: true }, () => this.transform({ reset: true, trigger: 'zoom' }));
     }
     /**
      * Pan the chart by dragging the mouse across the pane. This function is
@@ -2566,132 +2524,199 @@ class Chart {
      *
      * @private
      * @function Highcharts.Chart#pan
-     * @param {Highcharts.PointerEventObject} e
+     * @param {Highcharts.PointerEventObject} event
      * @param {string} panning
      */
-    pan(e, panning) {
-        const chart = this, hoverPoints = chart.hoverPoints, panningOptions = (typeof panning === 'object' ?
+    pan(event, panning) {
+        const chart = this, panningOptions = (typeof panning === 'object' ?
             panning :
             {
                 enabled: panning,
                 type: 'x'
-            }), chartOptions = chart.options.chart;
-        if (chartOptions && chartOptions.panning) {
+            }), type = panningOptions.type, axes = type && chart[{
+            x: 'xAxis',
+            xy: 'axes',
+            y: 'yAxis'
+        }[type]]
+            .filter((axis) => axis.options.panningEnabled && !axis.options.isInternal), chartOptions = chart.options.chart;
+        if (chartOptions?.panning) {
             chartOptions.panning = panningOptions;
         }
-        const type = panningOptions.type;
-        let doRedraw;
-        fireEvent(this, 'pan', { originalEvent: e }, function () {
-            // remove active points for shared tooltip
-            if (hoverPoints) {
-                hoverPoints.forEach(function (point) {
-                    point.setState();
-                });
-            }
-            let axes = chart.xAxis;
-            if (type === 'xy') {
-                axes = axes.concat(chart.yAxis);
-            }
-            else if (type === 'y') {
-                axes = chart.yAxis;
-            }
-            const nextMousePos = {};
-            axes.forEach(function (axis) {
-                if (!axis.options.panningEnabled || axis.options.isInternal) {
-                    return;
-                }
-                const horiz = axis.horiz, mousePos = e[horiz ? 'chartX' : 'chartY'], mouseDown = horiz ? 'mouseDownX' : 'mouseDownY', startPos = chart[mouseDown], halfPointRange = axis.minPointOffset || 0, pointRangeDirection = (axis.reversed && !chart.inverted) ||
-                    (!axis.reversed && chart.inverted) ?
-                    -1 :
-                    1, extremes = axis.getExtremes(), panMin = axis.toValue(startPos - mousePos, true) +
-                    halfPointRange * pointRangeDirection, panMax = axis.toValue(startPos + axis.len - mousePos, true) -
-                    ((halfPointRange * pointRangeDirection) ||
-                        (axis.isXAxis && axis.pointRangePadding) ||
-                        0), flipped = panMax < panMin, hasVerticalPanning = axis.hasVerticalPanning();
-                let newMin = flipped ? panMax : panMin, newMax = flipped ? panMin : panMax, panningState = axis.panningState, spill;
-                // General calculations of panning state.
-                // This is related to using vertical panning. (#11315).
-                if (hasVerticalPanning &&
-                    !axis.isXAxis && (!panningState || panningState.isDirty)) {
-                    axis.series.forEach(function (series) {
-                        const processedData = series.getProcessedData(true), dataExtremes = series.getExtremes(processedData.yData, true);
-                        if (!panningState) {
-                            panningState = {
-                                startMin: Number.MAX_VALUE,
-                                startMax: -Number.MAX_VALUE
-                            };
-                        }
-                        if (isNumber(dataExtremes.dataMin) &&
-                            isNumber(dataExtremes.dataMax)) {
-                            panningState.startMin = Math.min(pick(series.options.threshold, Infinity), dataExtremes.dataMin, panningState.startMin);
-                            panningState.startMax = Math.max(pick(series.options.threshold, -Infinity), dataExtremes.dataMax, panningState.startMax);
-                        }
-                    });
-                }
-                const paddedMin = Math.min(pick(panningState && panningState.startMin, extremes.dataMin), halfPointRange ?
-                    extremes.min :
-                    axis.toValue(axis.toPixels(extremes.min) -
-                        axis.minPixelPadding));
-                const paddedMax = Math.max(pick(panningState && panningState.startMax, extremes.dataMax), halfPointRange ?
-                    extremes.max :
-                    axis.toValue(axis.toPixels(extremes.max) +
-                        axis.minPixelPadding));
-                axis.panningState = panningState;
-                // It is not necessary to calculate extremes on ordinal axis,
-                // because they are already calculated, so we don't want to
-                // override them.
-                if (!axis.isOrdinal) {
-                    // If the new range spills over, either to the min or max,
-                    // adjust the new range.
-                    spill = paddedMin - newMin;
-                    if (spill > 0) {
-                        newMax += spill;
-                        newMin = paddedMin;
-                    }
-                    spill = newMax - paddedMax;
-                    if (spill > 0) {
-                        newMax = paddedMax;
-                        newMin -= spill;
-                    }
-                    // Set new extremes if they are actually new
-                    if (axis.series.length &&
-                        newMin !== extremes.min &&
-                        newMax !== extremes.max &&
-                        newMin >= paddedMin &&
-                        newMax <= paddedMax) {
-                        axis.setExtremes(newMin, newMax, false, false, { trigger: 'pan' });
-                        if (!chart.resetZoomButton &&
-                            // Show reset zoom button only when both newMin and
-                            // newMax values are between padded axis range.
-                            newMin !== paddedMin &&
-                            newMax !== paddedMax &&
-                            type.match('y')) {
-                            chart.showResetZoom();
-                            axis.displayBtn = false;
-                        }
-                        doRedraw = true;
-                    }
-                    // set new reference for next run:
-                    nextMousePos[mouseDown] = mousePos;
-                }
+        fireEvent(this, 'pan', { originalEvent: event }, () => {
+            chart.transform({
+                axes,
+                event,
+                to: {
+                    x: event.chartX - (chart.mouseDownX || 0),
+                    y: event.chartY - (chart.mouseDownY || 0)
+                },
+                trigger: 'pan'
             });
-            objectEach(nextMousePos, (pos, down) => {
-                chart[down] = pos;
-            });
-            if (doRedraw) {
-                chart.redraw(false);
-            }
             css(chart.container, { cursor: 'move' });
         });
+    }
+    /**
+     * Pan and scale the chart. Used internally by mouse-pan, touch-pan,
+     * touch-zoom, and mousewheel zoom.
+     *
+     * The main positioning logic is created around two imaginary boxes. What is
+     * currently within the `from` rectangle, should be transformed to fill up
+     * the `to` rectangle.
+     * - In a mouse zoom, the `from` rectangle is the selection, while the `to`
+     *   rectangle is the full plot area.
+     * - In a touch zoom, the `from` rectangle is made up of the last two-finger
+     *   touch, while the `to`` rectangle is the current touch.
+     * - In a mousewheel zoom, the `to` rectangle is a 10x10 px square,
+     *   while the `to` rectangle reflects the scale around that.
+     *
+     * @private
+     * @function Highcharts.Chart#transform
+     */
+    transform(params) {
+        const { axes = this.axes, event, from = {}, reset, selection, to = {}, trigger } = params, { inverted, resetZoomButton } = this;
+        let hasZoomed = false, displayButton;
+        // Remove active points for shared tooltip
+        this.hoverPoints?.forEach((point) => point.setState());
+        for (const axis of axes) {
+            const { horiz, len, minPointOffset = 0, options, reversed } = axis, wh = horiz ? 'width' : 'height', xy = horiz ? 'x' : 'y', toLength = to[wh] || axis.len, fromLength = from[wh] || axis.len, 
+            // If fingers pinched very close on this axis, treat as pan
+            scale = Math.abs(toLength) < 10 ?
+                1 :
+                toLength / fromLength, fromCenter = (from[xy] || 0) + fromLength / 2 - axis.pos, toCenter = (to[xy] ?? axis.pos) +
+                toLength / 2 - axis.pos, move = fromCenter - toCenter / scale, pointRangeDirection = (reversed && !inverted) ||
+                (!reversed && inverted) ?
+                -1 :
+                1, minPx = move;
+            // Zooming in multiple panes, zoom only in the pane that receives
+            // the input
+            if (!reset && (fromCenter < 0 || fromCenter > axis.len)) {
+                continue;
+            }
+            let newMin = axis.toValue(minPx, true) +
+                minPointOffset * pointRangeDirection, newMax = axis.toValue(minPx + len / scale, true) -
+                ((minPointOffset * pointRangeDirection) ||
+                    // Polar zoom tests failed when this was not commented:
+                    // (axis.isXAxis && axis.pointRangePadding) ||
+                    0), allExtremes = axis.allExtremes;
+            if (newMin > newMax) {
+                [newMin, newMax] = [newMax, newMin];
+            }
+            // General calculations of the full data extremes. It is calculated
+            // on the first call to transform, then reused for subsequent
+            // touch/pan calls. (#11315).
+            if (scale === 1 &&
+                !reset &&
+                axis.coll === 'yAxis' &&
+                !allExtremes) {
+                for (const series of axis.series) {
+                    const seriesExtremes = series.getExtremes(series.getProcessedData(true).yData, true);
+                    allExtremes ?? (allExtremes = {
+                        dataMin: Number.MAX_VALUE,
+                        dataMax: -Number.MAX_VALUE
+                    });
+                    if (isNumber(seriesExtremes.dataMin) &&
+                        isNumber(seriesExtremes.dataMax)) {
+                        allExtremes.dataMin = Math.min(seriesExtremes.dataMin, allExtremes.dataMin);
+                        allExtremes.dataMax = Math.max(seriesExtremes.dataMax, allExtremes.dataMax);
+                    }
+                }
+                axis.allExtremes = allExtremes;
+            }
+            const { dataMin, dataMax, min, max } = extend(axis.getExtremes(), allExtremes || {}), 
+            // For boosted chart where data extremes are skipped
+            safeDataMin = dataMin ?? options.min, safeDataMax = dataMax ?? options.max, range = newMax - newMin, padRange = axis.categories ? 0 : Math.min(range, safeDataMax - safeDataMin), paddedMin = safeDataMin - padRange * (defined(options.min) ? 0 : options.minPadding), paddedMax = safeDataMax + padRange * (defined(options.max) ? 0 : options.maxPadding), 
+            // We're allowed to zoom outside the data extremes if we're
+            // dealing with a bubble chart, if we're panning, or if we're
+            // pinching or mousewheeling in.
+            allowZoomOutside = axis.allowZoomOutside ||
+                scale === 1 ||
+                (trigger !== 'zoom' && scale > 1), 
+            // Calculate the floor and the ceiling
+            floor = Math.min(options.min ?? paddedMin, paddedMin, allowZoomOutside ? min : paddedMin), ceiling = Math.max(options.max ?? paddedMax, paddedMax, allowZoomOutside ? max : paddedMax);
+            // It is not necessary to calculate extremes on ordinal axis,
+            // because they are already calculated, so we don't want to override
+            // them.
+            if (!axis.isOrdinal || scale !== 1 || reset) {
+                // If the new range spills over, either to the min or max,
+                // adjust it.
+                if (newMin < floor) {
+                    newMin = floor;
+                    if (scale >= 1) {
+                        newMax = newMin + range;
+                    }
+                }
+                if (newMax > ceiling) {
+                    newMax = ceiling;
+                    if (scale >= 1) {
+                        newMin = newMax - range;
+                    }
+                }
+                // Set new extremes if they are actually new
+                if (reset || (axis.series.length &&
+                    (newMin !== min || newMax !== max) &&
+                    newMin >= floor &&
+                    newMax <= ceiling)) {
+                    if (selection) {
+                        selection[axis.coll].push({
+                            axis,
+                            min: newMin,
+                            max: newMax
+                        });
+                    }
+                    else {
+                        // Temporarily flag the axis as `isPanning` in order to
+                        // disallow certain axis padding options that would make
+                        // panning/zooming hard. Reset and redraw after the
+                        // operation has finished.
+                        axis.isPanning = trigger !== 'zoom';
+                        axis.setExtremes(reset ? void 0 : newMin, reset ? void 0 : newMax, false, false, { move, trigger, scale });
+                        if (!reset &&
+                            (newMin > floor || newMax < ceiling) &&
+                            trigger !== 'mousewheel') {
+                            displayButton = true;
+                        }
+                    }
+                    hasZoomed = true;
+                }
+                if (event) {
+                    this[horiz ? 'mouseDownX' : 'mouseDownY'] =
+                        event[horiz ? 'chartX' : 'chartY'];
+                }
+            }
+        }
+        if (hasZoomed) {
+            if (selection) {
+                fireEvent(this, 'selection', selection, 
+                // Run transform again, this time without the selection data
+                // so that the transform is applied.
+                () => {
+                    delete params.selection;
+                    params.trigger = 'zoom';
+                    this.transform(params);
+                });
+            }
+            else {
+                // Show or hide the Reset zoom button
+                if (displayButton && !resetZoomButton) {
+                    this.showResetZoom();
+                }
+                else if (!displayButton && resetZoomButton) {
+                    this.resetZoomButton = resetZoomButton.destroy();
+                }
+                this.redraw(trigger === 'zoom' &&
+                    (this.options.chart.animation ?? this.pointCount < 100));
+            }
+        }
+        return hasZoomed;
     }
 }
 extend(Chart.prototype, {
     // Hook for adding callbacks in modules
     callbacks: [],
     /**
-     * These collections (arrays) implement `Chart.addSomethig` method used in
+     * These collections (arrays) implement `Chart.addSomething` method used in
      * chart.update() to create new object in the collection. Equivalent for
-     * deleting is resolved by simple `Somethig.remove()`.
+     * deleting is resolved by simple `Something.remove()`.
      *
      * Note: We need to define these references after initializers are bound to
      * chart's prototype.

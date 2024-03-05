@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v11.4.0 (2024-03-05)
  *
  * Force directed graph module
  *
@@ -58,7 +58,7 @@
          * @private
          */
         function compose(ChartClass) {
-            if (pushUnique(composed, compose)) {
+            if (pushUnique(composed, 'DragNodes')) {
                 addEvent(ChartClass, 'load', onChartLoad);
             }
         }
@@ -99,12 +99,12 @@
          *
          * @private
          * @param {Highcharts.Point} point
-         *        The point that event occured.
+         *        The point that event occurred.
          * @param {Highcharts.PointerEventObject} event
          *        Browser event, before normalization.
          */
         function onMouseDown(point, event) {
-            const normalizedEvent = this.chart.pointer.normalize(event);
+            const normalizedEvent = this.chart.pointer?.normalize(event) || event;
             point.fixedPosition = {
                 chartX: normalizedEvent.chartX,
                 chartY: normalizedEvent.chartY,
@@ -121,12 +121,12 @@
          * @param {global.Event} event
          *        Browser event, before normalization.
          * @param {Highcharts.Point} point
-         *        The point that event occured.
+         *        The point that event occurred.
          *
          */
         function onMouseMove(point, event) {
             if (point.fixedPosition && point.inDragMode) {
-                const series = this, chart = series.chart, normalizedEvent = chart.pointer.normalize(event), diffX = point.fixedPosition.chartX - normalizedEvent.chartX, diffY = point.fixedPosition.chartY - normalizedEvent.chartY, graphLayoutsLookup = chart.graphLayoutsLookup;
+                const series = this, chart = series.chart, normalizedEvent = chart.pointer?.normalize(event) || event, diffX = point.fixedPosition.chartX - normalizedEvent.chartX, diffY = point.fixedPosition.chartY - normalizedEvent.chartY, graphLayoutsLookup = chart.graphLayoutsLookup;
                 let newPlotX, newPlotY;
                 // At least 5px to apply change (avoids simple click):
                 if (Math.abs(diffX) > 5 || Math.abs(diffY) > 5) {
@@ -149,9 +149,9 @@
          *
          * @private
          * @param {Highcharts.Point} point
-         *        The point that event occured.
+         *        The point that event occurred.
          */
-        function onMouseUp(point, _event) {
+        function onMouseUp(point) {
             if (point.fixedPosition) {
                 if (point.hasDragged) {
                     if (this.layout.enableSimulation) {
@@ -227,7 +227,7 @@
          * @private
          */
         function compose(ChartClass) {
-            if (pushUnique(composed, compose)) {
+            if (pushUnique(composed, 'GraphLayout')) {
                 addEvent(ChartClass, 'afterPrint', onChartAfterPrint);
                 addEvent(ChartClass, 'beforePrint', onChartBeforePrint);
                 addEvent(ChartClass, 'predraw', onChartPredraw);
@@ -438,7 +438,7 @@
             }
             NodesComposition.createNode = createNode;
             /**
-             * Destroy alll nodes and links.
+             * Destroy all nodes and links.
              * @private
              */
             function destroy() {
@@ -932,7 +932,7 @@
             states: {
                 /**
                  * The opposite state of a hover for a single point link. Applied
-                 * to all links that are not comming from the hovered node.
+                 * to all links that are not coming from the hovered node.
                  *
                  * @declare Highcharts.SeriesStatesInactiveOptionsObject
                  */
@@ -1159,7 +1159,7 @@
                 /**
                  * Barnes-Hut approximation only.
                  * Deteremines when distance between cell and node is small enough
-                 * to caculate forces. Value of `theta` is compared directly with
+                 * to calculate forces. Value of `theta` is compared directly with
                  * quotient `s / d`, where `s` is the size of the cell, and `d` is
                  * distance between center of cell's mass and currently compared
                  * node.
@@ -1185,7 +1185,7 @@
                 maxSpeed: 10,
                 /**
                  * Approximation used to calculate repulsive forces affecting nodes.
-                 * By default, when calculateing net force, nodes are compared
+                 * By default, when calculating net force, nodes are compared
                  * against each other, which gives O(N^2) complexity. Using
                  * Barnes-Hut approximation, we decrease this to O(N log N), but the
                  * resulting graph will have different layout. Barnes-Hut
@@ -1217,7 +1217,7 @@
                  * Euler integration, force is applied direct as
                  * `newPosition += velocity;`.
                  * In Verlet integration, new position is based on a previous
-                 * posittion without velocity:
+                 * position without velocity:
                  * `newPosition += previousPosition - newPosition`.
                  *
                  * Note that different integrations give different results as forces
@@ -1355,7 +1355,7 @@
          * @apioption series.networkgraph.nodes
          */
         /**
-         * The id of the auto-generated node, refering to the `from` or `to` setting of
+         * The id of the auto-generated node, referring to the `from` or `to` setting of
          * the link.
          *
          * @type      {string}
@@ -1451,7 +1451,7 @@
          * @param {Highcharts.Point} link
          *        Link that connects two nodes
          * @param {number} force
-         *        Force calcualated in `repulsiveForceFunction`
+         *        Force calculated in `repulsiveForceFunction`
          * @param {Highcharts.PositionObject} distanceXY
          *        Distance between two nodes e.g. `{x, y}`
          * @param {number} distanceR
@@ -1472,7 +1472,7 @@
             }
         }
         /**
-         * Attractive force funtion. Can be replaced by API's
+         * Attractive force function. Can be replaced by API's
          * `layoutAlgorithm.attractiveForce`
          *
          * Other forces that can be used:
@@ -1512,7 +1512,7 @@
             });
         }
         /**
-         * Estiamte the best possible distance between two nodes, making graph
+         * Estimate the best possible distance between two nodes, making graph
          * readable.
          * @private
          */
@@ -1575,7 +1575,7 @@
          * @param {Highcharts.Point} node
          *        Node that should be translated by force.
          * @param {number} force
-         *        Force calcualated in `repulsiveForceFunction`
+         *        Force calculated in `repulsiveForceFunction`
          * @param {Highcharts.PositionObject} distanceXY
          *        Distance between two nodes e.g. `{x, y}`
          */
@@ -1586,7 +1586,7 @@
                 (distanceXY.y / distanceR) * force / node.degree;
         }
         /**
-         * Repulsive force funtion. Can be replaced by API's
+         * Repulsive force function. Can be replaced by API's
          * `layoutAlgorithm.repulsiveForce`.
          *
          * Other forces that can be used:
@@ -1865,7 +1865,7 @@
             updateMassAndCenter() {
                 let mass = 0, plotX = 0, plotY = 0;
                 if (this.isInternal) {
-                    // Calcualte weightened mass of the quad node:
+                    // Calculate weightened mass of the quad node:
                     for (const pointMass of this.nodes) {
                         if (!pointMass.isEmpty) {
                             mass += pointMass.mass;
@@ -1975,7 +1975,7 @@
                 }
             }
             /**
-             * Depfth first treversal (DFS). Using `before` and `after` callbacks,
+             * Depth first treversal (DFS). Using `before` and `after` callbacks,
              * we can get two results: preorder and postorder traversals, reminder:
              *
              * ```
@@ -2060,14 +2060,14 @@
         /**
          * Attractive force.
          *
-         * In Verlet integration, force is applied on a node immidatelly to it's
+         * In Verlet integration, force is applied on a node immediately to it's
          * `plotX` and `plotY` position.
          *
          * @private
          * @param {Highcharts.Point} link
          *        Link that connects two nodes
          * @param {number} force
-         *        Force calcualated in `repulsiveForceFunction`
+         *        Force calculated in `repulsiveForceFunction`
          * @param {Highcharts.PositionObject} distance
          *        Distance between two nodes e.g. `{x, y}`
          */
@@ -2087,7 +2087,7 @@
             }
         }
         /**
-         * Attractive force funtion. Can be replaced by API's
+         * Attractive force function. Can be replaced by API's
          * `layoutAlgorithm.attractiveForce`
          *
          * @private
@@ -2103,7 +2103,7 @@
          * Barycenter force. Calculate and applys barycenter forces on the
          * nodes. Making them closer to the center of their barycenter point.
          *
-         * In Verlet integration, force is applied on a node immidatelly to it's
+         * In Verlet integration, force is applied on a node immediately to it's
          * `plotX` and `plotY` position.
          *
          * @private
@@ -2135,7 +2135,7 @@
         /**
          * Integration method.
          *
-         * In Verlet integration, forces are applied on node immidatelly to it's
+         * In Verlet integration, forces are applied on node immediately to it's
          * `plotX` and `plotY` position.
          *
          * Verlet without velocity:
@@ -2165,7 +2165,7 @@
          */
         function integrate(layout, node) {
             let friction = -layout.options.friction, maxSpeed = layout.options.maxSpeed, prevX = node.prevX, prevY = node.prevY, 
-            // Apply friciton:
+            // Apply friction:
             diffX = ((node.plotX + node.dispX -
                 prevX) * friction), diffY = ((node.plotY + node.dispY -
                 prevY) * friction), abs = Math.abs, signX = abs(diffX) / (diffX || 1), // need to deal with 0
@@ -2187,14 +2187,14 @@
         /**
          * Repulsive force.
          *
-         * In Verlet integration, force is applied on a node immidatelly to it's
+         * In Verlet integration, force is applied on a node immediately to it's
          * `plotX` and `plotY` position.
          *
          * @private
          * @param {Highcharts.Point} node
          *        Node that should be translated by force.
          * @param {number} force
-         *        Force calcualated in `repulsiveForceFunction`
+         *        Force calculated in `repulsiveForceFunction`
          * @param {Highcharts.PositionObject} distance
          *        Distance between two nodes e.g. `{x, y}`
          */
@@ -2206,7 +2206,7 @@
             }
         }
         /**
-         * Repulsive force funtion. Can be replaced by API's
+         * Repulsive force function. Can be replaced by API's
          * `layoutAlgorithm.repulsiveForce`
          *
          * @private
@@ -2902,7 +2902,7 @@
                 NodesComposition.destroy.call(this);
             }
             /**
-             * Networkgraph has two separate collecions of nodes and lines, render
+             * Networkgraph has two separate collections of nodes and lines, render
              * dataLabels for both sets:
              * @private
              */
@@ -2938,7 +2938,7 @@
             generatePoints() {
                 let node, i;
                 NodesComposition.generatePoints.apply(this, arguments);
-                // In networkgraph, it's fine to define stanalone nodes, create
+                // In networkgraph, it's fine to define standalone nodes, create
                 // them:
                 if (this.options.nodes) {
                     this.options.nodes.forEach(function (nodeOptions) {
@@ -3194,10 +3194,10 @@
          * @callback Highcharts.NetworkgraphAfterSimulationCallbackFunction
          *
          * @param {Highcharts.Series} this
-         *        The series where the event occured.
+         *        The series where the event occurred.
          *
          * @param {global.Event} event
-         *        The event that occured.
+         *        The event that occurred.
          */
         ''; // detach doclets above
 
@@ -3208,5 +3208,6 @@
         const G = Highcharts;
         NetworkgraphSeries.compose(G.Chart);
 
+        return Highcharts;
     });
 }));

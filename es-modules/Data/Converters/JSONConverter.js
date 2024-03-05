@@ -75,6 +75,7 @@ class JSONConverter extends DataConverter {
         if (!data) {
             return;
         }
+        converter.columns = [];
         converter.emit({
             type: 'parse',
             columns: converter.columns,

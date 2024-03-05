@@ -35,7 +35,7 @@ const { addEvent, defined, error, isFunction, merge, pushUnique, syncTimeout } =
  * */
 /** @private */
 function compose(AxisClass, ChartClass, highchartsDefaultOptions, SeriesClass) {
-    if (pushUnique(composed, compose)) {
+    if (pushUnique(composed, 'MarkerClusters')) {
         const PointClass = SeriesClass.prototype.pointClass, { scatter: ScatterSeries } = SeriesClass.types;
         addEvent(AxisClass, 'setExtremes', onAxisSetExtremes);
         addEvent(ChartClass, 'render', onChartRender);
@@ -78,7 +78,7 @@ function onChartRender() {
             const options = series.options.cluster, pointsState = (series.markerClusterInfo || {}).pointsState, oldState = (pointsState || {}).oldState;
             if ((options || {}).animation &&
                 series.markerClusterInfo &&
-                series.chart.pointer.pinchDown.length === 0 &&
+                (series.chart.pointer?.pinchDown || []).length === 0 &&
                 ((series.xAxis || {}).eventArgs || {}).trigger !== 'pan' &&
                 oldState &&
                 Object.keys(oldState).length) {
@@ -163,7 +163,7 @@ export default MarkerClusters;
  * @callback Highcharts.MarkerClusterDrillCallbackFunction
  *
  * @param {Highcharts.Point} this
- *        The point where the event occured.
+ *        The point where the event occurred.
  *
  * @param {Highcharts.PointClickEventObject} event
  *        Event arguments.

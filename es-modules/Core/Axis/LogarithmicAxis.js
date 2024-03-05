@@ -8,10 +8,8 @@
  *
  * */
 'use strict';
-import H from '../Globals.js';
-const { composed } = H;
 import U from '../Utilities.js';
-const { addEvent, normalizeTickInterval, pick, pushUnique } = U;
+const { addEvent, normalizeTickInterval, pick } = U;
 /* *
  *
  *  Class
@@ -37,7 +35,7 @@ var LogarithmicAxis;
      * @private
      */
     function compose(AxisClass) {
-        if (pushUnique(composed, compose)) {
+        if (!AxisClass.keepProps.includes('logarithmic')) {
             AxisClass.keepProps.push('logarithmic');
             addEvent(AxisClass, 'init', onInit);
             addEvent(AxisClass, 'afterInit', onAfterInit);

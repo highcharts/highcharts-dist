@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v11.4.0 (2024-03-05)
  *
  * (c) 2009-2024 Sebastian Bochan, Rafal Sebestjanski
  *
@@ -44,7 +44,7 @@
          *
          * */
         const { area: { prototype: { pointClass: AreaPoint, pointClass: { prototype: areaProto } } } } = SeriesRegistry.seriesTypes;
-        const { defined, isNumber, merge } = U;
+        const { defined, isNumber } = U;
         /* *
          *
          *  Class
@@ -70,7 +70,7 @@
              * @private
              */
             setState() {
-                const prevState = this.state, series = this.series, isPolar = series.chart.polar, seriesOptionsMarker = series.options.marker, seriesDefaultSymbol = series.symbol;
+                const prevState = this.state, series = this.series, isPolar = series.chart.polar;
                 if (!defined(this.plotHigh)) {
                     // Boost doesn't calculate plotHigh
                     this.plotHigh = series.yAxis.toPixels(this.high, true);
@@ -705,8 +705,9 @@
 
         return DumbbellSeries;
     });
-    _registerModule(_modules, 'masters/modules/dumbbell.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/dumbbell.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

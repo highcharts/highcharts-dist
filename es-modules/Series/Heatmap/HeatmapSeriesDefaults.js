@@ -382,7 +382,7 @@ const HeatmapSeriesDefaults = {
  * @apioption series.heatmap.data.color
  */
 /**
- * The value of the point, resulting in a color controled by options
+ * The value of the point, resulting in a color controlled by options
  * as set in the [colorAxis](#colorAxis) configuration.
  *
  * @type      {number}

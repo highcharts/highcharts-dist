@@ -10,11 +10,8 @@
  *
  * */
 'use strict';
-import Chart from '../../Core/Chart/Chart.js';
-import H from '../../Core/Globals.js';
-const { composed } = H;
 import U from '../../Core/Utilities.js';
-const { attr, pushUnique } = U;
+const { attr } = U;
 import AccessibilityComponent from '../AccessibilityComponent.js';
 import KeyboardNavigationHandler from '../KeyboardNavigationHandler.js';
 import ChartUtilities from '../Utils/ChartUtilities.js';
@@ -321,8 +318,8 @@ class MenuComponent extends AccessibilityComponent {
      * @private
      */
     function compose(ChartClass) {
-        if (pushUnique(composed, compose)) {
-            const chartProto = Chart.prototype;
+        const chartProto = ChartClass.prototype;
+        if (!chartProto.hideExportMenu) {
             chartProto.hideExportMenu = chartHideExportMenu;
             chartProto.highlightExportItem = chartHighlightExportItem;
             chartProto.highlightLastExportItem = chartHighlightLastExportItem;

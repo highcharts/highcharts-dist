@@ -9,7 +9,6 @@
  *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
-/* global MSBlobBuilder */
 'use strict';
 import AST from '../../Core/Renderer/HTML/AST.js';
 import Chart from '../../Core/Chart/Chart.js';
@@ -19,12 +18,12 @@ import DownloadURL from '../DownloadURL.js';
 const { downloadURL } = DownloadURL;
 import Exporting from '../Exporting/Exporting.js';
 import H from '../../Core/Globals.js';
-const { composed, doc, win } = H;
+const { doc, win } = H;
 import HU from '../../Core/HttpUtilities.js';
 const { ajax } = HU;
 import OfflineExportingDefaults from './OfflineExportingDefaults.js';
 import U from '../../Core/Utilities.js';
-const { addEvent, error, extend, fireEvent, merge, pushUnique } = U;
+const { addEvent, error, extend, fireEvent, merge } = U;
 AST.allowedAttributes.push('data-z-index', 'fill-opacity', 'filter', 'rx', 'ry', 'stroke-dasharray', 'stroke-linejoin', 'stroke-opacity', 'text-anchor', 'transform', 'version', 'viewBox', 'visibility', 'xmlns', 'xmlns:xlink');
 AST.allowedTags.push('desc', 'clippath', 'g');
 /* *
@@ -59,8 +58,8 @@ var OfflineExporting;
      * @private
      */
     function compose(ChartClass) {
-        if (pushUnique(composed, compose)) {
-            const chartProto = ChartClass.prototype;
+        const chartProto = ChartClass.prototype;
+        if (!chartProto.exportChartLocal) {
             chartProto.getSVGForLocalExport = getSVGForLocalExport;
             chartProto.exportChartLocal = exportChartLocal;
             // Extend the default options to use the local exporter logic
@@ -638,7 +637,7 @@ var OfflineExporting;
             userAgent.indexOf('Chrome') < 0);
         try {
             // Safari requires data URI since it doesn't allow navigation to
-            // blob URLs. ForeignObjects also dont work well in Blobs in Chrome
+            // blob URLs. ForeignObjects also don't work well in Blobs in Chrome
             // (#14780).
             if (!webKit && svg.indexOf('<foreignObject') === -1) {
                 return OfflineExporting.domurl.createObjectURL(new win.Blob([svg], {

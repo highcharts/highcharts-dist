@@ -12,9 +12,9 @@ import A from '../../Animation/AnimationUtilities.js';
 const { animate, animObject, stop } = A;
 import Color from '../../Color/Color.js';
 import H from '../../Globals.js';
-const { deg2rad, doc, noop, svg, SVG_NS, win } = H;
+const { deg2rad, doc, svg, SVG_NS, win } = H;
 import U from '../../Utilities.js';
-const { addEvent, attr, createElement, css, defined, erase, extend, fireEvent, isArray, isFunction, isObject, isString, merge, objectEach, pick, pInt, syncTimeout, uniqueKey } = U;
+const { addEvent, attr, createElement, css, defined, erase, extend, fireEvent, isArray, isFunction, isObject, isString, merge, objectEach, pick, pInt, replaceNested, syncTimeout, uniqueKey } = U;
 /* *
  *
  *  Class
@@ -39,6 +39,10 @@ const { addEvent, attr, createElement, css, defined, erase, extend, fireEvent, i
  * {@link Highcharts.SVGRenderer#label|label},
  * {@link Highcharts.SVGRenderer#g|g}
  * and more.
+ *
+ * See [How to use the SVG Renderer](
+ * https://www.highcharts.com/docs/advanced-chart-features/renderer) for a
+ * comprehensive tutorial on how to draw SVG elements on a chart.
  *
  * @class
  * @name Highcharts.SVGElement
@@ -202,9 +206,13 @@ class SVGElement {
      *        box is `spacingBox`, it refers to `Renderer.spacingBox` which
      *        holds `width`, `height`, `x` and `y` properties.
      *
+     * @param {boolean} [redraw]
+     *        Decide if SVGElement should be redrawn with new alignment or
+     *        just change its attributes.
+     *
      * @return {Highcharts.SVGElement} Returns the SVGElement for chaining.
      */
-    align(alignOptions, alignByTranslate, box) {
+    align(alignOptions, alignByTranslate, box, redraw = true) {
         const attribs = {}, renderer = this.renderer, alignedObjects = renderer.alignedObjects;
         let x, y, alignTo, alignFactor, vAlignFactor;
         // First call on instanciate
@@ -225,8 +233,7 @@ class SVGElement {
             alignByTranslate = this.alignByTranslate;
             alignTo = this.alignTo;
         }
-        box = pick(box, renderer[alignTo], alignTo === 'scrollablePlotBox' ?
-            renderer.plotBox : void 0, renderer);
+        box = pick(box, renderer[alignTo], renderer);
         // Assign variables
         const align = alignOptions.align, vAlign = alignOptions.verticalAlign;
         // default: left align
@@ -258,8 +265,10 @@ class SVGElement {
         }
         attribs[alignByTranslate ? 'translateY' : 'y'] = Math.round(y);
         // Animate only if already placed
-        this[this.placed ? 'animate' : 'attr'](attribs);
-        this.placed = true;
+        if (redraw) {
+            this[this.placed ? 'animate' : 'attr'](attribs);
+            this.placed = true;
+        }
         this.alignAttr = attribs;
         return this;
     }
@@ -610,7 +619,7 @@ class SVGElement {
                 gradients = renderer.gradients;
                 stops = colorOptions.stops;
                 radialReference = elem.radialReference;
-                // Keep < 2.2 kompatibility
+                // Keep < 2.2 compatibility
                 if (isArray(gradAttr)) {
                     colorOptions[gradName] = gradAttr = {
                         x1: gradAttr[0],
@@ -730,8 +739,8 @@ class SVGElement {
                 styles.width) {
                 textWidth = this.textWidth = pInt(styles.width);
             }
-            // store object
-            this.styles = styles;
+            // Store object
+            extend(this.styles, styles);
             if (textWidth && (!svg && this.renderer.forExport)) {
                 delete styles.width;
             }
@@ -932,7 +941,7 @@ class SVGElement {
      * @function Highcharts.SVGElement#getBBox
      *
      * @param {boolean} [reload]
-     *        Skip the cache and get the updated DOM bouding box.
+     *        Skip the cache and get the updated DOM bounding box.
      *
      * @param {number} [rot]
      *        Override the element's rotation. This is internally used on axis
@@ -944,8 +953,8 @@ class SVGElement {
      */
     getBBox(reload, rot) {
         const wrapper = this, { alignValue, element, renderer, styles, textStr } = wrapper, { cache, cacheKeys } = renderer, isSVG = element.namespaceURI === wrapper.SVG_NS, rotation = pick(rot, wrapper.rotation, 0), fontSize = renderer.styledMode ? (element &&
-            SVGElement.prototype.getStyle.call(element, 'font-size')) : (styles && styles.fontSize);
-        let bBox, width, height, toggleTextShadowShim, cacheKey;
+            SVGElement.prototype.getStyle.call(element, 'font-size')) : (styles.fontSize);
+        let bBox, height, toggleTextShadowShim, cacheKey;
         // Avoid undefined and null (#7316)
         if (defined(textStr)) {
             cacheKey = textStr.toString();
@@ -964,8 +973,8 @@ class SVGElement {
                 rotation,
                 wrapper.textWidth,
                 alignValue,
-                styles && styles.textOverflow,
-                styles && styles.fontWeight // #12163
+                styles.textOverflow,
+                styles.fontWeight // #12163
             ].join(',');
         }
         if (cacheKey && !reload) {
@@ -1021,7 +1030,6 @@ class SVGElement {
             }
             // True SVG elements as well as HTML elements in modern browsers
             // using the .useHTML option need to compensated for rotation
-            width = bBox.width;
             height = bBox.height;
             // Workaround for wrong bounding box in IE, Edge and Chrome on
             // Windows. With Highcharts' default font, IE and Edge report
@@ -1040,20 +1048,7 @@ class SVGElement {
             }
             // Adjust for rotated text
             if (rotation) {
-                const baseline = Number(element.getAttribute('y') || 0) - bBox.y, alignFactor = {
-                    'right': 1,
-                    'center': 0.5
-                }[alignValue || 0] || 0, rad = rotation * deg2rad, rad90 = (rotation - 90) * deg2rad, wCosRad = width * Math.cos(rad), wSinRad = width * Math.sin(rad), cosRad90 = Math.cos(rad90), sinRad90 = Math.sin(rad90), 
-                // Find the starting point on the left side baseline of
-                // the text
-                pX = bBox.x + alignFactor * (width - wCosRad), pY = bBox.y + baseline - alignFactor * wSinRad, 
-                // Find all corners
-                aX = pX + baseline * cosRad90, bX = aX + wCosRad, cX = bX - height * cosRad90, dX = cX - wCosRad, aY = pY + baseline * sinRad90, bY = aY + wSinRad, cY = bY - height * sinRad90, dY = cY - wSinRad;
-                // Deduct the bounding box from the corners
-                bBox.x = Math.min(aX, bX, cX, dX);
-                bBox.y = Math.min(aY, bY, cY, dY);
-                bBox.width = Math.max(aX, bX, cX, dX) - bBox.x;
-                bBox.height = Math.max(aY, bY, cY, dY) - bBox.y;
+                bBox = this.getRotatedBox(bBox, rotation);
             }
         }
         // Cache it. When loading a chart in a hidden iframe in Firefox and
@@ -1069,6 +1064,38 @@ class SVGElement {
             cache[cacheKey] = bBox;
         }
         return bBox;
+    }
+    /**
+     * Get the rotated box.
+     * @private
+     */
+    getRotatedBox(box, rotation) {
+        const { x: boxX, y: boxY, width, height } = box, { alignValue, translateY, rotationOriginX = 0, rotationOriginY = 0 } = this, alignFactor = {
+            'right': 1,
+            'center': 0.5
+        }[alignValue || 0] || 0, baseline = Number(this.element.getAttribute('y') || 0) -
+            (translateY ? 0 : boxY), rad = rotation * deg2rad, rad90 = (rotation - 90) * deg2rad, cosRad = Math.cos(rad), sinRad = Math.sin(rad), wCosRad = width * cosRad, wSinRad = width * sinRad, cosRad90 = Math.cos(rad90), sinRad90 = Math.sin(rad90), [[xOriginCosRad, xOriginSinRad], [yOriginCosRad, yOriginSinRad]] = [
+            rotationOriginX,
+            rotationOriginY
+        ].map((rotOrigin) => [
+            rotOrigin - (rotOrigin * cosRad),
+            rotOrigin * sinRad
+        ]), 
+        // Find the starting point on the left side baseline of
+        // the text
+        pX = ((boxX + alignFactor * (width - wCosRad)) +
+            xOriginCosRad + yOriginSinRad), pY = ((boxY + baseline - alignFactor * wSinRad) -
+            xOriginSinRad + yOriginCosRad), 
+        // Find all corners
+        aX = pX + baseline * cosRad90, bX = aX + wCosRad, cX = bX - height * cosRad90, dX = cX - wCosRad, aY = pY + baseline * sinRad90, bY = aY + wSinRad, cY = bY - height * sinRad90, dY = cY - wSinRad;
+        // Deduct the bounding box from the corners
+        const x = Math.min(aX, bX, cX, dX), y = Math.min(aY, bY, cY, dY), boxWidth = Math.max(aX, bX, cX, dX) - x, boxHeight = Math.max(aY, bY, cY, dY) - y;
+        return {
+            x,
+            y,
+            width: boxWidth,
+            height: boxHeight
+        };
     }
     /**
      * Get the computed style. Only in styled mode.
@@ -1146,7 +1173,7 @@ class SVGElement {
          * @name Highcharts.SVGElement#element
          * @type {Highcharts.SVGDOMElement|Highcharts.HTMLDOMElement}
          */
-        this.element = nodeName === 'span' ?
+        this.element = nodeName === 'span' || nodeName === 'body' ?
             createElement(nodeName) :
             doc.createElementNS(this.SVG_NS, nodeName);
         /**
@@ -1156,6 +1183,7 @@ class SVGElement {
          * @type {Highcharts.SVGRenderer}
          */
         this.renderer = renderer;
+        this.styles = {};
         fireEvent(this, 'afterInit');
     }
     /**
@@ -1437,7 +1465,7 @@ class SVGElement {
      * @function Highcharts.SVGElement#strokeWidth
      *
      * @return {number}
-     * The stroke width in pixels. Even if the given stroke widtch (in CSS or by
+     * The stroke width in pixels. Even if the given stroke width (in CSS or by
      * attributes) is based on `em` or other units, the pixel size is returned.
      */
     strokeWidth() {
@@ -1447,21 +1475,21 @@ class SVGElement {
         }
         // In styled mode, read computed stroke width
         const val = this.getStyle('stroke-width');
-        let ret = 0, dummy;
+        let ret = 0, tempElement;
         // Read pixel values directly
-        if (val.indexOf('px') === val.length - 2) {
+        if (/px$/.test(val)) {
             ret = pInt(val);
             // Other values like em, pt etc need to be measured
         }
         else if (val !== '') {
-            dummy = doc.createElementNS(SVG_NS, 'rect');
-            attr(dummy, {
+            tempElement = doc.createElementNS(SVG_NS, 'rect');
+            attr(tempElement, {
                 width: val,
                 'stroke-width': 0
             });
-            this.element.parentNode.appendChild(dummy);
-            ret = dummy.getBBox().width;
-            dummy.parentNode.removeChild(dummy);
+            this.element.parentNode.appendChild(tempElement);
+            ret = tempElement.getBBox().width;
+            tempElement.parentNode.removeChild(tempElement);
         }
         return ret;
     }
@@ -1518,12 +1546,9 @@ class SVGElement {
             el.appendChild(titleNode);
         }
         // Replace text content and escape markup
-        titleNode.textContent =
-            // #3276, #3895
-            String(pick(value, ''))
-                .replace(/<[^>]*>/g, '')
-                .replace(/&lt;/g, '<')
-                .replace(/&gt;/g, '>');
+        titleNode.textContent = replaceNested(// Scan #[73]
+        pick(value, ''), // #3276, #3895
+        [/<[^>]*>/g, '']).replace(/&lt;/g, '<').replace(/&gt;/g, '>');
     }
     /**
      * Bring the element to the front. Alternatively, a new zIndex can be set.
@@ -1570,23 +1595,31 @@ class SVGElement {
      * @function Highcharts.SVGElement#updateTransform
      */
     updateTransform(attrib = 'transform') {
-        const { element, matrix, rotation = 0, scaleX, scaleY, translateX = 0, translateY = 0 } = this;
+        const { element, matrix, rotation = 0, rotationOriginX, rotationOriginY, scaleX, scaleY, translateX = 0, translateY = 0 } = this;
         // Apply translate. Nearly all transformed elements have translation,
         // so instead of checking for translate = 0, do it always (#1767,
         // #1846).
         const transform = ['translate(' + translateX + ',' + translateY + ')'];
-        // apply matrix
+        // Apply matrix
         if (defined(matrix)) {
             transform.push('matrix(' + matrix.join(',') + ')');
         }
         // Apply rotation
-        if (rotation) { // text rotation or inverted chart
+        if (rotation) {
             transform.push('rotate(' + rotation + ' ' +
-                pick(this.rotationOriginX, element.getAttribute('x'), 0) +
+                pick(rotationOriginX, element.getAttribute('x'), 0) +
                 ' ' +
-                pick(this.rotationOriginY, element.getAttribute('y') || 0) + ')');
+                pick(rotationOriginY, element.getAttribute('y') || 0) + ')');
+            // HTML labels rotation (#20685)
+            if (this.text?.element.tagName === 'SPAN') {
+                this.text.attr({
+                    rotation,
+                    rotationOriginX: (rotationOriginX || 0) - this.padding,
+                    rotationOriginY: (rotationOriginY || 0) - this.padding
+                });
+            }
         }
-        // apply scale
+        // Apply scale
         if (defined(scaleX) || defined(scaleY)) {
             transform.push('scale(' + pick(scaleX, 1) + ' ' + pick(scaleY, 1) + ')');
         }
@@ -1606,7 +1639,7 @@ class SVGElement {
      *
      */
     visibilitySetter(value, key, element) {
-        // IE9-11 doesn't handle visibilty:inherit well, so we remove the
+        // IE9-11 doesn't handle visibility:inherit well, so we remove the
         // attribute instead (#2881, #3909)
         if (value === 'inherit') {
             element.removeAttribute(key);

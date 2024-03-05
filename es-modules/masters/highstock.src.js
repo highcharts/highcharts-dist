@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.3.0 (2024-01-10)
+ * @license Highstock JS v@product.version@ (@product.date@)
  * @module highcharts/highstock
  *
  * (c) 2009-2024 Torstein Honsi

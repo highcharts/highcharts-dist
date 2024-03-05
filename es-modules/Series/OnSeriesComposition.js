@@ -37,7 +37,7 @@ var OnSeriesComposition;
      * @private
      */
     function compose(SeriesClass) {
-        if (pushUnique(composed, compose)) {
+        if (pushUnique(composed, 'OnSeries')) {
             const seriesProto = SeriesClass.prototype;
             seriesProto.getPlotBox = getPlotBox;
             seriesProto.translate = translate;

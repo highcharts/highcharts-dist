@@ -262,7 +262,7 @@ class NewDataAnnouncer {
      * @private
      */
     function compose(SeriesClass) {
-        if (pushUnique(composed, compose)) {
+        if (pushUnique(composed, 'A11y.NDA')) {
             addEvent(SeriesClass, 'addPoint', seriesOnAddPoint);
             addEvent(SeriesClass, 'updatedData', seriesOnUpdatedData);
         }
@@ -274,7 +274,8 @@ class NewDataAnnouncer {
      * @param {Highcharts.Point} point
      */
     function seriesOnAddPoint(e) {
-        const chart = this.chart, newDataAnnouncer = this.newDataAnnouncer;
+        const chart = this.chart, newDataAnnouncer = chart.accessibility?.components
+            .series.newDataAnnouncer;
         if (newDataAnnouncer &&
             newDataAnnouncer.chart === chart &&
             chartHasAnnounceEnabled(chart)) {
@@ -290,7 +291,8 @@ class NewDataAnnouncer {
      * @param {Highcharts.Series} series
      */
     function seriesOnUpdatedData() {
-        const chart = this.chart, newDataAnnouncer = this.newDataAnnouncer;
+        const chart = this.chart, newDataAnnouncer = chart.accessibility?.components
+            .series.newDataAnnouncer;
         if (newDataAnnouncer &&
             newDataAnnouncer.chart === chart &&
             chartHasAnnounceEnabled(chart)) {

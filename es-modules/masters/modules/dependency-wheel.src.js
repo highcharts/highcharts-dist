@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v@product.version@ (@product.date@)
  * @module highcharts/modules/dependency-wheel
  * @requires highcharts
  * @requires highcharts/modules/sankey
@@ -11,4 +11,6 @@
  * License: www.highcharts.com/license
  */
 'use strict';
+import Highcharts from '../../Core/Globals.js';
 import '../../Series/DependencyWheel/DependencyWheelSeries.js';
+export default Highcharts;

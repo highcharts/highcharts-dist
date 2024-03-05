@@ -97,7 +97,7 @@ class PPOIndicator extends EMAIndicator {
  */
 PPOIndicator.defaultOptions = merge(EMAIndicator.defaultOptions, {
     /**
-     * Paramters used in calculation of Percentage Price Oscillator series
+     * Parameters used in calculation of Percentage Price Oscillator series
      * points.
      *
      * @excluding period

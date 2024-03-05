@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.3.0 (2024-01-10)
+ * @license Highstock JS v11.4.0 (2024-03-05)
  *
  * Data grouping module
  *
@@ -323,7 +323,7 @@
             },
             hlc: {
                 groupPixelWidth: 5
-                // Move to HeikinAshiSeries.ts aftre refactoring data grouping.
+                // Move to HeikinAshiSeries.ts after refactoring data grouping.
             },
             heikinashi: {
                 groupPixelWidth: 10
@@ -374,7 +374,7 @@
 
         return DataGroupingDefaults;
     });
-    _registerModule(_modules, 'Extensions/DataGrouping/DataGroupingAxisComposition.js', [_modules['Extensions/DataGrouping/DataGroupingDefaults.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (DataGroupingDefaults, H, U) {
+    _registerModule(_modules, 'Extensions/DataGrouping/DataGroupingAxisComposition.js', [_modules['Extensions/DataGrouping/DataGroupingDefaults.js'], _modules['Core/Utilities.js']], function (DataGroupingDefaults, U) {
         /* *
          *
          *  (c) 2010-2024 Torstein Honsi
@@ -384,8 +384,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { composed } = H;
-        const { addEvent, extend, merge, pick, pushUnique } = U;
+        const { addEvent, extend, merge, pick } = U;
         /* *
          *
          *  Variables
@@ -427,12 +426,13 @@
          */
         function compose(AxisClass) {
             AxisConstructor = AxisClass;
-            if (pushUnique(composed, compose)) {
+            const axisProto = AxisClass.prototype;
+            if (!axisProto.applyGrouping) {
                 addEvent(AxisClass, 'afterSetScale', onAfterSetScale);
                 // When all series are processed, calculate the group pixel width and
                 // then if this value is different than zero apply groupings.
                 addEvent(AxisClass, 'postProcessData', applyGrouping);
-                extend(AxisClass.prototype, {
+                extend(axisProto, {
                     applyGrouping,
                     getGroupPixelWidth,
                     setDataGrouping
@@ -470,8 +470,8 @@
             return doGrouping ? groupPixelWidth : 0;
         }
         /**
-         * When resetting the scale reset the hasProccessed flag to avoid taking
-         * previous data grouping of neighbour series into accound when determining
+         * When resetting the scale reset the hasProcessed flag to avoid taking
+         * previous data grouping of neighbour series into account when determining
          * group pixel width (#2692).
          * @private
          */
@@ -513,7 +513,7 @@
                         dataGrouping: dataGrouping
                     }, false);
                 }
-                // Axis not yet instanciated, alter series options
+                // Axis not yet instantiated, alter series options
             }
             else {
                 this.chart.options.series.forEach(function (seriesOptions) {
@@ -523,7 +523,7 @@
                         merge(dataGrouping, seriesOptions.dataGrouping);
                 });
             }
-            // Clear ordinal slope, so we won't accidentaly use the old one (#7827)
+            // Clear ordinal slope, so we won't accidentally use the old one (#7827)
             if (axis.ordinal) {
                 axis.ordinal.slope = void 0;
             }
@@ -542,7 +542,7 @@
 
         return DataGroupingAxisComposition;
     });
-    _registerModule(_modules, 'Extensions/DataGrouping/DataGroupingSeriesComposition.js', [_modules['Extensions/DataGrouping/ApproximationRegistry.js'], _modules['Extensions/DataGrouping/DataGroupingDefaults.js'], _modules['Core/Axis/DateTimeAxis.js'], _modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (ApproximationRegistry, DataGroupingDefaults, DateTimeAxis, D, H, SeriesRegistry, U) {
+    _registerModule(_modules, 'Extensions/DataGrouping/DataGroupingSeriesComposition.js', [_modules['Extensions/DataGrouping/ApproximationRegistry.js'], _modules['Extensions/DataGrouping/DataGroupingDefaults.js'], _modules['Core/Axis/DateTimeAxis.js'], _modules['Core/Defaults.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (ApproximationRegistry, DataGroupingDefaults, DateTimeAxis, D, SeriesRegistry, U) {
         /* *
          *
          *  (c) 2010-2024 Torstein Honsi
@@ -552,9 +552,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { composed } = H;
         const { series: { prototype: seriesProto } } = SeriesRegistry;
-        const { addEvent, defined, error, extend, isNumber, merge, pick, pushUnique } = U;
+        const { addEvent, defined, error, extend, isNumber, merge, pick } = U;
         /* *
          *
          *  Constants
@@ -629,7 +628,7 @@
             }
             // Change the last point position but only when it is
             // the last point in the data set not in the current zoom,
-            // or if it is not the 1st point simutainously.
+            // or if it is not the 1st point simultaneously.
             if (groupedDataLastIndex > 0 &&
                 lastAnchor &&
                 totalRange &&
@@ -768,8 +767,9 @@
          * @private
          */
         function compose(SeriesClass) {
-            const PointClass = SeriesClass.prototype.pointClass;
-            if (pushUnique(composed, compose)) {
+            const seriesProto = SeriesClass.prototype;
+            if (!seriesProto.applyGrouping) {
+                const PointClass = SeriesClass.prototype.pointClass;
                 // Override point prototype to throw a warning when trying to update
                 // grouped points.
                 addEvent(PointClass, 'update', function () {
@@ -780,7 +780,7 @@
                 });
                 addEvent(SeriesClass, 'afterSetOptions', onAfterSetOptions);
                 addEvent(SeriesClass, 'destroy', destroyGroupedData);
-                extend(SeriesClass.prototype, {
+                extend(seriesProto, {
                     applyGrouping,
                     destroyGroupedData,
                     generatePoints,
@@ -1052,7 +1052,7 @@
             DataGroupingAxisComposition.compose(AxisClass);
             DataGroupingSeriesComposition.compose(SeriesClass);
             if (TooltipClass &&
-                pushUnique(composed, compose)) {
+                pushUnique(composed, 'DataGrouping')) {
                 addEvent(TooltipClass, 'headerFormatter', onTooltipHeaderFormatter);
             }
         }
@@ -1490,11 +1490,13 @@
     _registerModule(_modules, 'masters/modules/datagrouping.src.js', [_modules['Core/Globals.js'], _modules['Extensions/DataGrouping/ApproximationDefaults.js'], _modules['Extensions/DataGrouping/ApproximationRegistry.js'], _modules['Extensions/DataGrouping/DataGrouping.js']], function (Highcharts, ApproximationDefaults, ApproximationRegistry, DataGrouping) {
 
         const G = Highcharts;
-        G.dataGrouping = {
-            approximationDefaults: ApproximationDefaults,
-            approximations: ApproximationRegistry
-        };
+        G.dataGrouping = G.dataGrouping || {};
+        G.dataGrouping.approximationDefaults = (G.dataGrouping.approximationDefaults ||
+            ApproximationDefaults);
+        G.dataGrouping.approximations = (G.dataGrouping.approximations ||
+            ApproximationRegistry);
         DataGrouping.compose(G.Axis, G.Series, G.Tooltip);
 
+        return Highcharts;
     });
 }));

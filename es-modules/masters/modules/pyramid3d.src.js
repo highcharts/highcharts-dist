@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v@product.version@ (@product.date@)
  * @module highcharts/modules/pyramid3d
  * @requires highcharts
  * @requires highcharts/highcharts-3d
@@ -13,4 +13,6 @@
  * License: www.highcharts.com/license
  */
 'use strict';
+import Highcharts from '../../Core/Globals.js';
 import '../../Series/Pyramid3D/Pyramid3DSeries.js';
+export default Highcharts;

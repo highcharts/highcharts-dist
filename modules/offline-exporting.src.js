@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v11.4.0 (2024-03-05)
  *
  * Client side exporting module
  *
@@ -177,7 +177,7 @@
          *
          * */
         const OfflineExportingDefaults = {
-            libURL: 'https://code.highcharts.com/11.3.0/lib/',
+            libURL: 'https://code.highcharts.com/11.4.0/lib/',
             // When offline-exporting is loaded, redefine the menu item definitions
             // related to download.
             menuItemDefinitions: {
@@ -233,12 +233,11 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        /* global MSBlobBuilder */
         const { defaultOptions } = D;
         const { downloadURL } = DownloadURL;
-        const { composed, doc, win } = H;
+        const { doc, win } = H;
         const { ajax } = HU;
-        const { addEvent, error, extend, fireEvent, merge, pushUnique } = U;
+        const { addEvent, error, extend, fireEvent, merge } = U;
         AST.allowedAttributes.push('data-z-index', 'fill-opacity', 'filter', 'rx', 'ry', 'stroke-dasharray', 'stroke-linejoin', 'stroke-opacity', 'text-anchor', 'transform', 'version', 'viewBox', 'visibility', 'xmlns', 'xmlns:xlink');
         AST.allowedTags.push('desc', 'clippath', 'g');
         /* *
@@ -273,8 +272,8 @@
              * @private
              */
             function compose(ChartClass) {
-                if (pushUnique(composed, compose)) {
-                    const chartProto = ChartClass.prototype;
+                const chartProto = ChartClass.prototype;
+                if (!chartProto.exportChartLocal) {
                     chartProto.getSVGForLocalExport = getSVGForLocalExport;
                     chartProto.exportChartLocal = exportChartLocal;
                     // Extend the default options to use the local exporter logic
@@ -852,7 +851,7 @@
                     userAgent.indexOf('Chrome') < 0);
                 try {
                     // Safari requires data URI since it doesn't allow navigation to
-                    // blob URLs. ForeignObjects also dont work well in Blobs in Chrome
+                    // blob URLs. ForeignObjects also don't work well in Blobs in Chrome
                     // (#14780).
                     if (!webKit && svg.indexOf('<foreignObject') === -1) {
                         return OfflineExporting.domurl.createObjectURL(new win.Blob([svg], {
@@ -927,11 +926,12 @@
 
         const G = Highcharts;
         // Compatibility
-        G.dataURLtoBlob = DownloadURL.dataURLtoBlob;
+        G.dataURLtoBlob = G.dataURLtoBlob || DownloadURL.dataURLtoBlob;
         G.downloadSVGLocal = OfflineExporting.downloadSVGLocal;
-        G.downloadURL = DownloadURL.downloadURL;
+        G.downloadURL = G.downloadURL || DownloadURL.downloadURL;
         // Compose
         OfflineExporting.compose(G.Chart);
 
+        return Highcharts;
     });
 }));

@@ -347,7 +347,11 @@ class DataConverter {
      * @param {DataConverter.Options} [options]
      * Options for the export.
      */
-    export(connector, options) {
+    export(
+    /* eslint-disable @typescript-eslint/no-unused-vars */
+    connector, options
+    /* eslint-enable @typescript-eslint/no-unused-vars */
+    ) {
         this.emit({
             type: 'exportError',
             columns: [],
@@ -422,7 +426,9 @@ class DataConverter {
      * @param {DataConverter.UserOptions} options
      * Options of the DataConverter.
      */
-    parse(options) {
+    parse(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    options) {
         this.emit({
             type: 'parseError',
             columns: [],

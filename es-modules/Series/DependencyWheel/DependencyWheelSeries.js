@@ -20,7 +20,7 @@ import SankeyColumnComposition from '../Sankey/SankeyColumnComposition.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { pie: PieSeries, sankey: SankeySeries } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
-const { extend, merge } = U;
+const { extend, merge, relativeLength } = U;
 /* *
  *
  *  Class
@@ -138,7 +138,8 @@ class DependencyWheelSeries extends SankeySeries {
         for (const node of this.nodeColumns[0]) {
             // Don't render the nodes if sum is 0 #12453
             if (node.sum) {
-                const shapeArgs = node.shapeArgs, centerX = center[0], centerY = center[1], r = center[2] / 2, innerR = r - options.nodeWidth, start = startAngle + factor * (shapeArgs.y || 0), end = startAngle +
+                const shapeArgs = node.shapeArgs, centerX = center[0], centerY = center[1], r = center[2] / 2, nodeWidth = options.nodeWidth === 'auto' ?
+                    20 : options.nodeWidth, innerR = r - relativeLength(nodeWidth || 0, r), start = startAngle + factor * (shapeArgs.y || 0), end = startAngle +
                     factor * ((shapeArgs.y || 0) + (shapeArgs.height || 0));
                 // Middle angle
                 node.angle = start + (end - start) / 2;

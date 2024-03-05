@@ -304,8 +304,9 @@ const DragDropDefaults = {
      * Style options for the guide box. The guide box has one state by default,
      * the `default` state.
      *
-     * @type  {Highcharts.Dictionary<Highcharts.DragDropGuideBoxOptionsObject>}
+     * @declare Highcharts.PlotOptionsSeriesDragDropGuideBoxOptions
      * @since 6.2.0
+     * @type  {Highcharts.Dictionary<Highcharts.DragDropGuideBoxOptionsObject>}
      */
     guideBox: {
         /**

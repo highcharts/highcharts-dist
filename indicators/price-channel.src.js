@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.3.0 (2024-01-10)
+ * @license Highstock JS v11.4.0 (2024-03-05)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -109,10 +109,10 @@
              *
              * */
             /* *
-            *
-            *  Constants
-            *
-            * */
+             *
+             *  Constants
+             *
+             * */
             /**
              * Additional lines DOCS names. Elements of linesApiNames array should
              * be consistent with DOCS line names defined in your implementation.
@@ -135,7 +135,7 @@
              */
             const pointArrayMap = ['top', 'bottom'];
             /**
-             * Names of the lines, bewteen which the area should be plotted.
+             * Names of the lines, between which the area should be plotted.
              * If the drawing of the area should
              * be disabled for some indicators, leave this option as an empty array.
              * Names should be the same as the names in the pointArrayMap.
@@ -152,10 +152,10 @@
              */
             const pointValKey = 'top';
             /* *
-            *
-            *  Functions
-            *
-            * */
+             *
+             *  Functions
+             *
+             * */
             /**
              * Composition useful for all indicators that have more than one line.
              * Compose it with your implementation where you will provide the
@@ -536,8 +536,9 @@
 
         return PCIndicator;
     });
-    _registerModule(_modules, 'masters/indicators/price-channel.src.js', [], function () {
+    _registerModule(_modules, 'masters/indicators/price-channel.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

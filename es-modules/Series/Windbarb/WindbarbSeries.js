@@ -193,7 +193,7 @@ class WindbarbSeries extends ColumnSeries {
             }, animObject(this.options.animation));
         }
     }
-    markerAttribs(point, state) {
+    markerAttribs() {
         return {};
     }
     getExtremes() {

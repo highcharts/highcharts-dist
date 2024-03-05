@@ -9,10 +9,6 @@
  *
  * */
 'use strict';
-import H from '../Core/Globals.js';
-const { composed } = H;
-import U from '../Core/Utilities.js';
-const { pushUnique } = U;
 /* *
  *
  *  Functions
@@ -91,15 +87,13 @@ function arrowHalf(x, y, w, h) {
  * @private
  */
 function compose(SVGRendererClass) {
-    if (pushUnique(composed, compose)) {
-        const symbols = SVGRendererClass.prototype.symbols;
-        symbols.arrow = arrow;
-        symbols['arrow-filled'] = triangleLeft;
-        symbols['arrow-filled-half'] = triangleLeftHalf;
-        symbols['arrow-half'] = arrowHalf;
-        symbols['triangle-left'] = triangleLeft;
-        symbols['triangle-left-half'] = triangleLeftHalf;
-    }
+    const symbols = SVGRendererClass.prototype.symbols;
+    symbols.arrow = arrow;
+    symbols['arrow-filled'] = triangleLeft;
+    symbols['arrow-filled-half'] = triangleLeftHalf;
+    symbols['arrow-half'] = arrowHalf;
+    symbols['triangle-left'] = triangleLeft;
+    symbols['triangle-left-half'] = triangleLeftHalf;
 }
 /**
  * Creates a left-oriented triangle.

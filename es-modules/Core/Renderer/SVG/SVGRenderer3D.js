@@ -15,12 +15,12 @@ const { animObject } = A;
 import Color from '../../Color/Color.js';
 const { parse: color } = Color;
 import H from '../../Globals.js';
-const { charts, composed, deg2rad } = H;
+const { charts, deg2rad } = H;
 import Math3D from '../../Math3D.js';
 const { perspective, shapeArea } = Math3D;
 import SVGElement3D from './SVGElement3D.js';
 import U from '../../Utilities.js';
-const { defined, extend, merge, pick, pushUnique } = U;
+const { defined, extend, merge, pick } = U;
 /* *
  *
  *  Constants
@@ -83,8 +83,9 @@ var SVGRenderer3D;
      * */
     /** @private */
     function compose(SVGRendererClass) {
-        if (pushUnique(composed, compose)) {
-            extend(SVGRendererClass.prototype, {
+        const rendererProto = SVGRendererClass.prototype;
+        if (!rendererProto.element3d) {
+            extend(rendererProto, {
                 Element3D: SVGElement3D,
                 arc3d,
                 arc3dPath,
@@ -249,7 +250,7 @@ var SVGRenderer3D;
         return elem3d;
     }
     /**
-     * generelized, so now use simply
+     * generalized, so now use simply
      * @private
      */
     function cuboid(shapeArgs) {
@@ -360,7 +361,7 @@ var SVGRenderer3D;
         mapPath = (i) => (pArr[i]), 
         /**
          * First value - path with specific face
-         * Second  value - added info about side for later calculations.
+         * Second value - added info about side for later calculations.
          *                 Possible second values are 0 for path1, 1 for
          *                 path2 and -1 for no path chosen.
          * Third value - string containing information about current side of
@@ -737,7 +738,7 @@ var SVGRenderer3D;
             out.push([
                 'L', cx + (rx * Math.cos(end)), cy + (ry * Math.sin(end))
             ]);
-            // Go back to the artifical end2
+            // Go back to the artificial end2
             out = out.concat(curveTo(cx, cy, rx, ry, end, end2, 0, 0));
         }
         out.push([

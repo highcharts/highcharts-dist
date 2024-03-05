@@ -32,7 +32,7 @@ const layouts = {};
  * @private
  */
 function compose(ChartClass) {
-    if (pushUnique(composed, compose)) {
+    if (pushUnique(composed, 'GraphLayout')) {
         addEvent(ChartClass, 'afterPrint', onChartAfterPrint);
         addEvent(ChartClass, 'beforePrint', onChartBeforePrint);
         addEvent(ChartClass, 'predraw', onChartPredraw);

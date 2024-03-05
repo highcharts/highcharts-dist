@@ -18,10 +18,10 @@ declare module "../highcharts" {
      * the layout is stable.
      *
      * @param this
-     *        The series where the event occured.
+     *        The series where the event occurred.
      *
      * @param event
-     *        The event that occured.
+     *        The event that occurred.
      */
     type NetworkgraphAfterSimulationCallbackFunction = (this: Series, event: Event) => void;
 }

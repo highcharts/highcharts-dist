@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v11.3.0 (2024-01-10)
+ * @license Highcharts Gantt JS v@product.version@ (@product.date@)
  * @module highcharts/modules/grid-axis
  * @requires highcharts
  *
@@ -15,3 +15,4 @@ import GridAxis from '../../Core/Axis/GridAxis.js';
 const G = Highcharts;
 // Compositions
 GridAxis.compose(G.Axis, G.Chart, G.Tick);
+export default Highcharts;

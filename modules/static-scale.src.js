@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v11.3.0 (2024-01-10)
+ * @license Highcharts Gantt JS v11.4.0 (2024-03-05)
  *
  * StaticScale
  *
@@ -35,7 +35,7 @@
             }
         }
     }
-    _registerModule(_modules, 'Extensions/StaticScale.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Extensions/StaticScale.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  (c) 2016-2024 Torstein Honsi, Lars Cabrera
@@ -45,8 +45,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { composed } = H;
-        const { addEvent, defined, isNumber, pick, pushUnique } = U;
+        const { addEvent, defined, isNumber, pick } = U;
         /* *
          *
          *  Composition
@@ -54,8 +53,8 @@
          * */
         /** @private */
         function compose(AxisClass, ChartClass) {
-            if (pushUnique(composed, compose)) {
-                const chartProto = ChartClass.prototype;
+            const chartProto = ChartClass.prototype;
+            if (!chartProto.adjustHeight) {
                 addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
                 chartProto.adjustHeight = chartAdjustHeight;
                 addEvent(ChartClass, 'render', chartProto.adjustHeight);
@@ -146,5 +145,6 @@
         const G = Highcharts;
         StaticScale.compose(G.Axis, G.Chart);
 
+        return Highcharts;
     });
 }));

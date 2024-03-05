@@ -115,7 +115,7 @@ class HollowCandlestickSeries extends CandlestickSeries {
     }
     /**
      * @private
-     * @function Highcarts.seriesTypes.hollowcandlestick#init
+     * @function Highcharts.seriesTypes.hollowcandlestick#init
      */
     init() {
         super.init.apply(this, arguments);
@@ -338,4 +338,4 @@ export default HollowCandlestickSeries;
  * @product   highstock
  * @apioption series.hollowcandlestick.data
  */
-''; // adds doclets above to transpilat
+''; // adds doclets above to transpiled

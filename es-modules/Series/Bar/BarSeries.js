@@ -141,4 +141,4 @@ export default BarSeries;
  * @product   highcharts highstock
  * @apioption series.bar.states.select
  */
-''; // gets doclets above into transpilat
+''; // gets doclets above into transpiled

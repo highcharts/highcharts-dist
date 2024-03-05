@@ -127,7 +127,7 @@ class VariwideSeries extends ColumnSeries {
  * */
 VariwideSeries.compose = VariwideComposition.compose;
 VariwideSeries.defaultOptions = merge(ColumnSeries.defaultOptions, VariwideSeriesDefaults);
-// Extend translation by distoring X position based on Z.
+// Extend translation by distorting X position based on Z.
 addEvent(VariwideSeries, 'afterColumnTranslate', function () {
     // Temporarily disable crisping when computing original shapeArgs
     const xAxis = this.xAxis, inverted = this.chart.inverted, crisp = this.borderWidth % 2 / 2;

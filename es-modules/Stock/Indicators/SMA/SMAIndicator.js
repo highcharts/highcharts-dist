@@ -302,7 +302,7 @@ SMAIndicator.defaultOptions = merge(LineSeries.defaultOptions, {
      */
     compareToMain: false,
     /**
-     * Paramters used in calculation of regression series' points.
+     * Parameters used in calculation of regression series' points.
      */
     params: {
         /**

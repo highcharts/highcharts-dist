@@ -23,7 +23,7 @@ const { extend, isNumber, pick } = U;
  *
  * */
 /**
- * Creates an object map from parent id to childrens index.
+ * Creates an object map from parent id to children's index.
  *
  * @private
  * @function Highcharts.Tree#getListOfParents
@@ -52,7 +52,7 @@ function getListOfParents(data) {
     Object.keys(listOfParents).forEach((node) => {
         if ((node !== root) && (ids.indexOf(node) === -1)) {
             const adoptedByRoot = listOfParents[node].map(function (orphan) {
-                const { parent, ...parentExcluded } = orphan; // #15196
+                const { ...parentExcluded } = orphan; // #15196
                 return parentExcluded;
             });
             listOfParents[root].push(...adoptedByRoot);
@@ -75,7 +75,7 @@ function getNode(id, parent, level, data, mapOfIdToChildren, options) {
     if (typeof before === 'function') {
         before(node, options);
     }
-    // Call getNode recursively on the children. Calulate the height of the
+    // Call getNode recursively on the children. Calculate the height of the
     // node, and the number of descendants.
     const children = ((mapOfIdToChildren[id] || [])).map((child) => {
         const node = getNode(child.id, id, (level + 1), child, mapOfIdToChildren, options), childStart = child.start || NaN, childEnd = (child.milestone === true ?

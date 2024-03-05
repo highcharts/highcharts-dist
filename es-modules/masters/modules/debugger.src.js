@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v@product.version@ (@product.date@)
  * @module highcharts/modules/debugger
  * @requires highcharts
  *
@@ -14,5 +14,6 @@ import Highcharts from '../../Core/Globals.js';
 import Debugger from '../../Extensions/Debugger/Debugger.js';
 import ErrorMessages from '../../Extensions/Debugger/ErrorMessages.js';
 const G = Highcharts;
-G.errorMessages = ErrorMessages;
+G.errorMessages = G.errorMessages || ErrorMessages;
 Debugger.compose(G.Chart);
+export default Highcharts;

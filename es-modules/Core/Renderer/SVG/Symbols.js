@@ -21,7 +21,7 @@ function arc(cx, cy, w, h, options) {
     if (options) {
         const start = options.start || 0, rx = pick(options.r, w), ry = pick(options.r, h || w), proximity = 0.001, fullCircle = (Math.abs((options.end || 0) - start - 2 * Math.PI) <
             proximity), 
-        // Substract a small number to prevent cos and sin of start
+        // Subtract a small number to prevent cos and sin of start
         // and end from becoming equal on 360 arcs (related: #1561)
         end = (options.end || 0) - proximity, innerRadius = options.innerR, open = pick(options.open, fullCircle), cosStart = Math.cos(start), sinStart = Math.sin(start), cosEnd = Math.cos(end), sinEnd = Math.sin(end), 
         // Proximity takes care of rounding errors around PI (#6971)

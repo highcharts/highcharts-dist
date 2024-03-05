@@ -23,7 +23,7 @@ import Tick from './Tick.js';
 import U from '../Utilities.js';
 const { arrayMax, arrayMin, clamp, correctFloat, defined, destroyObjectProperties, erase, error, extend, fireEvent, getClosestDistance, insertItem, isArray, isNumber, isString, merge, normalizeTickInterval, objectEach, pick, relativeLength, removeEvent, splat, syncTimeout } = U;
 const getNormalizedTickInterval = (axis, tickInterval) => normalizeTickInterval(tickInterval, void 0, void 0, pick(axis.options.allowDecimals, 
-// If the tick interval is greather than 0.5, avoid decimals, as
+// If the tick interval is greater than 0.5, avoid decimals, as
 // linear axes are often used to render discrete values (#3363). If
 // a tick amount is set, allow decimals by default, as it increases
 // the chances for a good fit.
@@ -35,7 +35,7 @@ extend(defaultOptions, { xAxis, yAxis: merge(xAxis, yAxis) });
  *
  * */
 /**
- * Create a new axis object. Called internally when instanciating a new chart or
+ * Create a new axis object. Called internally when instantiating a new chart or
  * adding axes by {@link Highcharts.Chart#addAxis}.
  *
  * A chart can have from 0 axes (pie chart) to multiples. In a normal, single
@@ -199,7 +199,7 @@ class Axis {
         // Flag, if axis is linked to another axis
         axis.isLinked = defined(options.linkedTo);
         /**
-         * List of major ticks mapped by postition on axis.
+         * List of major ticks mapped by position on axis.
          *
          * @see {@link Highcharts.Tick}
          *
@@ -221,7 +221,12 @@ class Axis {
         axis.plotLinesAndBands = [];
         // Alternate bands
         axis.alternateBands = {};
-        // Axis metrics
+        /**
+         * The length of the axis in terms of pixels.
+         *
+         * @name Highcharts.Axis#len
+         * @type {number}
+         */
         axis.len = 0;
         axis.minRange = axis.userMinRange = options.minRange || options.maxZoom;
         axis.range = options.range;
@@ -331,7 +336,7 @@ class Axis {
      * @return {string}
      * The formatted label content.
      */
-    defaultLabelFormatter(ctx) {
+    defaultLabelFormatter() {
         const axis = this.axis, chart = this.chart, { numberFormatter } = chart, value = isNumber(this.value) ? this.value : NaN, time = axis.chart.time, categories = axis.categories, dateTimeLabelFormat = this.dateTimeLabelFormat, lang = defaultOptions.lang, numericSymbols = lang.numericSymbols, numSymMagnitude = lang.numericSymbolMagnitude || 1000, 
         // Make sure the same symbol is added for all labels on a linear
         // axis
@@ -615,12 +620,12 @@ class Axis {
             }
             else if (axis.horiz) {
                 y1 = axisTop;
-                y2 = cHeight - axis.bottom;
+                y2 = cHeight - axis.bottom + (chart.scrollablePixelsY || 0);
                 x1 = x2 = between(x1, axisLeft, axisLeft + axis.width);
             }
             else {
                 x1 = axisLeft;
-                x2 = cWidth - axis.right;
+                x2 = cWidth - axis.right + (chart.scrollablePixelsX || 0);
                 y1 = y2 = between(y1, axisTop, axisTop + axis.height);
             }
             e.path = skip && !force ?
@@ -804,7 +809,7 @@ class Axis {
                 min + minRange,
                 pick(options.max, min + minRange)
             ];
-            // If space is availabe, stay within the data range
+            // If space is available, stay within the data range
             if (spaceAvailable) {
                 maxArgs[2] = logarithmic ?
                     logarithmic.log2lin(axis.dataMax) :
@@ -885,7 +890,7 @@ class Axis {
                     pick(names.keys[point.name], -1)) :
                 point.series.autoIncrement();
         }
-        if (nameX === -1) { // Not found in currenct categories
+        if (nameX === -1) { // Not found in current categories
             if (!explicitCategories && names) {
                 x = names.length;
             }
@@ -1202,7 +1207,7 @@ class Axis {
             axis.tickInterval = pick(tickIntervalOption, this.tickAmount ?
                 range / Math.max(this.tickAmount - 1, 1) :
                 void 0, 
-            // For categoried axis, 1 is default, for linear axis use
+            // For categorized axis, 1 is default, for linear axis use
             // tickPix
             categories ?
                 1 :
@@ -1266,7 +1271,7 @@ class Axis {
      * @emits Highcharts.Axis#event:afterSetTickPositions
      */
     setTickPositions() {
-        const axis = this, options = this.options, tickPositionsOption = options.tickPositions, tickPositioner = options.tickPositioner, minorTickIntervalOption = this.getMinorTickInterval(), hasVerticalPanning = this.hasVerticalPanning(), isColorAxis = this.coll === 'colorAxis', startOnTick = ((isColorAxis || !hasVerticalPanning) && options.startOnTick), endOnTick = ((isColorAxis || !hasVerticalPanning) && options.endOnTick);
+        const axis = this, options = this.options, tickPositionsOption = options.tickPositions, tickPositioner = options.tickPositioner, minorTickIntervalOption = this.getMinorTickInterval(), allowEndOnTick = !this.isPanning, startOnTick = allowEndOnTick && options.startOnTick, endOnTick = allowEndOnTick && options.endOnTick;
         let tickPositions = [], tickPositionerResult;
         // Set the tickmarkOffset
         this.tickmarkOffset = (this.categories &&
@@ -1439,7 +1444,7 @@ class Axis {
      * True if there are other axes.
      */
     alignToOthers() {
-        const axis = this, alignedAxes = [this], options = axis.options, chartOptions = this.chart.options.chart, alignThresholds = (this.coll === 'yAxis' &&
+        const axis = this, chart = axis.chart, alignedAxes = [this], options = axis.options, chartOptions = chart.options.chart, alignThresholds = (this.coll === 'yAxis' &&
             chartOptions.alignThresholds), thresholdAlignments = [];
         let hasOther;
         axis.thresholdAlignment = void 0;
@@ -1464,7 +1469,7 @@ class Axis {
                 ].join(',');
             };
             const thisKey = getKey(this);
-            this.chart[this.coll].forEach(function (otherAxis) {
+            chart[this.coll].forEach(function (otherAxis) {
                 const { series } = otherAxis;
                 if (
                 // #4442
@@ -1720,10 +1725,10 @@ class Axis {
         else if (stacking) {
             stacking.cleanStacks();
         }
-        // Recalculate panning state object, when the data
-        // has changed. It is required when vertical panning is enabled.
-        if (isDirtyData && axis.panningState) {
-            axis.panningState.isDirty = true;
+        // Recalculate all extremes object when the data has changed. It is
+        // required when vertical panning is enabled.
+        if (isDirtyData) {
+            delete axis.allExtremes;
         }
         fireEvent(this, 'afterSetScale');
     }
@@ -1764,74 +1769,21 @@ class Axis {
      *
      * @emits Highcharts.Axis#event:setExtremes
      */
-    setExtremes(newMin, newMax, redraw = true, animation, eventArguments) {
-        const axis = this, chart = axis.chart;
-        axis.series.forEach((serie) => {
+    setExtremes(min, max, redraw = true, animation, eventArguments) {
+        this.series.forEach((serie) => {
             delete serie.kdTree;
         });
         // Extend the arguments with min and max
-        eventArguments = extend(eventArguments, {
-            min: newMin,
-            max: newMax
-        });
+        eventArguments = extend(eventArguments, { min, max });
         // Fire the event
-        fireEvent(axis, 'setExtremes', eventArguments, () => {
-            axis.userMin = newMin;
-            axis.userMax = newMax;
-            axis.eventArgs = eventArguments;
+        fireEvent(this, 'setExtremes', eventArguments, (e) => {
+            this.userMin = e.min;
+            this.userMax = e.max;
+            this.eventArgs = e;
             if (redraw) {
-                chart.redraw(animation);
+                this.chart.redraw(animation);
             }
         });
-    }
-    /**
-     * Overridable method for zooming chart. Pulled out in a separate method to
-     * allow overriding in stock charts.
-     *
-     * @private
-     * @function Highcharts.Axis#zoom
-     */
-    zoom(newMin, newMax) {
-        const axis = this, dataMin = this.dataMin, dataMax = this.dataMax, options = this.options, min = Math.min(dataMin, pick(options.min, dataMin)), max = Math.max(dataMax, pick(options.max, dataMax)), evt = {
-            newMin: newMin,
-            newMax: newMax
-        };
-        fireEvent(this, 'zoom', evt, function (e) {
-            // Use e.newMin and e.newMax - event handlers may have altered them
-            let newMin = e.newMin, newMax = e.newMax;
-            if (newMin !== axis.min || newMax !== axis.max) { // #5790
-                // Prevent pinch zooming out of range. Check for defined is for
-                // #1946. #1734.
-                if (!axis.allowZoomOutside) {
-                    // #6014, sometimes newMax will be smaller than min (or
-                    // newMin will be larger than max).
-                    if (defined(dataMin)) {
-                        if (newMin < min) {
-                            newMin = min;
-                        }
-                        if (newMin > max) {
-                            newMin = max;
-                        }
-                    }
-                    if (defined(dataMax)) {
-                        if (newMax < min) {
-                            newMax = min;
-                        }
-                        if (newMax > max) {
-                            newMax = max;
-                        }
-                    }
-                }
-                // In full view, displaying the reset zoom button is not
-                // required
-                axis.displayBtn = (typeof newMin !== 'undefined' ||
-                    typeof newMax !== 'undefined');
-                // Do it
-                axis.setExtremes(newMin, newMax, false, void 0, { trigger: 'zoom' });
-            }
-            e.zoomed = true;
-        });
-        return evt.zoomed;
     }
     /**
      * Update the axis metrics.
@@ -1851,6 +1803,15 @@ class Axis {
         this.right = chart.chartWidth - width - left;
         // Direction agnostic properties
         this.len = Math.max(horiz ? width : height, 0); // Math.max fixes #905
+        /**
+         * The position of the axis in terms of pixels, compared to the chart
+         * edge. In a horizontal axis it is the same as `chart.plotLeft` unless
+         * the axis is explicitly positioned, and in a default vertical axis it
+         * is the same as `chart.plotTop`.
+         *
+         * @name Highcharts.Axis#pos
+         * @type {number}
+         */
         this.pos = horiz ? left : top; // Distance from SVG origin
     }
     /**
@@ -2137,8 +2098,7 @@ class Axis {
                     if (label) {
                         // Reset ellipsis in order to get the correct
                         // bounding box (#4070)
-                        if (label.styles &&
-                            label.styles.textOverflow === 'ellipsis') {
+                        if (label.styles.textOverflow === 'ellipsis') {
                             label.css({ textOverflow: 'clip' });
                             // Set the correct width in order to read
                             // the bounding box height (#4678, #5034)
@@ -2196,10 +2156,7 @@ class Axis {
                     label.css(css);
                     // Reset previously shortened label (#8210)
                 }
-                else if (label.styles &&
-                    label.styles.width &&
-                    !css.width &&
-                    !widthOption) {
+                else if (label.styles.width && !css.width && !widthOption) {
                     label.css({ width: null });
                 }
                 delete label.specificTextOverflow;
@@ -2736,7 +2693,8 @@ class Axis {
             axis.stacking.renderStackTotals();
         }
         // End stacked totals
-        // Record old scaling for updating/animation
+        // Record old scaling for updating/animation. Pinch base must be
+        // preserved until the pinch ends.
         axis.old = {
             len: axis.len,
             max: axis.max,
@@ -2953,18 +2911,6 @@ class Axis {
             this.cross.hide();
         }
         fireEvent(this, 'afterHideCrosshair');
-    }
-    /**
-     * Check whether the chart has vertical panning ('y' or 'xy' type).
-     *
-     * @private
-     * @function Highcharts.Axis#hasVerticalPanning
-     */
-    hasVerticalPanning() {
-        const panningOptions = this.chart.options.chart.panning;
-        return Boolean(panningOptions &&
-            panningOptions.enabled && // #14624
-            /y/.test(panningOptions.type));
     }
     /**
      * Update an axis object with a new set of options. The options are merged

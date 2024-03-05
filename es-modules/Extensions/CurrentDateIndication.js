@@ -76,7 +76,7 @@ const defaultOptions = {
  * @private
  */
 function compose(AxisClass, PlotLineOrBandClass) {
-    if (pushUnique(composed, compose)) {
+    if (pushUnique(composed, 'CurrentDateIndication')) {
         addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
         addEvent(PlotLineOrBandClass, 'render', onPlotLineOrBandRender);
         wrap(PlotLineOrBandClass.prototype, 'getLabelText', wrapPlotLineOrBandGetLabelText);

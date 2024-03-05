@@ -560,7 +560,7 @@ declare module "../highcharts.src" {
          *        The message to speak.
          *
          * @param options
-         *        Optionally override spaker configuration.
+         *        Optionally override speaker configuration.
          */
         say(message: string, options?: SonificationSpeakerOptionsObject): void;
         /**
@@ -573,7 +573,7 @@ declare module "../highcharts.src" {
          *        The message to speak.
          *
          * @param options
-         *        Optionally override spaker configuration.
+         *        Optionally override speaker configuration.
          */
         sayAtTime(time: number, message: string, options?: SonificationSpeakerOptionsObject): void;
         /**

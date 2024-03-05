@@ -73,22 +73,26 @@ function addToolbar(chart, options, callback) {
         popupDiv.style.top = chart.plotTop + 10 + 'px';
     }
     // create label
-    createElement('span', void 0, void 0, popupDiv).appendChild(doc.createTextNode(pick(
+    let label = createElement('p', {
+        className: 'highcharts-annotation-label'
+    }, void 0, popupDiv);
+    label.setAttribute('aria-label', 'Annotation type');
+    label.appendChild(doc.createTextNode(pick(
     // Advanced annotations:
     lang[options.langKey] || options.langKey, 
     // Basic shapes:
     options.shapes && options.shapes[0].type, '')));
     // add buttons
-    let button = this.addButton(popupDiv, lang.removeButton || 'Remove', 'remove', popupDiv, callback);
-    button.className += ' highcharts-annotation-remove-button';
-    button.style['background-image'] = 'url(' +
-        this.iconsURL + 'destroy.svg)';
-    button = this.addButton(popupDiv, lang.editButton || 'Edit', 'edit', popupDiv, () => {
+    let button = this.addButton(popupDiv, lang.editButton || 'Edit', 'edit', popupDiv, () => {
         showForm.call(this, 'annotation-edit', chart, options, callback);
     });
     button.className += ' highcharts-annotation-edit-button';
     button.style['background-image'] = 'url(' +
         this.iconsURL + 'edit.svg)';
+    button = this.addButton(popupDiv, lang.removeButton || 'Remove', 'remove', popupDiv, callback);
+    button.className += ' highcharts-annotation-remove-button';
+    button.style['background-image'] = 'url(' +
+        this.iconsURL + 'destroy.svg)';
 }
 /**
  * Create annotation's form fields.

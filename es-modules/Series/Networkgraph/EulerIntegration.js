@@ -25,7 +25,7 @@
  * @param {Highcharts.Point} link
  *        Link that connects two nodes
  * @param {number} force
- *        Force calcualated in `repulsiveForceFunction`
+ *        Force calculated in `repulsiveForceFunction`
  * @param {Highcharts.PositionObject} distanceXY
  *        Distance between two nodes e.g. `{x, y}`
  * @param {number} distanceR
@@ -46,7 +46,7 @@ function attractive(link, force, distanceXY, distanceR) {
     }
 }
 /**
- * Attractive force funtion. Can be replaced by API's
+ * Attractive force function. Can be replaced by API's
  * `layoutAlgorithm.attractiveForce`
  *
  * Other forces that can be used:
@@ -86,7 +86,7 @@ function barycenter() {
     });
 }
 /**
- * Estiamte the best possible distance between two nodes, making graph
+ * Estimate the best possible distance between two nodes, making graph
  * readable.
  * @private
  */
@@ -149,7 +149,7 @@ function integrate(layout, node) {
  * @param {Highcharts.Point} node
  *        Node that should be translated by force.
  * @param {number} force
- *        Force calcualated in `repulsiveForceFunction`
+ *        Force calculated in `repulsiveForceFunction`
  * @param {Highcharts.PositionObject} distanceXY
  *        Distance between two nodes e.g. `{x, y}`
  */
@@ -160,7 +160,7 @@ function repulsive(node, force, distanceXY, distanceR) {
         (distanceXY.y / distanceR) * force / node.degree;
 }
 /**
- * Repulsive force funtion. Can be replaced by API's
+ * Repulsive force function. Can be replaced by API's
  * `layoutAlgorithm.repulsiveForce`.
  *
  * Other forces that can be used:

@@ -68,20 +68,18 @@ class JSONConnector extends DataConnector {
             detail: eventDetail,
             table
         });
-        // If already loaded, clear the current rows
-        table.deleteRows();
         return Promise
             .resolve(dataUrl ?
             fetch(dataUrl).then((json) => json.json()) :
             data || [])
             .then((data) => {
             if (data) {
+                // If already loaded, clear the current rows
+                table.deleteColumns();
                 converter.parse({ data });
                 table.setColumns(converter.getTable().getColumns());
             }
-            return connector
-                .setModifierOptions(dataModifier)
-                .then(() => data);
+            return connector.setModifierOptions(dataModifier).then(() => data);
         })
             .then((data) => {
             connector.emit({

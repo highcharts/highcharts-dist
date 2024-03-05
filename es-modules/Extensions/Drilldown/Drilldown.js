@@ -15,11 +15,11 @@ const { animObject } = A;
 import Breadcrumbs from '../Breadcrumbs/Breadcrumbs.js';
 import Color from '../../Core/Color/Color.js';
 import H from '../../Core/Globals.js';
-const { composed, noop } = H;
+const { noop } = H;
 import DrilldownDefaults from './DrilldownDefaults.js';
 import DrilldownSeries from './DrilldownSeries.js';
 import U from '../../Core/Utilities.js';
-const { addEvent, defined, diffObjects, extend, fireEvent, merge, objectEach, pick, pushUnique, removeEvent, syncTimeout } = U;
+const { addEvent, defined, diffObjects, extend, fireEvent, merge, objectEach, pick, removeEvent, syncTimeout } = U;
 /* *
  *
  *  Variables
@@ -95,7 +95,7 @@ function createBreadcrumbsList(chart) {
                 levelOptions: drilldownLevels[0].seriesOptions
             });
         }
-        drilldownLevels.forEach(function (level, i) {
+        drilldownLevels.forEach(function (level) {
             const lastBreadcrumb = list[list.length - 1];
             // If level is already added to breadcrumbs list,
             // don't add it again- drilling categories
@@ -157,6 +157,7 @@ class ChartAdditions {
     addSeriesAsDrilldown(point, options) {
         const chart = (this.chart ||
             this);
+        fireEvent(this, 'addSeriesAsDrilldown', { seriesOptions: options });
         if (chart.mapView) {
             // stop hovering while drilling down
             point.series.isDrilling = true;
@@ -345,13 +346,13 @@ class ChartAdditions {
                                 // If it is the last series
                                 if (!(level.levelSeries.filter((el) => Object.keys(el).length)).length) {
                                     // We have a reset zoom button. Hide it and
-                                    // detatch it from the chart. It is
+                                    // detach it from the chart. It is
                                     // preserved to the layer config above.
                                     if (chart.resetZoomButton) {
                                         chart.resetZoomButton.hide();
                                         delete chart.resetZoomButton;
                                     }
-                                    chart.pointer.reset();
+                                    chart.pointer?.reset();
                                     fireEvent(chart, 'afterDrilldown');
                                     if (chart.mapView) {
                                         chart.series.forEach((series) => {
@@ -370,13 +371,13 @@ class ChartAdditions {
             });
         }
         if (!chart.mapView) {
-            // We have a reset zoom button. Hide it and detatch it from the
+            // We have a reset zoom button. Hide it and detach it from the
             // chart. It is preserved to the layer config above.
             if (chart.resetZoomButton) {
                 chart.resetZoomButton.hide();
                 delete chart.resetZoomButton;
             }
-            chart.pointer.reset();
+            chart.pointer?.reset();
             fireEvent(chart, 'afterDrilldown');
             // Axes shouldn't be visible after drilling into non-cartesian
             // (#19725)
@@ -645,8 +646,9 @@ var Drilldown;
     /** @private */
     function compose(AxisClass, ChartClass, highchartsDefaultOptions, SeriesClass, seriesTypes, SVGRendererClass, TickClass) {
         DrilldownSeries.compose(SeriesClass, seriesTypes);
-        if (pushUnique(composed, compose)) {
-            const DrilldownChart = ChartClass, SVGElementClass = SVGRendererClass.prototype.Element, addonProto = ChartAdditions.prototype, axisProto = AxisClass.prototype, chartProto = DrilldownChart.prototype, elementProto = SVGElementClass.prototype, tickProto = TickClass.prototype;
+        const DrilldownChart = ChartClass, chartProto = DrilldownChart.prototype;
+        if (!chartProto.drillUp) {
+            const SVGElementClass = SVGRendererClass.prototype.Element, addonProto = ChartAdditions.prototype, axisProto = AxisClass.prototype, elementProto = SVGElementClass.prototype, tickProto = TickClass.prototype;
             axisProto.drilldownCategory = axisDrilldownCategory;
             axisProto.getDDPoints = axisGetDDPoints;
             Breadcrumbs.compose(ChartClass, highchartsDefaultOptions);

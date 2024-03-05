@@ -14,11 +14,11 @@ import Color from '../../Core/Color/Color.js';
 const { parse: color } = Color;
 import ColumnSeriesDefaults from './ColumnSeriesDefaults.js';
 import H from '../../Core/Globals.js';
-const { hasTouch, noop } = H;
+const { noop } = H;
 import Series from '../../Core/Series/Series.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import U from '../../Core/Utilities.js';
-const { clamp, defined, extend, fireEvent, isArray, isNumber, merge, pick, objectEach, relativeLength } = U;
+const { clamp, defined, extend, fireEvent, isArray, isNumber, merge, pick, objectEach } = U;
 /* *
  *
  *  Class
@@ -63,8 +63,8 @@ class ColumnSeries extends Series {
             else {
                 attr.translateY = translatedThreshold;
             }
-            // apply finnal clipping (used in Highcharts Stock) (#7083)
-            // animation is done by scaleY, so cliping is for panes
+            // apply final clipping (used in Highcharts Stock) (#7083)
+            // animation is done by scaleY, so clipping is for panes
             if (series.clipBox) {
                 series.setClip();
             }
@@ -92,7 +92,9 @@ class ColumnSeries extends Series {
      * @private
      * @function Highcharts.seriesTypes.column#init
      */
-    init(chart, options) {
+    init(chart, 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    options) {
         super.init.apply(this, arguments);
         const series = this;
         chart = series.chart;
@@ -179,7 +181,7 @@ class ColumnSeries extends Series {
      * @function Highcharts.seriesTypes.column#crispCol
      */
     crispCol(x, y, w, h) {
-        const chart = this.chart, borderWidth = this.borderWidth, xCrisp = -(borderWidth % 2 ? 0.5 : 0);
+        const borderWidth = this.borderWidth, xCrisp = -(borderWidth % 2 ? 0.5 : 0);
         let right, yCrisp = borderWidth % 2 ? 0.5 : 1;
         // Horizontal. We need to first compute the exact right edge, then
         // round it and compute the width from there.
@@ -264,6 +266,8 @@ class ColumnSeries extends Series {
                     }
                 }
             });
+            indexInCategory = this.xAxis.reversed ?
+                totalInCategory - 1 - indexInCategory : indexInCategory;
             // Compute the adjusted x position
             const boxWidth = (totalInCategory - 1) * metrics.paddedWidth +
                 pointWidth;
@@ -303,7 +307,7 @@ class ColumnSeries extends Series {
             const yBottom = pick(point.yBottom, translatedThreshold), safeDistance = 999 + Math.abs(yBottom), plotX = point.plotX || 0, 
             // Don't draw too far outside plot area (#1303, #2241,
             // #4264)
-            plotY = clamp(point.plotY, -safeDistance, yAxis.len + safeDistance), stackBox = point.stackBox;
+            plotY = clamp(point.plotY, -safeDistance, yAxis.len + safeDistance);
             let up, barY = Math.min(plotY, yBottom), barH = Math.max(plotY, yBottom) - barY, pointWidth = seriesPointWidth, barX = plotX + seriesXOffset, barW = seriesBarW;
             // Handle options.minPointLength
             if (minPointLength && Math.abs(barH) < minPointLength) {
@@ -515,9 +519,10 @@ class ColumnSeries extends Series {
      */
     drawTracker(points = this.points) {
         const series = this, chart = series.chart, pointer = chart.pointer, onMouseOver = function (e) {
-            const point = pointer.getPointFromEvent(e);
-            // undefined on graph in scatterchart
-            if (typeof point !== 'undefined' &&
+            const point = pointer?.getPointFromEvent(e);
+            // Undefined on graph in scatterchart
+            if (pointer &&
+                point &&
                 series.options.enableMouseTracking) {
                 pointer.isDirectTouch = true;
                 point.onMouseOver(e);
@@ -533,12 +538,7 @@ class ColumnSeries extends Series {
                 point.graphic.element.point = point;
             }
             dataLabels.forEach(function (dataLabel) {
-                if (dataLabel.div) {
-                    dataLabel.div.point = point;
-                }
-                else {
-                    dataLabel.element.point = point;
-                }
+                (dataLabel.div || dataLabel.element).point = point;
             });
         });
         // Add the event listeners, we need to do this only once
@@ -550,11 +550,9 @@ class ColumnSeries extends Series {
                         .addClass('highcharts-tracker')
                         .on('mouseover', onMouseOver)
                         .on('mouseout', function (e) {
-                        pointer.onTrackerMouseOut(e);
-                    });
-                    if (hasTouch) {
-                        series[key].on('touchstart', onMouseOver);
-                    }
+                        pointer?.onTrackerMouseOut(e);
+                    })
+                        .on('touchstart', onMouseOver);
                     if (!chart.styledMode && series.options.cursor) {
                         series[key]
                             .css({ cursor: series.options.cursor });
@@ -597,7 +595,7 @@ extend(ColumnSeries.prototype, {
     directTouch: true,
     getSymbol: noop,
     // Use separate negative stacks, unlike area stacks where a negative
-    // point is substracted from previous (#1910)
+    // point is subtracted from previous (#1910)
     negStacks: true,
     trackerGroups: ['group', 'dataLabelsGroup']
 });

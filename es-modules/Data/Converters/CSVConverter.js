@@ -226,11 +226,9 @@ class CSVConverter extends DataConverter {
         if (!decimalPoint || decimalPoint === itemDelimiter) {
             decimalPoint = converter.guessedDecimalPoint || '.';
         }
-        let i = 0, c = '', cl = '', cn = '', token = '', actualColumn = 0, column = 0;
+        let i = 0, c = '', token = '', actualColumn = 0, column = 0;
         const read = (j) => {
             c = columnStr[j];
-            cl = columnStr[j - 1];
-            cn = columnStr[j + 1];
         };
         const pushType = (type) => {
             if (dataTypes.length < column + 1) {

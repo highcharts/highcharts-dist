@@ -55,7 +55,7 @@ class SVGElement3DFunnel extends SVGElement3D {
      *
      * */
     // override opacity and color setters to control opacity
-    opacitySetter(value, _key, _element) {
+    opacitySetter(value) {
         const funnel3d = this, opacity = parseFloat(value), parts = funnel3d.parts, chart = charts[funnel3d.renderer.chartIndex], filterId = 'group-opacity-' + opacity + '-' + chart.index;
         // use default for top and bottom
         funnel3d.parts = funnel3d.mainParts;

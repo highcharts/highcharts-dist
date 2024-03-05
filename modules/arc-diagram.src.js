@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v11.4.0 (2024-03-05)
  *
  * Arc diagram module
  *
@@ -221,14 +221,13 @@
                         ((fromNode.shapeArgs.height || 0) - linkWeight) / 2 :
                     getX(fromNode, 'linksFrom'), toX = centeredLinks ? toNode.nodeX +
                     ((toNode.shapeArgs.height || 0) - linkWeight) / 2 :
-                    getX(toNode, 'linksTo'), bottom = nodeTop, linkWidth = linkWeight;
+                    getX(toNode, 'linksTo'), bottom = nodeTop;
                 if (fromX > toX) {
                     [fromX, toX] = [toX, fromX];
                 }
                 if (seriesOptions.reversed) {
                     [fromX, toX] = [toX, fromX];
                     bottom = (chart.plotSizeY || 0) - bottom;
-                    linkWidth = -linkWidth;
                 }
                 point.shapeType = 'path';
                 point.linkBase = [
@@ -368,9 +367,11 @@
                     this.options.dataLabels.textPath = textPath;
                 }
             }
-            pointAttribs(point, state) {
+            pointAttribs(point, 
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            state) {
                 if (point && point.isNode) {
-                    const { opacity, ...attrs } = Series.prototype.pointAttribs
+                    const { ...attrs } = Series.prototype.pointAttribs
                         .apply(this, arguments);
                     return attrs;
                 }
@@ -623,8 +624,9 @@
 
         return ArcDiagramSeries;
     });
-    _registerModule(_modules, 'masters/modules/arc-diagram.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/arc-diagram.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

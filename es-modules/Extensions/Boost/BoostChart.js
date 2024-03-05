@@ -24,7 +24,7 @@ const { addEvent, pick, pushUnique } = U;
  * @private
  */
 function compose(ChartClass, wglMode) {
-    if (wglMode && pushUnique(composed, compose)) {
+    if (wglMode && pushUnique(composed, 'Boost.Chart')) {
         ChartClass.prototype.callbacks.push(onChartCallback);
     }
     return ChartClass;
@@ -46,7 +46,7 @@ function getBoostClipRect(chart, target) {
             chart.navigator.top + chart.navigator.height - chart.plotTop :
             chart.plotHeight
     };
-    // Clipping of individal series (#11906, #19039).
+    // Clipping of individual series (#11906, #19039).
     if (target.getClipBox) {
         const { xAxis, yAxis } = target;
         clipBox = target.getClipBox();
@@ -169,8 +169,8 @@ function onChartCallback(chart) {
         chart.boost.forceChartBoost = void 0;
         chart.boosted = false;
         // Clear the canvas
-        if (chart.boost.clear) {
-            chart.boost.clear();
+        if (!chart.axes.some((axis) => axis.isPanning)) {
+            chart.boost.clear?.();
         }
         if (chart.boost.canvas &&
             chart.boost.wgl &&

@@ -290,12 +290,16 @@ class Time {
         if (options.timezone) {
             return (timestamp) => {
                 try {
-                    const [date, gmt, hours, colon, minutes = 0] = 
-                    // eslint-disable-next-line new-cap
-                    Intl.DateTimeFormat('en', {
-                        timeZone: options.timezone,
-                        timeZoneName: 'shortOffset'
-                    })
+                    // Cache the DateTimeFormat instances for performance
+                    // (#20720)
+                    const cacheKey = `shortOffset,${options.timezone || ''}`, dateTimeFormat = Time.formatCache[cacheKey] = (Time.formatCache[cacheKey] ||
+                        // eslint-disable-next-line new-cap
+                        Intl.DateTimeFormat('en', {
+                            timeZone: options.timezone,
+                            timeZoneName: 'shortOffset'
+                        }));
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    const [date, gmt, hours, colon, minutes = 0] = dateTimeFormat
                         .format(timestamp)
                         .split(/(GMT|:)/)
                         .map(Number), offset = -(hours + minutes / 60) * 60 * 60000;
@@ -421,7 +425,7 @@ class Time {
             p: hours < 12 ? 'AM' : 'PM',
             // Lower case AM or PM
             P: hours < 12 ? 'am' : 'pm',
-            // Two digits seconds, 00 through  59
+            // Two digits seconds, 00 through 59
             S: pad(this.get('Seconds', date)),
             // Milliseconds (naming from Ruby)
             L: pad(Math.floor(timestamp % 1000), 3)
@@ -670,6 +674,7 @@ class Time {
         return this.resolveDTLFormat(dateTimeLabelFormats[n]).main;
     }
 }
+Time.formatCache = {};
 /* *
  *
  * Default export

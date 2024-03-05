@@ -14,9 +14,9 @@
 'use strict';
 import SVGElement3DFunnel from './SVGElement3DFunnel.js';
 import H from '../../Core/Globals.js';
-const { charts, composed } = H;
+const { charts } = H;
 import U from '../../Core/Utilities.js';
-const { error, extend, merge, pushUnique } = U;
+const { error, extend, merge } = U;
 /* *
  *
  *  Functions
@@ -24,8 +24,8 @@ const { error, extend, merge, pushUnique } = U;
  * */
 /** @private */
 function compose(SVGRendererClass) {
-    if (pushUnique(composed, compose)) {
-        const rendererProto = SVGRendererClass.prototype;
+    const rendererProto = SVGRendererClass.prototype;
+    if (!rendererProto.funnel3d) {
         rendererProto.Element3D.types.funnel3d = SVGElement3DFunnel;
         extend(rendererProto, {
             funnel3d: rendererFunnel3d,
@@ -41,7 +41,7 @@ function rendererFunnel3d(shapeArgs) {
         'stroke-width': 1,
         stroke: 'none'
     };
-    // create groups for sides for oppacity setter
+    // create groups for sides for opacity setter
     funnel3d.upperGroup = renderer.g('funnel3d-upper-group').attr({
         zIndex: funnel3d.frontUpper.zIndex
     }).add(funnel3d);
@@ -78,7 +78,7 @@ function rendererFunnel3dPath(shapeArgs) {
     // based on alpha, selected through visual tests
     alphaCorrection = shapeArgs.alphaCorrection = 90 - Math.abs((chart.options.chart.options3d.alpha % 180) -
         90), 
-    // set zIndexes of parts based on cubiod logic, for
+    // set zIndexes of parts based on cuboid logic, for
     // consistency
     cuboidData = this.cuboidPath.call(renderer, merge(shapeArgs, {
         depth: shapeArgs.width,

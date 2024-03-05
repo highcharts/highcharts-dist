@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v@product.version@ (@product.date@)
  * @module highcharts/themes/sunset
  * @requires highcharts
  *
@@ -12,3 +12,4 @@ import H from '../../Core/Globals.js';
 import SunsetTheme from '../../Extensions/Themes/Sunset.js';
 H.theme = SunsetTheme.options;
 SunsetTheme.apply();
+export default H;

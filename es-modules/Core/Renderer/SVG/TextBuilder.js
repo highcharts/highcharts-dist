@@ -168,7 +168,7 @@ class TextBuilder {
                     this.truncate(textNode, text, void 0, 0, 
                     // Target width
                     Math.max(0, 
-                    // Substract the font face to make room for the
+                    // Subtract the font face to make room for the
                     // ellipsis itself
                     width - 0.8 * dy), 
                     // Build the text to test for
@@ -333,7 +333,7 @@ class TextBuilder {
      */
     truncate(textNode, text, words, startAt, width, getString) {
         const svgElement = this.svgElement;
-        const { renderer, rotation } = svgElement;
+        const { rotation } = svgElement;
         // Cache the lengths to avoid checking the same twice
         const lengths = [];
         // Word wrap cannot be truncated to shorter than one word, ellipsis

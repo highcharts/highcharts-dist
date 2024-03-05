@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v@product.version@ (@product.date@)
  * @module highcharts/modules/sonification
  * @requires highcharts
  *
@@ -31,3 +31,4 @@ G.sonification = {
     Sonification
 };
 Sonification.compose(G.Chart, G.Series, G.Point);
+export default Highcharts;

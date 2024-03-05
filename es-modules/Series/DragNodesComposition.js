@@ -23,7 +23,7 @@ const { addEvent, pushUnique } = U;
  * @private
  */
 function compose(ChartClass) {
-    if (pushUnique(composed, compose)) {
+    if (pushUnique(composed, 'DragNodes')) {
         addEvent(ChartClass, 'load', onChartLoad);
     }
 }
@@ -64,12 +64,12 @@ function onChartLoad() {
  *
  * @private
  * @param {Highcharts.Point} point
- *        The point that event occured.
+ *        The point that event occurred.
  * @param {Highcharts.PointerEventObject} event
  *        Browser event, before normalization.
  */
 function onMouseDown(point, event) {
-    const normalizedEvent = this.chart.pointer.normalize(event);
+    const normalizedEvent = this.chart.pointer?.normalize(event) || event;
     point.fixedPosition = {
         chartX: normalizedEvent.chartX,
         chartY: normalizedEvent.chartY,
@@ -86,12 +86,12 @@ function onMouseDown(point, event) {
  * @param {global.Event} event
  *        Browser event, before normalization.
  * @param {Highcharts.Point} point
- *        The point that event occured.
+ *        The point that event occurred.
  *
  */
 function onMouseMove(point, event) {
     if (point.fixedPosition && point.inDragMode) {
-        const series = this, chart = series.chart, normalizedEvent = chart.pointer.normalize(event), diffX = point.fixedPosition.chartX - normalizedEvent.chartX, diffY = point.fixedPosition.chartY - normalizedEvent.chartY, graphLayoutsLookup = chart.graphLayoutsLookup;
+        const series = this, chart = series.chart, normalizedEvent = chart.pointer?.normalize(event) || event, diffX = point.fixedPosition.chartX - normalizedEvent.chartX, diffY = point.fixedPosition.chartY - normalizedEvent.chartY, graphLayoutsLookup = chart.graphLayoutsLookup;
         let newPlotX, newPlotY;
         // At least 5px to apply change (avoids simple click):
         if (Math.abs(diffX) > 5 || Math.abs(diffY) > 5) {
@@ -114,9 +114,9 @@ function onMouseMove(point, event) {
  *
  * @private
  * @param {Highcharts.Point} point
- *        The point that event occured.
+ *        The point that event occurred.
  */
-function onMouseUp(point, _event) {
+function onMouseUp(point) {
     if (point.fixedPosition) {
         if (point.hasDragged) {
             if (this.layout.enableSimulation) {

@@ -243,7 +243,7 @@ class ColorAxis extends Axis {
             (horiz ?
                 itemDistance :
                 pick(labelOptions.x, labelOptions.distance) +
-                    this.maxLabelLength));
+                    (this.maxLabelLength || 0)));
         legendItem.labelHeight = height + padding + (horiz ? labelPadding : 0);
     }
     /**
@@ -506,6 +506,7 @@ class ColorAxis extends Axis {
                         const affectedSeries = [];
                         for (const point of getPointsInDataClass(i)) {
                             point.setVisible(vis);
+                            point.hiddenInDataClass = !vis; // #20441
                             if (affectedSeries.indexOf(point.series) === -1) {
                                 affectedSeries.push(point.series);
                             }

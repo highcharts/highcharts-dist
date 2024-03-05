@@ -11,14 +11,12 @@
 'use strict';
 import BrokenAxis from '../BrokenAxis.js';
 import GridAxis from '../GridAxis.js';
-import H from '../../Globals.js';
-const { composed } = H;
 import Tree from '../../../Gantt/Tree.js';
 import TreeGridTick from './TreeGridTick.js';
 import TU from '../../../Series/TreeUtilities.js';
 const { getLevelOptions } = TU;
 import U from '../../Utilities.js';
-const { addEvent, find, fireEvent, isArray, isObject, isString, merge, pick, pushUnique, removeEvent, wrap } = U;
+const { addEvent, find, fireEvent, isArray, isObject, isString, merge, pick, removeEvent, wrap } = U;
 /* *
  *
  *  Variables
@@ -559,11 +557,9 @@ class TreeGridAxisAdditions {
      * @private
      */
     static compose(AxisClass, ChartClass, SeriesClass, TickClass) {
-        if (pushUnique(composed, this.compose)) {
+        if (!AxisClass.keepProps.includes('treeGrid')) {
             const axisProps = AxisClass.prototype;
-            if (AxisClass.keepProps.indexOf('treeGrid') === -1) {
-                AxisClass.keepProps.push('treeGrid');
-            }
+            AxisClass.keepProps.push('treeGrid');
             wrap(axisProps, 'generateTick', wrapGenerateTick);
             wrap(axisProps, 'init', wrapInit);
             wrap(axisProps, 'setTickInterval', wrapSetTickInterval);
@@ -723,7 +719,7 @@ class TreeGridAxisAdditions {
     /**
      * Calculates the new axis breaks after toggling the collapse/expand
      * state of a node. If it is collapsed it will be expanded, and if it is
-     * exapended it will be collapsed.
+     * expanded it will be collapsed.
      *
      * @private
      *

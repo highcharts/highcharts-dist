@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v11.4.0 (2024-03-05)
  *
  * Debugger module
  *
@@ -48,8 +48,8 @@
         const errorMessages = {
             "10": {
                 "title": "Can't plot zero or subzero values on a logarithmic axis",
-                "text": "<h1>Can't plot zero or subzero values on a logarithmic axis</h1><p>This error occurs in the following situations: </p><ul><li>If a zero or subzero data value is added to a logarithmic axis</li><li>If the minimum of a logarithimic axis is set to 0 or less</li><li>If the threshold is set to 0 or less</li></ul><p>Note: As of Highcharts 5.0.8 it's possible to bypass this error message by setting <code>Axis.prototype.allowNegativeLog</code> to true, and add custom conversion functions. <a href=\"https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/yaxis/type-log-negative/\">View live demo</a>. It is also possible to use a similar workaround for colorAxis. <a href=\"https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/coloraxis/logarithmic-with-emulate-negative-values/\">View live demo</a>.</p>",
-                "enduser": "<h1>Can't plot zero or subzero values on a logarithmic axis</h1><p>This error occurs in the following situations:</p><ul><li>If a zero or subzero data value is added to a logarithmic axis</li><li>If the minimum of a logarithimic axis is set to 0 or less</li><li>If the threshold is set to 0 or less</li></ul><p>As of Highcharts 5.0.8 it's possible to bypass this error message by setting <code>Axis.prototype.allowNegativeLog</code> to <code>true</code> and add custom conversion functions. <a href=\"http://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/yaxis/type-log-negative/\">\">View Live Demo</a>. It is also possible to use a similar workaround for colorAxis. <a href=\"https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/coloraxis/logarithmic-with-emulate-negative-values/\">View live demo</a>.</p>"
+                "text": "<h1>Can't plot zero or subzero values on a logarithmic axis</h1><p>This error occurs in the following situations: </p><ul><li>If a zero or subzero data value is added to a logarithmic axis</li><li>If the minimum of a logarithmic axis is set to 0 or less</li><li>If the threshold is set to 0 or less</li></ul><p>Note: As of Highcharts 5.0.8 it's possible to bypass this error message by setting <code>Axis.prototype.allowNegativeLog</code> to true, and add custom conversion functions. <a href=\"https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/yaxis/type-log-negative/\">View live demo</a>. It is also possible to use a similar workaround for colorAxis. <a href=\"https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/coloraxis/logarithmic-with-emulate-negative-values/\">View live demo</a>.</p>",
+                "enduser": "<h1>Can't plot zero or subzero values on a logarithmic axis</h1><p>This error occurs in the following situations:</p><ul><li>If a zero or subzero data value is added to a logarithmic axis</li><li>If the minimum of a logarithmic axis is set to 0 or less</li><li>If the threshold is set to 0 or less</li></ul><p>As of Highcharts 5.0.8 it's possible to bypass this error message by setting <code>Axis.prototype.allowNegativeLog</code> to <code>true</code> and add custom conversion functions. <a href=\"http://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/yaxis/type-log-negative/\">\">View Live Demo</a>. It is also possible to use a similar workaround for colorAxis. <a href=\"https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/coloraxis/logarithmic-with-emulate-negative-values/\">View live demo</a>.</p>"
             },
             "11": {
                 "title": "Can't link axes of different type",
@@ -192,7 +192,7 @@
          * @private
          */
         function compose(ChartClass) {
-            if (pushUnique(composed, compose)) {
+            if (pushUnique(composed, 'Debugger')) {
                 addEvent(ChartClass, 'beforeRedraw', onChartBeforeRedraw);
                 addEvent(H, 'displayError', onHighchartsDisplayError);
                 setOptions(defaultOptions);
@@ -279,8 +279,9 @@
     _registerModule(_modules, 'masters/modules/debugger.src.js', [_modules['Core/Globals.js'], _modules['Extensions/Debugger/Debugger.js'], _modules['Extensions/Debugger/ErrorMessages.js']], function (Highcharts, Debugger, ErrorMessages) {
 
         const G = Highcharts;
-        G.errorMessages = ErrorMessages;
+        G.errorMessages = G.errorMessages || ErrorMessages;
         Debugger.compose(G.Chart);
 
+        return Highcharts;
     });
 }));

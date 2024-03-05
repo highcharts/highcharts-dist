@@ -330,10 +330,10 @@ function destroyAllStackShadows(chart) {
     });
 }
 // This is a workaround due to no implementation of the animation drilldown.
-addEvent(Chart, 'afterDrilldown', function (e) {
+addEvent(Chart, 'afterDrilldown', function () {
     destroyAllStackShadows(this);
 });
-addEvent(Chart, 'afterDrillUp', function (e) {
+addEvent(Chart, 'afterDrillUp', function () {
     destroyAllStackShadows(this);
 });
 PictorialSeries.prototype.pointClass = PictorialPoint;

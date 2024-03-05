@@ -43,7 +43,7 @@ function onAxisPostProcessData() {
  */
 function onHeikinAshiSeriesAfterTranslate() {
     const series = this, points = series.points, heikiashiData = series.heikiashiData, cropStart = series.cropStart || 0;
-    // Reset the proccesed data.
+    // Reset the processed data.
     series.processedYData.length = 0;
     // Modify points.
     for (let i = 0; i < points.length; i++) {
@@ -93,9 +93,9 @@ class HeikinAshiSeries extends CandlestickSeries {
      *  Static Functions
      *
      * */
-    static compose(SeriesClass, AxisClass, ..._args) {
+    static compose(SeriesClass, AxisClass) {
         CandlestickSeries.compose(SeriesClass);
-        if (pushUnique(composed, this.compose)) {
+        if (pushUnique(composed, 'HeikinAshi')) {
             addEvent(AxisClass, 'postProcessData', onAxisPostProcessData);
             addEvent(HeikinAshiSeries, 'afterTranslate', onHeikinAshiSeriesAfterTranslate);
             addEvent(HeikinAshiSeries, 'updatedData', onHeikinAshiSeriesUpdatedData);

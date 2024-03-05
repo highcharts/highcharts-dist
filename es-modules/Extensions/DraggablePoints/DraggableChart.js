@@ -16,9 +16,9 @@ import DDU from './DragDropUtilities.js';
 const { addEvents, countProps, getFirstProp, getNormalizedEvent } = DDU;
 import DragDropDefaults from './DragDropDefaults.js';
 import H from '../../Core/Globals.js';
-const { composed, doc } = H;
+const { doc } = H;
 import U from '../../Core/Utilities.js';
-const { addEvent, merge, pick, pushUnique } = U;
+const { addEvent, merge, pick } = U;
 /* *
  *
  *  Functions
@@ -132,8 +132,8 @@ function chartZoomOrPanKeyPressed(e) {
  *        Class constructor of chart.
  */
 function compose(ChartClass) {
-    if (pushUnique(composed, compose)) {
-        const chartProto = ChartClass.prototype;
+    const chartProto = ChartClass.prototype;
+    if (!chartProto.hideDragHandles) {
         chartProto.hideDragHandles = chartHideDragHandles;
         chartProto.setGuideBoxState = chartSetGuideBoxState;
         chartProto.zoomOrPanKeyPressed = chartZoomOrPanKeyPressed;

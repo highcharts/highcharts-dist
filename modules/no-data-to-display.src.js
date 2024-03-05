@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v11.4.0 (2024-03-05)
  *
  * Plugin for displaying a message when there is no data visible in chart.
  *
@@ -166,7 +166,7 @@
 
         return NoDataDefaults;
     });
-    _registerModule(_modules, 'Extensions/NoDataToDisplay/NoDataToDisplay.js', [_modules['Core/Renderer/HTML/AST.js'], _modules['Core/Globals.js'], _modules['Extensions/NoDataToDisplay/NoDataDefaults.js'], _modules['Core/Utilities.js']], function (AST, H, NoDataDefaults, U) {
+    _registerModule(_modules, 'Extensions/NoDataToDisplay/NoDataToDisplay.js', [_modules['Core/Renderer/HTML/AST.js'], _modules['Extensions/NoDataToDisplay/NoDataDefaults.js'], _modules['Core/Utilities.js']], function (AST, NoDataDefaults, U) {
         /* *
          *
          *  Plugin for displaying a message when there is no data visible in chart.
@@ -180,8 +180,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { composed } = H;
-        const { addEvent, extend, merge, pushUnique } = U;
+        const { addEvent, extend, merge } = U;
         /* *
          *
          *  Functions
@@ -247,8 +246,8 @@
         }
         /** @private */
         function compose(ChartClass, highchartsDefaultOptions) {
-            if (pushUnique(composed, compose)) {
-                const chartProto = ChartClass.prototype;
+            const chartProto = ChartClass.prototype;
+            if (!chartProto.showNoData) {
                 chartProto.hasData = chartHasData;
                 chartProto.hideNoData = chartHideNoData;
                 chartProto.showNoData = chartShowNoData;
@@ -285,5 +284,6 @@
         const G = Highcharts;
         NoDataToDisplay.compose(G.Chart, G.defaultOptions);
 
+        return Highcharts;
     });
 }));

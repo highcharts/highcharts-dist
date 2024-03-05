@@ -102,7 +102,7 @@ class ChaikinIndicator extends EMAIndicator {
  */
 ChaikinIndicator.defaultOptions = merge(EMAIndicator.defaultOptions, {
     /**
-     * Paramters used in calculation of Chaikin Oscillator
+     * Parameters used in calculation of Chaikin Oscillator
      * series points.
      *
      * @excluding index

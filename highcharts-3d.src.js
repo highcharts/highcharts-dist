@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v11.4.0 (2024-03-05)
  *
  * 3D features for Highcharts JS
  *
@@ -1645,7 +1645,7 @@
                     };
                     // Decide the bast place to put axis title/labels based on the
                     // visible faces. Ideally, The labels can only be on the edge
-                    // between a visible face and an invisble one. Also, the Y label
+                    // between a visible face and an invisible one. Also, the Y label
                     // should be one the left-most edge (right-most if opposite).
                     if (options3d.axisLabelPosition === 'auto') {
                         const isValidEdge = function (face1, face2) {
@@ -1987,7 +1987,7 @@
          *
          * */
         function compose(AreaSeriesClass) {
-            if (pushUnique(composed, compose)) {
+            if (pushUnique(composed, 'Area3DSeries')) {
                 wrap(AreaSeriesClass.prototype, 'getGraphPath', wrapAreaSeriesGetGraphPath);
             }
         }
@@ -2058,7 +2058,7 @@
          *
          *  (c) 2010-2024 Torstein Honsi
          *
-         *  Extenstion for 3d axes
+         *  Extension for 3d axes
          *
          *  License: www.highcharts.com/license
          *
@@ -2190,7 +2190,7 @@
          *
          *  (c) 2010-2024 Torstein Honsi
          *
-         *  Extenstion for 3d axes
+         *  Extension for 3d axes
          *
          *  License: www.highcharts.com/license
          *
@@ -2208,7 +2208,7 @@
          * @private
          */
         function compose(TickClass) {
-            if (pushUnique(composed, compose)) {
+            if (pushUnique(composed, 'Axis.Tick3D')) {
                 addEvent(TickClass, 'afterGetLabelPosition', onTickAfterGetLabelPosition);
                 wrap(TickClass.prototype, 'getMarkPath', wrapTickGetMarkPath);
             }
@@ -2256,7 +2256,7 @@
          *
          *  (c) 2010-2024 Torstein Honsi
          *
-         *  Extenstion for 3d axes
+         *  Extension for 3d axes
          *
          *  License: www.highcharts.com/license
          *
@@ -2264,9 +2264,9 @@
          *
          * */
         const { defaultOptions } = D;
-        const { composed, deg2rad } = H;
+        const { deg2rad } = H;
         const { perspective, perspective3D, shapeArea } = Math3D;
-        const { addEvent, merge, pick, pushUnique, wrap } = U;
+        const { addEvent, merge, pick, wrap } = U;
         /* *
          *
          *  Functions
@@ -2498,7 +2498,7 @@
              */
             static compose(AxisClass, TickClass) {
                 Tick3D.compose(TickClass);
-                if (pushUnique(composed, this.compose)) {
+                if (!AxisClass.keepProps.includes('axis3D')) {
                     merge(true, defaultOptions.xAxis, Axis3DDefaults);
                     AxisClass.keepProps.push('axis3D');
                     addEvent(AxisClass, 'init', onAxisInit);
@@ -2643,7 +2643,7 @@
                     }
                 }
                 else if (positionMode === 'ortho') {
-                    // Labels will be rotated to be ortogonal to the axis
+                    // Labels will be rotated to be orthogonal to the axis
                     if (!axis.horiz) { // Y Axis
                         vecX = { x: Math.cos(beta), y: 0, z: Math.sin(beta) };
                     }
@@ -2766,7 +2766,7 @@
              *
              * */
             static compose(SeriesClass) {
-                if (pushUnique(composed, this.compose)) {
+                if (pushUnique(composed, 'Core.Series3D')) {
                     addEvent(SeriesClass, 'afterTranslate', function () {
                         if (this.chart.is3d()) {
                             this.translate3dPoints();
@@ -2790,7 +2790,7 @@
                 const series = this, seriesOptions = series.options, chart = series.chart, zAxis = pick(series.zAxis, chart.options.zAxis[0]), rawPoints = [], rawPointsX = [], stack = seriesOptions.stacking ?
                     (isNumber(seriesOptions.stack) ? seriesOptions.stack : 0) :
                     series.index || 0;
-                let rawPoint, projectedPoint, zValue, i;
+                let projectedPoint, zValue;
                 series.zPadding = stack *
                     (seriesOptions.depth || 0 + (seriesOptions.groupZPadding || 1));
                 series.data.forEach((rawPoint) => {
@@ -3042,9 +3042,9 @@
          * */
         const { animObject } = A;
         const { parse: color } = Color;
-        const { charts, composed, deg2rad } = H;
+        const { charts, deg2rad } = H;
         const { perspective, shapeArea } = Math3D;
-        const { defined, extend, merge, pick, pushUnique } = U;
+        const { defined, extend, merge, pick } = U;
         /* *
          *
          *  Constants
@@ -3107,8 +3107,9 @@
              * */
             /** @private */
             function compose(SVGRendererClass) {
-                if (pushUnique(composed, compose)) {
-                    extend(SVGRendererClass.prototype, {
+                const rendererProto = SVGRendererClass.prototype;
+                if (!rendererProto.element3d) {
+                    extend(rendererProto, {
                         Element3D: SVGElement3D,
                         arc3d,
                         arc3dPath,
@@ -3273,7 +3274,7 @@
                 return elem3d;
             }
             /**
-             * generelized, so now use simply
+             * generalized, so now use simply
              * @private
              */
             function cuboid(shapeArgs) {
@@ -3384,7 +3385,7 @@
                 mapPath = (i) => (pArr[i]), 
                 /**
                  * First value - path with specific face
-                 * Second  value - added info about side for later calculations.
+                 * Second value - added info about side for later calculations.
                  *                 Possible second values are 0 for path1, 1 for
                  *                 path2 and -1 for no path chosen.
                  * Third value - string containing information about current side of
@@ -3761,7 +3762,7 @@
                     out.push([
                         'L', cx + (rx * Math.cos(end)), cy + (ry * Math.sin(end))
                     ]);
-                    // Go back to the artifical end2
+                    // Go back to the artificial end2
                     out = out.concat(curveTo(cx, cy, rx, ry, end, end2, 0, 0));
                 }
                 out.push([
@@ -3842,7 +3843,7 @@
 
         return SVGRenderer3D;
     });
-    _registerModule(_modules, 'Core/Axis/ZAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Axis/AxisDefaults.js'], _modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Axis, AxisDefaults, D, H, U) {
+    _registerModule(_modules, 'Core/Axis/ZAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Defaults.js'], _modules['Core/Utilities.js']], function (Axis, D, U) {
         /* *
          *
          *  (c) 2010-2024 Torstein Honsi
@@ -3852,10 +3853,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { xAxis } = AxisDefaults;
         const { defaultOptions } = D;
-        const { composed } = H;
-        const { addEvent, merge, pick, pushUnique, splat } = U;
+        const { addEvent, merge, pick, splat } = U;
         /* *
          *
          *  Functions
@@ -3877,7 +3876,7 @@
                 return;
             }
             this.zAxis = [];
-            zAxisOptions.forEach((axisOptions, i) => {
+            zAxisOptions.forEach((axisOptions) => {
                 this.addZAxis(axisOptions).setScale();
             });
         }
@@ -3900,16 +3899,16 @@
                 this.isZAxis = true;
             }
             static compose(ChartClass) {
-                if (pushUnique(composed, this.compose)) {
-                    const chartProto = ChartClass.prototype;
-                    defaultOptions.zAxis = merge(xAxis, {
+                const chartProto = ChartClass.prototype;
+                if (!chartProto.addZAxis) {
+                    defaultOptions.zAxis = merge(defaultOptions.xAxis, {
                         offset: 0,
                         lineWidth: 0
                     });
-                    addEvent(ChartClass, 'afterGetAxes', onChartAfterGetAxes);
                     chartProto.addZAxis = chartAddZAxis;
                     chartProto.collectionsWithInit.zAxis = [chartProto.addZAxis];
                     chartProto.collectionsWithUpdate.push('zAxis');
+                    addEvent(ChartClass, 'afterGetAxes', onChartAfterGetAxes);
                 }
             }
             /* *
@@ -3928,7 +3927,6 @@
              *
              * */
             getSeriesExtremes() {
-                const chart = this.chart;
                 this.hasVisibleSeries = false;
                 // Reset properties in case we're redrawing (#3353)
                 this.dataMin = this.dataMax = this.ignoreMinPadding = (this.ignoreMaxPadding = void 0);
@@ -4088,7 +4086,7 @@
         }
         /** @private */
         function compose(SeriesClass, StackItemClass) {
-            if (pushUnique(composed, compose)) {
+            if (pushUnique(composed, 'Column3D')) {
                 const seriesProto = SeriesClass.prototype, stackItemProto = StackItemClass.prototype, { column: ColumnSeriesClass, columnRange: ColumnRangeSeriesClass } = SeriesClass.types;
                 wrap(seriesProto, 'alignDataLabel', wrapSeriesAlignDataLabel);
                 wrap(seriesProto, 'justifyDataLabel', wrapSeriesJustifyDataLabel);
@@ -4519,7 +4517,7 @@
              *
              * */
             static compose(SeriesClass) {
-                if (pushUnique(composed, this.compose)) {
+                if (pushUnique(composed, 'Pie3D')) {
                     SeriesClass.types.pie = Pie3DSeries;
                 }
             }
@@ -4696,7 +4694,7 @@
          * @requires  highcharts-3d
          * @apioption plotOptions.pie.depth
          */
-        ''; // keeps doclets above after transpilation
+        ''; // keeps doclets above after transpiledion
 
         return Pie3DSeries;
     });
@@ -4939,5 +4937,6 @@
         SVGRenderer3D.compose(RendererRegistry.getRendererType());
         ZAxis.compose(G.Chart);
 
+        return G;
     });
 }));

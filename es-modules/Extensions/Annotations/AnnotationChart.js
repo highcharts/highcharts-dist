@@ -8,10 +8,8 @@
  *
  * */
 'use strict';
-import H from '../../Core/Globals.js';
-const { composed } = H;
 import U from '../../Core/Utilities.js';
-const { addEvent, erase, find, fireEvent, pick, pushUnique, wrap } = U;
+const { addEvent, erase, find, fireEvent, pick, wrap } = U;
 /* *
  *
  *  Functions
@@ -252,8 +250,9 @@ var AnnotationChart;
      * @private
      */
     function compose(AnnotationClass, ChartClass, PointerClass) {
-        if (pushUnique(composed, compose)) {
-            const chartProto = ChartClass.prototype, pointerProto = PointerClass.prototype;
+        const chartProto = ChartClass.prototype;
+        if (!chartProto.addAnnotation) {
+            const pointerProto = PointerClass.prototype;
             addEvent(ChartClass, 'afterInit', onChartAfterInit);
             chartProto.addAnnotation = chartAddAnnotation;
             chartProto.callbacks.push(chartCallback);

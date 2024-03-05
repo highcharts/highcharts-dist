@@ -36,7 +36,7 @@ class PackedBubblePoint extends BubblePoint {
         return Point.prototype.destroy.apply(this, arguments);
     }
     firePointEvent() {
-        const point = this, series = this.series, seriesOptions = series.options;
+        const series = this.series, seriesOptions = series.options;
         if (this.isParentNode && seriesOptions.parentNode) {
             const temp = seriesOptions.allowPointSelect;
             seriesOptions.allowPointSelect = (seriesOptions.parentNode.allowPointSelect);

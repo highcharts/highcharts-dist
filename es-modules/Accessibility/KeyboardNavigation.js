@@ -11,10 +11,10 @@
  * */
 'use strict';
 import H from '../Core/Globals.js';
-const { composed, doc, win } = H;
+const { doc, win } = H;
 import MenuComponent from './Components/MenuComponent.js';
 import U from '../Core/Utilities.js';
-const { addEvent, fireEvent, pushUnique } = U;
+const { addEvent, defined, fireEvent } = U;
 import EventProvider from './Utils/EventProvider.js';
 import HTMLUtilities from './Utils/HTMLUtilities.js';
 const { getElement, simulatedEventTarget } = HTMLUtilities;
@@ -298,8 +298,16 @@ class KeyboardNavigation {
      * @private
      */
     removeExitAnchor() {
-        if (this.exitAnchor && this.exitAnchor.parentNode) {
-            this.exitAnchor.parentNode.removeChild(this.exitAnchor);
+        // Remove event from element and from eventRemovers array to prevent
+        // memory leak (#20329).
+        if (this.exitAnchor) {
+            if (defined(this.exitAnchor.focusEventRemover)) {
+                this.eventProvider.removeEvent(this.exitAnchor.focusEventRemover);
+                delete this.exitAnchor.focusEventRemover;
+            }
+            if (this.exitAnchor.parentNode) {
+                this.exitAnchor.parentNode.removeChild(this.exitAnchor);
+            }
             delete this.exitAnchor;
         }
     }
@@ -309,7 +317,7 @@ class KeyboardNavigation {
      */
     addExitAnchorEventsToEl(element) {
         const chart = this.chart, keyboardNavigation = this;
-        this.eventProvider.addEvent(element, 'focus', function (ev) {
+        element.focusEventRemover = this.eventProvider.addEvent(element, 'focus', function (ev) {
             const e = ev || win.event, focusComesFromChart = (e.relatedTarget &&
                 chart.container.contains(e.relatedTarget)), comingInBackwards = !(focusComesFromChart || keyboardNavigation.exiting);
             if (chart.focusElement) {
@@ -331,7 +339,8 @@ class KeyboardNavigation {
                     // Validate the module
                     if (curModule &&
                         curModule.validate && !curModule.validate()) {
-                        // Invalid. Try moving backwards to find next valid.
+                        // Invalid.
+                        // Try moving backwards to find next valid.
                         keyboardNavigation.move(-1);
                     }
                     else if (curModule) {
@@ -393,8 +402,8 @@ class KeyboardNavigation {
      */
     function compose(ChartClass) {
         MenuComponent.compose(ChartClass);
-        if (pushUnique(composed, compose)) {
-            const chartProto = ChartClass.prototype;
+        const chartProto = ChartClass.prototype;
+        if (!chartProto.dismissPopupContent) {
             chartProto.dismissPopupContent = chartDismissPopupContent;
             addEvent(doc, 'keydown', documentOnKeydown);
         }

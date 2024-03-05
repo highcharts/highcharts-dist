@@ -10,11 +10,9 @@
  *
  * */
 'use strict';
-import H from '../../Core/Globals.js';
-const { composed } = H;
 import ParallelCoordinatesDefaults from './ParallelCoordinatesDefaults.js';
 import U from '../../Core/Utilities.js';
-const { addEvent, arrayMax, arrayMin, isNumber, merge, pick, pushUnique, splat } = U;
+const { addEvent, arrayMax, arrayMin, isNumber, merge, pick, splat } = U;
 /* *
  *
  *  Class
@@ -89,7 +87,7 @@ var ParallelAxis;
      * @private
      */
     function compose(AxisClass) {
-        if (pushUnique(composed, compose)) {
+        if (!AxisClass.keepProps.includes('parallel')) {
             const axisCompo = AxisClass;
             // On update, keep parallel additions.
             AxisClass.keepProps.push('parallel');

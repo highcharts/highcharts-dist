@@ -505,7 +505,7 @@ class AreaRangeSeries extends AreaSeries {
         }
     }
     hasMarkerChanged(options, oldOptions) {
-        const series = this, lowMarker = options.lowMarker, oldMarker = oldOptions.lowMarker || {};
+        const lowMarker = options.lowMarker, oldMarker = oldOptions.lowMarker || {};
         return (lowMarker && (lowMarker.enabled === false ||
             oldMarker.symbol !== lowMarker.symbol || // #10870, #15946
             oldMarker.height !== lowMarker.height || // #16274
@@ -542,7 +542,6 @@ addEvent(AreaRangeSeries, 'afterTranslate', function () {
     }
 }, { order: 0 });
 addEvent(AreaRangeSeries, 'afterTranslate', function () {
-    const inverted = this.chart.inverted;
     this.points.forEach((point) => {
         // Postprocessing after the PolarComposition's afterTranslate
         if (this.chart.polar) {
@@ -710,4 +709,4 @@ export default AreaRangeSeries;
  * @product   highcharts highstock
  * @apioption series.arearange.data.low
  */
-''; // adds doclets above to tranpiled file
+''; // adds doclets above to transpiled file

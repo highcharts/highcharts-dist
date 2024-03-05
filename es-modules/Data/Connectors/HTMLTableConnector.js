@@ -66,8 +66,6 @@ class HTMLTableConnector extends DataConnector {
             table,
             tableElement: connector.tableElement
         });
-        // If already loaded, clear the current rows
-        table.deleteColumns();
         let tableElement;
         if (typeof tableHTML === 'string') {
             connector.tableID = tableHTML;
@@ -89,6 +87,8 @@ class HTMLTableConnector extends DataConnector {
             return Promise.reject(new Error(error));
         }
         converter.parse(merge({ tableElement: connector.tableElement }, connector.options), eventDetail);
+        // If already loaded, clear the current rows
+        table.deleteColumns();
         table.setColumns(converter.getTable().getColumns());
         return connector
             .setModifierOptions(dataModifier)

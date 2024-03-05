@@ -116,7 +116,7 @@ const PieSeriesDefaults = {
      *         Empty pie series
      *
      * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-     * @default   #cccccc
+     * @default   ${palette.neutralColor20}
      * @apioption plotOptions.pie.color
      */
     /**

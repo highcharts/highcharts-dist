@@ -25,7 +25,7 @@ const { addEvent, createElement, css, defined, discardElement, find, fireEvent, 
  *
  * */
 /**
- * The overview of the chart's series. The legend object is instanciated
+ * The overview of the chart's series. The legend object is instantiated
  * internally in the chart constructor, and is available from the `chart.legend`
  * property. Each chart has only one legend.
  *
@@ -1171,7 +1171,7 @@ class Legend {
      * @private
      */
     function compose(ChartClass) {
-        if (pushUnique(composed, compose)) {
+        if (pushUnique(composed, 'Core.Legend')) {
             addEvent(ChartClass, 'beforeMargins', function () {
                 /**
                  * The legend contains an interactive overview over chart items,
@@ -1219,10 +1219,10 @@ export default Legend;
  * @callback Highcharts.PointLegendItemClickCallbackFunction
  *
  * @param {Highcharts.Point} this
- *        The point on which the event occured.
+ *        The point on which the event occurred.
  *
  * @param {Highcharts.PointLegendItemClickEventObject} event
- *        The event that occured.
+ *        The event that occurred.
  */
 /**
  * Information about the legend click event.
@@ -1263,10 +1263,10 @@ export default Legend;
  * @callback Highcharts.SeriesLegendItemClickCallbackFunction
  *
  * @param {Highcharts.Series} this
- *        The series where the event occured.
+ *        The series where the event occurred.
  *
  * @param {Highcharts.SeriesLegendItemClickEventObject} event
- *        The event that occured.
+ *        The event that occurred.
  */
 /**
  * Information about the legend click event.

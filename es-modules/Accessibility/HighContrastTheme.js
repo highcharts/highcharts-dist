@@ -10,11 +10,6 @@
  *
  * */
 'use strict';
-/* *
- *
- *  Theme
- *
- * */
 const theme = {
     chart: {
         backgroundColor: 'window'
@@ -32,7 +27,8 @@ const theme = {
     colorAxis: {
         minColor: 'windowText',
         maxColor: 'windowText',
-        stops: []
+        stops: [],
+        dataClasses: []
     },
     colors: ['windowText'],
     xAxis: {

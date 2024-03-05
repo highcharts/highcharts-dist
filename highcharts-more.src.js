@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v11.4.0 (2024-03-05)
  *
  * (c) 2009-2024 Torstein Honsi
  *
@@ -33,14 +33,13 @@
             }
         }
     }
-    _registerModule(_modules, 'Extensions/Pane/PaneComposition.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Extensions/Pane/PaneComposition.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  Imports
          *
          * */
-        const { composed } = H;
-        const { addEvent, correctFloat, defined, pick, pushUnique } = U;
+        const { addEvent, correctFloat, defined, pick } = U;
         /* *
          *
          *  Functions
@@ -62,8 +61,8 @@
         }
         /** @private */
         function compose(ChartClass, PointerClass) {
-            if (pushUnique(composed, compose)) {
-                const chartProto = ChartClass.prototype;
+            const chartProto = ChartClass.prototype;
+            if (!chartProto.getHoverPane) {
                 chartProto.collectionsWithUpdate.push('pane');
                 chartProto.getHoverPane = chartGetHoverPane;
                 addEvent(ChartClass, 'afterIsInsidePlot', onChartAfterIsInsiderPlot);
@@ -571,7 +570,7 @@
          *
          * */
         const { area: { prototype: { pointClass: AreaPoint, pointClass: { prototype: areaProto } } } } = SeriesRegistry.seriesTypes;
-        const { defined, isNumber, merge } = U;
+        const { defined, isNumber } = U;
         /* *
          *
          *  Class
@@ -597,7 +596,7 @@
              * @private
              */
             setState() {
-                const prevState = this.state, series = this.series, isPolar = series.chart.polar, seriesOptionsMarker = series.options.marker, seriesDefaultSymbol = series.symbol;
+                const prevState = this.state, series = this.series, isPolar = series.chart.polar;
                 if (!defined(this.plotHigh)) {
                     // Boost doesn't calculate plotHigh
                     this.plotHigh = series.yAxis.toPixels(this.high, true);
@@ -1170,7 +1169,7 @@
                 }
             }
             hasMarkerChanged(options, oldOptions) {
-                const series = this, lowMarker = options.lowMarker, oldMarker = oldOptions.lowMarker || {};
+                const lowMarker = options.lowMarker, oldMarker = oldOptions.lowMarker || {};
                 return (lowMarker && (lowMarker.enabled === false ||
                     oldMarker.symbol !== lowMarker.symbol || // #10870, #15946
                     oldMarker.height !== lowMarker.height || // #16274
@@ -1207,7 +1206,6 @@
             }
         }, { order: 0 });
         addEvent(AreaRangeSeries, 'afterTranslate', function () {
-            const inverted = this.chart.inverted;
             this.points.forEach((point) => {
                 // Postprocessing after the PolarComposition's afterTranslate
                 if (this.chart.polar) {
@@ -1374,7 +1372,7 @@
          * @product   highcharts highstock
          * @apioption series.arearange.data.low
          */
-        ''; // adds doclets above to tranpiled file
+        ''; // adds doclets above to transpiled file
 
         return AreaRangeSeries;
     });
@@ -1570,6 +1568,10 @@
          *
          * @sample highcharts/demo/box-plot/
          *         Box plot
+         * @sample {highcharts} highcharts/css/boxplot/
+         *         Box plot in styled mode
+         * @sample {highcharts} highcharts/series-scatter/jitter-boxplot
+         *         Jittered scatter plot on top of a box plot
          *
          * @extends      plotOptions.column
          * @excluding    borderColor, borderRadius, borderWidth, groupZPadding,
@@ -2398,7 +2400,7 @@
                 y: 0
             },
             /**
-             * Miximum bubble legend range size. If values for ranges are
+             * Maximum bubble legend range size. If values for ranges are
              * not specified, the `minSize` and the `maxSize` are calculated
              * from bubble series.
              */
@@ -2473,7 +2475,7 @@
              */
             zIndex: 1,
             /**
-             * Ranges with with lower value than zThreshold, are skipped.
+             * Ranges with lower value than zThreshold are skipped.
              */
             zThreshold: 0
         };
@@ -2564,9 +2566,9 @@
              *        Legend instance
              */
             drawLegendSymbol(legend) {
-                const chart = this.chart, itemDistance = pick(legend.options.itemDistance, 20), legendItem = this.legendItem || {}, options = this.options, ranges = options.ranges, connectorDistance = options.connectorDistance;
+                const itemDistance = pick(legend.options.itemDistance, 20), legendItem = this.legendItem || {}, options = this.options, ranges = options.ranges, connectorDistance = options.connectorDistance;
                 let connectorSpace;
-                // Do not create bubbleLegend now if ranges or ranges valeus are not
+                // Do not create bubbleLegend now if ranges or ranges values are not
                 // specified or if are empty array.
                 if (!ranges || !ranges.length || !isNumber(ranges[0].value)) {
                     legend.options.bubbleLegend.autoRanges = true;
@@ -2854,7 +2856,7 @@
             predictBubbleSizes() {
                 const chart = this.chart, legendOptions = chart.legend.options, floating = legendOptions.floating, horizontal = legendOptions.layout === 'horizontal', lastLineHeight = horizontal ? chart.legend.lastLineHeight : 0, plotSizeX = chart.plotSizeX, plotSizeY = chart.plotSizeY, bubbleSeries = chart.series[this.options.seriesIndex], pxSizes = bubbleSeries.getPxExtremes(), minSize = Math.ceil(pxSizes.minPxSize), maxPxSize = Math.ceil(pxSizes.maxPxSize), plotSize = Math.min(plotSizeY, plotSizeX);
                 let calculatedSize, maxSize = bubbleSeries.options.maxSize;
-                // Calculate prediceted max size of bubble
+                // Calculate predicted max size of bubble
                 if (floating || !(/%$/.test(maxSize))) {
                     calculatedSize = maxPxSize;
                 }
@@ -3018,7 +3020,7 @@
          * Core series class to use with Bubble series.
          */
         function compose(ChartClass, LegendClass, SeriesClass) {
-            if (pushUnique(composed, compose)) {
+            if (pushUnique(composed, 'Series.BubbleLegend')) {
                 setOptions({
                     // Set default bubble legend options
                     legend: {
@@ -3327,7 +3329,7 @@
              * */
             static compose(AxisClass, ChartClass, LegendClass, SeriesClass) {
                 BubbleLegendComposition.compose(ChartClass, LegendClass, SeriesClass);
-                if (pushUnique(composed, this.compose)) {
+                if (pushUnique(composed, 'Series.Bubble')) {
                     addEvent(AxisClass, 'foundExtremes', onAxisFoundExtremes);
                 }
             }
@@ -3988,6 +3990,7 @@
              * @apioption plotOptions.columnrange.dataLabels
              */
             pointRange: null,
+            legendSymbol: 'rectangle',
             /** @ignore-option */
             marker: null,
             states: {
@@ -4060,7 +4063,7 @@
                  * @private
                  */
                 const yAxis = this.yAxis, xAxis = this.xAxis, startAngleRad = xAxis.startAngleRad, chart = this.chart, isRadial = this.xAxis.isRadial, safeDistance = Math.max(chart.chartWidth, chart.chartHeight) + 999;
-                let height, heightDifference, start, plotHigh, y;
+                let height, heightDifference, start, y;
                 // eslint-disable-next-line valid-jsdoc
                 /**
                  * Don't draw too far outside plot area (#6835)
@@ -5394,7 +5397,7 @@
          * @private
          */
         function compose(ChartClass) {
-            if (pushUnique(composed, compose)) {
+            if (pushUnique(composed, 'DragNodes')) {
                 addEvent(ChartClass, 'load', onChartLoad);
             }
         }
@@ -5435,12 +5438,12 @@
          *
          * @private
          * @param {Highcharts.Point} point
-         *        The point that event occured.
+         *        The point that event occurred.
          * @param {Highcharts.PointerEventObject} event
          *        Browser event, before normalization.
          */
         function onMouseDown(point, event) {
-            const normalizedEvent = this.chart.pointer.normalize(event);
+            const normalizedEvent = this.chart.pointer?.normalize(event) || event;
             point.fixedPosition = {
                 chartX: normalizedEvent.chartX,
                 chartY: normalizedEvent.chartY,
@@ -5457,12 +5460,12 @@
          * @param {global.Event} event
          *        Browser event, before normalization.
          * @param {Highcharts.Point} point
-         *        The point that event occured.
+         *        The point that event occurred.
          *
          */
         function onMouseMove(point, event) {
             if (point.fixedPosition && point.inDragMode) {
-                const series = this, chart = series.chart, normalizedEvent = chart.pointer.normalize(event), diffX = point.fixedPosition.chartX - normalizedEvent.chartX, diffY = point.fixedPosition.chartY - normalizedEvent.chartY, graphLayoutsLookup = chart.graphLayoutsLookup;
+                const series = this, chart = series.chart, normalizedEvent = chart.pointer?.normalize(event) || event, diffX = point.fixedPosition.chartX - normalizedEvent.chartX, diffY = point.fixedPosition.chartY - normalizedEvent.chartY, graphLayoutsLookup = chart.graphLayoutsLookup;
                 let newPlotX, newPlotY;
                 // At least 5px to apply change (avoids simple click):
                 if (Math.abs(diffX) > 5 || Math.abs(diffY) > 5) {
@@ -5485,9 +5488,9 @@
          *
          * @private
          * @param {Highcharts.Point} point
-         *        The point that event occured.
+         *        The point that event occurred.
          */
-        function onMouseUp(point, _event) {
+        function onMouseUp(point) {
             if (point.fixedPosition) {
                 if (point.hasDragged) {
                     if (this.layout.enableSimulation) {
@@ -5563,7 +5566,7 @@
          * @private
          */
         function compose(ChartClass) {
-            if (pushUnique(composed, compose)) {
+            if (pushUnique(composed, 'GraphLayout')) {
                 addEvent(ChartClass, 'afterPrint', onChartAfterPrint);
                 addEvent(ChartClass, 'beforePrint', onChartBeforePrint);
                 addEvent(ChartClass, 'predraw', onChartPredraw);
@@ -5696,7 +5699,7 @@
                 return Point.prototype.destroy.apply(this, arguments);
             }
             firePointEvent() {
-                const point = this, series = this.series, seriesOptions = series.options;
+                const series = this.series, seriesOptions = series.options;
                 if (this.isParentNode && seriesOptions.parentNode) {
                     const temp = seriesOptions.allowPointSelect;
                     seriesOptions.allowPointSelect = (seriesOptions.parentNode.allowPointSelect);
@@ -6145,14 +6148,14 @@
         /**
          * Attractive force.
          *
-         * In Verlet integration, force is applied on a node immidatelly to it's
+         * In Verlet integration, force is applied on a node immediately to it's
          * `plotX` and `plotY` position.
          *
          * @private
          * @param {Highcharts.Point} link
          *        Link that connects two nodes
          * @param {number} force
-         *        Force calcualated in `repulsiveForceFunction`
+         *        Force calculated in `repulsiveForceFunction`
          * @param {Highcharts.PositionObject} distance
          *        Distance between two nodes e.g. `{x, y}`
          */
@@ -6172,7 +6175,7 @@
             }
         }
         /**
-         * Attractive force funtion. Can be replaced by API's
+         * Attractive force function. Can be replaced by API's
          * `layoutAlgorithm.attractiveForce`
          *
          * @private
@@ -6188,7 +6191,7 @@
          * Barycenter force. Calculate and applys barycenter forces on the
          * nodes. Making them closer to the center of their barycenter point.
          *
-         * In Verlet integration, force is applied on a node immidatelly to it's
+         * In Verlet integration, force is applied on a node immediately to it's
          * `plotX` and `plotY` position.
          *
          * @private
@@ -6220,7 +6223,7 @@
         /**
          * Integration method.
          *
-         * In Verlet integration, forces are applied on node immidatelly to it's
+         * In Verlet integration, forces are applied on node immediately to it's
          * `plotX` and `plotY` position.
          *
          * Verlet without velocity:
@@ -6250,7 +6253,7 @@
          */
         function integrate(layout, node) {
             let friction = -layout.options.friction, maxSpeed = layout.options.maxSpeed, prevX = node.prevX, prevY = node.prevY, 
-            // Apply friciton:
+            // Apply friction:
             diffX = ((node.plotX + node.dispX -
                 prevX) * friction), diffY = ((node.plotY + node.dispY -
                 prevY) * friction), abs = Math.abs, signX = abs(diffX) / (diffX || 1), // need to deal with 0
@@ -6272,14 +6275,14 @@
         /**
          * Repulsive force.
          *
-         * In Verlet integration, force is applied on a node immidatelly to it's
+         * In Verlet integration, force is applied on a node immediately to it's
          * `plotX` and `plotY` position.
          *
          * @private
          * @param {Highcharts.Point} node
          *        Node that should be translated by force.
          * @param {number} force
-         *        Force calcualated in `repulsiveForceFunction`
+         *        Force calculated in `repulsiveForceFunction`
          * @param {Highcharts.PositionObject} distance
          *        Distance between two nodes e.g. `{x, y}`
          */
@@ -6291,7 +6294,7 @@
             }
         }
         /**
-         * Repulsive force funtion. Can be replaced by API's
+         * Repulsive force function. Can be replaced by API's
          * `layoutAlgorithm.repulsiveForce`
          *
          * @private
@@ -6427,7 +6430,7 @@
          * @param {Highcharts.Point} link
          *        Link that connects two nodes
          * @param {number} force
-         *        Force calcualated in `repulsiveForceFunction`
+         *        Force calculated in `repulsiveForceFunction`
          * @param {Highcharts.PositionObject} distanceXY
          *        Distance between two nodes e.g. `{x, y}`
          * @param {number} distanceR
@@ -6448,7 +6451,7 @@
             }
         }
         /**
-         * Attractive force funtion. Can be replaced by API's
+         * Attractive force function. Can be replaced by API's
          * `layoutAlgorithm.attractiveForce`
          *
          * Other forces that can be used:
@@ -6488,7 +6491,7 @@
             });
         }
         /**
-         * Estiamte the best possible distance between two nodes, making graph
+         * Estimate the best possible distance between two nodes, making graph
          * readable.
          * @private
          */
@@ -6551,7 +6554,7 @@
          * @param {Highcharts.Point} node
          *        Node that should be translated by force.
          * @param {number} force
-         *        Force calcualated in `repulsiveForceFunction`
+         *        Force calculated in `repulsiveForceFunction`
          * @param {Highcharts.PositionObject} distanceXY
          *        Distance between two nodes e.g. `{x, y}`
          */
@@ -6562,7 +6565,7 @@
                 (distanceXY.y / distanceR) * force / node.degree;
         }
         /**
-         * Repulsive force funtion. Can be replaced by API's
+         * Repulsive force function. Can be replaced by API's
          * `layoutAlgorithm.repulsiveForce`.
          *
          * Other forces that can be used:
@@ -6841,7 +6844,7 @@
             updateMassAndCenter() {
                 let mass = 0, plotX = 0, plotY = 0;
                 if (this.isInternal) {
-                    // Calcualte weightened mass of the quad node:
+                    // Calculate weightened mass of the quad node:
                     for (const pointMass of this.nodes) {
                         if (!pointMass.isEmpty) {
                             mass += pointMass.mass;
@@ -6951,7 +6954,7 @@
                 }
             }
             /**
-             * Depfth first treversal (DFS). Using `before` and `after` callbacks,
+             * Depth first treversal (DFS). Using `before` and `after` callbacks,
              * we can get two results: preorder and postorder traversals, reminder:
              *
              * ```
@@ -7521,7 +7524,7 @@
 
         return ReingoldFruchtermanLayout;
     });
-    _registerModule(_modules, 'Series/PackedBubble/PackedBubbleLayout.js', [_modules['Series/GraphLayoutComposition.js'], _modules['Core/Globals.js'], _modules['Series/PackedBubble/PackedBubbleIntegration.js'], _modules['Series/Networkgraph/ReingoldFruchtermanLayout.js'], _modules['Core/Utilities.js']], function (GraphLayout, H, PackedBubbleIntegration, ReingoldFruchtermanLayout, U) {
+    _registerModule(_modules, 'Series/PackedBubble/PackedBubbleLayout.js', [_modules['Series/GraphLayoutComposition.js'], _modules['Series/PackedBubble/PackedBubbleIntegration.js'], _modules['Series/Networkgraph/ReingoldFruchtermanLayout.js'], _modules['Core/Utilities.js']], function (GraphLayout, PackedBubbleIntegration, ReingoldFruchtermanLayout, U) {
         /* *
          *
          *  (c) 2010-2024 Grzegorz Blachlinski, Sebastian Bochan
@@ -7531,8 +7534,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { composed } = H;
-        const { addEvent, pick, pushUnique } = U;
+        const { addEvent, pick } = U;
         /* *
          *
          *  Functions
@@ -7581,9 +7583,9 @@
                 ReingoldFruchtermanLayout.compose(ChartClass);
                 GraphLayout.integrations.packedbubble = PackedBubbleIntegration;
                 GraphLayout.layouts.packedbubble = PackedBubbleLayout;
-                if (pushUnique(composed, this.compose)) {
+                const chartProto = ChartClass.prototype;
+                if (!chartProto.getSelectedParentNodes) {
                     addEvent(ChartClass, 'beforeRedraw', onChartBeforeRedraw);
-                    const chartProto = ChartClass.prototype;
                     chartProto.getSelectedParentNodes = chartGetSelectedParentNodes;
                 }
             }
@@ -7902,7 +7904,7 @@
             }
             /**
              * The function responsible for calculating the parent node radius
-             * based on the total surface of iniside-bubbles and the group BBox
+             * based on the total surface of inside-bubbles and the group BBox
              * @private
              */
             calculateParentRadius() {
@@ -8047,7 +8049,7 @@
                 seriesProto.destroy.apply(this, arguments);
             }
             /**
-             * Packedbubble has two separate collecions of nodes if split, render
+             * Packedbubble has two separate collections of nodes if split, render
              * dataLabels for both sets:
              * @private
              */
@@ -8131,12 +8133,7 @@
                         parentNode.graphic.element.point = parentNode;
                     }
                     dataLabels.forEach((dataLabel) => {
-                        if (dataLabel.div) {
-                            dataLabel.div.point = parentNode;
-                        }
-                        else {
-                            dataLabel.element.point = parentNode;
-                        }
+                        (dataLabel.div || dataLabel.element).point = parentNode;
                     });
                 }
             }
@@ -8191,7 +8188,7 @@
             /**
              * Mouse up action, finalizing drag&drop.
              * @private
-             * @param {Highcharts.Point} point The point that event occured.
+             * @param {Highcharts.Point} point The point that event occurred.
              */
             onMouseUp(dnPoint) {
                 const point = dnPoint;
@@ -8339,7 +8336,7 @@
             /**
              * Function that is adding one bubble based on positions and sizes of
              * two other bubbles, lastBubble is the last added bubble, newOrigin is
-             * the bubble for positioning new bubbles. nextBubble is the curently
+             * the bubble for positioning new bubbles. nextBubble is the currently
              * added bubble for which we are calculating positions
              * @private
              * @param {Array<number>} lastBubble The closest last bubble
@@ -8571,6 +8568,7 @@
             directTouch: true,
             forces: ['barycenter', 'repulsive'],
             hasDraggableNodes: true,
+            invertible: false,
             isCartesian: false,
             noSharedTooltip: true,
             pointArrayMap: ['value'],
@@ -9006,7 +9004,7 @@
              * Axis composition.
              */
             function compose(AxisClass, TickClass) {
-                if (pushUnique(composed, compose)) {
+                if (pushUnique(composed, 'Axis.Radial')) {
                     addEvent(AxisClass, 'afterInit', onAxisAfterInit);
                     addEvent(AxisClass, 'autoLabelAlign', onAxisAutoLabelAlign);
                     addEvent(AxisClass, 'destroy', onAxisDestroy);
@@ -9455,7 +9453,7 @@
              * Modify axis instance with radial logic before common axis init.
              */
             function onAxisInit(e) {
-                const chart = this.chart, inverted = chart.inverted, angular = chart.angular, polar = chart.polar, isX = this.isXAxis, coll = this.coll, isHidden = angular && isX, paneIndex = e.userOptions.pane || 0, pane = this.pane = chart.pane && chart.pane[paneIndex];
+                const chart = this.chart, angular = chart.angular, polar = chart.polar, isX = this.isXAxis, coll = this.coll, isHidden = angular && isX, paneIndex = e.userOptions.pane || 0, pane = this.pane = chart.pane && chart.pane[paneIndex];
                 let isCircular;
                 // Prevent changes for colorAxis
                 if (coll === 'colorAxis') {
@@ -9586,7 +9584,7 @@
                         else {
                             align = (labelDir === 'start') ? 'left' : 'right';
                         }
-                        // For angles beetwen (90 + n * 180) +- 20
+                        // For angles between (90 + n * 180) +- 20
                         if (reducedAngle2 > 70 && reducedAngle2 < 110) {
                             align = 'center';
                         }
@@ -9683,7 +9681,7 @@
                     else {
                         // When the pane's startAngle or the axis' angle is set then
                         // new x and y values for vertical axis' center must be
-                        // calulated
+                        // calculated
                         start = this.postTranslate(this.angleRad, center[3] / 2);
                         center[0] = start.x - this.chart.plotLeft;
                         center[1] = start.y - this.chart.plotTop;
@@ -9750,7 +9748,7 @@
                     defaultPolarOptions.reversedStacks = true;
                 }
                 const options = this.options = merge(defaultPolarOptions, userOptions);
-                // Make sure the plotBands array is instanciated for each Axis
+                // Make sure the plotBands array is instantiated for each Axis
                 // (#2649)
                 if (!options.plotBands) {
                     options.plotBands = [];
@@ -9857,13 +9855,13 @@
          * @private
          * @param {boolean} calculateNeighbours
          *        Check if connectors should be calculated for neighbour points as
-         *        well allows short recurence
+         *        well allows short recurrence
          */
         function getConnectors(segment, index, calculateNeighbours, connectEnds) {
             const smoothing = 1.5, denom = smoothing + 1, addedNumber = connectEnds ? 1 : 0;
             let i, leftContX, leftContY, rightContX, rightContY, jointAngle;
             // Calculate final index of points depending on the initial index value.
-            // Because of calculating neighbours, index may be outisde segment
+            // Because of calculating neighbours, index may be outside segment
             // array.
             if (index >= 0 && index <= segment.length - 1) {
                 i = index;
@@ -9953,15 +9951,13 @@
             const marker = event.args.marker, xAxis = this.chart.xAxis[0], yAxis = this.chart.yAxis[0], inverted = this.chart.inverted, radialAxis = inverted ? yAxis : xAxis, linearAxis = inverted ? xAxis : yAxis;
             if (this.chart.polar) {
                 event.preventDefault();
-                let start = (marker.attr ? marker.attr('start') : marker.start) - radialAxis.startAngleRad;
-                let r = (marker.attr ? marker.attr('r') : marker.r);
-                let end = (marker.attr ? marker.attr('end') : marker.end) - radialAxis.startAngleRad;
-                let innerR = (marker.attr ? marker.attr('innerR') : marker.innerR);
+                const start = (marker.attr ? marker.attr('start') : marker.start) - radialAxis.startAngleRad, r = (marker.attr ? marker.attr('r') : marker.r), end = (marker.attr ? marker.attr('end') : marker.end) - radialAxis.startAngleRad, innerR = (marker.attr ? marker.attr('innerR') : marker.innerR);
                 event.result.x = start + radialAxis.pos;
                 event.result.width = end - start;
-                // innerR goes from pane's center but toValue computes values from top
-                event.result.y = linearAxis.len + linearAxis.pos - innerR;
-                event.result.height = innerR - r;
+                // `innerR` goes from pane's center but `toValue` computes values from
+                // top
+                event.result.y = linearAxis.len + linearAxis.pos - r;
+                event.result.height = r - innerR;
             }
         }
         /**
@@ -9972,7 +9968,7 @@
             const chart = this.chart;
             if (chart.polar && chart.hoverPane && chart.hoverPane.axis) {
                 event.preventDefault();
-                const center = chart.hoverPane.center, mouseDownX = (this.mouseDownX || 0), mouseDownY = (this.mouseDownY || 0), chartY = event.args.chartY, chartX = event.args.chartX, fullCircle = Math.PI * 2, startAngleRad = chart.hoverPane.axis.startAngleRad, endAngleRad = chart.hoverPane.axis.endAngleRad, linearAxis = chart.inverted ? chart.xAxis[0] : chart.yAxis[0], attrs = {};
+                const center = chart.hoverPane.center, mouseDownX = chart.mouseDownX || 0, mouseDownY = chart.mouseDownY || 0, chartY = event.args.chartY, chartX = event.args.chartX, fullCircle = Math.PI * 2, startAngleRad = chart.hoverPane.axis.startAngleRad, endAngleRad = chart.hoverPane.axis.endAngleRad, linearAxis = chart.inverted ? chart.xAxis[0] : chart.yAxis[0], attrs = {};
                 let shapeType = 'arc';
                 attrs.x = center[0] + chart.plotLeft;
                 attrs.y = center[1] + chart.plotTop;
@@ -10009,7 +10005,7 @@
                         Math.min(endAngle + startAngleRad, endAngleRad);
                     // Adjust the selection shape for polygon grid lines
                     if (linearAxis.options.gridLineInterpolation === 'polygon') {
-                        const radialAxis = chart.hoverPane.axis, tickInterval = radialAxis.tickInterval, min = start - radialAxis.startAngleRad + radialAxis.pos, max = end - start;
+                        const radialAxis = chart.hoverPane.axis, min = start - radialAxis.startAngleRad + radialAxis.pos, max = end - start;
                         let path = linearAxis.getPlotLinePath({
                             value: linearAxis.max
                         }), pathStart = radialAxis.toValue(min), pathEnd = radialAxis.toValue(min + max);
@@ -10657,14 +10653,18 @@
          * @private
          */
         function wrapPointPos(proceed, chartCoordinates, plotY = this.plotY) {
-            const { plotX, series } = this, { chart } = series;
-            if (chart.polar && !this.destroyed && isNumber(plotX) && isNumber(plotY)) {
-                return [
-                    plotX + (chartCoordinates ? chart.plotLeft : 0),
-                    plotY + (chartCoordinates ? chart.plotTop : 0)
-                ];
+            if (!this.destroyed) {
+                const { plotX, series } = this, { chart } = series;
+                if (chart.polar &&
+                    isNumber(plotX) &&
+                    isNumber(plotY)) {
+                    return [
+                        plotX + (chartCoordinates ? chart.plotLeft : 0),
+                        plotY + (chartCoordinates ? chart.plotTop : 0)
+                    ];
+                }
+                return proceed.call(this, chartCoordinates, plotY);
             }
-            return proceed.call(this, chartCoordinates, plotY);
         }
         /* *
          *
@@ -10685,7 +10685,7 @@
             static compose(AxisClass, ChartClass, PointerClass, SeriesClass, TickClass, PointClass, AreaSplineRangeSeriesClass, ColumnSeriesClass, LineSeriesClass, SplineSeriesClass) {
                 Pane.compose(ChartClass, PointerClass);
                 RadialAxis.compose(AxisClass, TickClass);
-                if (pushUnique(composed, this.compose)) {
+                if (pushUnique(composed, 'Polar')) {
                     const chartProto = ChartClass.prototype, pointProto = PointClass.prototype, pointerProto = PointerClass.prototype, seriesProto = SeriesClass.prototype;
                     addEvent(ChartClass, 'afterDrawChartBox', onChartAfterDrawChartBox);
                     addEvent(ChartClass, 'getAxes', onChartGetAxes);
@@ -10841,7 +10841,7 @@
              * @private
              */
             function compose(AxisClass, ChartClass) {
-                if (pushUnique(composed, compose)) {
+                if (pushUnique(composed, 'Axis.Waterfall')) {
                     addEvent(AxisClass, 'init', onAxisInit);
                     addEvent(AxisClass, 'afterBuildStacks', onAxisAfterBuildStacks);
                     addEvent(AxisClass, 'afterRender', onAxisAfterRender);
@@ -10883,8 +10883,8 @@
              */
             function onChartBeforeRedraw() {
                 const axes = this.axes, series = this.series;
-                for (const seri of series) {
-                    if (seri.options.stacking) {
+                for (const serie of series) {
+                    if (serie.options.stacking) {
                         for (const axis of axes) {
                             if (!axis.isXAxis) {
                                 axis.waterfall.stacks.changed = true;
@@ -11176,7 +11176,7 @@
          */
         /**
          * When this property is true, the points acts as a summary column for
-         * the values added or substracted since the last intermediate sum,
+         * the values added or subtracted since the last intermediate sum,
          * or since the start of the series. The `y` value is ignored.
          *
          * @sample {highcharts} highcharts/demo/waterfall/
@@ -11757,5 +11757,6 @@
         PolarAdditions.compose(G.Axis, G.Chart, G.Pointer, G.Series, G.Tick, G.Point, SeriesRegistry.seriesTypes.areasplinerange, SeriesRegistry.seriesTypes.column, SeriesRegistry.seriesTypes.line, SeriesRegistry.seriesTypes.spline);
         WaterfallSeries.compose(G.Axis, G.Chart);
 
+        return G;
     });
 }));

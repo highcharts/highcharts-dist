@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v@product.version@ (@product.date@)
  * @module highcharts/modules/no-data-to-display
  * @requires highcharts
  *
@@ -15,3 +15,4 @@ import Highcharts from '../../Core/Globals.js';
 import NoDataToDisplay from '../../Extensions/NoDataToDisplay/NoDataToDisplay.js';
 const G = Highcharts;
 NoDataToDisplay.compose(G.Chart, G.defaultOptions);
+export default Highcharts;

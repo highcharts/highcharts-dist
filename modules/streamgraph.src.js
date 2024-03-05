@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v11.4.0 (2024-03-05)
  *
  * Streamgraph module
  *
@@ -247,8 +247,9 @@
 
         return StreamgraphSeries;
     });
-    _registerModule(_modules, 'masters/modules/streamgraph.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/streamgraph.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

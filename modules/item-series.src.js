@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v11.4.0 (2024-03-05)
  *
  * Item series type for Highcharts
  *
@@ -403,7 +403,7 @@
                         if (!graphic.isActive) {
                             graphic.destroy();
                             graphics.splice(j, 1);
-                            j--; // Need to substract 1 after splice, #19053
+                            j--; // Need to subtract 1 after splice, #19053
                         }
                         else {
                             graphic.isActive = false;
@@ -583,8 +583,9 @@
 
         return ItemSeries;
     });
-    _registerModule(_modules, 'masters/modules/item-series.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/item-series.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

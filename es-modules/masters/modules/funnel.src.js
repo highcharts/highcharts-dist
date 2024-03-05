@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v@product.version@ (@product.date@)
  * @module highcharts/modules/funnel
  * @requires highcharts
  *
@@ -15,3 +15,4 @@ import FunnelSeries from '../../Series/Funnel/FunnelSeries.js';
 import '../../Series/Pyramid/PyramidSeries.js';
 const G = Highcharts;
 FunnelSeries.compose(G.Chart);
+export default Highcharts;

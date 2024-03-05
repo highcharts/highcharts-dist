@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.3.0 (2024-01-10)
+ * @license Highstock JS v11.4.0 (2024-03-05)
  *
  * Slow Stochastic series type for Highcharts Stock
  *
@@ -164,8 +164,9 @@
 
         return SlowStochasticIndicator;
     });
-    _registerModule(_modules, 'masters/indicators/slow-stochastic.src.js', [], function () {
+    _registerModule(_modules, 'masters/indicators/slow-stochastic.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

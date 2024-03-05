@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v@product.version@ (@product.date@)
  * @module highcharts/modules/mouse-wheel-zoom
  * @requires highcharts
  *
@@ -13,4 +13,6 @@
 import Highcharts from '../../Core/Globals.js';
 import MouseWheelZoom from '../../Extensions/MouseWheelZoom/MouseWheelZoom.js';
 const G = Highcharts;
-MouseWheelZoom.compose(G.Chart);
+G.MouseWheelZoom = G.MouseWheelZoom || MouseWheelZoom;
+G.MouseWheelZoom.compose(G.Chart);
+export default Highcharts;

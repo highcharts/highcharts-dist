@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v@product.version@ (@product.date@)
  * @module highcharts/modules/broken-axis
  * @requires highcharts
  *
@@ -11,5 +11,6 @@
 import Highcharts from '../../Core/Globals.js';
 import BrokenAxis from '../../Core/Axis/BrokenAxis.js';
 const G = Highcharts;
-// Compositions
-BrokenAxis.compose(G.Axis, G.Series);
+G.BrokenAxis = G.BrokenAxis || BrokenAxis;
+G.BrokenAxis.compose(G.Axis, G.Series);
+export default Highcharts;

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.3.0 (2024-01-10)
+ * @license Highstock JS v11.4.0 (2024-03-05)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -150,7 +150,7 @@
                 period: void 0,
                 /**
                  * The id of another series to use its data as volume data for the
-                 * indiator calculation.
+                 * indicator calculation.
                  */
                 volumeSeriesID: 'volume'
             },
@@ -188,8 +188,9 @@
 
         return OBVIndicator;
     });
-    _registerModule(_modules, 'masters/indicators/obv.src.js', [], function () {
+    _registerModule(_modules, 'masters/indicators/obv.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

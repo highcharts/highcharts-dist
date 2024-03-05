@@ -35,10 +35,11 @@ var ForcedMarkersComposition;
      * @private
      */
     function compose(SeriesClass) {
-        if (pushUnique(composed, compose)) {
+        if (pushUnique(composed, 'A11y.FM')) {
             addEvent(SeriesClass, 'afterSetOptions', seriesOnAfterSetOptions);
             addEvent(SeriesClass, 'render', seriesOnRender);
             addEvent(SeriesClass, 'afterRender', seriesOnAfterRender);
+            addEvent(SeriesClass, 'renderCanvas', seriesOnRenderCanvas);
         }
     }
     ForcedMarkersComposition.compose = compose;
@@ -190,7 +191,7 @@ var ForcedMarkersComposition;
     function unforceSeriesMarkerOptions(series) {
         const resetMarkerOptions = series.resetA11yMarkerOptions;
         if (resetMarkerOptions) {
-            const originalOpactiy = resetMarkerOptions.states &&
+            const originalOpacity = resetMarkerOptions.states &&
                 resetMarkerOptions.states.normal &&
                 resetMarkerOptions.states.normal.opacity;
             // Temporarily set the old marker options to enabled in order to
@@ -202,10 +203,24 @@ var ForcedMarkersComposition;
                 marker: {
                     enabled: resetMarkerOptions.enabled,
                     states: {
-                        normal: { opacity: originalOpactiy }
+                        normal: { opacity: originalOpacity }
                     }
                 }
             });
+        }
+    }
+    /**
+     * Reset markers if series is boosted and had forced markers (#17320).
+     * @private
+     */
+    function seriesOnRenderCanvas() {
+        if (this.boosted && this.a11yMarkersForced) {
+            merge(true, this.options, {
+                marker: {
+                    enabled: false
+                }
+            });
+            delete this.a11yMarkersForced;
         }
     }
 })(ForcedMarkersComposition || (ForcedMarkersComposition = {}));

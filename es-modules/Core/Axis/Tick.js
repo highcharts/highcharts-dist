@@ -156,10 +156,10 @@ class Tick {
                 return labelOptions.formatter.call(ctx, ctx);
             }
             if (labelOptions.format) {
-                ctx.text = axis.defaultLabelFormatter.call(ctx, ctx);
+                ctx.text = axis.defaultLabelFormatter.call(ctx);
                 return F.format(labelOptions.format, ctx, chart);
             }
-            return axis.defaultLabelFormatter.call(ctx, ctx);
+            return axis.defaultLabelFormatter.call(ctx);
         };
         const str = labelFormatter.call(ctx, ctx);
         // Set up conditional formatting based on the format list if existing.
@@ -490,17 +490,26 @@ class Tick {
      * @param {number} [opacity]
      */
     render(index, old, opacity) {
-        const tick = this, axis = tick.axis, horiz = axis.horiz, pos = tick.pos, tickmarkOffset = pick(tick.tickmarkOffset, axis.tickmarkOffset), xy = tick.getPosition(horiz, pos, tickmarkOffset, old), x = xy.x, y = xy.y, reverseCrisp = ((horiz && x === axis.pos + axis.len) ||
-            (!horiz && y === axis.pos)) ? -1 : 1; // #1480, #1687
+        const tick = this, axis = tick.axis, horiz = axis.horiz, pos = tick.pos, tickmarkOffset = pick(tick.tickmarkOffset, axis.tickmarkOffset), xy = tick.getPosition(horiz, pos, tickmarkOffset, old), x = xy.x, y = xy.y, axisStart = axis.pos, axisEnd = axisStart + axis.len, reverseCrisp = ((horiz && x === axisEnd) ||
+            (!horiz && y === axisStart)) ? -1 : 1, // #1480, #1687
+        pxPos = horiz ? x : y;
+        // Anything that is not between `axis.pos` and `axis.pos + axis.length`
+        // should not be visible (#20166). The `correctFloat` is for reversed
+        // axes in Safari.
+        if (!axis.chart.polar &&
+            tick.isNew &&
+            (correctFloat(pxPos) < axisStart || pxPos > axisEnd)) {
+            opacity = 0;
+        }
         const labelOpacity = pick(opacity, tick.label && tick.label.newOpacity, // #15528
         1);
         opacity = pick(opacity, 1);
         this.isActive = true;
         // Create the grid line
         this.renderGridLine(old, opacity, reverseCrisp);
-        // create the tick mark
+        // Create the tick mark
         this.renderMark(xy, opacity, reverseCrisp);
-        // the label is created on init - now move it into place
+        // The label is created on init - now move it into place
         this.renderLabel(xy, old, labelOpacity, index);
         tick.isNew = false;
         fireEvent(this, 'afterRender');
@@ -704,7 +713,7 @@ export default Tick;
 * @type {number|undefined}
 */
 /**
- * Additonal time tick information.
+ * Additional time tick information.
  *
  * @interface Highcharts.TimeTicksInfoObject
  * @extends Highcharts.TimeNormalizedObject

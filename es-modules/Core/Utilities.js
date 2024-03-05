@@ -234,7 +234,9 @@ function diffObjects(newer, older, keepOlder, collectionsWithUpdate) {
             else if (newer[key] !== older[key] ||
                 // If the newer key is explicitly undefined, keep it (#10525)
                 (key in newer && !(key in older))) {
-                ret[key] = keeper[key];
+                if (key !== '__proto__' && key !== 'constructor') {
+                    ret[key] = keeper[key];
+                }
             }
         });
     }
@@ -613,11 +615,6 @@ function pick() {
  * @return {void}
  */
 function css(el, styles) {
-    if (H.isMS && !H.svg) { // #2686
-        if (styles && defined(styles.opacity)) {
-            styles.filter = `alpha(opacity=${styles.opacity * 100})`;
-        }
-    }
     extend(el.style, styles);
 }
 /**
@@ -728,6 +725,32 @@ function relativeLength(value, base, offset) {
     return (/%$/).test(value) ?
         (base * parseFloat(value) / 100) + (offset || 0) :
         parseFloat(value);
+}
+/**
+ * Replaces text in a string with a given replacement in a loop to catch nested
+ * matches after previous replacements.
+ *
+ * @function Highcharts.replaceNested
+ *
+ * @param {string} text
+ * Text to search and modify.
+ *
+ * @param {...Array<(RegExp|string)>} replacements
+ * One or multiple tuples with search pattern (`[0]: (string|RegExp)`) and
+ * replacement (`[1]: string`) for matching text.
+ *
+ * @return {string}
+ * Text with replacements.
+ */
+function replaceNested(text, ...replacements) {
+    let previous, replacement;
+    do {
+        previous = text;
+        for (replacement of replacements) {
+            text = text.replace(replacement[0], replacement[1]);
+        }
+    } while (text !== previous);
+    return text;
 }
 /**
  * Wrap a method with extended functionality, preserving the original function.
@@ -931,15 +954,17 @@ function arrayMax(data) {
  * @param {*} [except]
  *        Exception, do not destroy this property, only delete it.
  */
-function destroyObjectProperties(obj, except) {
+function destroyObjectProperties(obj, except, destructablesOnly) {
     objectEach(obj, function (val, n) {
         // If the object is non-null and destroy is defined
-        if (val && val !== except && val.destroy) {
+        if (val !== except && val?.destroy) {
             // Invoke the destroy
             val.destroy();
         }
-        // Delete the property from the object.
-        delete obj[n];
+        // Delete the property from the object
+        if (val?.destroy || !destructablesOnly) {
+            delete obj[n];
+        }
     });
 }
 /**
@@ -1337,7 +1362,7 @@ function objectEach(obj, fn, ctx) {
  *        The array to test
  *
  * @param {Function} fn
- *        The function to run on each item. Return truty to pass the test.
+ *        The function to run on each item. Return truthy to pass the test.
  *        Receives arguments `currentValue`, `index` and `array`.
  *
  * @param {*} ctx
@@ -1363,18 +1388,21 @@ objectEach({
  *
  * @function Highcharts.addEvent<T>
  *
- * @param {Highcharts.Class<T>|T} el
- *        The element or object to add a listener to. It can be a
- *        {@link HTMLDOMElement}, an {@link SVGElement} or any other object.
+ * @param  {Highcharts.Class<T>|T} el
+ *         The element or object to add a listener to. It can be a
+ *         {@link HTMLDOMElement}, an {@link SVGElement} or any other object.
  *
- * @param {string} type
- *        The event type.
+ * @param  {string} type
+ *         The event type.
  *
- * @param {Highcharts.EventCallbackFunction<T>|Function} fn
- *        The function callback to execute when the event is fired.
+ * @param  {Highcharts.EventCallbackFunction<T>|Function} fn
+ *         The function callback to execute when the event is fired.
  *
- * @param {Highcharts.EventOptionsObject} [options]
- *        Options for adding the event.
+ * @param  {Highcharts.EventOptionsObject} [options]
+ *         Options for adding the event.
+ *
+ * @sample highcharts/members/addevent
+ *         Use a general `render` event to draw shapes on a chart
  *
  * @return {Function}
  *         A callback function to remove the added event.
@@ -1525,14 +1553,13 @@ function removeEvent(el, type, fn) {
  */
 function fireEvent(el, type, eventArguments, defaultFunction) {
     /* eslint-enable valid-jsdoc */
-    let e, i;
     eventArguments = eventArguments || {};
     if (doc.createEvent &&
         (el.dispatchEvent ||
             (el.fireEvent &&
                 // Enable firing events on Highcharts instance.
                 el !== H))) {
-        e = doc.createEvent('Events');
+        const e = doc.createEvent('Events');
         e.initEvent(type, true, true);
         eventArguments = extend(e, eventArguments);
         if (el.dispatchEvent) {
@@ -1675,7 +1702,7 @@ if (win.jQuery) {
     *        The chart options structure.
     *
     * @param {Highcharts.ChartCallbackFunction} [callback]
-    *        Function to run when the chart has loaded and and all external
+    *        Function to run when the chart has loaded and all external
     *        images are loaded. Defining a
     *        [chart.events.load](https://api.highcharts.com/highcharts/chart.events.load)
     *        handler is equivalent.
@@ -1749,6 +1776,7 @@ const Utilities = {
     pushUnique,
     relativeLength,
     removeEvent,
+    replaceNested,
     splat,
     stableSort,
     syncTimeout,
@@ -1770,7 +1798,7 @@ export default Utilities;
  *
  * @interface Highcharts.AnimationOptionsObject
  */ /**
-* A callback function to exectute when the animation finishes.
+* A callback function to execute when the animation finishes.
 * @name Highcharts.AnimationOptionsObject#complete
 * @type {Function|undefined}
 */ /**
@@ -1808,7 +1836,7 @@ export default Utilities;
  * @interface Highcharts.Class<T>
  * @extends Function
  */ /**
-* Class costructor.
+* Class constructor.
 * @function Highcharts.Class<T>#new
 * @param {...Array<*>} args
 *        Constructor arguments.
@@ -1978,7 +2006,7 @@ export default Utilities;
 * @type boolean
 */
 /**
- * Formats data as a string. Usually the data is accessible throught the `this`
+ * Formats data as a string. Usually the data is accessible through the `this`
  * keyword.
  *
  * @callback Highcharts.FormatterCallbackFunction<T>

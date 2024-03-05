@@ -10,10 +10,8 @@
 'use strict';
 import Color from '../../Color/Color.js';
 const { parse: color } = Color;
-import H from '../../Globals.js';
-const { composed } = H;
 import U from '../../Utilities.js';
-const { addEvent, extend, merge, pick, pushUnique, splat } = U;
+const { addEvent, extend, merge, pick, splat } = U;
 /* *
  *
  *  Composition
@@ -41,9 +39,9 @@ var ColorAxisComposition;
      * @private
      */
     function compose(ColorAxisClass, ChartClass, FxClass, LegendClass, SeriesClass) {
-        if (pushUnique(composed, compose)) {
+        const chartProto = ChartClass.prototype, fxProto = FxClass.prototype, seriesProto = SeriesClass.prototype;
+        if (!chartProto.collectionsWithUpdate.includes('colorAxis')) {
             ColorAxisConstructor = ColorAxisClass;
-            const chartProto = ChartClass.prototype, fxProto = FxClass.prototype, seriesProto = SeriesClass.prototype;
             chartProto.collectionsWithUpdate.push('colorAxis');
             chartProto.collectionsWithInit.colorAxis = [
                 chartProto.addColorAxis

@@ -66,7 +66,7 @@ function axisMinFromRange() {
         min = max + getTrueRange(max, -(rangeOptions.count || 1));
         // Let the fixedRange reflect initial settings (#5930)
         if (this.chart) {
-            this.chart.fixedRange = max - min;
+            this.chart.setFixedRange(max - min);
         }
     }
     const dataMin = pick(this.dataMin, Number.MIN_VALUE);
@@ -95,7 +95,7 @@ function axisMinFromRange() {
  */
 function compose(AxisClass, ChartClass, RangeSelectorClass) {
     RangeSelectorConstructor = RangeSelectorClass;
-    if (pushUnique(composed, compose)) {
+    if (pushUnique(composed, 'RangeSelector')) {
         const chartProto = ChartClass.prototype;
         AxisClass.prototype.minFromRange = axisMinFromRange;
         addEvent(ChartClass, 'afterGetContainer', onChartAfterGetContainer);

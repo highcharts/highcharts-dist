@@ -113,8 +113,8 @@ class Scrollbar {
      */
     addEvents() {
         const buttonsOrder = this.options.inverted ? [1, 0] : [0, 1], buttons = this.scrollbarButtons, bar = this.scrollbarGroup.element, track = this.track.element, mouseDownHandler = this.mouseDownHandler.bind(this), mouseMoveHandler = this.mouseMoveHandler.bind(this), mouseUpHandler = this.mouseUpHandler.bind(this);
-        // Mouse events
         const _events = [
+            // Mouse events
             [
                 buttons[buttonsOrder[0]].element,
                 'click',
@@ -128,12 +128,12 @@ class Scrollbar {
             [track, 'click', this.trackClick.bind(this)],
             [bar, 'mousedown', mouseDownHandler],
             [bar.ownerDocument, 'mousemove', mouseMoveHandler],
-            [bar.ownerDocument, 'mouseup', mouseUpHandler]
+            [bar.ownerDocument, 'mouseup', mouseUpHandler],
+            // Touch events
+            [bar, 'touchstart', mouseDownHandler],
+            [bar.ownerDocument, 'touchmove', mouseMoveHandler],
+            [bar.ownerDocument, 'touchend', mouseUpHandler]
         ];
-        // Touch events
-        if (H.hasTouch) {
-            _events.push([bar, 'touchstart', mouseDownHandler], [bar.ownerDocument, 'touchmove', mouseMoveHandler], [bar.ownerDocument, 'touchend', mouseUpHandler]);
-        }
         // Add them all
         _events.forEach(function (args) {
             addEvent.apply(null, args);
@@ -299,7 +299,7 @@ class Scrollbar {
         }
     }
     mouseDownHandler(e) {
-        const scroller = this, normalizedEvent = scroller.chart.pointer.normalize(e), mousePosition = scroller.cursorToScrollbarPosition(normalizedEvent);
+        const scroller = this, normalizedEvent = scroller.chart.pointer?.normalize(e) || e, mousePosition = scroller.cursorToScrollbarPosition(normalizedEvent);
         scroller.chartX = mousePosition.chartX;
         scroller.chartY = mousePosition.chartY;
         scroller.initPositions = [scroller.from, scroller.to];
@@ -310,7 +310,7 @@ class Scrollbar {
      * @private
      */
     mouseMoveHandler(e) {
-        const scroller = this, normalizedEvent = scroller.chart.pointer.normalize(e), options = scroller.options, direction = options.vertical ?
+        const scroller = this, normalizedEvent = scroller.chart.pointer?.normalize(e) || e, options = scroller.options, direction = options.vertical ?
             'chartY' : 'chartX', initPositions = scroller.initPositions || [];
         let scrollPosition, chartPosition, change;
         // In iOS, a mousemove event with e.pageX === 0 is fired when
@@ -368,7 +368,7 @@ class Scrollbar {
      * @param {number} width
      *        width of the scrollbar
      * @param {number} height
-     *        height of the scorllbar
+     *        height of the scrollbar
      */
     position(x, y, width, height) {
         const scroller = this, options = scroller.options, { buttonsEnabled, margin = 0, vertical } = options, method = scroller.rendered ? 'animate' : 'attr';
@@ -592,7 +592,7 @@ class Scrollbar {
     }
     trackClick(e) {
         const scroller = this;
-        const normalizedEvent = scroller.chart.pointer.normalize(e), range = scroller.to - scroller.from, top = scroller.y + scroller.scrollbarTop, left = scroller.x + scroller.scrollbarLeft;
+        const normalizedEvent = scroller.chart.pointer?.normalize(e) || e, range = scroller.to - scroller.from, top = scroller.y + scroller.scrollbarTop, left = scroller.x + scroller.scrollbarLeft;
         if ((scroller.options.vertical && normalizedEvent.chartY > top) ||
             (!scroller.options.vertical && normalizedEvent.chartX > left)) {
             // On the top or on the left side of the track:

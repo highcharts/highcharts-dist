@@ -13,8 +13,6 @@
 import AST from '../../../Core/Renderer/HTML/AST.js';
 import H from '../../../Core/Globals.js';
 const { doc } = H;
-import NU from '../NavigationBindingsUtilities.js';
-const { annotationsFieldsTypes } = NU;
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 const { seriesTypes } = SeriesRegistry;
 import U from '../../../Core/Utilities.js';
@@ -165,6 +163,22 @@ function addFormFields(chart, series, seriesType, rhsColWrapper) {
  *        For the first iteration, it's an empty string.
  */
 function addIndicatorList(chart, parentDiv, listType, filter) {
+    function selectIndicator(series, indicatorType) {
+        const button = rhsColWrapper.parentNode
+            .children[1];
+        addFormFields.call(popup, chart, series, indicatorType, rhsColWrapper);
+        if (button) {
+            button.style.display = 'block';
+        }
+        // add hidden input with series.id
+        if (isEdit && series.options) {
+            createElement('input', {
+                type: 'hidden',
+                name: 'highcharts-id-' + indicatorType,
+                value: series.options.id
+            }, void 0, rhsColWrapper).setAttribute('highcharts-data-series-id', series.options.id);
+        }
+    }
     const popup = this, lang = popup.lang, lhsCol = parentDiv.querySelectorAll('.highcharts-popup-lhs-col')[0], rhsCol = parentDiv.querySelectorAll('.highcharts-popup-rhs-col')[0], isEdit = listType === 'edit', series = (isEdit ?
         chart.series : // EDIT mode
         chart.options.plotOptions || {} // ADD mode
@@ -181,7 +195,7 @@ function addIndicatorList(chart, parentDiv, listType, filter) {
     else if (isArray(series)) {
         filteredSeriesArray = filterSeriesArray.call(this, series);
     }
-    // Sort indicators alphabeticaly.
+    // Sort indicators alphabetically.
     stableSort(filteredSeriesArray, (a, b) => {
         const seriesAName = a.indicatorFullName.toLowerCase(), seriesBName = b.indicatorFullName.toLowerCase();
         return (seriesAName < seriesBName) ?
@@ -202,29 +216,20 @@ function addIndicatorList(chart, parentDiv, listType, filter) {
         item = createElement('li', {
             className: 'highcharts-indicator-list'
         }, void 0, indicatorList);
-        item.appendChild(doc.createTextNode(indicatorFullName));
+        let btn = createElement('button', {
+            className: 'highcharts-indicator-list-item',
+            textContent: indicatorFullName
+        }, void 0, item);
         ['click', 'touchstart'].forEach((eventName) => {
-            addEvent(item, eventName, function () {
-                const button = rhsColWrapper.parentNode
-                    .children[1];
-                addFormFields.call(popup, chart, series, indicatorType, rhsColWrapper);
-                if (button) {
-                    button.style.display = 'block';
-                }
-                // add hidden input with series.id
-                if (isEdit && series.options) {
-                    createElement('input', {
-                        type: 'hidden',
-                        name: 'highcharts-id-' + indicatorType,
-                        value: series.options.id
-                    }, void 0, rhsColWrapper).setAttribute('highcharts-data-series-id', series.options.id);
-                }
+            addEvent(btn, eventName, function () {
+                selectIndicator(series, indicatorType);
             });
         });
     });
     // select first item from the list
-    if (indicatorList.childNodes.length > 0) {
-        indicatorList.childNodes[0].click();
+    if (filteredSeriesArray.length > 0) {
+        let { series, indicatorType } = filteredSeriesArray[0];
+        selectIndicator(series, indicatorType);
     }
     else if (!isEdit) {
         AST.setElementHTML(rhsColWrapper.parentNode.children[0], lang.noFilterMatch || '');
@@ -233,7 +238,7 @@ function addIndicatorList(chart, parentDiv, listType, filter) {
     }
 }
 /**
- * Recurent function which lists all fields, from params object and
+ * Recurrent function which lists all fields, from params object and
  * create them as inputs. Each input has unique `data-name` attribute,
  * which keeps chain of fields i.e params.styles.fontSize.
  * @private
@@ -254,11 +259,6 @@ function addParamInputs(chart, parentNode, fields, type, parentDiv) {
     }
     const addInput = this.addInput;
     objectEach(fields, (value, fieldName) => {
-        const predefinedType = annotationsFieldsTypes[fieldName];
-        let fieldType = type;
-        if (predefinedType) {
-            fieldType = predefinedType;
-        }
         // create name like params.styles.fontSize
         const parentFullName = parentNode + '.' + fieldName;
         if (defined(value) && // skip if field is unnecessary, #15362
@@ -322,7 +322,7 @@ function addSearchBox(chart, parentDiv) {
     input.classList.add('highcharts-input-search-indicators');
     button.classList.add('clear-filter-button');
     // Add input change events.
-    addEvent(input, 'input', function (e) {
+    addEvent(input, 'input', function () {
         handleInputChange(this.value);
         // Show clear filter button.
         if (this.value.length) {
@@ -338,7 +338,7 @@ function addSearchBox(chart, parentDiv) {
             // Clear the input.
             input.value = '';
             handleInputChange('');
-            // Hide clear filter button- no longer nececary.
+            // Hide clear filter button- no longer necessary.
             button.style.display = 'none';
         });
     });
@@ -450,7 +450,7 @@ function addSelectionOptions(chart, optionName, selectBox, indicatorType, parame
  *         Returns array of filtered series based on filter string.
  */
 function filterSeries(series, filter) {
-    const popup = this, indicators = popup.indicators, lang = popup.chart && popup.chart.options.lang, indicatorAliases = lang &&
+    const popup = this, lang = popup.chart && popup.chart.options.lang, indicatorAliases = lang &&
         lang.navigation &&
         lang.navigation.popup &&
         lang.navigation.popup.indicatorAliases, filteredSeriesArray = [];
@@ -582,7 +582,7 @@ function getNameType(series, indicatorType) {
  *        Default value in dropdown.
  */
 function listAllSeries(indicatorType, optionName, chart, parentDiv, currentSeries, selectedOption) {
-    const popup = this, indicators = popup.indicators;
+    const popup = this;
     // Won't work without the chart.
     if (!chart) {
         return;

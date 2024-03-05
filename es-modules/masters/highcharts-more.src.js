@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v@product.version@ (@product.date@)
  * @module highcharts/highcharts-more
  * @requires highcharts
  *
@@ -29,3 +29,4 @@ PackedBubbleSeries.compose(G.Axis, G.Chart, G.Legend, G.Series);
 Pane.compose(G.Chart, G.Pointer);
 PolarAdditions.compose(G.Axis, G.Chart, G.Pointer, G.Series, G.Tick, G.Point, SeriesRegistry.seriesTypes.areasplinerange, SeriesRegistry.seriesTypes.column, SeriesRegistry.seriesTypes.line, SeriesRegistry.seriesTypes.spline);
 WaterfallSeries.compose(G.Axis, G.Chart);
+export default G;

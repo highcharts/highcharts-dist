@@ -71,14 +71,14 @@ class CSVConnector extends DataConnector {
             detail: eventDetail,
             table
         });
-        // If already loaded, clear the current rows
-        table.deleteRows();
         return Promise
             .resolve(csvURL ?
             fetch(csvURL).then((response) => response.text()) :
             csv || '')
             .then((csv) => {
             if (csv) {
+                // If already loaded, clear the current rows
+                table.deleteColumns();
                 converter.parse({ csv });
                 table.setColumns(converter.getTable().getColumns());
             }

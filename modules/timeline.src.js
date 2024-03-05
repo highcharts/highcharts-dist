@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v11.4.0 (2024-03-05)
  *
  * Timeline series
  *
@@ -610,8 +610,8 @@
                             // Initialize the targetPosition field within data label
                             // object. It's necessary because there is need to know
                             // expected position of specific data label, when
-                            // aligning connectors. This field is overrided inside
-                            // of SVGElement.animate() wrapped  method.
+                            // aligning connectors. This field is overridden inside
+                            // of SVGElement.animate() wrapped method.
                             if (!dataLabel.targetPosition) {
                                 dataLabel.targetPosition = {};
                             }
@@ -731,8 +731,9 @@
 
         return TimelineSeries;
     });
-    _registerModule(_modules, 'masters/modules/timeline.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/timeline.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

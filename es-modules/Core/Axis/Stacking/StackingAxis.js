@@ -11,13 +11,11 @@
 import A from '../../Animation/AnimationUtilities.js';
 const { getDeferredAnimation } = A;
 import Axis from '../Axis.js';
-import H from '../../Globals.js';
-const { composed } = H;
 import SeriesRegistry from '../../Series/SeriesRegistry.js';
 const { series: { prototype: seriesProto } } = SeriesRegistry;
 import StackItem from './StackItem.js';
 import U from '../../Utilities.js';
-const { addEvent, correctFloat, defined, destroyObjectProperties, fireEvent, isArray, isNumber, objectEach, pick, pushUnique } = U;
+const { addEvent, correctFloat, defined, destroyObjectProperties, fireEvent, isArray, isNumber, objectEach, pick } = U;
 /* *
  *
  *  Functions
@@ -415,8 +413,8 @@ var StackingAxis;
      * @private
      */
     function compose(AxisClass, ChartClass, SeriesClass) {
-        if (pushUnique(composed, compose)) {
-            const chartProto = ChartClass.prototype, seriesProto = SeriesClass.prototype;
+        const chartProto = ChartClass.prototype, seriesProto = SeriesClass.prototype;
+        if (!chartProto.getStacks) {
             addEvent(AxisClass, 'init', onAxisInit);
             addEvent(AxisClass, 'destroy', onAxisDestroy);
             chartProto.getStacks = chartGetStacks;

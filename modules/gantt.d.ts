@@ -37,7 +37,7 @@ declare module "../highcharts" {
          *        Custom options.
          *
          * @param callback
-         *        Function to run when the chart has loaded and and all external
+         *        Function to run when the chart has loaded and all external
          *        images are loaded.
          *
          * @fires Highcharts.GanttChart#init
@@ -56,9 +56,8 @@ declare module "../highcharts" {
      *        The chart options structure.
      *
      * @param callback
-     *        Function to run when the chart has loaded and and all external
-     *        images are loaded. Defining a chart.events.load handler is
-     *        equivalent.
+     *        Function to run when the chart has loaded and all external images
+     *        are loaded. Defining a chart.events.load handler is equivalent.
      *
      * @return Returns the Chart object.
      */

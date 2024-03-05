@@ -29,7 +29,9 @@ class ADIndicator extends SMAIndicator {
      *  Static Functions
      *
      * */
-    static populateAverage(xVal, yVal, yValVolume, i, _period) {
+    static populateAverage(xVal, yVal, yValVolume, i, 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _period) {
         const high = yVal[i][1], low = yVal[i][2], close = yVal[i][3], volume = yValVolume[i], adY = close === high && close === low || high === low ?
             0 :
             ((2 * close - low - high) / (high - low)) * volume, adX = xVal[i];

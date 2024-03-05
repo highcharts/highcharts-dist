@@ -22,7 +22,7 @@ import CU from './Utils/ChartUtilities.js';
 const { unhideChartElementFromAT } = CU;
 import DOMElementProvider from './Utils/DOMElementProvider.js';
 import HU from './Utils/HTMLUtilities.js';
-const { removeElement, removeChildNodes } = HU;
+const { removeChildNodes } = HU;
 import ProxyElement from './ProxyElement.js';
 /* *
  *
@@ -181,7 +181,13 @@ class ProxyProvider {
     removeGroup(groupKey) {
         const group = this.groups[groupKey];
         if (group) {
-            removeElement(group.groupElement);
+            // Remove detached HTML elements to prevent memory leak (#20329).
+            this.domElementProvider.removeElement(group.groupElement);
+            // Sometimes groupElement is a wrapper around the proxyContainer, so
+            // the real one proxyContainer needs to be removed also.
+            if (group.groupElement !== group.proxyContainerElement) {
+                this.domElementProvider.removeElement(group.proxyContainerElement);
+            }
             delete this.groups[groupKey];
         }
     }

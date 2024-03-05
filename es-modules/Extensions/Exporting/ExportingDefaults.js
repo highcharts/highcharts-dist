@@ -767,7 +767,7 @@ const navigation = {
              * The default fill exists only to capture hover events.
              *
              * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-             * @default   #ffffff
+             * @default   ${palette.backgroundColor}
              * @apioption navigation.buttonOptions.theme.fill
              */
             /**

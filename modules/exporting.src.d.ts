@@ -118,7 +118,7 @@ declare module "../highcharts.src" {
      * @param settings
      *        The Ajax settings to use.
      *
-     * @return Returns false, if error occured.
+     * @return Returns false, if error occurred.
      */
     function ajax(settings: AjaxSettingsObject): (false|undefined);
     /**

@@ -133,7 +133,7 @@ class MapSeries extends ScatterSeries {
         if (this.doFullTranslate()) {
             // Individual point actions.
             this.points.forEach((point) => {
-                const { graphic, shapeArgs } = point;
+                const { graphic } = point;
                 // Points should be added in the corresponding transform group
                 point.group = transformGroups[typeof point.insetIndex === 'number' ?
                     point.insetIndex + 1 :
@@ -169,6 +169,13 @@ class MapSeries extends ScatterSeries {
                     if (chart.styledMode) {
                         graphic.css(this.pointAttribs(point, point.selected && 'select' || void 0));
                     }
+                    // If the map point is not visible and is not null (e.g.
+                    // hidden by data classes), then the point should be
+                    // visible, but without value
+                    graphic.attr({
+                        visibility: (point.visible ||
+                            (!point.visible && !point.isNull)) ? 'inherit' : 'hidden'
+                    });
                     graphic.animate = function (params, options, complete) {
                         const animateIn = (isNumber(params['stroke-width']) &&
                             !isNumber(graphic['stroke-width'])), animateOut = (isNumber(graphic['stroke-width']) &&
@@ -294,7 +301,7 @@ class MapSeries extends ScatterSeries {
             // Find the bounding box of each point
             (this.points || []).forEach((point) => {
                 if (point.path || point.geometry) {
-                    // @todo Try to puth these two conversions in
+                    // @todo Try to put these two conversions in
                     // MapPoint.applyOptions
                     if (typeof point.path === 'string') {
                         point.path = splitPath(point.path);
@@ -638,15 +645,33 @@ class MapSeries extends ScatterSeries {
                         d: MapPoint.getProjectedPath(point, projection)
                     };
                 }
-                if (point.projectedPath && !point.projectedPath.length) {
-                    point.setVisible(false);
-                }
-                else if (!point.visible) {
-                    point.setVisible(true);
+                if (!point.hiddenInDataClass) { // #20441
+                    if (point.projectedPath && !point.projectedPath.length) {
+                        point.setVisible(false);
+                    }
+                    else if (!point.visible) {
+                        point.setVisible(true);
+                    }
                 }
             });
         }
         fireEvent(series, 'afterTranslate');
+    }
+    update(options) {
+        // Calculate and set the recommended map view after every series update
+        // if new mapData is set
+        if (options.mapData) {
+            this.chart.mapView?.recommendMapView(this.chart, [
+                this.chart.options.chart.map,
+                ...(this.chart.options.series || []).map((s, i) => {
+                    if (i === this._i) {
+                        return options.mapData;
+                    }
+                    return s.mapData;
+                })
+            ], true);
+        }
+        super.update.apply(this, arguments);
     }
 }
 MapSeries.defaultOptions = merge(ScatterSeries.defaultOptions, MapSeriesDefaults);

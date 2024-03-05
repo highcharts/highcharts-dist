@@ -356,7 +356,7 @@ function processFormula(formula, table) {
     return isValue(x) ? x : NaN;
 }
 /**
- * Process a function  on the give table. If the arguments do not contain
+ * Process a function on the given table. If the arguments do not contain
  * references or ranges, then no table has to be provided.
  *
  * @private
@@ -373,7 +373,9 @@ function processFormula(formula, table) {
  * @return {Highcharts.FormulaValue|Array<Highcharts.FormulaValue>}
  * Result value (or values) of the process. `NaN` indicates an error.
  */
-function processFunction(formulaFunction, table, reference // @todo
+function processFunction(formulaFunction, table, 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+reference // @todo
 ) {
     const processor = processorFunctions[formulaFunction.name];
     if (processor) {

@@ -181,9 +181,12 @@ class NavigatorComponent extends AccessibilityComponent {
      */
     updateNavigator(beforeAnnounce) {
         const performUpdate = (beforeAnnounce) => {
-            const chart = this.chart, navigator = chart.navigator;
-            if (navigator && this.minHandleProxy && this.maxHandleProxy) {
-                const chartPos = chart.pointer.getChartPosition(), minNewX = parseFloat(this.minHandleProxy.value) /
+            const chart = this.chart, { navigator, pointer } = chart;
+            if (navigator &&
+                pointer &&
+                this.minHandleProxy &&
+                this.maxHandleProxy) {
+                const chartPos = pointer.getChartPosition(), minNewX = parseFloat(this.minHandleProxy.value) /
                     100 * navigator.size, maxNewX = parseFloat(this.maxHandleProxy.value) /
                     100 * navigator.size;
                 // Fire fake events in order for each handle.

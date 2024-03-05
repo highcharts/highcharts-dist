@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v@product.version@ (@product.date@)
  * @module highcharts/themes/grid-light
  * @requires highcharts
  *
@@ -12,3 +12,4 @@ import H from '../../Core/Globals.js';
 import GridLightTheme from '../../Extensions/Themes/GridLight.js';
 H.theme = GridLightTheme.options;
 GridLightTheme.apply();
+export default H;

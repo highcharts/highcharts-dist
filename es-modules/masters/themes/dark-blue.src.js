@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v@product.version@ (@product.date@)
  * @module highcharts/themes/dark-blue
  * @requires highcharts
  *
@@ -12,3 +12,4 @@ import H from '../../Core/Globals.js';
 import DarkBlueTheme from '../../Extensions/Themes/DarkBlue.js';
 H.theme = DarkBlueTheme.options;
 DarkBlueTheme.apply();
+export default H;

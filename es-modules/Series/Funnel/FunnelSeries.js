@@ -433,7 +433,7 @@ extend(FunnelSeries.prototype, {
      * */
     /** @private */
     function compose(ChartClass) {
-        if (pushUnique(composed, compose)) {
+        if (pushUnique(composed, 'FunnelSeries')) {
             addEvent(ChartClass, 'afterHideAllOverlappingLabels', onChartAfterHideAllOverlappingLabels);
         }
     }

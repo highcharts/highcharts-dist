@@ -25,10 +25,10 @@ var MultipleLinesComposition;
      *
      * */
     /* *
-    *
-    *  Constants
-    *
-    * */
+     *
+     *  Constants
+     *
+     * */
     /**
      * Additional lines DOCS names. Elements of linesApiNames array should
      * be consistent with DOCS line names defined in your implementation.
@@ -51,7 +51,7 @@ var MultipleLinesComposition;
      */
     const pointArrayMap = ['top', 'bottom'];
     /**
-     * Names of the lines, bewteen which the area should be plotted.
+     * Names of the lines, between which the area should be plotted.
      * If the drawing of the area should
      * be disabled for some indicators, leave this option as an empty array.
      * Names should be the same as the names in the pointArrayMap.
@@ -68,10 +68,10 @@ var MultipleLinesComposition;
      */
     const pointValKey = 'top';
     /* *
-    *
-    *  Functions
-    *
-    * */
+     *
+     *  Functions
+     *
+     * */
     /**
      * Composition useful for all indicators that have more than one line.
      * Compose it with your implementation where you will provide the

@@ -11,10 +11,8 @@
  *
  * */
 'use strict';
-import H from '../Core/Globals.js';
-const { composed } = H;
 import U from '../Core/Utilities.js';
-const { addEvent, fireEvent, isNumber, objectEach, pick, pushUnique } = U;
+const { addEvent, fireEvent, objectEach, pick } = U;
 /* *
  *
  *  Functions
@@ -22,7 +20,7 @@ const { addEvent, fireEvent, isNumber, objectEach, pick, pushUnique } = U;
  * */
 /**
  * Hide overlapping labels. Labels are moved and faded in and out on zoom to
- * provide a smooth visual imression.
+ * provide a smooth visual impression.
  *
  * @requires modules/overlapping-datalabels
  *
@@ -32,56 +30,30 @@ const { addEvent, fireEvent, isNumber, objectEach, pick, pushUnique } = U;
  *        Rendered data labels
  */
 function chartHideOverlappingLabels(labels) {
-    const chart = this, len = labels.length, ren = chart.renderer, isIntersectRect = (box1, box2) => !(box2.x >= box1.x + box1.width ||
+    const chart = this, len = labels.length, isIntersectRect = (box1, box2) => !(box2.x >= box1.x + box1.width ||
         box2.x + box2.width <= box1.x ||
         box2.y >= box1.y + box1.height ||
-        box2.y + box2.height <= box1.y), 
-    // Get the box with its position inside the chart, as opposed to getBBox
-    // that only reports the position relative to the parent.
-    getAbsoluteBox = (label) => {
-        const padding = label.box ? 0 : (label.padding || 0);
-        let pos, parent, bBox, 
-        // Substract the padding if no background or border (#4333)
-        lineHeightCorrection = 0, xOffset = 0, boxWidth, alignValue;
-        if (label &&
-            (!label.alignAttr || label.placed)) {
-            pos = label.alignAttr || {
+        box2.y + box2.height <= box1.y);
+    /**
+     * Get the box with its position inside the chart, as opposed to getBBox
+     * that only reports the position relative to the parent.
+     */
+    function getAbsoluteBox(label) {
+        if (label && (!label.alignAttr || label.placed)) {
+            const padding = label.box ? 0 : (label.padding || 0), pos = label.alignAttr || {
                 x: label.attr('x'),
                 y: label.attr('y')
-            };
-            parent = label.parentGroup;
-            // Get width and height if pure text nodes (stack labels)
-            if (!label.width) {
-                bBox = label.getBBox();
-                label.width = bBox.width;
-                label.height = bBox.height;
-                // Labels positions are computed from top left corner, so we
-                // need to substract the text height from text nodes too.
-                lineHeightCorrection = ren.fontMetrics(label.element).h;
-            }
-            boxWidth = label.width - 2 * padding;
-            alignValue = {
-                left: '0',
-                center: '0.5',
-                right: '1'
-            }[label.alignValue];
-            if (alignValue) {
-                xOffset = +alignValue * boxWidth;
-            }
-            else if (isNumber(label.x) &&
-                Math.round(label.x) !== label.translateX) {
-                xOffset = label.x - (label.translateX || 0);
-            }
+            }, bBox = label.getBBox();
+            label.width = bBox.width;
+            label.height = bBox.height;
             return {
-                x: pos.x + (parent.translateX || 0) + padding -
-                    (xOffset || 0),
-                y: pos.y + (parent.translateY || 0) + padding -
-                    lineHeightCorrection,
-                width: label.width - 2 * padding,
+                x: pos.x + (label.parentGroup?.translateX || 0) + padding,
+                y: pos.y + (label.parentGroup?.translateY || 0) + padding,
+                width: (label.width || 0) - 2 * padding,
                 height: (label.height || 0) - 2 * padding
             };
         }
-    };
+    }
     let label, label1, label2, box1, box2, isLabelAffected = false;
     for (let i = 0; i < len; i++) {
         label = labels[i];
@@ -129,8 +101,8 @@ function chartHideOverlappingLabels(labels) {
 }
 /** @private */
 function compose(ChartClass) {
-    if (pushUnique(composed, compose)) {
-        const chartProto = ChartClass.prototype;
+    const chartProto = ChartClass.prototype;
+    if (!chartProto.hideOverlappingLabels) {
         chartProto.hideOverlappingLabels = chartHideOverlappingLabels;
         addEvent(ChartClass, 'render', onChartRender);
     }
@@ -181,7 +153,7 @@ function hideOrShow(label, chart) {
     return isLabelAffected;
 }
 /**
- * Collect potensial overlapping data labels. Stack labels probably don't need
+ * Collect potential overlapping data labels. Stack labels probably don't need
  * to be considered because they are usually accompanied by data labels that lie
  * inside the columns.
  * @private

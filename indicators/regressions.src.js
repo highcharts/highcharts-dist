@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.3.0 (2024-01-10)
+ * @license Highstock JS v11.4.0 (2024-03-05)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -220,10 +220,10 @@
             params: {
                 /**
                  * Unit (in milliseconds) for the x axis distances used to
-                 * compute the regression line paramters (slope & intercept) for
-                 * every range. In Highcharts Stock the x axis values are always
-                 * represented in milliseconds which may cause that distances
-                 * between points are "big" integer numbers.
+                 * compute the regression line parameters (slope & intercept)
+                 * for every range. In Highcharts Stock the x axis values are
+                 * always represented in milliseconds which may cause that
+                 * distances between points are "big" integer numbers.
                  *
                  * Highcharts Stock's linear regression algorithm (least squares
                  * method) will utilize these "big" integers for finding the
@@ -231,10 +231,10 @@
                  * period. In consequence, this value may be a very "small"
                  * decimal number that's hard to interpret by a human.
                  *
-                 * For instance: `xAxisUnit` equealed to `86400000` ms (1 day)
+                 * For instance: `xAxisUnit` equaled to `86400000` ms (1 day)
                  * forces the algorithm to treat `86400000` as `1` while
-                 * computing the slope and the intercept. This may enchance the
-                 * legiblitity of the indicator's values.
+                 * computing the slope and the intercept. This may enhance the
+                 * legibility of the indicator's values.
                  *
                  * Default value is the closest distance between two data
                  * points.
@@ -573,10 +573,11 @@
 
         return LinearRegressionAngleIndicator;
     });
-    _registerModule(_modules, 'masters/indicators/regressions.src.js', [], function () {
+    _registerModule(_modules, 'masters/indicators/regressions.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
         // eslint-disable-next-line max-len
         // eslint-disable-next-line max-len
 
+        return Highcharts;
     });
 }));

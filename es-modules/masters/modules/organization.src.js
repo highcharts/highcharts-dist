@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v@product.version@ (@product.date@)
  * Organization chart series type
  * @module highcharts/modules/organization
  * @requires highcharts
@@ -10,4 +10,6 @@
  * License: www.highcharts.com/license
  */
 'use strict';
+import Highcharts from '../../Core/Globals.js';
 import '../../Series/Organization/OrganizationSeries.js';
+export default Highcharts;

@@ -11,7 +11,7 @@
  * */
 'use strict';
 import U from '../../Core/Utilities.js';
-const { defined, pushUnique, relativeLength } = U;
+const { defined, relativeLength } = U;
 /* *
  *
  *  Composition

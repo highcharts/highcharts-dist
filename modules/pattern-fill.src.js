@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v11.4.0 (2024-03-05)
  *
  * Module for adding patterns and images as point fills.
  *
@@ -36,7 +36,7 @@
             }
         }
     }
-    _registerModule(_modules, 'Extensions/PatternFill.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (A, D, H, U) {
+    _registerModule(_modules, 'Extensions/PatternFill.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Defaults.js'], _modules['Core/Utilities.js']], function (A, D, U) {
         /* *
          *
          *  Module for using patterns or images as point fills.
@@ -51,8 +51,7 @@
          * */
         const { animObject } = A;
         const { getOptions } = D;
-        const { composed } = H;
-        const { addEvent, defined, erase, extend, merge, pick, pushUnique, removeEvent, wrap } = U;
+        const { addEvent, defined, erase, extend, merge, pick, removeEvent, wrap } = U;
         /* *
          *
          *  Constants
@@ -66,11 +65,11 @@
          * */
         /** @private */
         function compose(ChartClass, SeriesClass, SVGRendererClass) {
-            const PointClass = SeriesClass.prototype.pointClass;
-            if (pushUnique(composed, compose)) {
+            const PointClass = SeriesClass.prototype.pointClass, pointProto = PointClass.prototype;
+            if (!pointProto.calculatePatternDimensions) {
                 addEvent(ChartClass, 'endResize', onChartEndResize);
                 addEvent(ChartClass, 'redraw', onChartRedraw);
-                extend(PointClass.prototype, {
+                extend(pointProto, {
                     calculatePatternDimensions: pointCalculatePatternDimensions
                 });
                 addEvent(PointClass, 'afterInit', onPointAfterInit);
@@ -549,7 +548,7 @@
          */
         function wrapSeriesGetColor(proceed) {
             const oldColor = this.options.color;
-            // Temporarely remove color options to get defaults
+            // Temporarily remove color options to get defaults
             if (oldColor &&
                 oldColor.pattern &&
                 !oldColor.pattern.color) {
@@ -567,7 +566,7 @@
             }
         }
         /**
-         * Scale patterns inversly to the series it's used in.
+         * Scale patterns inversely to the series it's used in.
          * Maintains a visual (1,1) scale regardless of size.
          * @private
          */
@@ -605,25 +604,24 @@
                         .replace(renderer.url, '')
                         .replace('url(#', '')
                         .replace(')', '');
-                    return [
+                    return {
                         id,
-                        {
-                            x: point.group?.scaleX || 1,
-                            y: point.group?.scaleY || 1
-                        }
-                    ];
+                        x: point.group?.scaleX || 1,
+                        y: point.group?.scaleY || 1
+                    };
                 })
                     // Filter out colors and other non-patterns, as well as duplicates.
-                    .filter(function ([id, _], index, arr) {
-                    return id !== '' &&
-                        id.indexOf('highcharts-pattern-') !== -1 &&
-                        !arr.some(function ([otherID, _], otherIndex) {
-                            return otherID === id && otherIndex < index;
+                    .filter(function (pointInfo, index, arr) {
+                    return pointInfo.id !== '' &&
+                        pointInfo.id.indexOf('highcharts-pattern-') !== -1 &&
+                        !arr.some(function (otherInfo, otherIndex) {
+                            return otherInfo.id === pointInfo.id && otherIndex < index;
                         });
                 })
-                    .forEach(function ([id, scale]) {
-                    patterns[id].scaleX = 1 / scale.x;
-                    patterns[id].scaleY = 1 / scale.y;
+                    .forEach(function (pointInfo) {
+                    const id = pointInfo.id;
+                    patterns[id].scaleX = 1 / pointInfo.x;
+                    patterns[id].scaleY = 1 / pointInfo.y;
                     patterns[id].updateTransform('patternTransform');
                 });
             }
@@ -759,5 +757,6 @@
         G.patterns = PatternFill.patterns;
         PatternFill.compose(G.Chart, G.Series, G.SVGRenderer);
 
+        return Highcharts;
     });
 }));

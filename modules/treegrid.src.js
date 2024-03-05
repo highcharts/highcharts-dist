@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v11.3.0 (2024-01-10)
+ * @license Highcharts Gantt JS v11.4.0 (2024-03-05)
  *
  * Tree Grid
  *
@@ -35,7 +35,7 @@
             }
         }
     }
-    _registerModule(_modules, 'Core/Axis/BrokenAxis.js', [_modules['Core/Globals.js'], _modules['Core/Axis/Stacking/StackItem.js'], _modules['Core/Utilities.js']], function (H, StackItem, U) {
+    _registerModule(_modules, 'Core/Axis/BrokenAxis.js', [_modules['Core/Axis/Stacking/StackItem.js'], _modules['Core/Utilities.js']], function (StackItem, U) {
         /* *
          *
          *  (c) 2009-2024 Torstein Honsi
@@ -45,8 +45,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { composed } = H;
-        const { addEvent, find, fireEvent, isArray, isNumber, pick, pushUnique } = U;
+        const { addEvent, find, fireEvent, isArray, isNumber, pick } = U;
         /* *
          *
          *  Composition
@@ -73,7 +72,7 @@
              * @private
              */
             function compose(AxisClass, SeriesClass) {
-                if (pushUnique(composed, compose)) {
+                if (!AxisClass.keepProps.includes('brokenAxis')) {
                     AxisClass.keepProps.push('brokenAxis');
                     addEvent(AxisClass, 'init', onAxisInit);
                     addEvent(AxisClass, 'afterInit', onAxisAfterInit);
@@ -474,7 +473,7 @@
                 }
                 /**
                  * Dynamically set or unset breaks in an axis. This function in lighter
-                 * than usin Axis.update, and it also preserves animation.
+                 * than using Axis.update, and it also preserves animation.
                  *
                  * @private
                  * @function Highcharts.Axis#setBreaks
@@ -602,7 +601,7 @@
                                 });
                                 brokenAxis.breakArray = breakArray;
                                 // Used with staticScale, and below the actual axis
-                                // length, when breaks are substracted.
+                                // length, when breaks are subtracted.
                                 if (isNumber(min) &&
                                     isNumber(max) &&
                                     isNumber(axis.min)) {
@@ -653,8 +652,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { composed, dateFormats } = H;
-        const { addEvent, defined, erase, find, isArray, isNumber, merge, pick, pushUnique, timeUnits, wrap } = U;
+        const { dateFormats } = H;
+        const { addEvent, defined, erase, find, isArray, isNumber, merge, pick, timeUnits, wrap } = U;
         /* *
          *
          *  Enums
@@ -722,7 +721,7 @@
          * @private
          */
         function compose(AxisClass, ChartClass, TickClass) {
-            if (pushUnique(composed, compose)) {
+            if (!AxisClass.keepProps.includes('grid')) {
                 AxisClass.keepProps.push('grid');
                 AxisClass.prototype.getMaxLabelDimensions = getMaxLabelDimensions;
                 wrap(AxisClass.prototype, 'unsquish', wrapUnsquish);
@@ -926,7 +925,7 @@
                     !axis.options.title.style.width) {
                     axisTitle.css({ width: `${firstTick.slotWidth}px` });
                 }
-                // @todo acutual label padding (top, bottom, left, right)
+                // @todo actual label padding (top, bottom, left, right)
                 axis.maxLabelDimensions = axis.getMaxLabelDimensions(axis.ticks, axis.tickPositions);
                 // Remove right wall before rendering if updating
                 if (axis.rightWall) {
@@ -1127,7 +1126,7 @@
             let gridAxisOptions;
             if (gridOptions.enabled === true) {
                 // Merge the user options into default grid axis options so
-                // that when a user option is set, it takes presedence.
+                // that when a user option is set, it takes precedence.
                 gridAxisOptions = merge(true, {
                     className: ('highcharts-grid-axis ' + (userOptions.className || '')),
                     dateTimeLabelFormats: {
@@ -1163,7 +1162,7 @@
                         }
                     },
                     // In a grid axis, only allow one unit of certain types,
-                    // for example we shouln't have one grid cell spanning
+                    // for example we shouldn't have one grid cell spanning
                     // two days.
                     units: [[
                             'millisecond',
@@ -1472,7 +1471,7 @@
          *       ticks and not the labels directly?
          */
         function onTrimTicks() {
-            const axis = this, chart = axis.chart, options = axis.options, gridOptions = options.grid || {}, categoryAxis = axis.categories, tickPositions = axis.tickPositions, firstPos = tickPositions[0], secondPos = tickPositions[1], lastPos = tickPositions[tickPositions.length - 1], beforeLastPos = tickPositions[tickPositions.length - 2], linkedMin = axis.linkedParent && axis.linkedParent.min, linkedMax = axis.linkedParent && axis.linkedParent.max, min = linkedMin || axis.min, max = linkedMax || axis.max, tickInterval = axis.tickInterval, startLessThanMin = ( // #19845
+            const axis = this, options = axis.options, gridOptions = options.grid || {}, categoryAxis = axis.categories, tickPositions = axis.tickPositions, firstPos = tickPositions[0], secondPos = tickPositions[1], lastPos = tickPositions[tickPositions.length - 1], beforeLastPos = tickPositions[tickPositions.length - 2], linkedMin = axis.linkedParent && axis.linkedParent.min, linkedMax = axis.linkedParent && axis.linkedParent.max, min = linkedMin || axis.min, max = linkedMax || axis.max, tickInterval = axis.tickInterval, startLessThanMin = ( // #19845
             isNumber(min) &&
                 min >= firstPos + tickInterval &&
                 min < secondPos), endMoreThanMin = (isNumber(min) &&
@@ -1736,7 +1735,7 @@
          *
          * */
         /**
-         * Creates an object map from parent id to childrens index.
+         * Creates an object map from parent id to children's index.
          *
          * @private
          * @function Highcharts.Tree#getListOfParents
@@ -1765,7 +1764,7 @@
             Object.keys(listOfParents).forEach((node) => {
                 if ((node !== root) && (ids.indexOf(node) === -1)) {
                     const adoptedByRoot = listOfParents[node].map(function (orphan) {
-                        const { parent, ...parentExcluded } = orphan; // #15196
+                        const { ...parentExcluded } = orphan; // #15196
                         return parentExcluded;
                     });
                     listOfParents[root].push(...adoptedByRoot);
@@ -1788,7 +1787,7 @@
             if (typeof before === 'function') {
                 before(node, options);
             }
-            // Call getNode recursively on the children. Calulate the height of the
+            // Call getNode recursively on the children. Calculate the height of the
             // node, and the number of descendants.
             const children = ((mapOfIdToChildren[id] || [])).map((child) => {
                 const node = getNode(child.id, id, (level + 1), child, mapOfIdToChildren, options), childStart = child.start || NaN, childEnd = (child.milestone === true ?
@@ -1840,7 +1839,7 @@
 
         return Tree;
     });
-    _registerModule(_modules, 'Core/Axis/TreeGrid/TreeGridTick.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Core/Axis/TreeGrid/TreeGridTick.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  (c) 2016 Highsoft AS
@@ -1851,8 +1850,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { composed } = H;
-        const { addEvent, removeEvent, isObject, isNumber, pick, pushUnique, wrap } = U;
+        const { addEvent, removeEvent, isObject, isNumber, pick, wrap } = U;
         /* *
          *
          *  Functions
@@ -1965,7 +1963,6 @@
                 collapsed = axisGrid.isCollapsed(node);
                 renderLabelIcon(tick, {
                     color: (!styledMode &&
-                        label.styles &&
                         label.styles.color ||
                         ''),
                     collapsed: collapsed,
@@ -2031,8 +2028,8 @@
              * @private
              */
             static compose(TickClass) {
-                if (pushUnique(composed, this.compose)) {
-                    const tickProto = TickClass.prototype;
+                const tickProto = TickClass.prototype;
+                if (!tickProto.toggleCollapse) {
                     addEvent(TickClass, 'init', onTickInit);
                     wrap(tickProto, 'getLabelPosition', wrapGetLabelPosition);
                     wrap(tickProto, 'renderLabel', wrapRenderLabel);
@@ -2156,7 +2153,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { extend, isArray, isNumber, isObject, merge, pick } = U;
+        const { extend, isArray, isNumber, isObject, merge, pick, relativeLength } = U;
         /* *
          *
          *  Functions
@@ -2321,6 +2318,27 @@
             }
             return rootId;
         }
+        /**
+         * Get the node width, which relies on the plot width and the nodeDistance
+         * option.
+         *
+         * @private
+         */
+        function getNodeWidth(series, columnCount) {
+            const { chart, options } = series, { nodeDistance = 0, nodeWidth = 0 } = options, { plotSizeX = 1 } = chart;
+            // Node width auto means they are evenly distributed along the width of
+            // the plot area
+            if (nodeWidth === 'auto') {
+                if (typeof nodeDistance === 'string' && /%$/.test(nodeDistance)) {
+                    const fraction = parseFloat(nodeDistance) / 100, total = columnCount + fraction * (columnCount - 1);
+                    return plotSizeX / total;
+                }
+                const nDistance = Number(nodeDistance);
+                return ((plotSizeX + nDistance) /
+                    (columnCount || 1)) - nDistance;
+            }
+            return relativeLength(nodeWidth, plotSizeX);
+        }
         /* *
          *
          *  Default Export
@@ -2329,13 +2347,14 @@
         const TreeUtilities = {
             getColor,
             getLevelOptions,
+            getNodeWidth,
             setTreeValues,
             updateRootId
         };
 
         return TreeUtilities;
     });
-    _registerModule(_modules, 'Core/Axis/TreeGrid/TreeGridAxis.js', [_modules['Core/Axis/BrokenAxis.js'], _modules['Core/Axis/GridAxis.js'], _modules['Core/Globals.js'], _modules['Gantt/Tree.js'], _modules['Core/Axis/TreeGrid/TreeGridTick.js'], _modules['Series/TreeUtilities.js'], _modules['Core/Utilities.js']], function (BrokenAxis, GridAxis, H, Tree, TreeGridTick, TU, U) {
+    _registerModule(_modules, 'Core/Axis/TreeGrid/TreeGridAxis.js', [_modules['Core/Axis/BrokenAxis.js'], _modules['Core/Axis/GridAxis.js'], _modules['Gantt/Tree.js'], _modules['Core/Axis/TreeGrid/TreeGridTick.js'], _modules['Series/TreeUtilities.js'], _modules['Core/Utilities.js']], function (BrokenAxis, GridAxis, Tree, TreeGridTick, TU, U) {
         /* *
          *
          *  (c) 2016 Highsoft AS
@@ -2346,9 +2365,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { composed } = H;
         const { getLevelOptions } = TU;
-        const { addEvent, find, fireEvent, isArray, isObject, isString, merge, pick, pushUnique, removeEvent, wrap } = U;
+        const { addEvent, find, fireEvent, isArray, isObject, isString, merge, pick, removeEvent, wrap } = U;
         /* *
          *
          *  Variables
@@ -2889,11 +2907,9 @@
              * @private
              */
             static compose(AxisClass, ChartClass, SeriesClass, TickClass) {
-                if (pushUnique(composed, this.compose)) {
+                if (!AxisClass.keepProps.includes('treeGrid')) {
                     const axisProps = AxisClass.prototype;
-                    if (AxisClass.keepProps.indexOf('treeGrid') === -1) {
-                        AxisClass.keepProps.push('treeGrid');
-                    }
+                    AxisClass.keepProps.push('treeGrid');
                     wrap(axisProps, 'generateTick', wrapGenerateTick);
                     wrap(axisProps, 'init', wrapInit);
                     wrap(axisProps, 'setTickInterval', wrapSetTickInterval);
@@ -3053,7 +3069,7 @@
             /**
              * Calculates the new axis breaks after toggling the collapse/expand
              * state of a node. If it is collapsed it will be expanded, and if it is
-             * exapended it will be collapsed.
+             * expanded it will be collapsed.
              *
              * @private
              *
@@ -3083,8 +3099,8 @@
     _registerModule(_modules, 'masters/modules/treegrid.src.js', [_modules['Core/Globals.js'], _modules['Core/Axis/TreeGrid/TreeGridAxis.js']], function (Highcharts, TreeGridAxis) {
 
         const G = Highcharts;
-        // Compositions
         TreeGridAxis.compose(G.Axis, G.Chart, G.Series, G.Tick);
 
+        return Highcharts;
     });
 }));

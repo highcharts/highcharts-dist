@@ -18,7 +18,6 @@ const { noop } = H;
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 const { column: { prototype: columnProto }, sma: SMAIndicator } = SeriesRegistry.seriesTypes;
 import U from '../../../Core/Utilities.js';
-import StockChart from '../../../Core/Chart/StockChart.js';
 const { addEvent, arrayMax, arrayMin, correctFloat, defined, error, extend, isArray, merge } = U;
 /* *
  *
@@ -79,7 +78,7 @@ class VBPIndicator extends SMAIndicator {
         delete options.data;
         super.init.apply(indicator, arguments);
         // Only after series are linked add some additional logic/properties.
-        const unbinder = addEvent(StockChart, 'afterLinkSeries', function () {
+        const unbinder = addEvent(this.chart.constructor, 'afterLinkSeries', function () {
             // Protection for a case where the indicator is being updated,
             // for a brief moment the indicator is deleted.
             if (indicator.options) {
@@ -293,7 +292,7 @@ class VBPIndicator extends SMAIndicator {
             yData: yData
         };
     }
-    // Specifing where each zone should start ans end
+    // Specifying where each zone should start ans end
     specifyZones(isOHLC, xValues, yValues, ranges, volumeSeries) {
         const indicator = this, rangeExtremes = (isOHLC ? arrayExtremesOHLC(yValues) : false), zoneStarts = indicator.zoneStarts = [], priceZones = [];
         let lowRange = rangeExtremes ?
@@ -345,7 +344,7 @@ class VBPIndicator extends SMAIndicator {
         // Checks if each point has a corresponding volume value
         if (abs(baseSeriesLength - volumeSeriesLength)) {
             // If the first point don't have volume, add 0 value at the
-            // beggining of the volume array
+            // beginning of the volume array
             if (xValues[0] !== volumeXData[0]) {
                 volumeYData.unshift(0);
             }
@@ -404,7 +403,7 @@ class VBPIndicator extends SMAIndicator {
         });
         return priceZones;
     }
-    // Function responsoble for drawing additional lines indicating zones
+    // Function responsible for drawing additional lines indicating zones
     drawZones(chart, yAxis, zonesValues, zonesStyles) {
         const indicator = this, renderer = chart.renderer, leftLinePos = 0, rightLinePos = chart.plotWidth, verticalOffset = chart.plotTop;
         let zoneLinesSVG = indicator.zoneLinesSVG, zoneLinesPath = [], verticalLinePos;

@@ -29,7 +29,7 @@ class Pie3DSeries extends PieSeries {
      *
      * */
     static compose(SeriesClass) {
-        if (pushUnique(composed, this.compose)) {
+        if (pushUnique(composed, 'Pie3D')) {
             SeriesClass.types.pie = Pie3DSeries;
         }
     }
@@ -207,4 +207,4 @@ export default Pie3DSeries;
  * @requires  highcharts-3d
  * @apioption plotOptions.pie.depth
  */
-''; // keeps doclets above after transpilation
+''; // keeps doclets above after transpiledion

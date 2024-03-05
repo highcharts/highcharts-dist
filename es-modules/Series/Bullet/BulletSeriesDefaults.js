@@ -27,7 +27,7 @@
  */
 const BulletSeriesDefaults = {
     /**
-     * All options related with look and positiong of targets.
+     * All options related with look and positioning of targets.
      *
      * @since 6.0.0
      */
@@ -48,7 +48,7 @@ const BulletSeriesDefaults = {
         height: 3,
         /**
          * The border color of the rectangle representing the target. When
-         * not set, the  point's border color is used.
+         * not set, the point's border color is used.
          *
          * In styled mode, use class `highcharts-bullet-target` instead.
          *

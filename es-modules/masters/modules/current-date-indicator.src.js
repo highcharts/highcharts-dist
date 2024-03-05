@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v11.3.0 (2024-01-10)
+ * @license Highcharts Gantt JS v@product.version@ (@product.date@)
  * @module highcharts/modules/current-date-indicator
  * @requires highcharts
  *
@@ -14,3 +14,4 @@ import Highcharts from '../../Core/Globals.js';
 import CurrentDateIndication from '../../Extensions/CurrentDateIndication.js';
 const G = Highcharts;
 CurrentDateIndication.compose(G.Axis, G.PlotLineOrBand);
+export default Highcharts;

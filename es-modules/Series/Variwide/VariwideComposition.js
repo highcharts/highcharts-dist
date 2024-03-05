@@ -23,7 +23,7 @@ const { addEvent, pushUnique, wrap } = U;
  * @private
  */
 function compose(AxisClass, TickClass) {
-    if (pushUnique(composed, compose)) {
+    if (pushUnique(composed, 'Variwide')) {
         const tickProto = TickClass.prototype;
         addEvent(AxisClass, 'afterDrawCrosshair', onAxisAfterDrawCrosshair);
         addEvent(AxisClass, 'afterRender', onAxisAfterRender);
@@ -87,7 +87,11 @@ function tickPostTranslate(xy, xOrY, index) {
 /**
  * @private
  */
-function wrapTickGetLabelPosition(proceed, _x, _y, _label, horiz, _labelOptions, _tickmarkOffset, _index) {
+function wrapTickGetLabelPosition(proceed, _x, _y, _label, horiz, 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+_labelOptions, _tickmarkOffset, _index
+/* eslint-enable @typescript-eslint/no-unused-vars */
+) {
     const args = Array.prototype.slice.call(arguments, 1), xOrY = horiz ? 'x' : 'y';
     // Replace the x with the original x
     if (this.axis.variwide &&

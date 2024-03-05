@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v11.4.0 (2024-03-05)
  *
  * Highcharts 3D funnel module
  *
@@ -205,8 +205,9 @@
 
         return Pyramid3DSeries;
     });
-    _registerModule(_modules, 'masters/modules/pyramid3d.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/pyramid3d.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

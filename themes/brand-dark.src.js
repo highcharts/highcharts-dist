@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v11.4.0 (2024-03-05)
  *
  * (c) 2009-2024 Torstein Honsi
  *
@@ -325,5 +325,6 @@
         H.theme = BrandDark.options;
         BrandDark.apply();
 
+        return H;
     });
 }));

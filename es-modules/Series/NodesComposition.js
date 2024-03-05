@@ -113,7 +113,7 @@ var NodesComposition;
     }
     NodesComposition.createNode = createNode;
     /**
-     * Destroy alll nodes and links.
+     * Destroy all nodes and links.
      * @private
      */
     function destroy() {

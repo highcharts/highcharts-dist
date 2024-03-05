@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v11.3.0 (2024-01-10)
+ * @license Highcharts Gantt JS v11.4.0 (2024-03-05)
  *
  * CurrentDateIndicator
  *
@@ -111,7 +111,7 @@
          * @private
          */
         function compose(AxisClass, PlotLineOrBandClass) {
-            if (pushUnique(composed, compose)) {
+            if (pushUnique(composed, 'CurrentDateIndication')) {
                 addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
                 addEvent(PlotLineOrBandClass, 'render', onPlotLineOrBandRender);
                 wrap(PlotLineOrBandClass.prototype, 'getLabelText', wrapPlotLineOrBandGetLabelText);
@@ -177,5 +177,6 @@
         const G = Highcharts;
         CurrentDateIndication.compose(G.Axis, G.PlotLineOrBand);
 
+        return Highcharts;
     });
 }));

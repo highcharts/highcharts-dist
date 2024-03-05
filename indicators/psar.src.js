@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.3.0 (2024-01-10)
+ * @license Highstock JS v11.4.0 (2024-03-05)
  *
  * Parabolic SAR Indicator for Highcharts Stock
  *
@@ -303,8 +303,9 @@
 
         return PSARIndicator;
     });
-    _registerModule(_modules, 'masters/indicators/psar.src.js', [], function () {
+    _registerModule(_modules, 'masters/indicators/psar.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

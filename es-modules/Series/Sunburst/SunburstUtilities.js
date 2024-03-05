@@ -47,7 +47,7 @@ function calculateLevelSizes(levelOptions, params) {
             p.diffRadius : 0;
         // Convert percentage to pixels.
         // Calculate the remaining size to divide between "weight" levels.
-        // Calculate total weight to use in convertion from weight to
+        // Calculate total weight to use in conversion from weight to
         // pixels.
         for (const level of levels) {
             const options = result[level], unit = options.levelSize.unit, value = options.levelSize.value;

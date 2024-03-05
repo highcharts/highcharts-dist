@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v11.4.0 (2024-03-05)
  *
  * Highcharts funnel module
  *
@@ -88,7 +88,7 @@
              *
              * */
             // override opacity and color setters to control opacity
-            opacitySetter(value, _key, _element) {
+            opacitySetter(value) {
                 const funnel3d = this, opacity = parseFloat(value), parts = funnel3d.parts, chart = charts[funnel3d.renderer.chartIndex], filterId = 'group-opacity-' + opacity + '-' + chart.index;
                 // use default for top and bottom
                 funnel3d.parts = funnel3d.mainParts;
@@ -289,8 +289,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { charts, composed } = H;
-        const { error, extend, merge, pushUnique } = U;
+        const { charts } = H;
+        const { error, extend, merge } = U;
         /* *
          *
          *  Functions
@@ -298,8 +298,8 @@
          * */
         /** @private */
         function compose(SVGRendererClass) {
-            if (pushUnique(composed, compose)) {
-                const rendererProto = SVGRendererClass.prototype;
+            const rendererProto = SVGRendererClass.prototype;
+            if (!rendererProto.funnel3d) {
                 rendererProto.Element3D.types.funnel3d = SVGElement3DFunnel;
                 extend(rendererProto, {
                     funnel3d: rendererFunnel3d,
@@ -315,7 +315,7 @@
                 'stroke-width': 1,
                 stroke: 'none'
             };
-            // create groups for sides for oppacity setter
+            // create groups for sides for opacity setter
             funnel3d.upperGroup = renderer.g('funnel3d-upper-group').attr({
                 zIndex: funnel3d.frontUpper.zIndex
             }).add(funnel3d);
@@ -352,7 +352,7 @@
             // based on alpha, selected through visual tests
             alphaCorrection = shapeArgs.alphaCorrection = 90 - Math.abs((chart.options.chart.options3d.alpha % 180) -
                 90), 
-            // set zIndexes of parts based on cubiod logic, for
+            // set zIndexes of parts based on cuboid logic, for
             // consistency
             cuboidData = this.cuboidPath.call(renderer, merge(shapeArgs, {
                 depth: shapeArgs.width,
@@ -524,7 +524,7 @@
              */
             reversed: false,
             /**
-             * By deafult sides fill is set to a gradient through this option being
+             * By default sides fill is set to a gradient through this option being
              * set to `true`. Set to `false` to get solid color for the sides.
              *
              * @product highcharts
@@ -605,7 +605,7 @@
          * @apioption series.funnel3d.data
          */
         /**
-         * By deafult sides fill is set to a gradient through this option being
+         * By default sides fill is set to a gradient through this option being
          * set to `true`. Set to `false` to get solid color for the sides.
          *
          * @type      {boolean}
@@ -905,10 +905,10 @@
 
         return Funnel3DSeries;
     });
-    _registerModule(_modules, 'masters/modules/funnel3d.src.js', [_modules['Core/Renderer/RendererRegistry.js'], _modules['Series/Funnel3D/Funnel3DSeries.js']], function (RendererRegistry, Funnel3DSeries) {
+    _registerModule(_modules, 'masters/modules/funnel3d.src.js', [_modules['Core/Globals.js'], _modules['Series/Funnel3D/Funnel3DSeries.js'], _modules['Core/Renderer/RendererRegistry.js']], function (Highcharts, Funnel3DSeries, RendererRegistry) {
 
         Funnel3DSeries.compose(RendererRegistry.getRendererType());
 
-        return Funnel3DSeries;
+        return Highcharts;
     });
 }));

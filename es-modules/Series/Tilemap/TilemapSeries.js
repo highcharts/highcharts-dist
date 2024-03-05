@@ -81,7 +81,7 @@ class TilemapSeries extends HeatmapSeries {
      *
      * */
     static compose(AxisClass) {
-        if (pushUnique(composed, this.compose)) {
+        if (pushUnique(composed, 'TilemapSeries')) {
             addEvent(AxisClass, 'afterSetAxisTranslation', onAxisAfterSetAxisTranslation);
         }
     }
@@ -168,7 +168,7 @@ extend(TilemapSeries.prototype, {
     getSymbol: noop,
     // Use drawPoints, markerAttribs, pointAttribs methods from the old
     // heatmap implementation.
-    // TODO: Consider standarizing heatmap and tilemap into more
+    // TODO: Consider standardizing heatmap and tilemap into more
     // consistent form.
     markerAttribs: ScatterSeries.prototype.markerAttribs,
     pointAttribs: ColumnSeries.prototype.pointAttribs,

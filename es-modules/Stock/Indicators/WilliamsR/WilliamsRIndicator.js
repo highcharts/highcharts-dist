@@ -91,7 +91,7 @@ class WilliamsRIndicator extends SMAIndicator {
  */
 WilliamsRIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     /**
-     * Paramters used in calculation of Williams %R series points.
+     * Parameters used in calculation of Williams %R series points.
      * @excluding index
      */
     params: {

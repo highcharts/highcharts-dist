@@ -2,7 +2,7 @@
  *
  *  (c) 2010-2024 Torstein Honsi
  *
- *  Extenstion for 3d axes
+ *  Extension for 3d axes
  *
  *  License: www.highcharts.com/license
  *
@@ -23,7 +23,7 @@ const { addEvent, extend, pushUnique, wrap } = U;
  * @private
  */
 function compose(TickClass) {
-    if (pushUnique(composed, compose)) {
+    if (pushUnique(composed, 'Axis.Tick3D')) {
         addEvent(TickClass, 'afterGetLabelPosition', onTickAfterGetLabelPosition);
         wrap(TickClass.prototype, 'getMarkPath', wrapTickGetMarkPath);
     }

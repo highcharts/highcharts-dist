@@ -13,9 +13,9 @@
 import D from '../Core/Defaults.js';
 const { defaultOptions } = D;
 import H from '../Core/Globals.js';
-const { composed, doc } = H;
+const { doc } = H;
 import U from '../Core/Utilities.js';
-const { addEvent, extend, fireEvent, merge, pushUnique } = U;
+const { addEvent, extend, fireEvent, merge } = U;
 import HU from './Utils/HTMLUtilities.js';
 const { removeElement } = HU;
 import A11yI18n from './A11yI18n.js';
@@ -155,8 +155,10 @@ class Accessibility {
         // Update keyboard navigation
         this.keyboardNavigation.update(kbdNavOrder);
         // Handle high contrast mode
-        if (!chart.highContrastModeActive && // Only do this once
-            whcm.isHighContrastModeActive()) {
+        // Should only be applied once, and not if explicitly disabled
+        if (!chart.highContrastModeActive &&
+            a11yOptions.highContrastMode !== false && (whcm.isHighContrastModeActive() ||
+            a11yOptions.highContrastMode === true)) {
             whcm.setHighContrastTheme(chart);
         }
         fireEvent(chart, 'afterA11yUpdate', {
@@ -325,8 +327,8 @@ class Accessibility {
         if (RangeSelectorClass) {
             RangeSelectorComponent.compose(ChartClass, RangeSelectorClass);
         }
-        if (pushUnique(composed, compose)) {
-            const chartProto = ChartClass.prototype;
+        const chartProto = ChartClass.prototype;
+        if (!chartProto.updateA11yEnabled) {
             chartProto.updateA11yEnabled = chartUpdateA11yEnabled;
             addEvent(ChartClass, 'destroy', chartOnDestroy);
             addEvent(ChartClass, 'render', chartOnRender);

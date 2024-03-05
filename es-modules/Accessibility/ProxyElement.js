@@ -150,7 +150,7 @@ class ProxyElement {
                     fireEventOnWrappedOrUnwrappedElement(target, clonedEvent);
                 }
                 e.stopPropagation();
-                // #9682, #15318: Touch scrolling didnt work when touching
+                // #9682, #15318: Touch scrolling didn't work when touching
                 // proxy
                 if (!isTouchEvent) {
                     e.preventDefault();
@@ -188,9 +188,9 @@ class ProxyElement {
             clickTarget.element :
             clickTarget;
         const posElement = this.target.visual || clickTargetElement;
-        const chartDiv = this.chart.renderTo;
-        if (chartDiv && posElement && posElement.getBoundingClientRect) {
-            const rectEl = posElement.getBoundingClientRect(), chartPos = this.chart.pointer.getChartPosition();
+        const chartDiv = this.chart.renderTo, pointer = this.chart.pointer;
+        if (chartDiv && posElement?.getBoundingClientRect && pointer) {
+            const rectEl = posElement.getBoundingClientRect(), chartPos = pointer.getChartPosition();
             return {
                 x: (rectEl.left - chartPos.left) / chartPos.scaleX,
                 y: (rectEl.top - chartPos.top) / chartPos.scaleY,

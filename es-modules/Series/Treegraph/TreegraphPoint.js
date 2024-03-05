@@ -30,6 +30,7 @@ class TreegraphPoint extends TreemapPoint {
          *
          * */
         super(...arguments);
+        this.dataLabelOnHidden = true;
         this.isLink = false;
         this.setState = Point.prototype.setState;
     }

@@ -182,7 +182,7 @@ var RadialAxis;
      * Axis composition.
      */
     function compose(AxisClass, TickClass) {
-        if (pushUnique(composed, compose)) {
+        if (pushUnique(composed, 'Axis.Radial')) {
             addEvent(AxisClass, 'afterInit', onAxisAfterInit);
             addEvent(AxisClass, 'autoLabelAlign', onAxisAutoLabelAlign);
             addEvent(AxisClass, 'destroy', onAxisDestroy);
@@ -631,7 +631,7 @@ var RadialAxis;
      * Modify axis instance with radial logic before common axis init.
      */
     function onAxisInit(e) {
-        const chart = this.chart, inverted = chart.inverted, angular = chart.angular, polar = chart.polar, isX = this.isXAxis, coll = this.coll, isHidden = angular && isX, paneIndex = e.userOptions.pane || 0, pane = this.pane = chart.pane && chart.pane[paneIndex];
+        const chart = this.chart, angular = chart.angular, polar = chart.polar, isX = this.isXAxis, coll = this.coll, isHidden = angular && isX, paneIndex = e.userOptions.pane || 0, pane = this.pane = chart.pane && chart.pane[paneIndex];
         let isCircular;
         // Prevent changes for colorAxis
         if (coll === 'colorAxis') {
@@ -762,7 +762,7 @@ var RadialAxis;
                 else {
                     align = (labelDir === 'start') ? 'left' : 'right';
                 }
-                // For angles beetwen (90 + n * 180) +- 20
+                // For angles between (90 + n * 180) +- 20
                 if (reducedAngle2 > 70 && reducedAngle2 < 110) {
                     align = 'center';
                 }
@@ -859,7 +859,7 @@ var RadialAxis;
             else {
                 // When the pane's startAngle or the axis' angle is set then
                 // new x and y values for vertical axis' center must be
-                // calulated
+                // calculated
                 start = this.postTranslate(this.angleRad, center[3] / 2);
                 center[0] = start.x - this.chart.plotLeft;
                 center[1] = start.y - this.chart.plotTop;
@@ -926,7 +926,7 @@ var RadialAxis;
             defaultPolarOptions.reversedStacks = true;
         }
         const options = this.options = merge(defaultPolarOptions, userOptions);
-        // Make sure the plotBands array is instanciated for each Axis
+        // Make sure the plotBands array is instantiated for each Axis
         // (#2649)
         if (!options.plotBands) {
             options.plotBands = [];

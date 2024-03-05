@@ -60,7 +60,7 @@ class DataSeriesConverter {
      * The id of the series.
      *
      * @return {Array<PointOptions>}
-     * Returns an array of series points opitons.
+     * Returns an array of series points options.
      */
     getSeriesData(seriesId) {
         const converter = this, table = converter.table, seriesData = [];
@@ -91,7 +91,7 @@ class DataSeriesConverter {
      * Get all series data stored in the converter.
      *
      * @return {Array<SeriesOptions>}
-     * Returns an array of series opitons.
+     * Returns an array of series options.
      */
     getAllSeriesData() {
         const converter = this, seriesOptions = [];

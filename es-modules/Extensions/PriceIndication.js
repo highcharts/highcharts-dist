@@ -19,7 +19,7 @@ const { addEvent, isArray, merge, pushUnique } = U;
  * */
 /** @private */
 function compose(SeriesClass) {
-    if (pushUnique(composed, compose)) {
+    if (pushUnique(composed, 'PriceIndication')) {
         addEvent(SeriesClass, 'afterRender', onSeriesAfterRender);
     }
 }

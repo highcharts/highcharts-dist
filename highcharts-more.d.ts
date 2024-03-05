@@ -56,6 +56,10 @@ declare module "./highcharts" {
      */
     function getTitlePosition(): void;
     /**
+     * Finalize modification of axis instance with radial logic.
+     */
+    function onAxisAfterInit(): void;
+    /**
      * Wrap auto label align to avoid setting axis-wide rotation on radial axes.
      * (#4920)
      */

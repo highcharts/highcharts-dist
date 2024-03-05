@@ -42,7 +42,7 @@ var ScrollbarAxis;
      * Scrollbar class to use.
      */
     function compose(AxisClass, ScrollbarClass) {
-        if (pushUnique(composed, compose)) {
+        if (pushUnique(composed, 'Axis.Scrollbar')) {
             Scrollbar = ScrollbarClass;
             addEvent(AxisClass, 'afterGetOffset', onAxisAfterGetOffset);
             addEvent(AxisClass, 'afterInit', onAxisAfterInit);
@@ -115,7 +115,7 @@ var ScrollbarAxis;
                 }
                 else {
                     // When live redraw is disabled, don't change extremes
-                    // Only change the position of the scollbar thumb
+                    // Only change the position of the scrollbar thumb
                     this.setRange(this.from, this.to);
                 }
             });

@@ -20,9 +20,9 @@ const { destroyGraphics } = BoostSeries;
 import Color from '../Core/Color/Color.js';
 const { parse: color } = Color;
 import H from '../Core/Globals.js';
-const { composed, doc, noop } = H;
+const { doc, noop } = H;
 import U from '../Core/Utilities.js';
-const { addEvent, fireEvent, isNumber, merge, pick, pushUnique, wrap } = U;
+const { addEvent, fireEvent, isNumber, merge, pick, wrap } = U;
 /* *
  *
  *  Namespace
@@ -79,8 +79,9 @@ var BoostCanvas;
      * @private
      */
     function compose(ChartClass, SeriesClass, seriesTypes) {
-        if (pushUnique(composed, compose)) {
-            const seriesProto = SeriesClass.prototype, { area: AreaSeries, bubble: BubbleSeries, column: ColumnSeries, heatmap: HeatmapSeries, scatter: ScatterSeries } = seriesTypes;
+        const seriesProto = SeriesClass.prototype;
+        if (!seriesProto.renderCanvas) {
+            const { area: AreaSeries, bubble: BubbleSeries, column: ColumnSeries, heatmap: HeatmapSeries, scatter: ScatterSeries } = seriesTypes;
             ChartConstructor = ChartClass;
             ChartClass.prototype.callbacks.push((chart) => {
                 addEvent(chart, 'predraw', onChartClear);

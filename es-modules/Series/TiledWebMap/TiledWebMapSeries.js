@@ -22,8 +22,8 @@ const { addEvent, defined, error, merge, pick, pushUnique } = U;
  *
  * */
 /** @private */
-function onChartBeforeMapViewInit(e) {
-    const twm = (this.options.series || []).filter((s) => s.type === 'tiledwebmap')[0], { geoBounds } = e;
+function onRecommendMapView(e) {
+    const { geoBounds, chart } = e, twm = (chart.options.series || []).filter((s) => s.type === 'tiledwebmap')[0];
     if (twm && twm.provider && twm.provider.type && !twm.provider.url) {
         const ProviderDefinition = TilesProvidersRegistry[twm.provider.type];
         if (!defined(ProviderDefinition)) {
@@ -32,25 +32,23 @@ function onChartBeforeMapViewInit(e) {
         }
         else {
             const def = new ProviderDefinition(), { initialProjectionName: providerProjectionName } = def;
-            if (this.options.mapView) {
-                if (geoBounds) {
-                    const { x1, y1, x2, y2 } = geoBounds;
-                    this.options.mapView.recommendedMapView = {
-                        projection: {
-                            name: providerProjectionName,
-                            parallels: [y1, y2],
-                            rotation: [-(x1 + x2) / 2]
-                        }
-                    };
-                }
-                else {
-                    this.options.mapView.recommendedMapView = {
-                        projection: {
-                            name: providerProjectionName
-                        },
-                        minZoom: 0
-                    };
-                }
+            if (geoBounds) {
+                const { x1, y1, x2, y2 } = geoBounds;
+                this.recommendedMapView = {
+                    projection: {
+                        name: providerProjectionName,
+                        parallels: [y1, y2],
+                        rotation: [-(x1 + x2) / 2]
+                    }
+                };
+            }
+            else {
+                this.recommendedMapView = {
+                    projection: {
+                        name: providerProjectionName
+                    },
+                    minZoom: 0
+                };
             }
             return false;
         }
@@ -87,9 +85,9 @@ class TiledWebMapSeries extends MapSeries {
      *  Static Functions
      *
      * */
-    static compose(ChartClass) {
-        if (pushUnique(composed, this.compose)) {
-            addEvent(ChartClass, 'beforeMapViewInit', onChartBeforeMapViewInit);
+    static compose(MapViewClass) {
+        if (pushUnique(composed, 'TiledWebMapSeries')) {
+            addEvent(MapViewClass, 'onRecommendMapView', onRecommendMapView);
         }
     }
     /* *
@@ -478,7 +476,7 @@ class TiledWebMapSeries extends MapSeries {
             this.transformGroups = [];
         }
         if (mapView &&
-            !defined(mapView.options.projection) &&
+            !defined(chart.userOptions.mapView?.projection) &&
             provider &&
             provider.type) {
             const ProviderDefinition = TilesProvidersRegistry[provider.type];

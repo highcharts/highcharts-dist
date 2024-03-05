@@ -12,7 +12,7 @@ import A from '../../Core/Animation/AnimationUtilities.js';
 const { setAnimation } = A;
 import Point from '../../Core/Series/Point.js';
 import U from '../../Core/Utilities.js';
-const { addEvent, defined, extend, isNumber, isString, pick, relativeLength } = U;
+const { addEvent, defined, extend, isNumber, pick, relativeLength } = U;
 /* *
  *
  *  Class

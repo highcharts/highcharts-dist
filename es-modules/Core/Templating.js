@@ -11,7 +11,7 @@
 import D from './Defaults.js';
 const { defaultOptions, defaultTime } = D;
 import U from './Utilities.js';
-const { extend, getNestedProperty, isArray, isNumber, isObject, isString, pick, pInt } = U;
+const { extend, getNestedProperty, isArray, isNumber, isObject, pick, pInt } = U;
 const helpers = {
     // Built-in helpers
     add: (a, b) => a + b,

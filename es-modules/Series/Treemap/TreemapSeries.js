@@ -94,7 +94,7 @@ class TreemapSeries extends ScatterSeries {
      *
      * */
     static compose(SeriesClass) {
-        if (pushUnique(composed, this.compose)) {
+        if (pushUnique(composed, 'TreemapSeries')) {
             addEvent(SeriesClass, 'afterBindAxes', onSeriesAfterBindAxes);
         }
     }
@@ -591,7 +591,9 @@ class TreemapSeries extends ScatterSeries {
                     chart.breadcrumbs.updateProperties(series.createList(e));
                 }
             }));
-            series.eventsToUnbind.push(addEvent(series, 'update', function (e, redraw) {
+            series.eventsToUnbind.push(addEvent(series, 'update', 
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            function (e, redraw) {
                 const breadcrumbs = this.chart.breadcrumbs;
                 if (breadcrumbs && e.options.breadcrumbs) {
                     breadcrumbs.update(e.options.breadcrumbs);

@@ -13,9 +13,9 @@
 import D from '../Core/Defaults.js';
 const { defaultOptions } = D;
 import H from '../Core/Globals.js';
-const { composed, noop } = H;
+const { noop } = H;
 import U from '../Core/Utilities.js';
-const { addEvent, extend, isObject, merge, pushUnique, relativeLength } = U;
+const { addEvent, extend, isObject, merge, relativeLength } = U;
 /* *
  *
  *  Constants
@@ -207,8 +207,9 @@ function seriesOnAfterColumnTranslate() {
     }
 }
 /** @private */
-function compose(SeriesClass, PieSeriesClass, SVGElementClass, SVGRendererClass) {
-    if (pushUnique(composed, compose)) {
+function compose(SeriesClass, SVGElementClass, SVGRendererClass) {
+    const PieSeriesClass = SeriesClass.types.pie;
+    if (!SVGElementClass.symbolCustomAttribs.includes('borderRadius')) {
         const symbols = SVGRendererClass.prototype.symbols;
         addEvent(SeriesClass, 'afterColumnTranslate', seriesOnAfterColumnTranslate, {
             // After columnrange and polar column modifications

@@ -24,7 +24,7 @@ const { isNumber, merge, pInt } = U;
  * @name Highcharts.Color
  *
  * @param {Highcharts.ColorType} input
- * The input color in either rbga or hex format
+ * The input color in either rgba or hex format
  */
 class Color {
     /* *
@@ -38,7 +38,7 @@ class Color {
      * @function Highcharts.Color.parse
      *
      * @param {Highcharts.ColorType} [input]
-     * The input color in either rbga or hex format.
+     * The input color in either rgba or hex format.
      *
      * @return {Highcharts.Color}
      * Color instance.
@@ -394,7 +394,7 @@ export default Color;
  * @function Highcharts.color
  *
  * @param {Highcharts.ColorType} input
- *        The input color in either rbga or hex format
+ *        The input color in either rgba or hex format
  *
  * @return {Highcharts.Color}
  *         Color instance

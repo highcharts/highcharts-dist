@@ -12,13 +12,6 @@
 'use strict';
 /* *
  *
- *  Imports
- *
- * */
-import U from '../../Core/Utilities.js';
-const { objectEach } = U;
-/* *
- *
  *  Namespace
  *
  * */

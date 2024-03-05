@@ -72,13 +72,13 @@ function findAlignments(angle, options) {
  * @private
  * @param {boolean} calculateNeighbours
  *        Check if connectors should be calculated for neighbour points as
- *        well allows short recurence
+ *        well allows short recurrence
  */
 function getConnectors(segment, index, calculateNeighbours, connectEnds) {
     const smoothing = 1.5, denom = smoothing + 1, addedNumber = connectEnds ? 1 : 0;
     let i, leftContX, leftContY, rightContX, rightContY, jointAngle;
     // Calculate final index of points depending on the initial index value.
-    // Because of calculating neighbours, index may be outisde segment
+    // Because of calculating neighbours, index may be outside segment
     // array.
     if (index >= 0 && index <= segment.length - 1) {
         i = index;
@@ -168,15 +168,13 @@ function onPointerGetSelectionBox(event) {
     const marker = event.args.marker, xAxis = this.chart.xAxis[0], yAxis = this.chart.yAxis[0], inverted = this.chart.inverted, radialAxis = inverted ? yAxis : xAxis, linearAxis = inverted ? xAxis : yAxis;
     if (this.chart.polar) {
         event.preventDefault();
-        let start = (marker.attr ? marker.attr('start') : marker.start) - radialAxis.startAngleRad;
-        let r = (marker.attr ? marker.attr('r') : marker.r);
-        let end = (marker.attr ? marker.attr('end') : marker.end) - radialAxis.startAngleRad;
-        let innerR = (marker.attr ? marker.attr('innerR') : marker.innerR);
+        const start = (marker.attr ? marker.attr('start') : marker.start) - radialAxis.startAngleRad, r = (marker.attr ? marker.attr('r') : marker.r), end = (marker.attr ? marker.attr('end') : marker.end) - radialAxis.startAngleRad, innerR = (marker.attr ? marker.attr('innerR') : marker.innerR);
         event.result.x = start + radialAxis.pos;
         event.result.width = end - start;
-        // innerR goes from pane's center but toValue computes values from top
-        event.result.y = linearAxis.len + linearAxis.pos - innerR;
-        event.result.height = innerR - r;
+        // `innerR` goes from pane's center but `toValue` computes values from
+        // top
+        event.result.y = linearAxis.len + linearAxis.pos - r;
+        event.result.height = r - innerR;
     }
 }
 /**
@@ -187,7 +185,7 @@ function onPointerGetSelectionMarkerAttrs(event) {
     const chart = this.chart;
     if (chart.polar && chart.hoverPane && chart.hoverPane.axis) {
         event.preventDefault();
-        const center = chart.hoverPane.center, mouseDownX = (this.mouseDownX || 0), mouseDownY = (this.mouseDownY || 0), chartY = event.args.chartY, chartX = event.args.chartX, fullCircle = Math.PI * 2, startAngleRad = chart.hoverPane.axis.startAngleRad, endAngleRad = chart.hoverPane.axis.endAngleRad, linearAxis = chart.inverted ? chart.xAxis[0] : chart.yAxis[0], attrs = {};
+        const center = chart.hoverPane.center, mouseDownX = chart.mouseDownX || 0, mouseDownY = chart.mouseDownY || 0, chartY = event.args.chartY, chartX = event.args.chartX, fullCircle = Math.PI * 2, startAngleRad = chart.hoverPane.axis.startAngleRad, endAngleRad = chart.hoverPane.axis.endAngleRad, linearAxis = chart.inverted ? chart.xAxis[0] : chart.yAxis[0], attrs = {};
         let shapeType = 'arc';
         attrs.x = center[0] + chart.plotLeft;
         attrs.y = center[1] + chart.plotTop;
@@ -224,7 +222,7 @@ function onPointerGetSelectionMarkerAttrs(event) {
                 Math.min(endAngle + startAngleRad, endAngleRad);
             // Adjust the selection shape for polygon grid lines
             if (linearAxis.options.gridLineInterpolation === 'polygon') {
-                const radialAxis = chart.hoverPane.axis, tickInterval = radialAxis.tickInterval, min = start - radialAxis.startAngleRad + radialAxis.pos, max = end - start;
+                const radialAxis = chart.hoverPane.axis, min = start - radialAxis.startAngleRad + radialAxis.pos, max = end - start;
                 let path = linearAxis.getPlotLinePath({
                     value: linearAxis.max
                 }), pathStart = radialAxis.toValue(min), pathEnd = radialAxis.toValue(min + max);
@@ -872,14 +870,18 @@ function wrapSplineSeriesGetPointSpline(proceed, segment, point, i) {
  * @private
  */
 function wrapPointPos(proceed, chartCoordinates, plotY = this.plotY) {
-    const { plotX, series } = this, { chart } = series;
-    if (chart.polar && !this.destroyed && isNumber(plotX) && isNumber(plotY)) {
-        return [
-            plotX + (chartCoordinates ? chart.plotLeft : 0),
-            plotY + (chartCoordinates ? chart.plotTop : 0)
-        ];
+    if (!this.destroyed) {
+        const { plotX, series } = this, { chart } = series;
+        if (chart.polar &&
+            isNumber(plotX) &&
+            isNumber(plotY)) {
+            return [
+                plotX + (chartCoordinates ? chart.plotLeft : 0),
+                plotY + (chartCoordinates ? chart.plotTop : 0)
+            ];
+        }
+        return proceed.call(this, chartCoordinates, plotY);
     }
-    return proceed.call(this, chartCoordinates, plotY);
 }
 /* *
  *
@@ -900,7 +902,7 @@ class PolarAdditions {
     static compose(AxisClass, ChartClass, PointerClass, SeriesClass, TickClass, PointClass, AreaSplineRangeSeriesClass, ColumnSeriesClass, LineSeriesClass, SplineSeriesClass) {
         Pane.compose(ChartClass, PointerClass);
         RadialAxis.compose(AxisClass, TickClass);
-        if (pushUnique(composed, this.compose)) {
+        if (pushUnique(composed, 'Polar')) {
             const chartProto = ChartClass.prototype, pointProto = PointClass.prototype, pointerProto = PointerClass.prototype, seriesProto = SeriesClass.prototype;
             addEvent(ChartClass, 'afterDrawChartBox', onChartAfterDrawChartBox);
             addEvent(ChartClass, 'getAxes', onChartGetAxes);

@@ -17,7 +17,7 @@ import H from '../../Core/Globals.js';
 const { composed, doc, win } = H;
 import NavigationBindingDefaults from './NavigationBindingsDefaults.js';
 import NBU from './NavigationBindingsUtilities.js';
-const { getFieldType } = NBU;
+const { getAssignedAxis, getFieldType } = NBU;
 import U from '../../Core/Utilities.js';
 const { addEvent, attr, defined, fireEvent, isArray, isFunction, isNumber, isObject, merge, objectEach, pick, pushUnique } = U;
 /* *
@@ -93,7 +93,7 @@ function onChartRender() {
             this.navigationBindings.container[0]) {
             const container = this.navigationBindings.container[0];
             objectEach(navigationBindings.boundClassNames, (value, key) => {
-                // Get the HTML element coresponding to the className taken
+                // Get the HTML element corresponding to the className taken
                 // from StockToolsBindings.
                 const buttonNode = container.querySelectorAll('.' + key);
                 if (buttonNode) {
@@ -224,7 +224,7 @@ class NavigationBindings {
      *
      * */
     static compose(AnnotationClass, ChartClass) {
-        if (pushUnique(composed, this.compose)) {
+        if (pushUnique(composed, 'NavigationBindings')) {
             addEvent(AnnotationClass, 'remove', onAnnotationRemove);
             // Basic shapes:
             selectableAnnotation(AnnotationClass);
@@ -261,8 +261,15 @@ class NavigationBindings {
      *  Functions
      *
      * */
+    getCoords(e) {
+        const coords = this.chart.pointer?.getCoordinates(e);
+        return [
+            coords && getAssignedAxis(coords.xAxis),
+            coords && getAssignedAxis(coords.yAxis)
+        ];
+    }
     /**
-     * Initi all events conencted to NavigationBindings.
+     * Init all events connected to NavigationBindings.
      *
      * @private
      * @function Highcharts.NavigationBindings#initEvents
@@ -317,7 +324,7 @@ class NavigationBindings {
         });
     }
     /**
-     * Hook for click on a button, method selcts/unselects buttons,
+     * Hook for click on a button, method selects/unselects buttons,
      * then calls `bindings.init` callback.
      *
      * @private
@@ -497,19 +504,23 @@ class NavigationBindings {
             if (value !== 'undefined') {
                 let parent = config;
                 path.forEach((name, index) => {
-                    const nextName = pick(path[index + 1], '');
-                    if (pathLength === index) {
-                        // Last index, put value:
-                        parent[name] = value;
-                    }
-                    else if (!parent[name]) {
-                        // Create middle property:
-                        parent[name] = nextName.match(/\d/g) ? [] : {};
-                        parent = parent[name];
-                    }
-                    else {
-                        // Jump into next property
-                        parent = parent[name];
+                    if (name !== '__proto__' && name !== 'constructor') {
+                        const nextName = pick(path[index + 1], '');
+                        if (pathLength === index) {
+                            // Last index, put value:
+                            parent[name] = value;
+                        }
+                        else if (!parent[name]) {
+                            // Create middle property:
+                            parent[name] = nextName.match(/\d/g) ?
+                                [] :
+                                {};
+                            parent = parent[name];
+                        }
+                        else {
+                            // Jump into next property
+                            parent = parent[name];
+                        }
                     }
                 });
             }

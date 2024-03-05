@@ -83,7 +83,7 @@ extend(SunburstPoint.prototype, {
 });
 /* *
  *
- *  Defaul Export
+ *  Default Export
  *
  * */
 export default SunburstPoint;

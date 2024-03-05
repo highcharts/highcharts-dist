@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v11.4.0 (2024-03-05)
  *
  * (c) 2009-2024 Sebastian Bochan, Rafal Sebestjanski
  *
@@ -75,7 +75,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { seriesTypes: { column: { prototype: colProto }, dumbbell: { prototype: dumbbellProto }, scatter: ScatterSeries } } = SeriesRegistry;
+        const { seriesTypes: { column: { prototype: colProto }, dumbbell: { prototype: dumbbellProto }, 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        scatter: ScatterSeries } } = SeriesRegistry;
         const { extend, merge } = U;
         /* *
          *
@@ -303,8 +305,9 @@
 
         return LollipopSeries;
     });
-    _registerModule(_modules, 'masters/modules/lollipop.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/lollipop.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

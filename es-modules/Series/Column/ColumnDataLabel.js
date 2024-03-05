@@ -35,7 +35,7 @@ var ColumnDataLabel;
     function alignDataLabel(point, dataLabel, options, alignTo, isNew) {
         const inverted = this.chart.inverted, series = point.series, xLen = (series.xAxis ? series.xAxis.len : this.chart.plotSizeX) || 0, yLen = (series.yAxis ? series.yAxis.len : this.chart.plotSizeY) || 0, 
         // Data label box for alignment
-        dlBox = point.dlBox || point.shapeArgs, below = pick(point.below, // Fange series
+        dlBox = point.dlBox || point.shapeArgs, below = pick(point.below, // Range series
         point.plotY >
             pick(this.translatedThreshold, yLen)), 
         // Draw it inside the box?
@@ -92,7 +92,7 @@ var ColumnDataLabel;
     /** @private */
     function compose(ColumnSeriesClass) {
         DataLabel.compose(Series);
-        if (pushUnique(composed, compose)) {
+        if (pushUnique(composed, 'ColumnDataLabel')) {
             ColumnSeriesClass.prototype.alignDataLabel = alignDataLabel;
         }
     }

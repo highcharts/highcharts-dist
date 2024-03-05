@@ -112,7 +112,6 @@ class GanttSeries extends XRangeSeries {
      * @private
      */
     translatePoint(point) {
-        const series = this;
         let shapeArgs, size;
         super.translatePoint(point);
         if (point.options.milestone) {

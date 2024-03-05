@@ -52,6 +52,7 @@ const columnRangeOptions = {
      * @apioption plotOptions.columnrange.dataLabels
      */
     pointRange: null,
+    legendSymbol: 'rectangle',
     /** @ignore-option */
     marker: null,
     states: {
@@ -124,7 +125,7 @@ class ColumnRangeSeries extends AreaRangeSeries {
          * @private
          */
         const yAxis = this.yAxis, xAxis = this.xAxis, startAngleRad = xAxis.startAngleRad, chart = this.chart, isRadial = this.xAxis.isRadial, safeDistance = Math.max(chart.chartWidth, chart.chartHeight) + 999;
-        let height, heightDifference, start, plotHigh, y;
+        let height, heightDifference, start, y;
         // eslint-disable-next-line valid-jsdoc
         /**
          * Don't draw too far outside plot area (#6835)

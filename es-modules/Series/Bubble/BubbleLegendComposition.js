@@ -95,7 +95,7 @@ function chartDrawChartBox(proceed, options, callback) {
  * Core series class to use with Bubble series.
  */
 function compose(ChartClass, LegendClass, SeriesClass) {
-    if (pushUnique(composed, compose)) {
+    if (pushUnique(composed, 'Series.BubbleLegend')) {
         setOptions({
             // Set default bubble legend options
             legend: {

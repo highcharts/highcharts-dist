@@ -13,6 +13,11 @@ import * as _Highcharts from "../highcharts.src";
  */
 export function factory(highcharts: typeof Highcharts): void;
 declare module "../highcharts.src" {
+    /**
+     * An array of GeoJSON or TopoJSON objects or strings used as map data for
+     * series.
+     */
+    type MapDataType = (string|GeoJSON|TopoJSON|Array<any>);
     interface Chart {
         /**
          * Deprecated. Use `MapView.lonLatToProjectedUnits` instead.
@@ -140,7 +145,7 @@ declare module "../highcharts.src" {
          *        Custom options.
          *
          * @param callback
-         *        Function to run when the chart has loaded and and all external
+         *        Function to run when the chart has loaded and all external
          *        images are loaded.
          *
          * @fires Highcharts.MapChart#init
@@ -255,6 +260,22 @@ declare module "../highcharts.src" {
          * @return The position in pixels
          */
         projectedUnitsToPixels(pos: PositionObject): PositionObject;
+        /**
+         * Calculate and set the recommended map view based on provided map data
+         * from series.
+         *
+         * @param chart
+         *        Chart object
+         *
+         * @param mapDataArray
+         *        Array of map data from all series.
+         *
+         * @param update
+         *        Whether to update the chart with recommended map view.
+         *
+         * @return Best suitable map view.
+         */
+        recommendMapView(chart: Chart, mapDataArray: Array<(MapDataType|undefined)>, update?: boolean): (MapViewOptions|undefined);
         /**
          * Set the view to given center and zoom values.
          *

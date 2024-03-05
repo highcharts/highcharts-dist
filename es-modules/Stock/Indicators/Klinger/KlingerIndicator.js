@@ -158,7 +158,7 @@ class KlingerIndicator extends SMAIndicator {
  */
 KlingerIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     /**
-     * Paramters used in calculation of Klinger Oscillator.
+     * Parameters used in calculation of Klinger Oscillator.
      *
      * @excluding index, period
      */

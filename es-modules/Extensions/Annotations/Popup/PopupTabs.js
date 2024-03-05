@@ -48,7 +48,7 @@ function addMenuItem(tabName, disableTab) {
         className += ' highcharts-tab-disabled';
     }
     // tab 1
-    const menuItem = createElement('span', {
+    const menuItem = createElement('button', {
         className
     }, void 0, popupDiv);
     menuItem.appendChild(doc.createTextNode(lang[tabName + 'Button'] || tabName));

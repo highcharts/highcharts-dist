@@ -35,7 +35,7 @@ var ParallelSeries;
      * */
     /** @private */
     function compose(SeriesClass) {
-        if (pushUnique(composed, compose)) {
+        if (pushUnique(composed, 'ParallelSeries')) {
             const CompoClass = SeriesClass, { line: { prototype: { pointClass: LinePointClass } }, spline: { prototype: { pointClass: SplinePointClass } } } = SeriesClass.types;
             addEvent(CompoClass, 'afterTranslate', onSeriesAfterTranslate, { order: 1 });
             addEvent(CompoClass, 'bindAxes', onSeriesBindAxes);

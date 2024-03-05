@@ -8,10 +8,6 @@
  *
  * */
 'use strict';
-import H from '../Core/Globals.js';
-const { composed } = H;
-import U from '../Core/Utilities.js';
-const { pushUnique } = U;
 /* *
  *
  *  Variables
@@ -32,11 +28,9 @@ function bottomButton(x, y, w, h, options) {
     return symbols.roundedRect(x, y, w, h, options);
 }
 function compose(SVGRendererClass) {
-    if (pushUnique(composed, compose)) {
-        symbols = SVGRendererClass.prototype.symbols;
-        symbols.bottombutton = bottomButton;
-        symbols.topbutton = topButton;
-    }
+    symbols = SVGRendererClass.prototype.symbols;
+    symbols.bottombutton = bottomButton;
+    symbols.topbutton = topButton;
 }
 function topButton(x, y, w, h, options) {
     if (options) {

@@ -25,7 +25,7 @@ const { doc } = H;
 import HU from '../Utils/HTMLUtilities.js';
 const { addClass, getElement, getHeadingTagNameForElement, stripHTMLTagsFromString, visuallyHideElement } = HU;
 import U from '../../Core/Utilities.js';
-const { attr, pick } = U;
+const { attr, pick, replaceNested } = U;
 /* *
  *
  *  Functions
@@ -62,13 +62,13 @@ function getTypeDescForEmptyChart(chart, formatContext) {
  * @private
  */
 function buildTypeDescriptionFromSeries(chart, types, context) {
-    const firstType = types[0], typeExplaination = chart.langFormat('accessibility.seriesTypeDescriptions.' + firstType, context), multi = chart.series && chart.series.length < 2 ? 'Single' : 'Multiple';
+    const firstType = types[0], typeExplanation = chart.langFormat('accessibility.seriesTypeDescriptions.' + firstType, context), multi = chart.series && chart.series.length < 2 ? 'Single' : 'Multiple';
     return (chart.langFormat('accessibility.chartTypes.' + firstType + multi, context) ||
-        chart.langFormat('accessibility.chartTypes.default' + multi, context)) + (typeExplaination ? ' ' + typeExplaination : '');
+        chart.langFormat('accessibility.chartTypes.default' + multi, context)) + (typeExplanation ? ' ' + typeExplanation : '');
 }
 /**
- * Return simplified explaination of chart type. Some types will not be
- * familiar to most users, but in those cases we try to add an explaination
+ * Return simplified explanation of chart type. Some types will not be
+ * familiar to most users, but in those cases we try to add an explanation
  * of the type.
  *
  * @private
@@ -99,7 +99,8 @@ function getTypeDescription(chart, types) {
  * @private
  */
 function stripEmptyHTMLTags(str) {
-    return str.replace(/<(\w+)[^>]*?>\s*<\/\1>/g, '');
+    // Scan alert #[71]: Loop for nested patterns
+    return replaceNested(str, [/<([\w\-.:!]+)\b[^<>]*>\s*<\/\1>/g, '']);
 }
 /* *
  *
@@ -400,6 +401,10 @@ class InfoRegionsComponent extends AccessibilityComponent {
      * @private
      */
     getEndOfChartMarkerText() {
+        const endMarkerId = `highcharts-end-of-chart-marker-${this.chart.index}`, endMarker = getElement(endMarkerId);
+        if (endMarker) {
+            return endMarker.outerHTML;
+        }
         const chart = this.chart, markerText = chart.langFormat('accessibility.screenReaderSection.endOfChartMarker', { chart: chart }), id = 'highcharts-end-of-chart-marker-' + chart.index;
         return '<div id="' + id + '">' + markerText + '</div>';
     }

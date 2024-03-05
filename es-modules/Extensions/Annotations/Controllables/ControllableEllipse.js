@@ -101,8 +101,8 @@ class ControllableEllipse extends Controllable {
             (point2.x - point1.x) * (point2.x - point1.x));
     }
     /**
-     * The fuction calculates the svg attributes of the ellipse, and returns all
-     * parameters neccessary to draw the ellipse.
+     * The function calculates the svg attributes of the ellipse, and returns
+     * all parameters necessary to draw the ellipse.
      * @private
      * @param position
      *        Absolute position of the first point in points array
@@ -149,7 +149,7 @@ class ControllableEllipse extends Controllable {
      * Redraw the element
      * @private
      * @param animation
-     *        Display an annimation
+     *        Display an animation
      */
     redraw(animation) {
         if (this.graphic) {

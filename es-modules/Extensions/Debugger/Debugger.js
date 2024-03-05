@@ -47,7 +47,7 @@ const defaultOptions = {
  * @private
  */
 function compose(ChartClass) {
-    if (pushUnique(composed, compose)) {
+    if (pushUnique(composed, 'Debugger')) {
         addEvent(ChartClass, 'beforeRedraw', onChartBeforeRedraw);
         addEvent(H, 'displayError', onHighchartsDisplayError);
         setOptions(defaultOptions);

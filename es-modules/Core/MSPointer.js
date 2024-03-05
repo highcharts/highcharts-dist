@@ -44,12 +44,12 @@ function getWebkitTouches() {
 }
 /** @private */
 function translateMSPointer(e, method, wktype, func) {
-    const chart = charts[Pointer.hoverChartIndex || NaN];
-    if ((e.pointerType === 'touch' ||
-        e.pointerType === e.MSPOINTER_TYPE_TOUCH) && chart) {
-        const p = chart.pointer;
+    const pointer = charts[Pointer.hoverChartIndex ?? -1]?.pointer;
+    if (pointer &&
+        (e.pointerType === 'touch' ||
+            e.pointerType === e.MSPOINTER_TYPE_TOUCH)) {
         func(e);
-        p[method]({
+        pointer[method]({
             type: wktype,
             target: e.currentTarget,
             preventDefault: noop,
@@ -70,7 +70,7 @@ class MSPointer extends Pointer {
      *
      * */
     static isRequired() {
-        return !!(!H.hasTouch && (win.PointerEvent || win.MSPointerEvent));
+        return !!(!win.TouchEvent && (win.PointerEvent || win.MSPointerEvent));
     }
     /* *
      *
@@ -161,7 +161,7 @@ class MSPointer extends Pointer {
      * @private
      */
     function compose(ChartClass) {
-        if (pushUnique(composed, compose)) {
+        if (pushUnique(composed, 'Core.MSPointer')) {
             addEvent(ChartClass, 'beforeRender', function () {
                 this.pointer = new MSPointer(this, this.options);
             });

@@ -122,7 +122,7 @@ const navigation = {
             className: 'highcharts-circle-annotation',
             /** @ignore-option */
             start: function (e) {
-                const coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis), navigation = this.chart.options.navigation;
+                const coords = this.chart.pointer?.getCoordinates(e), coordsX = coords && getAssignedAxis(coords.xAxis), coordsY = coords && getAssignedAxis(coords.yAxis), navigation = this.chart.options.navigation;
                 // Exit if clicked out of axes area
                 if (!coordsX || !coordsY) {
                     return;
@@ -176,7 +176,7 @@ const navigation = {
         ellipseAnnotation: {
             className: 'highcharts-ellipse-annotation',
             start: function (e) {
-                const coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis), navigation = this.chart.options.navigation;
+                const coords = this.chart.pointer?.getCoordinates(e), coordsX = coords && getAssignedAxis(coords.xAxis), coordsY = coords && getAssignedAxis(coords.yAxis), navigation = this.chart.options.navigation;
                 if (!coordsX || !coordsY) {
                     return;
                 }
@@ -226,7 +226,7 @@ const navigation = {
             className: 'highcharts-rectangle-annotation',
             /** @ignore-option */
             start: function (e) {
-                const coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis);
+                const coords = this.chart.pointer?.getCoordinates(e), coordsX = coords && getAssignedAxis(coords.xAxis), coordsY = coords && getAssignedAxis(coords.yAxis);
                 // Exit if clicked out of axes area
                 if (!coordsX || !coordsY) {
                     return;
@@ -255,7 +255,7 @@ const navigation = {
             steps: [
                 function (e, annotation) {
                     const shapes = annotation.options.shapes, points = ((shapes && shapes[0] && shapes[0].points) ||
-                        []), coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis);
+                        []), coords = this.chart.pointer?.getCoordinates(e), coordsX = coords && getAssignedAxis(coords.xAxis), coordsY = coords && getAssignedAxis(coords.yAxis);
                     if (coordsX && coordsY) {
                         const x = coordsX.value, y = coordsY.value;
                         // Top right point
@@ -285,7 +285,7 @@ const navigation = {
             className: 'highcharts-label-annotation',
             /** @ignore-option */
             start: function (e) {
-                const coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis), navigation = this.chart.options.navigation;
+                const coords = this.chart.pointer?.getCoordinates(e), coordsX = coords && getAssignedAxis(coords.xAxis), coordsY = coords && getAssignedAxis(coords.yAxis), navigation = this.chart.options.navigation;
                 // Exit if clicked out of axes area
                 if (!coordsX || !coordsY) {
                     return;
@@ -319,7 +319,7 @@ const navigation = {
      * from a different server.
      *
      * @type      {string}
-     * @default   https://code.highcharts.com/11.3.0/gfx/stock-icons/
+     * @default   https://code.highcharts.com/@product.version@/gfx/stock-icons/
      * @since     7.1.3
      * @apioption navigation.iconsURL
      */

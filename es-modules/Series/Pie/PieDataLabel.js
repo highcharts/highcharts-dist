@@ -83,7 +83,7 @@ var ColumnDataLabel;
     /** @private */
     function compose(PieSeriesClass) {
         DataLabel.compose(Series);
-        if (pushUnique(composed, compose)) {
+        if (pushUnique(composed, 'PieDataLabel')) {
             const pieProto = PieSeriesClass.prototype;
             pieProto.dataLabelPositioners = dataLabelPositioners;
             pieProto.alignDataLabel = noop;
@@ -197,7 +197,7 @@ var ColumnDataLabel;
                 bottom = Math.min(centerY + radius + maxLabelDistance, chart.plotHeight);
                 points.forEach((point) => {
                     // Check if specific points' label is outside the pie
-                    (point.dataLabels || []).forEach((dataLabel, i) => {
+                    (point.dataLabels || []).forEach((dataLabel) => {
                         const labelPosition = dataLabel.dataLabelPosition;
                         if (labelPosition &&
                             labelPosition.distance > 0) {

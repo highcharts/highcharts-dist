@@ -83,8 +83,6 @@ class GoogleSheetsConnector extends DataConnector {
             table,
             url
         });
-        // If already loaded, clear the current table
-        table.deleteColumns();
         return fetch(url)
             .then((response) => (response.json()))
             .then((json) => {
@@ -95,6 +93,8 @@ class GoogleSheetsConnector extends DataConnector {
                 firstRowAsNames,
                 json
             });
+            // If already loaded, clear the current table
+            table.deleteColumns();
             table.setColumns(converter.getTable().getColumns());
             return connector.setModifierOptions(dataModifier);
         })

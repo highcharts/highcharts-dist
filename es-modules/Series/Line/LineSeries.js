@@ -492,4 +492,4 @@ export default LineSeries;
  * @product   highcharts highstock
  * @apioption series.line.data.marker
  */
-''; // include precedent doclets in transpilat
+''; // include precedent doclets in transpiled

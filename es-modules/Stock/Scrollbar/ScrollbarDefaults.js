@@ -8,8 +8,6 @@
  *
  * */
 'use strict';
-import H from '../../Core/Globals.js';
-const { isTouchDevice } = H;
 /* *
  *
  *  Constant
@@ -18,7 +16,7 @@ const { isTouchDevice } = H;
 /**
  *
  * The scrollbar is a means of panning over the X axis of a stock chart.
- * Scrollbars can  also be applied to other types of axes.
+ * Scrollbars can also be applied to other types of axes.
  *
  * Another approach to scrollable charts is the [chart.scrollablePlotArea](
  * https://api.highcharts.com/highcharts/chart.scrollablePlotArea) option that

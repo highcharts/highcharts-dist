@@ -23,7 +23,7 @@
  *         Dependency wheel
  *
  * @extends      plotOptions.sankey
- * @exclude      dataSorting, nodeAlignment
+ * @exclude      dataSorting, nodeAlignment, nodeDistance
  * @since        7.1.0
  * @product      highcharts
  * @requires     modules/dependency-wheel

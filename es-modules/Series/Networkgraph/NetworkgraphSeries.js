@@ -107,7 +107,7 @@ class NetworkgraphSeries extends Series {
         NodesComposition.destroy.call(this);
     }
     /**
-     * Networkgraph has two separate collecions of nodes and lines, render
+     * Networkgraph has two separate collections of nodes and lines, render
      * dataLabels for both sets:
      * @private
      */
@@ -143,7 +143,7 @@ class NetworkgraphSeries extends Series {
     generatePoints() {
         let node, i;
         NodesComposition.generatePoints.apply(this, arguments);
-        // In networkgraph, it's fine to define stanalone nodes, create
+        // In networkgraph, it's fine to define standalone nodes, create
         // them:
         if (this.options.nodes) {
             this.options.nodes.forEach(function (nodeOptions) {
@@ -400,9 +400,9 @@ export default NetworkgraphSeries;
  * @callback Highcharts.NetworkgraphAfterSimulationCallbackFunction
  *
  * @param {Highcharts.Series} this
- *        The series where the event occured.
+ *        The series where the event occurred.
  *
  * @param {global.Event} event
- *        The event that occured.
+ *        The event that occurred.
  */
 ''; // detach doclets above

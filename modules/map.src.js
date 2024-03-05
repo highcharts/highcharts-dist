@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v11.3.0 (2024-01-10)
+ * @license Highmaps JS v11.4.0 (2024-03-05)
  *
  * Highmaps as a plugin for Highcharts or Highcharts Stock.
  *
@@ -35,7 +35,7 @@
             }
         }
     }
-    _registerModule(_modules, 'Core/Axis/Color/ColorAxisComposition.js', [_modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Color, H, U) {
+    _registerModule(_modules, 'Core/Axis/Color/ColorAxisComposition.js', [_modules['Core/Color/Color.js'], _modules['Core/Utilities.js']], function (Color, U) {
         /* *
          *
          *  (c) 2010-2024 Torstein Honsi
@@ -46,8 +46,7 @@
          *
          * */
         const { parse: color } = Color;
-        const { composed } = H;
-        const { addEvent, extend, merge, pick, pushUnique, splat } = U;
+        const { addEvent, extend, merge, pick, splat } = U;
         /* *
          *
          *  Composition
@@ -75,9 +74,9 @@
              * @private
              */
             function compose(ColorAxisClass, ChartClass, FxClass, LegendClass, SeriesClass) {
-                if (pushUnique(composed, compose)) {
+                const chartProto = ChartClass.prototype, fxProto = FxClass.prototype, seriesProto = SeriesClass.prototype;
+                if (!chartProto.collectionsWithUpdate.includes('colorAxis')) {
                     ColorAxisConstructor = ColorAxisClass;
-                    const chartProto = ChartClass.prototype, fxProto = FxClass.prototype, seriesProto = SeriesClass.prototype;
                     chartProto.collectionsWithUpdate.push('colorAxis');
                     chartProto.collectionsWithInit.colorAxis = [
                         chartProto.addColorAxis
@@ -1151,7 +1150,7 @@
                     (horiz ?
                         itemDistance :
                         pick(labelOptions.x, labelOptions.distance) +
-                            this.maxLabelLength));
+                            (this.maxLabelLength || 0)));
                 legendItem.labelHeight = height + padding + (horiz ? labelPadding : 0);
             }
             /**
@@ -1414,6 +1413,7 @@
                                 const affectedSeries = [];
                                 for (const point of getPointsInDataClass(i)) {
                                     point.setVisible(vis);
+                                    point.hiddenInDataClass = !vis; // #20441
                                     if (affectedSeries.indexOf(point.series) === -1) {
                                         affectedSeries.push(point.series);
                                     }
@@ -1480,6 +1480,14 @@
         ''; // detach doclet above
 
         return ColorAxis;
+    });
+    _registerModule(_modules, 'masters/modules/coloraxis.src.js', [_modules['Core/Globals.js'], _modules['Core/Axis/Color/ColorAxis.js']], function (Highcharts, ColorAxis) {
+
+        const G = Highcharts;
+        G.ColorAxis = G.ColorAxis || ColorAxis;
+        G.ColorAxis.compose(G.Chart, G.Fx, G.Legend, G.Series);
+
+        return Highcharts;
     });
     _registerModule(_modules, 'Maps/MapNavigationDefaults.js', [], function () {
         /* *
@@ -1746,7 +1754,7 @@
 
         return mapNavigationDefaults;
     });
-    _registerModule(_modules, 'Maps/MapPointer.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Maps/MapPointer.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  (c) 2010-2024 Torstein Honsi
@@ -1756,8 +1764,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { composed } = H;
-        const { defined, extend, pick, pushUnique, wrap } = U;
+        const { defined, extend, pick, wrap } = U;
         /* *
          *
          *  Composition
@@ -1782,14 +1789,13 @@
              * @private
              */
             function compose(PointerClass) {
-                if (pushUnique(composed, compose)) {
-                    const pointerProto = PointerClass.prototype;
+                const pointerProto = PointerClass.prototype;
+                if (!pointerProto.onContainerDblClick) {
                     extend(pointerProto, {
                         onContainerDblClick,
                         onContainerMouseWheel
                     });
                     wrap(pointerProto, 'normalize', wrapNormalize);
-                    wrap(pointerProto, 'pinchTranslate', wrapPinchTranslate);
                     wrap(pointerProto, 'zoomOption', wrapZoomOption);
                 }
             }
@@ -1864,19 +1870,6 @@
                 return e;
             }
             /**
-             * Extend the pinchTranslate method to preserve fixed ratio when zooming.
-             * @private
-             */
-            function wrapPinchTranslate(proceed, pinchDown, touches, transform, selectionMarker, clip, lastValidTouch) {
-                let xBigger;
-                proceed.call(this, pinchDown, touches, transform, selectionMarker, clip, lastValidTouch);
-                // Keep ratio
-                if (this.chart.options.chart.type === 'map' && this.hasZoom) {
-                    xBigger = transform.scaleX > transform.scaleY;
-                    this.pinchTranslateDirection(!xBigger, pinchDown, touches, transform, selectionMarker, clip, lastValidTouch, xBigger ? transform.scaleX : transform.scaleY);
-                }
-            }
-            /**
              * The pinchType is inferred from mapNavigation options.
              * @private
              */
@@ -1898,7 +1891,7 @@
 
         return MapPointer;
     });
-    _registerModule(_modules, 'Maps/MapSymbols.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Maps/MapSymbols.js', [], function () {
         /* *
          *
          *  (c) 2010-2024 Torstein Honsi
@@ -1908,8 +1901,6 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { composed } = H;
-        const { pushUnique } = U;
         /* *
          *
          *  Variables
@@ -1930,11 +1921,9 @@
             return symbols.roundedRect(x, y, w, h, options);
         }
         function compose(SVGRendererClass) {
-            if (pushUnique(composed, compose)) {
-                symbols = SVGRendererClass.prototype.symbols;
-                symbols.bottombutton = bottomButton;
-                symbols.topbutton = topButton;
-            }
+            symbols = SVGRendererClass.prototype.symbols;
+            symbols.bottombutton = bottomButton;
+            symbols.topbutton = topButton;
         }
         function topButton(x, y, w, h, options) {
             if (options) {
@@ -2011,7 +2000,7 @@
             static compose(MapChartClass, PointerClass, SVGRendererClass) {
                 MapPointer.compose(PointerClass);
                 MapSymbols.compose(SVGRendererClass);
-                if (pushUnique(composed, this.compose)) {
+                if (pushUnique(composed, 'Map.Navigation')) {
                     // Extend the Chart.render method to add zooming and panning
                     addEvent(MapChartClass, 'beforeRender', function () {
                         // Render the plus and minus buttons. Doing this before the
@@ -2066,7 +2055,7 @@
                     if (!mapNav.navButtonsGroup) {
                         mapNav.navButtonsGroup = chart.renderer.g()
                             .attr({
-                            zIndex: 4 // #4955, // #8392
+                            zIndex: 7 // #4955, #8392, #20476
                         })
                             .add();
                     }
@@ -2306,7 +2295,7 @@
                     (this.value === void 0 || !isNaN(this.value)));
             }
             /**
-             * Get the color attibutes to apply on the graphic
+             * Get the color attributes to apply on the graphic
              * @private
              * @function Highcharts.colorMapSeriesMixin.colorAttribs
              * @param {Highcharts.Point} point
@@ -2373,7 +2362,7 @@
              *        Custom options.
              *
              * @param {Function} [callback]
-             *        Function to run when the chart has loaded and and all external
+             *        Function to run when the chart has loaded and all external
              *        images are loaded.
              *
              *
@@ -2446,6 +2435,16 @@
                         [chartX, chartY] :
                         void 0);
                 }
+            }
+            update(options) {
+                // Calculate and set the recommended map view if map option is set
+                if (options.chart && 'map' in options.chart) {
+                    this.mapView?.recommendMapView(this, [
+                        options.chart.map,
+                        ...(this.options.series || []).map((s) => s.mapData)
+                    ], true);
+                }
+                super.update.apply(this, arguments);
             }
         }
         /* *
@@ -2529,7 +2528,7 @@
                     // specific styled mode files.
                     const split = path.split(/[ ,;]+/);
                     arr = split.map((item) => {
-                        if (!/[A-za-z]/.test(item)) {
+                        if (!/[A-Za-z]/.test(item)) {
                             return parseFloat(item);
                         }
                         return item;
@@ -2666,7 +2665,11 @@
                     const joinKey = joinBy[1], mapKey = super.getNestedProperty(joinKey), mapPoint = typeof mapKey !== 'undefined' &&
                         series.mapMap[mapKey];
                     if (mapPoint) {
-                        extend(point, mapPoint); // copy over properties
+                        // Copy over properties; #20231 prioritize point.name
+                        extend(point, {
+                            ...mapPoint,
+                            name: point.name ?? mapPoint.name
+                        });
                     }
                     else if (series.pointArrayMap.indexOf('value') !== -1) {
                         point.value = point.value || null;
@@ -2843,7 +2846,9 @@
                 formatter: function () {
                     const { numberFormatter } = this.series.chart;
                     const { value } = this.point;
-                    return isNumber(value) ? numberFormatter(value, -1) : '';
+                    return isNumber(value) ?
+                        numberFormatter(value, -1) :
+                        this.point.name; // #20231
                 },
                 inside: true,
                 overflow: false,
@@ -3311,7 +3316,7 @@
          */
         /**
          * For map and mapline series types, the SVG path for the shape. For
-         * compatibily with old IE, not all SVG path definitions are supported,
+         * compatibility with old IE, not all SVG path definitions are supported,
          * but M, L and C operators are safe.
          *
          * To achieve a better separation between the structure and the data,
@@ -3665,9 +3670,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { composed, win } = H;
+        const { win } = H;
         const { format } = T;
-        const { error, extend, merge, pushUnique, wrap } = U;
+        const { error, extend, merge, wrap } = U;
         /* *
          *
          *  Composition
@@ -3814,13 +3819,13 @@
             }
             /** @private */
             function compose(ChartClass) {
-                if (pushUnique(composed, compose)) {
-                    const proto = ChartClass.prototype;
-                    proto.fromLatLonToPoint = chartFromLatLonToPoint;
-                    proto.fromPointToLatLon = chartFromPointToLatLon;
-                    proto.transformFromLatLon = chartTransformFromLatLon;
-                    proto.transformToLatLon = chartTransformToLatLon;
-                    wrap(proto, 'addCredits', wrapChartAddCredit);
+                const chartProto = ChartClass.prototype;
+                if (!chartProto.transformFromLatLon) {
+                    chartProto.fromLatLonToPoint = chartFromLatLonToPoint;
+                    chartProto.fromPointToLatLon = chartFromPointToLatLon;
+                    chartProto.transformFromLatLon = chartTransformFromLatLon;
+                    chartProto.transformToLatLon = chartTransformToLatLon;
+                    wrap(chartProto, 'addCredits', wrapChartAddCredit);
                 }
             }
             GeoJSONComposition.compose = compose;
@@ -3916,8 +3921,9 @@
                     objectName = Object.keys(topology.objects)[0];
                 }
                 const obj = topology.objects[objectName];
-                // Already decoded => return cache
-                if (obj['hc-decoded-geojson']) {
+                // Already decoded with the same title => return cache
+                if (obj['hc-decoded-geojson'] &&
+                    obj['hc-decoded-geojson'].title === topology.title) {
                     return obj['hc-decoded-geojson'];
                 }
                 // Do the initial transform
@@ -3939,7 +3945,7 @@
                         }
                     }
                 }
-                // Recurse down any depth of multi-dimentional arrays of arcs and insert
+                // Recurse down any depth of multi-dimensional arrays of arcs and insert
                 // the coordinates
                 const arcsToCoordinates = (arcs) => {
                     if (typeof arcs[0] === 'number') {
@@ -4077,7 +4083,7 @@
         * @name Highcharts.GeoJSONTranslation#crs
         * @type {string}
         */ /**
-        * Define the portion of the map that this defintion applies to. Defined as a
+        * Define the portion of the map that this definition applies to. Defined as a
         * GeoJSON polygon feature object, with `type` and `coordinates` properties.
         * @name Highcharts.GeoJSONTranslation#hitZone
         * @type {Highcharts.Dictionary<*>|undefined}
@@ -4150,6 +4156,12 @@
          * An array of longitude, latitude.
          *
          * @typedef {Array<number>} Highcharts.LonLatArray
+         */
+        /**
+         * An array of GeoJSON or TopoJSON objects or strings used as map data for
+         * series.
+         *
+         * @typedef {Array<*>|GeoJSON|TopoJSON|string} Highcharts.MapDataType
          */
         /**
          * A TopoJSON object, see description on the
@@ -5233,6 +5245,19 @@
             const { width, height } = playingField, scaleToField = Math.max((b.x2 - b.x1) / (width / tileSize), (b.y2 - b.y1) / (height / tileSize));
             return Math.log(worldSize / scaleToField) / Math.log(2);
         }
+        /**
+         * Calculate and set the recommended map view drilldown or drillup if mapData
+         * is set for the series.
+         * @private
+         */
+        function recommendedMapViewAfterDrill(e) {
+            if (e.seriesOptions.mapData) {
+                this.mapView?.recommendMapView(this, [
+                    this.options.chart.map,
+                    e.seriesOptions.mapData
+                ], this.options.drilldown?.mapZooming);
+            }
+        }
         /*
         const mergeCollections = <
             T extends Array<AnyRecord|undefined>
@@ -5282,7 +5307,7 @@
              *
              * */
             static compose(MapChartClass) {
-                if (pushUnique(composed, this.compose)) {
+                if (pushUnique(composed, 'MapView')) {
                     maps = MapChartClass.maps;
                     // Initialize MapView after initialization, but before firstRender
                     addEvent(MapChartClass, 'afterInit', function () {
@@ -5295,6 +5320,8 @@
                          */
                         this.mapView = new MapView(this, this.options.mapView);
                     }, { order: 0 });
+                    addEvent(MapChartClass, 'addSeriesAsDrilldown', recommendedMapViewAfterDrill);
+                    addEvent(MapChartClass, 'afterDrillUp', recommendedMapViewAfterDrill);
                 }
             }
             /**
@@ -5347,66 +5374,17 @@
                 this.eventsToUnbind = [];
                 this.insets = [];
                 this.padding = [0, 0, 0, 0];
-                let recommendedMapView;
-                let recommendedProjection;
+                this.recommendedMapView = {};
                 if (!(this instanceof MapViewInset)) {
-                    // Handle the global map and series-level mapData
-                    const geoMaps = [
+                    this.recommendMapView(chart, [
                         chart.options.chart.map,
                         ...(chart.options.series || []).map((s) => s.mapData)
-                    ]
-                        .map((mapData) => this.getGeoMap(mapData));
-                    const allGeoBounds = [];
-                    geoMaps.forEach((geoMap) => {
-                        if (geoMap) {
-                            // Use the first geo map as main
-                            if (!recommendedMapView) {
-                                recommendedMapView =
-                                    geoMap['hc-recommended-mapview'];
-                            }
-                            // Combine the bounding boxes of all loaded maps
-                            if (geoMap.bbox) {
-                                const [x1, y1, x2, y2] = geoMap.bbox;
-                                allGeoBounds.push({ x1, y1, x2, y2 });
-                            }
-                        }
-                    });
-                    // Get the composite bounds
-                    const geoBounds = (allGeoBounds.length &&
-                        MapView.compositeBounds(allGeoBounds));
-                    // Provide a best-guess recommended projection if not set in
-                    // the map or in user options
-                    fireEvent(chart, 'beforeMapViewInit', {
-                        geoBounds
-                    }, function () {
-                        if (geoBounds) {
-                            const { x1, y1, x2, y2 } = geoBounds;
-                            recommendedProjection =
-                                (x2 - x1 > 180 && y2 - y1 > 90) ?
-                                    // Wide angle, go for the world view
-                                    {
-                                        name: 'EqualEarth'
-                                    } :
-                                    // Narrower angle, use a projection better
-                                    // suited for local view
-                                    {
-                                        name: 'LambertConformalConic',
-                                        parallels: [y1, y2],
-                                        rotation: [-(x1 + x2) / 2]
-                                    };
-                        }
-                    });
-                    // Register the main geo map (from options.chart.map) if set
-                    this.geoMap = geoMaps[0];
+                    ]);
                 }
                 this.userOptions = options || {};
-                if (chart.options.mapView &&
-                    chart.options.mapView.recommendedMapView) {
-                    recommendedMapView = chart.options.mapView.recommendedMapView;
-                }
-                const o = merge(MapViewDefaults, { projection: recommendedProjection }, recommendedMapView, options);
+                const o = merge(MapViewDefaults, this.recommendedMapView, options);
                 // Merge the inset collections by id, or index if id missing
-                const recInsets = recommendedMapView && recommendedMapView.insets, optInsets = options && options.insets;
+                const recInsets = this.recommendedMapView?.insets, optInsets = options && options.insets;
                 if (recInsets && optInsets) {
                     o.insets = MapView.mergeInsets(recInsets, optInsets);
                 }
@@ -5703,6 +5681,90 @@
                 const coordinates = this.projection.inverse([point.x, point.y]);
                 return { lon: coordinates[0], lat: coordinates[1] };
             }
+            /**
+             * Calculate and set the recommended map view based on provided map data
+             * from series.
+             *
+             * @requires modules/map
+             *
+             * @function Highcharts.MapView#recommendMapView
+             *
+             * @since @next
+             *
+             * @param {Highcharts.Chart} chart
+             *        Chart object
+             *
+             * @param {Array<MapDataType | undefined>} mapDataArray
+             *        Array of map data from all series.
+             *
+             * @param {boolean} [update=false]
+             *        Whether to update the chart with recommended map view.
+             *
+             * @return {Highcharts.MapViewOptions|undefined} Best suitable map view.
+             */
+            recommendMapView(chart, mapDataArray, update = false) {
+                // Reset recommended map view
+                this.recommendedMapView = {};
+                // Handle the global map and series-level mapData
+                const geoMaps = mapDataArray.map((mapData) => this.getGeoMap(mapData));
+                const allGeoBounds = [];
+                geoMaps.forEach((geoMap) => {
+                    if (geoMap) {
+                        // Use the first geo map as main
+                        if (!Object.keys(this.recommendedMapView).length) {
+                            this.recommendedMapView =
+                                geoMap['hc-recommended-mapview'] || {};
+                        }
+                        // Combine the bounding boxes of all loaded maps
+                        if (geoMap.bbox) {
+                            const [x1, y1, x2, y2] = geoMap.bbox;
+                            allGeoBounds.push({ x1, y1, x2, y2 });
+                        }
+                    }
+                });
+                // Get the composite bounds
+                const geoBounds = (allGeoBounds.length &&
+                    MapView.compositeBounds(allGeoBounds));
+                // Provide a best-guess recommended projection if not set in
+                // the map or in user options
+                fireEvent(this, 'onRecommendMapView', {
+                    geoBounds,
+                    chart
+                }, function () {
+                    if (geoBounds &&
+                        this.recommendedMapView) {
+                        if (!this.recommendedMapView.projection) {
+                            const { x1, y1, x2, y2 } = geoBounds;
+                            this.recommendedMapView.projection =
+                                (x2 - x1 > 180 && y2 - y1 > 90) ?
+                                    // Wide angle, go for the world view
+                                    {
+                                        name: 'EqualEarth',
+                                        parallels: [0, 0],
+                                        rotation: [0]
+                                    } :
+                                    // Narrower angle, use a projection better
+                                    // suited for local view
+                                    {
+                                        name: 'LambertConformalConic',
+                                        parallels: [y1, y2],
+                                        rotation: [-(x1 + x2) / 2]
+                                    };
+                        }
+                        if (!this.recommendedMapView.insets) {
+                            this.recommendedMapView.insets = void 0; // Reset insets
+                        }
+                    }
+                });
+                // Register the main geo map (from options.chart.map) if set
+                this.geoMap = geoMaps[0];
+                if (update &&
+                    chart.hasRendered &&
+                    !chart.userOptions.mapView?.projection &&
+                    this.recommendedMapView) {
+                    this.update(this.recommendedMapView);
+                }
+            }
             redraw(animation) {
                 this.chart.series.forEach((s) => {
                     if (s.useMapGeometry) {
@@ -5848,21 +5910,34 @@
             }
             setUpEvents() {
                 const { chart } = this;
-                // Set up panning for maps. In orthographic projections the globe will
-                // rotate, otherwise adjust the map center.
-                let mouseDownCenterProjected;
-                let mouseDownKey;
-                let mouseDownRotation;
+                // Set up panning and touch zoom for maps. In orthographic projections
+                // the globe will rotate, otherwise adjust the map center and zoom.
+                let mouseDownCenterProjected, mouseDownKey, mouseDownRotation;
                 const onPan = (e) => {
-                    const pinchDown = chart.pointer.pinchDown, projection = this.projection;
-                    let { mouseDownX, mouseDownY } = chart;
-                    if (pinchDown.length === 1) {
+                    const { lastTouches, pinchDown } = chart.pointer, projection = this.projection, touches = e.touches;
+                    let { mouseDownX, mouseDownY } = chart, howMuch = 0;
+                    if (pinchDown?.length === 1) {
                         mouseDownX = pinchDown[0].chartX;
                         mouseDownY = pinchDown[0].chartY;
                     }
-                    if (typeof mouseDownX === 'number' &&
-                        typeof mouseDownY === 'number') {
-                        const key = `${mouseDownX},${mouseDownY}`, { chartX, chartY } = e.originalEvent;
+                    else if (pinchDown?.length === 2) {
+                        mouseDownX = (pinchDown[0].chartX + pinchDown[1].chartX) / 2;
+                        mouseDownY = (pinchDown[0].chartY + pinchDown[1].chartY) / 2;
+                    }
+                    // How much has the distance between the fingers changed?
+                    if (touches?.length === 2 && lastTouches) {
+                        const startDistance = Math.sqrt(Math.pow(lastTouches[0].chartX - lastTouches[1].chartX, 2) +
+                            Math.pow(lastTouches[0].chartY - lastTouches[1].chartY, 2)), endDistance = Math.sqrt(Math.pow(touches[0].chartX - touches[1].chartX, 2) +
+                            Math.pow(touches[0].chartY - touches[1].chartY, 2));
+                        howMuch = Math.log(startDistance / endDistance) / Math.log(0.5);
+                    }
+                    if (isNumber(mouseDownX) && isNumber(mouseDownY)) {
+                        const key = `${mouseDownX},${mouseDownY}`;
+                        let { chartX, chartY } = e.originalEvent;
+                        if (touches?.length === 2) {
+                            chartX = (touches[0].chartX + touches[1].chartX) / 2;
+                            chartY = (touches[0].chartY + touches[1].chartY) / 2;
+                        }
                         // Reset starting position
                         if (key !== mouseDownKey) {
                             mouseDownKey = key;
@@ -5876,6 +5951,7 @@
                             zoomFromBounds(worldBounds, this.playingField)) || -Infinity;
                         // Panning rotates the globe
                         if (projection.options.name === 'Orthographic' &&
+                            (touches?.length || 0) < 2 &&
                             // ... but don't rotate if we're loading only a part of the
                             // world
                             (this.minZoom || Infinity) < worldZoom * 1.3) {
@@ -5909,7 +5985,7 @@
                             ]);
                             // #19190 Skip NaN coords
                             if (!isNaN(newCenter[0] + newCenter[1])) {
-                                this.setView(newCenter, void 0, true, false);
+                                this.zoomBy(howMuch, newCenter, void 0, false);
                             }
                         }
                         e.preventDefault();
@@ -6039,13 +6115,10 @@
              *        The animation to apply to a the redraw
              */
             zoomBy(howMuch, coords, chartCoords, animation) {
-                const chart = this.chart;
-                const projectedCenter = this.projection.forward(this.center);
-                // let { x, y } = coords || {};
-                let [x, y] = coords ? this.projection.forward(coords) : [];
+                const chart = this.chart, projectedCenter = this.projection.forward(this.center);
                 if (typeof howMuch === 'number') {
                     const zoom = this.zoom + howMuch;
-                    let center;
+                    let center, x, y;
                     // Keep chartX and chartY stationary - convert to lat and lng
                     if (chartCoords) {
                         const [chartX, chartY] = chartCoords;
@@ -6058,14 +6131,13 @@
                     // Keep lon and lat stationary by adjusting the center
                     if (typeof x === 'number' && typeof y === 'number') {
                         const scale = 1 - Math.pow(2, this.zoom) / Math.pow(2, zoom);
-                        // const projectedCenter = this.projection.forward(this.center);
                         const offsetX = projectedCenter[0] - x;
                         const offsetY = projectedCenter[1] - y;
                         projectedCenter[0] -= offsetX * scale;
                         projectedCenter[1] += offsetY * scale;
                         center = this.projection.inverse(projectedCenter);
                     }
-                    this.setView(center, zoom, void 0, animation);
+                    this.setView(coords || center, zoom, void 0, animation);
                     // Undefined howMuch => reset zoom
                 }
                 else {
@@ -6352,7 +6424,7 @@
                 if (this.doFullTranslate()) {
                     // Individual point actions.
                     this.points.forEach((point) => {
-                        const { graphic, shapeArgs } = point;
+                        const { graphic } = point;
                         // Points should be added in the corresponding transform group
                         point.group = transformGroups[typeof point.insetIndex === 'number' ?
                             point.insetIndex + 1 :
@@ -6388,6 +6460,13 @@
                             if (chart.styledMode) {
                                 graphic.css(this.pointAttribs(point, point.selected && 'select' || void 0));
                             }
+                            // If the map point is not visible and is not null (e.g.
+                            // hidden by data classes), then the point should be
+                            // visible, but without value
+                            graphic.attr({
+                                visibility: (point.visible ||
+                                    (!point.visible && !point.isNull)) ? 'inherit' : 'hidden'
+                            });
                             graphic.animate = function (params, options, complete) {
                                 const animateIn = (isNumber(params['stroke-width']) &&
                                     !isNumber(graphic['stroke-width'])), animateOut = (isNumber(graphic['stroke-width']) &&
@@ -6513,7 +6592,7 @@
                     // Find the bounding box of each point
                     (this.points || []).forEach((point) => {
                         if (point.path || point.geometry) {
-                            // @todo Try to puth these two conversions in
+                            // @todo Try to put these two conversions in
                             // MapPoint.applyOptions
                             if (typeof point.path === 'string') {
                                 point.path = splitPath(point.path);
@@ -6857,15 +6936,33 @@
                                 d: MapPoint.getProjectedPath(point, projection)
                             };
                         }
-                        if (point.projectedPath && !point.projectedPath.length) {
-                            point.setVisible(false);
-                        }
-                        else if (!point.visible) {
-                            point.setVisible(true);
+                        if (!point.hiddenInDataClass) { // #20441
+                            if (point.projectedPath && !point.projectedPath.length) {
+                                point.setVisible(false);
+                            }
+                            else if (!point.visible) {
+                                point.setVisible(true);
+                            }
                         }
                     });
                 }
                 fireEvent(series, 'afterTranslate');
+            }
+            update(options) {
+                // Calculate and set the recommended map view after every series update
+                // if new mapData is set
+                if (options.mapData) {
+                    this.chart.mapView?.recommendMapView(this.chart, [
+                        this.chart.options.chart.map,
+                        ...(this.chart.options.series || []).map((s, i) => {
+                            if (i === this._i) {
+                                return options.mapData;
+                            }
+                            return s.mapData;
+                        })
+                    ], true);
+                }
+                super.update.apply(this, arguments);
             }
         }
         MapSeries.defaultOptions = merge(ScatterSeries.defaultOptions, MapSeriesDefaults);
@@ -7721,7 +7818,7 @@
                 y: 0
             },
             /**
-             * Miximum bubble legend range size. If values for ranges are
+             * Maximum bubble legend range size. If values for ranges are
              * not specified, the `minSize` and the `maxSize` are calculated
              * from bubble series.
              */
@@ -7796,7 +7893,7 @@
              */
             zIndex: 1,
             /**
-             * Ranges with with lower value than zThreshold, are skipped.
+             * Ranges with lower value than zThreshold are skipped.
              */
             zThreshold: 0
         };
@@ -7887,9 +7984,9 @@
              *        Legend instance
              */
             drawLegendSymbol(legend) {
-                const chart = this.chart, itemDistance = pick(legend.options.itemDistance, 20), legendItem = this.legendItem || {}, options = this.options, ranges = options.ranges, connectorDistance = options.connectorDistance;
+                const itemDistance = pick(legend.options.itemDistance, 20), legendItem = this.legendItem || {}, options = this.options, ranges = options.ranges, connectorDistance = options.connectorDistance;
                 let connectorSpace;
-                // Do not create bubbleLegend now if ranges or ranges valeus are not
+                // Do not create bubbleLegend now if ranges or ranges values are not
                 // specified or if are empty array.
                 if (!ranges || !ranges.length || !isNumber(ranges[0].value)) {
                     legend.options.bubbleLegend.autoRanges = true;
@@ -8177,7 +8274,7 @@
             predictBubbleSizes() {
                 const chart = this.chart, legendOptions = chart.legend.options, floating = legendOptions.floating, horizontal = legendOptions.layout === 'horizontal', lastLineHeight = horizontal ? chart.legend.lastLineHeight : 0, plotSizeX = chart.plotSizeX, plotSizeY = chart.plotSizeY, bubbleSeries = chart.series[this.options.seriesIndex], pxSizes = bubbleSeries.getPxExtremes(), minSize = Math.ceil(pxSizes.minPxSize), maxPxSize = Math.ceil(pxSizes.maxPxSize), plotSize = Math.min(plotSizeY, plotSizeX);
                 let calculatedSize, maxSize = bubbleSeries.options.maxSize;
-                // Calculate prediceted max size of bubble
+                // Calculate predicted max size of bubble
                 if (floating || !(/%$/.test(maxSize))) {
                     calculatedSize = maxPxSize;
                 }
@@ -8341,7 +8438,7 @@
          * Core series class to use with Bubble series.
          */
         function compose(ChartClass, LegendClass, SeriesClass) {
-            if (pushUnique(composed, compose)) {
+            if (pushUnique(composed, 'Series.BubbleLegend')) {
                 setOptions({
                     // Set default bubble legend options
                     legend: {
@@ -8650,7 +8747,7 @@
              * */
             static compose(AxisClass, ChartClass, LegendClass, SeriesClass) {
                 BubbleLegendComposition.compose(ChartClass, LegendClass, SeriesClass);
-                if (pushUnique(composed, this.compose)) {
+                if (pushUnique(composed, 'Series.Bubble')) {
                     addEvent(AxisClass, 'foundExtremes', onAxisFoundExtremes);
                 }
             }
@@ -10089,7 +10186,7 @@
          * @apioption series.heatmap.data.color
          */
         /**
-         * The value of the point, resulting in a color controled by options
+         * The value of the point, resulting in a color controlled by options
          * as set in the [colorAxis](#colorAxis) configuration.
          *
          * @type      {number}
@@ -10723,7 +10820,7 @@
          */
         /**
          * Heatmap series only. The value of the point, resulting in a color
-         * controled by options as set in the colorAxis configuration.
+         * controlled by options as set in the colorAxis configuration.
          * @name Highcharts.Point#value
          * @type {number|null|undefined}
          */
@@ -10734,7 +10831,7 @@
         * @name Highcharts.PointOptionsObject#pointPadding
         * @type {number|undefined}
         */ /**
-        * Heatmap series only. The value of the point, resulting in a color controled
+        * Heatmap series only. The value of the point, resulting in a color controlled
         * by options as set in the colorAxis configuration.
         * @name Highcharts.PointOptionsObject#value
         * @type {number|null|undefined}
@@ -10743,23 +10840,27 @@
 
         return HeatmapSeries;
     });
-    _registerModule(_modules, 'masters/modules/map.src.js', [_modules['Core/Globals.js'], _modules['Core/Axis/Color/ColorAxis.js'], _modules['Maps/MapNavigation.js'], _modules['Series/MapBubble/MapBubbleSeries.js'], _modules['Maps/GeoJSONComposition.js'], _modules['Core/Chart/MapChart.js'], _modules['Maps/MapView.js'], _modules['Maps/Projection.js']], function (Highcharts, ColorAxis, MapNavigation, MapBubbleSeries, GeoJSONComposition, MapChart, MapView, Projection) {
+    _registerModule(_modules, 'masters/modules/map.src.js', [_modules['Core/Globals.js'], _modules['Maps/MapNavigation.js'], _modules['Series/ColorMapComposition.js'], _modules['Series/MapBubble/MapBubbleSeries.js'], _modules['Maps/GeoJSONComposition.js'], _modules['Core/Chart/MapChart.js'], _modules['Maps/MapView.js'], _modules['Maps/Projection.js']], function (Highcharts, MapNavigation, ColorMapComposition, MapBubbleSeries, GeoJSONComposition, MapChart, MapView, Projection) {
 
         const G = Highcharts;
-        G.ColorAxis = ColorAxis;
-        G.MapChart = MapChart;
-        G.mapChart = G.Map = MapChart.mapChart;
-        G.MapNavigation = MapNavigation;
-        G.MapView = MapView;
-        G.maps = MapChart.maps;
-        G.Projection = Projection;
+        // Classes
+        G.ColorMapComposition = ColorMapComposition;
+        G.MapChart = G.MapChart || MapChart;
+        G.MapNavigation = G.MapNavigation || MapNavigation;
+        G.MapView = G.MapView || MapView;
+        G.Projection = G.Projection || Projection;
+        // Functions
+        G.mapChart = G.Map = G.MapChart.mapChart;
+        G.maps = G.MapChart.maps;
         G.geojson = GeoJSONComposition.geojson;
         G.topo2geo = GeoJSONComposition.topo2geo;
-        ColorAxis.compose(G.Chart, G.Fx, G.Legend, G.Series);
+        // Compositions
         GeoJSONComposition.compose(G.Chart);
         MapBubbleSeries.compose(G.Axis, G.Chart, G.Legend, G.Series);
         MapNavigation.compose(MapChart, G.Pointer, G.SVGRenderer);
         MapView.compose(MapChart);
+        // Default Export
 
+        return Highcharts;
     });
 }));

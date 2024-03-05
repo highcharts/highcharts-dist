@@ -94,7 +94,7 @@ class APOIndicator extends EMAIndicator {
  */
 APOIndicator.defaultOptions = merge(EMAIndicator.defaultOptions, {
     /**
-     * Paramters used in calculation of Absolute Price Oscillator
+     * Parameters used in calculation of Absolute Price Oscillator
      * series points.
      *
      * @excluding period

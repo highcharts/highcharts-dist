@@ -8,11 +8,9 @@
  *
  * */
 'use strict';
-import H from '../Globals.js';
-const { composed } = H;
 import StackItem from './Stacking/StackItem.js';
 import U from '../Utilities.js';
-const { addEvent, find, fireEvent, isArray, isNumber, pick, pushUnique } = U;
+const { addEvent, find, fireEvent, isArray, isNumber, pick } = U;
 /* *
  *
  *  Composition
@@ -39,7 +37,7 @@ var BrokenAxis;
      * @private
      */
     function compose(AxisClass, SeriesClass) {
-        if (pushUnique(composed, compose)) {
+        if (!AxisClass.keepProps.includes('brokenAxis')) {
             AxisClass.keepProps.push('brokenAxis');
             addEvent(AxisClass, 'init', onAxisInit);
             addEvent(AxisClass, 'afterInit', onAxisAfterInit);
@@ -440,7 +438,7 @@ var BrokenAxis;
         }
         /**
          * Dynamically set or unset breaks in an axis. This function in lighter
-         * than usin Axis.update, and it also preserves animation.
+         * than using Axis.update, and it also preserves animation.
          *
          * @private
          * @function Highcharts.Axis#setBreaks
@@ -568,7 +566,7 @@ var BrokenAxis;
                         });
                         brokenAxis.breakArray = breakArray;
                         // Used with staticScale, and below the actual axis
-                        // length, when breaks are substracted.
+                        // length, when breaks are subtracted.
                         if (isNumber(min) &&
                             isNumber(max) &&
                             isNumber(axis.min)) {

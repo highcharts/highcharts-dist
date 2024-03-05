@@ -95,7 +95,7 @@ class FibonacciTimeZones extends CrookedLine {
                 edgePoint(1, 0, correctedFibb),
                 edgePoint(0, 1, correctedFibb)
             ];
-            // Calculate fibbonacci
+            // Calculate fibonacci
             nextFibb = fibb + nextFibb;
             fibb = nextFibb - fibb;
             // Save the second line for the control point

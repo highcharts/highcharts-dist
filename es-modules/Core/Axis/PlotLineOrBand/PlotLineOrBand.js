@@ -139,7 +139,7 @@ class PlotLineOrBand {
         // before.
         if (!this.eventsAdded && events) {
             objectEach(events, (event, eventType) => {
-                svgElem?.on(eventType, function (e) {
+                svgElem?.on(eventType, (e) => {
                     events[eventType].apply(this, [e]);
                 });
             });
@@ -353,7 +353,7 @@ export default PlotLineOrBand;
  *         Plot band on Y axis
  *
  * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
- * @default   #e6e9ff
+ * @default   ${palette.highlightColor10}
  * @apioption xAxis.plotBands.color
  */
 /**
@@ -601,7 +601,7 @@ export default PlotLineOrBand;
  *         Plot line on Y axis
  *
  * @type      {Highcharts.ColorString}
- * @default   #999999
+ * @default   ${palette.neutralColor40}
  * @apioption xAxis.plotLines.color
  */
 /**

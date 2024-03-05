@@ -13,7 +13,7 @@ const { composed } = H;
 import Point from '../Core/Series/Point.js';
 import Series from '../Core/Series/Series.js';
 import SeriesRegistry from '../Core/Series/SeriesRegistry.js';
-const { bubble, pie, sunburst } = SeriesRegistry.seriesTypes;
+const { bubble } = SeriesRegistry.seriesTypes;
 import SVGRenderer from '../Core/Renderer/SVG/SVGRenderer.js';
 import U from '../Core/Utilities.js';
 const { addEvent, defined, find, isNumber, pushUnique } = U;
@@ -46,7 +46,7 @@ var SeriesOnPointComposition;
      * Chart class to use.
      */
     function compose(SeriesClass, ChartClass) {
-        if (pushUnique(composed, compose)) {
+        if (pushUnique(composed, 'SeriesOnPoint')) {
             const { chartGetZData, seriesAfterInit, seriesAfterRender, seriesGetCenter, seriesShowOrHide, seriesTranslate } = Additions.prototype;
             // We can mark support for pie series here because it's in the core.
             // But all other series outside the core should be marked in its
@@ -233,7 +233,7 @@ var SeriesOnPointComposition;
                     return id === point.id;
                 });
                 // And also toggle series that are on toggled points. Redraw is
-                // not needed because it's fired later after showOrhide event
+                // not needed because it's fired later after showOrHide event
                 series && series.setVisible(!series.visible, false);
             });
         }

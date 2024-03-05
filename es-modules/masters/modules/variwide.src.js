@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v@product.version@ (@product.date@)
  * @module highcharts/modules/variwide
  * @requires highcharts
  *
@@ -14,3 +14,4 @@ import Highcharts from '../../Core/Globals.js';
 import VariwideSeries from '../../Series/Variwide/VariwideSeries.js';
 const G = Highcharts;
 VariwideSeries.compose(G.Axis, G.Tick);
+export default Highcharts;

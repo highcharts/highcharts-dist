@@ -10,13 +10,11 @@
  *
  * */
 'use strict';
-import H from '../../Core/Globals.js';
-const { composed } = H;
 import ParallelAxis from './ParallelAxis.js';
 import ParallelCoordinatesDefaults from './ParallelCoordinatesDefaults.js';
 import ParallelSeries from './ParallelSeries.js';
 import U from '../../Core/Utilities.js';
-const { addEvent, defined, merge, pushUnique, splat } = U;
+const { addEvent, defined, merge, splat } = U;
 /* *
  *
  *  Class
@@ -87,8 +85,8 @@ var ParallelCoordinates;
     function compose(AxisClass, ChartClass, highchartsDefaultOptions, SeriesClass) {
         ParallelAxis.compose(AxisClass);
         ParallelSeries.compose(SeriesClass);
-        if (pushUnique(composed, compose)) {
-            const ChartCompo = ChartClass, addsProto = ChartAdditions.prototype, chartProto = ChartCompo.prototype;
+        const ChartCompo = ChartClass, addsProto = ChartAdditions.prototype, chartProto = ChartCompo.prototype;
+        if (!chartProto.setParallelInfo) {
             chartProto.setParallelInfo = addsProto.setParallelInfo;
             addEvent(ChartCompo, 'init', onChartInit);
             addEvent(ChartCompo, 'update', onChartUpdate);
@@ -123,7 +121,8 @@ var ParallelCoordinates;
             if (!options.legend) {
                 options.legend = {};
             }
-            if (typeof options.legend.enabled === 'undefined') {
+            if (options.legend &&
+                typeof options.legend.enabled === 'undefined') {
                 options.legend.enabled = false;
             }
             merge(true, options, 

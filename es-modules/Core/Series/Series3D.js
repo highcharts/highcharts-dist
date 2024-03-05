@@ -29,7 +29,7 @@ class Series3D extends Series {
      *
      * */
     static compose(SeriesClass) {
-        if (pushUnique(composed, this.compose)) {
+        if (pushUnique(composed, 'Core.Series3D')) {
             addEvent(SeriesClass, 'afterTranslate', function () {
                 if (this.chart.is3d()) {
                     this.translate3dPoints();
@@ -53,7 +53,7 @@ class Series3D extends Series {
         const series = this, seriesOptions = series.options, chart = series.chart, zAxis = pick(series.zAxis, chart.options.zAxis[0]), rawPoints = [], rawPointsX = [], stack = seriesOptions.stacking ?
             (isNumber(seriesOptions.stack) ? seriesOptions.stack : 0) :
             series.index || 0;
-        let rawPoint, projectedPoint, zValue, i;
+        let projectedPoint, zValue;
         series.zPadding = stack *
             (seriesOptions.depth || 0 + (seriesOptions.groupZPadding || 1));
         series.data.forEach((rawPoint) => {

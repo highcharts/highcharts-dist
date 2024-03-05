@@ -13,10 +13,10 @@
 import A from '../../Core/Animation/AnimationUtilities.js';
 const { animObject } = A;
 import H from '../../Core/Globals.js';
-const { composed, doc } = H;
+const { doc } = H;
 import Legend from '../../Core/Legend/Legend.js';
 import U from '../../Core/Utilities.js';
-const { addEvent, fireEvent, isNumber, pick, pushUnique, syncTimeout } = U;
+const { addEvent, fireEvent, isNumber, pick, syncTimeout } = U;
 import AccessibilityComponent from '../AccessibilityComponent.js';
 import KeyboardNavigationHandler from '../KeyboardNavigationHandler.js';
 import CU from '../Utils/ChartUtilities.js';
@@ -439,8 +439,8 @@ class LegendComponent extends AccessibilityComponent {
      * @private
      */
     function compose(ChartClass, LegendClass) {
-        if (pushUnique(composed, compose)) {
-            const chartProto = ChartClass.prototype;
+        const chartProto = ChartClass.prototype;
+        if (!chartProto.highlightLegendItem) {
             chartProto.highlightLegendItem = chartHighlightLegendItem;
             addEvent(LegendClass, 'afterColorizeItem', legendOnAfterColorizeItem);
         }

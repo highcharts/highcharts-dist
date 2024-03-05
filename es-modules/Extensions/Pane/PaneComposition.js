@@ -3,10 +3,8 @@
  *  Imports
  *
  * */
-import H from '../../Core/Globals.js';
-const { composed } = H;
 import U from '../../Core/Utilities.js';
-const { addEvent, correctFloat, defined, pick, pushUnique } = U;
+const { addEvent, correctFloat, defined, pick } = U;
 /* *
  *
  *  Functions
@@ -28,8 +26,8 @@ function chartGetHoverPane(eventArgs) {
 }
 /** @private */
 function compose(ChartClass, PointerClass) {
-    if (pushUnique(composed, compose)) {
-        const chartProto = ChartClass.prototype;
+    const chartProto = ChartClass.prototype;
+    if (!chartProto.getHoverPane) {
         chartProto.collectionsWithUpdate.push('pane');
         chartProto.getHoverPane = chartGetHoverPane;
         addEvent(ChartClass, 'afterIsInsidePlot', onChartAfterIsInsiderPlot);

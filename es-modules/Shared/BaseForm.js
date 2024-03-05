@@ -64,7 +64,7 @@ class BaseForm {
     addCloseButton(className = 'highcharts-popup-close') {
         const popup = this, iconsURL = this.iconsURL;
         // Create close popup button.
-        const closeButton = createElement('div', { className }, void 0, this.container);
+        const closeButton = createElement('button', { className }, void 0, this.container);
         closeButton.style['background-image'] = 'url(' +
             (iconsURL.match(/png|svg|jpeg|jpg|gif/ig) ?
                 iconsURL : iconsURL + 'close.svg') + ')';

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.3.0 (2024-01-10)
+ * @license Highstock JS v11.4.0 (2024-03-05)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -73,7 +73,7 @@
                     'high': 1 - deviation
                 }, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, zigzag = [], xData = [], yData = [];
                 let i, j, zigzagPoint, directionUp, exitLoop = false, yIndex = false;
-                // Exit if not enught points or no low or high values
+                // Exit if not enough points or no low or high values
                 if (!xVal || xVal.length <= 1 ||
                     (yValLen &&
                         (typeof yVal[0][lowIndex] === 'undefined' ||
@@ -85,7 +85,7 @@
                 // Search for a second zigzag point candidate,
                 // this will also set first zigzag point
                 for (i = 1; i < yValLen; i++) {
-                    // requried change to go down
+                    // required change to go down
                     if (yVal[i][lowIndex] <= firstZigzagHigh * deviations.high) {
                         zigzag.push([xVal[0], firstZigzagHigh]);
                         // second zigzag point candidate
@@ -93,7 +93,7 @@
                         // next line will be going up
                         directionUp = true;
                         exitLoop = true;
-                        // requried change to go up
+                        // required change to go up
                     }
                     else if (yVal[i][highIndex] >= firstZigzagLow * deviations.low) {
                         zigzag.push([xVal[0], firstZigzagLow]);
@@ -117,7 +117,7 @@
                         if (yVal[i][lowIndex] <= zigzagPoint[1]) {
                             zigzagPoint = [xVal[i], yVal[i][lowIndex]];
                         }
-                        // requried change to go down -> new zigzagpoint and
+                        // required change to go down -> new zigzagpoint and
                         // direction change
                         if (yVal[i][highIndex] >=
                             zigzagPoint[1] * deviations.low) {
@@ -129,7 +129,7 @@
                         if (yVal[i][highIndex] >= zigzagPoint[1]) {
                             zigzagPoint = [xVal[i], yVal[i][highIndex]];
                         }
-                        // requried change to go down -> new zigzagpoint and
+                        // required change to go down -> new zigzagpoint and
                         // direction change
                         if (yVal[i][lowIndex] <=
                             zigzagPoint[1] * deviations.high) {
@@ -246,8 +246,9 @@
 
         return ZigzagIndicator;
     });
-    _registerModule(_modules, 'masters/indicators/zigzag.src.js', [], function () {
+    _registerModule(_modules, 'masters/indicators/zigzag.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

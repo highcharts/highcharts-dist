@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v@product.version@ (@product.date@)
  * @module highcharts/modules/treemap
  * @requires highcharts
  *
@@ -10,9 +10,10 @@
  */
 'use strict';
 import Highcharts from '../../Core/Globals.js';
-import TreemapSeries from '../../Series/Treemap/TreemapSeries.js';
 import Breadcrumbs from '../../Extensions/Breadcrumbs/Breadcrumbs.js';
+import TreemapSeries from '../../Series/Treemap/TreemapSeries.js';
 const G = Highcharts;
-G.Breadcrumbs = Breadcrumbs;
-Breadcrumbs.compose(G.Chart, G.defaultOptions);
+G.Breadcrumbs = G.Breadcrumbs || Breadcrumbs;
+G.Breadcrumbs.compose(G.Chart, G.defaultOptions);
 TreemapSeries.compose(G.Series);
+export default Highcharts;

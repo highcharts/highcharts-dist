@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v@product.version@ (@product.date@)
  * @module highcharts/modules/xrange
  * @requires highcharts
  *
@@ -14,3 +14,4 @@ import Highcharts from '../../Core/Globals.js';
 import XRangeSeries from '../../Series/XRange/XRangeSeries.js';
 const G = Highcharts;
 XRangeSeries.compose(G.Axis);
+export default Highcharts;

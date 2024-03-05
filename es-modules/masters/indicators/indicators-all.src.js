@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.3.0 (2024-01-10)
+ * @license Highstock JS v@product.version@ (@product.date@)
  * @module highcharts/indicators/indicators-all
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -11,6 +11,7 @@
  * License: www.highcharts.com/license
  */
 'use strict';
+import Highcharts from '../../Core/Globals.js';
 import '../../Stock/Indicators/SMA/SMAIndicator.js';
 import '../../Stock/Indicators/EMA/EMAIndicator.js';
 import '../../Stock/Indicators/AD/ADIndicator.js';
@@ -59,3 +60,4 @@ import '../../Stock/Indicators/LinearRegressionAngle/LinearRegressionAngleIndica
 import '../../Stock/Indicators/ABands/ABandsIndicator.js';
 import '../../Stock/Indicators/TrendLine/TrendLineIndicator.js';
 import '../../Stock/Indicators/DisparityIndex/DisparityIndexIndicator.js';
+export default Highcharts;

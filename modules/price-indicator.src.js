@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.3.0 (2024-01-10)
+ * @license Highstock JS v11.4.0 (2024-03-05)
  *
  * Advanced Highcharts Stock tools
  *
@@ -55,7 +55,7 @@
          * */
         /** @private */
         function compose(SeriesClass) {
-            if (pushUnique(composed, compose)) {
+            if (pushUnique(composed, 'PriceIndication')) {
                 addEvent(SeriesClass, 'afterRender', onSeriesAfterRender);
             }
         }
@@ -366,5 +366,6 @@
         const G = Highcharts;
         PriceIndication.compose(G.Series);
 
+        return Highcharts;
     });
 }));

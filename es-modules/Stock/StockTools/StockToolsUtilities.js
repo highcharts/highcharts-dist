@@ -165,9 +165,9 @@ function addFlagFromForm(type) {
  * Consider using getHoverData(), but always kdTree (columns?)
  */
 function attractToPoint(e, chart) {
-    const coords = chart.pointer.getCoordinates(e);
+    const coords = chart.pointer?.getCoordinates(e);
     let coordsX, coordsY, distX = Number.MAX_VALUE, closestPoint;
-    if (chart.navigationBindings) {
+    if (chart.navigationBindings && coords) {
         coordsX = getAssignedAxis(coords.xAxis);
         coordsY = getAssignedAxis(coords.yAxis);
     }
@@ -180,12 +180,11 @@ function attractToPoint(e, chart) {
     // Search by 'x' but only in yAxis' series.
     coordsY.axis.series.forEach((series) => {
         if (series.points) {
-            series.points.forEach((point) => {
-                if (point && distX > Math.abs(point.x - x)) {
-                    distX = Math.abs(point.x - x);
-                    closestPoint = point;
-                }
-            });
+            const point = series.searchPoint(e, true);
+            if (point && distX > Math.abs(point.x - x)) {
+                distX = Math.abs(point.x - x);
+                closestPoint = point;
+            }
         }
     });
     if (closestPoint && closestPoint.x && closestPoint.y) {
@@ -352,7 +351,7 @@ function updateHeight(e, annotation) {
  * @function bindingsUtils.updateNthPoint
  *
  * @param {number} startIndex
- *        Index from each point should udpated
+ *        Index from which point should update
  *
  * @return {Function}
  *         Callback to be used in steps array

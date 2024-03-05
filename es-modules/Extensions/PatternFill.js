@@ -15,10 +15,8 @@ import A from '../Core/Animation/AnimationUtilities.js';
 const { animObject } = A;
 import D from '../Core/Defaults.js';
 const { getOptions } = D;
-import H from '../Core/Globals.js';
-const { composed } = H;
 import U from '../Core/Utilities.js';
-const { addEvent, defined, erase, extend, merge, pick, pushUnique, removeEvent, wrap } = U;
+const { addEvent, defined, erase, extend, merge, pick, removeEvent, wrap } = U;
 /* *
  *
  *  Constants
@@ -32,11 +30,11 @@ const patterns = createPatterns();
  * */
 /** @private */
 function compose(ChartClass, SeriesClass, SVGRendererClass) {
-    const PointClass = SeriesClass.prototype.pointClass;
-    if (pushUnique(composed, compose)) {
+    const PointClass = SeriesClass.prototype.pointClass, pointProto = PointClass.prototype;
+    if (!pointProto.calculatePatternDimensions) {
         addEvent(ChartClass, 'endResize', onChartEndResize);
         addEvent(ChartClass, 'redraw', onChartRedraw);
-        extend(PointClass.prototype, {
+        extend(pointProto, {
             calculatePatternDimensions: pointCalculatePatternDimensions
         });
         addEvent(PointClass, 'afterInit', onPointAfterInit);
@@ -515,7 +513,7 @@ function rendererAddPattern(options, animation) {
  */
 function wrapSeriesGetColor(proceed) {
     const oldColor = this.options.color;
-    // Temporarely remove color options to get defaults
+    // Temporarily remove color options to get defaults
     if (oldColor &&
         oldColor.pattern &&
         !oldColor.pattern.color) {
@@ -533,7 +531,7 @@ function wrapSeriesGetColor(proceed) {
     }
 }
 /**
- * Scale patterns inversly to the series it's used in.
+ * Scale patterns inversely to the series it's used in.
  * Maintains a visual (1,1) scale regardless of size.
  * @private
  */
@@ -571,25 +569,24 @@ function onPatternScaleCorrection() {
                 .replace(renderer.url, '')
                 .replace('url(#', '')
                 .replace(')', '');
-            return [
+            return {
                 id,
-                {
-                    x: point.group?.scaleX || 1,
-                    y: point.group?.scaleY || 1
-                }
-            ];
+                x: point.group?.scaleX || 1,
+                y: point.group?.scaleY || 1
+            };
         })
             // Filter out colors and other non-patterns, as well as duplicates.
-            .filter(function ([id, _], index, arr) {
-            return id !== '' &&
-                id.indexOf('highcharts-pattern-') !== -1 &&
-                !arr.some(function ([otherID, _], otherIndex) {
-                    return otherID === id && otherIndex < index;
+            .filter(function (pointInfo, index, arr) {
+            return pointInfo.id !== '' &&
+                pointInfo.id.indexOf('highcharts-pattern-') !== -1 &&
+                !arr.some(function (otherInfo, otherIndex) {
+                    return otherInfo.id === pointInfo.id && otherIndex < index;
                 });
         })
-            .forEach(function ([id, scale]) {
-            patterns[id].scaleX = 1 / scale.x;
-            patterns[id].scaleY = 1 / scale.y;
+            .forEach(function (pointInfo) {
+            const id = pointInfo.id;
+            patterns[id].scaleX = 1 / pointInfo.x;
+            patterns[id].scaleY = 1 / pointInfo.y;
             patterns[id].updateTransform('patternTransform');
         });
     }

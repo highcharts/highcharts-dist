@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v11.4.0 (2024-03-05)
  *
  * Dot plot series type for Highcharts
  *
@@ -197,8 +197,9 @@
 
         return DotPlotSeries;
     });
-    _registerModule(_modules, 'masters/modules/dotplot.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/dotplot.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

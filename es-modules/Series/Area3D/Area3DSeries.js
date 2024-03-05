@@ -22,7 +22,7 @@ const { pushUnique, wrap } = U;
  *
  * */
 function compose(AreaSeriesClass) {
-    if (pushUnique(composed, compose)) {
+    if (pushUnique(composed, 'Area3DSeries')) {
         wrap(AreaSeriesClass.prototype, 'getGraphPath', wrapAreaSeriesGetGraphPath);
     }
 }

@@ -176,9 +176,7 @@ class HTMLTableConverter extends DataConverter {
      * Get table header markup from row data.
      */
     getTableHeaderHTML(topheaders = [], subheaders = [], options = this.options) {
-        const { useMultiLevelHeaders, useRowspanHeaders } = options, decimalPoint = (options.useLocalDecimalPoint ?
-            (1.1).toLocaleString()[1] :
-            '.');
+        const { useMultiLevelHeaders, useRowspanHeaders } = options;
         let html = '<thead>', i = 0, len = subheaders && subheaders.length, next, cur, curColspan = 0, rowspan;
         // Clean up multiple table headers. Chart.getDataRows() returns two
         // levels of headers when using multilevel, not merged. We need to

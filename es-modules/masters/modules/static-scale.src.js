@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v11.3.0 (2024-01-10)
+ * @license Highcharts Gantt JS v@product.version@ (@product.date@)
  * @module highcharts/modules/static-scale
  * @requires highcharts
  *
@@ -14,3 +14,4 @@ import Highcharts from '../../Core/Globals.js';
 import StaticScale from '../../Extensions/StaticScale.js';
 const G = Highcharts;
 StaticScale.compose(G.Axis, G.Chart);
+export default Highcharts;

@@ -11,8 +11,6 @@
  * */
 'use strict';
 import H from '../../Core/Globals.js';
-import NBU from '../../Extensions/Annotations/NavigationBindingsUtilities.js';
-const { getAssignedAxis } = NBU;
 import STU from './StockToolsUtilities.js';
 const { addFlagFromForm, attractToPoint, isNotNavigatorYAxis, isPriceIndicatorEnabled, manageIndicators, updateHeight, updateNthPoint, updateRectSize } = STU;
 import U from '../../Core/Utilities.js';
@@ -46,7 +44,7 @@ const StockToolsBindings = {
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
-            const coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis);
+            const [coordsX, coordsY] = this.getCoords(e);
             // Exit if clicked out of axes area
             if (!coordsX || !coordsY) {
                 return;
@@ -87,7 +85,7 @@ const StockToolsBindings = {
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
-            const coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis);
+            const [coordsX, coordsY] = this.getCoords(e);
             // Exit if clicked out of axes area
             if (!coordsX || !coordsY) {
                 return;
@@ -131,7 +129,7 @@ const StockToolsBindings = {
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
-            const coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis);
+            const [coordsX, coordsY] = this.getCoords(e);
             // Exit if clicked out of axes area
             if (!coordsX || !coordsY) {
                 return;
@@ -173,7 +171,7 @@ const StockToolsBindings = {
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
-            const coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis);
+            const [coordsX, coordsY] = this.getCoords(e);
             // Exit if clicked out of axes area
             if (!coordsX || !coordsY) {
                 return;
@@ -217,7 +215,7 @@ const StockToolsBindings = {
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
-            const coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis);
+            const [coordsX, coordsY] = this.getCoords(e);
             // Exit if clicked out of axes area
             if (!coordsX || !coordsY) {
                 return;
@@ -259,7 +257,7 @@ const StockToolsBindings = {
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
-            const coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis);
+            const [coordsX, coordsY] = this.getCoords(e);
             // Exit if clicked out of axes area
             if (!coordsX || !coordsY) {
                 return;
@@ -304,7 +302,7 @@ const StockToolsBindings = {
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
-            const coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis);
+            const [coordsX, coordsY] = this.getCoords(e);
             // Exit if clicked out of axes area
             if (!coordsX || !coordsY) {
                 return;
@@ -340,7 +338,7 @@ const StockToolsBindings = {
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
-            const coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis);
+            const [coordsX, coordsY] = this.getCoords(e);
             // Exit if clicked out of axes area
             if (!coordsX || !coordsY) {
                 return;
@@ -377,7 +375,7 @@ const StockToolsBindings = {
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
-            const coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis);
+            const [coordsX, coordsY] = this.getCoords(e);
             // Exit if clicked out of axes area
             if (!coordsX || !coordsY) {
                 return;
@@ -417,7 +415,7 @@ const StockToolsBindings = {
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
-            const coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis);
+            const [coordsX, coordsY] = this.getCoords(e);
             // Exit if clicked out of axes area
             if (!coordsX || !coordsY) {
                 return;
@@ -461,7 +459,7 @@ const StockToolsBindings = {
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
-            const coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis);
+            const [coordsX, coordsY] = this.getCoords(e);
             // Exit if clicked out of axes area
             if (!coordsX || !coordsY) {
                 return;
@@ -508,7 +506,7 @@ const StockToolsBindings = {
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
-            const coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis);
+            const [coordsX, coordsY] = this.getCoords(e);
             // Exit if clicked out of axes area
             if (!coordsX || !coordsY) {
                 return;
@@ -559,7 +557,7 @@ const StockToolsBindings = {
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
-            const coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis);
+            const [coordsX, coordsY] = this.getCoords(e);
             // Exit if clicked out of axes area
             if (!coordsX || !coordsY) {
                 return;
@@ -615,7 +613,7 @@ const StockToolsBindings = {
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
-            const coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis);
+            const [coordsX, coordsY] = this.getCoords(e);
             // Exit if clicked out of axes area
             if (!coordsX || !coordsY) {
                 return;
@@ -671,7 +669,7 @@ const StockToolsBindings = {
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
-            const coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis);
+            const [coordsX, coordsY] = this.getCoords(e);
             // Exit if clicked out of axes area
             if (!coordsX || !coordsY) {
                 return;
@@ -728,7 +726,7 @@ const StockToolsBindings = {
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
-            const coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis);
+            const [coordsX, coordsY] = this.getCoords(e);
             // Exit if clicked out of axes area
             if (!coordsX || !coordsY) {
                 return;
@@ -772,7 +770,7 @@ const StockToolsBindings = {
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
-            const coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis);
+            const [coordsX, coordsY] = this.getCoords(e);
             // Exit if clicked out of axes area
             if (!coordsX || !coordsY) {
                 return;
@@ -812,7 +810,7 @@ const StockToolsBindings = {
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
-            const coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis);
+            const [coordsX, coordsY] = this.getCoords(e);
             // Exit if clicked out of axes area
             if (!coordsX || !coordsY) {
                 return;
@@ -988,8 +986,8 @@ const StockToolsBindings = {
     /**
      * A vertical arrow annotation bindings. Includes `start` event. On click,
      * finds the closest point and marks it with an arrow.
-     * `#06b535` is the color of the arrow when
-     * pointing from above and `#f21313`
+     * `${palette.positiveColor}` is the color of the arrow when
+     * pointing from above and `${palette.negativeColor}`
      * when pointing from below the point.
      *
      * @type    {Highcharts.NavigationBindingsOptionsObject}
@@ -1051,7 +1049,7 @@ const StockToolsBindings = {
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
-            const coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis);
+            const [coordsX, coordsY] = this.getCoords(e);
             // Exit if clicked out of axes area
             if (!coordsX || !coordsY) {
                 return;
@@ -1074,18 +1072,20 @@ const StockToolsBindings = {
         // eslint-disable-next-line valid-jsdoc
         steps: [
             function (e, annotation) {
-                const mockPointOpts = annotation.options.typeOptions.points, x = mockPointOpts && mockPointOpts[0].x, coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis);
-                annotation.update({
-                    typeOptions: {
-                        xAxis: coordsX.axis.index,
-                        yAxis: coordsY.axis.index,
-                        points: [{
-                                x: x
-                            }, {
-                                x: coordsX.value
-                            }]
-                    }
-                });
+                const mockPointOpts = annotation.options.typeOptions.points, x = mockPointOpts && mockPointOpts[0].x, [coordsX, coordsY] = this.getCoords(e);
+                if (coordsX && coordsY) {
+                    annotation.update({
+                        typeOptions: {
+                            xAxis: coordsX.axis.index,
+                            yAxis: coordsY.axis.index,
+                            points: [{
+                                    x: x
+                                }, {
+                                    x: coordsX.value
+                                }]
+                        }
+                    });
+                }
             }
         ]
     },

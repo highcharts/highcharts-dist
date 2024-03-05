@@ -70,7 +70,7 @@ class OHLCSeries extends HLCSeries {
      *
      * */
     static compose(SeriesClass, ..._args) {
-        if (pushUnique(composed, this.compose)) {
+        if (pushUnique(composed, 'OHLCSeries')) {
             addEvent(SeriesClass, 'afterSetOptions', onSeriesAfterSetOptions);
             addEvent(SeriesClass, 'init', onSeriesInit);
         }

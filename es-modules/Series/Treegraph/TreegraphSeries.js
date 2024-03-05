@@ -17,9 +17,9 @@ const { prototype: { symbols } } = SVGRenderer;
 import TreegraphNode from './TreegraphNode.js';
 import TreegraphPoint from './TreegraphPoint.js';
 import TU from '../TreeUtilities.js';
-const { getLevelOptions } = TU;
+const { getLevelOptions, getNodeWidth } = TU;
 import U from '../../Core/Utilities.js';
-const { extend, merge, pick, relativeLength, splat } = U;
+const { arrayMax, extend, merge, pick, relativeLength, splat } = U;
 import TreegraphLink from './TreegraphLink.js';
 import TreegraphLayout from './TreegraphLayout.js';
 import TreegraphSeriesDefaults from './TreegraphSeriesDefaults.js';
@@ -64,7 +64,7 @@ class TreegraphSeries extends TreemapSeries {
      * @return {LayoutModifiers} `a` and `b` parameter for x and y direction.
      */
     getLayoutModifiers() {
-        const chart = this.chart, series = this, plotSizeX = chart.plotSizeX, plotSizeY = chart.plotSizeY;
+        const chart = this.chart, series = this, plotSizeX = chart.plotSizeX, plotSizeY = chart.plotSizeY, columnCount = arrayMax(this.points.map((p) => p.node.xPosition));
         let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity, maxXSize = 0, minXSize = 0, maxYSize = 0, minYSize = 0;
         this.points.forEach((point) => {
             // When fillSpace is on, stop the layout calculation when the hidden
@@ -72,11 +72,11 @@ class TreegraphSeries extends TreemapSeries {
             if (this.options.fillSpace && !point.visible) {
                 return;
             }
-            const node = point.node, level = series.mapOptionsToLevel[point.node.level] || {}, markerOptions = merge(this.options.marker, level.marker, point.options.marker), radius = relativeLength(markerOptions.radius || 0, Math.min(plotSizeX, plotSizeY)), symbol = markerOptions.symbol, nodeSizeY = (symbol === 'circle' || !markerOptions.height) ?
+            const node = point.node, level = series.mapOptionsToLevel[point.node.level] || {}, markerOptions = merge(this.options.marker, level.marker, point.options.marker), nodeWidth = markerOptions.width ?? getNodeWidth(this, columnCount), radius = relativeLength(markerOptions.radius || 0, Math.min(plotSizeX, plotSizeY)), symbol = markerOptions.symbol, nodeSizeY = (symbol === 'circle' || !markerOptions.height) ?
                 radius * 2 :
-                relativeLength(markerOptions.height, plotSizeY), nodeSizeX = symbol === 'circle' || !markerOptions.width ?
+                relativeLength(markerOptions.height, plotSizeY), nodeSizeX = symbol === 'circle' || !nodeWidth ?
                 radius * 2 :
-                relativeLength(markerOptions.width, plotSizeX);
+                relativeLength(nodeWidth, plotSizeX);
             node.nodeSizeX = nodeSizeX;
             node.nodeSizeY = nodeSizeY;
             let lineWidth;
@@ -113,7 +113,7 @@ class TreegraphSeries extends TreemapSeries {
     getLinks() {
         const series = this;
         const links = [];
-        this.data.forEach((point, index) => {
+        this.data.forEach((point) => {
             const levelOptions = series.mapOptionsToLevel[point.node.level || 0] || {};
             if (point.node.parent) {
                 const pointOptions = merge(levelOptions, point.options);
@@ -483,7 +483,7 @@ export default TreegraphSeries;
  * points can be given in the following ways:
  *
  * 1. The array of arrays, with `keys` property, which defines how the fields in
- *     array should be interpretated
+ *     array should be interpreted
  *    ```js
  *       keys: ['id', 'parent'],
  *       data: [

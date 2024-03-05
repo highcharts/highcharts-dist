@@ -79,7 +79,7 @@ const Funnel3DSeriesDefaults = {
      */
     reversed: false,
     /**
-     * By deafult sides fill is set to a gradient through this option being
+     * By default sides fill is set to a gradient through this option being
      * set to `true`. Set to `false` to get solid color for the sides.
      *
      * @product highcharts
@@ -160,7 +160,7 @@ const Funnel3DSeriesDefaults = {
  * @apioption series.funnel3d.data
  */
 /**
- * By deafult sides fill is set to a gradient through this option being
+ * By default sides fill is set to a gradient through this option being
  * set to `true`. Set to `false` to get solid color for the sides.
  *
  * @type      {boolean}

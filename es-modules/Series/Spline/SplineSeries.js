@@ -269,4 +269,4 @@ export default SplineSeries;
  * @product   highcharts highstock
  * @apioption series.spline.data
  */
-''; // adds doclets above intro transpilat
+''; // adds doclets above intro transpiled

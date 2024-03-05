@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.3.0 (2024-01-10)
+ * @license Highstock JS v11.4.0 (2024-03-05)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -102,7 +102,7 @@
                     sum = accumulatePoints(sum, yVal, periodIndex, index);
                     price = pick(yVal[rangeIndex][index], yVal[rangeIndex]);
                     oscillator = price - sum / period;
-                    // substracting the first period point
+                    // subtracting the first period point
                     sum = accumulatePoints(sum, yVal, j, index, true);
                     DPO.push([xVal[rangeIndex], oscillator]);
                     xData.push(xVal[rangeIndex]);
@@ -183,8 +183,9 @@
 
         return DPOIndicator;
     });
-    _registerModule(_modules, 'masters/indicators/dpo.src.js', [], function () {
+    _registerModule(_modules, 'masters/indicators/dpo.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.3.0 (2024-01-10)
+ * @license Highstock JS v11.4.0 (2024-03-05)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -64,7 +64,9 @@
              *  Static Functions
              *
              * */
-            static populateAverage(xVal, yVal, yValVolume, i, _period) {
+            static populateAverage(xVal, yVal, yValVolume, i, 
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            _period) {
                 const high = yVal[i][1], low = yVal[i][2], close = yVal[i][3], volume = yValVolume[i], adY = close === high && close === low || high === low ?
                     0 :
                     ((2 * close - low - high) / (high - low)) * volume, adX = xVal[i];
@@ -275,7 +277,7 @@
          */
         ChaikinIndicator.defaultOptions = merge(EMAIndicator.defaultOptions, {
             /**
-             * Paramters used in calculation of Chaikin Oscillator
+             * Parameters used in calculation of Chaikin Oscillator
              * series points.
              *
              * @excluding index
@@ -336,8 +338,9 @@
 
         return ChaikinIndicator;
     });
-    _registerModule(_modules, 'masters/indicators/chaikin.src.js', [], function () {
+    _registerModule(_modules, 'masters/indicators/chaikin.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

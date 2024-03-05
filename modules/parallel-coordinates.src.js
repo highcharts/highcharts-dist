@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v11.4.0 (2024-03-05)
  *
  * Support for parallel coordinates in Highcharts
  *
@@ -179,7 +179,7 @@
 
         return ParallelCoordinatesDefaults;
     });
-    _registerModule(_modules, 'Extensions/ParallelCoordinates/ParallelAxis.js', [_modules['Core/Globals.js'], _modules['Extensions/ParallelCoordinates/ParallelCoordinatesDefaults.js'], _modules['Core/Utilities.js']], function (H, ParallelCoordinatesDefaults, U) {
+    _registerModule(_modules, 'Extensions/ParallelCoordinates/ParallelAxis.js', [_modules['Extensions/ParallelCoordinates/ParallelCoordinatesDefaults.js'], _modules['Core/Utilities.js']], function (ParallelCoordinatesDefaults, U) {
         /* *
          *
          *  Parallel coordinates module
@@ -191,8 +191,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { composed } = H;
-        const { addEvent, arrayMax, arrayMin, isNumber, merge, pick, pushUnique, splat } = U;
+        const { addEvent, arrayMax, arrayMin, isNumber, merge, pick, splat } = U;
         /* *
          *
          *  Class
@@ -267,7 +266,7 @@
              * @private
              */
             function compose(AxisClass) {
-                if (pushUnique(composed, compose)) {
+                if (!AxisClass.keepProps.includes('parallel')) {
                     const axisCompo = AxisClass;
                     // On update, keep parallel additions.
                     AxisClass.keepProps.push('parallel');
@@ -386,7 +385,7 @@
              * */
             /** @private */
             function compose(SeriesClass) {
-                if (pushUnique(composed, compose)) {
+                if (pushUnique(composed, 'ParallelSeries')) {
                     const CompoClass = SeriesClass, { line: { prototype: { pointClass: LinePointClass } }, spline: { prototype: { pointClass: SplinePointClass } } } = SeriesClass.types;
                     addEvent(CompoClass, 'afterTranslate', onSeriesAfterTranslate, { order: 1 });
                     addEvent(CompoClass, 'bindAxes', onSeriesBindAxes);
@@ -513,7 +512,7 @@
 
         return ParallelSeries;
     });
-    _registerModule(_modules, 'Extensions/ParallelCoordinates/ParallelCoordinates.js', [_modules['Core/Globals.js'], _modules['Extensions/ParallelCoordinates/ParallelAxis.js'], _modules['Extensions/ParallelCoordinates/ParallelCoordinatesDefaults.js'], _modules['Extensions/ParallelCoordinates/ParallelSeries.js'], _modules['Core/Utilities.js']], function (H, ParallelAxis, ParallelCoordinatesDefaults, ParallelSeries, U) {
+    _registerModule(_modules, 'Extensions/ParallelCoordinates/ParallelCoordinates.js', [_modules['Extensions/ParallelCoordinates/ParallelAxis.js'], _modules['Extensions/ParallelCoordinates/ParallelCoordinatesDefaults.js'], _modules['Extensions/ParallelCoordinates/ParallelSeries.js'], _modules['Core/Utilities.js']], function (ParallelAxis, ParallelCoordinatesDefaults, ParallelSeries, U) {
         /* *
          *
          *  Parallel coordinates module
@@ -525,8 +524,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { composed } = H;
-        const { addEvent, defined, merge, pushUnique, splat } = U;
+        const { addEvent, defined, merge, splat } = U;
         /* *
          *
          *  Class
@@ -597,8 +595,8 @@
             function compose(AxisClass, ChartClass, highchartsDefaultOptions, SeriesClass) {
                 ParallelAxis.compose(AxisClass);
                 ParallelSeries.compose(SeriesClass);
-                if (pushUnique(composed, compose)) {
-                    const ChartCompo = ChartClass, addsProto = ChartAdditions.prototype, chartProto = ChartCompo.prototype;
+                const ChartCompo = ChartClass, addsProto = ChartAdditions.prototype, chartProto = ChartCompo.prototype;
+                if (!chartProto.setParallelInfo) {
                     chartProto.setParallelInfo = addsProto.setParallelInfo;
                     addEvent(ChartCompo, 'init', onChartInit);
                     addEvent(ChartCompo, 'update', onChartUpdate);
@@ -633,7 +631,8 @@
                     if (!options.legend) {
                         options.legend = {};
                     }
-                    if (typeof options.legend.enabled === 'undefined') {
+                    if (options.legend &&
+                        typeof options.legend.enabled === 'undefined') {
                         options.legend.enabled = false;
                     }
                     merge(true, options, 
@@ -690,5 +689,6 @@
         const G = Highcharts;
         ParallelCoordinates.compose(G.Axis, G.Chart, G.defaultOptions, G.Series);
 
+        return Highcharts;
     });
 }));

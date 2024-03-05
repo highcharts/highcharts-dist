@@ -99,7 +99,7 @@ class OrganizationSeries extends SankeySeries {
     translateLink(point) {
         const chart = this.chart, options = this.options, fromNode = point.fromNode, toNode = point.toNode, linkWidth = pick(options.linkLineWidth, options.link.lineWidth), crisp = (Math.round(linkWidth) % 2) / 2, factor = pick(options.link.offset, 0.5), type = pick(point.options.link && point.options.link.type, options.link.type);
         if (fromNode.shapeArgs && toNode.shapeArgs) {
-            const hangingIndent = options.hangingIndent, toOffset = toNode.options.offset, percentOffset = /%$/.test(toOffset) && parseInt(toOffset, 10), inverted = chart.inverted;
+            const hangingIndent = options.hangingIndent, hangingRight = options.hangingSide === 'right', toOffset = toNode.options.offset, percentOffset = /%$/.test(toOffset) && parseInt(toOffset, 10), inverted = chart.inverted;
             let x1 = Math.floor((fromNode.shapeArgs.x || 0) +
                 (fromNode.shapeArgs.width || 0)) + crisp, y1 = Math.floor((fromNode.shapeArgs.y || 0) +
                 (fromNode.shapeArgs.height || 0) / 2) + crisp, x2 = Math.floor(toNode.shapeArgs.x || 0) + crisp, y2 = Math.floor((toNode.shapeArgs.y || 0) +
@@ -127,11 +127,14 @@ class OrganizationSeries extends SankeySeries {
             }
             if (toNode.hangsFrom === fromNode) {
                 if (chart.inverted) {
-                    y1 = Math.floor((fromNode.shapeArgs.y || 0) +
-                        (fromNode.shapeArgs.height || 0) -
-                        hangingIndent / 2) + crisp;
-                    y2 = ((toNode.shapeArgs.y || 0) +
-                        (toNode.shapeArgs.height || 0));
+                    y1 = !hangingRight ?
+                        Math.floor((fromNode.shapeArgs.y || 0) +
+                            (fromNode.shapeArgs.height || 0) -
+                            hangingIndent / 2) + crisp :
+                        Math.floor((fromNode.shapeArgs.y || 0) +
+                            hangingIndent / 2) + crisp;
+                    y2 = !hangingRight ? ((toNode.shapeArgs.y || 0) +
+                        (toNode.shapeArgs.height || 0)) : (toNode.shapeArgs.y || 0) + hangingIndent / 2;
                 }
                 else {
                     y1 = Math.floor((fromNode.shapeArgs.y || 0) +
@@ -180,15 +183,19 @@ class OrganizationSeries extends SankeySeries {
     }
     translateNode(node, column) {
         super.translateNode(node, column);
-        const chart = this.chart, options = this.options, translationFactor = this.translationFactor, sum = node.getSum(), nodeHeight = Math.max(Math.round(sum * translationFactor), this.options.minLinkWidth || 0), nodeWidth = Math.round(this.nodeWidth), indent = options.hangingIndent || 0, sign = chart.inverted ? -1 : 1, shapeArgs = node.shapeArgs, indentLogic = options.hangingIndentTranslation, minLength = options.minNodeLength || 10;
+        const chart = this.chart, options = this.options, sum = node.getSum(), translationFactor = this.translationFactor, nodeHeight = Math.max(Math.round(sum * translationFactor), options.minLinkWidth || 0), hangingRight = options.hangingSide === 'right', indent = options.hangingIndent || 0, indentLogic = options.hangingIndentTranslation, minLength = options.minNodeLength || 10, nodeWidth = Math.round(this.nodeWidth), shapeArgs = node.shapeArgs, sign = chart.inverted ? -1 : 1;
         let parentNode = node.hangsFrom;
         if (parentNode) {
             if (indentLogic === 'cumulative') {
                 // Move to the right:
                 shapeArgs.height -= indent;
-                shapeArgs.y -= sign * indent;
+                // If hanging right, first indent is handled by shrinking.
+                if (chart.inverted && !hangingRight) {
+                    shapeArgs.y -= sign * indent;
+                }
                 while (parentNode) {
-                    shapeArgs.y += sign * indent;
+                    // Hanging right is the same direction as non-inverted.
+                    shapeArgs.y += (hangingRight ? 1 : sign) * indent;
                     parentNode = parentNode.hangsFrom;
                 }
             }
@@ -197,6 +204,11 @@ class OrganizationSeries extends SankeySeries {
                 while (parentNode &&
                     shapeArgs.height > indent + minLength) {
                     shapeArgs.height -= indent;
+                    // Fixes nodes not dropping in non-inverted charts.
+                    // Hanging right is the same as non-inverted.
+                    if (!chart.inverted || hangingRight) {
+                        shapeArgs.y += indent;
+                    }
                     parentNode = parentNode.hangsFrom;
                 }
             }
@@ -204,7 +216,7 @@ class OrganizationSeries extends SankeySeries {
                 // Option indentLogic === "inherit"
                 // Do nothing (v9.3.2 and prev versions):
                 shapeArgs.height -= indent;
-                if (!chart.inverted) {
+                if (!chart.inverted || hangingRight) {
                     shapeArgs.y += indent;
                 }
             }

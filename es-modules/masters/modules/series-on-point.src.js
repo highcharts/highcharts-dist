@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v@product.version@ (@product.date@)
  * @module highcharts/modules/series-on-point
  * @requires highcharts
  *
@@ -15,3 +15,4 @@ import Highcharts from '../../Core/Globals.js';
 import SeriesOnPointComposition from '../../Series/SeriesOnPointComposition.js';
 const G = Highcharts;
 SeriesOnPointComposition.compose(G.Series, G.Chart);
+export default Highcharts;

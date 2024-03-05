@@ -45,7 +45,7 @@ class SonificationSpeaker {
      * @function Highcharts.SonificationSpeaker#say
      * @param {string} message The message to speak.
      * @param {SonificationSpeakerOptionsObject} [options]
-     * Optionally override spaker configuration.
+     * Optionally override speaker configuration.
      */
     say(message, options) {
         if (this.synthesis) {
@@ -69,7 +69,7 @@ class SonificationSpeaker {
      * @param {string} message
      * The message to speak.
      * @param {SonificationSpeakerOptionsObject} [options]
-     * Optionally override spaker configuration.
+     * Optionally override speaker configuration.
      */
     sayAtTime(time, message, options) {
         this.scheduled.push(setTimeout(this.say.bind(this, message, options), time));

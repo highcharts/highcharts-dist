@@ -692,7 +692,7 @@ Measure.prototype.defaultOptions = merge(Annotation.prototype.defaultOptions,
              *
              * <td>`this.min`</td>
              *
-             * <td>The mininimum value of the points in the selected
+             * <td>The minimum value of the points in the selected
              * range.</td>
              *
              * </tr>

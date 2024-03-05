@@ -10,10 +10,8 @@
  *
  * */
 'use strict';
-import H from '../Core/Globals.js';
-const { composed } = H;
 import U from '../Core/Utilities.js';
-const { addEvent, pick, pushUnique } = U;
+const { addEvent, pick } = U;
 /* *
  *
  *  Composition
@@ -44,10 +42,12 @@ var FocusBorderComposition;
      * @private
      */
     function compose(ChartClass, SVGElementClass) {
-        if (pushUnique(composed, compose)) {
-            const chartProto = ChartClass.prototype, svgElementProto = SVGElementClass.prototype;
+        const chartProto = ChartClass.prototype, svgElementProto = SVGElementClass.prototype;
+        if (!chartProto.renderFocusBorder) {
             chartProto.renderFocusBorder = chartRenderFocusBorder;
             chartProto.setFocusToElement = chartSetFocusToElement;
+        }
+        if (!svgElementProto.addFocusBorder) {
             svgElementProto.addFocusBorder = svgElementAddFocusBorder;
             svgElementProto.removeFocusBorder = svgElementRemoveFocusBorder;
         }

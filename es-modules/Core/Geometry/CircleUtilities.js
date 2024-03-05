@@ -134,7 +134,7 @@ var CircleUtilities;
      * The first circle.
      *
      * @param {Highcharts.CircleObject} c2
-     * The second sircle.
+     * The second circle.
      *
      * @return {Array<Highcharts.PositionObject>}
      * Returns the resulting intersection points.
@@ -173,7 +173,7 @@ var CircleUtilities;
         return circles.reduce((points, c1, i, arr) => {
             const additional = arr
                 .slice(i + 1)
-                .reduce((points, c2, j, arr) => {
+                .reduce((points, c2, j) => {
                 const indexes = [i, j + i + 1];
                 return points.concat(getCircleCircleIntersection(c1, c2).map((p) => {
                     p.indexes = indexes;
@@ -194,7 +194,7 @@ var CircleUtilities;
      * The first circle.
      *
      * @param {Highcharts.CircleObject} circle2
-     * The The second circle.
+     * The second circle.
      *
      * @return {boolean}
      * Returns true if circle1 is completely overlapping circle2, false if not.

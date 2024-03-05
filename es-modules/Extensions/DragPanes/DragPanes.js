@@ -15,10 +15,8 @@
 import AxisResizer from './AxisResizer.js';
 import D from '../../Core/Defaults.js';
 const { defaultOptions } = D;
-import H from '../../Core/Globals.js';
-const { composed } = H;
 import U from '../../Core/Utilities.js';
-const { addEvent, merge, pushUnique, wrap } = U;
+const { addEvent, merge, wrap } = U;
 /* *
  *
  *  Functions
@@ -28,7 +26,7 @@ const { addEvent, merge, pushUnique, wrap } = U;
  * @private
  */
 function compose(AxisClass, PointerClass) {
-    if (pushUnique(composed, compose)) {
+    if (!AxisClass.keepProps.includes('resizer')) {
         merge(true, defaultOptions.yAxis, AxisResizer.resizerOptions);
         // Keep resizer reference on axis update
         AxisClass.keepProps.push('resizer');

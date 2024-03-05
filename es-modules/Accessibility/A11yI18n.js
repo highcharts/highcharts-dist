@@ -13,10 +13,8 @@
 'use strict';
 import F from '../Core/Templating.js';
 const { format } = F;
-import H from '../Core/Globals.js';
-const { composed } = H;
 import U from '../Core/Utilities.js';
-const { getNestedProperty, pick, pushUnique } = U;
+const { getNestedProperty, pick } = U;
 /* *
  *
  *  Composition
@@ -38,8 +36,8 @@ var A11yI18nComposition;
      * @private
      */
     function compose(ChartClass) {
-        if (pushUnique(composed, compose)) {
-            const chartProto = ChartClass.prototype;
+        const chartProto = ChartClass.prototype;
+        if (!chartProto.langFormat) {
             chartProto.langFormat = langFormat;
         }
     }
@@ -149,7 +147,7 @@ var A11yI18nComposition;
      * If negative, the function will subtract the number from the length of the
      * array.  Use this to stop iterating before the array ends.  Example:
      *
-     * - Format: 'List contains: {#each(myArray, -1) }and {myArray[-1]}.'
+     * - Format: 'List contains: {#each(myArray, -1), }and {myArray[-1]}.'
      *
      * - Context: { myArray: [0, 1, 2, 3] }
      *

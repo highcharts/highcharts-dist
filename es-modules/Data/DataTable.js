@@ -24,7 +24,6 @@ const { addEvent, fireEvent, uniqueKey } = U;
  * to add, remove, and manipulate columns and rows, as well as to retrieve data
  * from specific cells.
  *
- * @private
  * @class
  * @name Highcharts.DataTable
  *
@@ -890,7 +889,7 @@ class DataTable {
      * @emits #afterSetColumns
      */
     setColumns(columns, rowIndex, eventDetail) {
-        const table = this, tableColumns = table.columns, tableModifier = table.modifier, tableRowCount = table.rowCount, reset = (typeof rowIndex === 'undefined'), columnNames = Object.keys(columns);
+        const table = this, tableColumns = table.columns, tableModifier = table.modifier, reset = (typeof rowIndex === 'undefined'), columnNames = Object.keys(columns);
         table.emit({
             type: 'setColumns',
             columns,

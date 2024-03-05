@@ -9,9 +9,9 @@
  * */
 'use strict';
 import G from '../Core/Globals.js';
-const { doc, win } = G;
+const { win } = G;
 import U from '../Core/Utilities.js';
-const { createElement, discardElement, merge, objectEach } = U;
+const { discardElement, objectEach } = U;
 /* *
  *
  *  Functions
@@ -26,7 +26,7 @@ const { createElement, discardElement, merge, objectEach } = U;
  *        The Ajax settings to use.
  *
  * @return {false|undefined}
- *         Returns false, if error occured.
+ *         Returns false, if error occurred.
  */
 function ajax(settings) {
     const headers = {
@@ -41,7 +41,7 @@ function ajax(settings) {
      * @param {XMLHttpRequest} xhr
      * Internal request object.
      * @param {string|Error} err
-     * Occured error.
+     * Occurred error.
      */
     function handleError(xhr, err) {
         if (settings.error) {

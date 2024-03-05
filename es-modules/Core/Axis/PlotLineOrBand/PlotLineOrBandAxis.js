@@ -8,10 +8,8 @@
  *
  * */
 'use strict';
-import H from '../../Globals.js';
-const { composed } = H;
 import U from '../../Utilities.js';
-const { erase, extend, isNumber, pushUnique } = U;
+const { erase, extend, isNumber } = U;
 /* *
  *
  *  Composition
@@ -110,9 +108,10 @@ var PlotLineOrBandAxis;
      * @private
      */
     function compose(PlotLineOrBandType, AxisClass) {
-        if (pushUnique(composed, compose)) {
+        const axisProto = AxisClass.prototype;
+        if (!axisProto.addPlotBand) {
             PlotLineOrBandClass = PlotLineOrBandType;
-            extend(AxisClass.prototype, {
+            extend(axisProto, {
                 addPlotBand,
                 addPlotLine,
                 addPlotBandOrLine,

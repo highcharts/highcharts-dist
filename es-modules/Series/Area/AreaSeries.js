@@ -8,8 +8,6 @@
  *
  * */
 'use strict';
-import Color from '../../Core/Color/Color.js';
-const { parse: color } = Color;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { seriesTypes: { line: LineSeries } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
@@ -255,7 +253,7 @@ class AreaSeries extends LineSeries {
                                         pointMap[x][nullName] = true;
                                         // If there are missing points in the next
                                         // stack in any of the series below this
-                                        // one, we need to substract the missing
+                                        // one, we need to subtract the missing
                                         // values and add a hiatus to the left or
                                         // right.
                                     }
@@ -546,4 +544,4 @@ export default AreaSeries;
  * @default   {highstock} 0.75
  * @apioption series.area.fillOpacity
  */
-''; // adds doclets above to transpilat
+''; // adds doclets above to transpiled

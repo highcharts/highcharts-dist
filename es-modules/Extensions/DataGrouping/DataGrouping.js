@@ -29,7 +29,7 @@ function compose(AxisClass, SeriesClass, TooltipClass) {
     DataGroupingAxisComposition.compose(AxisClass);
     DataGroupingSeriesComposition.compose(SeriesClass);
     if (TooltipClass &&
-        pushUnique(composed, compose)) {
+        pushUnique(composed, 'DataGrouping')) {
         addEvent(TooltipClass, 'headerFormatter', onTooltipHeaderFormatter);
     }
 }

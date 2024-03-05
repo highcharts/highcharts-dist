@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v11.4.0 (2024-03-05)
  *
  * Sonification module
  *
@@ -924,6 +924,7 @@
         /**
          * Sonification/audio chart options for a series.
          *
+         * @declare    Highcharts.SeriesSonificationOptions
          * @since 11.0.0
          * @requires   modules/sonification
          * @apioption  plotOptions.series.sonification
@@ -1030,11 +1031,11 @@
          * */
         const { clamp, defined, pick } = U;
         /**
-         * Get the multipler value from a pitch tracked multiplier. The parameter
+         * Get the multiplier value from a pitch tracked multiplier. The parameter
          * specifies the multiplier at ca 3200Hz. It is 1 at ca 50Hz. In between
          * it is mapped logarithmically.
          * @private
-         * @param {number} multiplier The multipler to track.
+         * @param {number} multiplier The multiplier to track.
          * @param {number} freq The current frequency.
          */
         function getPitchTrackedMultiplierVal(multiplier, freq) {
@@ -1233,7 +1234,7 @@
             getVMTarget() {
                 return this.vmNode && this.vmNode.gain;
             }
-            // Schedule one of the osciallator envelopes at a specified time in
+            // Schedule one of the oscillator envelopes at a specified time in
             // seconds (in AudioContext timespace).
             runEnvelopeAtTime(type, time) {
                 if (!this.gainNode) {
@@ -2995,7 +2996,7 @@
              * @function Highcharts.SonificationSpeaker#say
              * @param {string} message The message to speak.
              * @param {SonificationSpeakerOptionsObject} [options]
-             * Optionally override spaker configuration.
+             * Optionally override speaker configuration.
              */
             say(message, options) {
                 if (this.synthesis) {
@@ -3019,7 +3020,7 @@
              * @param {string} message
              * The message to speak.
              * @param {SonificationSpeakerOptionsObject} [options]
-             * Optionally override spaker configuration.
+             * Optionally override speaker configuration.
              */
             sayAtTime(time, message, options) {
                 this.scheduled.push(setTimeout(this.say.bind(this, message, options), time));
@@ -5435,5 +5436,6 @@
         };
         Sonification.compose(G.Chart, G.Series, G.Point);
 
+        return Highcharts;
     });
 }));

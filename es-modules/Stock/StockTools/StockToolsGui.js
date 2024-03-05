@@ -12,12 +12,10 @@
 'use strict';
 import D from '../../Core/Defaults.js';
 const { setOptions } = D;
-import H from '../../Core/Globals.js';
-const { composed } = H;
 import StockToolsDefaults from './StockToolsDefaults.js';
 import Toolbar from './StockToolbar.js';
 import U from '../../Core/Utilities.js';
-const { addEvent, getStyle, merge, pick, pushUnique } = U;
+const { addEvent, getStyle, merge, pick } = U;
 /* *
  *
  *  Functions
@@ -38,7 +36,8 @@ function chartSetStockTools(options) {
  * @private
  */
 function compose(ChartClass, NavigationBindingsClass) {
-    if (pushUnique(composed, compose)) {
+    const chartProto = ChartClass.prototype;
+    if (!chartProto.setStockTools) {
         addEvent(ChartClass, 'afterGetContainer', onChartAfterGetContainer);
         addEvent(ChartClass, 'beforeRedraw', onChartBeforeRedraw);
         addEvent(ChartClass, 'beforeRender', onChartBeforeRedraw);
@@ -46,7 +45,7 @@ function compose(ChartClass, NavigationBindingsClass) {
         addEvent(ChartClass, 'getMargins', onChartGetMargins, { order: 0 });
         addEvent(ChartClass, 'redraw', onChartRedraw);
         addEvent(ChartClass, 'render', onChartRender);
-        ChartClass.prototype.setStockTools = chartSetStockTools;
+        chartProto.setStockTools = chartSetStockTools;
         addEvent(NavigationBindingsClass, 'deselectButton', onNavigationBindingsDeselectButton);
         addEvent(NavigationBindingsClass, 'selectButton', onNavigationBindingsSelectButton);
         setOptions(StockToolsDefaults);
@@ -129,8 +128,8 @@ function onChartRender() {
         this.navigationBindings &&
         this.options.series &&
         button) {
-        if (this.navigationBindings.constructor.prototype.utils
-            .isPriceIndicatorEnabled(this.series)) {
+        if (this.navigationBindings.utils
+            ?.isPriceIndicatorEnabled?.(this.series)) {
             button.firstChild.style['background-image'] =
                 'url("' + stockTools.getIconsURL() + 'current-price-hide.svg")';
         }
@@ -163,7 +162,7 @@ function onNavigationBindingsSelectButton(event) {
     const className = 'highcharts-submenu-wrapper', gui = this.chart.stockTools;
     if (gui && gui.guiEnabled) {
         let button = event.button;
-        // Unslect other active buttons
+        // Unselect other active buttons
         gui.unselectAllButtons(event.button);
         // If clicked on a submenu, select state for it's parent
         if (button.parentNode.className.indexOf(className) >= 0) {

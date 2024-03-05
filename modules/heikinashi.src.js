@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.3.0 (2024-01-10)
+ * @license Highstock JS v11.4.0 (2024-03-05)
  *
  * HeikinAshi series type for Highcharts Stock
  *
@@ -45,7 +45,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { candlestick: { prototype: { pointClass: CandlestickPoint } }, hlc: { prototype: { pointClass: HLCPoint } } } = SeriesRegistry.seriesTypes;
+        const { candlestick: { prototype: { pointClass: CandlestickPoint } }, hlc: { prototype: { 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        pointClass: HLCPoint } } } = SeriesRegistry.seriesTypes;
         /* *
          *
          *  Class
@@ -156,7 +158,7 @@
          * @product   highstock
          * @apioption series.heikinashi.data
          */
-        ''; // adds doclets above to transpilat
+        ''; // adds doclets above to transpiled
         /* *
          *
          *  Default Export
@@ -205,7 +207,7 @@
          */
         function onHeikinAshiSeriesAfterTranslate() {
             const series = this, points = series.points, heikiashiData = series.heikiashiData, cropStart = series.cropStart || 0;
-            // Reset the proccesed data.
+            // Reset the processed data.
             series.processedYData.length = 0;
             // Modify points.
             for (let i = 0; i < points.length; i++) {
@@ -255,9 +257,9 @@
              *  Static Functions
              *
              * */
-            static compose(SeriesClass, AxisClass, ..._args) {
+            static compose(SeriesClass, AxisClass) {
                 CandlestickSeries.compose(SeriesClass);
-                if (pushUnique(composed, this.compose)) {
+                if (pushUnique(composed, 'HeikinAshi')) {
                     addEvent(AxisClass, 'postProcessData', onAxisPostProcessData);
                     addEvent(HeikinAshiSeries, 'afterTranslate', onHeikinAshiSeriesAfterTranslate);
                     addEvent(HeikinAshiSeries, 'updatedData', onHeikinAshiSeriesUpdatedData);
@@ -346,5 +348,6 @@
         const G = Highcharts;
         HeikinAshiSeries.compose(G.Series, G.Axis);
 
+        return Highcharts;
     });
 }));

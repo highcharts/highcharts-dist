@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.3.0 (2024-01-10)
+ * @license Highstock JS v@product.version@ (@product.date@)
  * @module highcharts/modules/heikinashi
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -15,3 +15,4 @@ import Highcharts from '../../Core/Globals.js';
 import HeikinAshiSeries from '../../Series/HeikinAshi/HeikinAshiSeries.js';
 const G = Highcharts;
 HeikinAshiSeries.compose(G.Series, G.Axis);
+export default Highcharts;

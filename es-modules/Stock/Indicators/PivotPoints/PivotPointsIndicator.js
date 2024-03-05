@@ -88,7 +88,7 @@ class PivotPointsIndicator extends SMAIndicator {
         let currentLabel, pointsLength, point, i;
         if (indicator.options.dataLabels.enabled) {
             pointsLength = indicator.points.length;
-            // For every Ressitance/Support group we need to render labels.
+            // For every Resistance/Support group we need to render labels.
             // Add one more item, which will just store dataLabels from
             // previous iteration
             pointMapping.concat([false]).forEach((position, k) => {
@@ -239,7 +239,7 @@ PivotPointsIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
         index: void 0,
         period: 28,
         /**
-         * Algorithm used to calculate ressistance and support lines based
+         * Algorithm used to calculate resistance and support lines based
          * on pivot points. Implemented algorithms: `'standard'`,
          * `'fibonacci'` and `'camarilla'`
          */

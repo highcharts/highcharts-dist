@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v@product.version@ (@product.date@)
  * @module highcharts/modules/overlapping-datalabels
  * @requires highcharts
  *
@@ -11,4 +11,6 @@
 import Highcharts from '../../Core/Globals.js';
 import OverlappingDataLabels from '../../Extensions/OverlappingDataLabels.js';
 const G = Highcharts;
-OverlappingDataLabels.compose(G.Chart);
+G.OverlappingDataLabels = G.OverlappingDataLabels || OverlappingDataLabels;
+G.OverlappingDataLabels.compose(G.Chart);
+export default Highcharts;

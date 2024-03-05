@@ -14,7 +14,7 @@ import * as _Highcharts from "../highcharts.src";
 export function factory(highcharts: typeof Highcharts): void;
 declare module "../highcharts.src" {
     /**
-     * Callback function that returns the correspondig Date object to a match.
+     * Callback function that returns the corresponding Date object to a match.
      */
     type DataDateFormatCallbackFunction = (match: Array<number>) => number;
     interface AjaxSettingsObject {
@@ -165,7 +165,7 @@ declare module "../highcharts.src" {
      * @param settings
      *        The Ajax settings to use.
      *
-     * @return Returns false, if error occured.
+     * @return Returns false, if error occurred.
      */
     function ajax(settings: AjaxSettingsObject): (false|undefined);
     /**

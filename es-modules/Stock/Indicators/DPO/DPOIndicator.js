@@ -67,7 +67,7 @@ class DPOIndicator extends SMAIndicator {
             sum = accumulatePoints(sum, yVal, periodIndex, index);
             price = pick(yVal[rangeIndex][index], yVal[rangeIndex]);
             oscillator = price - sum / period;
-            // substracting the first period point
+            // subtracting the first period point
             sum = accumulatePoints(sum, yVal, j, index, true);
             DPO.push([xVal[rangeIndex], oscillator]);
             xData.push(xVal[rangeIndex]);

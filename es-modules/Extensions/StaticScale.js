@@ -8,10 +8,8 @@
  *
  * */
 'use strict';
-import H from '../Core/Globals.js';
-const { composed } = H;
 import U from '../Core/Utilities.js';
-const { addEvent, defined, isNumber, pick, pushUnique } = U;
+const { addEvent, defined, isNumber, pick } = U;
 /* *
  *
  *  Composition
@@ -19,8 +17,8 @@ const { addEvent, defined, isNumber, pick, pushUnique } = U;
  * */
 /** @private */
 function compose(AxisClass, ChartClass) {
-    if (pushUnique(composed, compose)) {
-        const chartProto = ChartClass.prototype;
+    const chartProto = ChartClass.prototype;
+    if (!chartProto.adjustHeight) {
         addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
         chartProto.adjustHeight = chartAdjustHeight;
         addEvent(ChartClass, 'render', chartProto.adjustHeight);

@@ -13,14 +13,13 @@ import F from '../Templating.js';
 const { format } = F;
 import D from '../Defaults.js';
 const { getOptions } = D;
-import H from '../Globals.js';
-const { composed } = H;
 import NavigatorDefaults from '../../Stock/Navigator/NavigatorDefaults.js';
 import RangeSelectorDefaults from '../../Stock/RangeSelector/RangeSelectorDefaults.js';
 import ScrollbarDefaults from '../../Stock/Scrollbar/ScrollbarDefaults.js';
+import StockUtilities from '../../Stock/Utilities/StockUtilities.js';
+const { setFixedRange } = StockUtilities;
 import U from '../Utilities.js';
-const { addEvent, clamp, defined, extend, find, isNumber, isString, merge, pick, pushUnique, splat } = U;
-import '../Pointer.js';
+const { addEvent, clamp, defined, extend, find, isNumber, isString, merge, pick, splat } = U;
 /* *
  *
  *  Functions
@@ -113,7 +112,7 @@ class StockChart extends Chart {
      *        Custom options.
      *
      * @param {Function} [callback]
-     *        Function to run when the chart has loaded and and all external
+     *        Function to run when the chart has loaded and all external
      *        images are loaded.
      *
      *
@@ -168,12 +167,12 @@ class StockChart extends Chart {
         userOptions.xAxis = xAxisOptions;
         userOptions.yAxis = yAxisOptions;
         // Apply X axis options to both single and multi y axes
-        options.xAxis = splat(userOptions.xAxis || {}).map((xAxisOptions, i) => merge(getDefaultAxisOptions('xAxis', xAxisOptions, defaultOptions.xAxis), 
+        options.xAxis = splat(userOptions.xAxis || {}).map((xAxisOptions) => merge(getDefaultAxisOptions('xAxis', xAxisOptions, defaultOptions.xAxis), 
         // #7690
         xAxisOptions, // User options
         getForcedAxisOptions('xAxis', userOptions)));
         // Apply Y axis options to both single and multi y axes
-        options.yAxis = splat(userOptions.yAxis || {}).map((yAxisOptions, i) => merge(getDefaultAxisOptions('yAxis', yAxisOptions, defaultOptions.yAxis), 
+        options.yAxis = splat(userOptions.yAxis || {}).map((yAxisOptions) => merge(getDefaultAxisOptions('yAxis', yAxisOptions, defaultOptions.yAxis), 
         // #7690
         yAxisOptions // User options
         ));
@@ -218,14 +217,16 @@ addEvent(Chart, 'update', function (e) {
      *
      * */
     /** @private */
-    function compose(AxisClass, SeriesClass, SVGRendererClass) {
-        if (pushUnique(composed, compose)) {
+    function compose(ChartClass, AxisClass, SeriesClass, SVGRendererClass) {
+        const seriesProto = SeriesClass.prototype;
+        if (!seriesProto.forceCropping) {
             addEvent(AxisClass, 'afterDrawCrosshair', onAxisAfterDrawCrosshair);
             addEvent(AxisClass, 'afterHideCrosshair', onAxisAfterHideCrosshair);
             addEvent(AxisClass, 'autoLabelAlign', onAxisAutoLabelAlign);
             addEvent(AxisClass, 'destroy', onAxisDestroy);
             addEvent(AxisClass, 'getPlotLinePath', onAxisGetPlotLinePath);
-            SeriesClass.prototype.forceCropping = seriesForceCropping;
+            ChartClass.prototype.setFixedRange = setFixedRange;
+            seriesProto.forceCropping = seriesForceCropping;
             addEvent(SeriesClass, 'setOptions', onSeriesSetOptions);
             SVGRendererClass.prototype.crispPolyLine = svgRendererCrispPolyLine;
         }
@@ -638,7 +639,7 @@ addEvent(Chart, 'update', function (e) {
         for (let i = 0; i < points.length; i = i + 2) {
             const start = points[i], end = points[i + 1];
             if (start[1] === end[1]) {
-                // Substract due to #1129. Now bottom and left axis gridlines
+                // Subtract due to #1129. Now bottom and left axis gridlines
                 // behave the same.
                 start[1] = end[1] =
                     Math.round(start[1]) - (width % 2 / 2);

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v@product.version@ (@product.date@)
  * @module highcharts/modules/marker-clusters
  * @requires highcharts
  *
@@ -16,3 +16,4 @@ import MarkerClusterSymbols from '../../Extensions/MarkerClusters/MarkerClusterS
 const G = Highcharts;
 MarkerClusters.compose(G.Axis, G.Chart, G.defaultOptions, G.Series);
 MarkerClusterSymbols.compose(G.SVGRenderer);
+export default Highcharts;

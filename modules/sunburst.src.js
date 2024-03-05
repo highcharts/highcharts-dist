@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v11.4.0 (2024-03-05)
  *
  * (c) 2016-2024 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -414,7 +414,7 @@
              *
              * */
             static compose(ChartClass, highchartsDefaultOptions) {
-                if (pushUnique(composed, this.compose)) {
+                if (pushUnique(composed, 'Breadcrumbs')) {
                     addEvent(ChartClass, 'destroy', onChartDestroy);
                     addEvent(ChartClass, 'afterShowResetZoom', onChartAfterShowResetZoom);
                     addEvent(ChartClass, 'getMargins', onChartGetMargins);
@@ -473,7 +473,7 @@
                 this.list = list;
             }
             /**
-             * Calcule level on which chart currently is.
+             * Calculate level on which chart currently is.
              *
              * @requires  modules/breadcrumbs
              *
@@ -528,7 +528,7 @@
             /**
              * Redraw.
              *
-             * @requires  modules/breadcrums
+             * @requires  modules/breadcrumbs
              *
              * @function Highcharts.Breadcrumbs#redraw
              * @param {Highcharts.Breadcrumbs} this
@@ -602,7 +602,7 @@
                 const breadcrumbs = this, chart = breadcrumbs.chart, list = breadcrumbs.list, breadcrumbsOptions = breadcrumbs.options, buttonSpacing = breadcrumbsOptions.buttonSpacing;
                 // Make sure that only one type of button is visible.
                 this.destroyListElements();
-                // Draw breadcrumbs. Inital position for calculating the breadcrumbs
+                // Draw breadcrumbs. Initial position for calculating the breadcrumbs
                 // group.
                 const posX = breadcrumbs.group ?
                     breadcrumbs.group.getBBox().width :
@@ -636,7 +636,7 @@
                     const breadcrumbsOptions = breadcrumbs.options, buttonTheme = breadcrumbsOptions.buttonTheme, positionOptions = breadcrumbsOptions.position, alignTo = (breadcrumbsOptions.relativeTo === 'chart' ||
                         breadcrumbsOptions.relativeTo === 'spacingBox' ?
                         void 0 :
-                        'scrollablePlotBox'), bBox = breadcrumbs.group.getBBox(), additionalSpace = 2 * (buttonTheme.padding || 0) +
+                        'plotBox'), bBox = breadcrumbs.group.getBBox(), additionalSpace = 2 * (buttonTheme.padding || 0) +
                         breadcrumbsOptions.buttonSpacing;
                     // Store positionOptions
                     positionOptions.width = bBox.width + additionalSpace;
@@ -656,7 +656,7 @@
             /**
              * Render a button.
              *
-             * @requires  modules/breadcrums
+             * @requires  modules/breadcrumbs
              *
              * @function Highcharts.Breadcrumbs#renderButton
              * @param {Highcharts.Breadcrumbs} this
@@ -704,7 +704,7 @@
             /**
              * Render a separator.
              *
-             * @requires  modules/breadcrums
+             * @requires  modules/breadcrumbs
              *
              * @function Highcharts.Breadcrumbs#renderSeparator
              * @param {Highcharts.Breadcrumbs} this
@@ -773,7 +773,7 @@
              */
             destroy() {
                 this.destroySingleButton();
-                // Destroy elements one by one. It's necessary beacause
+                // Destroy elements one by one. It's necessary because
                 // g().destroy() does not remove added HTML
                 this.destroyListElements(true);
                 // Then, destroy the group itself.
@@ -854,7 +854,7 @@
                 }, adjustToRTL = function (element, posX, posY) {
                     element.translate(posX - element.getBBox().width, posY);
                 };
-                // Inital position for calculating the breadcrumbs group.
+                // Initial position for calculating the breadcrumbs group.
                 let posX = breadcrumbs.group ?
                     updateXPosition(breadcrumbs.group, buttonSpacing) :
                     buttonSpacing, currentBreadcrumb, breadcrumb;
@@ -1088,7 +1088,7 @@
                     (this.value === void 0 || !isNaN(this.value)));
             }
             /**
-             * Get the color attibutes to apply on the graphic
+             * Get the color attributes to apply on the graphic
              * @private
              * @function Highcharts.colorMapSeriesMixin.colorAttribs
              * @param {Highcharts.Point} point
@@ -1255,13 +1255,12 @@
 
         return TreemapNode;
     });
-    _registerModule(_modules, 'Series/DrawPointUtilities.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Series/DrawPointUtilities.js', [], function () {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { isNumber } = U;
         /* *
          *
          *  Functions
@@ -1978,7 +1977,7 @@
 
         return TreemapSeriesDefaults;
     });
-    _registerModule(_modules, 'Series/Treemap/TreemapUtilities.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Series/Treemap/TreemapUtilities.js', [], function () {
         /* *
          *
          *  (c) 2014-2024 Highsoft AS
@@ -1990,12 +1989,6 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        /* *
-         *
-         *  Imports
-         *
-         * */
-        const { objectEach } = U;
         /* *
          *
          *  Namespace
@@ -2046,7 +2039,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { extend, isArray, isNumber, isObject, merge, pick } = U;
+        const { extend, isArray, isNumber, isObject, merge, pick, relativeLength } = U;
         /* *
          *
          *  Functions
@@ -2211,6 +2204,27 @@
             }
             return rootId;
         }
+        /**
+         * Get the node width, which relies on the plot width and the nodeDistance
+         * option.
+         *
+         * @private
+         */
+        function getNodeWidth(series, columnCount) {
+            const { chart, options } = series, { nodeDistance = 0, nodeWidth = 0 } = options, { plotSizeX = 1 } = chart;
+            // Node width auto means they are evenly distributed along the width of
+            // the plot area
+            if (nodeWidth === 'auto') {
+                if (typeof nodeDistance === 'string' && /%$/.test(nodeDistance)) {
+                    const fraction = parseFloat(nodeDistance) / 100, total = columnCount + fraction * (columnCount - 1);
+                    return plotSizeX / total;
+                }
+                const nDistance = Number(nodeDistance);
+                return ((plotSizeX + nDistance) /
+                    (columnCount || 1)) - nDistance;
+            }
+            return relativeLength(nodeWidth, plotSizeX);
+        }
         /* *
          *
          *  Default Export
@@ -2219,6 +2233,7 @@
         const TreeUtilities = {
             getColor,
             getLevelOptions,
+            getNodeWidth,
             setTreeValues,
             updateRootId
         };
@@ -2309,7 +2324,7 @@
              *
              * */
             static compose(SeriesClass) {
-                if (pushUnique(composed, this.compose)) {
+                if (pushUnique(composed, 'TreemapSeries')) {
                     addEvent(SeriesClass, 'afterBindAxes', onSeriesAfterBindAxes);
                 }
             }
@@ -2806,7 +2821,9 @@
                             chart.breadcrumbs.updateProperties(series.createList(e));
                         }
                     }));
-                    series.eventsToUnbind.push(addEvent(series, 'update', function (e, redraw) {
+                    series.eventsToUnbind.push(addEvent(series, 'update', 
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    function (e, redraw) {
                         const breadcrumbs = this.chart.breadcrumbs;
                         if (breadcrumbs && e.options.breadcrumbs) {
                             breadcrumbs.update(e.options.breadcrumbs);
@@ -3270,7 +3287,7 @@
         });
         /* *
          *
-         *  Defaul Export
+         *  Default Export
          *
          * */
 
@@ -3323,7 +3340,7 @@
                     p.diffRadius : 0;
                 // Convert percentage to pixels.
                 // Calculate the remaining size to divide between "weight" levels.
-                // Calculate total weight to use in convertion from weight to
+                // Calculate total weight to use in conversion from weight to
                 // pixels.
                 for (const level of levels) {
                     const options = result[level], unit = options.levelSize.unit, value = options.levelSize.value;
@@ -3620,9 +3637,9 @@
                  * `parallel` and `perpendicular`. When `circular`, the best fit
                  * will be computed for the point, so that the label is curved
                  * around the center when there is room for it, otherwise
-                 * perpendicular. The legacy `auto` option works similiar to
+                 * perpendicular. The legacy `auto` option works similar to
                  * `circular`, but instead of curving the labels they are tangent to
-                 * the perimiter.
+                 * the perimeter.
                  *
                  * The `rotation` option takes precedence over `rotationMode`.
                  *
@@ -3684,7 +3701,7 @@
                  * - `pixels` gives the ring a fixed width in pixels.
                  *
                  * - `weight` takes the remaining width after percentage and pixels,
-                 *   and distributes it accross all "weighted" levels. The value
+                 *   and distributes it across all "weighted" levels. The value
                  *   relative to the sum of all weights determines the width.
                  *
                  * @sample {highcharts} highcharts/plotoptions/sunburst-levelsize/
@@ -3971,11 +3988,6 @@
                         2 * (options.padding || 0), 1);
                 }
             }
-            // NOTE: alignDataLabel positions the data label differntly when rotation is
-            // 0. Avoiding this by setting rotation to a small number.
-            if (options.rotation === 0) {
-                options.rotation = 0.001;
-            }
             return options;
         }
         /** @private */
@@ -4218,7 +4230,7 @@
                     });
                 }
                 // Draw data labels after points
-                // TODO draw labels one by one to avoid addtional looping
+                // TODO draw labels one by one to avoid additional looping
                 if (hackDataLabelAnimation && addedHack) {
                     series.hasRendered = false;
                     series.options.dataLabels.defer = true;
@@ -4305,7 +4317,7 @@
                     }
                     child.shapeArgs = merge(values, {
                         plotX: center.x,
-                        plotY: center.y + 4 * Math.abs(Math.cos(angle))
+                        plotY: center.y
                     });
                     child.values = merge(values, {
                         val: val
@@ -4416,8 +4428,9 @@
     _registerModule(_modules, 'masters/modules/sunburst.src.js', [_modules['Core/Globals.js'], _modules['Extensions/Breadcrumbs/Breadcrumbs.js']], function (Highcharts, Breadcrumbs) {
 
         const G = Highcharts;
-        G.Breadcrumbs = Breadcrumbs;
-        Breadcrumbs.compose(G.Chart, G.defaultOptions);
+        G.Breadcrumbs = G.Breadcrumbs || Breadcrumbs;
+        G.Breadcrumbs.compose(G.Chart, G.defaultOptions);
 
+        return Highcharts;
     });
 }));

@@ -15,11 +15,6 @@
  * Based on default solutions in browsers.
  */
 'use strict';
-/* *
- *
- *  Imports
- *
- * */
 import AST from '../../Core/Renderer/HTML/AST.js';
 import H from '../../Core/Globals.js';
 const { composed } = H;
@@ -69,7 +64,7 @@ class Fullscreen {
      * The chart class to decorate with fullscreen support.
      */
     static compose(ChartClass) {
-        if (pushUnique(composed, this.compose)) {
+        if (pushUnique(composed, 'Fullscreen')) {
             // Initialize fullscreen
             addEvent(ChartClass, 'beforeRender', onChartBeforeRender);
         }
@@ -293,10 +288,10 @@ export default Fullscreen;
  * @callback Highcharts.FullScreenfullscreenCloseCallbackFunction
  *
  * @param {Highcharts.Chart} chart
- *        The chart on which the event occured.
+ *        The chart on which the event occurred.
  *
  * @param {global.Event} event
- *        The event that occured.
+ *        The event that occurred.
  */
 /**
  * Gets fired when opening the fullscreen
@@ -304,10 +299,10 @@ export default Fullscreen;
  * @callback Highcharts.FullScreenfullscreenOpenCallbackFunction
  *
  * @param {Highcharts.Chart} chart
- *        The chart on which the event occured.
+ *        The chart on which the event occurred.
  *
  * @param {global.Event} event
- *        The event that occured.
+ *        The event that occurred.
  */
 (''); // keeps doclets above separated from following code
 /* *

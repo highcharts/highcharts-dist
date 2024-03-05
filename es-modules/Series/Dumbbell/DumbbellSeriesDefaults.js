@@ -189,7 +189,7 @@ const DumbbellSeriesDefaults = {
  *
  * @type        {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
  * @since       8.0.0
- * @default     #333333
+ * @default     ${palette.neutralColor80}
  * @product     highcharts highstock
  * @apioption   series.dumbbell.data.lowColor
  */

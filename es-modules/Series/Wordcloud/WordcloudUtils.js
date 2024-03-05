@@ -210,7 +210,7 @@ function archimedeanSpiral(attempt, params) {
     return result;
 }
 /**
- * Gives a set of cordinates for an rectangular spiral.
+ * Gives a set of coordinates for an rectangular spiral.
  *
  * @private
  * @function squareSpiral
@@ -225,7 +225,9 @@ function archimedeanSpiral(attempt, params) {
  * Resulting coordinates, x and y. False if the word should be dropped from
  * the visualization.
  */
-function squareSpiral(attempt, params) {
+function squareSpiral(attempt, 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+params) {
     const a = attempt * 4, k = Math.ceil((Math.sqrt(a) - 1) / 2), isBoolean = (x) => (typeof x === 'boolean');
     let t = 2 * k + 1, m = Math.pow(t, 2), result = false;
     t -= 1;
@@ -264,7 +266,7 @@ function squareSpiral(attempt, params) {
     return result;
 }
 /**
- * Gives a set of cordinates for an rectangular spiral.
+ * Gives a set of coordinates for an rectangular spiral.
  *
  * @private
  * @function rectangularSpiral
@@ -435,7 +437,7 @@ function getRotation(orientations, index, from, to) {
 function getSpiral(fn, params) {
     const length = 10000, arr = [];
     for (let i = 1; i < length; i++) {
-        // @todo unnecessary amount of precaclulation
+        // @todo unnecessary amount of precalculation
         arr.push(fn(i, params));
     }
     return (attempt) => (attempt <= length ? arr[attempt - 1] : false);

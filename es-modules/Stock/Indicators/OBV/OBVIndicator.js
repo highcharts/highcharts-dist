@@ -115,7 +115,7 @@ OBVIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
         period: void 0,
         /**
          * The id of another series to use its data as volume data for the
-         * indiator calculation.
+         * indicator calculation.
          */
         volumeSeriesID: 'volume'
     },

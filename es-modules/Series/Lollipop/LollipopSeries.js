@@ -11,7 +11,9 @@
 import LollipopPoint from './LollipopPoint.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import Series from '../../Core/Series/Series.js';
-const { seriesTypes: { column: { prototype: colProto }, dumbbell: { prototype: dumbbellProto }, scatter: ScatterSeries } } = SeriesRegistry;
+const { seriesTypes: { column: { prototype: colProto }, dumbbell: { prototype: dumbbellProto }, 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+scatter: ScatterSeries } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
 const { extend, merge } = U;
 /* *

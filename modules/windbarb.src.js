@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v11.4.0 (2024-03-05)
  *
  * Wind barb series module
  *
@@ -107,7 +107,7 @@
              * @private
              */
             function compose(SeriesClass) {
-                if (pushUnique(composed, compose)) {
+                if (pushUnique(composed, 'OnSeries')) {
                     const seriesProto = SeriesClass.prototype;
                     seriesProto.getPlotBox = getPlotBox;
                     seriesProto.translate = translate;
@@ -709,7 +709,7 @@
                     }, animObject(this.options.animation));
                 }
             }
-            markerAttribs(point, state) {
+            markerAttribs() {
                 return {};
             }
             getExtremes() {
@@ -766,8 +766,9 @@
 
         return WindbarbSeries;
     });
-    _registerModule(_modules, 'masters/modules/windbarb.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/windbarb.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

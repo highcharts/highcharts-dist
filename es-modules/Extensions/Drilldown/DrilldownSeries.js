@@ -12,10 +12,8 @@
 'use strict';
 import A from '../../Core/Animation/AnimationUtilities.js';
 const { animObject } = A;
-import H from '../../Core/Globals.js';
-const { composed } = H;
 import U from '../../Core/Utilities.js';
-const { addEvent, extend, fireEvent, merge, pick, pushUnique, syncTimeout } = U;
+const { addEvent, extend, fireEvent, merge, pick, syncTimeout } = U;
 /* *
  *
  *  Functions
@@ -172,8 +170,9 @@ function columnAnimateDrillupTo(init) {
 }
 /** @private */
 function compose(SeriesClass, seriesTypes) {
-    if (pushUnique(composed, compose)) {
-        const PointClass = SeriesClass.prototype.pointClass, pointProto = PointClass.prototype, { column: ColumnSeriesClass, map: MapSeriesClass, pie: PieSeriesClass } = seriesTypes;
+    const PointClass = SeriesClass.prototype.pointClass, pointProto = PointClass.prototype;
+    if (!pointProto.doDrilldown) {
+        const { column: ColumnSeriesClass, map: MapSeriesClass, pie: PieSeriesClass } = seriesTypes;
         addEvent(PointClass, 'afterInit', onPointAfterInit);
         addEvent(PointClass, 'afterSetState', onPointAfterSetState);
         addEvent(PointClass, 'update', onPointUpdate);
@@ -437,7 +436,7 @@ function pointRunDrilldown(holdRedraw, category, originalEvent) {
         }
     }
     // Fire the event. If seriesOptions is undefined, the implementer can check
-    // for  seriesOptions, and call addSeriesAsDrilldown async if necessary.
+    // for seriesOptions, and call addSeriesAsDrilldown async if necessary.
     fireEvent(chart, 'drilldown', {
         point,
         seriesOptions: seriesOptions,

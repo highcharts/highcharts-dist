@@ -9,10 +9,8 @@
  *
  * */
 'use strict';
-import H from '../../Globals.js';
-const { composed } = H;
 import U from '../../Utilities.js';
-const { addEvent, removeEvent, isObject, isNumber, pick, pushUnique, wrap } = U;
+const { addEvent, removeEvent, isObject, isNumber, pick, wrap } = U;
 /* *
  *
  *  Functions
@@ -125,7 +123,6 @@ function wrapRenderLabel(proceed) {
         collapsed = axisGrid.isCollapsed(node);
         renderLabelIcon(tick, {
             color: (!styledMode &&
-                label.styles &&
                 label.styles.color ||
                 ''),
             collapsed: collapsed,
@@ -191,8 +188,8 @@ class TreeGridTickAdditions {
      * @private
      */
     static compose(TickClass) {
-        if (pushUnique(composed, this.compose)) {
-            const tickProto = TickClass.prototype;
+        const tickProto = TickClass.prototype;
+        if (!tickProto.toggleCollapse) {
             addEvent(TickClass, 'init', onTickInit);
             wrap(tickProto, 'getLabelPosition', wrapGetLabelPosition);
             wrap(tickProto, 'renderLabel', wrapRenderLabel);

@@ -12,7 +12,7 @@
 'use strict';
 import Color from '../Core/Color/Color.js';
 import U from '../Core/Utilities.js';
-const { extend, isArray, isNumber, isObject, merge, pick } = U;
+const { extend, isArray, isNumber, isObject, merge, pick, relativeLength } = U;
 /* *
  *
  *  Functions
@@ -177,6 +177,27 @@ function updateRootId(series) {
     }
     return rootId;
 }
+/**
+ * Get the node width, which relies on the plot width and the nodeDistance
+ * option.
+ *
+ * @private
+ */
+function getNodeWidth(series, columnCount) {
+    const { chart, options } = series, { nodeDistance = 0, nodeWidth = 0 } = options, { plotSizeX = 1 } = chart;
+    // Node width auto means they are evenly distributed along the width of
+    // the plot area
+    if (nodeWidth === 'auto') {
+        if (typeof nodeDistance === 'string' && /%$/.test(nodeDistance)) {
+            const fraction = parseFloat(nodeDistance) / 100, total = columnCount + fraction * (columnCount - 1);
+            return plotSizeX / total;
+        }
+        const nDistance = Number(nodeDistance);
+        return ((plotSizeX + nDistance) /
+            (columnCount || 1)) - nDistance;
+    }
+    return relativeLength(nodeWidth, plotSizeX);
+}
 /* *
  *
  *  Default Export
@@ -185,6 +206,7 @@ function updateRootId(series) {
 const TreeUtilities = {
     getColor,
     getLevelOptions,
+    getNodeWidth,
     setTreeValues,
     updateRootId
 };

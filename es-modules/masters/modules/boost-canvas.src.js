@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v@product.version@ (@product.date@)
  * @module highcharts/modules/boost-canvas
  * @requires highcharts
  *
@@ -22,3 +22,4 @@ const G = Highcharts;
 G.initCanvasBoost = function () {
     BoostCanvas.compose(G.Chart, G.Series, G.seriesTypes);
 };
+export default Highcharts;

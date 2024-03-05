@@ -178,7 +178,7 @@ var ControlTarget;
         this.controlPoints.forEach((controlPoint) => controlPoint.redraw(animation));
     }
     /**
-     * Render controll points.
+     * Render control points.
      * @private
      */
     function renderControlPoints() {

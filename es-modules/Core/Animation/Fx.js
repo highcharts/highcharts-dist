@@ -288,7 +288,7 @@ class Fx {
          * Copy and append last point until the length matches the end length.
          * @private
          */
-        function append(arr, other) {
+        function append(arr) {
             while (arr.length < fullLength) {
                 // Pull out the slice that is going to be appended or inserted.
                 // In a line graph, the positionFactor is 1, and the last point
@@ -344,11 +344,11 @@ class Fx {
             fullLength = end.length + shift * positionFactor;
             if (!reverse) {
                 prepend(end, start);
-                append(start, end);
+                append(start);
             }
             else {
                 prepend(start, end);
-                append(end, start);
+                append(end);
             }
         }
         return [start, end];

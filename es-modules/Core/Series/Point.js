@@ -16,7 +16,7 @@ const { defaultOptions } = D;
 import F from '../Templating.js';
 const { format } = F;
 import U from '../Utilities.js';
-const { addEvent, defined, erase, extend, fireEvent, getNestedProperty, isArray, isFunction, isNumber, isObject, merge, objectEach, pick, syncTimeout, removeEvent, uniqueKey } = U;
+const { addEvent, erase, extend, fireEvent, getNestedProperty, isArray, isFunction, isNumber, isObject, pick, syncTimeout, removeEvent, uniqueKey } = U;
 /* eslint-disable no-invalid-this, valid-jsdoc */
 /* *
  *
@@ -314,14 +314,9 @@ class Point {
      */
     firePointEvent(eventType, eventArgs, defaultFunction) {
         const point = this, series = this.series, seriesOptions = series.options;
-        // load event handlers on demand to save time on mouseover/out
-        if (seriesOptions.point.events[eventType] ||
-            (point.options &&
-                point.options.events &&
-                point.options.events[eventType])) {
-            point.importEvents();
-        }
-        // add default handler if in selection mode
+        // Load event handlers on demand to save time on mouseover/out
+        point.manageEvent(eventType);
+        // Add default handler if in selection mode
         if (eventType === 'click' && seriesOptions.allowPointSelect) {
             defaultFunction = function (event) {
                 // Control key is for Windows, meta (= Cmd key) for Mac, Shift
@@ -894,7 +889,7 @@ class Point {
                         loopPoint.selected = loopPoint.options.selected =
                             false;
                         loopSeries.options.data[loopSeries.data.indexOf(loopPoint)] = loopPoint.options;
-                        // Programatically selecting a point should restore
+                        // Programmatically selecting a point should restore
                         // normal state, but when click happened on other
                         // point, set inactive state to match other points
                         loopPoint.setState(chart.hoverPoints &&
@@ -917,12 +912,15 @@ class Point {
      *        The event arguments.
      */
     onMouseOver(e) {
-        const point = this, series = point.series, chart = series.chart, pointer = chart.pointer;
-        e = e ?
-            pointer.normalize(e) :
-            // In cases where onMouseOver is called directly without an event
-            pointer.getChartCoordinatesFromPoint(point, chart.inverted);
-        pointer.runPointActions(e, point);
+        const point = this, series = point.series, { inverted, pointer } = series.chart;
+        if (pointer) {
+            e = e ?
+                pointer.normalize(e) :
+                // In cases where onMouseOver is called directly without an
+                // event
+                pointer.getChartCoordinatesFromPoint(point, inverted);
+            pointer.runPointActions(e, point);
+        }
     }
     /**
      * Runs on mouse out from the point. Called internally from mouse and touch
@@ -942,22 +940,32 @@ class Point {
         chart.hoverPoints = chart.hoverPoint = null;
     }
     /**
-     * Import events from the series' and point's options. Only do it on
+     * Manage specific event from the series' and point's options. Only do it on
      * demand, to save processing time on hovering.
      *
      * @private
      * @function Highcharts.Point#importEvents
      */
-    importEvents() {
-        if (!this.hasImportedEvents) {
-            const point = this, options = merge(point.series.options.point, point.options), events = options.events;
-            point.events = events;
-            objectEach(events, function (event, eventType) {
-                if (isFunction(event)) {
-                    addEvent(point, eventType, event);
-                }
-            });
-            this.hasImportedEvents = true;
+    manageEvent(eventType) {
+        const point = this, options = point.series.options.point || {}, userEvent = options.events?.[eventType];
+        if (isFunction(userEvent) &&
+            (!point.hcEvents?.[eventType] ||
+                // Some HC modules, like marker-clusters, draggable-poins etc.
+                // use events in their logic, so we need to be sure, that
+                // callback function is different
+                point.hcEvents?.[eventType]?.map((el) => el.fn)
+                    .indexOf(userEvent) === -1)) {
+            addEvent(point, eventType, userEvent);
+            point.hasImportedEvents = true;
+        }
+        else if (point.hasImportedEvents &&
+            !userEvent &&
+            point.hcEvents?.[eventType]) {
+            removeEvent(point, eventType);
+            delete point.hcEvents[eventType];
+            if (!Object.keys(point.hcEvents)) {
+                point.hasImportedEvents = false;
+            }
         }
     }
     /**
@@ -1160,7 +1168,7 @@ export default Point;
  * @callback Highcharts.PointClickCallbackFunction
  *
  * @param {Highcharts.Point} this
- *        The point where the event occured.
+ *        The point where the event occurred.
  *
  * @param {Highcharts.PointClickEventObject} event
  *        Event arguments.
@@ -1226,10 +1234,10 @@ export default Point;
  * @callback Highcharts.PointMouseOutCallbackFunction
  *
  * @param {Highcharts.Point} this
- *        Point where the event occured.
+ *        Point where the event occurred.
  *
  * @param {global.PointerEvent} event
- *        Event that occured.
+ *        Event that occurred.
  */
 /**
  * Gets fired when the mouse enters the area close to the point.
@@ -1237,10 +1245,10 @@ export default Point;
  * @callback Highcharts.PointMouseOverCallbackFunction
  *
  * @param {Highcharts.Point} this
- *        Point where the event occured.
+ *        Point where the event occurred.
  *
  * @param {global.Event} event
- *        Event that occured.
+ *        Event that occurred.
  */
 /**
  * The generic point options for all series.
@@ -1267,10 +1275,10 @@ export default Point;
  * @callback Highcharts.PointRemoveCallbackFunction
  *
  * @param {Highcharts.Point} this
- *        Point where the event occured.
+ *        Point where the event occurred.
  *
  * @param {global.Event} event
- *        Event that occured.
+ *        Event that occurred.
  */
 /**
  * Possible key values for the point state options.
@@ -1284,10 +1292,10 @@ export default Point;
  * @callback Highcharts.PointUpdateCallbackFunction
  *
  * @param {Highcharts.Point} this
- *        Point where the event occured.
+ *        Point where the event occurred.
  *
  * @param {Highcharts.PointUpdateEventObject} event
- *        Event that occured.
+ *        Event that occurred.
  */
 /**
  * Information about the update event.
@@ -1330,10 +1338,10 @@ export default Point;
  * @callback Highcharts.PointSelectCallbackFunction
  *
  * @param {Highcharts.Point} this
- *        Point where the event occured.
+ *        Point where the event occurred.
  *
  * @param {Highcharts.PointInteractionEventObject} event
- *        Event that occured.
+ *        Event that occurred.
  */
 /**
  * Fires when the point is unselected either programmatically or following a
@@ -1342,9 +1350,9 @@ export default Point;
  * @callback Highcharts.PointUnselectCallbackFunction
  *
  * @param {Highcharts.Point} this
- *        Point where the event occured.
+ *        Point where the event occurred.
  *
  * @param {Highcharts.PointInteractionEventObject} event
- *        Event that occured.
+ *        Event that occurred.
  */
 ''; // keeps doclets above in JS file.

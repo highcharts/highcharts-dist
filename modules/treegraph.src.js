@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v11.4.0 (2024-03-05)
  * Treegraph chart series type
  *
  *  (c) 2010-2024 Pawel Lysy Grzegorz Blachlinski
@@ -381,6 +381,7 @@
                  *
                  * */
                 super(...arguments);
+                this.dataLabelOnHidden = true;
                 this.isLink = false;
                 this.setState = Point.prototype.setState;
             }
@@ -623,14 +624,12 @@
              * @param {TreegraphNode} child
              *        Child node, which should be connected to dummyNode.
              * @param {number} gapSize
-             *        Remainig gap size.
-             * @param {number} index
-             *        The index of the link.
+             *        Remaining gap size.
              *
              * @return {TreegraphNode}
              *         DummyNode as a parent of nodes, which column changes.
              */
-            static createDummyNode(parent, child, gapSize, index) {
+            static createDummyNode(parent, child, gapSize) {
                 // Initialise dummy node.
                 const dummyNode = new TreegraphNode();
                 dummyNode.id = parent.id + '-' + gapSize;
@@ -684,7 +683,6 @@
              */
             beforeLayout(nodes) {
                 for (const node of nodes) {
-                    let index = 0;
                     for (let child of node.children) {
                         // Support for children placed in distant columns.
                         if (child && child.level - node.level > 1) {
@@ -693,16 +691,15 @@
                             let gapSize = child.level - node.level - 1;
                             // parent -> dummyNode -> child
                             while (gapSize > 0) {
-                                child = TreegraphLayout.createDummyNode(node, child, gapSize, index);
+                                child = TreegraphLayout.createDummyNode(node, child, gapSize);
                                 gapSize--;
                             }
                         }
-                        ++index;
                     }
                 }
             }
             /**
-             * Reset the caluclated values from the previous run.
+             * Reset the calculated values from the previous run.
              * @param {TreegraphNode[]} nodes all of the nodes.
              */
             resetValues(nodes) {
@@ -757,7 +754,7 @@
                 else {
                     // If the node has children, perform the recursive first walk for
                     // its children, and then calculate its shift in the apportion
-                    // function (most crucial part part of the algorythm).
+                    // function (most crucial part of the algorithm).
                     let defaultAncestor = node.getLeftMostChild();
                     for (const child of node.children) {
                         treeLayout.firstWalk(child);
@@ -822,9 +819,9 @@
              * are left(right)Int(Out)node where Int means internal and Out means
              * outernal. For summing up the modifiers along the contour we use the
              * `left(right)Int(Out)mod` variable. Whenever two nodes of the inside
-             * contours are in conflict we comute the left one of the greatest uncommon
+             * contours are in conflict we commute the left one of the greatest uncommon
              * ancestors using the getAncestor function and we call the moveSubtree
-             * method to shift the subtree and prepare the shifts of smaller subrtees.
+             * method to shift the subtree and prepare the shifts of smaller subtrees.
              * Finally we add a new thread (if necessary) and we adjust ancestor of
              * right outernal node or defaultAncestor.
              *
@@ -948,7 +945,7 @@
          * @extends      plotOptions.treemap
          * @excluding    layoutAlgorithm, dashStyle, linecap, lineWidth,
          *               negativeColor, threshold, zones, zoneAxis, colorAxis,
-         *               colorKey, compare, dataGrouping, endAgle, gapSize, gapUnit,
+         *               colorKey, compare, dataGrouping, endAngle, gapSize, gapUnit,
          *               ignoreHiddenPoint, innerSize, joinBy, legendType, linecap,
          *               minSize, navigatorOptions, pointRange, allowTraversingTree,
          *               alternateStartingDirection, borderRadius, breadcrumbs,
@@ -1159,7 +1156,44 @@
                 style: {
                     textOverflow: 'none'
                 }
-            }
+            },
+            /**
+             * The distance between nodes in a tree graph in the longitudinal direction.
+             * The longitudinal direction means the direction that the chart flows - in
+             * a horizontal chart the distance is horizontal, in an inverted chart
+             * (vertical), the distance is vertical.
+             *
+             * If a number is given, it denotes pixels. If a percentage string is given,
+             * the distance is a percentage of the rendered node width. A `nodeDistance`
+             * of `100%` will render equal widths for the nodes and the gaps between
+             * them.
+             *
+             * This option applies only when the `nodeWidth` option is `auto`, making
+             * the node width respond to the number of columns.
+             *
+             * @since 11.4.0
+             * @sample highcharts/series-treegraph/node-distance
+             *         Node distance of 100% means equal to node width
+             * @type   {number|string}
+             */
+            nodeDistance: 30,
+            /**
+             * The pixel width of each node in a, or the height in case the chart is
+             * inverted. For tree graphs, the node width is only applied if the marker
+             * symbol is `rect`, otherwise the `marker` sizing options apply.
+             *
+             * Can be a number or a percentage string, or `auto`. If `auto`, the nodes
+             * are sized to fill up the plot area in the longitudinal direction,
+             * regardless of the number of levels.
+             *
+             * @since 11.4.0
+             * @see    [treegraph.nodeDistance](#nodeDistance)
+             * @sample highcharts/series-treegraph/node-distance
+             *         Node width is auto and combined with node distance
+             *
+             * @type {number|string}
+             */
+            nodeWidth: void 0
         };
         /* *
          *
@@ -1182,8 +1216,8 @@
         const { getLinkPath } = PU;
         const { series: { prototype: seriesProto }, seriesTypes: { treemap: TreemapSeries, column: ColumnSeries } } = SeriesRegistry;
         const { prototype: { symbols } } = SVGRenderer;
-        const { getLevelOptions } = TU;
-        const { extend, merge, pick, relativeLength, splat } = U;
+        const { getLevelOptions, getNodeWidth } = TU;
+        const { arrayMax, extend, merge, pick, relativeLength, splat } = U;
         /* *
          *
          *  Class
@@ -1225,7 +1259,7 @@
              * @return {LayoutModifiers} `a` and `b` parameter for x and y direction.
              */
             getLayoutModifiers() {
-                const chart = this.chart, series = this, plotSizeX = chart.plotSizeX, plotSizeY = chart.plotSizeY;
+                const chart = this.chart, series = this, plotSizeX = chart.plotSizeX, plotSizeY = chart.plotSizeY, columnCount = arrayMax(this.points.map((p) => p.node.xPosition));
                 let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity, maxXSize = 0, minXSize = 0, maxYSize = 0, minYSize = 0;
                 this.points.forEach((point) => {
                     // When fillSpace is on, stop the layout calculation when the hidden
@@ -1233,11 +1267,11 @@
                     if (this.options.fillSpace && !point.visible) {
                         return;
                     }
-                    const node = point.node, level = series.mapOptionsToLevel[point.node.level] || {}, markerOptions = merge(this.options.marker, level.marker, point.options.marker), radius = relativeLength(markerOptions.radius || 0, Math.min(plotSizeX, plotSizeY)), symbol = markerOptions.symbol, nodeSizeY = (symbol === 'circle' || !markerOptions.height) ?
+                    const node = point.node, level = series.mapOptionsToLevel[point.node.level] || {}, markerOptions = merge(this.options.marker, level.marker, point.options.marker), nodeWidth = markerOptions.width ?? getNodeWidth(this, columnCount), radius = relativeLength(markerOptions.radius || 0, Math.min(plotSizeX, plotSizeY)), symbol = markerOptions.symbol, nodeSizeY = (symbol === 'circle' || !markerOptions.height) ?
                         radius * 2 :
-                        relativeLength(markerOptions.height, plotSizeY), nodeSizeX = symbol === 'circle' || !markerOptions.width ?
+                        relativeLength(markerOptions.height, plotSizeY), nodeSizeX = symbol === 'circle' || !nodeWidth ?
                         radius * 2 :
-                        relativeLength(markerOptions.width, plotSizeX);
+                        relativeLength(nodeWidth, plotSizeX);
                     node.nodeSizeX = nodeSizeX;
                     node.nodeSizeY = nodeSizeY;
                     let lineWidth;
@@ -1274,7 +1308,7 @@
             getLinks() {
                 const series = this;
                 const links = [];
-                this.data.forEach((point, index) => {
+                this.data.forEach((point) => {
                     const levelOptions = series.mapOptionsToLevel[point.node.level || 0] || {};
                     if (point.node.parent) {
                         const pointOptions = merge(levelOptions, point.options);
@@ -1643,7 +1677,7 @@
          * points can be given in the following ways:
          *
          * 1. The array of arrays, with `keys` property, which defines how the fields in
-         *     array should be interpretated
+         *     array should be interpreted
          *    ```js
          *       keys: ['id', 'parent'],
          *       data: [
@@ -1693,8 +1727,9 @@
 
         return TreegraphSeries;
     });
-    _registerModule(_modules, 'masters/modules/treegraph.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/treegraph.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

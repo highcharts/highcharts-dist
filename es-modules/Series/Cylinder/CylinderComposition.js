@@ -13,20 +13,20 @@
  * */
 'use strict';
 import H from '../../Core/Globals.js';
-const { charts, composed, deg2rad } = H;
+const { charts, deg2rad } = H;
 import Math3D from '../../Core/Math3D.js';
 const { perspective } = Math3D;
 import SVGElement3DCylinder from './SVGElement3DCylinder.js';
 import U from '../../Core/Utilities.js';
-const { extend, pick, pushUnique } = U;
+const { extend, pick } = U;
 /* *
  *
  *  Functions
  *
  * */
 function compose(SVGRendererClass) {
-    if (pushUnique(composed, compose)) {
-        const rendererProto = SVGRendererClass.prototype;
+    const rendererProto = SVGRendererClass.prototype;
+    if (!rendererProto.cylinder) {
         rendererProto.Element3D.types.cylinder = SVGElement3DCylinder;
         extend(rendererProto, {
             cylinder: rendererCylinder,
@@ -56,7 +56,7 @@ function rendererCylinder(shapeArgs) {
  */
 function rendererCylinderPath(shapeArgs) {
     const renderer = this, chart = charts[renderer.chartIndex], 
-    // decide zIndexes of parts based on cubiod logic, for consistency.
+    // decide zIndexes of parts based on cuboid logic, for consistency.
     cuboidData = this.cuboidPath(shapeArgs), isTopFirst = !cuboidData.isTop, isFronFirst = !cuboidData.isFront, top = renderer.getCylinderEnd(chart, shapeArgs), bottom = renderer.getCylinderEnd(chart, shapeArgs, true);
     return {
         front: renderer.getCylinderFront(top, bottom),
@@ -147,7 +147,7 @@ function rendererGetCylinderBack(topPath, bottomPath) {
     return path;
 }
 /**
- * Retruns cylinder path for top or bottom.
+ * Returns cylinder path for top or bottom.
  * @private
  */
 function rendererGetCylinderEnd(chart, shapeArgs, isBottom) {
@@ -160,7 +160,7 @@ function rendererGetCylinderEnd(chart, shapeArgs, isBottom) {
         alphaCorrection), 
     // Could be top or bottom of the cylinder
     y = (shapeArgs.y || 0) + (isBottom ? height : 0), 
-    // Use cubic Bezier curve to draw a cricle in x,z (y is constant).
+    // Use cubic Bezier curve to draw a circle in x,z (y is constant).
     // More math. at spencermortensen.com/articles/bezier-circle/
     c = 0.5519 * radius, centerX = width / 2 + (shapeArgs.x || 0), centerZ = depth / 2 + (shapeArgs.z || 0), 
     // points could be generated in a loop, but readability will plummet
@@ -218,7 +218,7 @@ function rendererGetCylinderEnd(chart, shapeArgs, isBottom) {
             z: radius
         }], cosTheta = Math.cos(angleOffset), sinTheta = Math.sin(angleOffset);
     let path, x, z;
-    // rotete to match chart's beta and translate to the shape center
+    // rotate to match chart's beta and translate to the shape center
     for (const point of points) {
         x = point.x;
         z = point.z;
@@ -231,7 +231,7 @@ function rendererGetCylinderEnd(chart, shapeArgs, isBottom) {
     // check for sub-pixel curve issue, compare front and back edges
     if (Math.abs(perspectivePoints[3].y - perspectivePoints[9].y) < 2.5 &&
         Math.abs(perspectivePoints[0].y - perspectivePoints[6].y) < 2.5) {
-        // use simplied shape
+        // use simplified shape
         path = this.toLinePath([
             perspectivePoints[0],
             perspectivePoints[3],

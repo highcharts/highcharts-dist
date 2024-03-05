@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.3.0 (2024-01-10)
+ * @license Highstock JS v11.4.0 (2024-03-05)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -92,7 +92,7 @@
                         sumOfLowerValues += values[j - 1] - values[j];
                     }
                 }
-                // You might devide by 0 if all values are equal,
+                // You might divide by 0 if all values are equal,
                 // so return 0 in this case.
                 y =
                     sumOfHigherValues + sumOfLowerValues > 0 ?
@@ -111,7 +111,7 @@
                         sumOfLowerValues += values[i - 1] - values[i];
                     }
                     // Check, to which sum was the first value added to,
-                    // and substract this value from given sum.
+                    // and subtract this value from given sum.
                     if (values[i - period] > values[i - period - 1]) {
                         sumOfHigherValues -= firstAddedSum;
                     }
@@ -188,8 +188,9 @@
 
         return CMOIndicator;
     });
-    _registerModule(_modules, 'masters/indicators/cmo.src.js', [], function () {
+    _registerModule(_modules, 'masters/indicators/cmo.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v11.4.0 (2024-03-05)
  *
  * Highcharts funnel module
  *
@@ -669,7 +669,7 @@
              * */
             /** @private */
             function compose(ChartClass) {
-                if (pushUnique(composed, compose)) {
+                if (pushUnique(composed, 'FunnelSeries')) {
                     addEvent(ChartClass, 'afterHideAllOverlappingLabels', onChartAfterHideAllOverlappingLabels);
                 }
             }
@@ -858,5 +858,6 @@
         const G = Highcharts;
         FunnelSeries.compose(G.Chart);
 
+        return Highcharts;
     });
 }));

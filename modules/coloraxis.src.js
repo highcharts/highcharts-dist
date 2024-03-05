@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v11.4.0 (2024-03-05)
  *
  * ColorAxis module
  *
@@ -35,7 +35,7 @@
             }
         }
     }
-    _registerModule(_modules, 'Core/Axis/Color/ColorAxisComposition.js', [_modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Color, H, U) {
+    _registerModule(_modules, 'Core/Axis/Color/ColorAxisComposition.js', [_modules['Core/Color/Color.js'], _modules['Core/Utilities.js']], function (Color, U) {
         /* *
          *
          *  (c) 2010-2024 Torstein Honsi
@@ -46,8 +46,7 @@
          *
          * */
         const { parse: color } = Color;
-        const { composed } = H;
-        const { addEvent, extend, merge, pick, pushUnique, splat } = U;
+        const { addEvent, extend, merge, pick, splat } = U;
         /* *
          *
          *  Composition
@@ -75,9 +74,9 @@
              * @private
              */
             function compose(ColorAxisClass, ChartClass, FxClass, LegendClass, SeriesClass) {
-                if (pushUnique(composed, compose)) {
+                const chartProto = ChartClass.prototype, fxProto = FxClass.prototype, seriesProto = SeriesClass.prototype;
+                if (!chartProto.collectionsWithUpdate.includes('colorAxis')) {
                     ColorAxisConstructor = ColorAxisClass;
-                    const chartProto = ChartClass.prototype, fxProto = FxClass.prototype, seriesProto = SeriesClass.prototype;
                     chartProto.collectionsWithUpdate.push('colorAxis');
                     chartProto.collectionsWithInit.colorAxis = [
                         chartProto.addColorAxis
@@ -1151,7 +1150,7 @@
                     (horiz ?
                         itemDistance :
                         pick(labelOptions.x, labelOptions.distance) +
-                            this.maxLabelLength));
+                            (this.maxLabelLength || 0)));
                 legendItem.labelHeight = height + padding + (horiz ? labelPadding : 0);
             }
             /**
@@ -1414,6 +1413,7 @@
                                 const affectedSeries = [];
                                 for (const point of getPointsInDataClass(i)) {
                                     point.setVisible(vis);
+                                    point.hiddenInDataClass = !vis; // #20441
                                     if (affectedSeries.indexOf(point.series) === -1) {
                                         affectedSeries.push(point.series);
                                     }
@@ -1484,8 +1484,9 @@
     _registerModule(_modules, 'masters/modules/coloraxis.src.js', [_modules['Core/Globals.js'], _modules['Core/Axis/Color/ColorAxis.js']], function (Highcharts, ColorAxis) {
 
         const G = Highcharts;
-        G.ColorAxis = ColorAxis;
-        ColorAxis.compose(G.Chart, G.Fx, G.Legend, G.Series);
+        G.ColorAxis = G.ColorAxis || ColorAxis;
+        G.ColorAxis.compose(G.Chart, G.Fx, G.Legend, G.Series);
 
+        return Highcharts;
     });
 }));

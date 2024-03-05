@@ -89,7 +89,7 @@ class StackItem {
             format(formatOption, this, chart) :
             options.formatter.call(this);
         // Change the text to reflect the new total and set visibility to hidden
-        // in case the serie is hidden
+        // in case the series is hidden
         if (this.label) {
             this.label.attr({ text: str, visibility: 'hidden' });
         }
@@ -133,7 +133,7 @@ class StackItem {
             xAxis
         }), { verticalAlign } = alignOptions;
         if (label && stackBox) {
-            const labelBox = label.getBBox(), padding = label.padding;
+            const labelBox = label.getBBox(void 0, 0), padding = label.padding;
             let isJustify = pick(options.overflow, 'justify') === 'justify', visible;
             // Reset alignOptions property after justify #12337
             alignOptions.x = options.x || 0;
@@ -160,13 +160,17 @@ class StackItem {
                 // Justify stackLabel into the alignBox
                 Series.prototype.justifyDataLabel.call(axis, label, alignOptions, label.alignAttr, labelBox, stackBox);
             }
-            // Add attr to aviod the default animation of justifyDataLabel.
+            // Add attr to avoid the default animation of justifyDataLabel.
             // Also add correct rotation with its rotation origin. #15129
             label.attr({
                 x: label.alignAttr.x,
                 y: label.alignAttr.y,
                 rotation: options.rotation,
-                rotationOriginX: labelBox.width / 2,
+                rotationOriginX: labelBox.width * {
+                    left: 0,
+                    center: 0.5,
+                    right: 1
+                }[options.textAlign || 'center'],
                 rotationOriginY: labelBox.height / 2
             });
             // Check if the dataLabel should be visible.

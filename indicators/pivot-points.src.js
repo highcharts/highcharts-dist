@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.3.0 (2024-01-10)
+ * @license Highstock JS v11.4.0 (2024-03-05)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -179,7 +179,7 @@
                 let currentLabel, pointsLength, point, i;
                 if (indicator.options.dataLabels.enabled) {
                     pointsLength = indicator.points.length;
-                    // For every Ressitance/Support group we need to render labels.
+                    // For every Resistance/Support group we need to render labels.
                     // Add one more item, which will just store dataLabels from
                     // previous iteration
                     pointMapping.concat([false]).forEach((position, k) => {
@@ -330,7 +330,7 @@
                 index: void 0,
                 period: 28,
                 /**
-                 * Algorithm used to calculate ressistance and support lines based
+                 * Algorithm used to calculate resistance and support lines based
                  * on pivot points. Implemented algorithms: `'standard'`,
                  * `'fibonacci'` and `'camarilla'`
                  */
@@ -386,8 +386,9 @@
 
         return PivotPointsIndicator;
     });
-    _registerModule(_modules, 'masters/indicators/pivot-points.src.js', [], function () {
+    _registerModule(_modules, 'masters/indicators/pivot-points.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

@@ -13,7 +13,7 @@ import D from '../Defaults.js';
 const { defaultOptions } = D;
 import Point from './Point.js';
 import U from '../Utilities.js';
-const { extendClass, merge } = U;
+const { extend, extendClass, merge } = U;
 /* *
  *
  *  Namespace
@@ -47,10 +47,14 @@ var SeriesRegistry;
         if (!seriesProto.pointClass) {
             seriesProto.pointClass = Point;
         }
+        if (SeriesRegistry.seriesTypes[seriesType]) {
+            return false;
+        }
         if (seriesOptions) {
             defaultPlotOptions[seriesType] = seriesOptions;
         }
         SeriesRegistry.seriesTypes[seriesType] = SeriesClass;
+        return true;
     }
     SeriesRegistry.registerSeriesType = registerSeriesType;
     /**
@@ -86,11 +90,15 @@ var SeriesRegistry;
         // Merge the options
         defaultPlotOptions[type] = merge(defaultPlotOptions[parent], options);
         // Create the class
+        delete SeriesRegistry.seriesTypes[type];
         registerSeriesType(type, extendClass(SeriesRegistry.seriesTypes[parent] || function () { }, seriesProto));
         SeriesRegistry.seriesTypes[type].prototype.type = type;
         // Create the point class if needed
         if (pointProto) {
-            SeriesRegistry.seriesTypes[type].prototype.pointClass = extendClass(Point, pointProto);
+            class PointClass extends Point {
+            }
+            extend(PointClass.prototype, pointProto);
+            SeriesRegistry.seriesTypes[type].prototype.pointClass = PointClass;
         }
         return SeriesRegistry.seriesTypes[type];
     }

@@ -4,8 +4,6 @@
  *
  * */
 'use strict';
-import U from '../Core/Utilities.js';
-const { isNumber } = U;
 /* *
  *
  *  Functions

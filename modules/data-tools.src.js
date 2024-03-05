@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v11.4.0 (2024-03-05)
  *
  * Highcharts
  *
@@ -182,7 +182,11 @@
              * @return {Highcharts.DataTable}
              * Table with `modified` property as a reference.
              */
-            modifyCell(table, columnName, rowIndex, cellValue, eventDetail) {
+            modifyCell(table, 
+            /* eslint-disable @typescript-eslint/no-unused-vars */
+            columnName, rowIndex, cellValue, eventDetail
+            /* eslint-enable @typescript-eslint/no-unused-vars */
+            ) {
                 return this.modifyTable(table);
             }
             /**
@@ -204,7 +208,11 @@
              * @return {Highcharts.DataTable}
              * Table with `modified` property as a reference.
              */
-            modifyColumns(table, columns, rowIndex, eventDetail) {
+            modifyColumns(table, 
+            /* eslint-disable @typescript-eslint/no-unused-vars */
+            columns, rowIndex, eventDetail
+            /* eslint-enable @typescript-eslint/no-unused-vars */
+            ) {
                 return this.modifyTable(table);
             }
             /**
@@ -226,7 +234,11 @@
              * @return {Highcharts.DataTable}
              * Table with `modified` property as a reference.
              */
-            modifyRows(table, rows, rowIndex, eventDetail) {
+            modifyRows(table, 
+            /* eslint-disable @typescript-eslint/no-unused-vars */
+            rows, rowIndex, eventDetail
+            /* eslint-enable @typescript-eslint/no-unused-vars */
+            ) {
                 return this.modifyTable(table);
             }
             /**
@@ -332,7 +344,6 @@
          * to add, remove, and manipulate columns and rows, as well as to retrieve data
          * from specific cells.
          *
-         * @private
          * @class
          * @name Highcharts.DataTable
          *
@@ -1198,7 +1209,7 @@
              * @emits #afterSetColumns
              */
             setColumns(columns, rowIndex, eventDetail) {
-                const table = this, tableColumns = table.columns, tableModifier = table.modifier, tableRowCount = table.rowCount, reset = (typeof rowIndex === 'undefined'), columnNames = Object.keys(columns);
+                const table = this, tableColumns = table.columns, tableModifier = table.modifier, reset = (typeof rowIndex === 'undefined'), columnNames = Object.keys(columns);
                 table.emit({
                     type: 'setColumns',
                     columns,
@@ -1517,14 +1528,16 @@
              * @return {Array<string>|undefined}
              * Order of columns.
              */
-            getColumnOrder(usePresentationState) {
+            getColumnOrder(
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            usePresentationState) {
                 const connector = this, columns = connector.metadata.columns, names = Object.keys(columns || {});
                 if (names.length) {
                     return names.sort((a, b) => (pick(columns[a].index, 0) - pick(columns[b].index, 0)));
                 }
             }
             /**
-             * Retrieves the columns of the the dataTable,
+             * Retrieves the columns of the dataTable,
              * applies column order from meta.
              *
              * @param {boolean} [usePresentationOrder]
@@ -2043,7 +2056,11 @@
              * @param {DataConverter.Options} [options]
              * Options for the export.
              */
-            export(connector, options) {
+            export(
+            /* eslint-disable @typescript-eslint/no-unused-vars */
+            connector, options
+            /* eslint-enable @typescript-eslint/no-unused-vars */
+            ) {
                 this.emit({
                     type: 'exportError',
                     columns: [],
@@ -2118,7 +2135,9 @@
              * @param {DataConverter.UserOptions} options
              * Options of the DataConverter.
              */
-            parse(options) {
+            parse(
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            options) {
                 this.emit({
                     type: 'parseError',
                     columns: [],
@@ -3898,7 +3917,7 @@
             return isValue(x) ? x : NaN;
         }
         /**
-         * Process a function  on the give table. If the arguments do not contain
+         * Process a function on the given table. If the arguments do not contain
          * references or ranges, then no table has to be provided.
          *
          * @private
@@ -3915,7 +3934,9 @@
          * @return {Highcharts.FormulaValue|Array<Highcharts.FormulaValue>}
          * Result value (or values) of the process. `NaN` indicates an error.
          */
-        function processFunction(formulaFunction, table, reference // @todo
+        function processFunction(formulaFunction, table, 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        reference // @todo
         ) {
             const processor = processorFunctions[formulaFunction.name];
             if (processor) {
@@ -5592,11 +5613,9 @@
                 if (!decimalPoint || decimalPoint === itemDelimiter) {
                     decimalPoint = converter.guessedDecimalPoint || '.';
                 }
-                let i = 0, c = '', cl = '', cn = '', token = '', actualColumn = 0, column = 0;
+                let i = 0, c = '', token = '', actualColumn = 0, column = 0;
                 const read = (j) => {
                     c = columnStr[j];
-                    cl = columnStr[j - 1];
-                    cn = columnStr[j + 1];
                 };
                 const pushType = (type) => {
                     if (dataTypes.length < column + 1) {
@@ -5878,14 +5897,14 @@
                     detail: eventDetail,
                     table
                 });
-                // If already loaded, clear the current rows
-                table.deleteRows();
                 return Promise
                     .resolve(csvURL ?
                     fetch(csvURL).then((response) => response.text()) :
                     csv || '')
                     .then((csv) => {
                     if (csv) {
+                        // If already loaded, clear the current rows
+                        table.deleteColumns();
                         converter.parse({ csv });
                         table.setColumns(converter.getTable().getColumns());
                     }
@@ -6007,6 +6026,7 @@
                 if (!data) {
                     return;
                 }
+                converter.columns = [];
                 converter.emit({
                     type: 'parse',
                     columns: converter.columns,
@@ -6179,20 +6199,18 @@
                     detail: eventDetail,
                     table
                 });
-                // If already loaded, clear the current rows
-                table.deleteRows();
                 return Promise
                     .resolve(dataUrl ?
                     fetch(dataUrl).then((json) => json.json()) :
                     data || [])
                     .then((data) => {
                     if (data) {
+                        // If already loaded, clear the current rows
+                        table.deleteColumns();
                         converter.parse({ data });
                         table.setColumns(converter.getTable().getColumns());
                     }
-                    return connector
-                        .setModifierOptions(dataModifier)
-                        .then(() => data);
+                    return connector.setModifierOptions(dataModifier).then(() => data);
                 })
                     .then((data) => {
                     connector.emit({
@@ -6446,8 +6464,6 @@
                     table,
                     url
                 });
-                // If already loaded, clear the current table
-                table.deleteColumns();
                 return fetch(url)
                     .then((response) => (response.json()))
                     .then((json) => {
@@ -6458,6 +6474,8 @@
                         firstRowAsNames,
                         json
                     });
+                    // If already loaded, clear the current table
+                    table.deleteColumns();
                     table.setColumns(converter.getTable().getColumns());
                     return connector.setModifierOptions(dataModifier);
                 })
@@ -6738,9 +6756,7 @@
              * Get table header markup from row data.
              */
             getTableHeaderHTML(topheaders = [], subheaders = [], options = this.options) {
-                const { useMultiLevelHeaders, useRowspanHeaders } = options, decimalPoint = (options.useLocalDecimalPoint ?
-                    (1.1).toLocaleString()[1] :
-                    '.');
+                const { useMultiLevelHeaders, useRowspanHeaders } = options;
                 let html = '<thead>', i = 0, len = subheaders && subheaders.length, next, cur, curColspan = 0, rowspan;
                 // Clean up multiple table headers. Chart.getDataRows() returns two
                 // levels of headers when using multilevel, not merged. We need to
@@ -6988,8 +7004,6 @@
                     table,
                     tableElement: connector.tableElement
                 });
-                // If already loaded, clear the current rows
-                table.deleteColumns();
                 let tableElement;
                 if (typeof tableHTML === 'string') {
                     connector.tableID = tableHTML;
@@ -7011,6 +7025,8 @@
                     return Promise.reject(new Error(error));
                 }
                 converter.parse(merge({ tableElement: connector.tableElement }, connector.options), eventDetail);
+                // If already loaded, clear the current rows
+                table.deleteColumns();
                 table.setColumns(converter.getTable().getColumns());
                 return connector
                     .setModifierOptions(dataModifier)
@@ -8164,13 +8180,14 @@
     _registerModule(_modules, 'masters/modules/data-tools.src.js', [_modules['Core/Globals.js'], _modules['Data/Connectors/DataConnector.js'], _modules['Data/Converters/DataConverter.js'], _modules['Data/DataCursor.js'], _modules['Data/Modifiers/DataModifier.js'], _modules['Data/DataPool.js'], _modules['Data/DataTable.js'], _modules['Data/Formula/Formula.js']], function (Highcharts, DataConnector, DataConverter, DataCursor, DataModifier, DataPool, DataTable, Formula) {
 
         const G = Highcharts;
-        G.DataConnector = DataConnector;
-        G.DataConverter = DataConverter;
-        G.DataCursor = DataCursor;
-        G.DataModifier = DataModifier;
-        G.DataPool = DataPool;
-        G.DataTable = DataTable;
-        G.Formula = Formula;
+        G.DataConnector = G.DataConnector || DataConnector;
+        G.DataConverter = G.DataConverter || DataConverter;
+        G.DataCursor = G.DataCursor || DataCursor;
+        G.DataModifier = G.DataModifier || DataModifier;
+        G.DataPool = G.DataPool || DataPool;
+        G.DataTable = G.DataTable || DataTable;
+        G.Formula = G.Formula || Formula;
 
+        return Highcharts;
     });
 }));

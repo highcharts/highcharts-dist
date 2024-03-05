@@ -77,7 +77,7 @@ var ColorMapComposition;
             (this.value === void 0 || !isNaN(this.value)));
     }
     /**
-     * Get the color attibutes to apply on the graphic
+     * Get the color attributes to apply on the graphic
      * @private
      * @function Highcharts.colorMapSeriesMixin.colorAttribs
      * @param {Highcharts.Point} point

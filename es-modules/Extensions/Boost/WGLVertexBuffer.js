@@ -88,7 +88,7 @@ class WGLVertexBuffer {
      * @param {string} attrib
      * Name of the Attribute to bind the buffer to
      * @param {number} dataComponents
-     * Mumber of components per. indice
+     * Number of components per. indice
      */
     build(dataIn, attrib, dataComponents) {
         let farray;

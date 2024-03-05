@@ -9,9 +9,9 @@
  * */
 'use strict';
 import H from '../Globals.js';
-const { composed, isTouchDevice } = H;
+const { isTouchDevice } = H;
 import U from '../Utilities.js';
-const { addEvent, correctFloat, defined, isNumber, pick, pushUnique } = U;
+const { addEvent, correctFloat, defined, isNumber, pick } = U;
 /* *
  *
  *  Functions
@@ -32,34 +32,36 @@ function onAxisInit() {
  * selector.
  * @private
  */
-function onAxisZoom(e) {
+function onAxisSetExtremes(e) {
     const axis = this, chart = axis.chart, chartOptions = chart.options, navigator = chartOptions.navigator, navigatorAxis = axis.navigatorAxis, pinchType = chart.zooming.pinchType, rangeSelector = chartOptions.rangeSelector, zoomType = chart.zooming.type;
-    if (axis.isXAxis && ((navigator && navigator.enabled) ||
-        (rangeSelector && rangeSelector.enabled))) {
+    let zoomed;
+    if (axis.isXAxis &&
+        (navigator?.enabled || rangeSelector?.enabled)) {
         // For y only zooming, ignore the X axis completely
-        if (zoomType === 'y') {
-            e.zoomed = false;
-            // For xy zooming, record the state of the zoom before zoom
-            // selection, then when the reset button is pressed, revert to
-            // this state. This should apply only if the chart is
-            // initialized with a range (#6612), otherwise zoom all the way
-            // out.
+        if (zoomType === 'y' && e.trigger === 'zoom') {
+            zoomed = false;
+            // For xy zooming, record the state of the zoom before zoom selection,
+            // then when the reset button is pressed, revert to this state. This
+            // should apply only if the chart is initialized with a range (#6612),
+            // otherwise zoom all the way out.
         }
-        else if (((!isTouchDevice && zoomType === 'xy') ||
+        else if (((e.trigger === 'zoom' && zoomType === 'xy') ||
             (isTouchDevice && pinchType === 'xy')) &&
             axis.options.range) {
             const previousZoom = navigatorAxis.previousZoom;
-            if (defined(e.newMin)) {
+            // Minimum defined, zooming in
+            if (defined(e.min)) {
                 navigatorAxis.previousZoom = [axis.min, axis.max];
+                // Minimum undefined, resetting zoom
             }
             else if (previousZoom) {
-                e.newMin = previousZoom[0];
-                e.newMax = previousZoom[1];
+                e.min = previousZoom[0];
+                e.max = previousZoom[1];
                 navigatorAxis.previousZoom = void 0;
             }
         }
     }
-    if (typeof e.zoomed !== 'undefined') {
+    if (typeof zoomed !== 'undefined') {
         e.preventDefault();
     }
 }
@@ -82,10 +84,10 @@ class NavigatorAxisAdditions {
      * @private
      */
     static compose(AxisClass) {
-        if (pushUnique(composed, this.compose)) {
+        if (!AxisClass.keepProps.includes('navigatorAxis')) {
             AxisClass.keepProps.push('navigatorAxis');
             addEvent(AxisClass, 'init', onAxisInit);
-            addEvent(AxisClass, 'zoom', onAxisZoom);
+            addEvent(AxisClass, 'setExtremes', onAxisSetExtremes);
         }
     }
     /* *
@@ -115,7 +117,7 @@ class NavigatorAxisAdditions {
      * @function Highcharts.Axis#toFixedRange
      */
     toFixedRange(pxMin, pxMax, fixedMin, fixedMax) {
-        const axis = this.axis, chart = axis.chart;
+        const axis = this.axis, chart = axis.chart, overscroll = pick(axis.ordinal?.convertOverscroll(axis.options.overscroll), 0);
         let newMin = pick(fixedMin, axis.translate(pxMin, true, !axis.horiz)), newMax = pick(fixedMax, axis.translate(pxMax, true, !axis.horiz));
         const fixedRange = chart && chart.fixedRange, halfPointRange = (axis.pointRange || 0) / 2;
         // Add/remove half point range to/from the extremes (#1172)
@@ -127,8 +129,10 @@ class NavigatorAxisAdditions {
         }
         // Make sure panning to the edges does not decrease the zoomed range
         if (fixedRange && axis.dataMin && axis.dataMax) {
-            if (newMax >= axis.dataMax) {
-                newMin = correctFloat(axis.dataMax - fixedRange);
+            const maxWithOverscroll = axis.dataMax + overscroll;
+            if (newMax >= maxWithOverscroll) {
+                newMin = correctFloat(maxWithOverscroll - fixedRange);
+                newMax = correctFloat(maxWithOverscroll);
             }
             if (newMin <= axis.dataMin) {
                 newMax = correctFloat(axis.dataMin + fixedRange);

@@ -14,15 +14,15 @@ import AST from '../../Core/Renderer/HTML/AST.js';
 import Chart from '../../Core/Chart/Chart.js';
 import ChartNavigationComposition from '../../Core/Chart/ChartNavigationComposition.js';
 import D from '../../Core/Defaults.js';
-const { defaultOptions, setOptions } = D;
+const { defaultOptions } = D;
 import ExportingDefaults from './ExportingDefaults.js';
 import ExportingSymbols from './ExportingSymbols.js';
 import Fullscreen from './Fullscreen.js';
 import G from '../../Core/Globals.js';
-const { composed, doc, SVG_NS, win } = G;
+const { doc, SVG_NS, win } = G;
 import HU from '../../Core/HttpUtilities.js';
 import U from '../../Core/Utilities.js';
-const { addEvent, css, createElement, discardElement, extend, find, fireEvent, isObject, merge, objectEach, pick, pushUnique, removeEvent, uniqueKey } = U;
+const { addEvent, css, createElement, discardElement, extend, find, fireEvent, isObject, merge, objectEach, pick, removeEvent, uniqueKey } = U;
 /* *
  *
  *  Composition
@@ -183,7 +183,7 @@ var Exporting;
         chart.exportSVGElements.push(button, symbol);
     }
     /**
-     * Clena up after printing a chart.
+     * Clean up after printing a chart.
      *
      * @function Highcharts#afterPrint
      *
@@ -234,7 +234,7 @@ var Exporting;
             resetParams: void 0
         };
         chart.isPrinting = true;
-        chart.pointer.reset(null, 0);
+        chart.pointer?.reset(void 0, 0);
         fireEvent(chart, 'beforePrint');
         // Handle printMaxWidth
         const handleMaxWidth = printMaxWidth &&
@@ -309,8 +309,8 @@ var Exporting;
     function compose(ChartClass, SVGRendererClass) {
         ExportingSymbols.compose(SVGRendererClass);
         Fullscreen.compose(ChartClass);
-        if (pushUnique(composed, compose)) {
-            const chartProto = ChartClass.prototype;
+        const chartProto = ChartClass.prototype;
+        if (!chartProto.exportChart) {
             chartProto.afterPrint = afterPrint;
             chartProto.exportChart = exportChart;
             chartProto.inlineStyles = inlineStyles;
@@ -386,7 +386,7 @@ var Exporting;
                     padding: menuPadding + 'px',
                     pointerEvents: 'auto',
                     ...chart.renderer.style
-                }, chart.fixedDiv || chart.container);
+                }, chart.scrollablePlotArea?.fixedDiv || chart.container);
             innerMenu = createElement('ul', { className: 'highcharts-menu' }, chart.styledMode ? {} : {
                 listStyle: 'none',
                 margin: 0,
@@ -422,7 +422,7 @@ var Exporting;
             // Hide it on clicking or touching outside the menu (#2258,
             // #2335, #2407)
             addEvent(doc, 'mouseup', function (e) {
-                if (!chart.pointer.inClass(e.target, className)) {
+                if (!chart.pointer?.inClass(e.target, className)) {
                     menu.hideMenu();
                 }
             }), addEvent(menu, 'click', function () {
@@ -851,7 +851,7 @@ var Exporting;
             let styles, parentStyles, dummy, denylisted, allowlisted, i;
             /**
              * Check computed styles and whether they are in the allow/denylist
-             * for styles or atttributes.
+             * for styles or attributes.
              * @private
              * @param {string} val
              *        Style value
@@ -985,10 +985,15 @@ var Exporting;
      *        Move target
      */
     function moveContainers(moveTo) {
-        const chart = this;
-        (chart.fixedDiv ? // When scrollablePlotArea is active (#9533)
-            [chart.fixedDiv, chart.scrollingContainer] :
-            [chart.container]).forEach(function (div) {
+        const { scrollablePlotArea } = this;
+        (
+        // When scrollablePlotArea is active (#9533)
+        scrollablePlotArea ?
+            [
+                scrollablePlotArea.fixedDiv,
+                scrollablePlotArea.scrollingContainer
+            ] :
+            [this.container]).forEach(function (div) {
             moveTo.appendChild(div);
         });
     }
@@ -1096,7 +1101,7 @@ var Exporting;
     }
     /**
      * Exporting module only. A collection of fixes on the produced SVG to
-     * account for expando properties, browser bugs.
+     * account for expand properties, browser bugs.
      * Returns a cleaned SVG.
      *
      * @private
@@ -1136,7 +1141,7 @@ var Exporting;
             .replace(/url\([^#]+#/g, 'url(#')
             .replace(/<svg /, '<svg xmlns:xlink="http://www.w3.org/1999/xlink" ')
             .replace(/ (|NS[0-9]+\:)href=/g, ' xlink:href=') // #3567
-            .replace(/\n/, ' ')
+            .replace(/\n+/g, ' ')
             // Batik doesn't support rgba fills and strokes (#3095)
             .replace(/(fill|stroke)="rgba\(([ 0-9]+,[ 0-9]+,[ 0-9]+),([ 0-9\.]+)\)"/g, // eslint-disable-line max-len
         '$1="rgb($2)" $1-opacity="$3"')
@@ -1164,10 +1169,10 @@ export default Exporting;
  * @callback Highcharts.ExportingAfterPrintCallbackFunction
  *
  * @param {Highcharts.Chart} this
- *        The chart on which the event occured.
+ *        The chart on which the event occurred.
  *
  * @param {global.Event} event
- *        The event that occured.
+ *        The event that occurred.
  */
 /**
  * Gets fired before a chart is printed through the context menu item or the
@@ -1176,10 +1181,10 @@ export default Exporting;
  * @callback Highcharts.ExportingBeforePrintCallbackFunction
  *
  * @param {Highcharts.Chart} this
- *        The chart on which the event occured.
+ *        The chart on which the event occurred.
  *
  * @param {global.Event} event
- *        The event that occured.
+ *        The event that occurred.
  */
 /**
  * Function to call if the offline-exporting module fails to export a chart on

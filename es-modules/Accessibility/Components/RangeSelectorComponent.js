@@ -14,12 +14,9 @@ import AccessibilityComponent from '../AccessibilityComponent.js';
 import Announcer from '../Utils/Announcer.js';
 import ChartUtilities from '../Utils/ChartUtilities.js';
 const { unhideChartElementFromAT, getAxisRangeDescription } = ChartUtilities;
-import H from '../../Core/Globals.js';
-const { composed } = H;
 import KeyboardNavigationHandler from '../KeyboardNavigationHandler.js';
-import RangeSelector from '../../Stock/RangeSelector/RangeSelector.js';
 import U from '../../Core/Utilities.js';
-const { addEvent, attr, pushUnique } = U;
+const { addEvent, attr } = U;
 /* *
  *
  *  Functions
@@ -450,10 +447,10 @@ class RangeSelectorComponent extends AccessibilityComponent {
      * @private
      */
     function compose(ChartClass, RangeSelectorClass) {
-        if (pushUnique(composed, compose)) {
-            const chartProto = ChartClass.prototype;
+        const chartProto = ChartClass.prototype;
+        if (!chartProto.highlightRangeSelectorButton) {
             chartProto.highlightRangeSelectorButton = (chartHighlightRangeSelectorButton);
-            addEvent(RangeSelector, 'afterBtnClick', rangeSelectorAfterBtnClick);
+            addEvent(RangeSelectorClass, 'afterBtnClick', rangeSelectorAfterBtnClick);
         }
     }
     RangeSelectorComponent.compose = compose;

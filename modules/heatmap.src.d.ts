@@ -20,7 +20,7 @@ declare module "../highcharts.src" {
         pointPadding?: number;
         /**
          * Heatmap series only. The value of the point, resulting in a color
-         * controled by options as set in the colorAxis configuration.
+         * controlled by options as set in the colorAxis configuration.
          */
         value?: (number|null);
     }
@@ -31,7 +31,7 @@ declare module "../highcharts.src" {
         pointPadding?: number;
         /**
          * Heatmap series only. The value of the point, resulting in a color
-         * controled by options as set in the colorAxis configuration.
+         * controlled by options as set in the colorAxis configuration.
          */
         value?: (number|null);
     }

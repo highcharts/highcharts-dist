@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v@product.version@ (@product.date@)
  * @module highcharts/modules/draggable-points
  * @requires highcharts
  *
@@ -12,3 +12,4 @@ import Highcharts from '../../Core/Globals.js';
 import DraggablePoints from '../../Extensions/DraggablePoints/DraggablePoints.js';
 const G = Highcharts;
 DraggablePoints.compose(G.Chart, G.Series);
+export default Highcharts;

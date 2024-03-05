@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.3.0 (2024-01-10)
+ * @license Highstock JS v11.4.0 (2024-03-05)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -182,8 +182,9 @@
 
         return DEMAIndicator;
     });
-    _registerModule(_modules, 'masters/indicators/dema.src.js', [], function () {
+    _registerModule(_modules, 'masters/indicators/dema.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

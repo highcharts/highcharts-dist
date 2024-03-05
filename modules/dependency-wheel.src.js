@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v11.4.0 (2024-03-05)
  *
  * Dependency wheel module
  *
@@ -136,7 +136,7 @@
          *         Dependency wheel
          *
          * @extends      plotOptions.sankey
-         * @exclude      dataSorting, nodeAlignment
+         * @exclude      dataSorting, nodeAlignment, nodeDistance
          * @since        7.1.0
          * @product      highcharts
          * @requires     modules/dependency-wheel
@@ -306,7 +306,7 @@
         const { animObject } = A;
         const { deg2rad } = H;
         const { pie: PieSeries, sankey: SankeySeries } = SeriesRegistry.seriesTypes;
-        const { extend, merge } = U;
+        const { extend, merge, relativeLength } = U;
         /* *
          *
          *  Class
@@ -424,7 +424,8 @@
                 for (const node of this.nodeColumns[0]) {
                     // Don't render the nodes if sum is 0 #12453
                     if (node.sum) {
-                        const shapeArgs = node.shapeArgs, centerX = center[0], centerY = center[1], r = center[2] / 2, innerR = r - options.nodeWidth, start = startAngle + factor * (shapeArgs.y || 0), end = startAngle +
+                        const shapeArgs = node.shapeArgs, centerX = center[0], centerY = center[1], r = center[2] / 2, nodeWidth = options.nodeWidth === 'auto' ?
+                            20 : options.nodeWidth, innerR = r - relativeLength(nodeWidth || 0, r), start = startAngle + factor * (shapeArgs.y || 0), end = startAngle +
                             factor * ((shapeArgs.y || 0) + (shapeArgs.height || 0));
                         // Middle angle
                         node.angle = start + (end - start) / 2;
@@ -526,8 +527,9 @@
 
         return DependencyWheelSeries;
     });
-    _registerModule(_modules, 'masters/modules/dependency-wheel.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/dependency-wheel.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

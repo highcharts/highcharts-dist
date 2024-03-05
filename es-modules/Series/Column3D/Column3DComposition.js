@@ -118,7 +118,7 @@ function columnSeriesTranslate3dShapes() {
 }
 /** @private */
 function compose(SeriesClass, StackItemClass) {
-    if (pushUnique(composed, compose)) {
+    if (pushUnique(composed, 'Column3D')) {
         const seriesProto = SeriesClass.prototype, stackItemProto = StackItemClass.prototype, { column: ColumnSeriesClass, columnRange: ColumnRangeSeriesClass } = SeriesClass.types;
         wrap(seriesProto, 'alignDataLabel', wrapSeriesAlignDataLabel);
         wrap(seriesProto, 'justifyDataLabel', wrapSeriesJustifyDataLabel);

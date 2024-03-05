@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.3.0 (2024-01-10)
+ * @license Highcharts JS v@product.version@ (@product.date@)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -13,5 +13,6 @@
 import Highcharts from '../../Core/Globals.js';
 import ColorAxis from '../../Core/Axis/Color/ColorAxis.js';
 const G = Highcharts;
-G.ColorAxis = ColorAxis;
-ColorAxis.compose(G.Chart, G.Fx, G.Legend, G.Series);
+G.ColorAxis = G.ColorAxis || ColorAxis;
+G.ColorAxis.compose(G.Chart, G.Fx, G.Legend, G.Series);
+export default Highcharts;

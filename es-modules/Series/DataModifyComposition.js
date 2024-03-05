@@ -9,13 +9,11 @@
  * */
 'use strict';
 import Axis from '../Core/Axis/Axis.js';
-import H from '../Core/Globals.js';
-const { composed } = H;
 import Point from '../Core/Series/Point.js';
 const { tooltipFormatter: pointTooltipFormatter } = Point.prototype;
 import Series from '../Core/Series/Series.js';
 import U from '../Core/Utilities.js';
-const { addEvent, arrayMax, arrayMin, correctFloat, defined, isArray, isNumber, isString, pick, pushUnique } = U;
+const { addEvent, arrayMax, arrayMin, correctFloat, defined, isArray, isNumber, isString, pick } = U;
 /* *
  *
  *  Composition
@@ -49,13 +47,15 @@ var DataModifyComposition;
      * Point class to use.
      */
     function compose(SeriesClass, AxisClass, PointClass) {
-        if (pushUnique(composed, compose)) {
-            const axisProto = AxisClass.prototype, pointProto = PointClass.prototype, seriesProto = SeriesClass.prototype;
+        const axisProto = AxisClass.prototype, pointProto = PointClass.prototype, seriesProto = SeriesClass.prototype;
+        if (!seriesProto.setCompare) {
             seriesProto.setCompare = seriesSetCompare;
             seriesProto.setCumulative = seriesSetCumulative;
             addEvent(SeriesClass, 'afterInit', afterInit);
             addEvent(SeriesClass, 'afterGetExtremes', afterGetExtremes);
             addEvent(SeriesClass, 'afterProcessData', afterProcessData);
+        }
+        if (!axisProto.setCompare) {
             axisProto.setCompare = axisSetCompare;
             axisProto.setModifier = setModifier;
             axisProto.setCumulative = axisSetCumulative;
