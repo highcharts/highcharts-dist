@@ -195,9 +195,9 @@ class SVGRenderer {
                     top: (Math.ceil(rect.top) - rect.top) + 'px'
                 });
             };
-            // run the fix now
+            // Run the fix now
             subPixelFix();
-            // run it on resize
+            // Run it on resize
             renderer.unSubPixelFix = addEvent(win, 'resize', subPixelFix);
         }
     }
@@ -303,10 +303,10 @@ class SVGRenderer {
             }
             if (hasInternalReferenceBug) {
                 // Scan alert #[72]: Loop for nested patterns
-                return replaceNested(win.location.href.split('#')[0], // remove hash
-                [/<[^>]*>/g, ''], // wing cut HTML
-                [/([\('\)])/g, '\\$1'], // escape parantheses and quotes
-                [/ /g, '%20'] // replace spaces (needed for Safari only)
+                return replaceNested(win.location.href.split('#')[0], // Remove hash
+                [/<[^>]*>/g, ''], // Wing cut HTML
+                [/([\('\)])/g, '\\$1'], // Escape parantheses and quotes
+                [/ /g, '%20'] // Replace spaces (needed for Safari only)
                 );
             }
         }
@@ -726,7 +726,7 @@ class SVGRenderer {
         if (isArray(path)) {
             attribs.d = path;
         }
-        else if (isObject(path)) { // attributes
+        else if (isObject(path)) { // Attributes
             extend(attribs, path);
         }
         return this.createElement('path').attr(attribs);
@@ -1076,7 +1076,7 @@ class SVGRenderer {
      */
     symbol(symbol, x, y, width, height, options) {
         const ren = this, imageRegex = /^url\((.*?)\)$/, isImage = imageRegex.test(symbol), sym = (!isImage && (this.symbols[symbol] ? symbol : 'circle')), 
-        // get the symbol definition function
+        // Get the symbol definition function
         symbolFn = (sym && this.symbols[sym]);
         let obj, path, imageSrc, centerImage;
         if (symbolFn) {
@@ -1088,7 +1088,7 @@ class SVGRenderer {
             if (!ren.styledMode) {
                 obj.attr('fill', 'none');
             }
-            // expando properties for use in animate and attr
+            // Expando properties for use in animate and attr
             extend(obj, {
                 symbolName: (sym || void 0),
                 x: x,
@@ -1904,4 +1904,4 @@ export default SVGRenderer;
 * @name Highcharts.SymbolOptionsObject#start
 * @type {number|undefined}
 */
-(''); // keeps doclets above in transpiled file
+(''); // Keeps doclets above in transpiled file

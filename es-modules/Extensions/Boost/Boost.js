@@ -111,7 +111,7 @@ function hasWebGLSupport() {
                 }
             }
             catch (e) {
-                // silent error
+                // Silent error
             }
         }
     }
@@ -363,4 +363,4 @@ export default Boost;
  * @requires   modules/boost
  * @apioption  plotOptions.series.boostBlending
  */
-''; // adds doclets above to transpiled file
+''; // Adds doclets above to transpiled file

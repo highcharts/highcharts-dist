@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.0 (2024-03-05)
+ * @license Highcharts JS v11.4.1 (2024-04-04)
  *
  * Wind barb series module
  *
@@ -62,7 +62,7 @@
          * @private
          */
         const ApproximationRegistry = {
-        // approximations added programmatically
+        // Approximations added programmatically
         };
         /* *
          *
@@ -136,7 +136,7 @@
                 const series = this, options = series.options, chart = series.chart, points = series.points, optionsOnSeries = options.onSeries, onSeries = (optionsOnSeries &&
                     chart.get(optionsOnSeries)), step = onSeries && onSeries.options.step, onData = (onSeries && onSeries.points), inverted = chart.inverted, xAxis = series.xAxis, yAxis = series.yAxis;
                 let cursor = points.length - 1, point, lastPoint, onKey = options.onKey || 'y', i = onData && onData.length, xOffset = 0, leftPoint, lastX, rightPoint, currentDataGrouping, distanceRatio;
-                // relate to a master series
+                // Relate to a master series
                 if (onSeries && onSeries.visible && i) {
                     xOffset = (onSeries.pointXOffset || 0) + (onSeries.barW || 0) / 2;
                     currentDataGrouping = onSeries.currentDataGrouping;
@@ -153,7 +153,7 @@
                             typeof leftPoint[onKey] !== 'undefined') {
                             if (point.x <= lastX) { // #803
                                 point.plotY = leftPoint[onKey];
-                                // interpolate between points, #666
+                                // Interpolate between points, #666
                                 if (leftPoint.x < point.x &&
                                     !step) {
                                     rightPoint = onData[i + 1];
@@ -208,13 +208,13 @@
                                             }
                                         }
                                         else {
-                                            // the distance ratio, between 0 and 1
+                                            // The distance ratio, between 0 and 1
                                             distanceRatio =
                                                 (point.x - leftPoint.x) /
                                                     (rightPoint.x - leftPoint.x);
                                             point.plotY +=
                                                 distanceRatio *
-                                                    // the plotY distance
+                                                    // The plotY distance
                                                     (rightPoint[onKey] - leftPoint[onKey]);
                                             point.y +=
                                                 distanceRatio *
@@ -224,7 +224,7 @@
                                 }
                             }
                             cursor--;
-                            i++; // check again for points in the same x position
+                            i++; // Check again for points in the same x position
                             if (cursor < 0) {
                                 break;
                             }
@@ -260,7 +260,7 @@
                             point.shapeArgs = {}; // 847
                         }
                     }
-                    // if multiple flags appear at the same x, order them into a stack
+                    // If multiple flags appear at the same x, order them into a stack
                     lastPoint = points[i - 1];
                     if (lastPoint && lastPoint.plotX === point.plotX) {
                         if (typeof lastPoint.stackIndex === 'undefined') {
@@ -513,7 +513,7 @@
          * @product   highcharts highstock
          * @apioption series.windbarb.data.direction
          */
-        ''; // adds doclets above to transpiled file
+        ''; // Adds doclets above to transpiled file
         /* *
          *
          *  Default Export
@@ -620,10 +620,10 @@
                     ['L', 0, 10 * u],
                     ['L', 1.5 * u, 7 * u],
                     ['L', 0, 7 * u],
-                    ['L', 0, -10 * u] // top
+                    ['L', 0, -10 * u] // Top
                 ];
                 // For each full 50 knots, add a pennant
-                barbs = (knots - knots % 50) / 50; // pennants
+                barbs = (knots - knots % 50) / 50; // Pennants
                 if (barbs > 0) {
                     while (barbs--) {
                         path.push(pos === -10 ? ['L', 0, pos * u] : ['M', 0, pos * u], ['L', 5 * u, pos * u + 2], ['L', 0, pos * u + 4]);
@@ -642,7 +642,7 @@
                     }
                 }
                 // For each full 5 knots, add a half barb
-                barbs = (knots - knots % 5) / 5; // half barbs
+                barbs = (knots - knots % 5) / 5; // Half barbs
                 if (barbs > 0) {
                     while (barbs--) {
                         path.push(pos === -10 ? ['L', 0, pos * u] : ['M', 0, pos * u], ['L', 4 * u, pos * u]);
@@ -729,12 +729,16 @@
         WindbarbSeries.defaultOptions = merge(ColumnSeries.defaultOptions, WindbarbSeriesDefaults);
         OnSeriesComposition.compose(WindbarbSeries);
         extend(WindbarbSeries.prototype, {
-            beaufortFloor: [0, 0.3, 1.6, 3.4, 5.5, 8.0, 10.8, 13.9, 17.2, 20.8,
-                24.5, 28.5, 32.7],
-            beaufortName: ['Calm', 'Light air', 'Light breeze',
+            beaufortFloor: [
+                0, 0.3, 1.6, 3.4, 5.5, 8.0, 10.8, 13.9, 17.2, 20.8,
+                24.5, 28.5, 32.7
+            ],
+            beaufortName: [
+                'Calm', 'Light air', 'Light breeze',
                 'Gentle breeze', 'Moderate breeze', 'Fresh breeze',
                 'Strong breeze', 'Near gale', 'Gale', 'Strong gale', 'Storm',
-                'Violent storm', 'Hurricane'],
+                'Violent storm', 'Hurricane'
+            ],
             invertible: false,
             parallelArrays: ['x', 'value', 'direction'],
             pointArrayMap: ['value', 'direction'],

@@ -50,7 +50,7 @@ const labelDistance = 3;
  */
 function checkClearPoint(series, x, y, bBox, checkDistance) {
     const chart = series.chart, seriesLabelOptions = series.options.label || {}, onArea = pick(seriesLabelOptions.onArea, !!series.area), findDistanceToOthers = (onArea || seriesLabelOptions.connectorAllowed), leastDistance = 16, boxesToAvoid = chart.boxesToAvoid;
-    let distToOthersSquared = Number.MAX_VALUE, // distance to other graphs
+    let distToOthersSquared = Number.MAX_VALUE, // Distance to other graphs
     distToPointSquared = Number.MAX_VALUE, dist, connectorPoint, withinRange, xDist, yDist, i, j;
     /**
      * Get the weight in order to determine the ideal position. Larger distance
@@ -174,7 +174,7 @@ function compose(ChartClass, SVGRendererClass) {
  * @function Highcharts.Chart#drawSeriesLabels
  */
 function drawSeriesLabels(chart) {
-    // console.time('drawSeriesLabels');
+    // Console.time('drawSeriesLabels');
     chart.boxesToAvoid = [];
     const labelSeries = chart.labelSeries || [], boxesToAvoid = chart.boxesToAvoid;
     // Avoid data labels
@@ -407,7 +407,7 @@ function drawSeriesLabels(chart) {
         }
     });
     fireEvent(chart, 'afterDrawSeriesLabels');
-    // console.timeEnd('drawSeriesLabels');
+    // Console.timeEnd('drawSeriesLabels');
 }
 /**
  * Points to avoid. In addition to actual data points, the label should avoid
@@ -671,4 +671,4 @@ export default SeriesLabel;
 * @name Highcharts.LabelIntersectBoxObject#top
 * @type {number}
 */
-(''); // keeps doclets above in JS file
+(''); // Keeps doclets above in JS file

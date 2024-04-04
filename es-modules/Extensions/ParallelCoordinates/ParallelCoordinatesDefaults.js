@@ -129,7 +129,7 @@ const xAxisDefaults = {
  * @requires  modules/parallel-coordinates
  * @apioption yAxis.tooltipValueFormat
  */
-''; // keeps doclets above separate in JS file
+''; // Keeps doclets above separate in JS file
 /* *
  *
  *  Default Options

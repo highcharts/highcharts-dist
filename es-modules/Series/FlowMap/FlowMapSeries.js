@@ -100,13 +100,13 @@ class FlowMapSeries extends MapLineSeries {
      */
     animate(init) {
         const series = this, points = series.points;
-        if (!init) { // run the animation
+        if (!init) { // Run the animation
             points.forEach((point) => {
                 if (point.shapeArgs &&
                     isArray(point.shapeArgs.d) &&
                     point.shapeArgs.d.length) {
                     const path = point.shapeArgs.d, x = path[0][1], y = path[0][2];
-                    // to animate SVG path the initial path array needs to be
+                    // To animate SVG path the initial path array needs to be
                     // same as target, but element should be visible, so we
                     // insert array elements with start (M) values
                     if (x && y) {
@@ -213,7 +213,7 @@ class FlowMapSeries extends MapLineSeries {
                 if ((foundPoint instanceof Point) &&
                     foundPoint.plotX &&
                     foundPoint.plotY) {
-                    // after linked point update flowmap point should
+                    // After linked point update flowmap point should
                     // be also updated
                     addEvent(foundPoint, 'update', dirtySeries);
                     return {
@@ -751,4 +751,4 @@ export default FlowMapSeries;
  * @type  {number}
  * @apioption series.flowmap.data.lineWidth
  */
-''; // adds doclets above to transpiled file
+''; // Adds doclets above to transpiled file

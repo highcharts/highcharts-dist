@@ -150,4 +150,4 @@ export default CMOIndicator;
  * @requires  stock/indicators/cmo
  * @apioption series.cmo
  */
-(''); // to include the above in the js output
+(''); // To include the above in the js output

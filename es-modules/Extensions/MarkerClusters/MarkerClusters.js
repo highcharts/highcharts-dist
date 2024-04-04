@@ -168,4 +168,4 @@ export default MarkerClusters;
  * @param {Highcharts.PointClickEventObject} event
  *        Event arguments.
  */
-''; // keeps doclets above in JS file
+''; // Keeps doclets above in JS file

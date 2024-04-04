@@ -103,9 +103,9 @@ var DateTimeAxis;
          */
         normalizeTimeTickInterval(tickInterval, unitsOption) {
             const units = (unitsOption || [[
-                    // unit name
+                    // Unit name
                     'millisecond',
-                    // allowed multiples
+                    // Allowed multiples
                     [1, 2, 5, 10, 20, 25, 50, 100, 200, 500]
                 ], [
                     'second',
@@ -129,31 +129,31 @@ var DateTimeAxis;
                     'year',
                     null
                 ]]);
-            let unit = units[units.length - 1], // default unit is years
+            let unit = units[units.length - 1], // Default unit is years
             interval = timeUnits[unit[0]], multiples = unit[1], i;
-            // loop through the units to find the one that best fits the
+            // Loop through the units to find the one that best fits the
             // tickInterval
             for (i = 0; i < units.length; i++) {
                 unit = units[i];
                 interval = timeUnits[unit[0]];
                 multiples = unit[1];
                 if (units[i + 1]) {
-                    // lessThan is in the middle between the highest multiple
+                    // `lessThan` is in the middle between the highest multiple
                     // and the next unit.
                     const lessThan = (interval *
                         multiples[multiples.length - 1] +
                         timeUnits[units[i + 1][0]]) / 2;
-                    // break and keep the current unit
+                    // Break and keep the current unit
                     if (tickInterval <= lessThan) {
                         break;
                     }
                 }
             }
-            // prevent 2.5 years intervals, though 25, 250 etc. are allowed
+            // Prevent 2.5 years intervals, though 25, 250 etc. are allowed
             if (interval === timeUnits.year && tickInterval < 5 * interval) {
                 multiples = [1, 2, 5];
             }
-            // get the count
+            // Get the count
             const count = normalizeTickInterval(tickInterval / interval, multiples, unit[0] === 'year' ? // #1913, #2360
                 Math.max(getMagnitude(tickInterval / interval), 1) :
                 1);

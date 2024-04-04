@@ -46,7 +46,7 @@ function compose(ChartClass) {
 function onChartAfterPrint() {
     if (this.graphLayoutsLookup) {
         this.graphLayoutsLookup.forEach((layout) => {
-            // return to default simulation
+            // Return to default simulation
             layout.updateSimulation();
         });
         this.redraw();

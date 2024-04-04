@@ -253,7 +253,7 @@ function onBeforeRender(e) {
                     });
                 }
             }
-            // setScale is fired after all the series is initialized,
+            // `setScale` is fired after all the series is initialized,
             // which is an ideal time to update the axis.categories.
             treeGrid = getTreeGridFromData(data, uniqueNames || false, (uniqueNames === true) ? numberOfSeries : 1);
             // Assign values to the axis.
@@ -332,7 +332,7 @@ function wrapGenerateTick(proceed, pos) {
                 });
         }
         else {
-            // update labels depending on tick interval
+            // Update labels depending on tick interval
             tick.parameters.category = gridNode.name;
             tick.options = options;
             tick.addLabel();
@@ -371,7 +371,7 @@ function wrapInit(proceed, chart, userOptions, coll) {
                     const breaks = axis.treeGrid.collapse(node);
                     if (axis.brokenAxis) {
                         axis.brokenAxis.setBreaks(breaks, false);
-                        // remove the node from the axis collapsedNodes
+                        // Remove the node from the axis collapsedNodes
                         if (axis.treeGrid.collapsedNodes) {
                             axis.treeGrid.collapsedNodes = axis.treeGrid
                                 .collapsedNodes

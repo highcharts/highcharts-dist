@@ -54,7 +54,7 @@ function edgePoint(startIndex, endIndex, fibonacciIndex) {
         // Distance between the two first lines in pixels
         deltaX = points.length > 1 ?
             points[1].plotX - points[0].plotX : 0, 
-        // firstLine.x + fibb * offset
+        // `firstLine.x + fibb * offset`
         x = xAxis.toValue(points[0].plotX + plotLeftOrTop + fibonacciIndex * deltaX);
         // We need 2 mock points with the same x coordinate, different y
         points = [
@@ -105,7 +105,7 @@ class FibonacciTimeZones extends CrookedLine {
             this.initShape(merge(this.options.typeOptions.line, {
                 type: 'path',
                 points: points
-            }), i // shape's index. Can be found in annotation.shapes[i].index
+            }), i // Shape's index. Can be found in annotation.shapes[i].index
             );
         }
     }

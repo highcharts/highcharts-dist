@@ -175,4 +175,4 @@ export default VWAPIndicator;
  * @requires  stock/indicators/vwap
  * @apioption series.vwap
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

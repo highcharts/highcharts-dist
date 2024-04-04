@@ -126,12 +126,11 @@ function getK(layout) {
  *        Node that should be translated
  */
 function integrate(layout, node) {
-    let distanceR;
     node.dispX +=
         node.dispX * layout.options.friction;
     node.dispY +=
         node.dispY * layout.options.friction;
-    distanceR = node.temperature = layout.vectorLength({
+    const distanceR = node.temperature = layout.vectorLength({
         x: node.dispX,
         y: node.dispY
     });

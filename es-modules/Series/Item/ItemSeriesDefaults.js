@@ -172,7 +172,7 @@ const ItemSeriesDefaults = {
  * @excluding legendItemClick
  * @apioption series.item.events
  */
-''; // keeps the doclets above separate
+''; // Keeps the doclets above separate
 /* *
  *
  *  Default Export

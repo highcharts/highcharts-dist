@@ -44,7 +44,7 @@ class ArcDiagramSeries extends SankeySeries {
      */
     createNodeColumns() {
         const series = this, chart = series.chart, 
-        // column needs casting, to much methods required at the same time
+        // Column needs casting, to much methods required at the same time
         column = SankeyColumnComposition.compose([], series);
         column.sankeyColumn.maxLength = chart.inverted ?
             chart.plotHeight : chart.plotWidth;
@@ -67,7 +67,7 @@ class ArcDiagramSeries extends SankeySeries {
                 i = column.length;
                 while (i--) {
                     radius = (column[i].getSum()) * factor * scale;
-                    let plotArea = Math.min(chart.plotHeight, chart.plotWidth);
+                    const plotArea = Math.min(chart.plotHeight, chart.plotWidth);
                     if (radius > plotArea) {
                         scale = Math.min(plotArea / radius, scale);
                     }
@@ -96,9 +96,9 @@ class ArcDiagramSeries extends SankeySeries {
             return factor;
         };
         column.sankeyColumn.offset = function (node, factor) {
-            const equalNodes = node.series.options.equalNodes;
-            let offset = column.sankeyColumn.additionalSpace || 0, totalNodeOffset, nodePadding = series.nodePadding, maxRadius = Math.min(chart.plotWidth, chart.plotHeight, (column.sankeyColumn.maxLength || 0) /
+            const equalNodes = node.series.options.equalNodes, nodePadding = series.nodePadding, maxRadius = Math.min(chart.plotWidth, chart.plotHeight, (column.sankeyColumn.maxLength || 0) /
                 series.nodes.length - nodePadding);
+            let offset = column.sankeyColumn.additionalSpace || 0, totalNodeOffset;
             for (let i = 0; i < column.length; i++) {
                 const sum = column[i].getSum() *
                     (column.sankeyColumn.scale || 0);
@@ -548,4 +548,4 @@ export default ArcDiagramSeries;
  * @excluding outgoing, dataLabels
  * @apioption series.arcdiagram.data
  */
-''; // adds doclets above to the transpiled file
+''; // Adds doclets above to the transpiled file

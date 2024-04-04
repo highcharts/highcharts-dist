@@ -16,6 +16,9 @@ const { defined, isNumber, pick } = U;
  *
  * */
 /* eslint-disable require-jsdoc, valid-jsdoc */
+/**
+ *
+ */
 function arc(cx, cy, w, h, options) {
     const arc = [];
     if (options) {
@@ -127,18 +130,21 @@ function callout(x, y, w, h, options) {
             }
         }
     }
-    else if ( // replace bottom
+    else if ( // Replace bottom
     anchorY > h &&
         anchorX < w - safeDistance) {
         path.splice(5, 1, ['L', anchorX + halfDistance, y + h], ['L', anchorX, y + h + arrowLength], ['L', anchorX - halfDistance, y + h], ['L', x + r, y + h]);
     }
-    else if ( // replace top
+    else if ( // Replace top
     anchorY < 0 &&
         anchorX > safeDistance) {
         path.splice(1, 1, ['L', anchorX - halfDistance, y], ['L', anchorX, y - arrowLength], ['L', anchorX + halfDistance, y], ['L', w - r, y]);
     }
     return path;
 }
+/**
+ *
+ */
 function circle(x, y, w, h) {
     // Return a full arc
     return arc(x + w / 2, y + h / 2, w / 2, h / 2, {
@@ -147,6 +153,9 @@ function circle(x, y, w, h) {
         open: false
     });
 }
+/**
+ *
+ */
 function diamond(x, y, w, h) {
     return [
         ['M', x + w / 2, y],
@@ -157,6 +166,9 @@ function diamond(x, y, w, h) {
     ];
 }
 // #15291
+/**
+ *
+ */
 function rect(x, y, w, h, options) {
     if (options && options.r) {
         return roundedRect(x, y, w, h, options);
@@ -169,6 +181,9 @@ function rect(x, y, w, h, options) {
         ['Z']
     ];
 }
+/**
+ *
+ */
 function roundedRect(x, y, w, h, options) {
     const r = options?.r || 0;
     return [
@@ -181,9 +196,12 @@ function roundedRect(x, y, w, h, options) {
         ['A', r, r, 0, 0, 1, x, y + h - r],
         ['L', x, y + r],
         ['A', r, r, 0, 0, 1, x + r, y],
-        ['Z'] // top-left corner
+        ['Z'] // Top-left corner
     ];
 }
+/**
+ *
+ */
 function triangle(x, y, w, h) {
     return [
         ['M', x + w / 2, y],
@@ -192,6 +210,9 @@ function triangle(x, y, w, h) {
         ['Z']
     ];
 }
+/**
+ *
+ */
 function triangleDown(x, y, w, h) {
     return [
         ['M', x, y],

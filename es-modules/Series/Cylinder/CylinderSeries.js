@@ -27,8 +27,8 @@ const { extend, merge } = U;
 /**
  * The cylinder series type.
  *
- * @requires module:highcharts-3d
- * @requires module:modules/cylinder
+ * @requires highcharts-3d
+ * @requires modules/cylinder
  *
  * @private
  * @class

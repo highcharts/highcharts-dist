@@ -50,21 +50,21 @@ class ZigzagIndicator extends SMAIndicator {
         // Search for a second zigzag point candidate,
         // this will also set first zigzag point
         for (i = 1; i < yValLen; i++) {
-            // required change to go down
+            // Required change to go down
             if (yVal[i][lowIndex] <= firstZigzagHigh * deviations.high) {
                 zigzag.push([xVal[0], firstZigzagHigh]);
-                // second zigzag point candidate
+                // Second zigzag point candidate
                 zigzagPoint = [xVal[i], yVal[i][lowIndex]];
-                // next line will be going up
+                // Next line will be going up
                 directionUp = true;
                 exitLoop = true;
-                // required change to go up
+                // Required change to go up
             }
             else if (yVal[i][highIndex] >= firstZigzagLow * deviations.low) {
                 zigzag.push([xVal[0], firstZigzagLow]);
-                // second zigzag point candidate
+                // Second zigzag point candidate
                 zigzagPoint = [xVal[i], yVal[i][highIndex]];
-                // next line will be going down
+                // Next line will be going down
                 directionUp = false;
                 exitLoop = true;
             }
@@ -77,31 +77,31 @@ class ZigzagIndicator extends SMAIndicator {
         }
         // Search for next zigzags
         for (i = j; i < yValLen; i++) {
-            if (directionUp) { // next line up
+            if (directionUp) { // Next line up
                 // lower when going down -> change zigzag candidate
                 if (yVal[i][lowIndex] <= zigzagPoint[1]) {
                     zigzagPoint = [xVal[i], yVal[i][lowIndex]];
                 }
-                // required change to go down -> new zigzagpoint and
+                // Required change to go down -> new zigzagpoint and
                 // direction change
                 if (yVal[i][highIndex] >=
                     zigzagPoint[1] * deviations.low) {
                     yIndex = highIndex;
                 }
             }
-            else { // next line down
+            else { // Next line down
                 // higher when going up -> change zigzag candidate
                 if (yVal[i][highIndex] >= zigzagPoint[1]) {
                     zigzagPoint = [xVal[i], yVal[i][highIndex]];
                 }
-                // required change to go down -> new zigzagpoint and
+                // Required change to go down -> new zigzagpoint and
                 // direction change
                 if (yVal[i][lowIndex] <=
                     zigzagPoint[1] * deviations.high) {
                     yIndex = lowIndex;
                 }
             }
-            if (yIndex !== false) { // new zigzag point and direction change
+            if (yIndex !== false) { // New zigzag point and direction change
                 zigzag.push(zigzagPoint);
                 xData.push(zigzagPoint[0]);
                 yData.push(zigzagPoint[1]);
@@ -111,10 +111,10 @@ class ZigzagIndicator extends SMAIndicator {
             }
         }
         const zigzagLen = zigzag.length;
-        // no zigzag for last point
+        // No zigzag for last point
         if (zigzagLen !== 0 &&
             zigzag[zigzagLen - 1][0] < xVal[yValLen - 1]) {
-            // set last point from zigzag candidate
+            // Set last point from zigzag candidate
             zigzag.push(zigzagPoint);
             xData.push(zigzagPoint[0]);
             yData.push(zigzagPoint[1]);
@@ -208,4 +208,4 @@ export default ZigzagIndicator;
  * @requires  stock/indicators/zigzag
  * @apioption series.zigzag
  */
-''; // adds doclets above to transpiled file
+''; // Adds doclets above to transpiled file

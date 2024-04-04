@@ -123,4 +123,4 @@ export default KeyboardNavigationHandler;
 * @name Highcharts.KeyboardNavigationHandlerOptionsObject#validate
 * @type {Function|undefined}
 */
-(''); // keeps doclets above in JS file
+(''); // Keeps doclets above in JS file

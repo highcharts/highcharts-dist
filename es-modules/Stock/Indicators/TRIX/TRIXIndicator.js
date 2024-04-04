@@ -93,4 +93,4 @@ export default TRIXIndicator;
  * @requires  stock/indicators/tema
  * @apioption series.trix
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

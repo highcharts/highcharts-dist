@@ -176,8 +176,8 @@ function getFakeMouseEvent(type, position, relatedTarget) {
             // Coords
             pos.x, pos.y, pos.x, pos.y, 
             // Pressed keys
-            false, false, false, false, 0, // button
-            null // related target
+            false, false, false, false, 0, // Button
+            null // Related target
             );
             return evt;
         }

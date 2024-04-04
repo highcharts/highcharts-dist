@@ -77,7 +77,7 @@ class TextBuilder {
         }
         else if (textStr !== '') {
             if (tempParent) {
-                // attach it to the DOM to read offset width and font size
+                // Attach it to the DOM to read offset width and font size
                 tempParent.appendChild(textNode);
             }
             // Step 1. Parse the markup safely and directly into a tree
@@ -213,7 +213,7 @@ class TextBuilder {
                     parentElement.insertBefore(doc.createTextNode(line), textNode);
                     // Insert a break
                     const br = doc.createElementNS(SVG_NS, 'tspan');
-                    br.textContent = '\u200B'; // zero-width space
+                    br.textContent = '\u200B'; // Zero-width space
                     attr(br, { dy, x });
                     parentElement.insertBefore(br, textNode);
                 });
@@ -294,7 +294,7 @@ class TextBuilder {
             // Handle breaks
             if (tagName === 'br') {
                 attributes['class'] = 'highcharts-br'; // eslint-disable-line dot-notation
-                node.textContent = '\u200B'; // zero-width space
+                node.textContent = '\u200B'; // Zero-width space
                 // Trim whitespace off the beginning of new lines
                 const nextNode = nodes[i + 1];
                 if (nextNode && nextNode.textContent) {
@@ -344,7 +344,7 @@ class TextBuilder {
         let str;
         let actualWidth;
         const getSubStringLength = function (charEnd, concatenatedEnd) {
-            // charEnd is used when finding the character-by-character
+            // `charEnd` is used when finding the character-by-character
             // break for ellipsis, concatenatedEnd is used for word-by-word
             // break for word wrapping.
             const end = concatenatedEnd || charEnd;
@@ -366,7 +366,7 @@ class TextBuilder {
             }
             return lengths[end];
         };
-        svgElement.rotation = 0; // discard rotation when computing box
+        svgElement.rotation = 0; // Discard rotation when computing box
         actualWidth = getSubStringLength(textNode.textContent.length);
         if (startAt + actualWidth > width) {
             // Do a binary search for the index where to truncate the text

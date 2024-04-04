@@ -543,7 +543,7 @@ const TreemapSeriesDefaults = {
  * @product   highcharts
  * @apioption series.treemap.data.parent
  */
-''; // keeps doclets above detached
+''; // Keeps doclets above detached
 /* *
  *
  *  Default Export

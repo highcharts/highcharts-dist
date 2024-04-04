@@ -279,4 +279,4 @@ export default OrganizationSeries;
  *
  * @typedef {"inherit"|"cumulative"|"shrink"} Highcharts.OrganizationHangingIndentTranslationValue
  */
-''; // detach doclets above
+''; // Detach doclets above

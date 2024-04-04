@@ -42,7 +42,7 @@ var RadialAxis;
             x: 0,
             y: void 0,
             style: {
-                textOverflow: 'none' // wrap lines by default (#7248)
+                textOverflow: 'none' // Wrap lines by default (#7248)
             }
         },
         maxPadding: 0,
@@ -205,7 +205,7 @@ var RadialAxis;
         return () => {
             if (this.isRadial &&
                 this.tickPositions &&
-                // undocumented option for now, but working
+                // Undocumented option for now, but working
                 this.options.labels &&
                 this.options.labels.allowOverlap !== true) {
                 return this.tickPositions
@@ -717,14 +717,14 @@ var RadialAxis;
                         centerSlot = 0;
                     }
                     if (angle > centerSlot && angle < 180 - centerSlot) {
-                        align = 'left'; // right hemisphere
+                        align = 'left'; // Right hemisphere
                     }
                     else if (angle > 180 + centerSlot &&
                         angle < 360 - centerSlot) {
-                        align = 'right'; // left hemisphere
+                        align = 'right'; // Left hemisphere
                     }
                     else {
-                        align = 'center'; // top or bottom
+                        align = 'center'; // Top or bottom
                     }
                 }
                 else {
@@ -766,7 +766,7 @@ var RadialAxis;
                 if (reducedAngle2 > 70 && reducedAngle2 < 110) {
                     align = 'center';
                 }
-                // auto Y translation
+                // Auto Y translation
                 if (reducedAngle1 < 15 ||
                     (reducedAngle1 >= 180 && reducedAngle1 < 195)) {
                     translateY = labelBBox.height * 0.3;
@@ -787,7 +787,7 @@ var RadialAxis;
                     translateY = labelDir === 'start' ?
                         labelBBox.height : -labelBBox.height * 0.25;
                 }
-                // auto X translation
+                // Auto X translation
                 if (reducedAngle2 < 15) {
                     translateX = labelDir === 'start' ?
                         -labelBBox.height * 0.15 : labelBBox.height * 0.15;
@@ -881,7 +881,7 @@ var RadialAxis;
         // Call uber method
         axisProto.setAxisTranslation.call(this);
         // Set transA and minPixelPadding
-        if (this.center) { // it's not defined the first time
+        if (this.center) { // It's not defined the first time
             if (this.isCircular) {
                 this.transA = (this.endAngleRad - this.startAngleRad) /
                     ((this.max - this.min) || 1);

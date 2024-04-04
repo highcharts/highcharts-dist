@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.4.0 (2024-03-05)
+ * @license Highstock JS v11.4.1 (2024-04-04)
  *
  * Indicator series type for Highstock
  *
@@ -70,7 +70,7 @@
              * */
             init() {
                 const args = arguments, ctx = this, // Disparity Index indicator
-                params = args[1].params, // options.params
+                params = args[1].params, // Options.params
                 averageType = params && params.average ? params.average : void 0;
                 ctx.averageIndicator = SeriesRegistry
                     .seriesTypes[averageType] || SMAIndicator;
@@ -182,7 +182,7 @@
          * @requires  stock/indicators/disparity-index
          * @apioption series.disparityindex
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return DisparityIndexIndicator;
     });

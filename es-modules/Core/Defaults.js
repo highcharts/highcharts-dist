@@ -1071,7 +1071,7 @@ const defaultOptions = {
          * @type {Highcharts.FormatterCallbackFunction<Point|Series>}
          */
         labelFormatter: function () {
-            /** eslint-enable valid-jsdoc */
+            // eslint-enable valid-jsdoc
             return this.name;
         },
         /**
@@ -1426,7 +1426,7 @@ const defaultOptions = {
              */
             height: '13px'
         },
-        // itemWidth: undefined,
+        /// itemWidth: undefined,
         /**
          * When this is true, the legend symbol width will be the same as
          * the symbol height, which in turn defaults to the font size of the
@@ -1578,7 +1578,7 @@ const defaultOptions = {
          * @since 2.0
          */
         verticalAlign: 'bottom',
-        // width: undefined,
+        // Width: undefined,
         /**
          * The x offset of the legend relative to its horizontal alignment
          * `align` within chart.spacingLeft and chart.spacingRight. Negative
@@ -2756,4 +2756,4 @@ export default DefaultOptions;
  * @return {boolean|undefined}
  *         Return false to prevent the default action, usually zoom.
  */
-(''); // detach doclets above
+(''); // Detach doclets above

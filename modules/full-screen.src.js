@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.4.0 (2024-03-05)
+ * @license Highstock JS v11.4.1 (2024-04-04)
  *
  * Advanced Highcharts Stock tools
  *
@@ -223,7 +223,7 @@
                     fullscreen.origHeight = chart.chartHeight;
                     // Handle exitFullscreen() method when user clicks 'Escape' button.
                     if (fullscreen.browserProps) {
-                        const unbindChange = addEvent(chart.container.ownerDocument, // chart's document
+                        const unbindChange = addEvent(chart.container.ownerDocument, // Chart's document
                         fullscreen.browserProps.fullscreenChange, function () {
                             // Handle lack of async of browser's
                             // fullScreenChange event.
@@ -338,7 +338,7 @@
          * @param {global.Event} event
          *        The event that occurred.
          */
-        (''); // keeps doclets above separated from following code
+        (''); // Keeps doclets above separated from following code
         /* *
          *
          *  API Options
@@ -371,7 +371,7 @@
          * @requires  modules/full-screen
          * @apioption chart.events.fullscreenOpen
          */
-        (''); // keeps doclets above in transpiled file
+        (''); // Keeps doclets above in transpiled file
 
         return Fullscreen;
     });

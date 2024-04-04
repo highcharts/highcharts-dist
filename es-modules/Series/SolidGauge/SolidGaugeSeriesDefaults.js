@@ -194,7 +194,7 @@ const SolidGaugeSeriesDefaults = {
  * @product   highcharts
  * @apioption series.solidgauge.data.radius
  */
-''; // keeps doclets above separate
+''; // Keeps doclets above separate
 /* *
  *
  *  Default Export

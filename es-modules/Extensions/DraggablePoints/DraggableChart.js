@@ -342,7 +342,7 @@ function getPositionSnapshot(e, points, guideBox) {
             }
             else {
                 pointProps[key + 'Offset'] =
-                    // e.g. yAxis.toPixels(point.high), xAxis.toPixels
+                    // E.g. yAxis.toPixels(point.high), xAxis.toPixels
                     // (point.end)
                     axis.toPixels(point[key]) -
                         (axis.horiz ? e.chartX : e.chartY);
@@ -659,7 +659,7 @@ function onChartRender() {
  */
 function resizeGuideBox(point, dX, dY) {
     const series = point.series, chart = series.chart, dragDropData = chart.dragDropData, resizeProp = series.dragDropProps[dragDropData.updateProp], 
-    // dragDropProp.resizeSide holds info on which side to resize.
+    // `dragDropProp.resizeSide` holds info on which side to resize.
     newPoint = dragDropData.newPoints[point.id].newValues, resizeSide = typeof resizeProp.resizeSide === 'function' ?
         resizeProp.resizeSide(newPoint, point) : resizeProp.resizeSide;
     // Call resize hook if it is defined

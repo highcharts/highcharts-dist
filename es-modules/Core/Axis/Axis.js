@@ -139,8 +139,8 @@ class Axis {
          * @type {number}
          */
         axis.side = pick(userOptions.side, axis.side, (horiz ?
-            (axis.opposite ? 0 : 2) : // top : bottom
-            (axis.opposite ? 1 : 3)) // right : left
+            (axis.opposite ? 0 : 2) : // Top : bottom
+            (axis.opposite ? 1 : 3)) // Right : left
         );
         /**
          * Current options for the axis after merge of defaults and user's
@@ -2230,7 +2230,7 @@ class Axis {
                 width: axis.len + 'px'
             });
         }
-        // hide or show the title depending on whether showEmpty is set
+        // Hide or show the title depending on whether showEmpty is set
         axis.axisTitle[display ? 'show' : 'hide'](display);
     }
     /**
@@ -2251,7 +2251,7 @@ class Axis {
             ticks[pos] = new Tick(axis, pos);
         }
         else {
-            ticks[pos].addLabel(); // update labels depending on tick interval
+            ticks[pos].addLabel(); // Update labels depending on tick interval
         }
     }
     /**
@@ -2289,7 +2289,7 @@ class Axis {
         const axis = this, { chart, horiz, options, side, ticks, tickPositions, coll } = axis, invertedSide = (chart.inverted && !axis.isZAxis ?
             [1, 0, 3, 2][side] :
             side), hasData = axis.hasData(), axisTitleOptions = options.title, labelOptions = options.labels, hasCrossing = isNumber(options.crossing), axisOffset = chart.axisOffset, clipOffset = chart.clipOffset, directionFactor = [-1, 1, 1, -1][side];
-        let showAxis, titleOffset = 0, titleOffsetOption, titleMargin = 0, labelOffset = 0, // reset
+        let showAxis, titleOffset = 0, titleOffsetOption, titleMargin = 0, labelOffset = 0, // Reset
         labelOffsetPadded, lineHeightCorrection;
         // For reuse in Axis.render
         axis.showAxis = showAxis = hasData || options.showEmpty;
@@ -2299,7 +2299,6 @@ class Axis {
         if (hasData || axis.isLinked) {
             // Generate ticks
             tickPositions.forEach(function (pos) {
-                // i is not used here, but may be used in overrides
                 axis.generateTick(pos);
             });
             axis.renderUnsquish();
@@ -2310,7 +2309,7 @@ class Axis {
                 { 1: 'left', 3: 'right' }[side] === axis.labelAlign);
             if (pick(labelOptions.reserveSpace, hasCrossing ? false : null, axis.labelAlign === 'center' ? true : null, axis.reserveSpaceDefault)) {
                 tickPositions.forEach(function (pos) {
-                    // get the highest offset
+                    // Get the highest offset
                     labelOffset = Math.max(ticks[pos].getLabelSize(), labelOffset);
                 });
             }
@@ -2319,7 +2318,7 @@ class Axis {
             }
             axis.labelOffset = labelOffset * (axis.opposite ? -1 : 1);
         }
-        else { // doesn't have data
+        else { // Doesn't have data
             objectEach(ticks, function (tick, n) {
                 tick.destroy();
                 delete ticks[n];
@@ -2341,9 +2340,9 @@ class Axis {
         }
         // Render the axis line
         axis.renderLine();
-        // handle automatic or user set offset
+        // Handle automatic or user set offset
         axis.offset = directionFactor * pick(options.offset, axisOffset[side] ? axisOffset[side] + (options.margin || 0) : 0);
-        axis.tickRotCorr = axis.tickRotCorr || { x: 0, y: 0 }; // polar
+        axis.tickRotCorr = axis.tickRotCorr || { x: 0, y: 0 }; // Polar
         if (side === 0) {
             lineHeightCorrection = -axis.labelMetrics().h;
         }
@@ -2403,7 +2402,7 @@ class Axis {
         const chart = this.chart, opposite = this.opposite, offset = this.offset, horiz = this.horiz, lineLeft = this.left + (opposite ? this.width : 0) + offset, lineTop = chart.chartHeight - this.bottom -
             (opposite ? this.height : 0) + offset;
         if (opposite) {
-            lineWidth *= -1; // crispify the other way - #1480, #1687
+            lineWidth *= -1; // Crispify the other way - #1480, #1687
         }
         return chart.renderer
             .crispLine([
@@ -2457,28 +2456,28 @@ class Axis {
      * X and Y positions for the title.
      */
     getTitlePosition(axisTitle) {
-        // compute anchor points for each of the title align options
+        // Compute anchor points for each of the title align options
         const horiz = this.horiz, axisLeft = this.left, axisTop = this.top, axisLength = this.len, axisTitleOptions = this.options.title, margin = horiz ? axisLeft : axisTop, opposite = this.opposite, offset = this.offset, xOption = axisTitleOptions.x, yOption = axisTitleOptions.y, fontMetrics = this.chart.renderer.fontMetrics(axisTitle), 
         // The part of a multiline text that is below the baseline of the
         // first line. Subtract 1 to preserve pixel-perfectness from the
         // old behaviour (v5.0.12), where only one line was allowed.
         textHeightOvershoot = axisTitle ? Math.max(axisTitle.getBBox(false, 0).height - fontMetrics.h - 1, 0) : 0, 
-        // the position in the length direction of the axis
+        // The position in the length direction of the axis
         alongAxis = ({
             low: margin + (horiz ? 0 : axisLength),
             middle: margin + axisLength / 2,
             high: margin + (horiz ? axisLength : 0)
         })[axisTitleOptions.align], 
-        // the position in the perpendicular direction of the axis
+        // The position in the perpendicular direction of the axis
         offAxis = (horiz ? axisTop + this.height : axisLeft) +
-            (horiz ? 1 : -1) * // horizontal axis reverses the margin
-                (opposite ? -1 : 1) * // so does opposite axes
+            (horiz ? 1 : -1) * // Horizontal axis reverses the margin
+                (opposite ? -1 : 1) * // So does opposite axes
                 (this.axisTitleMargin || 0) +
             [
                 -textHeightOvershoot,
                 textHeightOvershoot,
                 fontMetrics.f,
-                -textHeightOvershoot // left
+                -textHeightOvershoot // Left
             ][this.side], titlePosition = {
             x: horiz ?
                 alongAxis + xOption :
@@ -2584,7 +2583,7 @@ class Axis {
         if (axis.hasData() || isLinked) {
             const slideInTicks = axis.chart.hasRendered &&
                 axis.old && isNumber(axis.old.min);
-            // minor ticks
+            // Minor ticks
             if (axis.minorTickInterval && !axis.categories) {
                 axis.getMinorTickPositions().forEach(function (pos) {
                     axis.renderMinorTick(pos, slideInTicks);
@@ -2634,8 +2633,8 @@ class Axis {
                     }
                 });
             }
-            // custom plot lines and bands
-            if (!axis._addedPlotLB) { // only first time
+            // Custom plot lines and bands
+            if (!axis._addedPlotLB) { // Only first time
                 axis._addedPlotLB = true;
                 (options.plotLines || [])
                     .concat(options.plotBands || [])
@@ -2644,7 +2643,7 @@ class Axis {
                         .addPlotBandOrLine(plotLineOptions);
                 });
             }
-        } // end if hasData
+        } // End if hasData
         // Remove inactive ticks
         [ticks, minorTicks, alternateBands].forEach(function (coll) {
             const forDestruction = [], delay = animation.duration, destroyInactiveItems = function () {
@@ -2715,14 +2714,14 @@ class Axis {
      */
     redraw() {
         if (this.visible) {
-            // render the axis
+            // Render the axis
             this.render();
-            // move plot lines and bands
+            // Move plot lines and bands
             this.plotLinesAndBands.forEach(function (plotLine) {
                 plotLine.render();
             });
         }
-        // mark associated series as dirty and ready for redraw
+        // Mark associated series as dirty and ready for redraw
         this.series.forEach(function (series) {
             series.isDirty = true;
         });
@@ -2765,8 +2764,10 @@ class Axis {
             }
         }
         // Destroy elements
-        ['axisLine', 'axisTitle', 'axisGroup',
-            'gridGroup', 'labelGroup', 'cross', 'scrollbar'].forEach(function (prop) {
+        [
+            'axisLine', 'axisTitle', 'axisGroup',
+            'gridGroup', 'labelGroup', 'cross', 'scrollbar'
+        ].forEach(function (prop) {
             if (axis[prop]) {
                 axis[prop] = axis[prop].destroy();
             }
@@ -2833,7 +2834,7 @@ class Axis {
             }
             if (defined(pos)) {
                 crossOptions = {
-                    // value, only used on radial
+                    // Value, only used on radial
                     value: point && (this.isXAxis ?
                         point.x :
                         pick(point.stackY, point.y)),
@@ -3259,4 +3260,4 @@ export default Axis;
  *
  * @return {string}
  */
-''; // keeps doclets above in JS file
+''; // Keeps doclets above in JS file

@@ -87,7 +87,7 @@ const PyramidSeriesDefaults = {
  * @product   highcharts
  * @apioption series.pyramid.data
  */
-''; // keeps doclets above separate
+''; // Keeps doclets above separate
 /* *
  *
  *  Default Export

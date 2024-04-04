@@ -64,7 +64,7 @@ function recommendedMapViewAfterDrill(e) {
     }
 }
 /*
-const mergeCollections = <
+Const mergeCollections = <
     T extends Array<AnyRecord|undefined>
 >(a: T, b: T): T => {
     b.forEach((newer, i): void => {
@@ -845,9 +845,9 @@ class MapView {
      *        The animation to apply to a the redraw
      */
     update(options, redraw = true, animation) {
-        const newProjection = options.projection;
-        let isDirtyProjection = newProjection && ((Projection.toString(newProjection) !==
-            Projection.toString(this.options.projection))), isDirtyInsets = false;
+        const newProjection = options.projection, isDirtyProjection = newProjection && ((Projection.toString(newProjection) !==
+            Projection.toString(this.options.projection)));
+        let isDirtyInsets = false;
         merge(true, this.userOptions, options);
         merge(true, this.options, options);
         // If anything changed with the insets, destroy them all and create
@@ -887,7 +887,7 @@ class MapView {
             }
             // Fit to natural bounds if center/zoom are not explicitly given
             if (!options.center &&
-                // do not fire fitToBounds if user don't want to set zoom
+                // Do not fire fitToBounds if user don't want to set zoom
                 Object.hasOwnProperty.call(options, 'zoom') &&
                 !isNumber(options.zoom)) {
                 this.fitToBounds(void 0, void 0, false);

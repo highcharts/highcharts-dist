@@ -197,4 +197,4 @@ export default MapPointSeries;
  *  API Options
  *
  * */
-''; // adds doclets above to transpiled file
+''; // Adds doclets above to transpiled file

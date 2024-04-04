@@ -27,7 +27,6 @@ const markerClusterAlgorithms = {
     grid: function (dataX, dataY, dataIndexes, options) {
         const series = this, grid = {}, gridOffset = this.getGridOffset();
         let x, y, gridX, gridY, key, i;
-        // drawGridLines(series, options);
         const scaledGridSize = series.getScaledGridSize(options);
         for (i = 0; i < dataX.length; i++) {
             const p = valuesToPixels(series, { x: dataX[i], y: dataY[i] });

@@ -73,8 +73,8 @@ class VBPIndicator extends SMAIndicator {
      * */
     init(chart, options) {
         const indicator = this;
-        // series.update() sends data that is not necessary
-        // as everything is calculated in getValues(), #17007
+        // Series.update() sends data that is not necessary as everything is
+        // calculated in getValues(), #17007
         delete options.data;
         super.init.apply(indicator, arguments);
         // Only after series are linked add some additional logic/properties.
@@ -582,4 +582,4 @@ export default VBPIndicator;
  * @requires  stock/indicators/volume-by-price
  * @apioption series.vbp
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

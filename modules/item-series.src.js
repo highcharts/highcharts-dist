@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.0 (2024-03-05)
+ * @license Highcharts JS v11.4.1 (2024-04-04)
  *
  * Item series type for Highcharts
  *
@@ -239,7 +239,7 @@
          * @excluding legendItemClick
          * @apioption series.item.events
          */
-        ''; // keeps the doclets above separate
+        ''; // Keeps the doclets above separate
         /* *
          *
          *  Default Export
@@ -308,7 +308,7 @@
             drawDataLabels() {
                 if (this.center && this.slots) {
                     super.drawDataLabels();
-                    // or it's just a dot chart with no natural place to put the data labels
+                    // Or it's just a dot chart with no natural place to put the data labels
                 }
                 else {
                     for (const point of this.points) {
@@ -545,7 +545,7 @@
             }
             translate(positions) {
                 // Initialize chart without setting data, #13379.
-                if (this.total === 0 && // check if that is a (semi-)circle
+                if (this.total === 0 && // Check if that is a (semi-)circle
                     isNumber(this.options.startAngle) &&
                     isNumber(this.options.endAngle)) {
                     this.center = this.getCenter();

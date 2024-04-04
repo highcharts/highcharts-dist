@@ -12,6 +12,10 @@ import * as _Highcharts from "../highcharts.src";
  *        The imported Highcharts namespace to extend.
  */
 export function factory(highcharts: typeof Highcharts): void;
-declare module "../highcharts.src" {}
+declare module "../highcharts.src" {
+    function calculateRawMoneyFlow(): void;
+    function calculateTypicalPrice(): void;
+    function toFixed(): void;
+}
 export default factory;
 export let Highcharts: typeof _Highcharts;

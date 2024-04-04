@@ -117,7 +117,7 @@ const PolygonSeriesDefaults = {
  * @product   highcharts highstock
  * @apioption series.polygon.data
  */
-''; // keeps doclets above separate
+''; // Keeps doclets above separate
 /* *
  *
  *  Default Export

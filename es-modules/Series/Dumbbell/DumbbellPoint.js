@@ -27,8 +27,6 @@ class DumbbellPoint extends AreaRangePoint {
      * (between low and high value).
      *
      * @private
-     * @param {Highcharts.Point} this The point to inspect.
-     *
      */
     setState() {
         const point = this, series = point.series, chart = series.chart, seriesLowColor = series.options.lowColor, seriesMarker = series.options.marker, seriesLowMarker = series.options.lowMarker, pointOptions = point.options, pointLowColor = pointOptions.lowColor, zoneColor = point.zone && point.zone.color, lowerGraphicColor = pick(pointLowColor, seriesLowMarker?.fillColor, seriesLowColor, pointOptions.color, zoneColor, point.color, series.color);

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.0 (2024-03-05)
+ * @license Highcharts JS v11.4.1 (2024-04-04)
  * Organization chart series type
  *
  * (c) 2019-2024 Torstein Honsi
@@ -612,7 +612,7 @@
          * @product   highcharts
          * @apioption series.organization.data
          */
-        ''; // keeps doclets above in JS file
+        ''; // Keeps doclets above in JS file
         /* *
          *
          *  Default Export
@@ -636,6 +636,9 @@
             straight: getStraightPath,
             curved: getCurvedPath
         };
+        /**
+         *
+         */
         function getDefaultPath(pathParams) {
             const { x1, y1, x2, y2, width = 0, inverted = false, radius, parentVisible } = pathParams;
             const path = [
@@ -655,6 +658,9 @@
                 ], radius) :
                 path;
         }
+        /**
+         *
+         */
         function getStraightPath(pathParams) {
             const { x1, y1, x2, y2, width = 0, inverted = false, parentVisible } = pathParams;
             return parentVisible ? [
@@ -667,6 +673,9 @@
                 ['L', x1, y2]
             ];
         }
+        /**
+         *
+         */
         function getCurvedPath(pathParams) {
             const { x1, y1, x2, y2, offset = 0, width = 0, inverted = false, parentVisible } = pathParams;
             return parentVisible ?
@@ -699,13 +708,13 @@
                 const x = path[i][1];
                 const y = path[i][2];
                 if (typeof x === 'number' && typeof y === 'number') {
-                    // moveTo
+                    // MoveTo
                     if (i === 0) {
                         d.push(['M', x, y]);
                     }
                     else if (i === path.length - 1) {
                         d.push(['L', x, y]);
-                        // curveTo
+                        // CurveTo
                     }
                     else if (r) {
                         const prevSeg = path[i - 1];
@@ -735,7 +744,7 @@
                                 ]);
                             }
                         }
-                        // lineTo
+                        // LineTo
                     }
                     else {
                         d.push(['L', x, y]);
@@ -1026,7 +1035,7 @@
          *
          * @typedef {"inherit"|"cumulative"|"shrink"} Highcharts.OrganizationHangingIndentTranslationValue
          */
-        ''; // detach doclets above
+        ''; // Detach doclets above
 
         return OrganizationSeries;
     });

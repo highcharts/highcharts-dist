@@ -181,7 +181,7 @@ class AxisResizer {
             [chart.yAxis.indexOf(resizer.axis) + 1] : axes.next, 
         // Main axis is included in the prev array by default
         prevAxes = [resizer.axis].concat(axes.prev), 
-        // prev and next configs
+        // Prev and next configs
         axesConfigs = [], plotTop = chart.plotTop, plotHeight = chart.plotHeight, plotBottom = plotTop + plotHeight, calculatePercent = (value) => (value * 100 / plotHeight + '%'), normalize = (val, min, max) => (Math.round(clamp(val, min, max)));
         // Normalize chartY to plot area limits
         chartY = clamp(chartY, plotTop, plotBottom);
@@ -201,9 +201,9 @@ class AxisResizer {
                     (
                     // If it's first elem. in first group
                     isFirst ?
-                        // then it's an Axis object
+                        // Then it's an Axis object
                         axisInfo :
-                        // else it should be an id
+                        // Else it should be an id
                         chart.get(axisInfo)), axisOptions = axis && axis.options, optionsToUpdate = {};
                 let height, top;
                 // Skip if axis is not found

@@ -90,6 +90,9 @@ function onChartAfterIsInsiderPlot(e) {
         e.isInsidePlot = chart.pane.some((pane) => isInsidePane(e.x, e.y, pane.center, pane.axis && pane.axis.normalizedStartAngleRad, pane.axis && pane.axis.normalizedEndAngleRad));
     }
 }
+/**
+ *
+ */
 function onPointerAfterGetHoverData(eventArgs) {
     const chart = this.chart;
     if (eventArgs.hoverPoint &&

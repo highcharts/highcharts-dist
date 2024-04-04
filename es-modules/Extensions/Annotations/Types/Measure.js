@@ -29,7 +29,7 @@ function average() {
  */
 function bins() {
     const series = this.chart.series, ext = getExtremes(this.xAxisMin, this.xAxisMax, this.yAxisMin, this.yAxisMax);
-    let bins = 0, isCalculated = false; // to avoid Infinity in formatter
+    let bins = 0, isCalculated = false; // To avoid Infinity in formatter
     series.forEach((serie) => {
         if (serie.visible &&
             serie.options.id !== 'highcharts-navigator-series') {
@@ -108,7 +108,7 @@ function init() {
     else {
         this.startYMax = getPointPos(yAxis, this.startYMin, parseFloat(height));
     }
-    // x / y selection type
+    // X / y selection type
     if (selectType === 'x') {
         this.startYMin = yAxis.toValue(top);
         this.startYMax = yAxis.toValue(top + yAxis.len);
@@ -123,7 +123,7 @@ function init() {
  */
 function max() {
     const series = this.chart.series, ext = getExtremes(this.xAxisMin, this.xAxisMax, this.yAxisMin, this.yAxisMax);
-    let max = -Infinity, isCalculated = false; // to avoid Infinity in formatter
+    let max = -Infinity, isCalculated = false; // To avoid Infinity in formatter
     series.forEach((serie) => {
         if (serie.visible &&
             serie.options.id !== 'highcharts-navigator-series') {
@@ -151,7 +151,7 @@ function max() {
  */
 function min() {
     const series = this.chart.series, ext = getExtremes(this.xAxisMin, this.xAxisMax, this.yAxisMin, this.yAxisMax);
-    let min = Infinity, isCalculated = false; // to avoid Infinity in formatter
+    let min = Infinity, isCalculated = false; // To avoid Infinity in formatter
     series.forEach((serie) => {
         if (serie.visible &&
             serie.options.id !== 'highcharts-navigator-series') {
@@ -334,7 +334,7 @@ class Measure extends Annotation {
         }
         let controlPoint = new ControlPoint(this.chart, this, this.options.controlPointOptions, 0);
         this.controlPoints.push(controlPoint);
-        // add extra controlPoint for horizontal and vertical range
+        // Add extra controlPoint for horizontal and vertical range
         if (selectType !== 'xy') {
             controlPoint = new ControlPoint(this.chart, this, this.options.controlPointOptions, 1);
             this.controlPoints.push(controlPoint);
@@ -348,7 +348,7 @@ class Measure extends Annotation {
      */
     addValues(resize) {
         const typeOptions = this.options.typeOptions, formatter = typeOptions.label.formatter;
-        // set xAxisMin, xAxisMax, yAxisMin, yAxisMax
+        // Set xAxisMin, xAxisMax, yAxisMin, yAxisMax
         recalculate.call(this, resize);
         if (!typeOptions.label.enabled) {
             return;
@@ -426,7 +426,7 @@ class Measure extends Annotation {
             xAxisMax = yAxisMax;
             yAxisMax = temp;
         }
-        // horizontal line
+        // Horizontal line
         if (options.crosshairX.enabled) {
             pathH = [[
                     'M',
@@ -438,7 +438,7 @@ class Measure extends Annotation {
                     yAxisMin + ((yAxisMax - yAxisMin) / 2)
                 ]];
         }
-        // vertical line
+        // Vertical line
         if (options.crosshairY.enabled) {
             pathV = [[
                     'M',
@@ -468,7 +468,7 @@ class Measure extends Annotation {
         this.translate(x, y);
         this.offsetX += x;
         this.offsetY += y;
-        // animation, resize, setStartPoints
+        // Animation, resize, setStartPoints
         this.redraw(false, false, true);
     }
     /**
@@ -485,7 +485,7 @@ class Measure extends Annotation {
      * x / y / xy
      */
     resize(dx, dy, cpIndex, selectType) {
-        // background shape
+        // Background shape
         const bckShape = this.shapes[2];
         if (selectType === 'x') {
             if (cpIndex === 0) {
@@ -541,7 +541,7 @@ class Measure extends Annotation {
         this.addCrosshairs();
         this.redrawItems(this.shapes, animation);
         this.redrawItems(this.labels, animation);
-        // redraw control point to run positioner
+        // Redraw control point to run positioner
         this.controlPoints.forEach((controlPoint) => controlPoint.redraw());
     }
     translate(dx, dy) {
@@ -737,7 +737,7 @@ Measure.prototype.defaultOptions = merge(Annotation.prototype.defaultOptions,
             let targetX = target.xAxisMax, targetY = target.yAxisMax, x, y;
             if (selectType === 'x') {
                 targetY = (ext.yAxisMax + ext.yAxisMin) / 2;
-                // first control point
+                // First control point
                 if (cpIndex === 0) {
                     targetX = target.xAxisMin;
                 }
@@ -745,7 +745,7 @@ Measure.prototype.defaultOptions = merge(Annotation.prototype.defaultOptions,
             if (selectType === 'y') {
                 targetX = ext.xAxisMin +
                     ((ext.xAxisMax - ext.xAxisMin) / 2);
-                // first control point
+                // First control point
                 if (cpIndex === 0) {
                     targetY = target.yAxisMin;
                 }

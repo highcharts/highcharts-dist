@@ -211,7 +211,7 @@ const TilemapSeriesDefaults = {
  * @product   highcharts highmaps
  * @apioption series.tilemap.data.y
  */
-''; // keeps doclets above detached
+''; // Keeps doclets above detached
 /* *
  *
  *  Default Export

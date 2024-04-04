@@ -169,7 +169,7 @@ const DependencyWheelSeriesDefaults = {
  *
  * @apioption series.dependencywheel.nodes.dataLabels
  */
-''; // keeps doclets above separate
+''; // Keeps doclets above separate
 /* *
  *
  *  Default Export

@@ -169,11 +169,11 @@ class PlotLineOrBand {
             !path.isFlat) {
             // Apply defaults
             optionsLabel = merge({
-                align: horiz && isBand && 'center',
+                align: horiz && isBand ? 'center' : void 0,
                 x: horiz ? !isBand && 4 : 10,
-                verticalAlign: !horiz && isBand && 'middle',
+                verticalAlign: !horiz && isBand ? 'middle' : void 0,
                 y: horiz ? isBand ? 16 : 10 : isBand ? 6 : -4,
-                rotation: horiz && !isBand && 90
+                rotation: horiz && !isBand ? 90 : 0
             }, optionsLabel);
             this.renderLabel(optionsLabel, path, isBand, zIndex);
             // Move out of sight
@@ -206,7 +206,7 @@ class PlotLineOrBand {
                 align: optionsLabel.textAlign || optionsLabel.align,
                 rotation: optionsLabel.rotation,
                 'class': 'highcharts-plot-' + (isBand ? 'band' : 'line') +
-                    '-label' + (optionsLabel.className || ''),
+                    '-label ' + (optionsLabel.className || ''),
                 zIndex
             });
             if (!axis.chart.styledMode) {
@@ -882,4 +882,4 @@ export default PlotLineOrBand;
  * @extends   xAxis.plotLines
  * @apioption yAxis.plotLines
  */
-(''); // keeps doclets above in JS file
+(''); // Keeps doclets above in JS file

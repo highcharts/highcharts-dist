@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.0 (2024-03-05)
+ * @license Highcharts JS v11.4.1 (2024-04-04)
  *
  * Vector plot series module
  *
@@ -182,7 +182,7 @@
          * @product   highcharts highstock
          * @apioption series.vector.data.direction
          */
-        ''; // adds doclets above to the transpiled file
+        ''; // Adds doclets above to the transpiled file
         /* *
          *
          *  Default Export
@@ -261,12 +261,12 @@
                     ['L', 0, 10 * u + o],
                     ['L', 1.5 * u, 7 * u + o],
                     ['L', 0, 7 * u + o],
-                    ['L', 0, -10 * u + o] // top
+                    ['L', 0, -10 * u + o] // Top
                 ];
                 return path;
             }
             /*
-            drawLegendSymbol: function (legend, item) {
+            DrawLegendSymbol: function (legend, item) {
                 let options = legend.options,
                     symbolHeight = legend.symbolHeight,
                     square = options.squareSymbol,

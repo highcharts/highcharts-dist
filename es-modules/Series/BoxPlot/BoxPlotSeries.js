@@ -44,7 +44,7 @@ class BoxPlotSeries extends ColumnSeries {
     translate() {
         const series = this, yAxis = series.yAxis, pointArrayMap = series.pointArrayMap;
         super.translate.apply(series);
-        // do the translation on each point dimension
+        // Do the translation on each point dimension
         series.points.forEach(function (point) {
             pointArrayMap.forEach(function (key) {
                 if (point[key] !== null) {
@@ -60,14 +60,14 @@ class BoxPlotSeries extends ColumnSeries {
      */
     drawPoints() {
         const series = this, points = series.points, options = series.options, chart = series.chart, renderer = chart.renderer, 
-        // error bar inherits this series type but doesn't do quartiles
+        // Error bar inherits this series type but doesn't do quartiles
         doQuartiles = series.doQuartiles !== false, whiskerLength = series.options.whiskerLength;
         let q1Plot, q3Plot, highPlot, lowPlot, medianPlot, medianPath, crispCorr, crispX = 0, boxPath, graphic, width, left, right, halfWidth, pointWiskerLength;
         for (const point of points) {
             graphic = point.graphic;
             const verb = graphic ? 'animate' : 'attr', shapeArgs = point.shapeArgs, boxAttr = {}, stemAttr = {}, whiskersAttr = {}, medianAttr = {}, color = point.color || series.color;
             if (typeof point.plotY !== 'undefined') {
-                // crisp vector coordinates
+                // Crisp vector coordinates
                 width = Math.round(shapeArgs.width);
                 left = Math.floor(shapeArgs.x);
                 right = left + width;
@@ -142,10 +142,10 @@ class BoxPlotSeries extends ColumnSeries {
                 crispCorr = (point.stem.strokeWidth() % 2) / 2;
                 crispX = left + halfWidth + crispCorr;
                 d = [
-                    // stem up
+                    // Stem up
                     ['M', crispX, q3Plot],
                     ['L', crispX, highPlot],
-                    // stem down
+                    // Stem down
                     ['M', crispX, q1Plot],
                     ['L', crispX, lowPlot]
                 ];
@@ -197,7 +197,7 @@ class BoxPlotSeries extends ColumnSeries {
             }
         }
     }
-    // return a plain array for speedy calculation
+    // Return a plain array for speedy calculation
     toYData(point) {
         return [point.low, point.q1, point.median, point.q3, point.high];
     }
@@ -209,9 +209,9 @@ class BoxPlotSeries extends ColumnSeries {
  * */
 BoxPlotSeries.defaultOptions = merge(ColumnSeries.defaultOptions, BoxPlotSeriesDefaults);
 extend(BoxPlotSeries.prototype, {
-    // array point configs are mapped to this
+    // Array point configs are mapped to this
     pointArrayMap: ['low', 'q1', 'median', 'q3', 'high'],
-    // defines the top of the tracker
+    // Defines the top of the tracker
     pointValKey: 'high',
     // Disable data labels for box plot
     drawDataLabels: noop,

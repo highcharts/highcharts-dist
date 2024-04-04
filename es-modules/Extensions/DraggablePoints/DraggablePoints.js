@@ -327,20 +327,20 @@ function pointGetDropValues(origin, newPos, updateProps) {
                 return res;
             }
             if (key === 'lat') {
-                // if map is bigger than possible projection range
+                // If map is bigger than possible projection range
                 if (isNaN(min) || min > mapView.projection.maxLatitude) {
                     min = mapView.projection.maxLatitude;
                 }
                 if (isNaN(max) || max < -1 * mapView.projection.maxLatitude) {
                     max = -1 * mapView.projection.maxLatitude;
                 }
-                // swap for latitude
+                // Swap for latitude
                 const temp = max;
                 max = min;
                 min = temp;
             }
             if (!mapView.projection.hasCoordinates) {
-                // establish y value
+                // Establish y value
                 const lonLatRes = mapView.pixelsToLonLat({
                     x: newPos.chartX - chart.plotLeft,
                     y: chart.plotHeight - newPos.chartY + chart.plotTop
@@ -670,4 +670,4 @@ export default DraggablePoints;
 * @name Highcharts.PointDropEventObject#type
 * @type {"drop"}
 */
-''; // detaches doclets above
+''; // Detaches doclets above

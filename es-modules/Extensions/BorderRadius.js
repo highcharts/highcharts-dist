@@ -308,21 +308,21 @@ function roundedRect(x, y, width, height, options = {}) {
     // Preserve the box for data labels
     path.length = 0;
     path.push(['M', ...a], 
-    // top side
+    // Top side
     ['L', ...b], 
-    // top right corner
+    // Top right corner
     ['A', rTop, rTop, 0, 0, 1, ...c], 
-    // right side
+    // Right side
     ['L', ...d], 
-    // bottom right corner
+    // Bottom right corner
     ['A', rBtm, rBtm, 0, 0, 1, ...e], 
-    // bottom side
+    // Bottom side
     ['L', ...f], 
-    // bottom left corner
+    // Bottom left corner
     ['A', rBtm, rBtm, 0, 0, 1, ...g], 
-    // left side
+    // Left side
     ['L', ...h], 
-    // top left corner
+    // Top left corner
     ['A', rTop, rTop, 0, 0, 1, ...a], ['Z']);
     return path;
 }
@@ -377,4 +377,4 @@ export default BorderRadius;
 * @type {string}
 * @default end
 */
-(''); // keeps doclets above in JS file
+(''); // Keeps doclets above in JS file

@@ -13,11 +13,6 @@
 import H from '../../Core/Globals.js';
 import U from '../../Core/Utilities.js';
 const { addEvent } = U;
-/* *
- *
- *  Class
- *
- * */
 /**
  * @private
  */
@@ -37,7 +32,10 @@ class EventProvider {
      */
     addEvent() {
         const remover = addEvent.apply(H, arguments);
-        this.eventRemovers.push(remover);
+        this.eventRemovers.push({
+            element: arguments[0],
+            remover
+        });
         return remover;
     }
     /**
@@ -45,8 +43,8 @@ class EventProvider {
      * @private
      */
     removeEvent(event) {
-        const pos = this.eventRemovers.indexOf(event);
-        this.eventRemovers[pos]();
+        const pos = this.eventRemovers.map((e) => e.remover).indexOf(event);
+        this.eventRemovers[pos].remover();
         this.eventRemovers.splice(pos, 1);
     }
     /**
@@ -54,7 +52,8 @@ class EventProvider {
      * @private
      */
     removeAddedEvents() {
-        this.eventRemovers.forEach((remover) => remover());
+        this.eventRemovers.map((e) => e.remover)
+            .forEach((remover) => remover());
         this.eventRemovers = [];
     }
 }

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.0 (2024-03-05)
+ * @license Highcharts JS v11.4.1 (2024-04-04)
  *
  * Data module
  *
@@ -164,9 +164,12 @@
          * @param {RequestInit} [fetchOptions]
          * Additional attributes for the post request
          */
+        /**
+         *
+         */
         function post(url, data, fetchOptions) {
             const formData = new win.FormData();
-            // add the data
+            // Add the data
             objectEach(data, function (val, name) {
                 formData.append(name, val);
             });
@@ -235,7 +238,7 @@
         * @name Highcharts.AjaxSettingsObject#url
         * @type {string}
         */
-        (''); // keeps doclets above in JS file
+        (''); // Keeps doclets above in JS file
 
         return HttpUtilities;
     });
@@ -286,6 +289,9 @@
             }
             return freeIndexValues;
         }
+        /**
+         *
+         */
         function hasURLOption(options) {
             return Boolean(options &&
                 (options.rowsURL || options.csvURL || options.columnsURL));
@@ -351,7 +357,7 @@
              *
              * */
             constructor(dataOptions, chartOptions = {}, chart) {
-                this.rowsToColumns = Data.rowsToColumns; // backwards compatibility
+                this.rowsToColumns = Data.rowsToColumns; // Backwards compatibility
                 /**
                  * A collection of available date formats, extendable from the outside to
                  * support custom date formats.
@@ -375,7 +381,7 @@
                                 Date.UTC(+match[3], match[2] - 1, +match[1]) :
                                 NaN);
                         },
-                        alternative: 'mm/dd/YYYY' // different format with the same regex
+                        alternative: 'mm/dd/YYYY' // Different format with the same regex
                     },
                     'mm/dd/YYYY': {
                         regex: /^([0-9]{1,2})[\-\/\.]([0-9]{1,2})[\-\/\.]([0-9]{4})$/,
@@ -401,7 +407,7 @@
                             }
                             return Date.UTC(year, match[2] - 1, +match[1]);
                         },
-                        alternative: 'mm/dd/YY' // different format with the same regex
+                        alternative: 'mm/dd/YY' // Different format with the same regex
                     },
                     'mm/dd/YY': {
                         regex: /^([0-9]{1,2})[\-\/\.]([0-9]{1,2})[\-\/\.]([0-9]{2})$/,
@@ -603,9 +609,7 @@
                 };
                 let csv = options.csv, startRow = (typeof options.startRow !== 'undefined' && options.startRow ?
                     options.startRow :
-                    0), endRow = options.endRow || Number.MAX_VALUE, itemDelimiter, lines, 
-                // activeRowNo = 0,
-                rowIt = 0;
+                    0), endRow = options.endRow || Number.MAX_VALUE, itemDelimiter, lines, rowIt = 0;
                 /*
                     This implementation is quite verbose. It will be shortened once
                     it's stable and passes all the test.
@@ -843,9 +847,7 @@
                  */
                 function deduceDateFormat(data, limit) {
                     const format = 'YYYY/mm/dd', stable = [], max = [];
-                    let thing, guessedFormat = [], calculatedFormat, i = 0, madeDeduction = false, 
-                    // candidates = {},
-                    j;
+                    let thing, guessedFormat = [], calculatedFormat, i = 0, madeDeduction = false, j;
                     if (!limit || limit > data.length) {
                         limit = data.length;
                     }
@@ -885,7 +887,6 @@
                                             else {
                                                 guessedFormat[j] = 'YYYY';
                                             }
-                                            // madeDeduction = true;
                                         }
                                         else if (thing[j] > 12 &&
                                             thing[j] <= 31) {
@@ -973,7 +974,7 @@
                             parseRow(lines[rowIt], rowIt - startRow - offset);
                         }
                     }
-                    // //Make sure that there's header columns for everything
+                    // Make sure that there's header columns for everything
                     // columns.forEach(function (col) {
                     // });
                     deduceAxisTypes();
@@ -984,7 +985,7 @@
                         !options.dateFormat) {
                         options.dateFormat = deduceDateFormat(columns[0]);
                     }
-                    // lines.forEach(function (line, rowNo) {
+                    /// lines.forEach(function (line, rowNo) {
                     //    let trimmed = self.trim(line),
                     //        isComment = trimmed.indexOf('#') === 0,
                     //        isBlank = trimmed === '',
@@ -1047,7 +1048,7 @@
                             });
                         }
                     });
-                    this.dataFound(); // continue
+                    this.dataFound(); // Continue
                 }
                 return columns;
             }
@@ -1315,7 +1316,7 @@
                         (row === 0 && firstRowAsNames && !columnHasName)) {
                         column[row] = '' + trimVal;
                     }
-                    else if (+trimInsideVal === floatVal) { // is numeric
+                    else if (+trimInsideVal === floatVal) { // Is numeric
                         column[row] = floatVal;
                         // If the number is greater than milliseconds in a year, assume
                         // datetime
@@ -1362,7 +1363,7 @@
                                 descending = diff;
                             }
                         }
-                        else { // string
+                        else { // String
                             column[row] = trimVal === '' ? null : trimVal;
                             if (row !== 0 &&
                                 (column.isDatetime ||
@@ -2338,7 +2339,7 @@
          * @default   false
          * @apioption data.enablePolling
          */
-        (''); // keeps doclets above in JS file
+        (''); // Keeps doclets above in JS file
 
         return Data;
     });

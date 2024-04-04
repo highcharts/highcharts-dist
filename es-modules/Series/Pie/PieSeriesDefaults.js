@@ -665,7 +665,7 @@ const PieSeriesDefaults = {
  * @product   highcharts highmaps
  * @apioption series.pie.events
  */
-''; // placeholder for transpiled doclets above
+''; // Placeholder for transpiled doclets above
 /* *
  *
  *  Default Export

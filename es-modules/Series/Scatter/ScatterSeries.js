@@ -48,15 +48,12 @@ class ScatterSeries extends LineSeries {
         if (jitter) {
             this.points.forEach(function (point, i) {
                 ['x', 'y'].forEach(function (dim, j) {
-                    let axis, plotProp = 'plot' + dim.toUpperCase(), min, max, translatedJitter;
                     if (jitter[dim] && !point.isNull) {
-                        axis = series[dim + 'Axis'];
-                        translatedJitter =
-                            jitter[dim] * axis.transA;
-                        if (axis && !axis.isLog) {
+                        const plotProp = `plot${dim.toUpperCase()}`, axis = series[`${dim}Axis`], translatedJitter = jitter[dim] *
+                            axis.transA;
+                        if (axis && !axis.logarithmic) {
                             // Identify the outer bounds of the jitter range
-                            min = Math.max(0, point[plotProp] - translatedJitter);
-                            max = Math.min(axis.len, point[plotProp] + translatedJitter);
+                            const min = Math.max(0, (point[plotProp] || 0) - translatedJitter), max = Math.min(axis.len, (point[plotProp] || 0) + translatedJitter);
                             // Find a random position within this range
                             point[plotProp] = min +
                                 (max - min) * unrandom(i + j * len);

@@ -155,7 +155,8 @@ class HollowCandlestickSeries extends CandlestickSeries {
      * Current point state.
      */
     pointAttribs(point, state) {
-        let attribs = super.pointAttribs.call(this, point, state), stateOptions;
+        const attribs = super.pointAttribs.call(this, point, state);
+        let stateOptions;
         const index = point.index, hollowcandleInfo = this.hollowCandlestickData[index];
         attribs.fill = this.getPointFill(hollowcandleInfo) || attribs.fill;
         attribs.stroke = this.getLineColor(hollowcandleInfo.trendDirection) ||
@@ -338,4 +339,4 @@ export default HollowCandlestickSeries;
  * @product   highstock
  * @apioption series.hollowcandlestick.data
  */
-''; // adds doclets above to transpiled
+''; // Adds doclets above to transpiled

@@ -247,13 +247,13 @@ addEvent(Chart, 'update', function (e) {
             !isNumber(axis.max)) {
             return;
         }
-        const chart = axis.chart, log = axis.logarithmic, options = axis.crosshair.label, // the label's options
-        horiz = axis.horiz, // axis orientation
-        opposite = axis.opposite, // axis position
-        left = axis.left, // left position
-        top = axis.top, // top position
+        const chart = axis.chart, log = axis.logarithmic, options = axis.crosshair.label, // The label's options
+        horiz = axis.horiz, // Axis orientation
+        opposite = axis.opposite, // Axis position
+        left = axis.left, // Left position
+        top = axis.top, // Top position
         width = axis.width, tickInside = axis.options.tickPosition === 'inside', snap = axis.crosshair.snap !== false, e = event.e || (axis.cross && axis.cross.e), point = event.point;
-        let crossLabel = axis.crossLabel, // the svgElement
+        let crossLabel = axis.crossLabel, // The svgElement
         posx, posy, formatOption = options.format, formatFormat = '', limit, offset = 0, 
         // Use last available event (#5287)
         min = axis.min, max = axis.max;
@@ -353,8 +353,8 @@ addEvent(Chart, 'update', function (e) {
         // Check the edges
         if (horiz) {
             limit = {
-                left: left - crossBox.x,
-                right: left + axis.width - crossBox.x
+                left,
+                right: left + axis.width
             };
         }
         else {
@@ -409,7 +409,7 @@ addEvent(Chart, 'update', function (e) {
             const key = options.top + ',' + options.height;
             // Do it only for the first Y axis of each pane
             if (!panes[key] && labelOptions.enabled) {
-                if (labelOptions.distance === 15 && // default
+                if (labelOptions.distance === 15 && // Default
                     axis.side === 1) {
                     labelOptions.distance = 0;
                 }
@@ -505,7 +505,7 @@ addEvent(Chart, 'update', function (e) {
                         y1 = axis2.pos;
                         y2 = y1 + axis2.len;
                         x1 = x2 = Math.round(transVal + axis.transB);
-                        // outside plot area
+                        // Outside plot area
                         if (force !== 'pass' &&
                             (x1 < axisLeft || x1 > axisLeft + axis.width)) {
                             if (force) {
@@ -526,7 +526,7 @@ addEvent(Chart, 'update', function (e) {
                         x1 = axis2.pos;
                         x2 = x1 + axis2.len;
                         y1 = y2 = Math.round(axisTop + axis.height - transVal);
-                        // outside plot area
+                        // Outside plot area
                         if (force !== 'pass' &&
                             (y1 < axisTop || y1 > axisTop + axis.height)) {
                             if (force) {
@@ -634,7 +634,7 @@ addEvent(Chart, 'update', function (e) {
      * @function Highcharts.SVGRenderer#crispPolyLine
      */
     function svgRendererCrispPolyLine(points, width) {
-        // points format: [['M', 0, 0], ['L', 100, 0]]
+        // Points format: [['M', 0, 0], ['L', 100, 0]]
         // normalize to a crisp line
         for (let i = 0; i < points.length; i = i + 2) {
             const start = points[i], end = points[i + 1];

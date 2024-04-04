@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v11.4.0 (2024-03-05)
+ * @license Highmaps JS v11.4.1 (2024-04-04)
  *
  * Highmaps as a plugin for Highcharts or Highcharts Stock.
  *
@@ -220,7 +220,7 @@
                         point[key][method]();
                     }
                 });
-                this.series.buildKDTree(); // rebuild kdtree #13195
+                this.series.buildKDTree(); // Rebuild kdtree #13195
             }
             ColorAxisComposition.pointSetVisible = pointSetVisible;
             /**
@@ -993,7 +993,7 @@
                 axis.reversed = userOptions.reversed || !horiz;
                 axis.opposite = !horiz;
                 super.init(chart, userOptions, 'colorAxis');
-                // Super.init saves the extended user options, now replace it with the
+                // `super.init` saves the extended user options, now replace it with the
                 // originals
                 this.userOptions = userOptions;
                 if (isArray(chart.userOptions.colorAxis)) {
@@ -1089,6 +1089,10 @@
                     });
                     legend.render();
                     this.chart.getMargins(true);
+                    // If not drilling down/up
+                    if (!this.chart.series.some((series) => series.isDrilling)) {
+                        axis.isDirty = true; // Flag to fire drawChartBox
+                    }
                     // First time only
                     if (!axis.added) {
                         axis.added = true;
@@ -1176,7 +1180,7 @@
                 let colorValArray, colorKey, colorValIndex, pointArrayMap, calculatedExtremes, cSeries, i = series.length, yData, j;
                 this.dataMin = Infinity;
                 this.dataMax = -Infinity;
-                while (i--) { // x, y, value, other
+                while (i--) { // X, y, value, other
                     cSeries = series[i];
                     colorKey = cSeries.colorKey = pick(cSeries.options.colorKey, cSeries.colorKey, cSeries.pointValKey, cSeries.zoneAxis, 'y');
                     pointArrayMap = cSeries.pointArrayMap;
@@ -1477,7 +1481,7 @@
          *
          * @typedef {"linear"|"logarithmic"} Highcharts.ColorAxisTypeValue
          */
-        ''; // detach doclet above
+        ''; // Detach doclet above
 
         return ColorAxis;
     });
@@ -1735,7 +1739,7 @@
              * @since 4.2.4
              */
             mouseWheelSensitivity: 1.1
-            // enabled: false,
+            // Enabled: false,
             // enableButtons: null, // inherit from enabled
             // enableTouchZoom: null, // inherit from enabled
             // enableDoubleClickZoom: null, // inherit from enabled
@@ -1912,6 +1916,9 @@
          *  Functions
          *
          * */
+        /**
+         *
+         */
         function bottomButton(x, y, w, h, options) {
             if (options) {
                 const r = options?.r || 0;
@@ -1920,11 +1927,17 @@
             }
             return symbols.roundedRect(x, y, w, h, options);
         }
+        /**
+         *
+         */
         function compose(SVGRendererClass) {
             symbols = SVGRendererClass.prototype.symbols;
             symbols.bottombutton = bottomButton;
             symbols.topbutton = topButton;
         }
+        /**
+         *
+         */
         function topButton(x, y, w, h, options) {
             if (options) {
                 const r = options?.r || 0;
@@ -2291,7 +2304,7 @@
                 return (this.value !== null &&
                     this.value !== Infinity &&
                     this.value !== -Infinity &&
-                    // undefined is allowed, but NaN is not (#17279)
+                    // Undefined is allowed, but NaN is not (#17279)
                     (this.value === void 0 || !isNaN(this.value)));
             }
             /**
@@ -2388,7 +2401,7 @@
                     tooltip: {
                         followTouchMove: false
                     }
-                }, userOptions // user's options
+                }, userOptions // User's options
                 );
                 super.init(options, callback);
             }
@@ -2581,8 +2594,8 @@
          * Test for point in polygon. Polygon defined as array of [x,y] points.
          * @private
          */
-        const pointInPolygon = function (point, polygon) {
-            let i, j, rel1, rel2, c = false, x = point.x, y = point.y;
+        const pointInPolygon = function ({ x, y }, polygon) {
+            let i, j, rel1, rel2, c = false;
             for (i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
                 rel1 = polygon[i][1] > y;
                 rel2 = polygon[j][1] > y;
@@ -4169,7 +4182,7 @@
          *
          * @typedef {Object} Highcharts.TopoJSON
          */
-        ''; // detach doclets above
+        ''; // Detach doclets above
 
         return GeoJSONComposition;
     });
@@ -5259,7 +5272,7 @@
             }
         }
         /*
-        const mergeCollections = <
+        Const mergeCollections = <
             T extends Array<AnyRecord|undefined>
         >(a: T, b: T): T => {
             b.forEach((newer, i): void => {
@@ -6040,9 +6053,9 @@
              *        The animation to apply to a the redraw
              */
             update(options, redraw = true, animation) {
-                const newProjection = options.projection;
-                let isDirtyProjection = newProjection && ((Projection.toString(newProjection) !==
-                    Projection.toString(this.options.projection))), isDirtyInsets = false;
+                const newProjection = options.projection, isDirtyProjection = newProjection && ((Projection.toString(newProjection) !==
+                    Projection.toString(this.options.projection)));
+                let isDirtyInsets = false;
                 merge(true, this.userOptions, options);
                 merge(true, this.options, options);
                 // If anything changed with the insets, destroy them all and create
@@ -6082,7 +6095,7 @@
                     }
                     // Fit to natural bounds if center/zoom are not explicitly given
                     if (!options.center &&
-                        // do not fire fitToBounds if user don't want to set zoom
+                        // Do not fire fitToBounds if user don't want to set zoom
                         Object.hasOwnProperty.call(options, 'zoom') &&
                         !isNumber(options.zoom)) {
                         this.fitToBounds(void 0, void 0, false);
@@ -6313,7 +6326,7 @@
         const { noop } = H;
         const { splitPath } = MapChart;
         const { 
-        // indirect dependency to keep product size low
+        // Indirect dependency to keep product size low
         column: ColumnSeries, scatter: ScatterSeries } = SeriesRegistry.seriesTypes;
         const { extend, find, fireEvent, getNestedProperty, isArray, defined, isNumber, isObject, merge, objectEach, pick, splat } = U;
         /* *
@@ -6563,7 +6576,7 @@
                             .animate({ animator: 1 }, animOptions, function () {
                             if (typeof renderer.globalAnimation !== 'boolean' &&
                                 renderer.globalAnimation.complete) {
-                                // fire complete only from this place
+                                // Fire complete only from this place
                                 renderer.globalAnimation.complete({
                                     applyDrilldown: true
                                 });
@@ -7633,7 +7646,7 @@
          *  API Options
          *
          * */
-        ''; // adds doclets above to transpiled file
+        ''; // Adds doclets above to transpiled file
 
         return MapPointSeries;
     });
@@ -8114,7 +8127,7 @@
                     -connectorDistance : connectorDistance;
                 // Set options for centered labels
                 if (labelsAlign === 'center') {
-                    connectorLength = 0; // do not use connector
+                    connectorLength = 0; // Do not use connector
                     options.connectorDistance = 0;
                     range.labelAttribs.align = 'center';
                 }
@@ -8342,7 +8355,7 @@
         * @name Highcharts.BubbleLegendFormatterContextObject#value
         * @type {number}
         */
-        ''; // detach doclets above
+        ''; // Detach doclets above
 
         return BubbleLegendItem;
     });
@@ -8390,24 +8403,26 @@
                 }
                 // Create legend with bubbleLegend
                 legend.render();
-                chart.getMargins();
-                chart.axes.forEach(function (axis) {
-                    if (axis.visible) { // #11448
-                        axis.render();
-                    }
-                    if (!bubbleLegendOptions.placed) {
-                        axis.setScale();
-                        axis.updateNames();
-                        // Disable axis animation on init
-                        objectEach(axis.ticks, function (tick) {
-                            tick.isNew = true;
-                            tick.isNewLabel = true;
-                        });
-                    }
-                });
+                // Calculate margins after first rendering the bubble legend
+                if (!bubbleLegendOptions.placed) {
+                    chart.getMargins();
+                    chart.axes.forEach(function (axis) {
+                        if (axis.visible) { // #11448
+                            axis.render();
+                        }
+                        if (!bubbleLegendOptions.placed) {
+                            axis.setScale();
+                            axis.updateNames();
+                            // Disable axis animation on init
+                            objectEach(axis.ticks, function (tick) {
+                                tick.isNew = true;
+                                tick.isNewLabel = true;
+                            });
+                        }
+                    });
+                    chart.getMargins();
+                }
                 bubbleLegendOptions.placed = true;
-                // After recalculate axes, calculate margins again.
-                chart.getMargins();
                 // Call default 'drawChartBox' method.
                 proceed.call(chart, options, callback);
                 // Check bubble legend sizes and correct them if necessary.
@@ -8493,7 +8508,7 @@
                 legendItem = items[i].legendItem || {};
                 legendItem2 = (items[i + 1] || {}).legendItem || {};
                 if (legendItem.labelHeight) {
-                    // for bubbleLegend
+                    // For bubbleLegend
                     items[i].itemHeight = legendItem.labelHeight;
                 }
                 if ( // Line break
@@ -8917,7 +8932,7 @@
                             height: 2 * radius
                         };
                     }
-                    else { // below zThreshold
+                    else { // Below zThreshold
                         // #1691
                         point.shapeArgs = point.plotY = point.dlBox = void 0;
                         point.isInside = false; // #17281
@@ -9227,7 +9242,7 @@
         /**
          * @typedef {"area"|"width"} Highcharts.BubbleSizeByValue
          */
-        ''; // detach doclets above
+        ''; // Detach doclets above
         /* *
          *
          *  API Options
@@ -9316,7 +9331,7 @@
          * @excluding enabled, enabledThreshold, height, radius, width
          * @apioption series.bubble.marker
          */
-        ''; // adds doclets above to transpiled file
+        ''; // Adds doclets above to transpiled file
 
         return BubbleSeries;
     });
@@ -9414,7 +9429,7 @@
             }
             updateParallelArrays(point, i, iArgs) {
                 super.updateParallelArrays.call(this, point, i, iArgs);
-                let processedXData = this.processedXData, xData = this.xData;
+                const processedXData = this.processedXData, xData = this.xData;
                 if (processedXData && xData) {
                     processedXData.length = xData.length;
                 }
@@ -9688,7 +9703,7 @@
          *         Map bubble with mapmarker symbol
          * @apioption series.mapbubble.marker
          */
-        ''; // adds doclets above to transpiled file
+        ''; // Adds doclets above to transpiled file
 
         return MapBubbleSeries;
     });
@@ -9785,7 +9800,7 @@
              * @private
              */
             isValid() {
-                // undefined is allowed
+                // Undefined is allowed
                 return (this.value !== Infinity &&
                     this.value !== -Infinity);
             }
@@ -10434,7 +10449,7 @@
          * @product   highcharts highstock
          * @apioption series.heatmap.data.marker.states.select.heightPlus
          */
-        ''; // keeps doclets above separate
+        ''; // Keeps doclets above separate
         /* *
          *
          *  Default Export
@@ -10658,7 +10673,7 @@
                 const options = this.options;
                 // #3758, prevent resetting in setData
                 options.pointRange = pick(options.pointRange, options.colsize || 1);
-                // general point range
+                // General point range
                 this.yAxis.axisPointRange = options.rowsize || 1;
                 // Bind new symbol names
                 symbols.ellipse = symbols.circle;
@@ -10836,7 +10851,7 @@
         * @name Highcharts.PointOptionsObject#value
         * @type {number|null|undefined}
         */
-        ''; // detach doclets above
+        ''; // Detach doclets above
 
         return HeatmapSeries;
     });

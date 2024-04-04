@@ -73,12 +73,12 @@ class VectorSeries extends ScatterSeries {
             ['L', 0, 10 * u + o],
             ['L', 1.5 * u, 7 * u + o],
             ['L', 0, 7 * u + o],
-            ['L', 0, -10 * u + o] // top
+            ['L', 0, -10 * u + o] // Top
         ];
         return path;
     }
     /*
-    drawLegendSymbol: function (legend, item) {
+    DrawLegendSymbol: function (legend, item) {
         let options = legend.options,
             symbolHeight = legend.symbolHeight,
             square = options.squareSymbol,

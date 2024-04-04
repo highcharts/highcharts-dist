@@ -1335,7 +1335,7 @@ var Chart3D;
                     visible: isVisible
                 };
             };
-            // docs @TODO: Add all frame options (left, right, top, bottom,
+            // Docs @TODO: Add all frame options (left, right, top, bottom,
             // front, back) to apioptions JSDoc once the new system is up.
             const ret = {
                 axes: {},
@@ -1683,4 +1683,4 @@ export default Chart3D;
  * @product   highcharts
  * @apioption chart.options3d.frame.side.size
  */
-''; // keeps doclets above in JS file
+''; // Keeps doclets above in JS file

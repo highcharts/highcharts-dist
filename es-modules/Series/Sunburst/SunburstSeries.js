@@ -416,7 +416,7 @@ class SunburstSeries extends TreemapSeries {
                 plotY: shape.plotY,
                 value: node.val,
                 isInside: visible,
-                isNull: !visible // used for dataLabels & point.draw
+                isNull: !visible // Used for dataLabels & point.draw
             });
             point.dlOptions = getDlOptions({
                 point: point,
@@ -543,7 +543,7 @@ class SunburstSeries extends TreemapSeries {
         rootId = updateRootId(series);
         let mapIdToNode = series.nodeMap, mapOptionsToLevel, nodeRoot = mapIdToNode && mapIdToNode[rootId], nodeIds = {};
         series.shapeRoot = nodeRoot && nodeRoot.shapeArgs;
-        if (!series.processedXData) { // hidden series
+        if (!series.processedXData) { // Hidden series
             series.processData();
         }
         series.generatePoints();
@@ -600,10 +600,10 @@ class SunburstSeries extends TreemapSeries {
             if (nodeIds[point.id]) {
                 error(31, false, series.chart);
             }
-            // map
+            // Map
             nodeIds[point.id] = true;
         }
-        // reset object
+        // Reset object
         nodeIds = {};
     }
 }

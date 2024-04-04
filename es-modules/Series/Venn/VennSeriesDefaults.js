@@ -178,7 +178,7 @@ const VennSeriesDefaults = {
  * @excluding halo
  * @apioption series.venn.states.select
  */
-''; // detach doclets above
+''; // Detach doclets above
 /* *
  *
  *  Default Export

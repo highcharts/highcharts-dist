@@ -105,7 +105,7 @@ const CylinderSeriesDefaults = {};
  * @product   highcharts highstock
  * @apioption series.cylinder.data
  */
-''; // detaches doclets above
+''; // Detaches doclets above
 /* *
  *
  *  Default Export

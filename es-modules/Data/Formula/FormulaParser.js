@@ -136,7 +136,7 @@ function extractString(text) {
                 start = i;
             }
             else {
-                return text.substring(start + 1, i); // i is excluding
+                return text.substring(start + 1, i); // `ì` is excluding
             }
         }
     }
@@ -271,7 +271,7 @@ function parseArguments(text, alternativeSeparators) {
             !term) {
             const string = extractString(text.substring(i));
             args.push(string);
-            i += string.length + 1; // only +1 to cover ++i in for-loop
+            i += string.length + 1; // Only +1 to cover ++i in for-loop
             // Skip space and check paranthesis nesting
         }
         else if (char !== ' ') {
@@ -284,7 +284,7 @@ function parseArguments(text, alternativeSeparators) {
             }
         }
     }
-    // look for left-overs from last argument
+    // Look for left-overs from last argument
     if (!parantheseLevel && term) {
         args.push(parseArgument(term, alternativeSeparators));
     }

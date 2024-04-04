@@ -346,7 +346,7 @@ const SunburstSeriesDefaults = {
   * @product   highcharts
   * @apioption series.sunburst.data.sliced
   */
-''; // detach doclets above
+''; // Detach doclets above
 /* *
  *
  *  Default Export

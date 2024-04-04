@@ -62,7 +62,7 @@ class ItemSeries extends PieSeries {
     drawDataLabels() {
         if (this.center && this.slots) {
             super.drawDataLabels();
-            // or it's just a dot chart with no natural place to put the data labels
+            // Or it's just a dot chart with no natural place to put the data labels
         }
         else {
             for (const point of this.points) {
@@ -299,7 +299,7 @@ class ItemSeries extends PieSeries {
     }
     translate(positions) {
         // Initialize chart without setting data, #13379.
-        if (this.total === 0 && // check if that is a (semi-)circle
+        if (this.total === 0 && // Check if that is a (semi-)circle
             isNumber(this.options.startAngle) &&
             isNumber(this.options.endAngle)) {
             this.center = this.getCenter();

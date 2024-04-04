@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.0 (2024-03-05)
+ * @license Highcharts JS v11.4.1 (2024-04-04)
  *
  * Annotations module
  *
@@ -943,7 +943,7 @@
              * The Z index of the annotation.
              */
             zIndex: 6
-        }; // typeOptions are expected but not set
+        }; // Type options are expected but not set
         /* *
          *
          *  Default Export
@@ -1285,7 +1285,7 @@
                     .add(chart.controlPointsGroup)
                     .css(options.style);
                 this.setVisibility(options.visible);
-                // npm test -- --tests "highcharts/annotations-advanced/*"
+                // `npm test -- --tests "highcharts/annotations-advanced/*"`
                 this.addEvents();
             }
             /**
@@ -1335,7 +1335,7 @@
          * @param {Highcharts.AnnotationControllable} target
          * @return {Highcharts.PositionObject}
          */
-        (''); // keeps doclets above in JS file
+        (''); // Keeps doclets above in JS file
 
         return ControlPoint;
     });
@@ -1826,7 +1826,7 @@
          * @name Highcharts.Point#mock
          * @type {boolean|undefined}
          */
-        (''); // keeps doclets above in JS file
+        (''); // Keeps doclets above in JS file
 
         return MockPoint;
     });
@@ -2339,7 +2339,7 @@
         * @name Highcharts.AnnotationControllable#points
         * @type {Array<Highcharts.Point>}
         */
-        (''); // keeps doclets above in JS file
+        (''); // Keeps doclets above in JS file
 
         return Controllable;
     });
@@ -2422,7 +2422,7 @@
                 children: [{
                         tagName: 'path',
                         attributes: {
-                            // reverse triangle (used as an arrow)
+                            // Reverse triangle (used as an arrow)
                             d: 'M 0 5 L 10 0 L 10 10 Z',
                             'stroke-width': 0
                         }
@@ -2475,7 +2475,7 @@
          */
         function onChartAfterGetContainer() {
             this.options.defs = merge(defaultMarkers, this.options.defs || {});
-            // objectEach(this.options.defs, function (def): void {
+            ///  objectEach(this.options.defs, function (def): void {
             //     const attributes = def.attributes;
             //     if (
             //         def.tagName === 'marker' &&
@@ -2662,7 +2662,8 @@
                     fill :
                     itemOptions.stroke;
                 const setMarker = function (markerType) {
-                    let markerId = itemOptions[markerType], def, predefinedMarker, key, marker;
+                    const markerId = itemOptions[markerType];
+                    let def, predefinedMarker, key, marker;
                     if (markerId) {
                         for (key in defs) { // eslint-disable-line guard-for-in
                             def = defs[key];
@@ -3687,7 +3688,7 @@
                 ['click', 'touchstart'].forEach((eventName) => {
                     addEvent(closeButton, eventName, popup.closeButtonEvents.bind(popup));
                 });
-                // close popup when press ESC
+                // Close popup when press ESC
                 addEvent(document, 'keydown', function (event) {
                     if (event.code === 'Escape') {
                         popup.closeButtonEvents();
@@ -3716,7 +3717,7 @@
                 // Reset toolbar styles if exists.
                 if (popupDiv.className.indexOf(toolbarClass) >= 0) {
                     popupDiv.classList.remove(toolbarClass);
-                    // reset toolbar inline styles
+                    // Reset toolbar inline styles
                     popupDiv.removeAttribute('style');
                 }
                 // Add close button.
@@ -3776,12 +3777,12 @@
                 return;
             }
             const popupDiv = this.container, lang = this.lang;
-            // create title of annotations
+            // Create title of annotations
             let lhsCol = createElement('h2', {
                 className: 'highcharts-popup-main-title'
             }, void 0, popupDiv);
             lhsCol.appendChild(doc.createTextNode(lang[options.langKey] || options.langKey || ''));
-            // left column
+            // Left column
             lhsCol = createElement('div', {
                 className: ('highcharts-popup-lhs-col highcharts-popup-lhs-full')
             }, void 0, popupDiv);
@@ -3803,16 +3804,16 @@
          */
         function addToolbar(chart, options, callback) {
             const lang = this.lang, popupDiv = this.container, showForm = this.showForm, toolbarClass = 'highcharts-annotation-toolbar';
-            // set small size
+            // Set small size
             if (popupDiv.className.indexOf(toolbarClass) === -1) {
                 popupDiv.className += ' ' + toolbarClass + ' highcharts-no-mousewheel';
             }
-            // set position
+            // Set position
             if (chart) {
                 popupDiv.style.top = chart.plotTop + 10 + 'px';
             }
-            // create label
-            let label = createElement('p', {
+            // Create label
+            const label = createElement('p', {
                 className: 'highcharts-annotation-label'
             }, void 0, popupDiv);
             label.setAttribute('aria-label', 'Annotation type');
@@ -3821,7 +3822,7 @@
             lang[options.langKey] || options.langKey, 
             // Basic shapes:
             options.shapes && options.shapes[0].type, '')));
-            // add buttons
+            // Add buttons
             let button = this.addButton(popupDiv, lang.editButton || 'Edit', 'edit', popupDiv, () => {
                 showForm.call(this, 'annotation-edit', chart, options, callback);
             });
@@ -3856,13 +3857,13 @@
             const addInput = this.addInput, lang = this.lang;
             let parentFullName, titleName;
             objectEach(options, (value, option) => {
-                // create name like params.styles.fontSize
+                // Create name like params.styles.fontSize
                 parentFullName = parentNode !== '' ? parentNode + '.' + option : option;
                 if (isObject(value)) {
                     if (
-                    // value is object of options
+                    // Value is object of options
                     !isArray(value) ||
-                        // array of objects with params. i.e labels in Fibonacci
+                        // Array of objects with params. i.e labels in Fibonacci
                         (isArray(value) && isObject(value[0]))) {
                         titleName = lang[option] || option;
                         if (!titleName.match(/\d/g)) {
@@ -3969,15 +3970,15 @@
          * Reference to two HTML columns (lhsCol, rhsCol)
          */
         function addColsContainer(container) {
-            // left column
+            // Left column
             const lhsCol = createElement('div', {
                 className: 'highcharts-popup-lhs-col'
             }, void 0, container);
-            // right column
+            // Right column
             const rhsCol = createElement('div', {
                 className: 'highcharts-popup-rhs-col'
             }, void 0, container);
-            // wrapper content
+            // Wrapper content
             createElement('div', {
                 className: 'highcharts-popup-rhs-col-wrapper'
             }, void 0, rhsCol);
@@ -3997,9 +3998,9 @@
             if (!chart) {
                 return;
             }
-            // add tabs
+            // Add tabs
             this.tabs.init.call(this, chart);
-            // get all tabs content divs
+            // Get all tabs content divs
             const tabsContainers = this.container
                 .querySelectorAll('.highcharts-tab-item-content');
             // ADD tab
@@ -4035,24 +4036,24 @@
          */
         function addFormFields(chart, series, seriesType, rhsColWrapper) {
             const fields = series.params || series.options.params;
-            // reset current content
+            // Reset current content
             rhsColWrapper.innerHTML = AST.emptyHTML;
-            // create title (indicator name in the right column)
+            // Create title (indicator name in the right column)
             createElement('h3', {
                 className: 'highcharts-indicator-title'
             }, void 0, rhsColWrapper).appendChild(doc.createTextNode(getNameType(series, seriesType).indicatorFullName));
-            // input type
+            // Input type
             createElement('input', {
                 type: 'hidden',
                 name: 'highcharts-type-' + seriesType,
                 value: seriesType
             }, void 0, rhsColWrapper);
-            // list all series with id
+            // List all series with id
             listAllSeries.call(this, seriesType, 'series', chart, rhsColWrapper, series, series.linkedParent && series.linkedParent.options.id);
             if (fields.volumeSeriesID) {
                 listAllSeries.call(this, seriesType, 'volume', chart, rhsColWrapper, series, series.linkedParent && fields.volumeSeriesID);
             }
-            // add param fields
+            // Add param fields
             addParamInputs.call(this, chart, 'params', fields, seriesType, rhsColWrapper);
         }
         /**
@@ -4079,6 +4080,9 @@
          *        For the first iteration, it's an empty string.
          */
         function addIndicatorList(chart, parentDiv, listType, filter) {
+            /**
+             *
+             */
             function selectIndicator(series, indicatorType) {
                 const button = rhsColWrapper.parentNode
                     .children[1];
@@ -4086,7 +4090,7 @@
                 if (button) {
                     button.style.display = 'block';
                 }
-                // add hidden input with series.id
+                // Add hidden input with series.id
                 if (isEdit && series.options) {
                     createElement('input', {
                         type: 'hidden',
@@ -4132,7 +4136,7 @@
                 item = createElement('li', {
                     className: 'highcharts-indicator-list'
                 }, void 0, indicatorList);
-                let btn = createElement('button', {
+                const btn = createElement('button', {
                     className: 'highcharts-indicator-list-item',
                     textContent: indicatorFullName
                 }, void 0, item);
@@ -4142,9 +4146,9 @@
                     });
                 });
             });
-            // select first item from the list
+            // Select first item from the list
             if (filteredSeriesArray.length > 0) {
-                let { series, indicatorType } = filteredSeriesArray[0];
+                const { series, indicatorType } = filteredSeriesArray[0];
                 selectIndicator(series, indicatorType);
             }
             else if (!isEdit) {
@@ -4175,9 +4179,9 @@
             }
             const addInput = this.addInput;
             objectEach(fields, (value, fieldName) => {
-                // create name like params.styles.fontSize
+                // Create name like params.styles.fontSize
                 const parentFullName = parentNode + '.' + fieldName;
-                if (defined(value) && // skip if field is unnecessary, #15362
+                if (defined(value) && // Skip if field is unnecessary, #15362
                     parentFullName) {
                     if (isObject(value)) {
                         // (15733) 'Periods' has an arrayed value. Label must be
@@ -4201,7 +4205,7 @@
                         addInput.call(this, parentFullName, type, parentDiv, {
                             value: value,
                             type: 'number'
-                        } // all inputs are text type
+                        } // All inputs are text type
                         );
                     }
                 }
@@ -4462,11 +4466,11 @@
          */
         function getNameType(series, indicatorType) {
             const options = series.options;
-            // add mode
+            // Add mode
             let seriesName = (seriesTypes[indicatorType] &&
                 seriesTypes[indicatorType].prototype.nameBase) ||
                 indicatorType.toUpperCase(), seriesType = indicatorType;
-            // edit
+            // Edit
             if (options && options.type) {
                 seriesType = series.options.type;
                 seriesName = series.name;
@@ -4571,7 +4575,7 @@
             if (disableTab === 0) {
                 className += ' highcharts-tab-disabled';
             }
-            // tab 1
+            // Tab 1
             const menuItem = createElement('button', {
                 className
             }, void 0, popupDiv);
@@ -4603,14 +4607,14 @@
                 return;
             }
             const indicatorsCount = this.indicators.getAmount.call(chart);
-            // create menu items
-            const firstTab = addMenuItem.call(this, 'add'); // run by default
+            // Create menu items
+            const firstTab = addMenuItem.call(this, 'add'); // Run by default
             addMenuItem.call(this, 'edit', indicatorsCount);
-            // create tabs containers
+            // Create tabs containers
             addContentItem.call(this);
             addContentItem.call(this);
             switchTabs.call(this, indicatorsCount);
-            // activate first tab
+            // Activate first tab
             selectTab.call(this, firstTab, 0);
         }
         /**
@@ -4640,7 +4644,7 @@
                 }
                 ['click', 'touchstart'].forEach((eventName) => {
                     addEvent(tab, eventName, function () {
-                        // reset class on other elements
+                        // Reset class on other elements
                         deselectAll.call(popup);
                         selectTab.call(popup, this, i);
                     });
@@ -4698,7 +4702,7 @@
             };
             inputList.forEach((input) => {
                 const param = input.getAttribute('highcharts-data-name'), seriesId = input.getAttribute('highcharts-data-series-id');
-                // params
+                // Params
                 if (seriesId) {
                     fieldsOutput.seriesId = input.value;
                 }
@@ -4706,7 +4710,7 @@
                     fieldsOutput.fields[param] = input.value;
                 }
                 else {
-                    // type like sma / ema
+                    // Type like sma / ema
                     fieldsOutput.type = input.value;
                 }
             });
@@ -4783,13 +4787,13 @@
             addInput(option, indicatorType, parentDiv, inputAttributes) {
                 const optionParamList = option.split('.'), optionName = optionParamList[optionParamList.length - 1], lang = this.lang, inputName = 'highcharts-' + indicatorType + '-' + pick(inputAttributes.htmlFor, optionName);
                 if (!optionName.match(/^\d+$/)) {
-                    // add label
+                    // Add label
                     createElement('label', {
                         htmlFor: inputName,
                         className: inputAttributes.labelClassName
                     }, void 0, parentDiv).appendChild(doc.createTextNode(lang[optionName] || optionName));
                 }
-                // add input
+                // Add input
                 const input = createElement('input', {
                     name: inputName,
                     value: inputAttributes.value,
@@ -4853,21 +4857,21 @@
                 if (!chart) {
                     return;
                 }
-                // show blank popup
+                // Show blank popup
                 this.showPopup();
-                // indicator form
+                // Indicator form
                 if (type === 'indicators') {
                     this.indicators.addForm.call(this, chart, options, callback);
                 }
-                // annotation small toolbar
+                // Annotation small toolbar
                 if (type === 'annotation-toolbar') {
                     this.annotations.addToolbar.call(this, chart, options, callback);
                 }
-                // annotation edit form
+                // Annotation edit form
                 if (type === 'annotation-edit') {
                     this.annotations.addForm.call(this, chart, options, callback);
                 }
-                // flags form - add / edit
+                // Flags form - add / edit
                 if (type === 'flag') {
                     this.annotations.addForm.call(this, chart, options, callback, true);
                 }
@@ -4935,17 +4939,17 @@
                 this.popup = new Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
                     (this.chart.options.stockTools &&
                         this.chart.options.stockTools.gui.iconsURL) ||
-                    'https://code.highcharts.com/11.4.0/gfx/stock-icons/'), this.chart);
+                    'https://code.highcharts.com/11.4.1/gfx/stock-icons/'), this.chart);
             }
             this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
         }
         /**
-         * onContainerMouseDown blocks internal popup events, due to e.preventDefault.
+         * `onContainerMouseDown` blocks internal popup events, due to e.preventDefault.
          * Related issue #4606
          * @private
          */
         function wrapPointerOnContainerMouserDown(proceed, e) {
-            // elements is not in popup
+            // Elements is not in popup
             if (!this.inClass(e.target, 'highcharts-popup')) {
                 proceed.apply(this, Array.prototype.slice.call(arguments, 1));
             }
@@ -5201,7 +5205,7 @@
              * @private
              */
             destroyItem(item) {
-                // erase from shapes or labels array
+                // Erase from shapes or labels array
                 erase(this[item.itemType + 's'], item);
                 item.destroy();
             }
@@ -5317,9 +5321,8 @@
              */
             redrawItems(items, animation) {
                 let i = items.length;
-                // needs a backward loop
-                // labels/shapes array might be modified
-                // due to destruction of the item
+                // Needs a backward loop. Labels/shapes array might be modified due to
+                // destruction of the item
                 while (i--) {
                     this.redrawItem(items[i], animation);
                 }
@@ -5356,7 +5359,7 @@
                 this.labelsGroup = renderer
                     .g('annotation-labels')
                     .attr({
-                    // hideOverlappingLabels requires translation
+                    // `hideOverlappingLabels` requires translation
                     translateX: 0,
                     translateY: 0
                 })
@@ -5584,7 +5587,7 @@
          *          Highcharts.AnnotationMockPointFunction
          *     } Highcharts.AnnotationShapePointOptions
          */
-        (''); // keeps doclets above in JS file
+        (''); // Keeps doclets above in JS file
 
         return Annotation;
     });
@@ -5739,7 +5742,7 @@
                 return isNumber(axisMin) && isNumber(axisMax) &&
                     coord.value >= (axisMin - minPointOffset) &&
                     coord.value <= (axisMax + minPointOffset) &&
-                    // don't count navigator axis
+                    // Don't count navigator axis
                     !coord.axis.options.isInternal;
             })[0]; // If the axes overlap, return the first axis that was found.
         }
@@ -6098,7 +6101,7 @@
              * from a different server.
              *
              * @type      {string}
-             * @default   https://code.highcharts.com/11.4.0/gfx/stock-icons/
+             * @default   https://code.highcharts.com/11.4.1/gfx/stock-icons/
              * @since     7.1.3
              * @apioption navigation.iconsURL
              */
@@ -6362,10 +6365,16 @@
             }
             // #18276, show popup on touchend, but not on touchmove
             let touchStartX, touchStartY;
+            /**
+             *
+             */
             function saveCoords(e) {
                 touchStartX = e.touches[0].clientX;
                 touchStartY = e.touches[0].clientY;
             }
+            /**
+             *
+             */
             function checkForTouchmove(e) {
                 const hasMoved = touchStartX ? Math.sqrt(Math.pow(touchStartX - e.changedTouches[0].clientX, 2) +
                     Math.pow(touchStartY - e.changedTouches[0].clientY, 2)) >= 4 : false;
@@ -6753,8 +6762,8 @@
                         nonEditables.indexOf(key) === -1 &&
                         ((parentEditables.indexOf &&
                             parentEditables.indexOf(key)) >= 0 ||
-                            parentEditables[key] || // nested array
-                            parentEditables === true // simple array
+                            parentEditables[key] || // Nested array
+                            parentEditables === true // Simple array
                         )) {
                         // Roots:
                         if (isArray(option)) {
@@ -6994,7 +7003,7 @@
         * @name Highcharts.NavigationBindingsOptionsObject#steps
         * @type {Array<Function>|undefined}
         */
-        (''); // keeps doclets above in JS file
+        (''); // Keeps doclets above in JS file
 
         return NavigationBindings;
     });
@@ -7688,7 +7697,7 @@
                         points = [
                             points[0],
                             new MockPoint(annotation.chart, points[0].target, {
-                                // add 0 or 1 to x or y depending on type
+                                // Add 0 or 1 to x or y depending on type
                                 x: points[0].x + +(type === 'horizontalLine'),
                                 y: points[0].y + +(type === 'verticalLine'),
                                 xAxis: points[0].options.xAxis,
@@ -7701,7 +7710,7 @@
             }
             static findEdgeCoordinate(firstPoint, secondPoint, xOrY, edgePointFirstCoordinate) {
                 const xOrYOpposite = xOrY === 'x' ? 'y' : 'x';
-                // solves equation for x or y
+                // Solves equation for x or y
                 // y - y1 = (y2 - y1) / (x2 - x1) * (x - x1)
                 return ((secondPoint[xOrY] - firstPoint[xOrY]) *
                     (edgePointFirstCoordinate - firstPoint[xOrYOpposite]) /
@@ -7788,7 +7797,7 @@
          * @product   highstock
          * @apioption annotations.infinityLine
          */
-        (''); // keeps doclets above in transpiled file
+        (''); // Keeps doclets above in transpiled file
 
         return InfinityLine;
     });
@@ -8235,7 +8244,7 @@
                 // Distance between the two first lines in pixels
                 deltaX = points.length > 1 ?
                     points[1].plotX - points[0].plotX : 0, 
-                // firstLine.x + fibb * offset
+                // `firstLine.x + fibb * offset`
                 x = xAxis.toValue(points[0].plotX + plotLeftOrTop + fibonacciIndex * deltaX);
                 // We need 2 mock points with the same x coordinate, different y
                 points = [
@@ -8286,7 +8295,7 @@
                     this.initShape(merge(this.options.typeOptions.line, {
                         type: 'path',
                         points: points
-                    }), i // shape's index. Can be found in annotation.shapes[i].index
+                    }), i // Shape's index. Can be found in annotation.shapes[i].index
                     );
                 }
             }
@@ -8706,7 +8715,7 @@
          */
         function bins() {
             const series = this.chart.series, ext = getExtremes(this.xAxisMin, this.xAxisMax, this.yAxisMin, this.yAxisMax);
-            let bins = 0, isCalculated = false; // to avoid Infinity in formatter
+            let bins = 0, isCalculated = false; // To avoid Infinity in formatter
             series.forEach((serie) => {
                 if (serie.visible &&
                     serie.options.id !== 'highcharts-navigator-series') {
@@ -8785,7 +8794,7 @@
             else {
                 this.startYMax = getPointPos(yAxis, this.startYMin, parseFloat(height));
             }
-            // x / y selection type
+            // X / y selection type
             if (selectType === 'x') {
                 this.startYMin = yAxis.toValue(top);
                 this.startYMax = yAxis.toValue(top + yAxis.len);
@@ -8800,7 +8809,7 @@
          */
         function max() {
             const series = this.chart.series, ext = getExtremes(this.xAxisMin, this.xAxisMax, this.yAxisMin, this.yAxisMax);
-            let max = -Infinity, isCalculated = false; // to avoid Infinity in formatter
+            let max = -Infinity, isCalculated = false; // To avoid Infinity in formatter
             series.forEach((serie) => {
                 if (serie.visible &&
                     serie.options.id !== 'highcharts-navigator-series') {
@@ -8828,7 +8837,7 @@
          */
         function min() {
             const series = this.chart.series, ext = getExtremes(this.xAxisMin, this.xAxisMax, this.yAxisMin, this.yAxisMax);
-            let min = Infinity, isCalculated = false; // to avoid Infinity in formatter
+            let min = Infinity, isCalculated = false; // To avoid Infinity in formatter
             series.forEach((serie) => {
                 if (serie.visible &&
                     serie.options.id !== 'highcharts-navigator-series') {
@@ -9011,7 +9020,7 @@
                 }
                 let controlPoint = new ControlPoint(this.chart, this, this.options.controlPointOptions, 0);
                 this.controlPoints.push(controlPoint);
-                // add extra controlPoint for horizontal and vertical range
+                // Add extra controlPoint for horizontal and vertical range
                 if (selectType !== 'xy') {
                     controlPoint = new ControlPoint(this.chart, this, this.options.controlPointOptions, 1);
                     this.controlPoints.push(controlPoint);
@@ -9025,7 +9034,7 @@
              */
             addValues(resize) {
                 const typeOptions = this.options.typeOptions, formatter = typeOptions.label.formatter;
-                // set xAxisMin, xAxisMax, yAxisMin, yAxisMax
+                // Set xAxisMin, xAxisMax, yAxisMin, yAxisMax
                 recalculate.call(this, resize);
                 if (!typeOptions.label.enabled) {
                     return;
@@ -9103,7 +9112,7 @@
                     xAxisMax = yAxisMax;
                     yAxisMax = temp;
                 }
-                // horizontal line
+                // Horizontal line
                 if (options.crosshairX.enabled) {
                     pathH = [[
                             'M',
@@ -9115,7 +9124,7 @@
                             yAxisMin + ((yAxisMax - yAxisMin) / 2)
                         ]];
                 }
-                // vertical line
+                // Vertical line
                 if (options.crosshairY.enabled) {
                     pathV = [[
                             'M',
@@ -9145,7 +9154,7 @@
                 this.translate(x, y);
                 this.offsetX += x;
                 this.offsetY += y;
-                // animation, resize, setStartPoints
+                // Animation, resize, setStartPoints
                 this.redraw(false, false, true);
             }
             /**
@@ -9162,7 +9171,7 @@
              * x / y / xy
              */
             resize(dx, dy, cpIndex, selectType) {
-                // background shape
+                // Background shape
                 const bckShape = this.shapes[2];
                 if (selectType === 'x') {
                     if (cpIndex === 0) {
@@ -9218,7 +9227,7 @@
                 this.addCrosshairs();
                 this.redrawItems(this.shapes, animation);
                 this.redrawItems(this.labels, animation);
-                // redraw control point to run positioner
+                // Redraw control point to run positioner
                 this.controlPoints.forEach((controlPoint) => controlPoint.redraw());
             }
             translate(dx, dy) {
@@ -9414,7 +9423,7 @@
                     let targetX = target.xAxisMax, targetY = target.yAxisMax, x, y;
                     if (selectType === 'x') {
                         targetY = (ext.yAxisMax + ext.yAxisMin) / 2;
-                        // first control point
+                        // First control point
                         if (cpIndex === 0) {
                             targetX = target.xAxisMin;
                         }
@@ -9422,7 +9431,7 @@
                     if (selectType === 'y') {
                         targetX = ext.xAxisMin +
                             ((ext.xAxisMax - ext.xAxisMin) / 2);
-                        // first control point
+                        // First control point
                         if (cpIndex === 0) {
                             targetY = target.yAxisMin;
                         }

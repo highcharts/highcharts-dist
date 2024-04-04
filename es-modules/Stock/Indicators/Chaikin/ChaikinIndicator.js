@@ -160,4 +160,4 @@ export default ChaikinIndicator;
  * @requires  stock/indicators/chaikin
  * @apioption series.chaikin
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

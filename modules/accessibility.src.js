@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.0 (2024-03-05)
+ * @license Highcharts JS v11.4.1 (2024-04-04)
  *
  * Accessibility module
  *
@@ -212,8 +212,8 @@
                     // Coords
                     pos.x, pos.y, pos.x, pos.y, 
                     // Pressed keys
-                    false, false, false, false, 0, // button
-                    null // related target
+                    false, false, false, false, 0, // Button
+                    null // Related target
                     );
                     return evt;
                 }
@@ -398,7 +398,7 @@
             }
             A11yI18nComposition.compose = compose;
             /**
-             * i18n utility function.  Format a single array or plural statement in a
+             * I18n utility function.  Format a single array or plural statement in a
              * format string.  If the statement is not an array or plural statement,
              * returns the statement within brackets.  Invalid array statements return
              * an empty string.
@@ -1024,11 +1024,6 @@
          *
          * */
         const { addEvent } = U;
-        /* *
-         *
-         *  Class
-         *
-         * */
         /**
          * @private
          */
@@ -1048,7 +1043,10 @@
              */
             addEvent() {
                 const remover = addEvent.apply(H, arguments);
-                this.eventRemovers.push(remover);
+                this.eventRemovers.push({
+                    element: arguments[0],
+                    remover
+                });
                 return remover;
             }
             /**
@@ -1056,8 +1054,8 @@
              * @private
              */
             removeEvent(event) {
-                const pos = this.eventRemovers.indexOf(event);
-                this.eventRemovers[pos]();
+                const pos = this.eventRemovers.map((e) => e.remover).indexOf(event);
+                this.eventRemovers[pos].remover();
                 this.eventRemovers.splice(pos, 1);
             }
             /**
@@ -1065,7 +1063,8 @@
              * @private
              */
             removeAddedEvents() {
-                this.eventRemovers.forEach((remover) => remover());
+                this.eventRemovers.map((e) => e.remover)
+                    .forEach((remover) => remover());
                 this.eventRemovers = [];
             }
         }
@@ -1336,7 +1335,7 @@
         * @name Highcharts.KeyboardNavigationHandlerOptionsObject#validate
         * @type {Function|undefined}
         */
-        (''); // keeps doclets above in JS file
+        (''); // Keeps doclets above in JS file
 
         return KeyboardNavigationHandler;
     });
@@ -3274,9 +3273,9 @@
                 // Remove event from element and from eventRemovers array to prevent
                 // memory leak (#20329).
                 if (this.exitAnchor) {
-                    if (defined(this.exitAnchor.focusEventRemover)) {
-                        this.eventProvider.removeEvent(this.exitAnchor.focusEventRemover);
-                        delete this.exitAnchor.focusEventRemover;
+                    const el = this.eventProvider.eventRemovers.find((el) => el.element === this.exitAnchor);
+                    if (el && defined(el.remover)) {
+                        this.eventProvider.removeEvent(el.remover);
                     }
                     if (this.exitAnchor.parentNode) {
                         this.exitAnchor.parentNode.removeChild(this.exitAnchor);
@@ -3290,7 +3289,7 @@
              */
             addExitAnchorEventsToEl(element) {
                 const chart = this.chart, keyboardNavigation = this;
-                element.focusEventRemover = this.eventProvider.addEvent(element, 'focus', function (ev) {
+                this.eventProvider.addEvent(element, 'focus', function (ev) {
                     const e = ev || win.event, focusComesFromChart = (e.relatedTarget &&
                         chart.container.contains(e.relatedTarget)), comingInBackwards = !(focusComesFromChart || keyboardNavigation.exiting);
                     if (chart.focusElement) {
@@ -3979,7 +3978,7 @@
                                 0) -
                             (this.titleOffset ? this.titleOffset[2] : 0);
                 }
-                if (xAxis && yAxis) { // false if navigator is disabled (#904)
+                if (xAxis && yAxis) { // False if navigator is disabled (#904)
                     if (this.inverted) {
                         xAxis.options.left = yAxis.options.left = navigator.left;
                     }
@@ -4185,26 +4184,14 @@
              * @function Highcharts.Axis#toFixedRange
              */
             toFixedRange(pxMin, pxMax, fixedMin, fixedMax) {
-                const axis = this.axis, chart = axis.chart, overscroll = pick(axis.ordinal?.convertOverscroll(axis.options.overscroll), 0);
+                const axis = this.axis, halfPointRange = (axis.pointRange || 0) / 2;
                 let newMin = pick(fixedMin, axis.translate(pxMin, true, !axis.horiz)), newMax = pick(fixedMax, axis.translate(pxMax, true, !axis.horiz));
-                const fixedRange = chart && chart.fixedRange, halfPointRange = (axis.pointRange || 0) / 2;
                 // Add/remove half point range to/from the extremes (#1172)
                 if (!defined(fixedMin)) {
                     newMin = correctFloat(newMin + halfPointRange);
                 }
                 if (!defined(fixedMax)) {
                     newMax = correctFloat(newMax - halfPointRange);
-                }
-                // Make sure panning to the edges does not decrease the zoomed range
-                if (fixedRange && axis.dataMin && axis.dataMax) {
-                    const maxWithOverscroll = axis.dataMax + overscroll;
-                    if (newMax >= maxWithOverscroll) {
-                        newMin = correctFloat(maxWithOverscroll - fixedRange);
-                        newMax = correctFloat(maxWithOverscroll);
-                    }
-                    if (newMin <= axis.dataMin) {
-                        newMax = correctFloat(axis.dataMin + fixedRange);
-                    }
                 }
                 if (!isNumber(newMin) || !isNumber(newMax)) { // #1195, #7411
                     newMin = newMax = void 0;
@@ -4735,7 +4722,7 @@
          * @product   highstock gantt
          * @apioption xAxis.maxRange
          */
-        (''); // keeps doclets above in JS file
+        (''); // Keeps doclets above in JS file
 
         return NavigatorDefaults;
     });
@@ -5488,7 +5475,7 @@
             cursorToScrollbarPosition(normalizedEvent) {
                 const scroller = this, options = scroller.options, minWidthDifference = options.minWidth > scroller.calculatedWidth ?
                     options.minWidth :
-                    0; // minWidth distorts translation
+                    0; // `minWidth` distorts translation
                 return {
                     chartX: (normalizedEvent.chartX - scroller.x -
                         scroller.xOffset) /
@@ -5599,7 +5586,7 @@
                 scroller.options = merge(ScrollbarDefaults, defaultOptions.scrollbar, options);
                 scroller.options.margin = pick(scroller.options.margin, 10);
                 scroller.chart = chart;
-                // backward compatibility
+                // Backward compatibility
                 scroller.size = pick(scroller.options.size, scroller.options.height);
                 // Init
                 if (options.enabled) {
@@ -5686,7 +5673,7 @@
                 scroller.group.show();
                 scroller.x = x;
                 scroller.y = y + this.trackBorderWidth;
-                scroller.width = width; // width with buttons
+                scroller.width = width; // Width with buttons
                 scroller.height = height;
                 scroller.xOffset = xOffset;
                 scroller.yOffset = yOffset;
@@ -5695,14 +5682,14 @@
                     scroller.width = scroller.yOffset = width = yOffset = scroller.size;
                     scroller.xOffset = xOffset = 0;
                     scroller.yOffset = yOffset = buttonsEnabled ? scroller.size : 0;
-                    // width without buttons
+                    // Width without buttons
                     scroller.barWidth = height - (buttonsEnabled ? width * 2 : 0);
                     scroller.x = x = x + margin;
                 }
                 else {
                     scroller.height = height = scroller.size;
                     scroller.xOffset = xOffset = buttonsEnabled ? scroller.size : 0;
-                    // width without buttons
+                    // Width without buttons
                     scroller.barWidth = width - (buttonsEnabled ? height * 2 : 0);
                     scroller.y = scroller.y + margin;
                 }
@@ -5745,7 +5732,7 @@
                     .attr({
                     zIndex: options.zIndex
                 })
-                    .hide() // initially hide the scrollbar #15863
+                    .hide() // Initially hide the scrollbar #15863
                     .add();
                 // Draw the scrollbar group
                 scroller.group = group;
@@ -6099,7 +6086,7 @@
                             left + height,
                             navigatorTop - scrollButtonSize - outlineCorrection
                         ],
-                        // top right of zoomed range
+                        // Top right of zoomed range
                         ['L', left + height, verticalMin],
                         ['L', left, verticalMin],
                         ['M', left, zoomedMax],
@@ -6112,9 +6099,9 @@
                     ];
                     if (maskInside) {
                         path.push(
-                        // upper left of zoomed range
+                        // Upper left of zoomed range
                         ['M', left + height, verticalMin - halfOutline], 
-                        // upper right of z.r.
+                        // Upper right of z.r.
                         [
                             'L',
                             left + height,
@@ -6127,17 +6114,17 @@
                     zoomedMin += left + scrollButtonSize - outlineCorrection;
                     zoomedMax += left + scrollButtonSize - outlineCorrection;
                     path = [
-                        // left
+                        // Left
                         ['M', left, lineTop],
-                        // upper left of zoomed range
+                        // Upper left of zoomed range
                         ['L', zoomedMin, lineTop],
-                        // lower left of z.r.
+                        // Lower left of z.r.
                         ['L', zoomedMin, lineBtm],
-                        // lower right of z.r.
+                        // Lower right of z.r.
                         ['M', zoomedMax, lineBtm],
-                        // upper right of z.r.
+                        // Upper right of z.r.
                         ['L', zoomedMax, lineTop],
-                        // right
+                        // Right
                         [
                             'L',
                             left + navigatorSize + scrollButtonSize * 2,
@@ -6146,9 +6133,9 @@
                     ];
                     if (maskInside) {
                         path.push(
-                        // upper left of zoomed range
+                        // Upper left of zoomed range
                         ['M', zoomedMin - halfOutline, lineTop], 
-                        // upper right of z.r.
+                        // Upper right of z.r.
                         ['L', zoomedMax + halfOutline, lineTop]);
                     }
                 }
@@ -6278,8 +6265,8 @@
                                 rotationOriginY: (height + width) / 2
                             });
                         }
-                        // zIndex = 6 for right handle, 7 for left.
-                        // Can't be 10, because of the tooltip in inverted chart #2908
+                        // Z index is 6 for right handle, 7 for left. Can't be 10,
+                        // because of the tooltip in inverted chart (#2908).
                         navigator.handles[index].attr({ zIndex: 7 - index })
                             .addClass('highcharts-navigator-handle ' +
                             'highcharts-navigator-handle-' +
@@ -6354,7 +6341,7 @@
                     }
                 }
                 navigator.left = pick(xAxis.left, 
-                // in case of scrollbar only, without navigator
+                // In case of scrollbar only, without navigator
                 chart.plotLeft + scrollButtonSize +
                     (inverted ? chart.plotWidth : 0));
                 let zoomedMax = navigator.size = navigatorSize = pick(xAxis.len, (inverted ? chart.plotHeight : chart.plotWidth) -
@@ -6551,7 +6538,7 @@
                             fixedMax = navigator.getUnionExtremes().dataMax;
                         }
                     }
-                    if (left !== zoomedMin) { // it has actually moved
+                    if (left !== zoomedMin) { // It has actually moved
                         navigator.fixedWidth = range; // #1370
                         ext = xAxis.navigatorAxis.toFixedRange(left, left + range, fixedMin, fixedMax);
                         if (defined(ext.min)) { // #7411
@@ -6634,9 +6621,9 @@
                     }
                     else if (navigator.grabbedCenter) {
                         navigator.hasDragged = true;
-                        if (chartX < dragOffset) { // outside left
+                        if (chartX < dragOffset) { // Outside left
                             chartX = dragOffset;
-                            // outside right
+                            // Outside right
                         }
                         else if (chartX >
                             navigatorSize + dragOffset - range) {
@@ -6797,9 +6784,9 @@
                     chart.xAxis[0] || { options: {} };
                 chart.isDirtyBox = true;
                 if (navigator.navigatorEnabled) {
-                    // an x axis is required for scrollbar also
+                    // An x axis is required for scrollbar also
                     navigator.xAxis = new Axis(chart, merge({
-                        // inherit base xAxis' break, ordinal options and overscroll
+                        // Inherit base xAxis' break, ordinal options and overscroll
                         breaks: baseXaxis.options.breaks,
                         ordinal: baseXaxis.options.ordinal,
                         overscroll: baseXaxis.options.overscroll
@@ -6847,7 +6834,7 @@
                             // We've got one, now add it as base
                             if (chart.series.length > 0 && !navigator.series) {
                                 navigator.setBaseSeries();
-                                navigator.unbindRedraw(); // reset
+                                navigator.unbindRedraw(); // Reset
                             }
                         });
                     }
@@ -6856,7 +6843,7 @@
                     navigator.renderElements();
                     // Add mouse events
                     navigator.addMouseEvents();
-                    // in case of scrollbar only, fake an x axis to get translation
+                    // In case of scrollbar only, fake an x axis to get translation
                 }
                 else {
                     navigator.xAxis = {
@@ -6867,9 +6854,9 @@
                         translate: function (value, reverse) {
                             const axis = chart.xAxis[0], ext = axis.getExtremes(), scrollTrackWidth = axis.len - 2 * scrollButtonSize, min = numExt('min', axis.options.min, ext.dataMin), valueRange = numExt('max', axis.options.max, ext.dataMax) - min;
                             return reverse ?
-                                // from pixel to value
+                                // From pixel to value
                                 (value * valueRange / scrollTrackWidth) + min :
-                                // from value to pixel
+                                // From value to pixel
                                 scrollTrackWidth * (value - min) / valueRange;
                         },
                         toPixels: function (value) {
@@ -7206,7 +7193,7 @@
                         newMax = baseDataMax + overscroll;
                         // If stickToMin is true, the new min value is set above
                         if (!stickToMin) {
-                            newMin = Math.max(baseDataMin, // don't go below data extremes (#13184)
+                            newMin = Math.max(baseDataMin, // Don't go below data extremes (#13184)
                             newMax - range, navigator.getBaseSeriesMin(navigatorSeries && navigatorSeries.xData ?
                                 navigatorSeries.xData[0] :
                                 -Number.MAX_VALUE));
@@ -7297,7 +7284,8 @@
                 }), 
                 // Make room for the navigator, can be placed around the chart:
                 addEvent(this.chart, 'getMargins', function () {
-                    let chart = this, navigator = chart.navigator, marginName = navigator.opposite ?
+                    const chart = this, navigator = chart.navigator;
+                    let marginName = navigator.opposite ?
                         'plotTop' : 'marginBottom';
                     if (chart.inverted) {
                         marginName = navigator.opposite ?
@@ -9774,15 +9762,20 @@
                 const keyboardNavigation = this, keys = this.keyCodes, chart = this.chart, inverted = chart.inverted;
                 return new KeyboardNavigationHandler(chart, {
                     keyCodeMap: [
-                        [inverted ? [keys.up, keys.down] : [keys.left, keys.right],
+                        [
+                            inverted ? [keys.up, keys.down] : [keys.left, keys.right],
                             function (keyCode) {
                                 return keyboardNavigation.onKbdSideways(this, keyCode);
-                            }],
-                        [inverted ? [keys.left, keys.right] : [keys.up, keys.down],
+                            }
+                        ],
+                        [
+                            inverted ? [keys.left, keys.right] : [keys.up, keys.down],
                             function (keyCode) {
                                 return keyboardNavigation.onKbdVertical(this, keyCode);
-                            }],
-                        [[keys.enter, keys.space],
+                            }
+                        ],
+                        [
+                            [keys.enter, keys.space],
                             function (keyCode, event) {
                                 const point = chart.highlightedPoint;
                                 if (point) {
@@ -9791,22 +9784,29 @@
                                     point.firePointEvent('click');
                                 }
                                 return this.response.success;
-                            }],
-                        [[keys.home],
+                            }
+                        ],
+                        [
+                            [keys.home],
                             function () {
                                 highlightFirstValidPointInChart(chart);
                                 return this.response.success;
-                            }],
-                        [[keys.end],
+                            }
+                        ],
+                        [
+                            [keys.end],
                             function () {
                                 highlightLastValidPointInChart(chart);
                                 return this.response.success;
-                            }],
-                        [[keys.pageDown, keys.pageUp],
+                            }
+                        ],
+                        [
+                            [keys.pageDown, keys.pageUp],
                             function (keyCode) {
                                 chart.highlightAdjacentSeries(keyCode === keys.pageDown);
                                 return this.response.success;
-                            }]
+                            }
+                        ]
                     ],
                     init: function () {
                         return keyboardNavigation.onHandlerInit(this);
@@ -12344,14 +12344,14 @@
                      */
                     description: '{description}',
                     /**
-                     * xAxis description for series if there are multiple xAxes in
+                     * X-axis description for series if there are multiple xAxes in
                      * the chart.
                      *
                      * @since 6.0.6
                      */
                     xAxisDescription: 'X axis, {name}',
                     /**
-                     * yAxis description for series if there are multiple yAxes in
+                     * Y-axis description for series if there are multiple yAxes in
                      * the chart.
                      *
                      * @since 6.0.6
@@ -12572,15 +12572,21 @@
                 pointDateFormat: ['point', 'dateFormat'],
                 pointDateFormatter: ['point', 'dateFormatter'],
                 pointDescriptionFormatter: ['point', 'descriptionFormatter'],
-                pointDescriptionThreshold: ['series',
-                    'pointDescriptionEnabledThreshold'],
-                pointNavigationThreshold: ['keyboardNavigation', 'seriesNavigation',
-                    'pointNavigationEnabledThreshold'],
+                pointDescriptionThreshold: [
+                    'series',
+                    'pointDescriptionEnabledThreshold'
+                ],
+                pointNavigationThreshold: [
+                    'keyboardNavigation', 'seriesNavigation',
+                    'pointNavigationEnabledThreshold'
+                ],
                 pointValueDecimals: ['point', 'valueDecimals'],
                 pointValuePrefix: ['point', 'valuePrefix'],
                 pointValueSuffix: ['point', 'valueSuffix'],
-                screenReaderSectionFormatter: ['screenReaderSection',
-                    'beforeChartFormatter'],
+                screenReaderSectionFormatter: [
+                    'screenReaderSection',
+                    'beforeChartFormatter'
+                ],
                 describeSingleSeries: ['series', 'describeSingleSeries'],
                 seriesDescriptionFormatter: ['series', 'descriptionFormatter'],
                 onTableAnchorClick: ['screenReaderSection', 'onViewDataTableClick'],
@@ -12606,8 +12612,10 @@
                 mapZoomIn: ['zoom', 'mapZoomIn'],
                 mapZoomOut: ['zoom', 'mapZoomOut'],
                 resetZoomButton: ['zoom', 'resetZoomButton'],
-                screenReaderRegionLabel: ['screenReaderSection',
-                    'beforeRegionLabel'],
+                screenReaderRegionLabel: [
+                    'screenReaderSection',
+                    'beforeRegionLabel'
+                ],
                 rangeSelectorButton: ['rangeSelector', 'buttonText'],
                 rangeSelectorMaxInput: ['rangeSelector', 'maxInputLabel'],
                 rangeSelectorMinInput: ['rangeSelector', 'minInputLabel'],

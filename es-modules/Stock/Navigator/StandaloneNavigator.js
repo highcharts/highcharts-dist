@@ -331,4 +331,4 @@ export default StandaloneNavigator;
  * @interface Highcharts.StandaloneNavigatorOptions
  */ /**
 */
-''; // detach doclets above
+''; // Detach doclets above

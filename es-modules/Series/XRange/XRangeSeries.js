@@ -297,7 +297,7 @@ class XRangeSeries extends ColumnSeries {
         let graphic = point.graphic, pfOptions = point.partialFill;
         if (!point.isNull && point.visible !== false) {
             // Original graphic
-            if (graphic) { // update
+            if (graphic) { // Update
                 graphic.rect[verb](shapeArgs);
             }
             else {

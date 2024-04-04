@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.4.0 (2024-03-05)
+ * @license Highstock JS v11.4.1 (2024-04-04)
  *
  * Money Flow Index indicator for Highcharts Stock
  *
@@ -55,17 +55,29 @@
          *
          * */
         // Utils:
+        /**
+         *
+         */
         function sumArray(array) {
             return array.reduce(function (prev, cur) {
                 return prev + cur;
             });
         }
+        /**
+         *
+         */
         function toFixed(a, n) {
             return parseFloat(a.toFixed(n));
         }
+        /**
+         *
+         */
         function calculateTypicalPrice(point) {
             return (point[1] + point[2] + point[3]) / 3;
         }
+        /**
+         *
+         */
         function calculateRawMoneyFlow(typicalPrice, volume) {
             return typicalPrice * volume;
         }
@@ -216,7 +228,7 @@
          * @requires  stock/indicators/mfi
          * @apioption series.mfi
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return MFIIndicator;
     });

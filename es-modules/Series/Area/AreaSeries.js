@@ -213,7 +213,7 @@ class AreaSeries extends LineSeries {
             }
             // Sort the keys (#1651)
             objectEach(stack, function (stackX, x) {
-                // nulled after switching between
+                // Nulled after switching between
                 // grouping and not (#1651, #2336)
                 if (stackX.total !== null) {
                     keys.push(x);
@@ -544,4 +544,4 @@ export default AreaSeries;
  * @default   {highstock} 0.75
  * @apioption series.area.fillOpacity
  */
-''; // adds doclets above to transpiled
+''; // Adds doclets above to transpiled

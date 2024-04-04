@@ -554,4 +554,4 @@ export default AST;
 * @name Highcharts.ASTNode#textContent
 * @type {string|undefined}
 */
-(''); // keeps doclets above in file
+(''); // Keeps doclets above in file

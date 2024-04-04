@@ -37,7 +37,7 @@ class PCIndicator extends SMAIndicator {
         const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
         // 0- date, 1-top line, 2-middle line, 3-bottom line
         PC = [], 
-        // middle line, top line and bottom line
+        // Middle line, top line and bottom line
         low = 2, high = 1, xData = [], yData = [];
         let ML, TL, BL, date, slicedY, extremes, i;
         if (yValLen < period) {
@@ -173,4 +173,4 @@ export default PCIndicator;
  * @requires     stock/indicators/price-channel
  * @apioption    series.pc
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

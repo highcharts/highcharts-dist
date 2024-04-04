@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v11.4.0 (2024-03-05)
+ * @license Highcharts Gantt JS v11.4.1 (2024-04-04)
  *
  * Pathfinder
  *
@@ -402,6 +402,9 @@
             straight: getStraightPath,
             curved: getCurvedPath
         };
+        /**
+         *
+         */
         function getDefaultPath(pathParams) {
             const { x1, y1, x2, y2, width = 0, inverted = false, radius, parentVisible } = pathParams;
             const path = [
@@ -421,6 +424,9 @@
                 ], radius) :
                 path;
         }
+        /**
+         *
+         */
         function getStraightPath(pathParams) {
             const { x1, y1, x2, y2, width = 0, inverted = false, parentVisible } = pathParams;
             return parentVisible ? [
@@ -433,6 +439,9 @@
                 ['L', x1, y2]
             ];
         }
+        /**
+         *
+         */
         function getCurvedPath(pathParams) {
             const { x1, y1, x2, y2, offset = 0, width = 0, inverted = false, parentVisible } = pathParams;
             return parentVisible ?
@@ -465,13 +474,13 @@
                 const x = path[i][1];
                 const y = path[i][2];
                 if (typeof x === 'number' && typeof y === 'number') {
-                    // moveTo
+                    // MoveTo
                     if (i === 0) {
                         d.push(['M', x, y]);
                     }
                     else if (i === path.length - 1) {
                         d.push(['L', x, y]);
-                        // curveTo
+                        // CurveTo
                     }
                     else if (r) {
                         const prevSeg = path[i - 1];
@@ -501,7 +510,7 @@
                                 ]);
                             }
                         }
-                        // lineTo
+                        // LineTo
                     }
                     else {
                         d.push(['L', x, y]);
@@ -2021,9 +2030,12 @@
              *
              * @param {Object} options
              *        Options for the calculation. Currently only
-             *        options.algorithmMargin.
+             *        `options.algorithmMargin`.
              *
-             * @return {Array<object>}
+             * @param {number} options.algorithmMargin
+             *        The algorithm margin to use for the obstacles.
+
+            * @return {Array<object>}
              *         An array of calculated obstacles. Each obstacle is defined as an
              *         object with xMin, xMax, yMin and yMax properties.
              */

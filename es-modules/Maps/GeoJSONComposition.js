@@ -511,4 +511,4 @@ export default GeoJSONComposition;
  *
  * @typedef {Object} Highcharts.TopoJSON
  */
-''; // detach doclets above
+''; // Detach doclets above

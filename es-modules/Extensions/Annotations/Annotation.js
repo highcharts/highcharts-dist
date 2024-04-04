@@ -253,7 +253,7 @@ class Annotation extends EventEmitter {
      * @private
      */
     destroyItem(item) {
-        // erase from shapes or labels array
+        // Erase from shapes or labels array
         erase(this[item.itemType + 's'], item);
         item.destroy();
     }
@@ -369,9 +369,8 @@ class Annotation extends EventEmitter {
      */
     redrawItems(items, animation) {
         let i = items.length;
-        // needs a backward loop
-        // labels/shapes array might be modified
-        // due to destruction of the item
+        // Needs a backward loop. Labels/shapes array might be modified due to
+        // destruction of the item
         while (i--) {
             this.redrawItem(items[i], animation);
         }
@@ -408,7 +407,7 @@ class Annotation extends EventEmitter {
         this.labelsGroup = renderer
             .g('annotation-labels')
             .attr({
-            // hideOverlappingLabels requires translation
+            // `hideOverlappingLabels` requires translation
             translateX: 0,
             translateY: 0
         })
@@ -637,4 +636,4 @@ export default Annotation;
  *          Highcharts.AnnotationMockPointFunction
  *     } Highcharts.AnnotationShapePointOptions
  */
-(''); // keeps doclets above in JS file
+(''); // Keeps doclets above in JS file

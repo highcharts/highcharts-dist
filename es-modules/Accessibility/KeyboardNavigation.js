@@ -301,9 +301,9 @@ class KeyboardNavigation {
         // Remove event from element and from eventRemovers array to prevent
         // memory leak (#20329).
         if (this.exitAnchor) {
-            if (defined(this.exitAnchor.focusEventRemover)) {
-                this.eventProvider.removeEvent(this.exitAnchor.focusEventRemover);
-                delete this.exitAnchor.focusEventRemover;
+            const el = this.eventProvider.eventRemovers.find((el) => el.element === this.exitAnchor);
+            if (el && defined(el.remover)) {
+                this.eventProvider.removeEvent(el.remover);
             }
             if (this.exitAnchor.parentNode) {
                 this.exitAnchor.parentNode.removeChild(this.exitAnchor);
@@ -317,7 +317,7 @@ class KeyboardNavigation {
      */
     addExitAnchorEventsToEl(element) {
         const chart = this.chart, keyboardNavigation = this;
-        element.focusEventRemover = this.eventProvider.addEvent(element, 'focus', function (ev) {
+        this.eventProvider.addEvent(element, 'focus', function (ev) {
             const e = ev || win.event, focusComesFromChart = (e.relatedTarget &&
                 chart.container.contains(e.relatedTarget)), comingInBackwards = !(focusComesFromChart || keyboardNavigation.exiting);
             if (chart.focusElement) {

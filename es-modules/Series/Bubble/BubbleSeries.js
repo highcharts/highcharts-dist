@@ -259,7 +259,7 @@ class BubbleSeries extends ScatterSeries {
                     height: 2 * radius
                 };
             }
-            else { // below zThreshold
+            else { // Below zThreshold
                 // #1691
                 point.shapeArgs = point.plotY = point.dlBox = void 0;
                 point.isInside = false; // #17281
@@ -570,7 +570,7 @@ export default BubbleSeries;
 /**
  * @typedef {"area"|"width"} Highcharts.BubbleSizeByValue
  */
-''; // detach doclets above
+''; // Detach doclets above
 /* *
  *
  *  API Options
@@ -659,4 +659,4 @@ export default BubbleSeries;
  * @excluding enabled, enabledThreshold, height, radius, width
  * @apioption series.bubble.marker
  */
-''; // adds doclets above to transpiled file
+''; // Adds doclets above to transpiled file

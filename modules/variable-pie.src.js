@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.0 (2024-03-05)
+ * @license Highcharts JS v11.4.1 (2024-04-04)
  *
  * Variable Pie module for Highcharts
  *
@@ -195,7 +195,7 @@
          * @product   highcharts
          * @apioption series.variablepie.data
          */
-        ''; // keeps doclets above separate
+        ''; // Keeps doclets above separate
         /* *
          *
          *  Default Export
@@ -293,7 +293,7 @@
                 let pos, value, radius;
                 // Calculate radius for all pie slice's based on their Z values
                 for (let i = 0; i < zData.length; i++) {
-                    // if zData[i] is null/undefined/string we need to take zMin for
+                    // If zData[i] is null/undefined/string we need to take zMin for
                     // smallest radius.
                     value = this.zValEval(zData[i]) ? zData[i] : zMin;
                     if (value <= zMin) {
@@ -365,11 +365,11 @@
              */
             translate(positions) {
                 this.generatePoints();
-                const series = this, precision = 1000, // issue #172
+                const series = this, precision = 1000, // Issue #172
                 options = series.options, slicedOffset = options.slicedOffset, startAngle = options.startAngle || 0, startAngleRad = Math.PI / 180 * (startAngle - 90), endAngleRad = Math.PI / 180 * (pick(options.endAngle, startAngle + 360) - 90), circ = endAngleRad - startAngleRad, // 2 * Math.PI,
                 points = series.points, ignoreHiddenPoint = options.ignoreHiddenPoint;
                 let cumulative = 0, start, end, angle, 
-                // the x component of the radius vector for a given point
+                // The x component of the radius vector for a given point
                 radiusX, radiusY, point, pointRadii;
                 series.startAngleRad = startAngleRad;
                 series.endAngleRad = endAngleRad;
@@ -465,7 +465,7 @@
         /**
          * @typedef {"area"|"radius"} Highcharts.VariablePieSizeByValue
          */
-        ''; // adds doclets above to transpiled file
+        ''; // Adds doclets above to transpiled file
 
         return VariablePieSeries;
     });

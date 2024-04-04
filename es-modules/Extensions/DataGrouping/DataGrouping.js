@@ -41,17 +41,17 @@ function compose(AxisClass, SeriesClass, TooltipClass) {
 function onTooltipHeaderFormatter(e) {
     const chart = this.chart, time = chart.time, labelConfig = e.labelConfig, series = labelConfig.series, point = labelConfig.point, options = series.options, tooltipOptions = series.tooltipOptions, dataGroupingOptions = options.dataGrouping, xAxis = series.xAxis;
     let xDateFormat = tooltipOptions.xDateFormat, xDateFormatEnd, currentDataGrouping, dateTimeLabelFormats, labelFormats, formattedKey, formatString = tooltipOptions[e.isFooter ? 'footerFormat' : 'headerFormat'];
-    // apply only to grouped series
+    // Apply only to grouped series
     if (xAxis &&
         xAxis.options.type === 'datetime' &&
         dataGroupingOptions &&
         isNumber(labelConfig.key)) {
-        // set variables
+        // Set variables
         currentDataGrouping = series.currentDataGrouping;
         dateTimeLabelFormats = dataGroupingOptions.dateTimeLabelFormats ||
             // Fallback to commonOptions (#9693)
             DataGroupingDefaults.common.dateTimeLabelFormats;
-        // if we have grouped data, use the grouping information to get the
+        // If we have grouped data, use the grouping information to get the
         // right format
         if (currentDataGrouping) {
             labelFormats = dateTimeLabelFormats[currentDataGrouping.unitName];
@@ -62,7 +62,7 @@ function onTooltipHeaderFormatter(e) {
                 xDateFormat = labelFormats[1];
                 xDateFormatEnd = labelFormats[2];
             }
-            // if not grouped, and we don't have set the xDateFormat option, get the
+            // If not grouped, and we don't have set the xDateFormat option, get the
             // best fit, so if the least distance between points is one minute, show
             // it, but if the least distance is one day, skip hours and minutes etc.
         }
@@ -78,7 +78,7 @@ function onTooltipHeaderFormatter(e) {
         if (series.chart.styledMode) {
             formatString = this.styledModeFormat(formatString);
         }
-        // return the replaced format
+        // Return the replaced format
         e.text = format(formatString, {
             point: extend(labelConfig.point, { key: formattedKey }),
             series: series
@@ -164,7 +164,7 @@ export default DataGroupingComposition;
  * @name Highcharts.Point#dataGroup
  * @type {Highcharts.DataGroupingInfoObject|undefined}
  */
-(''); // detach doclets above
+(''); // Detach doclets above
 /* *
  *
  *  API Options
@@ -461,4 +461,4 @@ export default DataGroupingComposition;
  * @default   10
  * @apioption plotOptions.column.dataGrouping.groupPixelWidth
  */
-''; // required by JSDoc parsing
+''; // Required by JSDoc parsing

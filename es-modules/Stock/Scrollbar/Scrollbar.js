@@ -179,7 +179,7 @@ class Scrollbar {
     cursorToScrollbarPosition(normalizedEvent) {
         const scroller = this, options = scroller.options, minWidthDifference = options.minWidth > scroller.calculatedWidth ?
             options.minWidth :
-            0; // minWidth distorts translation
+            0; // `minWidth` distorts translation
         return {
             chartX: (normalizedEvent.chartX - scroller.x -
                 scroller.xOffset) /
@@ -290,7 +290,7 @@ class Scrollbar {
         scroller.options = merge(ScrollbarDefaults, defaultOptions.scrollbar, options);
         scroller.options.margin = pick(scroller.options.margin, 10);
         scroller.chart = chart;
-        // backward compatibility
+        // Backward compatibility
         scroller.size = pick(scroller.options.size, scroller.options.height);
         // Init
         if (options.enabled) {
@@ -377,7 +377,7 @@ class Scrollbar {
         scroller.group.show();
         scroller.x = x;
         scroller.y = y + this.trackBorderWidth;
-        scroller.width = width; // width with buttons
+        scroller.width = width; // Width with buttons
         scroller.height = height;
         scroller.xOffset = xOffset;
         scroller.yOffset = yOffset;
@@ -386,14 +386,14 @@ class Scrollbar {
             scroller.width = scroller.yOffset = width = yOffset = scroller.size;
             scroller.xOffset = xOffset = 0;
             scroller.yOffset = yOffset = buttonsEnabled ? scroller.size : 0;
-            // width without buttons
+            // Width without buttons
             scroller.barWidth = height - (buttonsEnabled ? width * 2 : 0);
             scroller.x = x = x + margin;
         }
         else {
             scroller.height = height = scroller.size;
             scroller.xOffset = xOffset = buttonsEnabled ? scroller.size : 0;
-            // width without buttons
+            // Width without buttons
             scroller.barWidth = width - (buttonsEnabled ? height * 2 : 0);
             scroller.y = scroller.y + margin;
         }
@@ -436,7 +436,7 @@ class Scrollbar {
             .attr({
             zIndex: options.zIndex
         })
-            .hide() // initially hide the scrollbar #15863
+            .hide() // Initially hide the scrollbar #15863
             .add();
         // Draw the scrollbar group
         scroller.group = group;

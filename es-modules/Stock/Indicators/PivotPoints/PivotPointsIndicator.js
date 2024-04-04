@@ -292,4 +292,4 @@ export default PivotPointsIndicator;
  * @requires  stock/indicators/pivotpoints
  * @apioption series.pivotpoints
  */
-''; // to include the above in the js output'
+''; // To include the above in the js output'

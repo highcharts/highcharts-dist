@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.0 (2024-03-05)
+ * @license Highcharts JS v11.4.1 (2024-04-04)
  *
  * Highcharts 3D funnel module
  *
@@ -148,7 +148,7 @@
          * @product   highcharts
          * @apioption series.pyramid3d.data
          */
-        ''; // detachs doclets above
+        ''; // Detachs doclets above
         /* *
          *
          *  Default Export

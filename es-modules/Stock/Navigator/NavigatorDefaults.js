@@ -513,4 +513,4 @@ export default NavigatorDefaults;
  * @product   highstock gantt
  * @apioption xAxis.maxRange
  */
-(''); // keeps doclets above in JS file
+(''); // Keeps doclets above in JS file

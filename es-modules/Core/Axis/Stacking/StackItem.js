@@ -99,9 +99,9 @@ class StackItem {
             const attr = {
                 r: options.borderRadius || 0,
                 text: str,
-                // set default padding to 5 as it is in datalabels #12308
+                // Set default padding to 5 as it is in datalabels #12308
                 padding: pick(options.padding, 5),
-                visibility: 'hidden' // hidden until setOffset is called
+                visibility: 'hidden' // Hidden until setOffset is called
             };
             if (!chart.styledMode) {
                 attr.fill = options.backgroundColor;
@@ -111,7 +111,7 @@ class StackItem {
             }
             this.label.attr(attr);
             if (!this.label.added) {
-                this.label.add(group); // add to the labels-group
+                this.label.add(group); // Add to the labels-group
             }
         }
         // Rank it higher than data labels (#8742)
@@ -284,4 +284,4 @@ export default StackItem;
 * @name Highcharts.StackItemObject#x
 * @type {number}
 */
-''; // keeps doclets above in JS file
+''; // Keeps doclets above in JS file

@@ -143,4 +143,4 @@ export default PPOIndicator;
  * @requires  stock/indicators/ppo
  * @apioption series.ppo
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

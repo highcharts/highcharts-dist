@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.0 (2024-03-05)
+ * @license Highcharts JS v11.4.1 (2024-04-04)
  *
  * (c) 2009-2024 Torstein Honsi
  *
@@ -125,6 +125,9 @@
                 e.isInsidePlot = chart.pane.some((pane) => isInsidePane(e.x, e.y, pane.center, pane.axis && pane.axis.normalizedStartAngleRad, pane.axis && pane.axis.normalizedEndAngleRad));
             }
         }
+        /**
+         *
+         */
         function onPointerAfterGetHoverData(eventArgs) {
             const chart = this.chart;
             if (eventArgs.hoverPoint &&
@@ -555,7 +558,7 @@
         /**
          * @typedef {"arc"|"circle"|"solid"} Highcharts.PaneBackgroundShapeValue
          */
-        ''; // keeps doclets above in JS file
+        ''; // Keeps doclets above in JS file
 
         return Pane;
     });
@@ -880,7 +883,7 @@
                         polarPlotY: point.polarPlotY,
                         rectPlotX: point.rectPlotX,
                         yBottom: point.yBottom,
-                        // plotHighX is for polar charts
+                        // `plotHighX` is for polar charts
                         plotX: pick(point.plotHighX, point.plotX),
                         plotY: point.plotHigh,
                         isNull: point.isNull
@@ -904,7 +907,7 @@
                         left: 'right',
                         center: 'center',
                         right: 'left'
-                    }[step]; // swap for reading in getGraphPath
+                    }[step]; // Swap for reading in getGraphPath
                 }
                 const higherPath = getGraphPath.call(this, highPoints);
                 const higherAreaPath = getGraphPath.call(this, highAreaPoints);
@@ -1372,7 +1375,7 @@
          * @product   highcharts highstock
          * @apioption series.arearange.data.low
          */
-        ''; // adds doclets above to transpiled file
+        ''; // Adds doclets above to transpiled file
 
         return AreaRangeSeries;
     });
@@ -1541,7 +1544,7 @@
          * @default   0.75
          * @apioption series.areasplinerange.fillOpacity
          */
-        ''; // adds doclets above to transpiled file
+        ''; // Adds doclets above to transpiled file
 
         return AreaSplineRangeSeries;
     });
@@ -1987,7 +1990,7 @@
          * @product   highcharts
          * @apioption series.boxplot.data.whiskerDashStyle
          */
-        ''; // keeps doclets above separate
+        ''; // Keeps doclets above separate
         /* *
          *
          *  Default Export
@@ -2037,7 +2040,7 @@
             translate() {
                 const series = this, yAxis = series.yAxis, pointArrayMap = series.pointArrayMap;
                 super.translate.apply(series);
-                // do the translation on each point dimension
+                // Do the translation on each point dimension
                 series.points.forEach(function (point) {
                     pointArrayMap.forEach(function (key) {
                         if (point[key] !== null) {
@@ -2053,14 +2056,14 @@
              */
             drawPoints() {
                 const series = this, points = series.points, options = series.options, chart = series.chart, renderer = chart.renderer, 
-                // error bar inherits this series type but doesn't do quartiles
+                // Error bar inherits this series type but doesn't do quartiles
                 doQuartiles = series.doQuartiles !== false, whiskerLength = series.options.whiskerLength;
                 let q1Plot, q3Plot, highPlot, lowPlot, medianPlot, medianPath, crispCorr, crispX = 0, boxPath, graphic, width, left, right, halfWidth, pointWiskerLength;
                 for (const point of points) {
                     graphic = point.graphic;
                     const verb = graphic ? 'animate' : 'attr', shapeArgs = point.shapeArgs, boxAttr = {}, stemAttr = {}, whiskersAttr = {}, medianAttr = {}, color = point.color || series.color;
                     if (typeof point.plotY !== 'undefined') {
-                        // crisp vector coordinates
+                        // Crisp vector coordinates
                         width = Math.round(shapeArgs.width);
                         left = Math.floor(shapeArgs.x);
                         right = left + width;
@@ -2135,10 +2138,10 @@
                         crispCorr = (point.stem.strokeWidth() % 2) / 2;
                         crispX = left + halfWidth + crispCorr;
                         d = [
-                            // stem up
+                            // Stem up
                             ['M', crispX, q3Plot],
                             ['L', crispX, highPlot],
-                            // stem down
+                            // Stem down
                             ['M', crispX, q1Plot],
                             ['L', crispX, lowPlot]
                         ];
@@ -2190,7 +2193,7 @@
                     }
                 }
             }
-            // return a plain array for speedy calculation
+            // Return a plain array for speedy calculation
             toYData(point) {
                 return [point.low, point.q1, point.median, point.q3, point.high];
             }
@@ -2202,9 +2205,9 @@
          * */
         BoxPlotSeries.defaultOptions = merge(ColumnSeries.defaultOptions, BoxPlotSeriesDefaults);
         extend(BoxPlotSeries.prototype, {
-            // array point configs are mapped to this
+            // Array point configs are mapped to this
             pointArrayMap: ['low', 'q1', 'median', 'q3', 'high'],
-            // defines the top of the tracker
+            // Defines the top of the tracker
             pointValKey: 'high',
             // Disable data labels for box plot
             drawDataLabels: noop,
@@ -2696,7 +2699,7 @@
                     -connectorDistance : connectorDistance;
                 // Set options for centered labels
                 if (labelsAlign === 'center') {
-                    connectorLength = 0; // do not use connector
+                    connectorLength = 0; // Do not use connector
                     options.connectorDistance = 0;
                     range.labelAttribs.align = 'center';
                 }
@@ -2924,7 +2927,7 @@
         * @name Highcharts.BubbleLegendFormatterContextObject#value
         * @type {number}
         */
-        ''; // detach doclets above
+        ''; // Detach doclets above
 
         return BubbleLegendItem;
     });
@@ -2972,24 +2975,26 @@
                 }
                 // Create legend with bubbleLegend
                 legend.render();
-                chart.getMargins();
-                chart.axes.forEach(function (axis) {
-                    if (axis.visible) { // #11448
-                        axis.render();
-                    }
-                    if (!bubbleLegendOptions.placed) {
-                        axis.setScale();
-                        axis.updateNames();
-                        // Disable axis animation on init
-                        objectEach(axis.ticks, function (tick) {
-                            tick.isNew = true;
-                            tick.isNewLabel = true;
-                        });
-                    }
-                });
+                // Calculate margins after first rendering the bubble legend
+                if (!bubbleLegendOptions.placed) {
+                    chart.getMargins();
+                    chart.axes.forEach(function (axis) {
+                        if (axis.visible) { // #11448
+                            axis.render();
+                        }
+                        if (!bubbleLegendOptions.placed) {
+                            axis.setScale();
+                            axis.updateNames();
+                            // Disable axis animation on init
+                            objectEach(axis.ticks, function (tick) {
+                                tick.isNew = true;
+                                tick.isNewLabel = true;
+                            });
+                        }
+                    });
+                    chart.getMargins();
+                }
                 bubbleLegendOptions.placed = true;
-                // After recalculate axes, calculate margins again.
-                chart.getMargins();
                 // Call default 'drawChartBox' method.
                 proceed.call(chart, options, callback);
                 // Check bubble legend sizes and correct them if necessary.
@@ -3075,7 +3080,7 @@
                 legendItem = items[i].legendItem || {};
                 legendItem2 = (items[i + 1] || {}).legendItem || {};
                 if (legendItem.labelHeight) {
-                    // for bubbleLegend
+                    // For bubbleLegend
                     items[i].itemHeight = legendItem.labelHeight;
                 }
                 if ( // Line break
@@ -3499,7 +3504,7 @@
                             height: 2 * radius
                         };
                     }
-                    else { // below zThreshold
+                    else { // Below zThreshold
                         // #1691
                         point.shapeArgs = point.plotY = point.dlBox = void 0;
                         point.isInside = false; // #17281
@@ -3809,7 +3814,7 @@
         /**
          * @typedef {"area"|"width"} Highcharts.BubbleSizeByValue
          */
-        ''; // detach doclets above
+        ''; // Detach doclets above
         /* *
          *
          *  API Options
@@ -3898,7 +3903,7 @@
          * @excluding enabled, enabledThreshold, height, radius, width
          * @apioption series.bubble.marker
          */
-        ''; // adds doclets above to transpiled file
+        ''; // Adds doclets above to transpiled file
 
         return BubbleSeries;
     });
@@ -4030,7 +4035,7 @@
             translate() {
                 return columnProto.translate.apply(this);
             }
-            // public crispCol(): BBoxObject {
+            // Public crispCol(): BBoxObject {
             //     return columnProto.crispCol.apply(this, arguments as any);
             // }
             // public drawPoints(): void {
@@ -4045,7 +4050,7 @@
             pointAttribs() {
                 return columnProto.pointAttribs.apply(this, arguments);
             }
-            // public adjustForMissingColumns(): number {
+            // Public adjustForMissingColumns(): number {
             //     return columnProto.adjustForMissingColumns.apply(this, arguments);
             // }
             // public animate(): void {
@@ -4078,7 +4083,7 @@
                     if (isNumber(plotHigh) && isNumber(plotY)) {
                         point.plotHigh = safeBounds(plotHigh);
                         point.plotLow = safeBounds(plotY);
-                        // adjust shape
+                        // Adjust shape
                         y = point.plotHigh;
                         height = pick(point.rectPlotY, point.plotY) - point.plotHigh;
                         // Adjust for minPointLength
@@ -4115,7 +4120,7 @@
                                 xAxis.left - chart.plotLeft + x + width / 2,
                                 yAxis.pos - chart.plotTop + y + height / 2,
                                 height
-                            ]; // don't inherit from column tooltip position - #3372
+                            ]; // Don't inherit from column tooltip position - #3372
                         }
                     }
                 });
@@ -4142,10 +4147,6 @@
             getSymbol: noop,
             drawTracker: columnProto.drawTracker,
             getColumnMetrics: columnProto.getColumnMetrics
-            // pointAttribs: columnProto.pointAttribs,
-            // polarArc: columnProto.polarArc
-            // translate3dPoints: columnProto.translate3dPoints,
-            // translate3dShapes: columnProto.translate3dShapes
         });
         SeriesRegistry.registerSeriesType('columnrange', ColumnRangeSeries);
         /* *
@@ -4239,7 +4240,7 @@
          * @product   highcharts highstock
          * @apioption series.columnrange.states.select
          */
-        ''; // adds doclets above into transpiled
+        ''; // Adds doclets above into transpiled
 
         return ColumnRangeSeries;
     });
@@ -4361,7 +4362,7 @@
          * @product   highcharts highstock
          * @apioption series.columnpyramid.data
          */
-        ''; // keeps doclets above separate
+        ''; // Keeps doclets above separate
         /* *
          *
          *  Default Export
@@ -4412,7 +4413,7 @@
                 ), yAxis = series.yAxis, threshold = options.threshold, minPointLength = pick(options.minPointLength, 5), metrics = series.getColumnMetrics(), pointWidth = metrics.width, pointXOffset = series.pointXOffset = metrics.offset;
                 let translatedThreshold = series.translatedThreshold =
                     yAxis.getThreshold(threshold), 
-                // postprocessed for border width
+                // Postprocessed for border width
                 seriesBarW = series.barW =
                     Math.max(pointWidth, 1 + 2 * borderWidth);
                 if (chart.inverted) {
@@ -4433,7 +4434,7 @@
                     // Don't draw too far outside plot area
                     // (#1303, #2241, #4264)
                     barW = seriesBarW / 2, barY = Math.min(plotY, yBottom), barH = Math.max(plotY, yBottom) - barY;
-                    let barX = point.plotX + pointXOffset, stackTotal, stackHeight, topPointY, topXwidth, bottomXwidth, invBarPos, x1, x2, x3, x4, y1, y2;
+                    let barX = point.plotX + pointXOffset, stackTotal, stackHeight, topXwidth, bottomXwidth, invBarPos, x1, x2, x3, x4, y1, y2;
                     // Adjust for null or missing points
                     if (options.centerInCategory) {
                         barX = series.adjustForMissingColumns(barX, pointWidth, point, metrics);
@@ -4455,25 +4456,24 @@
                         ];
                     stackTotal =
                         threshold + (point.total || point.y);
-                    // overwrite stacktotal (always 100 / -100)
+                    // Overwrite stacktotal (always 100 / -100)
                     if (options.stacking === 'percent') {
                         stackTotal =
                             threshold + (point.y < 0) ?
                                 -100 :
                                 100;
                     }
-                    // get the highest point (if stack, extract from total)
-                    topPointY = yAxis.toPixels((stackTotal), true);
-                    // calculate height of stack (in pixels)
+                    // Get the highest point (if stack, extract from total)
+                    const topPointY = yAxis.toPixels((stackTotal), true);
+                    // Calculate height of stack (in pixels)
                     stackHeight =
                         chart.plotHeight - topPointY -
                             (chart.plotHeight - translatedThreshold);
-                    // topXwidth and bottomXwidth = width of lines from the center
-                    // calculated from tanges proportion.
-                    // Cannot be a NaN #12514
+                    // `topXwidth` and `bottomXwidth` = width of lines from the center
+                    // calculated from tanges proportion. Cannot be a NaN #12514.
                     topXwidth = stackHeight ?
                         (barW * (barY - topPointY)) / stackHeight : 0;
-                    // like topXwidth, but with height of point
+                    // Like topXwidth, but with height of point
                     bottomXwidth = stackHeight ?
                         (barW * (barY + barH - topPointY)) / stackHeight :
                         0;
@@ -4495,20 +4495,20 @@
                         y1 = barY;
                         y2 = barY + barH + minPointLength;
                     }
-                    // inverted chart
+                    // Inverted chart
                     if (chart.inverted) {
                         invBarPos = yAxis.width - barY;
                         stackHeight =
                             topPointY - (yAxis.width - translatedThreshold);
-                        // proportion tanges
+                        // Proportion tanges
                         topXwidth = (barW *
                             (topPointY - invBarPos)) / stackHeight;
                         bottomXwidth = (barW *
                             (topPointY - (invBarPos - barH))) / stackHeight;
-                        x1 = barX + barW + topXwidth; // top bottom
-                        x2 = x1 - 2 * topXwidth; // top top
-                        x3 = barX - bottomXwidth + barW; // bottom top
-                        x4 = barX + bottomXwidth + barW; // bottom bottom
+                        x1 = barX + barW + topXwidth; // Top bottom
+                        x2 = x1 - 2 * topXwidth; // Top top
+                        x3 = barX - bottomXwidth + barW; // Bottom top
+                        x4 = barX + bottomXwidth + barW; // Bottom bottom
                         y1 = barY;
                         y2 = barY + barH - minPointLength;
                         if (point.y < 0) {
@@ -4522,7 +4522,7 @@
                         y: y1,
                         width: x2 - x1,
                         height: barH,
-                        // path of pyramid
+                        // Path of pyramid
                         d: [
                             ['M', x1, y1],
                             ['L', x2, y1],
@@ -4689,7 +4689,7 @@
          * @product   highcharts
          * @apioption series.errorbar.data
          */
-        ''; // adds doclets above to transpiled file
+        ''; // Adds doclets above to transpiled file
         /* *
          *
          *  Default Export
@@ -4749,7 +4749,7 @@
                 }
             }
             toYData(point) {
-                // return a plain array for speedy calculation
+                // Return a plain array for speedy calculation
                 return [point.low, point.high];
             }
         }
@@ -4765,7 +4765,6 @@
             }
         }, { order: 0 });
         extend(ErrorBarSeries.prototype, {
-            // pointClass: ErrorBarPoint, // just a declaration
             pointArrayMap: ['low', 'high'],
             pointValKey: 'high',
             doQuartiles: false
@@ -4905,7 +4904,7 @@
                     const graphic = point.graphic, shapeArgs = point.shapeArgs, d = shapeArgs.d, dialOptions = merge(options.dial, point.dial); // #1233
                     if (graphic) {
                         graphic.animate(shapeArgs);
-                        shapeArgs.d = d; // animate alters it
+                        shapeArgs.d = d; // Animate alters it
                     }
                     else {
                         point.graphic =
@@ -4958,11 +4957,11 @@
                     series.points.forEach((point) => {
                         const graphic = point.graphic;
                         if (graphic) {
-                            // start value
+                            // Start value
                             graphic.attr({
                                 rotation: series.yAxis.startAngleRad * 180 / Math.PI
                             });
-                            // animate
+                            // Animate
                             graphic.animate({
                                 rotation: point.shapeArgs.rotation
                             }, series.options.animation);
@@ -5293,8 +5292,8 @@
             // Prototype members
         });
         extend(GaugeSeries.prototype, {
-            // chart.angular will be set to true when a gauge series is present,
-            // and this will be used on the axes
+            // `chart.angular` will be set to true when a gauge series is present, and
+            // this will be used on the axes
             angular: true,
             directTouch: true,
             drawGraph: noop,
@@ -5370,7 +5369,7 @@
          * @product   highcharts
          * @apioption series.gauge.data
          */
-        ''; // adds the doclets above in the transpiled file
+        ''; // Adds the doclets above in the transpiled file
 
         return GaugeSeries;
     });
@@ -5457,11 +5456,10 @@
          *
          * @private
          *
-         * @param {global.Event} event
-         *        Browser event, before normalization.
          * @param {Highcharts.Point} point
          *        The point that event occurred.
-         *
+         * @param {global.Event} event
+         *        Browser event, before normalization.
          */
         function onMouseMove(point, event) {
             if (point.fixedPosition && point.inDragMode) {
@@ -5580,7 +5578,7 @@
         function onChartAfterPrint() {
             if (this.graphLayoutsLookup) {
                 this.graphLayoutsLookup.forEach((layout) => {
-                    // return to default simulation
+                    // Return to default simulation
                     layout.updateSimulation();
                 });
                 this.redraw();
@@ -6124,7 +6122,7 @@
          * @product   highcharts
          * @apioption series.packedbubble.marker
          */
-        ''; // adds doclets above to transpiled file
+        ''; // Adds doclets above to transpiled file
 
         return PackedBubbleSeriesDefaults;
     });
@@ -6156,7 +6154,7 @@
          *        Link that connects two nodes
          * @param {number} force
          *        Force calculated in `repulsiveForceFunction`
-         * @param {Highcharts.PositionObject} distance
+         * @param {Highcharts.PositionObject} distanceXY
          *        Distance between two nodes e.g. `{x, y}`
          */
         function attractive(link, force, distanceXY) {
@@ -6197,12 +6195,9 @@
          * @private
          */
         function barycenter() {
-            let gravitationalConstant = this.options.gravitationalConstant, xFactor = this.barycenter.xFactor, yFactor = this.barycenter.yFactor;
-            // To consider:
-            xFactor = (xFactor - (this.box.left + this.box.width) / 2) *
-                gravitationalConstant;
-            yFactor = (yFactor - (this.box.top + this.box.height) / 2) *
-                gravitationalConstant;
+            const gravitationalConstant = this.options.gravitationalConstant || 0, xFactor = (this.barycenter.xFactor -
+                (this.box.left + this.box.width) / 2) * gravitationalConstant, yFactor = (this.barycenter.yFactor -
+                (this.box.top + this.box.height) / 2) * gravitationalConstant;
             this.nodes.forEach(function (node) {
                 if (!node.fixedPosition) {
                     node.plotX -=
@@ -6252,15 +6247,14 @@
          * @param {Highcharts.Point} node node that should be translated
          */
         function integrate(layout, node) {
-            let friction = -layout.options.friction, maxSpeed = layout.options.maxSpeed, prevX = node.prevX, prevY = node.prevY, 
+            const friction = -layout.options.friction, maxSpeed = layout.options.maxSpeed, prevX = node.prevX, prevY = node.prevY, 
             // Apply friction:
-            diffX = ((node.plotX + node.dispX -
-                prevX) * friction), diffY = ((node.plotY + node.dispY -
-                prevY) * friction), abs = Math.abs, signX = abs(diffX) / (diffX || 1), // need to deal with 0
-            signY = abs(diffY) / (diffY || 1);
+            frictionX = ((node.plotX + node.dispX -
+                prevX) * friction), frictionY = ((node.plotY + node.dispY -
+                prevY) * friction), abs = Math.abs, signX = abs(frictionX) / (frictionX || 1), // Need to deal with 0
+            signY = abs(frictionY) / (frictionY || 1), 
             // Apply max speed:
-            diffX = signX * Math.min(maxSpeed, Math.abs(diffX));
-            diffY = signY * Math.min(maxSpeed, Math.abs(diffY));
+            diffX = signX * Math.min(maxSpeed, Math.abs(frictionX)), diffY = signY * Math.min(maxSpeed, Math.abs(frictionY));
             // Store for the next iteration:
             node.prevX = node.plotX + node.dispX;
             node.prevY = node.plotY + node.dispY;
@@ -6283,7 +6277,7 @@
          *        Node that should be translated by force.
          * @param {number} force
          *        Force calculated in `repulsiveForceFunction`
-         * @param {Highcharts.PositionObject} distance
+         * @param {Highcharts.PositionObject} distanceXY
          *        Distance between two nodes e.g. `{x, y}`
          */
         function repulsive(node, force, distanceXY) {
@@ -6531,12 +6525,11 @@
          *        Node that should be translated
          */
         function integrate(layout, node) {
-            let distanceR;
             node.dispX +=
                 node.dispX * layout.options.friction;
             node.dispY +=
                 node.dispY * layout.options.friction;
-            distanceR = node.temperature = layout.vectorLength({
+            const distanceR = node.temperature = layout.vectorLength({
                 x: node.dispX,
                 y: node.dispY
             });
@@ -7670,8 +7663,8 @@
             applyLimitBox(node, box) {
                 const layout = this, factor = 0.01;
                 let distanceXY, distanceR;
-                // parentNodeLimit should be used together
-                // with seriesInteraction: false
+                // `parentNodeLimit` should be used together with seriesInteraction:
+                // false
                 if (layout.options.splitSeries &&
                     !node.isParentNode &&
                     layout.options.parentNodeLimit) {
@@ -7831,7 +7824,7 @@
                     if (series.is('packedbubble') && // #13574
                         series.reserveSpace()) {
                         yData = series.yData || [];
-                        // add data to array only if series is visible
+                        // Add data to array only if series is visible
                         for (let j = 0; j < yData.length; j++) {
                             allDataPoints.push([
                                 null, null,
@@ -7928,7 +7921,7 @@
                 if (zMin && zMax) {
                     return [zMin, zMax];
                 }
-                // it is needed to deal with null
+                // It is needed to deal with null
                 // and undefined values
                 allSeries.forEach((series) => {
                     series.yData.forEach((y) => {
@@ -7951,9 +7944,9 @@
              * @private
              */
             checkOverlap(bubble1, bubble2) {
-                const diffX = bubble1[0] - bubble2[0], // diff of X center values
-                diffY = bubble1[1] - bubble2[1], // diff of Y center values
-                sumRad = bubble1[2] + bubble2[2]; // sum of bubble radius
+                const diffX = bubble1[0] - bubble2[0], // Diff of X center values
+                diffY = bubble1[1] - bubble2[1], // Diff of Y center values
+                sumRad = bubble1[2] + bubble2[2]; // Sum of bubble radius
                 return (Math.sqrt(diffX * diffX + diffY * diffY) -
                     Math.abs(sumRad)) < -0.001;
             }
@@ -8025,7 +8018,7 @@
                 if (!this.visible) {
                     return;
                 }
-                // layout is using nodes for position calculation
+                // Layout is using nodes for position calculation
                 this.addLayout();
                 if (layoutOptions.splitSeries) {
                     this.addSeriesLayout();
@@ -8071,7 +8064,7 @@
              * @private
              */
             drawGraph() {
-                // if the series is not using layout, don't add parent nodes
+                // If the series is not using layout, don't add parent nodes
                 if (!this.layout || !this.layout.options.splitSeries) {
                     return;
                 }
@@ -8112,7 +8105,7 @@
             }
             drawTracker() {
                 const parentNode = this.parentNode;
-                // chart = series.chart,
+                // Chart = series.chart,
                 // pointer = chart.pointer,
                 // onMouseOver = function (e: PointerEvent): void {
                 //     const point = pointer.getPointFromEvent(e);
@@ -8230,10 +8223,10 @@
             placeBubbles(allDataPoints) {
                 const checkOverlap = this.checkOverlap, positionBubble = this.positionBubble, bubblePos = [];
                 let stage = 1, j = 0, k = 0, calculatedBubble, arr = [], i;
-                // sort all points
+                // Sort all points
                 const sortedArr = allDataPoints.sort((a, b) => b[2] - a[2]);
                 if (sortedArr.length) {
-                    // create first bubble in the middle of the chart
+                    // Create first bubble in the middle of the chart
                     bubblePos.push([
                         [
                             0,
@@ -8241,7 +8234,7 @@
                             sortedArr[0][2],
                             sortedArr[0][3],
                             sortedArr[0][4]
-                        ] // point index
+                        ] // Point index
                     ]); // 0 level bubble
                     if (sortedArr.length > 1) {
                         bubblePos.push([
@@ -8249,7 +8242,7 @@
                                 0,
                                 (0 - sortedArr[1][2] -
                                     sortedArr[0][2]),
-                                // move bubble above first one
+                                // Move bubble above first one
                                 sortedArr[1][2],
                                 sortedArr[1][3],
                                 sortedArr[1][4]
@@ -8258,28 +8251,28 @@
                         // first two already positioned so starting from 2
                         for (i = 2; i < sortedArr.length; i++) {
                             sortedArr[i][2] = sortedArr[i][2] || 1;
-                            // in case if radius is calculated as 0.
-                            calculatedBubble = positionBubble(bubblePos[stage][j], bubblePos[stage - 1][k], sortedArr[i]); // calculate initial bubble position
+                            // In case if radius is calculated as 0.
+                            calculatedBubble = positionBubble(bubblePos[stage][j], bubblePos[stage - 1][k], sortedArr[i]); // Calculate initial bubble position
                             if (checkOverlap(calculatedBubble, bubblePos[stage][0])) {
-                                /* if new bubble is overlapping with first bubble
+                                /* If new bubble is overlapping with first bubble
                                     * in current level (stage)
                                     */
                                 bubblePos.push([]);
                                 k = 0;
-                                /* reset index of bubble, used for
+                                /* Reset index of bubble, used for
                                     * positioning the bubbles around it,
                                     * we are starting from first bubble in next
                                     * stage because we are changing level to higher
                                     */
                                 bubblePos[stage + 1].push(positionBubble(bubblePos[stage][j], bubblePos[stage][0], sortedArr[i]));
                                 // (last bubble, 1. from curr stage, new bubble)
-                                stage++; // the new level is created, above current
-                                j = 0; // set the index of bubble in curr level to 0
+                                stage++; // The new level is created, above current
+                                j = 0; // Set the index of bubble in curr level to 0
                             }
                             else if (stage > 1 &&
                                 bubblePos[stage - 1][k + 1] &&
                                 checkOverlap(calculatedBubble, bubblePos[stage - 1][k + 1])) {
-                                /* if new bubble is overlapping with one of the prev
+                                /* If new bubble is overlapping with one of the prev
                                     * stage bubbles, it means that - bubble, used for
                                     * positioning the bubbles around it has changed
                                     * so we need to recalculate it
@@ -8289,19 +8282,19 @@
                                 // (last bubble, prev stage bubble, new bubble)
                                 j++;
                             }
-                            else { // simply add calculated bubble
+                            else { // Simply add calculated bubble
                                 j++;
                                 bubblePos[stage].push(calculatedBubble);
                             }
                         }
                     }
                     this.chart.stages = bubblePos;
-                    // it may not be necessary but adding it just in case -
+                    // It may not be necessary but adding it just in case -
                     // it is containing all of the bubble levels
                     this.chart.rawPositions =
                         []
                             .concat.apply([], bubblePos);
-                    // bubble positions merged into one array
+                    // Bubble positions merged into one array
                     this.resizeRadius();
                     arr = this.chart.rawPositions;
                 }
@@ -8345,27 +8338,27 @@
              * @return {Array<number>} Bubble with correct positions
              */
             positionBubble(lastBubble, newOrigin, nextBubble) {
-                const sqrt = Math.sqrt, asin = Math.asin, acos = Math.acos, pow = Math.pow, abs = Math.abs, distance = sqrt(// dist between lastBubble and newOrigin
+                const sqrt = Math.sqrt, asin = Math.asin, acos = Math.acos, pow = Math.pow, abs = Math.abs, distance = sqrt(// Dist between lastBubble and newOrigin
                 pow((lastBubble[0] - newOrigin[0]), 2) +
                     pow((lastBubble[1] - newOrigin[1]), 2)), alfa = acos(
-                // from cosinus theorem: alfa is an angle used for
+                // From cosinus theorem: alfa is an angle used for
                 // calculating correct position
                 (pow(distance, 2) +
                     pow(nextBubble[2] + newOrigin[2], 2) -
-                    pow(nextBubble[2] + lastBubble[2], 2)) / (2 * (nextBubble[2] + newOrigin[2]) * distance)), beta = asin(// from sinus theorem.
+                    pow(nextBubble[2] + lastBubble[2], 2)) / (2 * (nextBubble[2] + newOrigin[2]) * distance)), beta = asin(// From sinus theorem.
                 abs(lastBubble[0] - newOrigin[0]) /
                     distance), 
-                // providing helping variables, related to angle between
+                // Providing helping variables, related to angle between
                 // lastBubble and newOrigin
                 gamma = (lastBubble[1] - newOrigin[1]) < 0 ? 0 : Math.PI, 
-                // if new origin y is smaller than last bubble y value
+                // If new origin y is smaller than last bubble y value
                 // (2 and 3 quarter),
                 // add Math.PI to final angle
                 delta = (lastBubble[0] - newOrigin[0]) *
                     (lastBubble[1] - newOrigin[1]) < 0 ?
                     1 : -1, // (1st and 3rd quarter)
                 finalAngle = gamma + alfa + beta * delta, cosA = Math.cos(finalAngle), sinA = Math.sin(finalAngle), posX = newOrigin[0] + (newOrigin[2] + nextBubble[2]) * sinA, 
-                // center of new origin + (radius1 + radius2) * sinus A
+                // Center of new origin + (radius1 + radius2) * sinus A
                 posY = newOrigin[1] - (newOrigin[2] + nextBubble[2]) * cosA;
                 return [
                     posX,
@@ -8373,7 +8366,7 @@
                     nextBubble[2],
                     nextBubble[3],
                     nextBubble[4]
-                ]; // the same as described before
+                ]; // The same as described before
             }
             render() {
                 const dataLabels = [];
@@ -8409,7 +8402,7 @@
             resizeRadius() {
                 const chart = this.chart, positions = chart.rawPositions, min = Math.min, max = Math.max, plotLeft = chart.plotLeft, plotTop = chart.plotTop, chartHeight = chart.plotHeight, chartWidth = chart.plotWidth;
                 let minX, maxX, minY, maxY, radius;
-                minX = minY = Number.POSITIVE_INFINITY; // set initial values
+                minX = minY = Number.POSITIVE_INFINITY; // Set initial values
                 maxX = maxY = Number.NEGATIVE_INFINITY;
                 for (const position of positions) {
                     radius = position[2];
@@ -8424,14 +8417,14 @@
                     (chartHeight - plotTop) / bBox[1]
                 ], smallerDimension = min.apply([], spaceRatio);
                 if (Math.abs(smallerDimension - 1) > 1e-10) {
-                    // if bBox is considered not the same width as possible size
+                    // If bBox is considered not the same width as possible size
                     for (const position of positions) {
                         position[2] *= smallerDimension;
                     }
                     this.placeBubbles(positions);
                 }
                 else {
-                    /** if no radius recalculation is needed, we need to position
+                    /** If no radius recalculation is needed, we need to position
                      * the whole bubbles in center of chart plotarea
                      * for this, we are adding two parameters,
                      * diffY and diffX, that are related to differences
@@ -8450,9 +8443,7 @@
              * @private
              */
             seriesBox() {
-                const chart = this.chart, data = this.data, max = Math.max, min = Math.min, 
-                // bBox = [xMin, xMax, yMin, yMax]
-                bBox = [
+                const chart = this.chart, data = this.data, max = Math.max, min = Math.min, bBox = [
                     chart.plotLeft,
                     chart.plotLeft + chart.plotWidth,
                     chart.plotTop,
@@ -8518,13 +8509,13 @@
                 let point, radius, positions;
                 this.processedXData = this.xData;
                 this.generatePoints();
-                // merged data is an array with all of the data from all series
+                // Merged data is an array with all of the data from all series
                 if (!defined(chart.allDataPoints)) {
                     chart.allDataPoints = this.accumulateAllPoints();
-                    // calculate radius for all added data
+                    // Calculate radius for all added data
                     this.getPointRadius();
                 }
-                // after getting initial radius, calculate bubble positions
+                // After getting initial radius, calculate bubble positions
                 if (useSimulation) {
                     positions = chart.allDataPoints;
                 }
@@ -8535,7 +8526,7 @@
                 // Set the shape and arguments to be picked up in drawPoints
                 for (const position of positions) {
                     if (position[3] === index) {
-                        // update the series points with the val from positions
+                        // Update the series points with the val from positions
                         // array
                         point = data[position[4]];
                         radius = pick(position[2], void 0);
@@ -8581,7 +8572,7 @@
             onMouseDown: DragNodesComposition.onMouseDown,
             onMouseMove: DragNodesComposition.onMouseMove,
             redrawHalo: DragNodesComposition.redrawHalo,
-            searchPoint: noop // solving #12287
+            searchPoint: noop // Solving #12287
         });
         SeriesRegistry.registerSeriesType('packedbubble', PackedBubbleSeries);
         /* *
@@ -8629,7 +8620,7 @@
         * @type {string}
         * @since 7.0.0
         */
-        ''; // detach doclets above
+        ''; // Detach doclets above
 
         return PackedBubbleSeries;
     });
@@ -8752,7 +8743,7 @@
          * @product   highcharts highstock
          * @apioption series.polygon.data
          */
-        ''; // keeps doclets above separate
+        ''; // Keeps doclets above separate
         /* *
          *
          *  Default Export
@@ -8864,7 +8855,7 @@
                     x: 0,
                     y: void 0,
                     style: {
-                        textOverflow: 'none' // wrap lines by default (#7248)
+                        textOverflow: 'none' // Wrap lines by default (#7248)
                     }
                 },
                 maxPadding: 0,
@@ -9027,7 +9018,7 @@
                 return () => {
                     if (this.isRadial &&
                         this.tickPositions &&
-                        // undocumented option for now, but working
+                        // Undocumented option for now, but working
                         this.options.labels &&
                         this.options.labels.allowOverlap !== true) {
                         return this.tickPositions
@@ -9539,14 +9530,14 @@
                                 centerSlot = 0;
                             }
                             if (angle > centerSlot && angle < 180 - centerSlot) {
-                                align = 'left'; // right hemisphere
+                                align = 'left'; // Right hemisphere
                             }
                             else if (angle > 180 + centerSlot &&
                                 angle < 360 - centerSlot) {
-                                align = 'right'; // left hemisphere
+                                align = 'right'; // Left hemisphere
                             }
                             else {
-                                align = 'center'; // top or bottom
+                                align = 'center'; // Top or bottom
                             }
                         }
                         else {
@@ -9588,7 +9579,7 @@
                         if (reducedAngle2 > 70 && reducedAngle2 < 110) {
                             align = 'center';
                         }
-                        // auto Y translation
+                        // Auto Y translation
                         if (reducedAngle1 < 15 ||
                             (reducedAngle1 >= 180 && reducedAngle1 < 195)) {
                             translateY = labelBBox.height * 0.3;
@@ -9609,7 +9600,7 @@
                             translateY = labelDir === 'start' ?
                                 labelBBox.height : -labelBBox.height * 0.25;
                         }
-                        // auto X translation
+                        // Auto X translation
                         if (reducedAngle2 < 15) {
                             translateX = labelDir === 'start' ?
                                 -labelBBox.height * 0.15 : labelBBox.height * 0.15;
@@ -9703,7 +9694,7 @@
                 // Call uber method
                 axisProto.setAxisTranslation.call(this);
                 // Set transA and minPixelPadding
-                if (this.center) { // it's not defined the first time
+                if (this.center) { // It's not defined the first time
                     if (this.isCircular) {
                         this.transA = (this.endAngleRad - this.startAngleRad) /
                             ((this.max - this.min) || 1);
@@ -9826,25 +9817,25 @@
             let align, verticalAlign;
             if (options.align === null) {
                 if (angle > 20 && angle < 160) {
-                    align = 'left'; // right hemisphere
+                    align = 'left'; // Right hemisphere
                 }
                 else if (angle > 200 && angle < 340) {
-                    align = 'right'; // left hemisphere
+                    align = 'right'; // Left hemisphere
                 }
                 else {
-                    align = 'center'; // top or bottom
+                    align = 'center'; // Top or bottom
                 }
                 options.align = align;
             }
             if (options.verticalAlign === null) {
                 if (angle < 45 || angle > 315) {
-                    verticalAlign = 'bottom'; // top part
+                    verticalAlign = 'bottom'; // Top part
                 }
                 else if (angle > 135 && angle < 225) {
-                    verticalAlign = 'top'; // bottom part
+                    verticalAlign = 'top'; // Bottom part
                 }
                 else {
-                    verticalAlign = 'middle'; // left or right
+                    verticalAlign = 'middle'; // Left or right
                 }
                 options.verticalAlign = verticalAlign;
             }
@@ -9874,13 +9865,13 @@
             }
             // 1 means control points midway between points, 2 means 1/3 from
             // the point, 3 is 1/4 etc;
-            const prevPointInd = ((i - 1 < 0) ? segment.length - (1 + addedNumber) : i - 1), nextPointInd = (i + 1 > segment.length - 1) ? addedNumber : i + 1, previousPoint = segment[prevPointInd], nextPoint = segment[nextPointInd], previousX = previousPoint.plotX, previousY = previousPoint.plotY, nextX = nextPoint.plotX, nextY = nextPoint.plotY, plotX = segment[i].plotX, // actual point
+            const prevPointInd = ((i - 1 < 0) ? segment.length - (1 + addedNumber) : i - 1), nextPointInd = (i + 1 > segment.length - 1) ? addedNumber : i + 1, previousPoint = segment[prevPointInd], nextPoint = segment[nextPointInd], previousX = previousPoint.plotX, previousY = previousPoint.plotY, nextX = nextPoint.plotX, nextY = nextPoint.plotY, plotX = segment[i].plotX, // Actual point
             plotY = segment[i].plotY;
             leftContX = (smoothing * plotX + previousX) / denom;
             leftContY = (smoothing * plotY + previousY) / denom;
             rightContX = (smoothing * plotX + nextX) / denom;
             rightContY = (smoothing * plotY + nextY) / denom;
-            // distance left control point
+            // Distance left control point
             const dLControlPoint = Math.sqrt(Math.pow(leftContX - plotX, 2) + Math.pow(leftContY - plotY, 2)), dRControlPoint = Math.sqrt(Math.pow(rightContX - plotX, 2) + Math.pow(rightContY - plotY, 2)), leftContAngle = Math.atan2(leftContY - plotY, leftContX - plotX), rightContAngle = Math.atan2(rightContY - plotY, rightContX - plotX);
             jointAngle = (Math.PI / 2) + ((leftContAngle + rightContAngle) / 2);
             // Ensure the right direction, jointAngle should be in the same quadrant
@@ -9894,7 +9885,7 @@
             leftContY = plotY + Math.sin(jointAngle) * dLControlPoint;
             rightContX = plotX + Math.cos(Math.PI + jointAngle) * dRControlPoint;
             rightContY = plotY + Math.sin(Math.PI + jointAngle) * dRControlPoint;
-            // push current point's connectors into returned object
+            // Push current point's connectors into returned object
             const ret = {
                 rightContX: rightContX,
                 rightContY: rightContY,
@@ -9903,13 +9894,16 @@
                 plotX: plotX,
                 plotY: plotY
             };
-            // calculate connectors for previous and next point and push them inside
+            // Calculate connectors for previous and next point and push them inside
             // returned object
             if (calculateNeighbours) {
                 ret.prevPointCont = getConnectors(segment, prevPointInd, false, connectEnds);
             }
             return ret;
         }
+        /**
+         *
+         */
         function onChartAfterDrawChartBox() {
             (this.pane || []).forEach((pane) => {
                 pane.render();
@@ -9933,6 +9927,9 @@
                 }
             }
         }
+        /**
+         *
+         */
         function onChartGetAxes() {
             if (!this.pane) {
                 this.pane = [];
@@ -10246,11 +10243,11 @@
                         // inside
                         labelPos =
                             this.yAxis.postTranslate(
-                            // angle
+                            // Angle
                             ((shapeArgs.start || 0) + (shapeArgs.end || 0)) / 2 -
                                 this
                                     .xAxis.startAngleRad, 
-                            // radius
+                            // Radius
                             point.barX +
                                 point.pointWidth / 2);
                         alignTo = merge(alignTo, {
@@ -10469,7 +10466,7 @@
                  */
                 if (this.options.connectEnds !== false &&
                     typeof firstValid !== 'undefined') {
-                    this.connectEnds = true; // re-used in splines
+                    this.connectEnds = true; // Re-used in splines
                     points.splice(points.length, 0, points[firstValid]);
                     popLastPoint = true;
                 }
@@ -10512,7 +10509,7 @@
                     ret[isXAxis ? 'xAxis' : 'yAxis'].push({
                         axis: axis,
                         value: axis.translate(isXAxis ?
-                            Math.PI - Math.atan2(x, y) : // angle
+                            Math.PI - Math.atan2(x, y) : // Angle
                             // distance from center
                             Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)), true)
                     });
@@ -10561,12 +10558,12 @@
                                 r = shapeArgs && shapeArgs.r;
                                 innerR = shapeArgs && shapeArgs.innerR;
                                 if (graphic && shapeArgs) {
-                                    // start values
+                                    // Start values
                                     graphic.attr({
                                         r: paneInnerR,
                                         innerR: paneInnerR
                                     });
-                                    // animate
+                                    // Animate
                                     graphic.animate({
                                         r: r,
                                         innerR: innerR
@@ -10618,11 +10615,11 @@
         function wrapSplineSeriesGetPointSpline(proceed, segment, point, i) {
             let ret, connectors;
             if (this.chart.polar) {
-                // moveTo or lineTo
+                // `moveTo` or `lineTo`
                 if (!i) {
                     ret = ['M', point.plotX, point.plotY];
                 }
-                else { // curve from last point to this
+                else { // Curve from last point to this
                     connectors = getConnectors(segment, i, true, this.connectEnds);
                     const rightContX = connectors.prevPointCont &&
                         connectors.prevPointCont.rightContX;
@@ -11199,7 +11196,7 @@
          * @product   highcharts
          * @apioption series.waterfall.data.isSum
          */
-        ''; // adds doclets above to transpiled file
+        ''; // Adds doclets above to transpiled file
         /* *
          *
          *  Default Export
@@ -11353,7 +11350,7 @@
                     const prevStack = yAxis.waterfall.stacks[this.stackKey], isPos = prevY > 0 ? -prevBox.height : 0;
                     if (prevStack && prevBox && box) {
                         const prevStackX = prevStack[i - 1];
-                        // y position of the connector is different when series are
+                        // Y position of the connector is different when series are
                         // stacked, yAxis is reversed and it also depends on point's
                         // value
                         let yPos;
@@ -11524,7 +11521,7 @@
                     waterfallStacks = yAxis.waterfall.stacks;
                     stackedYNeg = this.stackedYNeg = [];
                     stackedYPos = this.stackedYPos = [];
-                    // the visible y range can be different when stacking is set to
+                    // The visible y range can be different when stacking is set to
                     // overlap and different when it's set to normal
                     if (stacking === 'overlap') {
                         objectEach(waterfallStacks[this.stackKey], function (stackX) {
@@ -11578,7 +11575,7 @@
                 }, shapeArgs || {});
                 point.box = box;
                 const range = [0, yValue], pointY = point.y || 0;
-                // code responsible for correct positions of stacked points
+                // Code responsible for correct positions of stacked points
                 // starts here
                 if (stacking) {
                     if (actualStack) {
@@ -11625,7 +11622,7 @@
                             }
                         }
                         if (!point.isSum) {
-                            // the connectorThreshold property is later used in
+                            // The connectorThreshold property is later used in
                             // getCrispPath function to draw a connector line in a
                             // correct place
                             actualStackX.connectorThreshold =
@@ -11652,10 +11649,10 @@
                     }
                 }
                 else {
-                    // up points
+                    // Up points
                     y = Math.max(previousY, previousY + pointY) + range[0];
                     box.y = yAxis.translate(y, false, true, false, true);
-                    // sum points
+                    // Sum points
                     if (point.isSum) {
                         box.y = yAxis.translate(range[1], false, true, false, true);
                         box.height = Math.min(yAxis.translate(range[0], false, true, false, true), yAxis.len) - box.y; // #4256
@@ -11671,7 +11668,7 @@
                             hPos = range[1] + previousIntermediate;
                         }
                         if (yAxis.reversed) {
-                            // swapping values
+                            // Swapping values
                             yPos ^= hPos;
                             hPos ^= yPos;
                             yPos ^= hPos;

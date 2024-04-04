@@ -73,7 +73,7 @@ var ColorMapComposition;
         return (this.value !== null &&
             this.value !== Infinity &&
             this.value !== -Infinity &&
-            // undefined is allowed, but NaN is not (#17279)
+            // Undefined is allowed, but NaN is not (#17279)
             (this.value === void 0 || !isNaN(this.value)));
     }
     /**

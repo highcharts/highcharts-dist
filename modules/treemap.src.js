@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.0 (2024-03-05)
+ * @license Highcharts JS v11.4.1 (2024-04-04)
  *
  * (c) 2014-2024 Highsoft AS
  * Authors: Jon Arild Nygard / Oystein Moseng
@@ -1084,7 +1084,7 @@
                 return (this.value !== null &&
                     this.value !== Infinity &&
                     this.value !== -Infinity &&
-                    // undefined is allowed, but NaN is not (#17279)
+                    // Undefined is allowed, but NaN is not (#17279)
                     (this.value === void 0 || !isNaN(this.value)));
             }
             /**
@@ -1318,7 +1318,7 @@
                         onComplete();
                     }
                 };
-                // animate only runs complete callback if something was animated.
+                // Animate only runs complete callback if something was animated.
                 if (Object.keys(animatableAttribs).length) {
                     graphic.animate(animatableAttribs, void 0, () => destroy());
                 }
@@ -1968,7 +1968,7 @@
          * @product   highcharts
          * @apioption series.treemap.data.parent
          */
-        ''; // keeps doclets above detached
+        ''; // Keeps doclets above detached
         /* *
          *
          *  Default Export
@@ -2011,8 +2011,7 @@
              * @todo Similar to reduce, this function is likely redundant
              */
             function recursive(item, func, context) {
-                let next;
-                next = func.call(context || this, item);
+                const next = func.call(context || this, item);
                 if (next !== false) {
                     recursive(next, func, context);
                 }
@@ -2104,7 +2103,8 @@
          * Returns a map from level number to its given options.
          */
         function getLevelOptions(params) {
-            let result = {}, defaults, converted, i, from, to, levels;
+            const result = {};
+            let defaults, converted, i, from, to, levels;
             if (isObject(params)) {
                 from = isNumber(params.from) ? params.from : 1;
                 levels = params.levels;
@@ -2285,10 +2285,8 @@
                         gridLineWidth: 0,
                         lineWidth: 0,
                         min: 0,
-                        // dataMin: 0,
                         minPadding: 0,
                         max: axisMax,
-                        // dataMax: TreemapUtilities.AXIS_MAX,
                         maxPadding: 0,
                         startOnTick: false,
                         title: void 0,
@@ -2464,13 +2462,13 @@
                     dataLabel.getBBox().width > (dataLabel.text.textWidth || 0)) {
                     dataLabel.css({
                         textOverflow: 'ellipsis',
-                        // unit (px) is required when useHTML is true
+                        // Unit (px) is required when useHTML is true
                         width: style.width += 'px'
                     });
                 }
                 ColumnSeries.prototype.alignDataLabel.apply(this, arguments);
                 if (point.dataLabel) {
-                    // point.node.zIndex could be undefined (#6956)
+                    // `point.node.zIndex` could be undefined (#6956)
                     point.dataLabel.attr({ zIndex: (point.node.zIndex || 0) + 1 });
                 }
             }

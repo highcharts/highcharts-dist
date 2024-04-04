@@ -176,7 +176,7 @@ const HLCSeriesDefaults = {
  * @product   highstock
  * @apioption series.hlc.data.close
  */
-(''); // keeps doclets above in JS file
+(''); // Keeps doclets above in JS file
 /* *
  *
  *  Default Export

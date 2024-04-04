@@ -71,7 +71,7 @@ class MapChart extends Chart {
             tooltip: {
                 followTouchMove: false
             }
-        }, userOptions // user's options
+        }, userOptions // User's options
         );
         super.init(options, callback);
     }

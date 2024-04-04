@@ -626,7 +626,7 @@ const AnnotationDefaults = {
      * The Z index of the annotation.
      */
     zIndex: 6
-}; // typeOptions are expected but not set
+}; // Type options are expected but not set
 /* *
  *
  *  Default Export

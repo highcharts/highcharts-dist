@@ -98,7 +98,7 @@ class Chart {
     static chart(a, b, c) {
         return new Chart(a, b, c);
     }
-    /** Implementation */
+    // Implementation
     constructor(a, 
     /* eslint-disable @typescript-eslint/no-unused-vars */
     b, c
@@ -158,7 +158,7 @@ class Chart {
     init(userOptions, callback) {
         // Fire the event with a default function
         fireEvent(this, 'init', { args: arguments }, function () {
-            const options = merge(defaultOptions, userOptions), // do the merge
+            const options = merge(defaultOptions, userOptions), // Do the merge
             optionsChart = options.chart;
             /**
              * The original options given to the constructor or a chart factory
@@ -470,7 +470,7 @@ class Chart {
         }
         // Adjust title layout (reflow multiline text)
         chart.layOutTitles(false);
-        // link stacked series
+        // Link stacked series
         i = series.length;
         while (i--) {
             serie = series[i];
@@ -482,7 +482,7 @@ class Chart {
                 }
             }
         }
-        if (hasDirtyStacks) { // mark others as dirty
+        if (hasDirtyStacks) { // Mark others as dirty
             i = series.length;
             while (i--) {
                 serie = series[i];
@@ -510,17 +510,17 @@ class Chart {
                 fireEvent(serie, 'updatedData');
             }
         });
-        // handle added or removed series
+        // Handle added or removed series
         if (redrawLegend && legend && legend.options.enabled) {
-            // draw legend graphics
+            // Draw legend graphics
             legend.render();
             chart.isDirtyLegend = false;
         }
-        // reset stacks
+        // Reset stacks
         if (hasStackedSeries) {
             chart.getStacks();
         }
-        // set axes scales
+        // Set axes scales
         axes.forEach(function (axis) {
             axis.updateNames();
             axis.setScale();
@@ -532,13 +532,13 @@ class Chart {
                 isDirtyBox = true;
             }
         });
-        // redraw axes
+        // Redraw axes
         axes.forEach(function (axis) {
             // Fire 'afterSetExtremes' only if extremes are set
             const key = axis.min + ',' + axis.max;
             if (axis.extKey !== key) { // #821, #4452
                 axis.extKey = key;
-                // prevent a recursive call to chart.redraw() (#1119)
+                // Prevent a recursive call to chart.redraw() (#1119)
                 afterRedraw.push(function () {
                     fireEvent(axis, 'afterSetExtremes', extend(axis.eventArgs, axis.getExtremes())); // #747, #751
                     delete axis.eventArgs;
@@ -548,14 +548,14 @@ class Chart {
                 axis.redraw();
             }
         });
-        // the plot areas size has changed
+        // The plot areas size has changed
         if (isDirtyBox) {
             chart.drawChartBox();
         }
         // Fire an event before redrawing series, used by the boost module to
         // clear previous series renderings.
         fireEvent(chart, 'predraw');
-        // redraw affected series
+        // Redraw affected series
         series.forEach(function (serie) {
             if ((isDirtyBox || serie.isDirty) && serie.visible) {
                 serie.redraw();
@@ -564,11 +564,11 @@ class Chart {
             // for a hidden series after setData(). Fixes #6012
             serie.isDirtyData = false;
         });
-        // move tooltip or reset
+        // Move tooltip or reset
         if (pointer) {
             pointer.reset(true);
         }
-        // redraw if canvas
+        // Redraw if canvas
         renderer.draw();
         // Fire the events
         fireEvent(chart, 'redraw');
@@ -733,7 +733,7 @@ class Chart {
         const options = this.options[name] = merge(this.options[name], explicitOptions);
         let elem = this[name];
         if (elem && explicitOptions) {
-            this[name] = elem = elem.destroy(); // remove old
+            this[name] = elem = elem.destroy(); // Remove old
         }
         if (options && !elem) {
             elem = this.renderer.text(options.text, 0, 0, options.useHTML)
@@ -999,7 +999,7 @@ class Chart {
         }
         // Make a reference to the chart from the div
         attr(renderTo, indexAttrName, chart.index);
-        // remove previous chart
+        // Remove previous chart
         renderTo.innerHTML = AST.emptyHTML;
         // If the container doesn't have an offsetWidth, it has or is a child of
         // a node that has display:none. We need to temporarily move it out to a
@@ -1009,7 +1009,7 @@ class Chart {
         if (!optionsChart.skipClone && !renderTo.offsetWidth) {
             chart.temporaryDisplay();
         }
-        // get the width and height
+        // Get the width and height
         chart.getChartSize();
         const chartHeight = chart.chartHeight;
         let chartWidth = chart.chartWidth;
@@ -1020,7 +1020,7 @@ class Chart {
         if (!chart.styledMode) {
             containerStyle = extend({
                 position: 'relative',
-                // needed for context menu (avoidscrollbars) and content
+                // Needed for context menu (avoidscrollbars) and content
                 // overflow in IE
                 overflow: 'hidden',
                 width: chartWidth + 'px',
@@ -1057,7 +1057,7 @@ class Chart {
             }
         }
         chart.containerBox = chart.getContainerBox();
-        // cache the cursor (#1650)
+        // Cache the cursor (#1650)
         chart._cursor = container.style.cursor;
         // Initialize the renderer
         const Renderer = optionsChart.renderer || !svg ?
@@ -1129,7 +1129,7 @@ class Chart {
                 }
             });
         };
-        // pre-render axes to get labels offset width
+        // Pre-render axes to get labels offset width
         if (chart.hasCartesianSeries) {
             getOffset(chart.axes);
         }
@@ -1305,12 +1305,12 @@ class Chart {
             // resize observer (#19027).
             setTimeout(() => {
                 if (chart) {
-                    fireEvent(chart, 'endResize', void 0, () => {
-                        chart.isResizing -= 1;
-                    });
+                    fireEvent(chart, 'endResize');
                 }
             }, animObject(globalAnimation).duration);
         }
+        // Handle resizing counter even if we've re-rendered or not (#20548).
+        chart.isResizing -= 1;
     }
     /**
      * Set the public chart properties. This is done before and after the
@@ -1413,7 +1413,7 @@ class Chart {
         marginNames.forEach(function (m, side) {
             chart[m] = pick(chart.margin[side], chart.spacing[side]);
         });
-        chart.axisOffset = [0, 0, 0, 0]; // top, right, bottom, left
+        chart.axisOffset = [0, 0, 0, 0]; // Top, right, bottom, left
         chart.clipOffset = [0, 0, 0, 0];
     }
     /**
@@ -1553,7 +1553,7 @@ class Chart {
                 optionsChart[key] ||
                     // The default series class:
                     (klass && klass.prototype[key]);
-            // requires it
+            // Requires it
             // 4. Check if any the chart's series require it
             i = seriesOptions && seriesOptions.length;
             while (!value && i--) {
@@ -1797,7 +1797,7 @@ class Chart {
     destroy() {
         const chart = this, axes = chart.axes, series = chart.series, container = chart.container, parentNode = container && container.parentNode;
         let i;
-        // fire the chart.destroy event
+        // Fire the chart.destroy event
         fireEvent(chart, 'destroy');
         // Delete the chart from charts lookup array
         if (chart.renderer.forExport) {
@@ -1808,7 +1808,7 @@ class Chart {
         }
         H.chartCount--;
         chart.renderTo.removeAttribute('data-highcharts-chart');
-        // remove events
+        // Remove events
         removeEvent(chart);
         // ==== Destroy collections:
         // Destroy axes
@@ -1846,7 +1846,7 @@ class Chart {
                 discardElement(container);
             }
         }
-        // clean it all up
+        // Clean it all up
         objectEach(chart, function (val, key) {
             delete chart[key];
         });
@@ -1866,7 +1866,7 @@ class Chart {
         chart.setChartSize();
         // Set the common chart properties (mainly invert) from the given series
         chart.propFromSeries();
-        // get axes
+        // Get axes
         chart.getAxes();
         // Initialize the series
         const series = isArray(options.series) ? options.series : [];
@@ -1923,6 +1923,7 @@ class Chart {
     }
     /**
      * Emit console warning if the a11y module is not loaded.
+     * @private
      */
     warnIfA11yModuleNotLoaded() {
         const { options, title } = this;
@@ -1978,7 +1979,7 @@ class Chart {
         const chart = this;
         let series;
         if (options) { // <- not necessary
-            redraw = pick(redraw, true); // defaults to true
+            redraw = pick(redraw, true); // Defaults to true
             fireEvent(chart, 'addSeries', { options: options }, function () {
                 series = chart.initSeries(options);
                 chart.isDirtyLegend = true;
@@ -2109,7 +2110,7 @@ class Chart {
             }
         };
         let loadingDiv = chart.loadingDiv, loadingSpan = chart.loadingSpan;
-        // create the layer at the first call
+        // Create the layer at the first call
         if (!loadingDiv) {
             chart.loadingDiv = loadingDiv = createElement('div', {
                 className: 'highcharts-loading highcharts-loading-hidden'
@@ -2573,7 +2574,7 @@ class Chart {
      * @function Highcharts.Chart#transform
      */
     transform(params) {
-        const { axes = this.axes, event, from = {}, reset, selection, to = {}, trigger } = params, { inverted, resetZoomButton } = this;
+        const { axes = this.axes, event, from = {}, reset, selection, to = {}, trigger } = params, { inverted } = this;
         let hasZoomed = false, displayButton;
         // Remove active points for shared tooltip
         this.hoverPoints?.forEach((point) => point.setState());
@@ -2593,11 +2594,15 @@ class Chart {
                 continue;
             }
             let newMin = axis.toValue(minPx, true) +
-                minPointOffset * pointRangeDirection, newMax = axis.toValue(minPx + len / scale, true) -
-                ((minPointOffset * pointRangeDirection) ||
-                    // Polar zoom tests failed when this was not commented:
-                    // (axis.isXAxis && axis.pointRangePadding) ||
-                    0), allExtremes = axis.allExtremes;
+                // Don't apply offset for selection (#20784)
+                (selection ? 0 : minPointOffset * pointRangeDirection), newMax = axis.toValue(minPx + len / scale, true) -
+                (selection ? // Don't apply offset for selection (#20784)
+                    0 :
+                    ((minPointOffset * pointRangeDirection) ||
+                        // Polar zoom tests failed when this was not
+                        // commented:
+                        // (axis.isXAxis && axis.pointRangePadding) ||
+                        0)), allExtremes = axis.allExtremes;
             if (newMin > newMax) {
                 [newMin, newMax] = [newMax, newMin];
             }
@@ -2697,11 +2702,11 @@ class Chart {
             }
             else {
                 // Show or hide the Reset zoom button
-                if (displayButton && !resetZoomButton) {
+                if (displayButton && !this.resetZoomButton) {
                     this.showResetZoom();
                 }
-                else if (!displayButton && resetZoomButton) {
-                    this.resetZoomButton = resetZoomButton.destroy();
+                else if (!displayButton && this.resetZoomButton) {
+                    this.resetZoomButton = this.resetZoomButton.destroy();
                 }
                 this.redraw(trigger === 'zoom' &&
                     (this.options.chart.animation ?? this.pointCount < 100));
@@ -2724,7 +2729,7 @@ extend(Chart.prototype, {
      * @private
      */
     collectionsWithInit: {
-        // collectionName: [ initializingMethod, [extraArguments] ]
+        // CollectionName: [ initializingMethod, [extraArguments] ]
         xAxis: [Chart.prototype.addAxis, [true]],
         yAxis: [Chart.prototype.addAxis, [false]],
         series: [Chart.prototype.addSeries]
@@ -2913,4 +2918,4 @@ export default Chart;
 * @name Highcharts.ChartIsInsideOptionsObject#visiblePlotOnly
 * @type {boolean|undefined}
 */
-''; // keeps doclets above in JS file
+''; // Keeps doclets above in JS file

@@ -117,7 +117,7 @@ ATRIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
      * @excluding index
      */
     params: {
-        index: void 0 // unused index, do not inherit (#15362)
+        index: void 0 // Unused index, do not inherit (#15362)
     }
 });
 SeriesRegistry.registerSeriesType('atr', ATRIndicator);
@@ -144,4 +144,4 @@ export default ATRIndicator;
  * @requires  stock/indicators/atr
  * @apioption series.atr
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

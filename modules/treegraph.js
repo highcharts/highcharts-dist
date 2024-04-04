@@ -1,5 +1,5 @@
 !/**
- * Highcharts JS v11.4.0 (2024-03-04)
+ * Highcharts JS v11.4.1 (2024-04-04)
  * Treegraph chart series type
  *
  *  (c) 2010-2024 Pawel Lysy Grzegorz Blachlinski

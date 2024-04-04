@@ -196,7 +196,7 @@ const WaterfallSeriesDefaults = {
  * @product   highcharts
  * @apioption series.waterfall.data.isSum
  */
-''; // adds doclets above to transpiled file
+''; // Adds doclets above to transpiled file
 /* *
  *
  *  Default Export

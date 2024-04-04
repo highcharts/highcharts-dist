@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.4.0 (2024-03-05)
+ * @license Highstock JS v11.4.1 (2024-04-04)
  *
  * Advanced Highcharts Stock tools
  *
@@ -98,7 +98,7 @@
                 }
                 if (lastVisiblePrice && lastVisiblePrice.enabled && pLength > 0) {
                     yAxis.crosshair = yAxis.options.crosshair = merge({
-                        color: 'transparent' // line invisible by default
+                        color: 'transparent' // Line invisible by default
                     }, seriesOptions.lastVisiblePrice);
                     yAxis.cross = series.lastVisiblePrice;
                     const lastPoint = points[pLength - 1].isInside ?
@@ -357,7 +357,7 @@
          * @apioption plotOptions.series.lastPrice.color
          *
          */
-        ''; // keeps doclets above in JS file
+        ''; // Keeps doclets above in JS file
 
         return PriceIndication;
     });

@@ -45,6 +45,7 @@ function onChartAfterGetAxes() {
  * */
 /**
  * 3D axis for z coordinates.
+ * @private
  */
 class ZAxis extends Axis {
     constructor() {
@@ -91,7 +92,7 @@ class ZAxis extends Axis {
         if (this.stacking) {
             this.stacking.buildStacks();
         }
-        // loop through this axis' series
+        // Loop through this axis' series
         this.series.forEach((series) => {
             if (series.reserveSpace()) {
                 let threshold = series.options.threshold;

@@ -93,7 +93,7 @@ const HeikinAshiDefaults = {
  * @product   highstock
  * @apioption series.heikinashi.data
  */
-''; // adds doclets above to transpiled
+''; // Adds doclets above to transpiled
 /* *
  *
  *  Default Export

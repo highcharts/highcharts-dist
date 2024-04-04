@@ -193,7 +193,7 @@ const DumbbellSeriesDefaults = {
  * @product     highcharts highstock
  * @apioption   series.dumbbell.data.lowColor
  */
-''; // keeps doclets above separate
+''; // Keeps doclets above separate
 /* *
  *
  *  Default Export

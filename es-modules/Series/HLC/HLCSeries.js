@@ -59,17 +59,17 @@ class HLCSeries extends ColumnSeries {
      * @private
      */
     getPointPath(point, graphic) {
-        // crisp vector coordinates
+        // Crisp vector coordinates
         const strokeWidth = graphic.strokeWidth(), series = point.series, crispCorr = (strokeWidth % 2) / 2, 
         // #2596:
         crispX = Math.round(point.plotX) - crispCorr, halfWidth = Math.round(point.shapeArgs.width / 2);
         let plotClose = point.plotClose;
-        // the vertical stem
+        // The vertical stem
         const path = [
             ['M', crispX, Math.round(point.yBottom)],
             ['L', crispX, Math.round(point.plotHigh)]
         ];
-        // close
+        // Close
         if (point.close !== null) {
             plotClose = Math.round(point.plotClose) + crispCorr;
             path.push(['M', crispX, plotClose], ['L', crispX + halfWidth, plotClose]);
@@ -93,7 +93,7 @@ class HLCSeries extends ColumnSeries {
             if (!chart.styledMode) {
                 graphic.attr(series.pointAttribs(point, (point.selected && 'select'))); // #3897
             }
-            // crisp vector coordinates
+            // Crisp vector coordinates
             path = series.getPointPath(point, graphic);
             graphic[!graphic ? 'attr' : 'animate']({ d: path })
                 .addClass(point.getClassName(), true);
@@ -124,7 +124,7 @@ class HLCSeries extends ColumnSeries {
         return attribs;
     }
     toYData(point) {
-        // return a plain array for speedy calculation
+        // Return a plain array for speedy calculation
         return [point.high, point.low, point.close];
     }
     /**

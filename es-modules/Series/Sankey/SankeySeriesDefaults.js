@@ -586,7 +586,7 @@ const SankeySeriesDefaults = {
  * @product   highcharts
  * @apioption series.sankey.data.weight
  */
-''; // adds doclets above to transpiled file
+''; // Adds doclets above to transpiled file
 /* *
  *
  *  Default Export

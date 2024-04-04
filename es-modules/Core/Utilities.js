@@ -58,9 +58,9 @@ function error(code, stop, chart, params) {
         if (stop) {
             throw new Error(message);
         }
-        // else ...
+        // Else ...
         if (win.console &&
-            error.messages.indexOf(message) === -1 // prevent console flooting
+            error.messages.indexOf(message) === -1 // Prevent console flooting
         ) {
             console.warn(message); // eslint-disable-line no-console
         }
@@ -825,10 +825,10 @@ function getMagnitude(num) {
  */
 function normalizeTickInterval(interval, multiples, magnitude, allowDecimals, hasTickAmount) {
     let i, retInterval = interval;
-    // round to a tenfold of 1, 2, 2.5 or 5
+    // Round to a tenfold of 1, 2, 2.5 or 5
     magnitude = pick(magnitude, getMagnitude(interval));
     const normalized = interval / magnitude;
-    // multiples for a linear scale
+    // Multiples for a linear scale
     if (!multiples) {
         multiples = hasTickAmount ?
             // Finer grained ticks when the tick amount is hard set, including
@@ -836,7 +836,7 @@ function normalizeTickInterval(interval, multiples, magnitude, allowDecimals, ha
             [1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10] :
             // Else, let ticks fall on rounder numbers
             [1, 2, 2.5, 5, 10];
-        // the allowDecimals option
+        // The allowDecimals option
         if (allowDecimals === false) {
             if (magnitude === 1) {
                 multiples = multiples.filter(function (num) {
@@ -848,10 +848,10 @@ function normalizeTickInterval(interval, multiples, magnitude, allowDecimals, ha
             }
         }
     }
-    // normalize the interval to the nearest multiple
+    // Normalize the interval to the nearest multiple
     for (i = 0; i < multiples.length; i++) {
         retInterval = multiples[i];
-        // only allow tick amounts smaller than natural
+        // Only allow tick amounts smaller than natural
         if ((hasTickAmount &&
             retInterval * magnitude >= interval) ||
             (!hasTickAmount &&
@@ -886,7 +886,7 @@ function stableSort(arr, sortFunction) {
     let sortValue, i;
     // Add index to each item
     for (i = 0; i < length; i++) {
-        arr[i].safeI = i; // stable sort index
+        arr[i].safeI = i; // Stable sort index
     }
     arr.sort(function (a, b) {
         sortValue = sortFunction(a, b);
@@ -894,7 +894,7 @@ function stableSort(arr, sortFunction) {
     });
     // Remove index from items
     for (i = 0; i < length; i++) {
-        delete arr[i].safeI; // stable sort index
+        delete arr[i].safeI; // Stable sort index
     }
 }
 /**
@@ -1082,7 +1082,7 @@ function getNestedProperty(path, parent) {
         // Filter on the key
         if (typeof pathElement === 'undefined' ||
             pathElement === '__proto__') {
-            return; // undefined
+            return; // Undefined
         }
         if (pathElement === 'this') {
             let thisProp;
@@ -1097,7 +1097,7 @@ function getNestedProperty(path, parent) {
             typeof child === 'function' ||
             typeof child.nodeType === 'number' ||
             child === win) {
-            return; // undefined
+            return; // Undefined
         }
         // Else, proceed
         parent = child;
@@ -1420,7 +1420,7 @@ function addEvent(el, type, fn, options = {}) {
     const events = owner.hcEvents;
     // Allow click events added to points, otherwise they will be prevented by
     // the TouchPointer.pinch function after a pinch zoom operation (#7091).
-    if (H.Point && // without H a dependency loop occurs
+    if (H.Point && // Without H a dependency loop occurs
         el instanceof H.Point &&
         el.series &&
         el.series.chart) {
@@ -1488,7 +1488,7 @@ function removeEvent(el, type, fn) {
     function removeAllEvents(eventCollection) {
         let types, len;
         if (!el.nodeName) {
-            return; // break on non-DOM events
+            return; // Break on non-DOM events
         }
         if (type) {
             types = {};
@@ -1712,7 +1712,7 @@ if (win.jQuery) {
     */
     win.jQuery.fn.highcharts = function () {
         const args = [].slice.call(arguments);
-        if (this[0]) { // this[0] is the renderTo div
+        if (this[0]) { // `this[0]` is the renderTo div
             // Create the chart
             if (args[0]) {
                 new H[ // eslint-disable-line computed-property-spacing, no-new
@@ -2111,4 +2111,4 @@ export default Utilities;
  *
  * @namespace Highcharts
  */
-''; // detach doclets above
+''; // Detach doclets above

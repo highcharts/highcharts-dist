@@ -27,7 +27,7 @@ const { isNumber } = U;
  * @optionparent plotOptions.gantt
  */
 const GanttSeriesDefaults = {
-    // options - default options merged with parent
+    // Options - default options merged with parent
     grouping: false,
     dataLabels: {
         enabled: true
@@ -212,7 +212,7 @@ const GanttSeriesDefaults = {
  * @excluding afterAnimate
  * @apioption series.gantt.events
  */
-''; // detachs doclets above
+''; // Detachs doclets above
 /* *
  *
  *  Default Export

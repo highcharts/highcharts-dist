@@ -114,7 +114,7 @@ function range(low, high) {
     if (low === null && high === null) {
         return null;
     }
-    // else, return is undefined
+    // Else, return is undefined
 }
 /**
  * @private

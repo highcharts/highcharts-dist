@@ -116,7 +116,7 @@ const ColumnPyramidSeriesDefaults = {};
  * @product   highcharts highstock
  * @apioption series.columnpyramid.data
  */
-''; // keeps doclets above separate
+''; // Keeps doclets above separate
 /* *
  *
  *  Default Export

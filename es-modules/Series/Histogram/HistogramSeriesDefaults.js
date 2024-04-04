@@ -80,7 +80,7 @@ const HistogramSeriesDefaults = {
  * @type      {number|string}
  * @apioption series.histogram.baseSeries
  */
-''; // keeps doclets above separate
+''; // Keeps doclets above separate
 /* *
  *
  *  Default Export

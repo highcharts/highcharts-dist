@@ -56,7 +56,7 @@ function wrapSeriesSetData(proceed, data = [], redraw = true, animation) {
         merge(true, data));
     const columns = {}, keys = (this.options.keys || this.parallelArrays).slice();
     if (isNumber(data[0]) || keys.length === 1) {
-        // first column is implicit index
+        // First column is implicit index
         const xData = columns.x = [];
         for (let i = 0, iEnd = data.length; i < iEnd; ++i) {
             xData.push(this.autoIncrement());
@@ -65,7 +65,7 @@ function wrapSeriesSetData(proceed, data = [], redraw = true, animation) {
     }
     else {
         if (keys.indexOf('x') === -1 && keys.length > data.length) {
-            // first column is implicit index
+            // First column is implicit index
             const xData = columns.x = [];
             for (let i = 0, iEnd = data.length; i < iEnd; ++i) {
                 xData.push(this.autoIncrement());
@@ -184,12 +184,12 @@ class DataSeriesAdditions {
             anySeries[`${key}Data`] = column;
         }
         if (failure) {
-            // fallback to index
+            // Fallback to index
             const columnNames = table.getColumnNames(), emptyColumn = [];
             emptyColumn.length = rowCount;
             let columnOffset = 0;
             if (columnNames.length === keys.length - 1) {
-                // table index becomes x
+                // Table index becomes x
                 columnOffset = 1;
                 indexAsX = true;
             }
@@ -235,14 +235,14 @@ class DataSeriesAdditions {
         }
         const series = this.series, table = this.table, anySeries = series, onChange = (e) => {
             if (e.type === 'afterDeleteColumns') {
-                // deletion affects all points
+                // Deletion affects all points
                 this.setTable(table, true);
                 return;
             }
             if (e.type === 'afterDeleteRows') {
                 if (e.rowIndex > 0 &&
                     e.rowIndex + e.rowCount < series.points.length) {
-                    // deletion affects trailing points
+                    // Deletion affects trailing points
                     this.setTable(table, true);
                     return;
                 }
@@ -285,4 +285,4 @@ export default DataSeriesAdditions;
  * @since     Future
  * @apioption plotOptions.series.dataAsColumns
  */
-(''); // keeps doclets above in JS file
+(''); // Keeps doclets above in JS file

@@ -540,4 +540,4 @@ export default GeoHeatmapSeries;
 * @name Highcharts.InterpolationOptionsObject#blur
 * @type {number}
 */
-''; // adds doclets above to the transpiled file
+''; // Adds doclets above to the transpiled file

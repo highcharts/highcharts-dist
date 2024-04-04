@@ -382,4 +382,4 @@ export default SeriesOnPointComposition;
  * @type       {number}
  * @apioption  plotOptions.series.onPoint.position.y
  */
-''; // keeps doclets above in transpiled file
+''; // Keeps doclets above in transpiled file

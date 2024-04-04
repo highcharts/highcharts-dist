@@ -150,4 +150,4 @@ export default XRangePoint;
 * @type {number|undefined}
 * @requires modules/xrange
 */
-(''); // keeps doclets above in JS file
+(''); // Keeps doclets above in JS file

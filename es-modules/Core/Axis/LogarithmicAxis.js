@@ -65,7 +65,7 @@ var LogarithmicAxis;
     function onAfterInit() {
         const axis = this;
         const log = axis.logarithmic;
-        // extend logarithmic axis
+        // Extend logarithmic axis
         if (log) {
             axis.lin2val = function (num) {
                 return log.lin2log(num);

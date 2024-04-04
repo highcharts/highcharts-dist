@@ -56,7 +56,7 @@ class ADIndicator extends SMAIndicator {
                 ' not found! Check `volumeSeriesID`.', true, series.chart);
             return;
         }
-        // i = period <-- skip first N-points
+        // When i = period <-- skip first N-points
         // Calculate value one-by-one for each period in visible data
         for (i = period; i < yValLen; i++) {
             len = AD.length;
@@ -138,4 +138,4 @@ export default ADIndicator;
  * @requires  stock/indicators/accumulation-distribution
  * @apioption series.ad
  */
-''; // add doclet above to transpiled file
+''; // Add doclet above to transpiled file

@@ -64,7 +64,7 @@ class TEMAIndicator extends EMAIndicator {
         }
         // Accumulate first N-points
         accumulatePeriodPoints = super.accumulatePeriodPoints(period, index, yVal);
-        // first point
+        // First point
         sma = accumulatePeriodPoints / period;
         accumulatePeriodPoints = 0;
         // Calculate value one-by-one for each period in visible data
@@ -177,4 +177,4 @@ export default TEMAIndicator;
  * @requires  stock/indicators/tema
  * @apioption series.tema
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

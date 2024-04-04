@@ -138,7 +138,7 @@ var ParallelCoordinates;
                 }
             });
             options.yAxis = defaultYAxis.concat(newYAxes);
-            options.xAxis = merge(ParallelCoordinatesDefaults.xAxis, // docs
+            options.xAxis = merge(ParallelCoordinatesDefaults.xAxis, // Docs
             splat(options.xAxis || {})[0]);
         }
     }

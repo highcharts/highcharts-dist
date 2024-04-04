@@ -60,7 +60,7 @@ class EMAIndicator extends SMAIndicator {
         }
         // Accumulate first N-points
         sum = this.accumulatePeriodPoints(period, index, yVal);
-        // first point
+        // First point
         SMA = sum / period;
         // Calculate value one-by-one for each period in visible data
         for (i = period; i < yValLen + 1; i++) {
@@ -134,4 +134,4 @@ export default EMAIndicator;
  * @requires  stock/indicators/indicators
  * @apioption series.ema
  */
-''; // adds doclet above to the transpiled file
+''; // Adds doclet above to the transpiled file

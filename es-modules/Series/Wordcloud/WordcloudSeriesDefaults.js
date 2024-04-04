@@ -196,7 +196,7 @@ const WordcloudSeriesDefaults = {
  * @product   highcharts
  * @apioption series.wordcloud.data.weight
  */
-''; // detach doclets above
+''; // Detach doclets above
 /* *
  *
  *  Default Export

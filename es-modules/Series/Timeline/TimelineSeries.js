@@ -294,4 +294,4 @@ export default TimelineSeries;
 * @name Highcharts.TimelineDataLabelsFormatterContextObject#series
 * @type {Highcharts.Series}
 */
-''; // dettach doclets above
+''; // Dettach doclets above

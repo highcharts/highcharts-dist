@@ -57,7 +57,7 @@ class KeltnerChannelsIndicator extends SMAIndicator {
         }), seriesATR = SeriesRegistry.seriesTypes.atr.prototype.getValues(series, {
             period: periodATR
         }), xData = [], yData = [];
-        // middle line, top line and bottom lineI
+        // Middle line, top line and bottom lineI
         let ML, TL, BL, date, pointEMA, pointATR, i;
         if (yValLen < period) {
             return;
@@ -212,4 +212,4 @@ export default KeltnerChannelsIndicator;
  * @requires     stock/indicators/keltner-channels
  * @apioption    series.keltnerchannels
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

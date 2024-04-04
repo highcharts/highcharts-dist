@@ -393,4 +393,4 @@ export default PackedBubbleSeriesDefaults;
  * @product   highcharts
  * @apioption series.packedbubble.marker
  */
-''; // adds doclets above to transpiled file
+''; // Adds doclets above to transpiled file

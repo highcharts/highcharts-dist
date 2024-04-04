@@ -111,7 +111,7 @@ const Pyramid3DSeriesDefaults = {
  * @product   highcharts
  * @apioption series.pyramid3d.data
  */
-''; // detachs doclets above
+''; // Detachs doclets above
 /* *
  *
  *  Default Export

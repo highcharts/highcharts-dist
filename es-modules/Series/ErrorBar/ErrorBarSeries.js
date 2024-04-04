@@ -54,7 +54,7 @@ class ErrorBarSeries extends BoxPlotSeries {
         }
     }
     toYData(point) {
-        // return a plain array for speedy calculation
+        // Return a plain array for speedy calculation
         return [point.low, point.high];
     }
 }
@@ -70,7 +70,6 @@ addEvent(ErrorBarSeries, 'afterTranslate', function () {
     }
 }, { order: 0 });
 extend(ErrorBarSeries.prototype, {
-    // pointClass: ErrorBarPoint, // just a declaration
     pointArrayMap: ['low', 'high'],
     pointValKey: 'high',
     doQuartiles: false

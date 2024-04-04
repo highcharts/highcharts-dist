@@ -146,9 +146,9 @@ var CircleUtilities;
             // If the circles are overlapping, but not completely overlapping,
             // then it exists intersecting points.
             const r1Square = r1 * r1, r2Square = r2 * r2, 
-            // d^2 - r^2 + R^2 / 2d
+            // `d^2 - r^2 + R^2 / 2d`
             x = (r1Square - r2Square + d * d) / (2 * d), 
-            // y^2 = R^2 - x^2
+            // `y^2 = R^2 - x^2`
             y = Math.sqrt(r1Square - x * x), x1 = c1.x, x2 = c2.x, y1 = c1.y, y2 = c2.y, x0 = x1 + x * (x2 - x1) / d, y0 = y1 + x * (y2 - y1) / d, rx = -(y2 - y1) * (y / d), ry = -(x2 - x1) * (y / d);
             points = [
                 { x: round(x0 + rx, 14), y: round(y0 - ry, 14) },
@@ -361,10 +361,10 @@ var CircleUtilities;
                 arcs: []
             }).arcs;
             if (arcs.length === 0) {
-                // empty
+                // Empty
             }
             else if (arcs.length === 1) {
-                // empty
+                // Empty
             }
             else {
                 arcs.unshift(['M', startPoint.x, startPoint.y]);

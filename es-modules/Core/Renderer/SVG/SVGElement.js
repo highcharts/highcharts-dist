@@ -69,9 +69,9 @@ class SVGElement {
      *         Property value.
      */
     _defaultGetter(key) {
-        let ret = pick(this[key + 'Value'], // align getter
+        let ret = pick(this[key + 'Value'], // Align getter
         this[key], this.element ? this.element.getAttribute(key) : null, 0);
-        if (/^[\-0-9\.]+$/.test(ret)) { // is numerical
+        if (/^[\-0-9\.]+$/.test(ret)) { // Is numerical
             ret = parseFloat(ret);
         }
         return ret;
@@ -130,7 +130,7 @@ class SVGElement {
                 parent.element :
                 renderer.box).appendChild(element);
         }
-        // fire an event for internal hooks
+        // Fire an event for internal hooks
         if (this.onAdd) {
             this.onAdd();
         }
@@ -221,10 +221,10 @@ class SVGElement {
             this.alignByTranslate = alignByTranslate;
             if (!box || isString(box)) {
                 this.alignTo = alignTo = box || 'renderer';
-                // prevent duplicates, like legendGroup after resize
+                // Prevent duplicates, like legendGroup after resize
                 erase(alignedObjects, this);
                 alignedObjects.push(this);
-                box = void 0; // reassign it below
+                box = void 0; // Reassign it below
             }
             // When called on resize, no arguments are supplied
         }
@@ -236,9 +236,9 @@ class SVGElement {
         box = pick(box, renderer[alignTo], renderer);
         // Assign variables
         const align = alignOptions.align, vAlign = alignOptions.verticalAlign;
-        // default: left align
+        // Default: left align
         x = (box.x || 0) + (alignOptions.x || 0);
-        // default: top align
+        // Default: top align
         y = (box.y || 0) + (alignOptions.y || 0);
         // Align
         if (align === 'right') {
@@ -316,7 +316,7 @@ class SVGElement {
             animOptions.duration = 0;
         }
         if (animOptions.duration !== 0) {
-            // allows using a callback with the global animation without
+            // Allows using a callback with the global animation without
             // overwriting it
             if (complete) {
                 animOptions.complete = complete;
@@ -482,17 +482,17 @@ class SVGElement {
     attr(hash, val, complete, continueAnimation) {
         const element = this.element, symbolCustomAttribs = SVGElement.symbolCustomAttribs;
         let key, hasSetSymbolSize, ret = this, skipAttr, setter;
-        // single key-value pair
+        // Single key-value pair
         if (typeof hash === 'string' && typeof val !== 'undefined') {
             key = hash;
             hash = {};
             hash[key] = val;
         }
-        // used as a getter: first argument is a string, second is undefined
+        // Used as a getter: first argument is a string, second is undefined
         if (typeof hash === 'string') {
             ret = (this[hash + 'Getter'] ||
                 this._defaultGetter).call(this, hash, element);
-            // setter
+            // Setter
         }
         else {
             objectEach(hash, function eachAttribute(val, key) {
@@ -574,7 +574,7 @@ class SVGElement {
         strokeWidth = strokeWidth || rect.strokeWidth || 0;
         // Math.round because strokeWidth can sometimes have roundoff errors
         const normalizer = Math.round(strokeWidth) % 2 / 2;
-        // normalize for crisp edges
+        // Normalize for crisp edges
         rect.x = Math.floor(rect.x || wrapper.x || 0) + normalizer;
         rect.y = Math.floor(rect.y || wrapper.y || 0) + normalizer;
         rect.width = Math.floor((rect.width || wrapper.width || 0) - 2 * normalizer);
@@ -795,7 +795,7 @@ class SVGElement {
                 .replace(/dot/g, '1,3,')
                 .replace('dash', '4,3,')
                 .replace(/,$/, '')
-                .split(','); // ending comma
+                .split(','); // Ending comma
             i = v.length;
             while (i--) {
                 v[i] = '' + (pInt(v[i]) * pick(strokeWidth, NaN));
@@ -815,10 +815,10 @@ class SVGElement {
         let parentToClean = (element.nodeName === 'SPAN' &&
             wrapper.parentGroup ||
             void 0), grandParent, i;
-        // remove events
+        // Remove events
         element.onclick = element.onmouseout = element.onmouseover =
             element.onmousemove = element.point = null;
-        stop(wrapper); // stop running animations
+        stop(wrapper); // Stop running animations
         if (wrapper.clipPath && ownerSVGElement) {
             const clipPath = wrapper.clipPath;
             // Look for existing references to this clipPath and remove them
@@ -840,7 +840,7 @@ class SVGElement {
             wrapper.stops.length = 0;
             wrapper.stops = void 0;
         }
-        // remove element
+        // Remove element
         wrapper.safeRemoveChild(element);
         // In case of useHTML, clean up empty containers emulating SVG groups
         // (#1960, #2393, #2697).
@@ -852,7 +852,7 @@ class SVGElement {
             delete parentToClean.div;
             parentToClean = grandParent;
         }
-        // remove from alignObjects
+        // Remove from alignObjects
         if (wrapper.alignTo) {
             erase(renderer.alignedObjects, wrapper);
         }
@@ -1023,7 +1023,7 @@ class SVGElement {
                 if (!bBox || bBox.width < 0) {
                     bBox = { x: 0, y: 0, width: 0, height: 0 };
                 }
-                // useHTML within SVG
+                // Use HTML within SVG
             }
             else {
                 bBox = wrapper.htmlGetBBox();
@@ -1343,7 +1343,7 @@ class SVGElement {
                     }
                     // Set attributes for the <text>
                     const textAttribs = {
-                        // dx/dy options must by set on <text> (parent), the
+                        // `dx`/`dy` options must by set on <text> (parent), the
                         // rest should be set on <textPath>
                         x: 0,
                         y: 0
@@ -1939,4 +1939,4 @@ export default SVGElement;
  *
  * @typedef {"bottom"|"middle"|"top"} Highcharts.VerticalAlignValue
  */
-''; // keeps doclets above in JS file
+''; // Keeps doclets above in JS file

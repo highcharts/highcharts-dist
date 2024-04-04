@@ -52,12 +52,12 @@ function onNavigationBindingsShowPopup(config) {
     this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
 }
 /**
- * onContainerMouseDown blocks internal popup events, due to e.preventDefault.
+ * `onContainerMouseDown` blocks internal popup events, due to e.preventDefault.
  * Related issue #4606
  * @private
  */
 function wrapPointerOnContainerMouserDown(proceed, e) {
-    // elements is not in popup
+    // Elements is not in popup
     if (!this.inClass(e.target, 'highcharts-popup')) {
         proceed.apply(this, Array.prototype.slice.call(arguments, 1));
     }

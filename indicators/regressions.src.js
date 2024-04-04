@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.4.0 (2024-03-05)
+ * @license Highstock JS v11.4.1 (2024-04-04)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -83,7 +83,7 @@
              * function.
              */
             getRegressionLineParameters(xData, yData) {
-                // least squares method
+                // Least squares method
                 const yIndex = this.options.params.index, getSingleYValue = function (yValue, yIndex) {
                     return isArray(yValue) ? yValue[yIndex] : yValue;
                 }, xSum = xData.reduce(function (accX, val) {
@@ -99,7 +99,7 @@
                     formulaDenominator += Math.pow(xError, 2);
                 }
                 const slope = formulaDenominator ?
-                    formulaNumerator / formulaDenominator : 0; // don't divide by 0
+                    formulaNumerator / formulaDenominator : 0; // Don't divide by 0
                 return {
                     slope: slope,
                     intercept: yMean - slope * xMean
@@ -165,7 +165,7 @@
             // Required to be implemented - starting point for indicator's logic
             getValues(baseSeries, regressionSeriesParams) {
                 const xData = baseSeries.xData, yData = baseSeries.yData, period = regressionSeriesParams.period, 
-                // format required to be returned
+                // Format required to be returned
                 indicatorData = {
                     xData: [],
                     yData: [],
@@ -177,7 +177,7 @@
                 // (end point) is used to represent the y value (regression)
                 // of the entire period.
                 for (i = period - 1; i <= xData.length - 1; i++) {
-                    periodStart = i - period + 1; // adjusted for slice() function
+                    periodStart = i - period + 1; // Adjusted for slice() function
                     periodEnd = i + 1; // (as above)
                     endPointX = xData[i];
                     periodXData = xData.slice(periodStart, periodEnd);
@@ -298,7 +298,7 @@
          * @requires  stock/indicators/regressions
          * @apioption series.linearregression
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return LinearRegressionIndicator;
     });
@@ -385,7 +385,7 @@
          * @requires  stock/indicators/regressions
          * @apioption series.linearregressionslope
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return LinearRegressionSlopesIndicator;
     });
@@ -472,7 +472,7 @@
          * @requires  stock/indicators/regressions
          * @apioption series.linearregressionintercept
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return LinearRegressionInterceptIndicator;
     });
@@ -516,7 +516,7 @@
              * @return {number} angle in degrees
              */
             slopeToAngle(slope) {
-                return Math.atan(slope) * (180 / Math.PI); // rad to deg
+                return Math.atan(slope) * (180 / Math.PI); // Rad to deg
             }
             getEndPointY(lineParameters) {
                 return this.slopeToAngle(lineParameters.slope);
@@ -569,7 +569,7 @@
          * @requires  stock/indicators/regressions
          * @apioption series.linearregressionangle
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return LinearRegressionAngleIndicator;
     });

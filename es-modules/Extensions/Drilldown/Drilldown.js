@@ -159,12 +159,12 @@ class ChartAdditions {
             this);
         fireEvent(this, 'addSeriesAsDrilldown', { seriesOptions: options });
         if (chart.mapView) {
-            // stop hovering while drilling down
+            // Stop hovering while drilling down
             point.series.isDrilling = true;
             chart.series.forEach((series) => {
-                // stop duplicating and overriding animations
+                // Stop duplicating and overriding animations
                 series.options.inactiveOtherPoints = true;
-                // hide and disable dataLabels
+                // Hide and disable dataLabels
                 series.dataLabelsGroup?.destroy();
                 delete series.dataLabelsGroup;
             });
@@ -173,7 +173,7 @@ class ChartAdditions {
                 !chart.mapView.projection.hasGeoProjection &&
                 DrilldownDefaults) {
                 const userDrilldown = diffObjects(chart.options.drilldown, DrilldownDefaults);
-                // set mapZooming to false if user didn't set any in chart
+                // Set mapZooming to false if user didn't set any in chart
                 // config
                 if (!defined(userDrilldown.mapZooming)) {
                     chart.options.drilldown.mapZooming = false;
@@ -182,7 +182,7 @@ class ChartAdditions {
             if (chart.options.drilldown &&
                 chart.options.drilldown.animation &&
                 chart.options.drilldown.mapZooming) {
-                // first zoomTo then crossfade series
+                // First zoomTo then crossfade series
                 chart.mapView.allowTransformAnimation = true;
                 const animOptions = animObject(chart.options.drilldown.animation);
                 if (typeof animOptions !== 'boolean') {
@@ -264,7 +264,7 @@ class ChartAdditions {
             levelSeriesOptions: levelSeriesOptions,
             levelSeries: levelSeries,
             shapeArgs: point.shapeArgs,
-            // no graphic in line series with markers disabled
+            // No graphic in line series with markers disabled
             bBox: point.graphic ? point.graphic.getBBox() : {},
             color: point.isNull ?
                 Color.parse(colorProp.color).setOpacity(0).get() :
@@ -429,7 +429,7 @@ class ChartAdditions {
         }, removeSeries = (oldSeries) => {
             oldSeries.remove(false);
             chart.series.forEach((series) => {
-                // ensures to redraw series to get correct colors
+                // Ensures to redraw series to get correct colors
                 if (series.colorAxis) {
                     series.isDirtyData = true;
                 }
@@ -491,7 +491,7 @@ class ChartAdditions {
                     newSeries.options._levelNumber = levelNumber;
                 }
                 const seriesToRemove = oldSeries;
-                // cannot access variable changed in loop
+                // Cannot access variable changed in loop
                 if (!chart.mapView) {
                     seriesToRemove.remove(false);
                 }
@@ -525,14 +525,14 @@ class ChartAdditions {
                         oldSeries.remove(false);
                     }
                     else {
-                        // hide and disable dataLabels
+                        // Hide and disable dataLabels
                         if (oldSeries.dataLabelsGroup) {
                             oldSeries.dataLabelsGroup.destroy();
                             delete oldSeries.dataLabelsGroup;
                         }
                         if (chart.mapView && newSeries) {
                             if (zoomingDrill) {
-                                // stop hovering while drilling down
+                                // Stop hovering while drilling down
                                 oldSeries.isDrilling = true;
                                 newSeries.isDrilling = true;
                                 chart.redraw(false);
@@ -547,7 +547,7 @@ class ChartAdditions {
                                 // Fit to natural bounds
                                 chart.mapView.setView(void 0, pick(chart.mapView.minZoom, 1), true, {
                                     complete: function () {
-                                        // fire it only on complete in this
+                                        // Fire it only on complete in this
                                         // place (once)
                                         if (Object.prototype.hasOwnProperty
                                             .call(this, 'complete')) {
@@ -596,7 +596,7 @@ class ChartAdditions {
      * simple SVGElement.fadeIn() is not enough, because of other features (e.g.
      * InactiveState) using `opacity` to fadeIn/fadeOut.
      *
-     * @requires module:modules/drilldown
+     * @requires modules/drilldown
      *
      * @private
      * @param {SVGElement} [group]
@@ -760,7 +760,7 @@ var Drilldown;
     /**
      * A general fadeIn method.
      *
-     * @requires module:modules/drilldown
+     * @requires modules/drilldown
      *
      * @function Highcharts.SVGElement#fadeIn
      *
@@ -775,7 +775,7 @@ var Drilldown;
             visibility: 'inherit'
         })
             .animate({
-            opacity: pick(elem.newOpacity, 1) // newOpacity used in maps
+            opacity: pick(elem.newOpacity, 1) // `newOpacity` used in maps
         }, animation || {
             duration: 250
         });
@@ -808,7 +808,7 @@ var Drilldown;
             else if (label &&
                 label.drillable && label.removeOnDrillableClick) {
                 if (!styledMode) {
-                    label.styles = {}; // reset for full overwrite of styles
+                    label.styles = {}; // Reset for full overwrite of styles
                     label.element.removeAttribute('style'); // #17933
                     label.css(label.basicStyles);
                 }
@@ -942,4 +942,4 @@ export default Drilldown;
 * @name Highcharts.DrillupEventObject#type
 * @type {"drillup"}
 */
-''; // keeps doclets above in JS file
+''; // Keeps doclets above in JS file

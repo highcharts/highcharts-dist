@@ -149,7 +149,7 @@ class SVGLabel extends SVGElement {
         if (value) {
             this.needsBox = true;
         }
-        // for animation getter (#6776)
+        // For animation getter (#6776)
         this.fill = value;
         this.boxAttr(key, value);
     }
@@ -303,13 +303,13 @@ class SVGLabel extends SVGElement {
             // Determine y based on the baseline
             const textY = this.baseline ? 0 : this.baselineOffset;
             let textX = pick(this.paddingLeft, this.padding);
-            // compensate for alignment
+            // Compensate for alignment
             if (defined(this.widthSetting) &&
                 this.bBox &&
                 (this.textAlign === 'center' || this.textAlign === 'right')) {
                 textX += { center: 0.5, right: 1 }[this.textAlign] * (this.widthSetting - this.bBox.width);
             }
-            // update if anything changed
+            // Update if anything changed
             if (textX !== text.x || textY !== text.y) {
                 text.attr('x', textX);
                 // #8159 - prevent misplaced data labels in treemap
@@ -321,13 +321,13 @@ class SVGLabel extends SVGElement {
                     text.attr('y', textY);
                 }
             }
-            // record current values
+            // Record current values
             text.x = textX;
             text.y = textY;
         }
     }
     widthSetter(value) {
-        // width:auto => null
+        // `width:auto` => null
         this.widthSetting = isNumber(value) ? value : void 0;
     }
     getPaddedWidth() {
@@ -339,7 +339,7 @@ class SVGLabel extends SVGElement {
             paddingRight);
     }
     xSetter(value) {
-        this.x = value; // for animation getter
+        this.x = value; // For animation getter
         if (this.alignFactor) {
             value -= this.alignFactor * this.getPaddedWidth();
             // Force animation even when setting to the same value (#7898)

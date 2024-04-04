@@ -134,7 +134,7 @@ class LineSeries extends Series {
         // Build the line
         points.forEach(function (point, i) {
             const plotX = point.plotX, plotY = point.plotY, lastPoint = points[i - 1], isNull = point.isNull || typeof plotY !== 'number';
-            // the path to this point from the previous
+            // The path to this point from the previous
             let pathToPoint;
             if ((point.leftCliff || (lastPoint && lastPoint.rightCliff)) &&
                 !connectCliffs) {
@@ -161,14 +161,14 @@ class LineSeries extends Series {
                     pathToPoint = [series.getPointSpline(points, point, i)];
                 }
                 else if (step) {
-                    if (step === 1) { // right
+                    if (step === 1) { // Right
                         pathToPoint = [[
                                 'L',
                                 lastPoint.plotX,
                                 plotY
                             ]];
                     }
-                    else if (step === 2) { // center
+                    else if (step === 2) { // Center
                         pathToPoint = [[
                                 'L',
                                 (lastPoint.plotX + plotX) / 2,
@@ -193,7 +193,7 @@ class LineSeries extends Series {
                     ]);
                 }
                 else {
-                    // normal line to next point
+                    // Normal line to next point
                     pathToPoint = [[
                             'L',
                             plotX,
@@ -205,7 +205,7 @@ class LineSeries extends Series {
                 xMap.push(point.x);
                 if (step) {
                     xMap.push(point.x);
-                    if (step === 2) { // step = center (#8073)
+                    if (step === 2) { // Step = center (#8073)
                         xMap.push(point.x);
                     }
                 }
@@ -492,4 +492,4 @@ export default LineSeries;
  * @product   highcharts highstock
  * @apioption series.line.data.marker
  */
-''; // include precedent doclets in transpiled
+''; // Include precedent doclets in transpiled

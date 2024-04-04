@@ -196,6 +196,9 @@ addEvent(PictorialSeries, 'afterRender', function () {
         }
     });
 });
+/**
+ *
+ */
 function renderStackShadow(stack) {
     // Get first pictorial series
     const stackKeys = Object
@@ -290,6 +293,9 @@ function renderStackShadow(stack) {
         stack.shadowGroup = void 0;
     }
 }
+/**
+ *
+ */
 function forEachStack(chart, callback) {
     if (chart.axes) {
         chart.axes.forEach(function (axis) {
@@ -319,6 +325,9 @@ addEvent(StackItem, 'afterSetOffset', function (e) {
         this.shadow.animate({ width });
     }
 });
+/**
+ *
+ */
 function destroyAllStackShadows(chart) {
     forEachStack(chart, function (stack) {
         if (stack.shadow && stack.shadowGroup) {
@@ -510,4 +519,4 @@ export default PictorialSeries;
  * @requires  modules/pictorial
  * @apioption yAxis.stackShadow.enabled
  */
-''; // adds doclets above to transpiled file
+''; // Adds doclets above to transpiled file

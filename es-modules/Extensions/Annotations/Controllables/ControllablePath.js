@@ -37,7 +37,7 @@ function createMarkerSetter(markerType) {
  */
 function onChartAfterGetContainer() {
     this.options.defs = merge(defaultMarkers, this.options.defs || {});
-    // objectEach(this.options.defs, function (def): void {
+    ///  objectEach(this.options.defs, function (def): void {
     //     const attributes = def.attributes;
     //     if (
     //         def.tagName === 'marker' &&
@@ -224,7 +224,8 @@ class ControllablePath extends Controllable {
             fill :
             itemOptions.stroke;
         const setMarker = function (markerType) {
-            let markerId = itemOptions[markerType], def, predefinedMarker, key, marker;
+            const markerId = itemOptions[markerType];
+            let def, predefinedMarker, key, marker;
             if (markerId) {
                 for (key in defs) { // eslint-disable-line guard-for-in
                     def = defs[key];

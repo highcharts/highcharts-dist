@@ -234,4 +234,4 @@ export default CMFIndicator;
  * @requires  stock/indicators/cmf
  * @apioption series.cmf
  */
-''; // adds doclet above to the transpiled file
+''; // Adds doclet above to the transpiled file

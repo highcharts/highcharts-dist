@@ -116,4 +116,4 @@ export default AroonOscillatorIndicator;
  * @requires  stock/indicators/aroon-oscillator
  * @apioption series.aroonoscillator
  */
-''; // adds doclet above to the transpiled file
+''; // Adds doclet above to the transpiled file

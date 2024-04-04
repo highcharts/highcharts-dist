@@ -30,7 +30,7 @@ class InfinityLine extends CrookedLine {
                 points = [
                     points[0],
                     new MockPoint(annotation.chart, points[0].target, {
-                        // add 0 or 1 to x or y depending on type
+                        // Add 0 or 1 to x or y depending on type
                         x: points[0].x + +(type === 'horizontalLine'),
                         y: points[0].y + +(type === 'verticalLine'),
                         xAxis: points[0].options.xAxis,
@@ -43,7 +43,7 @@ class InfinityLine extends CrookedLine {
     }
     static findEdgeCoordinate(firstPoint, secondPoint, xOrY, edgePointFirstCoordinate) {
         const xOrYOpposite = xOrY === 'x' ? 'y' : 'x';
-        // solves equation for x or y
+        // Solves equation for x or y
         // y - y1 = (y2 - y1) / (x2 - x1) * (x - x1)
         return ((secondPoint[xOrY] - firstPoint[xOrY]) *
             (edgePointFirstCoordinate - firstPoint[xOrYOpposite]) /
@@ -131,4 +131,4 @@ export default InfinityLine;
  * @product   highstock
  * @apioption annotations.infinityLine
  */
-(''); // keeps doclets above in transpiled file
+(''); // Keeps doclets above in transpiled file

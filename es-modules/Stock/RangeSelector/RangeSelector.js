@@ -102,7 +102,7 @@ class RangeSelector {
         const rangeSelector = this, chart = rangeSelector.chart, rangeOptions = rangeSelector.buttonOptions[i], baseAxis = chart.xAxis[0], unionExtremes = (chart.scroller && chart.scroller.getUnionExtremes()) || baseAxis || {}, type = rangeOptions.type, dataGrouping = rangeOptions.dataGrouping;
         let dataMin = unionExtremes.dataMin, dataMax = unionExtremes.dataMax, newMin, newMax = baseAxis && Math.round(Math.min(baseAxis.max, pick(dataMax, baseAxis.max))), // #1568
         baseXAxisOptions, range = rangeOptions._range, rangeMin, minSetting, rangeSetting, ctx, ytdExtremes, addOffsetMin = true;
-        // chart has no data, base series is removed
+        // Chart has no data, base series is removed
         if (dataMin === null || dataMax === null) {
             return;
         }
@@ -157,7 +157,7 @@ class RangeSelector {
                     dataMin = Number.MAX_VALUE;
                     dataMax = Number.MIN_VALUE;
                     chart.series.forEach((series) => {
-                        // reassign it to the last item
+                        // Reassign it to the last item
                         const xData = series.xData;
                         if (xData) {
                             dataMin = Math.min(xData[0], dataMin);
@@ -213,7 +213,7 @@ class RangeSelector {
         }
         else {
             // Existing axis object. Set extremes after render time.
-            baseAxis.setExtremes(newMin, newMax, pick(redraw, true), void 0, // auto animation
+            baseAxis.setExtremes(newMin, newMax, pick(redraw, true), void 0, // Auto animation
             {
                 trigger: 'rangeSelectorButton',
                 rangeSelectorButton: rangeOptions
@@ -393,7 +393,7 @@ class RangeSelector {
      */
     computeButtonRange(rangeOptions) {
         const type = rangeOptions.type, count = rangeOptions.count || 1, 
-        // these time intervals have a fixed number of milliseconds, as
+        // These time intervals have a fixed number of milliseconds, as
         // opposed to month, ytd and year
         fixedTimes = {
             millisecond: 1,
@@ -678,7 +678,7 @@ class RangeSelector {
         };
         // Hide away the input box
         input.onblur = () => {
-            // update extremes only when inputs are active
+            // Update extremes only when inputs are active
             if (input === H.doc.activeElement) { // Only when focused
                 // Update also when no `change` event is triggered, like when
                 // clicking inside the SVG (#4710)
@@ -690,7 +690,7 @@ class RangeSelector {
             input.blur(); // #4606
         };
         let keyDown = false;
-        // handle changes in the input boxes
+        // Handle changes in the input boxes
         input.onchange = () => {
             // Update extremes and blur input when clicking date input calendar
             if (!keyDown) {
@@ -727,7 +727,7 @@ class RangeSelector {
     getPosition() {
         const chart = this.chart, options = chart.options.rangeSelector, top = options.verticalAlign === 'top' ?
             chart.plotTop - chart.axisOffset[0] :
-            0; // set offset only for verticalAlign top
+            0; // Set offset only for verticalAlign top
         return {
             buttonTop: top + options.buttonPosition.y,
             inputTop: top + options.inputPosition.y - 10
@@ -772,7 +772,7 @@ class RangeSelector {
         if (options.enabled === false) {
             return;
         }
-        // create the elements
+        // Create the elements
         if (!rendered) {
             this.group = renderer.g('range-selector-group')
                 .attr({
@@ -908,7 +908,7 @@ class RangeSelector {
             }, void 0, dropdown);
             buttons[i] = renderer
                 .button(rangeOptions.text, 0, 0, (e) => {
-                // extract events from button object and call
+                // Extract events from button object and call
                 const buttonEvents = (rangeOptions.events && rangeOptions.events.click);
                 let callDefaultEvent;
                 if (buttonEvents) {
@@ -1000,7 +1000,7 @@ class RangeSelector {
                     y: inputPosition.y,
                     width: inputGroup.getBBox().width,
                     align: inputPosition.align,
-                    // fix wrong getBBox() value on right align
+                    // Fix wrong getBBox() value on right align
                     x: inputPosition.x + translateX - 2
                 }, true, chart.spacingBox);
                 // Skip animation
@@ -1155,7 +1155,7 @@ class RangeSelector {
                 const inputGroupX = (inputGroup.alignAttr.translateX +
                     inputGroup.alignOptions.x -
                     xOffsetForExportButton +
-                    // getBBox for detecing left margin
+                    // `getBBox` for detecing left margin
                     inputGroup.getBBox().x +
                     // 2px padding to not overlap input and label
                     2);
@@ -1530,4 +1530,4 @@ export default RangeSelector;
  * @return {number}
  *         Parsed JavaScript time value.
  */
-(''); // keeps doclets above in JS file
+(''); // Keeps doclets above in JS file

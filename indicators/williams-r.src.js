@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.4.0 (2024-03-05)
+ * @license Highstock JS v11.4.1 (2024-04-04)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -213,7 +213,7 @@
          * @requires  stock/indicators/williams-r
          * @apioption series.williamsr
          */
-        ''; // adds doclets above to the transpiled file
+        ''; // Adds doclets above to the transpiled file
 
         return WilliamsRIndicator;
     });

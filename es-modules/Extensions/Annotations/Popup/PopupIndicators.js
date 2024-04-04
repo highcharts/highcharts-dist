@@ -53,15 +53,15 @@ const dropdownParameters = {
  * Reference to two HTML columns (lhsCol, rhsCol)
  */
 function addColsContainer(container) {
-    // left column
+    // Left column
     const lhsCol = createElement('div', {
         className: 'highcharts-popup-lhs-col'
     }, void 0, container);
-    // right column
+    // Right column
     const rhsCol = createElement('div', {
         className: 'highcharts-popup-rhs-col'
     }, void 0, container);
-    // wrapper content
+    // Wrapper content
     createElement('div', {
         className: 'highcharts-popup-rhs-col-wrapper'
     }, void 0, rhsCol);
@@ -81,9 +81,9 @@ function addForm(chart, _options, callback) {
     if (!chart) {
         return;
     }
-    // add tabs
+    // Add tabs
     this.tabs.init.call(this, chart);
-    // get all tabs content divs
+    // Get all tabs content divs
     const tabsContainers = this.container
         .querySelectorAll('.highcharts-tab-item-content');
     // ADD tab
@@ -119,24 +119,24 @@ function addForm(chart, _options, callback) {
  */
 function addFormFields(chart, series, seriesType, rhsColWrapper) {
     const fields = series.params || series.options.params;
-    // reset current content
+    // Reset current content
     rhsColWrapper.innerHTML = AST.emptyHTML;
-    // create title (indicator name in the right column)
+    // Create title (indicator name in the right column)
     createElement('h3', {
         className: 'highcharts-indicator-title'
     }, void 0, rhsColWrapper).appendChild(doc.createTextNode(getNameType(series, seriesType).indicatorFullName));
-    // input type
+    // Input type
     createElement('input', {
         type: 'hidden',
         name: 'highcharts-type-' + seriesType,
         value: seriesType
     }, void 0, rhsColWrapper);
-    // list all series with id
+    // List all series with id
     listAllSeries.call(this, seriesType, 'series', chart, rhsColWrapper, series, series.linkedParent && series.linkedParent.options.id);
     if (fields.volumeSeriesID) {
         listAllSeries.call(this, seriesType, 'volume', chart, rhsColWrapper, series, series.linkedParent && fields.volumeSeriesID);
     }
-    // add param fields
+    // Add param fields
     addParamInputs.call(this, chart, 'params', fields, seriesType, rhsColWrapper);
 }
 /**
@@ -163,6 +163,9 @@ function addFormFields(chart, series, seriesType, rhsColWrapper) {
  *        For the first iteration, it's an empty string.
  */
 function addIndicatorList(chart, parentDiv, listType, filter) {
+    /**
+     *
+     */
     function selectIndicator(series, indicatorType) {
         const button = rhsColWrapper.parentNode
             .children[1];
@@ -170,7 +173,7 @@ function addIndicatorList(chart, parentDiv, listType, filter) {
         if (button) {
             button.style.display = 'block';
         }
-        // add hidden input with series.id
+        // Add hidden input with series.id
         if (isEdit && series.options) {
             createElement('input', {
                 type: 'hidden',
@@ -216,7 +219,7 @@ function addIndicatorList(chart, parentDiv, listType, filter) {
         item = createElement('li', {
             className: 'highcharts-indicator-list'
         }, void 0, indicatorList);
-        let btn = createElement('button', {
+        const btn = createElement('button', {
             className: 'highcharts-indicator-list-item',
             textContent: indicatorFullName
         }, void 0, item);
@@ -226,9 +229,9 @@ function addIndicatorList(chart, parentDiv, listType, filter) {
             });
         });
     });
-    // select first item from the list
+    // Select first item from the list
     if (filteredSeriesArray.length > 0) {
-        let { series, indicatorType } = filteredSeriesArray[0];
+        const { series, indicatorType } = filteredSeriesArray[0];
         selectIndicator(series, indicatorType);
     }
     else if (!isEdit) {
@@ -259,9 +262,9 @@ function addParamInputs(chart, parentNode, fields, type, parentDiv) {
     }
     const addInput = this.addInput;
     objectEach(fields, (value, fieldName) => {
-        // create name like params.styles.fontSize
+        // Create name like params.styles.fontSize
         const parentFullName = parentNode + '.' + fieldName;
-        if (defined(value) && // skip if field is unnecessary, #15362
+        if (defined(value) && // Skip if field is unnecessary, #15362
             parentFullName) {
             if (isObject(value)) {
                 // (15733) 'Periods' has an arrayed value. Label must be
@@ -285,7 +288,7 @@ function addParamInputs(chart, parentNode, fields, type, parentDiv) {
                 addInput.call(this, parentFullName, type, parentDiv, {
                     value: value,
                     type: 'number'
-                } // all inputs are text type
+                } // All inputs are text type
                 );
             }
         }
@@ -546,11 +549,11 @@ function getAmount() {
  */
 function getNameType(series, indicatorType) {
     const options = series.options;
-    // add mode
+    // Add mode
     let seriesName = (seriesTypes[indicatorType] &&
         seriesTypes[indicatorType].prototype.nameBase) ||
         indicatorType.toUpperCase(), seriesType = indicatorType;
-    // edit
+    // Edit
     if (options && options.type) {
         seriesType = series.options.type;
         seriesName = series.name;

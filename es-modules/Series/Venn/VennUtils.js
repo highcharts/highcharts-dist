@@ -97,7 +97,8 @@ function addOverlapToSets(relations) {
  * Root number.
  */
 function bisect(f, a, b, tolerance, maxIterations) {
-    let fA = f(a), fB = f(b), nMax = maxIterations || 100, tol = tolerance || 1e-10, delta = b - a, n = 1, x, fX;
+    const fA = f(a), fB = f(b), nMax = maxIterations || 100, tol = tolerance || 1e-10;
+    let delta = b - a, x, fX, n = 1;
     if (a >= b) {
         throw new Error('a must be smaller than b.');
     }
@@ -156,7 +157,8 @@ function getCentroid(simplex) {
  * circles.
  */
 function getDistanceBetweenCirclesByOverlap(r1, r2, overlap) {
-    let maxDistance = r1 + r2, distance;
+    const maxDistance = r1 + r2;
+    let distance;
     if (overlap <= 0) {
         // If overlap is below or equal to zero, then there is no overlap.
         distance = maxDistance;
@@ -256,10 +258,16 @@ function getOverlapBetweenCircles(circles) {
     return overlap;
 }
 // eslint-disable-next-line require-jsdoc
+/**
+ *
+ */
 function isSet(x) {
     return isArray(x.sets) && x.sets.length === 1;
 }
 // eslint-disable-next-line require-jsdoc
+/**
+ *
+ */
 function isValidRelation(x) {
     const map = {};
     return (isObject(x) &&
@@ -277,6 +285,9 @@ function isValidRelation(x) {
         }));
 }
 // eslint-disable-next-line require-jsdoc
+/**
+ *
+ */
 function isValidSet(x) {
     return (isValidRelation(x) && isSet(x) && x.value > 0);
 }

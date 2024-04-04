@@ -94,4 +94,4 @@ export default NATRIndicator;
  * @requires  stock/indicators/natr
  * @apioption series.natr
  */
-''; // to include the above in the js output'
+''; // To include the above in the js output'

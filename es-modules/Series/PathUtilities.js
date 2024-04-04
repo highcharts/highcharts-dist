@@ -13,6 +13,9 @@ const getLinkPath = {
     straight: getStraightPath,
     curved: getCurvedPath
 };
+/**
+ *
+ */
 function getDefaultPath(pathParams) {
     const { x1, y1, x2, y2, width = 0, inverted = false, radius, parentVisible } = pathParams;
     const path = [
@@ -32,6 +35,9 @@ function getDefaultPath(pathParams) {
         ], radius) :
         path;
 }
+/**
+ *
+ */
 function getStraightPath(pathParams) {
     const { x1, y1, x2, y2, width = 0, inverted = false, parentVisible } = pathParams;
     return parentVisible ? [
@@ -44,6 +50,9 @@ function getStraightPath(pathParams) {
         ['L', x1, y2]
     ];
 }
+/**
+ *
+ */
 function getCurvedPath(pathParams) {
     const { x1, y1, x2, y2, offset = 0, width = 0, inverted = false, parentVisible } = pathParams;
     return parentVisible ?
@@ -76,13 +85,13 @@ function applyRadius(path, r) {
         const x = path[i][1];
         const y = path[i][2];
         if (typeof x === 'number' && typeof y === 'number') {
-            // moveTo
+            // MoveTo
             if (i === 0) {
                 d.push(['M', x, y]);
             }
             else if (i === path.length - 1) {
                 d.push(['L', x, y]);
-                // curveTo
+                // CurveTo
             }
             else if (r) {
                 const prevSeg = path[i - 1];
@@ -112,7 +121,7 @@ function applyRadius(path, r) {
                         ]);
                     }
                 }
-                // lineTo
+                // LineTo
             }
             else {
                 d.push(['L', x, y]);

@@ -57,10 +57,10 @@ class SVGElement3DFunnel extends SVGElement3D {
     // override opacity and color setters to control opacity
     opacitySetter(value) {
         const funnel3d = this, opacity = parseFloat(value), parts = funnel3d.parts, chart = charts[funnel3d.renderer.chartIndex], filterId = 'group-opacity-' + opacity + '-' + chart.index;
-        // use default for top and bottom
+        // Use default for top and bottom
         funnel3d.parts = funnel3d.mainParts;
         funnel3d.singleSetterForParts('opacity', opacity);
-        // restore
+        // Restore
         funnel3d.parts = parts;
         if (!chart.renderer.filterId) {
             chart.renderer.definition({
@@ -84,7 +84,7 @@ class SVGElement3DFunnel extends SVGElement3D {
                     filter: 'url(#' + filterId + ')'
                 });
             }
-            // styled mode
+            // Styled mode
             if (funnel3d.renderer.styledMode) {
                 chart.renderer.definition({
                     tagName: 'style',
@@ -100,25 +100,25 @@ class SVGElement3DFunnel extends SVGElement3D {
     }
     fillSetter(fill) {
         let fillColor = color(fill);
-        // extract alpha channel to use the opacitySetter
+        // Extract alpha channel to use the opacitySetter
         const funnel3d = this, alpha = fillColor.rgba[3], partsWithColor = {
-            // standard color for top and bottom
+            // Standard color for top and bottom
             top: color(fill).brighten(0.1).get(),
             bottom: color(fill).brighten(-0.2).get()
         };
         if (alpha < 1) {
             fillColor.rgba[3] = 1;
             fillColor = fillColor.get('rgb');
-            // set opacity through the opacitySetter
+            // Set opacity through the opacitySetter
             funnel3d.attr({
                 opacity: alpha
             });
         }
         else {
-            // use default for full opacity
+            // Use default for full opacity
             fillColor = fill;
         }
-        // add gradient for sides
+        // Add gradient for sides
         if (!fillColor.linearGradient &&
             !fillColor.radialGradient &&
             funnel3d.gradientForSides) {
@@ -131,9 +131,9 @@ class SVGElement3DFunnel extends SVGElement3D {
                 ]
             };
         }
-        // gradient support
+        // Gradient support
         if (fillColor.linearGradient) {
-            // color in steps, as each gradient will generate a key
+            // Color in steps, as each gradient will generate a key
             for (const sideGroupName of funnel3d.sideGroups) {
                 const box = funnel3d[sideGroupName].gradientBox, gradient = fillColor.linearGradient, alteredGradient = merge(fillColor, {
                     linearGradient: {
@@ -169,9 +169,9 @@ class SVGElement3DFunnel extends SVGElement3D {
             }
         }
         funnel3d.singleSetterForParts('fill', null, partsWithColor);
-        // fill for animation getter (#6776)
+        // Fill for animation getter (#6776)
         funnel3d.color = funnel3d.fill = fill;
-        // change gradientUnits to userSpaceOnUse for linearGradient
+        // Change gradientUnits to userSpaceOnUse for linearGradient
         if (fillColor.linearGradient) {
             for (const part of [funnel3d.frontLower, funnel3d.frontUpper]) {
                 const elem = part.element, grad = (elem &&
@@ -190,7 +190,7 @@ class SVGElement3DFunnel extends SVGElement3D {
         const funnel3d = this;
         let bbox;
         for (const sideGroupName of funnel3d.sideGroups) {
-            // use common extremes for groups for matching gradients
+            // Use common extremes for groups for matching gradients
             let topLeftEdge = {
                 x: Number.MAX_VALUE,
                 y: Number.MAX_VALUE
@@ -198,7 +198,7 @@ class SVGElement3DFunnel extends SVGElement3D {
                 x: -Number.MAX_VALUE,
                 y: -Number.MAX_VALUE
             };
-            // get extremes
+            // Get extremes
             for (const partName of funnel3d.sideParts[sideGroupName]) {
                 const part = funnel3d[partName];
                 bbox = part.getBBox(true);
@@ -211,7 +211,7 @@ class SVGElement3DFunnel extends SVGElement3D {
                     y: Math.max(bottomRightEdge.y, bbox.y + bbox.height)
                 };
             }
-            // store for color fillSetter
+            // Store for color fillSetter
             funnel3d[sideGroupName].gradientBox = {
                 x: topLeftEdge.x,
                 width: bottomRightEdge.x - topLeftEdge.x,
@@ -221,12 +221,12 @@ class SVGElement3DFunnel extends SVGElement3D {
         }
     }
     zIndexSetter() {
-        // this.added won't work, because zIndex is set after the prop
-        // is set, but before the graphic is really added
+        // `this.added` won't work, because zIndex is set after the prop is set,
+        // but before the graphic is really added
         if (this.finishedOnAdd) {
             this.adjustForGradient();
         }
-        // run default
+        // Run default
         return this.renderer.Element.prototype.zIndexSetter.apply(this, arguments);
     }
     onAdd() {

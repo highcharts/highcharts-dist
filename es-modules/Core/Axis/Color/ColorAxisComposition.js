@@ -185,7 +185,7 @@ var ColorAxisComposition;
                 point[key][method]();
             }
         });
-        this.series.buildKDTree(); // rebuild kdtree #13195
+        this.series.buildKDTree(); // Rebuild kdtree #13195
     }
     ColorAxisComposition.pointSetVisible = pointSetVisible;
     /**

@@ -64,7 +64,7 @@ class ABandsIndicator extends SMAIndicator {
         // ABANDS array structure:
         // 0-date, 1-top line, 2-middle line, 3-bottom line
         ABANDS = [], low = 2, high = 1, xData = [], yData = [];
-        // middle line, top line and bottom line
+        // Middle line, top line and bottom line
         let ML, TL, BL, date, bandBase, pointSMA, ubSMA, lbSMA, slicedX, slicedY, i;
         if (yValLen < period) {
             return;
@@ -221,4 +221,4 @@ export default ABandsIndicator;
  * @requires  stock/indicators/acceleration-bands
  * @apioption series.abands
  */
-''; // to include the above in jsdoc
+''; // To include the above in jsdoc

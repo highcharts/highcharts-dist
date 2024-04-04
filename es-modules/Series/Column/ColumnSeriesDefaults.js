@@ -308,7 +308,7 @@ const ColumnSeriesDefaults = {
          */
         y: void 0
     },
-    // false doesn't work well: https://jsfiddle.net/highcharts/hz8fopan/14/
+    // False doesn't work well: https://jsfiddle.net/highcharts/hz8fopan/14/
     /** @ignore-option */
     startFromThreshold: true,
     stickyTracking: false,
@@ -484,7 +484,7 @@ const ColumnSeriesDefaults = {
  * @product   highcharts highstock
  * @apioption series.column.states.select
  */
-''; // keeps doclets above in JS file
+''; // Keeps doclets above in JS file
 /* *
  *
  *  Default Export

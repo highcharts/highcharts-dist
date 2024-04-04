@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.4.0 (2024-03-05)
+ * @license Highstock JS v11.4.1 (2024-04-04)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -174,12 +174,12 @@
                         gapSize: mainLineOptions.gapSize
                     }
                 }, 
-                // additional lines point place holders:
+                // Additional lines point place holders:
                 secondaryLines = [], secondaryLinesNames = getTranslatedLinesNames(indicator, pointValKey);
                 let pointsLength = mainLinePoints.length, point;
                 // Generate points for additional lines:
                 secondaryLinesNames.forEach((plotLine, index) => {
-                    // create additional lines point place holders
+                    // Create additional lines point place holders
                     secondaryLines[index] = [];
                     while (pointsLength--) {
                         point = mainLinePoints[pointsLength];
@@ -370,7 +370,7 @@
                 }), seriesATR = SeriesRegistry.seriesTypes.atr.prototype.getValues(series, {
                     period: periodATR
                 }), xData = [], yData = [];
-                // middle line, top line and bottom lineI
+                // Middle line, top line and bottom lineI
                 let ML, TL, BL, date, pointEMA, pointATR, i;
                 if (yValLen < period) {
                     return;
@@ -524,7 +524,7 @@
          * @requires     stock/indicators/keltner-channels
          * @apioption    series.keltnerchannels
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return KeltnerChannelsIndicator;
     });

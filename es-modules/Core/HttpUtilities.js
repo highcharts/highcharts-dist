@@ -129,9 +129,12 @@ function getJSON(url, success) {
  * @param {RequestInit} [fetchOptions]
  * Additional attributes for the post request
  */
+/**
+ *
+ */
 function post(url, data, fetchOptions) {
     const formData = new win.FormData();
-    // add the data
+    // Add the data
     objectEach(data, function (val, name) {
         formData.append(name, val);
     });
@@ -201,4 +204,4 @@ export default HttpUtilities;
 * @name Highcharts.AjaxSettingsObject#url
 * @type {string}
 */
-(''); // keeps doclets above in JS file
+(''); // Keeps doclets above in JS file

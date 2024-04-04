@@ -37,12 +37,12 @@ function addForm(chart, options, callback, isInit) {
         return;
     }
     const popupDiv = this.container, lang = this.lang;
-    // create title of annotations
+    // Create title of annotations
     let lhsCol = createElement('h2', {
         className: 'highcharts-popup-main-title'
     }, void 0, popupDiv);
     lhsCol.appendChild(doc.createTextNode(lang[options.langKey] || options.langKey || ''));
-    // left column
+    // Left column
     lhsCol = createElement('div', {
         className: ('highcharts-popup-lhs-col highcharts-popup-lhs-full')
     }, void 0, popupDiv);
@@ -64,16 +64,16 @@ function addForm(chart, options, callback, isInit) {
  */
 function addToolbar(chart, options, callback) {
     const lang = this.lang, popupDiv = this.container, showForm = this.showForm, toolbarClass = 'highcharts-annotation-toolbar';
-    // set small size
+    // Set small size
     if (popupDiv.className.indexOf(toolbarClass) === -1) {
         popupDiv.className += ' ' + toolbarClass + ' highcharts-no-mousewheel';
     }
-    // set position
+    // Set position
     if (chart) {
         popupDiv.style.top = chart.plotTop + 10 + 'px';
     }
-    // create label
-    let label = createElement('p', {
+    // Create label
+    const label = createElement('p', {
         className: 'highcharts-annotation-label'
     }, void 0, popupDiv);
     label.setAttribute('aria-label', 'Annotation type');
@@ -82,7 +82,7 @@ function addToolbar(chart, options, callback) {
     lang[options.langKey] || options.langKey, 
     // Basic shapes:
     options.shapes && options.shapes[0].type, '')));
-    // add buttons
+    // Add buttons
     let button = this.addButton(popupDiv, lang.editButton || 'Edit', 'edit', popupDiv, () => {
         showForm.call(this, 'annotation-edit', chart, options, callback);
     });
@@ -117,13 +117,13 @@ function addFormFields(parentDiv, chart, parentNode, options, storage, isRoot) {
     const addInput = this.addInput, lang = this.lang;
     let parentFullName, titleName;
     objectEach(options, (value, option) => {
-        // create name like params.styles.fontSize
+        // Create name like params.styles.fontSize
         parentFullName = parentNode !== '' ? parentNode + '.' + option : option;
         if (isObject(value)) {
             if (
-            // value is object of options
+            // Value is object of options
             !isArray(value) ||
-                // array of objects with params. i.e labels in Fibonacci
+                // Array of objects with params. i.e labels in Fibonacci
                 (isArray(value) && isObject(value[0]))) {
                 titleName = lang[option] || option;
                 if (!titleName.match(/\d/g)) {

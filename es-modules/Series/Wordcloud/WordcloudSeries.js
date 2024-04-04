@@ -73,7 +73,7 @@ class WordcloudSeries extends ColumnSeries {
         const series = this, hasRendered = series.hasRendered, xAxis = series.xAxis, yAxis = series.yAxis, chart = series.chart, group = series.group, options = series.options, animation = options.animation, allowExtendPlayingField = options.allowExtendPlayingField, renderer = chart.renderer, placed = [], placementStrategy = series.placementStrategy[options.placementStrategy], rotation = options.rotation, weights = series.points.map(function (p) {
             return p.weight;
         }), maxWeight = Math.max.apply(null, weights), 
-        // concat() prevents from sorting the original array.
+        // `concat()` prevents from sorting the original array.
         points = series.points.concat().sort((a, b) => (b.weight - a.weight // Sort descending
         ));
         let testElement = renderer.text().add(group), field;
@@ -177,7 +177,7 @@ class WordcloudSeries extends ColumnSeries {
                 if (!hasRendered) {
                     attr.x = 0;
                     attr.y = 0;
-                    // or animate from previous position
+                    // Or animate from previous position
                 }
                 else {
                     delete attr.x;

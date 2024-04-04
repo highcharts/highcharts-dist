@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.0 (2024-03-05)
+ * @license Highcharts JS v11.4.1 (2024-04-04)
  *
  * Highcharts cylinder module
  *
@@ -79,7 +79,7 @@
                     top: color(fill).brighten(0.1).get(),
                     bottom: color(fill).brighten(-0.1).get()
                 });
-                // fill for animation getter (#6776)
+                // Fill for animation getter (#6776)
                 this.color = this.fill = fill;
                 return this;
             }
@@ -114,6 +114,9 @@
          *  Functions
          *
          * */
+        /**
+         *
+         */
         function compose(SVGRendererClass) {
             const rendererProto = SVGRendererClass.prototype;
             if (!rendererProto.cylinder) {
@@ -146,7 +149,7 @@
          */
         function rendererCylinderPath(shapeArgs) {
             const renderer = this, chart = charts[renderer.chartIndex], 
-            // decide zIndexes of parts based on cuboid logic, for consistency.
+            // Decide zIndexes of parts based on cuboid logic, for consistency.
             cuboidData = this.cuboidPath(shapeArgs), isTopFirst = !cuboidData.isTop, isFronFirst = !cuboidData.isFront, top = renderer.getCylinderEnd(chart, shapeArgs), bottom = renderer.getCylinderEnd(chart, shapeArgs, true);
             return {
                 front: renderer.getCylinderFront(top, bottom),
@@ -253,7 +256,7 @@
             // Use cubic Bezier curve to draw a circle in x,z (y is constant).
             // More math. at spencermortensen.com/articles/bezier-circle/
             c = 0.5519 * radius, centerX = width / 2 + (shapeArgs.x || 0), centerZ = depth / 2 + (shapeArgs.z || 0), 
-            // points could be generated in a loop, but readability will plummet
+            // Points could be generated in a loop, but readability will plummet
             points = [{
                     x: 0,
                     y: y,
@@ -308,20 +311,18 @@
                     z: radius
                 }], cosTheta = Math.cos(angleOffset), sinTheta = Math.sin(angleOffset);
             let path, x, z;
-            // rotate to match chart's beta and translate to the shape center
+            // Rotate to match chart's beta and translate to the shape center
             for (const point of points) {
                 x = point.x;
                 z = point.z;
-                // x′ = (x * cosθ − z * sinθ) + centerX
-                // z′ = (z * cosθ + x * sinθ) + centerZ
                 point.x = (x * cosTheta - z * sinTheta) + centerX;
                 point.z = (z * cosTheta + x * sinTheta) + centerZ;
             }
             const perspectivePoints = perspective(points, chart, true);
-            // check for sub-pixel curve issue, compare front and back edges
+            // Check for sub-pixel curve issue, compare front and back edges
             if (Math.abs(perspectivePoints[3].y - perspectivePoints[9].y) < 2.5 &&
                 Math.abs(perspectivePoints[0].y - perspectivePoints[6].y) < 2.5) {
-                // use simplified shape
+                // Use simplified shape
                 path = this.toLinePath([
                     perspectivePoints[0],
                     perspectivePoints[3],
@@ -330,7 +331,7 @@
                 ], true);
             }
             else {
-                // or default curved path to imitate ellipse (2D circle)
+                // Or default curved path to imitate ellipse (2D circle)
                 path = this.getCurvedPath(perspectivePoints);
             }
             return path;
@@ -528,7 +529,7 @@
          * @product   highcharts highstock
          * @apioption series.cylinder.data
          */
-        ''; // detaches doclets above
+        ''; // Detaches doclets above
         /* *
          *
          *  Default Export
@@ -561,8 +562,8 @@
         /**
          * The cylinder series type.
          *
-         * @requires module:highcharts-3d
-         * @requires module:modules/cylinder
+         * @requires highcharts-3d
+         * @requires modules/cylinder
          *
          * @private
          * @class

@@ -72,7 +72,8 @@ class NetworkgraphSeries extends Series {
      * @private
      */
     deferLayout() {
-        let layoutOptions = this.options.layoutAlgorithm, graphLayoutsStorage = this.chart.graphLayoutsStorage, graphLayoutsLookup = this.chart.graphLayoutsLookup, chartOptions = this.chart.options.chart, layout;
+        const layoutOptions = this.options.layoutAlgorithm, chartOptions = this.chart.options.chart;
+        let layout, graphLayoutsStorage = this.chart.graphLayoutsStorage, graphLayoutsLookup = this.chart.graphLayoutsLookup;
         if (!this.visible) {
             return;
         }
@@ -224,7 +225,7 @@ class NetworkgraphSeries extends Series {
      */
     markerAttribs(point, state) {
         const attribs = Series.prototype.markerAttribs.call(this, point, state);
-        // series.render() is called before initial positions are set:
+        // Series.render() is called before initial positions are set:
         if (!defined(point.plotY)) {
             attribs.y = 0;
         }
@@ -237,7 +238,8 @@ class NetworkgraphSeries extends Series {
      */
     pointAttribs(point, state) {
         // By default, only `selected` state is passed on
-        let pointState = state || point && point.state || 'normal', attribs = Series.prototype.pointAttribs.call(this, point, pointState), stateOptions = this.options.states[pointState];
+        const pointState = state || point && point.state || 'normal', stateOptions = this.options.states[pointState];
+        let attribs = Series.prototype.pointAttribs.call(this, point, pointState);
         if (point && !point.isNode) {
             attribs = point.getLinkAttributes();
             // For link, get prefixed names:
@@ -405,4 +407,4 @@ export default NetworkgraphSeries;
  * @param {global.Event} event
  *        The event that occurred.
  */
-''; // detach doclets above
+''; // Detach doclets above

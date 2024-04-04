@@ -64,7 +64,7 @@ var ColumnDataLabel;
         // touches the right edge of the plot area.
         alignToConnectors: function (points, half, plotWidth, plotLeft) {
             let maxDataLabelWidth = 0, dataLabelWidth;
-            // find widest data label
+            // Find widest data label
             points.forEach(function (point) {
                 dataLabelWidth = point.dataLabel.getBBox().width;
                 if (dataLabelWidth > maxDataLabelWidth) {
@@ -405,7 +405,8 @@ var ColumnDataLabel;
      * @private
      */
     function verifyDataLabelOverflow(overflow) {
-        let center = this.center, options = this.options, centerOption = options.center, minSize = options.minSize || 80, newSize = minSize, 
+        const center = this.center, options = this.options, centerOption = options.center, minSize = options.minSize || 80;
+        let newSize = minSize, 
         // If a size is set, return true and don't try to shrink the pie
         // to fit the labels.
         ret = options.size !== null;
@@ -417,9 +418,9 @@ var ColumnDataLabel;
             }
             else { // Auto center
                 newSize = Math.max(
-                // horizontal overflow
+                // Horizontal overflow
                 center[2] - overflow[1] - overflow[3], minSize);
-                // horizontal center
+                // Horizontal center
                 center[0] += (overflow[3] - overflow[1]) / 2;
             }
             // Handle vertical size and center
@@ -428,9 +429,9 @@ var ColumnDataLabel;
             }
             else { // Auto center
                 newSize = clamp(newSize, minSize, 
-                // vertical overflow
+                // Vertical overflow
                 center[2] - overflow[0] - overflow[2]);
-                // vertical center
+                // Vertical center
                 center[1] += (overflow[0] - overflow[2]) / 2;
             }
             // If the size must be decreased, we need to run translate and

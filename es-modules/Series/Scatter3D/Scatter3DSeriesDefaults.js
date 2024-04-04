@@ -108,7 +108,7 @@ const Scatter3DSeriesDefaults = {
  * @product   highcharts
  * @apioption series.scatter3d.data.z
  */
-''; // detachs doclets above
+''; // Detachs doclets above
 /* *
  *
  *  Default Export

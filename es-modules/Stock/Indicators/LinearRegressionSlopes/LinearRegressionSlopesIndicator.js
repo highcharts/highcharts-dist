@@ -84,4 +84,4 @@ export default LinearRegressionSlopesIndicator;
  * @requires  stock/indicators/regressions
  * @apioption series.linearregressionslope
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

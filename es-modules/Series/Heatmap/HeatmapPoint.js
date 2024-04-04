@@ -93,7 +93,7 @@ class HeatmapPoint extends ScatterPoint {
      * @private
      */
     isValid() {
-        // undefined is allowed
+        // Undefined is allowed
         return (this.value !== Infinity &&
             this.value !== -Infinity);
     }

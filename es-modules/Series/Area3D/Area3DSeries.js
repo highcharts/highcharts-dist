@@ -21,11 +21,17 @@ const { pushUnique, wrap } = U;
  *  Functions
  *
  * */
+/**
+ *
+ */
 function compose(AreaSeriesClass) {
     if (pushUnique(composed, 'Area3DSeries')) {
         wrap(AreaSeriesClass.prototype, 'getGraphPath', wrapAreaSeriesGetGraphPath);
     }
 }
+/**
+ *
+ */
 function wrapAreaSeriesGetGraphPath(proceed) {
     const series = this, svgPath = proceed.apply(series, [].slice.call(arguments, 1));
     // Do not do this if the chart is not 3D

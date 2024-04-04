@@ -135,7 +135,7 @@ const TiledWebMapSeriesDefaults = {
  * @product   highmaps
  * @apioption plotOptions.tiledwebmap.provider.url
  */
-''; // keeps doclets above detached
+''; // Keeps doclets above detached
 /* *
  *
  *  Default Export

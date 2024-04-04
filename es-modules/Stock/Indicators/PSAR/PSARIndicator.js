@@ -20,9 +20,15 @@ const { merge } = U;
  *
  * */
 // Utils:
+/**
+ *
+ */
 function toFixed(a, n) {
     return parseFloat(a.toFixed(n));
 }
+/**
+ *
+ */
 function calculateDirection(previousDirection, low, high, PSAR) {
     if ((previousDirection === 1 && low > PSAR) ||
         (previousDirection === -1 && high > PSAR)) {
@@ -40,6 +46,9 @@ function calculateDirection(previousDirection, low, high, PSAR) {
  * maxAcc - maximum acceleration factor
  * initAcc - initial acceleration factor
  */
+/**
+ *
+ */
 function getAccelerationFactor(dir, pDir, eP, pEP, pAcc, inc, maxAcc, initAcc) {
     if (dir === pDir) {
         if (dir === 1 && (eP > pEP)) {
@@ -52,15 +61,24 @@ function getAccelerationFactor(dir, pDir, eP, pEP, pAcc, inc, maxAcc, initAcc) {
     }
     return initAcc;
 }
+/**
+ *
+ */
 function getExtremePoint(high, low, previousDirection, previousExtremePoint) {
     if (previousDirection === 1) {
         return (high > previousExtremePoint) ? high : previousExtremePoint;
     }
     return (low < previousExtremePoint) ? low : previousExtremePoint;
 }
+/**
+ *
+ */
 function getEPMinusPSAR(EP, PSAR) {
     return EP - PSAR;
 }
+/**
+ *
+ */
 function getAccelerationFactorMultiply(accelerationFactor, EPMinusSAR) {
     return accelerationFactor * EPMinusSAR;
 }
@@ -75,6 +93,9 @@ function getAccelerationFactorMultiply(accelerationFactor, EPMinusSAR) {
  * sHigh - second previous high
  * pHigh - previous high
  * pEP - previous extreme point
+ */
+/**
+ *
  */
 function getPSAR(pdir, sDir, PSAR, pACCMulti, sLow, pLow, pHigh, sHigh, pEP) {
     if (pdir === sDir) {
@@ -265,4 +286,4 @@ export default PSARIndicator;
  * @requires  stock/indicators/psar
  * @apioption series.psar
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

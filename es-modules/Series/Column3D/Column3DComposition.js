@@ -113,7 +113,7 @@ function columnSeriesTranslate3dShapes() {
             }
         }
     }
-    // store for later use #4067
+    // Store for later use #4067
     series.z = z;
 }
 /** @private */
@@ -177,7 +177,7 @@ function onColumnSeriesAfterInit() {
         // @todo grouping === true ?
         if (!(typeof grouping !== 'undefined' && !grouping)) {
             const stacks = retrieveStacks(this.chart, stacking), stack = seriesOptions.stack || 0;
-            let i; // position within the stack
+            let i; // Position within the stack
             for (i = 0; i < stacks[stack].series.length; i++) {
                 if (stacks[stack].series[i] === this) {
                     break;
@@ -249,7 +249,7 @@ function wrapColumnSeriesAnimate(proceed) {
                     }
                 }
             }
-            // redraw datalabels to the correct position
+            // Redraw datalabels to the correct position
             this.drawDataLabels();
         }
     }
@@ -369,7 +369,7 @@ function wrapSeriesAlignDataLabel(proceed, point, _dataLabel, options, alignTo) 
                 dLPosition.y += point.shapeArgs.width;
             }
         }
-        // dLPosition is recalculated for 3D graphs
+        // `dLPosition` is recalculated for 3D graphs
         dLPosition = perspective([dLPosition], chart, true, false)[0];
         alignTo.x = dLPosition.x - xOffset;
         // #7103 If point is outside of plotArea, hide data label.
@@ -479,4 +479,4 @@ export default Column3DComposition;
  * @requires  highcharts-3d
  * @apioption plotOptions.column.groupZPadding
  */
-''; // keeps doclets above in transpiled file
+''; // Keeps doclets above in transpiled file

@@ -193,7 +193,7 @@ const FunnelSeriesDefaults = {
  * @product   highcharts
  * @apioption series.funnel.data
  */
-''; // keeps doclets above separate
+''; // Keeps doclets above separate
 /* *
  *
  *  Default Export

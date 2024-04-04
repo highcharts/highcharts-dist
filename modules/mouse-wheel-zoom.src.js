@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.0 (2024-03-05)
+ * @license Highcharts JS v11.4.1 (2024-04-04)
  *
  * Mousewheel zoom module
  *
@@ -94,7 +94,7 @@
                 return isNumber(axisMin) && isNumber(axisMax) &&
                     coord.value >= (axisMin - minPointOffset) &&
                     coord.value <= (axisMax + minPointOffset) &&
-                    // don't count navigator axis
+                    // Don't count navigator axis
                     !coord.axis.options.isInternal;
             })[0]; // If the axes overlap, return the first axis that was found.
         }

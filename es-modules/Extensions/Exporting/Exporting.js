@@ -200,9 +200,9 @@ var Exporting;
             return void 0;
         }
         const { childNodes, origDisplay, resetParams } = chart.printReverseInfo;
-        // put the chart back in
+        // Put the chart back in
         chart.moveContainers(chart.renderTo);
-        // restore all body content
+        // Restore all body content
         [].forEach.call(childNodes, function (node, i) {
             if (node.nodeType === 1) {
                 node.style.display = (origDisplay[i] || '');
@@ -247,14 +247,14 @@ var Exporting;
             ];
             chart.setSize(printMaxWidth, void 0, false);
         }
-        // hide all body content
+        // Hide all body content
         [].forEach.call(printReverseInfo.childNodes, function (node, i) {
             if (node.nodeType === 1) {
                 printReverseInfo.origDisplay[i] = node.style.display;
                 node.style.display = 'none';
             }
         });
-        // pull out the chart
+        // Pull out the chart
         chart.moveContainers(body);
         // Storage details for undo action after printing
         chart.printReverseInfo = printReverseInfo;
@@ -400,7 +400,7 @@ var Exporting;
                     boxShadow: '3px 3px 10px #888'
                 }, navOptions.menuStyle));
             }
-            // hide on mouse out
+            // Hide on mouse out
             menu.hideMenu = function () {
                 css(menu, { display: 'none' });
                 if (button) {
@@ -430,7 +430,7 @@ var Exporting;
                     menu.hideMenu();
                 }
             }));
-            // create the items
+            // Create the items
             items.forEach(function (item) {
                 if (typeof item === 'string') {
                     item = chart.options.exporting
@@ -485,14 +485,14 @@ var Exporting;
             chart.exportMenuHeight = menu.offsetHeight;
         }
         const menuStyle = { display: 'block' };
-        // if outside right, right align it
+        // If outside right, right align it
         if (x + chart.exportMenuWidth > chartWidth) {
             menuStyle.right = (chartWidth - x - width - menuPadding) + 'px';
         }
         else {
             menuStyle.left = (x - menuPadding) + 'px';
         }
-        // if outside bottom, bottom align it
+        // If outside bottom, bottom align it
         if (y + height + chart.exportMenuHeight > chartHeight &&
             button.alignOptions.verticalAlign !== 'top') {
             menuStyle.bottom = (chartHeight - y - menuPadding) + 'px';
@@ -592,9 +592,9 @@ var Exporting;
      */
     function exportChart(exportingOptions, chartOptions) {
         const svg = this.getSVGForExport(exportingOptions, chartOptions);
-        // merge the options
+        // Merge the options
         exportingOptions = merge(this.options.exporting, exportingOptions);
-        // do the post
+        // Do the post
         HU.post(exportingOptions.url, {
             filename: exportingOptions.filename ?
                 exportingOptions.filename.replace(/\//g, '-') :
@@ -643,13 +643,13 @@ var Exporting;
         if (typeof s === 'string') {
             filename = s
                 .toLowerCase()
-                .replace(/<\/?[^>]+(>|$)/g, '') // strip HTML tags
+                .replace(/<\/?[^>]+(>|$)/g, '') // Strip HTML tags
                 .replace(/[\s_]+/g, '-')
-                .replace(/[^a-z0-9\-]/g, '') // preserve only latin
-                .replace(/^[\-]+/g, '') // dashes in the start
-                .replace(/[\-]+/g, '-') // dashes in a row
+                .replace(/[^a-z0-9\-]/g, '') // Preserve only latin
+                .replace(/^[\-]+/g, '') // Dashes in the start
+                .replace(/[\-]+/g, '-') // Dashes in a row
                 .substr(0, 24)
-                .replace(/[\-]+$/g, ''); // dashes in the end;
+                .replace(/[\-]+$/g, ''); // Dashes in the end;
         }
         if (!filename || filename.length < 5) {
             filename = 'chart';
@@ -687,14 +687,14 @@ var Exporting;
         // ... and likewise with time, avoid that undefined time properties are
         // merged over legacy global time options
         options.time = merge(chart.userOptions.time, chartOptions && chartOptions.time);
-        // create a sandbox where a new chart will be generated
+        // Create a sandbox where a new chart will be generated
         const sandbox = createElement('div', null, {
             position: 'absolute',
             top: '-9999em',
             width: chart.chartWidth + 'px',
             height: chart.chartHeight + 'px'
         }, doc.body);
-        // get the source size
+        // Get the source size
         const cssWidth = chart.renderTo.style.width, cssHeight = chart.renderTo.style.height, sourceWidth = options.exporting.sourceWidth ||
             options.chart.width ||
             (/px$/.test(cssWidth) && parseInt(cssWidth, 10)) ||
@@ -702,7 +702,7 @@ var Exporting;
             options.chart.height ||
             (/px$/.test(cssHeight) && parseInt(cssHeight, 10)) ||
             400;
-        // override some options
+        // Override some options
         extend(options.chart, {
             animation: false,
             renderTo: sandbox,
@@ -711,7 +711,7 @@ var Exporting;
             width: sourceWidth,
             height: sourceHeight
         });
-        options.exporting.enabled = false; // hide buttons in print
+        options.exporting.enabled = false; // Hide buttons in print
         delete options.data; // #3004
         // prepare for replicating the chart
         options.series = [];
@@ -776,7 +776,7 @@ var Exporting;
         svg = chartCopy.getChartHTML();
         fireEvent(this, 'getSVG', { chartCopy: chartCopy });
         svg = chart.sanitizeSVG(svg, options);
-        // free up memory
+        // Free up memory
         options = null;
         chartCopy.destroy();
         discardElement(sandbox);
@@ -911,7 +911,7 @@ var Exporting;
                 // add these
                 if (!defaultStyles[node.nodeName]) {
                     /*
-                    if (!dummySVG) {
+                    If (!dummySVG) {
                         dummySVG = doc.createElementNS(H.SVG_NS, 'svg');
                         dummySVG.setAttribute('version', '1.1');
                         doc.body.appendChild(dummySVG);
@@ -1055,7 +1055,7 @@ var Exporting;
      */
     function print() {
         const chart = this;
-        if (chart.isPrinting) { // block the button while in printing mode
+        if (chart.isPrinting) { // Block the button while in printing mode
             return;
         }
         printingChart = chart;
@@ -1067,7 +1067,7 @@ var Exporting;
         setTimeout(() => {
             win.focus(); // #1510
             win.print();
-            // allow the browser to prepare before reverting
+            // Allow the browser to prepare before reverting
             if (!G.isSafari) {
                 setTimeout(() => {
                     chart.afterPrint();
@@ -1146,8 +1146,8 @@ var Exporting;
             .replace(/(fill|stroke)="rgba\(([ 0-9]+,[ 0-9]+,[ 0-9]+),([ 0-9\.]+)\)"/g, // eslint-disable-line max-len
         '$1="rgb($2)" $1-opacity="$3"')
             // Replace HTML entities, issue #347
-            .replace(/&nbsp;/g, '\u00A0') // no-break space
-            .replace(/&shy;/g, '\u00AD'); // soft hyphen
+            .replace(/&nbsp;/g, '\u00A0') // No-break space
+            .replace(/&shy;/g, '\u00AD'); // Soft hyphen
         return svg;
     }
 })(Exporting || (Exporting = {}));
@@ -1228,7 +1228,7 @@ export default Exporting;
  *
  * @typedef {"image/png"|"image/jpeg"|"application/pdf"|"image/svg+xml"} Highcharts.ExportingMimeTypeValue
  */
-(''); // keeps doclets above in transpiled file
+(''); // Keeps doclets above in transpiled file
 /* *
  *
  *  API Options
@@ -1260,4 +1260,4 @@ export default Exporting;
  * @requires  modules/exporting
  * @apioption chart.events.beforePrint
  */
-(''); // keeps doclets above in transpiled file
+(''); // Keeps doclets above in transpiled file

@@ -244,7 +244,7 @@ const TimelineSeriesDefaults = {
  * @product   highcharts
  * @apioption series.timeline.data.description
  */
-''; // adds doclets above to transpiled file
+''; // Adds doclets above to transpiled file
 /* *
  *
  *  Default Export

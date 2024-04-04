@@ -48,7 +48,7 @@ class LinearRegressionIndicator extends SMAIndicator {
      * function.
      */
     getRegressionLineParameters(xData, yData) {
-        // least squares method
+        // Least squares method
         const yIndex = this.options.params.index, getSingleYValue = function (yValue, yIndex) {
             return isArray(yValue) ? yValue[yIndex] : yValue;
         }, xSum = xData.reduce(function (accX, val) {
@@ -64,7 +64,7 @@ class LinearRegressionIndicator extends SMAIndicator {
             formulaDenominator += Math.pow(xError, 2);
         }
         const slope = formulaDenominator ?
-            formulaNumerator / formulaDenominator : 0; // don't divide by 0
+            formulaNumerator / formulaDenominator : 0; // Don't divide by 0
         return {
             slope: slope,
             intercept: yMean - slope * xMean
@@ -130,7 +130,7 @@ class LinearRegressionIndicator extends SMAIndicator {
     // Required to be implemented - starting point for indicator's logic
     getValues(baseSeries, regressionSeriesParams) {
         const xData = baseSeries.xData, yData = baseSeries.yData, period = regressionSeriesParams.period, 
-        // format required to be returned
+        // Format required to be returned
         indicatorData = {
             xData: [],
             yData: [],
@@ -142,7 +142,7 @@ class LinearRegressionIndicator extends SMAIndicator {
         // (end point) is used to represent the y value (regression)
         // of the entire period.
         for (i = period - 1; i <= xData.length - 1; i++) {
-            periodStart = i - period + 1; // adjusted for slice() function
+            periodStart = i - period + 1; // Adjusted for slice() function
             periodEnd = i + 1; // (as above)
             endPointX = xData[i];
             periodXData = xData.slice(periodStart, periodEnd);
@@ -264,4 +264,4 @@ export default LinearRegressionIndicator;
  * @requires  stock/indicators/regressions
  * @apioption series.linearregression
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

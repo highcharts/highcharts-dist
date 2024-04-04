@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.0 (2024-03-05)
+ * @license Highcharts JS v11.4.1 (2024-04-04)
  *
  * (c) 2009-2024 Torstein Honsi
  *
@@ -207,10 +207,10 @@
          * @function boxIntersectLine
          */
         function boxIntersectLine(x, y, w, h, x1, y1, x2, y2) {
-            return (intersectLine(x, y, x + w, y, x1, y1, x2, y2) || // top of label
-                intersectLine(x + w, y, x + w, y + h, x1, y1, x2, y2) || // right
-                intersectLine(x, y + h, x + w, y + h, x1, y1, x2, y2) || // bottom
-                intersectLine(x, y, x, y + h, x1, y1, x2, y2) // left of label
+            return (intersectLine(x, y, x + w, y, x1, y1, x2, y2) || // Top of label
+                intersectLine(x + w, y, x + w, y + h, x1, y1, x2, y2) || // Right
+                intersectLine(x, y + h, x + w, y + h, x1, y1, x2, y2) || // Bottom
+                intersectLine(x, y, x, y + h, x1, y1, x2, y2) // Left of label
             );
         }
         /**
@@ -279,7 +279,7 @@
          */
         function checkClearPoint(series, x, y, bBox, checkDistance) {
             const chart = series.chart, seriesLabelOptions = series.options.label || {}, onArea = pick(seriesLabelOptions.onArea, !!series.area), findDistanceToOthers = (onArea || seriesLabelOptions.connectorAllowed), leastDistance = 16, boxesToAvoid = chart.boxesToAvoid;
-            let distToOthersSquared = Number.MAX_VALUE, // distance to other graphs
+            let distToOthersSquared = Number.MAX_VALUE, // Distance to other graphs
             distToPointSquared = Number.MAX_VALUE, dist, connectorPoint, withinRange, xDist, yDist, i, j;
             /**
              * Get the weight in order to determine the ideal position. Larger distance
@@ -403,7 +403,7 @@
          * @function Highcharts.Chart#drawSeriesLabels
          */
         function drawSeriesLabels(chart) {
-            // console.time('drawSeriesLabels');
+            // Console.time('drawSeriesLabels');
             chart.boxesToAvoid = [];
             const labelSeries = chart.labelSeries || [], boxesToAvoid = chart.boxesToAvoid;
             // Avoid data labels
@@ -636,7 +636,7 @@
                 }
             });
             fireEvent(chart, 'afterDrawSeriesLabels');
-            // console.timeEnd('drawSeriesLabels');
+            // Console.timeEnd('drawSeriesLabels');
         }
         /**
          * Points to avoid. In addition to actual data points, the label should avoid
@@ -899,7 +899,7 @@
         * @name Highcharts.LabelIntersectBoxObject#top
         * @type {number}
         */
-        (''); // keeps doclets above in JS file
+        (''); // Keeps doclets above in JS file
 
         return SeriesLabel;
     });

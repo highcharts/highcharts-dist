@@ -212,7 +212,7 @@ var DataModifyComposition;
      */
     function afterProcessData() {
         const series = this;
-        if (series.xAxis && // not pies
+        if (series.xAxis && // Not pies
             series.processedYData &&
             series.dataModify) {
             const processedXData = series.processedXData, processedYData = series.processedYData, length = processedYData.length, compareStart = series.options.compareStart === true ? 0 : 1;
@@ -222,7 +222,7 @@ var DataModifyComposition;
             if (series.pointArrayMap) {
                 keyIndex = series.pointArrayMap.indexOf(series.options.pointValKey || series.pointValKey || 'y');
             }
-            // find the first value for comparison
+            // Find the first value for comparison
             for (i = 0; i < length - compareStart; i++) {
                 const compareValue = processedYData[i] && keyIndex > -1 ?
                     processedYData[i][keyIndex] : processedYData[i];
@@ -396,7 +396,7 @@ var DataModifyComposition;
                         value = 100 * (value / compareValue) -
                             (compareBase === 100 ? 0 : 100);
                     }
-                    // record for tooltip etc.
+                    // Record for tooltip etc.
                     if (typeof index !== 'undefined') {
                         const point = this.series.points[index];
                         if (point) {
@@ -524,4 +524,4 @@ export default DataModifyComposition;
  * @product   highstock
  * @apioption plotOptions.series.cumulative
  */
-''; // keeps doclets above in transpiled file
+''; // Keeps doclets above in transpiled file

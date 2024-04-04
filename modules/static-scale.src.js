@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v11.4.0 (2024-03-05)
+ * @license Highcharts Gantt JS v11.4.1 (2024-04-04)
  *
  * StaticScale
  *
@@ -82,7 +82,7 @@
                         let height = pick(axis.brokenAxis && axis.brokenAxis.unitLength, axis.max + axis.tickInterval - axis.min) * staticScale;
                         // Minimum height is 1 x staticScale.
                         height = Math.max(height, staticScale);
-                        let diff = height - chart.plotHeight;
+                        const diff = height - chart.plotHeight;
                         if (!chart.scrollablePixelsY && Math.abs(diff) >= 1) {
                             chart.plotHeight = height;
                             chart.redrawTrigger = 'adjustHeight';
@@ -136,7 +136,7 @@
          * @product   gantt
          * @apioption yAxis.staticScale
          */
-        ''; // keeps doclets above in JS file
+        ''; // Keeps doclets above in JS file
 
         return StaticScale;
     });

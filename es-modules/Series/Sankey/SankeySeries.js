@@ -590,4 +590,4 @@ export default SankeySeries;
 * @name Highcharts.SeriesSankeyDataLabelsFormatterContextObject#point
 * @type {Highcharts.SankeyNodeObject}
 */
-''; // detach doclets above
+''; // Detach doclets above

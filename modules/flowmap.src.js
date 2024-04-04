@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.0 (2024-03-05)
+ * @license Highcharts JS v11.4.1 (2024-04-04)
  *
  * (c) 2009-2024
  *
@@ -63,7 +63,7 @@
                 let valid = !!(this.options.to && this.options.from);
                 [this.options.to, this.options.from]
                     .forEach(function (toOrFrom) {
-                    valid = !!(valid && (toOrFrom && (isString(toOrFrom) || ( // point id or has lat/lon coords
+                    valid = !!(valid && (toOrFrom && (isString(toOrFrom) || ( // Point id or has lat/lon coords
                     isNumber(pick(toOrFrom[0], toOrFrom.lat)) &&
                         isNumber(pick(toOrFrom[1], toOrFrom.lon))))));
                 });
@@ -177,13 +177,13 @@
              */
             animate(init) {
                 const series = this, points = series.points;
-                if (!init) { // run the animation
+                if (!init) { // Run the animation
                     points.forEach((point) => {
                         if (point.shapeArgs &&
                             isArray(point.shapeArgs.d) &&
                             point.shapeArgs.d.length) {
                             const path = point.shapeArgs.d, x = path[0][1], y = path[0][2];
-                            // to animate SVG path the initial path array needs to be
+                            // To animate SVG path the initial path array needs to be
                             // same as target, but element should be visible, so we
                             // insert array elements with start (M) values
                             if (x && y) {
@@ -290,7 +290,7 @@
                         if ((foundPoint instanceof Point) &&
                             foundPoint.plotX &&
                             foundPoint.plotY) {
-                            // after linked point update flowmap point should
+                            // After linked point update flowmap point should
                             // be also updated
                             addEvent(foundPoint, 'update', dirtySeries);
                             return {
@@ -827,7 +827,7 @@
          * @type  {number}
          * @apioption series.flowmap.data.lineWidth
          */
-        ''; // adds doclets above to transpiled file
+        ''; // Adds doclets above to transpiled file
 
         return FlowMapSeries;
     });

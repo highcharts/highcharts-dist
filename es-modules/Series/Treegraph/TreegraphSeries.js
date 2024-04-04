@@ -529,4 +529,4 @@ export default TreegraphSeries;
  * @type {boolean}
  * @apioption series.treegraph.data.collapsed
  */
-''; // gets doclets above into transpiled version
+''; // Gets doclets above into transpiled version

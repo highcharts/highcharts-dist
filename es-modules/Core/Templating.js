@@ -241,7 +241,7 @@ function format(str = '', ctx, chart) {
             // Format the replacement
             if (valueAndFormat.length && typeof replacement === 'number') {
                 const segment = valueAndFormat.join(':');
-                if (floatRegex.test(segment)) { // float
+                if (floatRegex.test(segment)) { // Float
                     const decimals = parseInt((segment.match(decRegex) || ['', '-1'])[1], 10);
                     if (replacement !== null) {
                         replacement = numberFormatter(replacement, decimals, lang.decimalPoint, segment.indexOf(',') > -1 ? lang.thousandsSep : '');
@@ -298,21 +298,21 @@ function numberFormat(number, decimals, decimalPoint, thousandsSep) {
         // Expose decimals from exponential notation (#7042)
         fractionDigits = decimals + +exponent[1];
         if (fractionDigits >= 0) {
-            // remove too small part of the number while keeping the notation
+            // Remove too small part of the number while keeping the notation
             exponent[0] = (+exponent[0]).toExponential(fractionDigits)
                 .split('e')[0];
             decimals = fractionDigits;
         }
         else {
-            // fractionDigits < 0
+            // `fractionDigits < 0`
             exponent[0] = exponent[0].split('.')[0] || 0;
             if (decimals < 20) {
-                // use number instead of exponential notation (#7405)
+                // Use number instead of exponential notation (#7405)
                 number = (exponent[0] * Math.pow(10, exponent[1]))
                     .toFixed(decimals);
             }
             else {
-                // or zero
+                // Or zero
                 number = 0;
             }
             exponent[1] = 0;

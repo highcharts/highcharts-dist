@@ -174,7 +174,7 @@ const BulletSeriesDefaults = {
  * @excluding halo, lineWidth, lineWidthPlus, marker
  * @apioption series.bullet.states.select
  */
-''; // keeps doclets above separate
+''; // Keeps doclets above separate
 /* *
  *
  *  Default Export

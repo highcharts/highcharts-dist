@@ -69,12 +69,12 @@ class DataPool {
      */
     getConnector(connectorId) {
         const connector = this.connectors[connectorId];
-        // already loaded
+        // Already loaded
         if (connector) {
             return Promise.resolve(connector);
         }
         let waitingList = this.waiting[connectorId];
-        // start loading
+        // Start loading
         if (!waitingList) {
             waitingList = this.waiting[connectorId] = [];
             const connectorOptions = this.getConnectorOptions(connectorId);
@@ -96,7 +96,7 @@ class DataPool {
                 }
             });
         }
-        // add request to waiting list
+        // Add request to waiting list
         return new Promise((resolve, reject) => {
             waitingList.push([resolve, reject]);
         });

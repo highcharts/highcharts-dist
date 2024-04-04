@@ -89,7 +89,7 @@ class GaugeSeries extends Series {
             const graphic = point.graphic, shapeArgs = point.shapeArgs, d = shapeArgs.d, dialOptions = merge(options.dial, point.dial); // #1233
             if (graphic) {
                 graphic.animate(shapeArgs);
-                shapeArgs.d = d; // animate alters it
+                shapeArgs.d = d; // Animate alters it
             }
             else {
                 point.graphic =
@@ -142,11 +142,11 @@ class GaugeSeries extends Series {
             series.points.forEach((point) => {
                 const graphic = point.graphic;
                 if (graphic) {
-                    // start value
+                    // Start value
                     graphic.attr({
                         rotation: series.yAxis.startAngleRad * 180 / Math.PI
                     });
-                    // animate
+                    // Animate
                     graphic.animate({
                         rotation: point.shapeArgs.rotation
                     }, series.options.animation);
@@ -477,8 +477,8 @@ GaugeSeries.defaultOptions = merge(Series.defaultOptions, {
     // Prototype members
 });
 extend(GaugeSeries.prototype, {
-    // chart.angular will be set to true when a gauge series is present,
-    // and this will be used on the axes
+    // `chart.angular` will be set to true when a gauge series is present, and
+    // this will be used on the axes
     angular: true,
     directTouch: true,
     drawGraph: noop,
@@ -555,4 +555,4 @@ export default GaugeSeries;
  * @product   highcharts
  * @apioption series.gauge.data
  */
-''; // adds the doclets above in the transpiled file
+''; // Adds the doclets above in the transpiled file

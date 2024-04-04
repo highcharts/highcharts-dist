@@ -286,4 +286,4 @@ export default ExportDataDefaults;
  * @requires  modules/export-data
  * @apioption plotOptions.series.includeInDataExport
  */
-(''); // keep doclets above in JS file
+(''); // Keep doclets above in JS file

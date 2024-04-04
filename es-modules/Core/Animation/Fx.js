@@ -111,7 +111,7 @@ class Fx {
      *
      */
     update() {
-        const elem = this.elem, prop = this.prop, // if destroyed, it is null
+        const elem = this.elem, prop = this.prop, // If destroyed, it is null
         now = this.now, step = this.options.step;
         // Animation setter defined from outside
         if (this[prop + 'Setter']) {
@@ -244,9 +244,9 @@ class Fx {
      *         they can be animated in parallel.
      */
     initPath(elem, fromD, toD) {
-        const startX = elem.startX, endX = elem.endX, end = toD.slice(), // copy
+        const startX = elem.startX, endX = elem.endX, end = toD.slice(), // Copy
         isArea = elem.isArea, positionFactor = isArea ? 2 : 1;
-        let shift, fullLength, i, reverse, start = fromD && fromD.slice(); // copy
+        let shift, fullLength, i, reverse, start = fromD && fromD.slice(); // Copy
         if (!start) {
             return [end, end];
         }
@@ -280,7 +280,7 @@ class Fx {
                 // need to append a copy of the last point.
                 if (isArea) {
                     const z = arr.pop();
-                    arr.push(arr[arr.length - 1], z); // append point and the Z
+                    arr.push(arr[arr.length - 1], z); // Append point and the Z
                 }
             }
         }

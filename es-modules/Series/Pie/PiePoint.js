@@ -124,7 +124,7 @@ class PiePoint extends Point {
     slice(sliced, redraw, animation) {
         const series = this.series, chart = series.chart;
         setAnimation(animation, chart);
-        // redraw is true by default
+        // Redraw is true by default
         redraw = pick(redraw, true);
         /**
          * Pie series only. Whether to display a slice offset from the
@@ -135,7 +135,7 @@ class PiePoint extends Point {
         // if called without an argument, toggle
         this.sliced = this.options.sliced = sliced =
             defined(sliced) ? sliced : !this.sliced;
-        // update userOptions.data
+        // Update userOptions.data
         series.options.data[series.data.indexOf(this)] =
             this.options;
         if (this.graphic) {
@@ -145,7 +145,7 @@ class PiePoint extends Point {
 }
 extend(PiePoint.prototype, {
     connectorShapes: {
-        // only one available before v7.0.0
+        // Only one available before v7.0.0
         fixedOffset: function (labelPosition, connectorPosition, options) {
             const breakAt = connectorPosition.breakAt, touchingSliceAt = connectorPosition.touchingSliceAt, lineSegment = options.softConnector ? [
                 'C',
@@ -163,7 +163,7 @@ extend(PiePoint.prototype, {
                 breakAt.x,
                 breakAt.y
             ];
-            // assemble the path
+            // Assemble the path
             return ([
                 ['M', labelPosition.x, labelPosition.y],
                 lineSegment,
@@ -172,7 +172,7 @@ extend(PiePoint.prototype, {
         },
         straight: function (labelPosition, connectorPosition) {
             const touchingSliceAt = connectorPosition.touchingSliceAt;
-            // direct line to the slice
+            // Direct line to the slice
             return [
                 ['M', labelPosition.x, labelPosition.y],
                 ['L', touchingSliceAt.x, touchingSliceAt.y]

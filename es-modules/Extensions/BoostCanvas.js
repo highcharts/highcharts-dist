@@ -215,7 +215,7 @@ var BoostCanvas;
             boost.target.clip(boost.clipRect);
         }
         else if (!(target instanceof ChartConstructor)) {
-            // ctx.clearRect(0, 0, width, height);
+            ///  ctx.clearRect(0, 0, width, height);
         }
         if (boost.canvas.width !== width) {
             boost.canvas.width = width;
@@ -271,7 +271,7 @@ var BoostCanvas;
         if (boost.clear) {
             boost.clear();
         }
-        // if (series.canvas) {
+        // If (series.canvas) {
         //     ctx.clearRect(
         //         0,
         //         0,
@@ -297,7 +297,7 @@ var BoostCanvas;
             });
             U.clearTimeout(destroyLoadingDiv);
             chart.showLoading('Drawing...');
-            chart.options.loading = loadingOptions; // reset
+            chart.options.loading = loadingOptions; // Reset
         }
         if (boostSettings.timeRendering) {
             console.time('canvas rendering'); // eslint-disable-line no-console
@@ -463,7 +463,7 @@ var BoostCanvas;
                         }
                         // Add points and reset
                         if (clientX !== lastClientX) {
-                            // maxI also a number:
+                            // `maxI` also a number:
                             if (typeof minI !== 'undefined') {
                                 plotY = yAxis.toPixels(maxVal, true);
                                 yBottom = yAxis.toPixels(minVal, true);
@@ -501,7 +501,7 @@ var BoostCanvas;
         }, function () {
             const loadingDiv = chart.loadingDiv, loadingShown = chart.loadingShown;
             stroke();
-            // if (series.boostCopy || series.chart.boostCopy) {
+            // If (series.boostCopy || series.chart.boostCopy) {
             //     (series.boostCopy || series.chart.boostCopy)();
             // }
             series.canvasToSVG();
@@ -553,7 +553,8 @@ var BoostCanvas;
         if (ctx) {
             // Draw the columns
             this.points.forEach((point) => {
-                let plotY = point.plotY, pointAttr;
+                const plotY = point.plotY;
+                let pointAttr;
                 if (typeof plotY !== 'undefined' &&
                     !isNaN(plotY) &&
                     point.y !== null &&

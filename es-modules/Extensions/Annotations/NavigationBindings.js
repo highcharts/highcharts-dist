@@ -192,10 +192,16 @@ function selectableAnnotation(annotationType) {
     }
     // #18276, show popup on touchend, but not on touchmove
     let touchStartX, touchStartY;
+    /**
+     *
+     */
     function saveCoords(e) {
         touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
     }
+    /**
+     *
+     */
     function checkForTouchmove(e) {
         const hasMoved = touchStartX ? Math.sqrt(Math.pow(touchStartX - e.changedTouches[0].clientX, 2) +
             Math.pow(touchStartY - e.changedTouches[0].clientY, 2)) >= 4 : false;
@@ -583,8 +589,8 @@ class NavigationBindings {
                 nonEditables.indexOf(key) === -1 &&
                 ((parentEditables.indexOf &&
                     parentEditables.indexOf(key)) >= 0 ||
-                    parentEditables[key] || // nested array
-                    parentEditables === true // simple array
+                    parentEditables[key] || // Nested array
+                    parentEditables === true // Simple array
                 )) {
                 // Roots:
                 if (isArray(option)) {
@@ -825,4 +831,4 @@ export default NavigationBindings;
 * @name Highcharts.NavigationBindingsOptionsObject#steps
 * @type {Array<Function>|undefined}
 */
-(''); // keeps doclets above in JS file
+(''); // Keeps doclets above in JS file

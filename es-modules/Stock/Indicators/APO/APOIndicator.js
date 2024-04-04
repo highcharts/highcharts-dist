@@ -141,4 +141,4 @@ export default APOIndicator;
  * @requires  stock/indicators/apo
  * @apioption series.apo
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

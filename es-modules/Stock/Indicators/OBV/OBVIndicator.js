@@ -46,13 +46,13 @@ class OBVIndicator extends SMAIndicator {
             for (i; i < yVal.length; i++) {
                 curentClose = hasOHLC ?
                     yVal[i][3] : yVal[i];
-                if (curentClose > previousClose) { // up
+                if (curentClose > previousClose) { // Up
                     curentOBV = previousOBV + volume[i];
                 }
-                else if (curentClose === previousClose) { // constant
+                else if (curentClose === previousClose) { // Constant
                     curentOBV = previousOBV;
                 }
-                else { // down
+                else { // Down
                     curentOBV = previousOBV - volume[i];
                 }
                 // Add point.
@@ -150,4 +150,4 @@ export default OBVIndicator;
  * @requires  stock/indicators/obv
  * @apioption series.obv
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

@@ -30,7 +30,7 @@ class SunburstPoint extends TreemapPoint {
     getDataLabelPath(label) {
         const renderer = this.series.chart.renderer, shapeArgs = this.shapeExisting, r = shapeArgs.r + pInt(label.options?.distance || 0);
         let start = shapeArgs.start, end = shapeArgs.end;
-        const angle = start + (end - start) / 2; // arc middle value
+        const angle = start + (end - start) / 2; // Arc middle value
         let upperHalf = angle < 0 &&
             angle > -Math.PI ||
             angle > Math.PI, moreThanHalf;

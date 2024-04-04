@@ -247,19 +247,19 @@ class SonificationTimeline {
             let s = 0, e = events.length, lastValidTime = time;
             while (s < e) {
                 const mid = (s + e) >> 1, t = events[mid].time, cmp = t - fromTime;
-                if (cmp > 0) { // ahead
+                if (cmp > 0) { // Ahead
                     if (next && t < lastValidTime) {
                         lastValidTime = t;
                     }
                     e = mid;
                 }
-                else if (cmp < 0) { // behind
+                else if (cmp < 0) { // Behind
                     if (!next && t > lastValidTime) {
                         lastValidTime = t;
                     }
                     s = mid + 1;
                 }
-                else { // same as from time
+                else { // Same as from time
                     if (next) {
                         s = mid + 1;
                     }
@@ -355,10 +355,10 @@ class SonificationTimeline {
                 let s = 0, e = events.length;
                 while (s < e) {
                     const mid = (s + e) >> 1, t = events[mid].time;
-                    if (t < fromTime) { // behind
+                    if (t < fromTime) { // Behind
                         s = mid + 1;
                     }
-                    else if (t > toTime) { // ahead
+                    else if (t > toTime) { // Ahead
                         e = mid;
                     }
                     else {

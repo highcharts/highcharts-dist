@@ -233,7 +233,7 @@ class IKHIndicator extends SMAIndicator {
         // getGraphPath()
         nextPoints = [
             [],
-            [] // NextPoints negative color
+            [] // Next points negative color
         ];
         let pointsLength = mainLinePoints.length, lineIndex = 0, position, point, i, startIntersect, endIntersect, sectionPoints, sectionNextPoints, pointsPlotYSum, nextPointsPlotYSum, senkouSpanTempColor, concatArrIndex, j, k;
         indicator.ikhMap = ikhMap;
@@ -689,4 +689,4 @@ export default IKHIndicator;
  * @requires  stock/indicators/ichimoku-kinko-hyo
  * @apioption series.ikh
  */
-(''); // add doclet above to transpiled file
+(''); // Add doclet above to transpiled file

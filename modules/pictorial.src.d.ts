@@ -25,6 +25,12 @@ declare module "../highcharts.src" {
          */
         animate(init?: boolean): void;
     }
+    function destroyAllStackShadows(): void;
+    function forEachStack(): void;
+    function getStackMetrics(): void;
+    function invertShadowGroup(): void;
+    function renderStackShadow(): void;
+    function rescalePatternFill(): void;
 }
 export default factory;
 export let Highcharts: typeof _Highcharts;

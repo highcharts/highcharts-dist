@@ -131,4 +131,4 @@ export default WilliamsRIndicator;
  * @requires  stock/indicators/williams-r
  * @apioption series.williamsr
  */
-''; // adds doclets above to the transpiled file
+''; // Adds doclets above to the transpiled file

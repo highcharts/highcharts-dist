@@ -19,7 +19,7 @@
  * @optionparent plotOptions.series
  */
 const seriesDefaults = {
-    // base series options
+    // Base series options
     /**
      * The SVG value used for the `stroke-linecap` and `stroke-linejoin`
      * of a line graph. Round means that lines are rounded in the ends and
@@ -2046,8 +2046,8 @@ const seriesDefaults = {
              * @product   highcharts highstock
              */
             marker: {
-            // lineWidth: base + 1,
-            // radius: base + 1
+            // `lineWidth: base + 1`,
+            // `radius: base + 1`
             },
             /**
              * Options for the halo appearing around the hovered point in

@@ -70,7 +70,7 @@ const ParetoSeriesDefaults = {
  * @product   highcharts
  * @apioption series.pareto.data
  */
-''; // keeps doclets above separate
+''; // Keeps doclets above separate
 /* *
  *
  *  Default Export

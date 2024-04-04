@@ -193,7 +193,7 @@ const WindbarbSeriesDefaults = {
  * @product   highcharts highstock
  * @apioption series.windbarb.data.direction
  */
-''; // adds doclets above to transpiled file
+''; // Adds doclets above to transpiled file
 /* *
  *
  *  Default Export

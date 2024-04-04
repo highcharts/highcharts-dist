@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.4.0 (2024-03-05)
+ * @license Highstock JS v11.4.1 (2024-04-04)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -223,12 +223,12 @@
                         gapSize: mainLineOptions.gapSize
                     }
                 }, 
-                // additional lines point place holders:
+                // Additional lines point place holders:
                 secondaryLines = [], secondaryLinesNames = getTranslatedLinesNames(indicator, pointValKey);
                 let pointsLength = mainLinePoints.length, point;
                 // Generate points for additional lines:
                 secondaryLinesNames.forEach((plotLine, index) => {
-                    // create additional lines point place holders
+                    // Create additional lines point place holders
                     secondaryLines[index] = [];
                     while (pointsLength--) {
                         point = mainLinePoints[pointsLength];
@@ -397,7 +397,7 @@
                 const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
                 // 0- date, 1-top line, 2-middle line, 3-bottom line
                 PC = [], 
-                // middle line, top line and bottom line
+                // Middle line, top line and bottom line
                 low = 2, high = 1, xData = [], yData = [];
                 let ML, TL, BL, date, slicedY, extremes, i;
                 if (yValLen < period) {
@@ -532,7 +532,7 @@
          * @requires     stock/indicators/price-channel
          * @apioption    series.pc
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return PCIndicator;
     });

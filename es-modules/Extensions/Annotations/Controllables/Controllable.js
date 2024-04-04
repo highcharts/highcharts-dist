@@ -247,4 +247,4 @@ export default Controllable;
 * @name Highcharts.AnnotationControllable#points
 * @type {Array<Highcharts.Point>}
 */
-(''); // keeps doclets above in JS file
+(''); // Keeps doclets above in JS file

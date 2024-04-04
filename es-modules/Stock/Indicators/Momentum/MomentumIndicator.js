@@ -120,4 +120,4 @@ export default MomentumIndicator;
  * @requires  stock/indicators/momentum
  * @apioption series.momentum
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

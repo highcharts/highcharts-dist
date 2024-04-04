@@ -148,8 +148,8 @@ class PackedBubbleLayout extends ReingoldFruchtermanLayout {
     applyLimitBox(node, box) {
         const layout = this, factor = 0.01;
         let distanceXY, distanceR;
-        // parentNodeLimit should be used together
-        // with seriesInteraction: false
+        // `parentNodeLimit` should be used together with seriesInteraction:
+        // false
         if (layout.options.splitSeries &&
             !node.isParentNode &&
             layout.options.parentNodeLimit) {

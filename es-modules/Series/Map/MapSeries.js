@@ -21,7 +21,7 @@ import MapSeriesDefaults from './MapSeriesDefaults.js';
 import MapView from '../../Maps/MapView.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { 
-// indirect dependency to keep product size low
+// Indirect dependency to keep product size low
 column: ColumnSeries, scatter: ScatterSeries } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
 const { extend, find, fireEvent, getNestedProperty, isArray, defined, isNumber, isObject, merge, objectEach, pick, splat } = U;
@@ -272,7 +272,7 @@ class MapSeries extends ScatterSeries {
                     .animate({ animator: 1 }, animOptions, function () {
                     if (typeof renderer.globalAnimation !== 'boolean' &&
                         renderer.globalAnimation.complete) {
-                        // fire complete only from this place
+                        // Fire complete only from this place
                         renderer.globalAnimation.complete({
                             applyDrilldown: true
                         });

@@ -62,10 +62,10 @@ class KlingerIndicator extends SMAIndicator {
     }
     getVolumeForce(yVal) {
         const volumeForce = [];
-        let CM = 0, // cumulative measurement
-        DM, // daily measurement
-        force, i = 1, // start from second point
-        previousCM = 0, previousDM = yVal[0][1] - yVal[0][2], // initial DM
+        let CM = 0, // Cumulative measurement
+        DM, // Daily measurement
+        force, i = 1, // Start from second point
+        previousCM = 0, previousDM = yVal[0][1] - yVal[0][2], // Initial DM
         previousTrend = 0, trend;
         for (i; i < yVal.length; i++) {
             trend = this.calculateTrend(yVal, i);
@@ -94,9 +94,7 @@ class KlingerIndicator extends SMAIndicator {
     }
     getValues(series, params) {
         const Klinger = [], xVal = series.xData, yVal = series.yData, xData = [], yData = [], calcSingal = [];
-        let KO, i = 0, fastEMA = 0, slowEMA, 
-        // signalEMA: number|undefined = void 0,
-        previousFastEMA = void 0, previousSlowEMA = void 0, signal = null;
+        let KO, i = 0, fastEMA = 0, slowEMA, previousFastEMA = void 0, previousSlowEMA = void 0, signal = null;
         // If the necessary conditions are not fulfilled, don't proceed.
         if (!this.isValidData(yVal[0])) {
             return;
@@ -247,4 +245,4 @@ export default KlingerIndicator;
  * @requires  stock/indicators/klinger
  * @apioption series.klinger
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

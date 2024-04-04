@@ -71,7 +71,7 @@ class BaseForm {
         ['click', 'touchstart'].forEach((eventName) => {
             addEvent(closeButton, eventName, popup.closeButtonEvents.bind(popup));
         });
-        // close popup when press ESC
+        // Close popup when press ESC
         addEvent(document, 'keydown', function (event) {
             if (event.code === 'Escape') {
                 popup.closeButtonEvents();
@@ -100,7 +100,7 @@ class BaseForm {
         // Reset toolbar styles if exists.
         if (popupDiv.className.indexOf(toolbarClass) >= 0) {
             popupDiv.classList.remove(toolbarClass);
-            // reset toolbar inline styles
+            // Reset toolbar inline styles
             popupDiv.removeAttribute('style');
         }
         // Add close button.

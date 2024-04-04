@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.0 (2024-03-05)
+ * @license Highcharts JS v11.4.1 (2024-04-04)
  *
  * Pictorial graph series type for Highcharts
  *
@@ -761,6 +761,9 @@
          *
          * */
         const { defined } = U;
+        /**
+         *
+         */
         function rescalePatternFill(element, stackHeight, width, height, borderWidth = 1) {
             const fill = element && element.attr('fill'), match = fill && fill.match(/url\(([^)]+)\)/);
             if (match) {
@@ -788,6 +791,9 @@
                 }
             }
         }
+        /**
+         *
+         */
         function getStackMetrics(yAxis, shape) {
             let height = yAxis.len, y = 0;
             if (shape && defined(shape.max)) {
@@ -799,8 +805,11 @@
                 y
             };
         }
+        /**
+         *
+         */
         function invertShadowGroup(shadowGroup, yAxis) {
-            let inverted = yAxis.chart.inverted;
+            const inverted = yAxis.chart.inverted;
             if (inverted) {
                 shadowGroup.attr({
                     rotation: inverted ? 90 : 0,
@@ -1040,6 +1049,9 @@
                 }
             });
         });
+        /**
+         *
+         */
         function renderStackShadow(stack) {
             // Get first pictorial series
             const stackKeys = Object
@@ -1134,6 +1146,9 @@
                 stack.shadowGroup = void 0;
             }
         }
+        /**
+         *
+         */
         function forEachStack(chart, callback) {
             if (chart.axes) {
                 chart.axes.forEach(function (axis) {
@@ -1163,6 +1178,9 @@
                 this.shadow.animate({ width });
             }
         });
+        /**
+         *
+         */
         function destroyAllStackShadows(chart) {
             forEachStack(chart, function (stack) {
                 if (stack.shadow && stack.shadowGroup) {
@@ -1353,7 +1371,7 @@
          * @requires  modules/pictorial
          * @apioption yAxis.stackShadow.enabled
          */
-        ''; // adds doclets above to transpiled file
+        ''; // Adds doclets above to transpiled file
 
         return PictorialSeries;
     });

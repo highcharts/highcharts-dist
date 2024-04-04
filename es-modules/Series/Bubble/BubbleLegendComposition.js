@@ -47,24 +47,26 @@ function chartDrawChartBox(proceed, options, callback) {
         }
         // Create legend with bubbleLegend
         legend.render();
-        chart.getMargins();
-        chart.axes.forEach(function (axis) {
-            if (axis.visible) { // #11448
-                axis.render();
-            }
-            if (!bubbleLegendOptions.placed) {
-                axis.setScale();
-                axis.updateNames();
-                // Disable axis animation on init
-                objectEach(axis.ticks, function (tick) {
-                    tick.isNew = true;
-                    tick.isNewLabel = true;
-                });
-            }
-        });
+        // Calculate margins after first rendering the bubble legend
+        if (!bubbleLegendOptions.placed) {
+            chart.getMargins();
+            chart.axes.forEach(function (axis) {
+                if (axis.visible) { // #11448
+                    axis.render();
+                }
+                if (!bubbleLegendOptions.placed) {
+                    axis.setScale();
+                    axis.updateNames();
+                    // Disable axis animation on init
+                    objectEach(axis.ticks, function (tick) {
+                        tick.isNew = true;
+                        tick.isNewLabel = true;
+                    });
+                }
+            });
+            chart.getMargins();
+        }
         bubbleLegendOptions.placed = true;
-        // After recalculate axes, calculate margins again.
-        chart.getMargins();
         // Call default 'drawChartBox' method.
         proceed.call(chart, options, callback);
         // Check bubble legend sizes and correct them if necessary.
@@ -150,7 +152,7 @@ function getLinesHeights(legend) {
         legendItem = items[i].legendItem || {};
         legendItem2 = (items[i + 1] || {}).legendItem || {};
         if (legendItem.labelHeight) {
-            // for bubbleLegend
+            // For bubbleLegend
             items[i].itemHeight = legendItem.labelHeight;
         }
         if ( // Line break

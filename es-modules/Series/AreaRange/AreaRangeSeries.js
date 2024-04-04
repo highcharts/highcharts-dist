@@ -216,7 +216,7 @@ class AreaRangeSeries extends AreaSeries {
                 polarPlotY: point.polarPlotY,
                 rectPlotX: point.rectPlotX,
                 yBottom: point.yBottom,
-                // plotHighX is for polar charts
+                // `plotHighX` is for polar charts
                 plotX: pick(point.plotHighX, point.plotX),
                 plotY: point.plotHigh,
                 isNull: point.isNull
@@ -240,7 +240,7 @@ class AreaRangeSeries extends AreaSeries {
                 left: 'right',
                 center: 'center',
                 right: 'left'
-            }[step]; // swap for reading in getGraphPath
+            }[step]; // Swap for reading in getGraphPath
         }
         const higherPath = getGraphPath.call(this, highPoints);
         const higherAreaPath = getGraphPath.call(this, highAreaPoints);
@@ -709,4 +709,4 @@ export default AreaRangeSeries;
  * @product   highcharts highstock
  * @apioption series.arearange.data.low
  */
-''; // adds doclets above to transpiled file
+''; // Adds doclets above to transpiled file

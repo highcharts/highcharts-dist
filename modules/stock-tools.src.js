@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.4.0 (2024-03-05)
+ * @license Highstock JS v11.4.1 (2024-04-04)
  *
  * Advanced Highcharts Stock tools
  *
@@ -447,7 +447,7 @@
              * from a different server.
              *
              * @type      {string}
-             * @default   https://code.highcharts.com/11.4.0/gfx/stock-icons/
+             * @default   https://code.highcharts.com/11.4.1/gfx/stock-icons/
              * @since     7.1.3
              * @apioption navigation.iconsURL
              */
@@ -711,10 +711,16 @@
             }
             // #18276, show popup on touchend, but not on touchmove
             let touchStartX, touchStartY;
+            /**
+             *
+             */
             function saveCoords(e) {
                 touchStartX = e.touches[0].clientX;
                 touchStartY = e.touches[0].clientY;
             }
+            /**
+             *
+             */
             function checkForTouchmove(e) {
                 const hasMoved = touchStartX ? Math.sqrt(Math.pow(touchStartX - e.changedTouches[0].clientX, 2) +
                     Math.pow(touchStartY - e.changedTouches[0].clientY, 2)) >= 4 : false;
@@ -1102,8 +1108,8 @@
                         nonEditables.indexOf(key) === -1 &&
                         ((parentEditables.indexOf &&
                             parentEditables.indexOf(key)) >= 0 ||
-                            parentEditables[key] || // nested array
-                            parentEditables === true // simple array
+                            parentEditables[key] || // Nested array
+                            parentEditables === true // Simple array
                         )) {
                         // Roots:
                         if (isArray(option)) {
@@ -1343,7 +1349,7 @@
         * @name Highcharts.NavigationBindingsOptionsObject#steps
         * @type {Array<Function>|undefined}
         */
-        (''); // keeps doclets above in JS file
+        (''); // Keeps doclets above in JS file
 
         return NavigationBindings;
     });
@@ -2597,7 +2603,8 @@
                                     }
                                 },
                                 { x, y },
-                                { x, y }],
+                                { x, y }
+                            ],
                             innerBackground: {
                                 fill: 'rgba(100, 170, 255, 0.8)'
                             }
@@ -4665,7 +4672,7 @@
             yAxes = chart.yAxis.filter(isNotNavigatorYAxis), plotHeight = chart.plotHeight, 
             // Gather current heights (in %)
             { positions, allAxesHeight } = this.getYAxisPositions(yAxes, plotHeight, defaultHeight, removedYAxisProps), resizers = this.getYAxisResizers(yAxes);
-            // check if the axis is being either added or removed and
+            // Check if the axis is being either added or removed and
             // if the new indicator axis will fit under existing axes.
             // if so, there is no need to scale them.
             if (!removedYAxisProps &&
@@ -4744,7 +4751,7 @@
                 this.chart = chart;
                 this.options = options;
                 this.lang = langOptions;
-                // set url for icons.
+                // Set url for icons.
                 this.iconsURL = this.getIconsURL();
                 this.guiEnabled = options.enabled;
                 this.visible = pick(options.visible, true);
@@ -4771,12 +4778,12 @@
              */
             init() {
                 const lang = this.lang, guiOptions = this.options, toolbar = this.toolbar, buttons = guiOptions.buttons, defs = guiOptions.definitions, allButtons = toolbar.childNodes;
-                // create buttons
+                // Create buttons
                 buttons.forEach((btnName) => {
                     const button = this.addButton(toolbar, defs, btnName, lang);
                     this.eventsToUnbind.push(addEvent(button.buttonWrapper, 'click', () => this.eraseActiveButtons(allButtons, button.buttonWrapper)));
                     if (isArray(defs[btnName].items)) {
-                        // create submenu buttons
+                        // Create submenu buttons
                         this.addSubmenu(button, defs[btnName]);
                     }
                 });
@@ -4795,18 +4802,18 @@
              */
             addSubmenu(parentBtn, button) {
                 const submenuArrow = parentBtn.submenuArrow, buttonWrapper = parentBtn.buttonWrapper, buttonWidth = getStyle(buttonWrapper, 'width'), wrapper = this.wrapper, menuWrapper = this.listWrapper, allButtons = this.toolbar.childNodes, 
-                // create submenu container
+                // Create submenu container
                 submenuWrapper = this.submenu = createElement('ul', {
                     className: 'highcharts-submenu-wrapper'
                 }, void 0, buttonWrapper);
-                // create submenu buttons and select the first one
+                // Create submenu buttons and select the first one
                 this.addSubmenuItems(buttonWrapper, button);
-                // show / hide submenu
+                // Show / hide submenu
                 this.eventsToUnbind.push(addEvent(submenuArrow, 'click', (e) => {
                     e.stopPropagation();
                     // Erase active class on all other buttons
                     this.eraseActiveButtons(allButtons, buttonWrapper);
-                    // hide menu
+                    // Hide menu
                     if (buttonWrapper.className
                         .indexOf('highcharts-current') >= 0) {
                         menuWrapper.style.width =
@@ -4815,23 +4822,23 @@
                         submenuWrapper.style.display = 'none';
                     }
                     else {
-                        // show menu
+                        // Show menu
                         // to calculate height of element
                         submenuWrapper.style.display = 'block';
                         let topMargin = submenuWrapper.offsetHeight -
                             buttonWrapper.offsetHeight - 3;
-                        // calculate position of submenu in the box
+                        // Calculate position of submenu in the box
                         // if submenu is inside, reset top margin
                         if (
-                        // cut on the bottom
+                        // Cut on the bottom
                         !(submenuWrapper.offsetHeight +
                             buttonWrapper.offsetTop >
                             wrapper.offsetHeight &&
-                            // cut on the top
+                            // Cut on the top
                             buttonWrapper.offsetTop > topMargin)) {
                             topMargin = 0;
                         }
-                        // apply calculated styles
+                        // Apply calculated styles
                         css(submenuWrapper, {
                             top: -topMargin + 'px',
                             left: buttonWidth + 3 + 'px'
@@ -4858,9 +4865,9 @@
             addSubmenuItems(buttonWrapper, button) {
                 const _self = this, submenuWrapper = this.submenu, lang = this.lang, menuWrapper = this.listWrapper, items = button.items;
                 let submenuBtn;
-                // add items to submenu
+                // Add items to submenu
                 items.forEach((btnName) => {
-                    // add buttons to submenu
+                    // Add buttons to submenu
                     submenuBtn = this.addButton(submenuWrapper, button, btnName, lang);
                     this.eventsToUnbind.push(addEvent(submenuBtn.mainButton, 'click', function () {
                         _self.switchSymbol(this, buttonWrapper, true);
@@ -4869,9 +4876,9 @@
                         submenuWrapper.style.display = 'none';
                     }));
                 });
-                // select first submenu item
+                // Select first submenu item
                 const firstSubmenuItem = submenuWrapper.querySelectorAll('li > .highcharts-menu-item-btn')[0];
-                // replace current symbol, in main button, with submenu's button style
+                // Replace current symbol, in main button, with submenu's button style
                 this.switchSymbol(firstSubmenuItem, false);
             }
             /**
@@ -4885,7 +4892,7 @@
                         btn.classList.remove('highcharts-active');
                         submenuItems =
                             btn.querySelectorAll('.highcharts-submenu-wrapper');
-                        // hide submenu
+                        // Hide submenu
                         if (submenuItems.length > 0) {
                             submenuItems[0].style.display = 'none';
                         }
@@ -4915,19 +4922,19 @@
              */
             addButton(target, options, btnName, lang = {}) {
                 const btnOptions = options[btnName], items = btnOptions.items, classMapping = Toolbar.prototype.classMapping, userClassName = btnOptions.className || '';
-                // main button wrapper
+                // Main button wrapper
                 const buttonWrapper = createElement('li', {
                     className: pick(classMapping[btnName], '') + ' ' + userClassName,
                     title: lang[btnName] || btnName
                 }, void 0, target);
-                // single button
+                // Single button
                 const elementType = (btnOptions.elementType || 'button');
                 const mainButton = createElement(elementType, {
                     className: 'highcharts-menu-item-btn'
                 }, void 0, buttonWrapper);
-                // submenu
+                // Submenu
                 if (items && items.length) {
-                    // arrow is a hook to show / hide submenu
+                    // Arrow is a hook to show / hide submenu
                     const submenuArrow = createElement('button', {
                         className: 'highcharts-submenu-item-arrow ' +
                             'highcharts-arrow-right'
@@ -4953,7 +4960,7 @@
              */
             addNavigation() {
                 const wrapper = this.wrapper;
-                // arrow wrapper
+                // Arrow wrapper
                 this.arrowWrapper = createElement('div', {
                     className: 'highcharts-arrow-wrapper'
                 });
@@ -4968,7 +4975,7 @@
                 this.arrowDown.style.backgroundImage =
                     'url(' + this.iconsURL + 'arrow-right.svg)';
                 wrapper.insertBefore(this.arrowWrapper, wrapper.childNodes[0]);
-                // attach scroll events
+                // Attach scroll events
                 this.scrollButtons();
             }
             /**
@@ -5000,7 +5007,7 @@
             createHTML() {
                 const chart = this.chart, guiOptions = this.options, container = chart.container, navigation = chart.options.navigation, bindingsClassName = navigation && navigation.bindingsClassName;
                 let listWrapper, toolbar;
-                // create main container
+                // Create main container
                 const wrapper = this.wrapper = createElement('div', {
                     className: 'highcharts-stocktools-wrapper ' +
                         guiOptions.className + ' ' + bindingsClassName
@@ -5016,19 +5023,19 @@
                     addEvent(wrapper, eventType, (e) => e.stopPropagation());
                 });
                 addEvent(wrapper, 'mouseover', (e) => chart.pointer?.onContainerMouseLeave(e));
-                // toolbar
+                // Toolbar
                 this.toolbar = toolbar = createElement('ul', {
                     className: 'highcharts-stocktools-toolbar ' +
                         guiOptions.toolbarClassName
                 });
-                // add container for list of buttons
+                // Add container for list of buttons
                 this.listWrapper = listWrapper = createElement('div', {
                     className: 'highcharts-menu-wrapper'
                 });
                 wrapper.insertBefore(listWrapper, wrapper.childNodes[0]);
                 listWrapper.insertBefore(toolbar, listWrapper.childNodes[0]);
                 this.showHideToolbar();
-                // add navigation which allows user to scroll down / top GUI buttons
+                // Add navigation which allows user to scroll down / top GUI buttons
                 this.addNavigation();
             }
             /**
@@ -5036,16 +5043,16 @@
              * @private
              */
             showHideNavigatorion() {
-                // arrows
+                // Arrows
                 // 50px space for arrows
                 if (this.visible &&
                     this.toolbar.offsetHeight > (this.wrapper.offsetHeight - 50)) {
                     this.arrowWrapper.style.display = 'block';
                 }
                 else {
-                    // reset margin if whole toolbar is visible
+                    // Reset margin if whole toolbar is visible
                     this.toolbar.style.marginTop = '0px';
-                    // hide arrows
+                    // Hide arrows
                     this.arrowWrapper.style.display = 'none';
                 }
             }
@@ -5063,7 +5070,7 @@
                 showhideBtn.style.backgroundImage =
                     'url(' + this.iconsURL + 'arrow-right.svg)';
                 if (!visible) {
-                    // hide
+                    // Hide
                     if (submenu) {
                         submenu.style.display = 'none';
                     }
@@ -5101,23 +5108,23 @@
              */
             switchSymbol(button, redraw) {
                 const buttonWrapper = button.parentNode, buttonWrapperClass = buttonWrapper.className, 
-                // main button in first level og GUI
+                // Main button in first level og GUI
                 mainNavButton = buttonWrapper.parentNode.parentNode;
-                // if the button is disabled, don't do anything
+                // If the button is disabled, don't do anything
                 if (buttonWrapperClass.indexOf('highcharts-disabled-btn') > -1) {
                     return;
                 }
-                // set class
+                // Set class
                 mainNavButton.className = '';
                 if (buttonWrapperClass) {
                     mainNavButton.classList.add(buttonWrapperClass.trim());
                 }
-                // set icon
+                // Set icon
                 mainNavButton
                     .querySelectorAll('.highcharts-menu-item-btn')[0]
                     .style.backgroundImage =
                     button.style.backgroundImage;
-                // set active class
+                // Set active class
                 if (redraw) {
                     this.toggleButtonActiveClass(mainNavButton);
                 }
@@ -5190,7 +5197,7 @@
             getIconsURL() {
                 return this.chart.options.navigation.iconsURL ||
                     this.options.iconsURL ||
-                    'https://code.highcharts.com/11.4.0/gfx/stock-icons/';
+                    'https://code.highcharts.com/11.4.1/gfx/stock-icons/';
             }
         }
         Toolbar.prototype.classMapping = {

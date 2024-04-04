@@ -136,4 +136,4 @@ export default TrendLineIndicator;
  * @requires  stock/indicators/trendline
  * @apioption series.trendline
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

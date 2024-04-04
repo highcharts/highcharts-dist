@@ -188,6 +188,7 @@ declare module "../highcharts" {
      * googleSpreadsheetRange option is set.
      */
     function getRange(): void;
+    function hasURLOption(): void;
 }
 export default factory;
 export let Highcharts: typeof _Highcharts;

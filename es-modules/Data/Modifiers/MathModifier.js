@@ -90,11 +90,11 @@ class MathModifier extends DataModifier {
             if (typeof cell === 'string' &&
                 cell[0] === '=') {
                 try {
-                    // use cache while formula string is repetitive
+                    // Use cache while formula string is repetitive
                     cacheFormula = (cacheString === cell ?
                         cacheFormula :
                         FormulaParser.parseFormula(cell.substring(1), alternativeSeparators));
-                    // process parsed formula string
+                    // Process parsed formula string
                     column[i] =
                         FormulaProcessor.processFormula(cacheFormula, table);
                 }

@@ -216,4 +216,4 @@ export default StochasticIndicator;
  * @requires  stock/indicators/stochastic
  * @apioption series.stochastic
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

@@ -51,7 +51,7 @@ class PriceEnvelopesIndicator extends SMAIndicator {
         const period = params.period, topPercent = params.topBand, botPercent = params.bottomBand, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
         // 0- date, 1-top line, 2-middle line, 3-bottom line
         PE = [], 
-        // middle line, top line and bottom line
+        // Middle line, top line and bottom line
         xData = [], yData = [];
         let ML, TL, BL, date, slicedX, slicedY, point, i;
         // Price envelopes requires close value
@@ -200,4 +200,4 @@ export default PriceEnvelopesIndicator;
  * @requires  stock/indicators/price-envelopes
  * @apioption series.priceenvelopes
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

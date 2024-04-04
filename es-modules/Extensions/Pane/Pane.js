@@ -205,4 +205,4 @@ export default Pane;
 /**
  * @typedef {"arc"|"circle"|"solid"} Highcharts.PaneBackgroundShapeValue
  */
-''; // keeps doclets above in JS file
+''; // Keeps doclets above in JS file

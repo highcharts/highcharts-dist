@@ -47,7 +47,7 @@ function addMenuItem(tabName, disableTab) {
     if (disableTab === 0) {
         className += ' highcharts-tab-disabled';
     }
-    // tab 1
+    // Tab 1
     const menuItem = createElement('button', {
         className
     }, void 0, popupDiv);
@@ -79,14 +79,14 @@ function init(chart) {
         return;
     }
     const indicatorsCount = this.indicators.getAmount.call(chart);
-    // create menu items
-    const firstTab = addMenuItem.call(this, 'add'); // run by default
+    // Create menu items
+    const firstTab = addMenuItem.call(this, 'add'); // Run by default
     addMenuItem.call(this, 'edit', indicatorsCount);
-    // create tabs containers
+    // Create tabs containers
     addContentItem.call(this);
     addContentItem.call(this);
     switchTabs.call(this, indicatorsCount);
-    // activate first tab
+    // Activate first tab
     selectTab.call(this, firstTab, 0);
 }
 /**
@@ -116,7 +116,7 @@ function switchTabs(disableTab) {
         }
         ['click', 'touchstart'].forEach((eventName) => {
             addEvent(tab, eventName, function () {
-                // reset class on other elements
+                // Reset class on other elements
                 deselectAll.call(popup);
                 selectTab.call(popup, this, i);
             });

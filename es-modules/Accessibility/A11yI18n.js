@@ -43,7 +43,7 @@ var A11yI18nComposition;
     }
     A11yI18nComposition.compose = compose;
     /**
-     * i18n utility function.  Format a single array or plural statement in a
+     * I18n utility function.  Format a single array or plural statement in a
      * format string.  If the statement is not an array or plural statement,
      * returns the statement within brackets.  Invalid array statements return
      * an empty string.

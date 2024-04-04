@@ -55,10 +55,8 @@ function onSeriesAfterBindAxes() {
                 gridLineWidth: 0,
                 lineWidth: 0,
                 min: 0,
-                // dataMin: 0,
                 minPadding: 0,
                 max: axisMax,
-                // dataMax: TreemapUtilities.AXIS_MAX,
                 maxPadding: 0,
                 startOnTick: false,
                 title: void 0,
@@ -234,13 +232,13 @@ class TreemapSeries extends ScatterSeries {
             dataLabel.getBBox().width > (dataLabel.text.textWidth || 0)) {
             dataLabel.css({
                 textOverflow: 'ellipsis',
-                // unit (px) is required when useHTML is true
+                // Unit (px) is required when useHTML is true
                 width: style.width += 'px'
             });
         }
         ColumnSeries.prototype.alignDataLabel.apply(this, arguments);
         if (point.dataLabel) {
-            // point.node.zIndex could be undefined (#6956)
+            // `point.node.zIndex` could be undefined (#6956)
             point.dataLabel.attr({ zIndex: (point.node.zIndex || 0) + 1 });
         }
     }

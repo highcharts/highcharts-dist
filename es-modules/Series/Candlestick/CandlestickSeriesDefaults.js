@@ -166,7 +166,7 @@ const CandlestickSeriesDefaults = {
  * @product   highstock
  * @apioption series.candlestick.data
  */
-''; // adds doclets above to transpiled
+''; // Adds doclets above to transpiled
 /* *
  *
  *  Default Export

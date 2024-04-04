@@ -491,7 +491,7 @@ class DataTable {
                 for (let i = 0, cellValue; i < columnLength; ++i) {
                     cellValue = column[i];
                     if (typeof cellValue === 'number') {
-                        // assume unmixed data for performance reasons
+                        // Assume unmixed data for performance reasons
                         return column.slice();
                     }
                     if (cellValue !== null &&

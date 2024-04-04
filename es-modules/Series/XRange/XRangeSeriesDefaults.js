@@ -76,7 +76,7 @@ const XRangeSeriesDefaults = {
     colorByPoint: true,
     dataLabels: {
         formatter: function () {
-            let point = this.point, amount = point.partialFill;
+            let amount = this.point.partialFill;
             if (isObject(amount)) {
                 amount = amount.amount;
             }
@@ -211,4 +211,4 @@ export default XRangeSeriesDefaults;
  * @product   highcharts highstock gantt
  * @apioption series.xrange.data.partialFill.fill
  */
-(''); // adds doclets above to transpiled file
+(''); // Adds doclets above to transpiled file

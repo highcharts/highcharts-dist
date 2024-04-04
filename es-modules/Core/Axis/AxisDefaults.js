@@ -2195,7 +2195,7 @@ var AxisDefaults;
          * @type    {Highcharts.ColorType}
          */
         tickColor: "#333333" /* Palette.neutralColor80 */
-        // tickWidth: 1
+        // `tickWidth: 1`
     };
     /**
      * The Z axis or depth axis for 3D plots.

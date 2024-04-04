@@ -52,7 +52,7 @@ class MapBubbleSeries extends BubbleSeries {
     }
     updateParallelArrays(point, i, iArgs) {
         super.updateParallelArrays.call(this, point, i, iArgs);
-        let processedXData = this.processedXData, xData = this.xData;
+        const processedXData = this.processedXData, xData = this.xData;
         if (processedXData && xData) {
             processedXData.length = xData.length;
         }
@@ -327,4 +327,4 @@ export default MapBubbleSeries;
  *         Map bubble with mapmarker symbol
  * @apioption series.mapbubble.marker
  */
-''; // adds doclets above to transpiled file
+''; // Adds doclets above to transpiled file

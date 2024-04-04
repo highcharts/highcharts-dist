@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.0 (2024-03-05)
+ * @license Highcharts JS v11.4.1 (2024-04-04)
  *
  * (c) 2009-2024 Torstein Honsi
  *
@@ -59,8 +59,10 @@
              *
              * */
             DarkGreenTheme.options = {
-                colors: ['#DDDF0D', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee',
-                    '#ff0066', '#eeaaee', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee'],
+                colors: [
+                    '#DDDF0D', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee',
+                    '#ff0066', '#eeaaee', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee'
+                ],
                 chart: {
                     backgroundColor: {
                         linearGradient: { x1: 0, y1: 0, x2: 1, y2: 1 },
@@ -193,7 +195,7 @@
                         }
                     }
                 },
-                // scroll charts
+                // Scroll charts
                 rangeSelector: {
                     buttonTheme: {
                         fill: {

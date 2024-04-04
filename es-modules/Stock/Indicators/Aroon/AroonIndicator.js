@@ -123,7 +123,7 @@ AroonIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
         pointFormat: '<span style="color:{point.color}">\u25CF</span><b> {series.name}</b><br/>Aroon Up: {point.y}<br/>Aroon Down: {point.aroonDown}<br/>'
     },
     /**
-     * aroonDown line options.
+     * AroonDown line options.
      */
     aroonDown: {
         /**
@@ -181,4 +181,4 @@ export default AroonIndicator;
  * @requires  stock/indicators/aroon
  * @apioption series.aroon
  */
-''; // to avoid removal of the above jsdoc
+''; // To avoid removal of the above jsdoc

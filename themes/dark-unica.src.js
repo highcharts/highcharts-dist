@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.0 (2024-03-05)
+ * @license Highcharts JS v11.4.1 (2024-04-04)
  *
  * (c) 2009-2024 Torstein Honsi
  *
@@ -189,7 +189,7 @@
                         }
                     }
                 },
-                // scroll charts
+                // Scroll charts
                 rangeSelector: {
                     buttonTheme: {
                         fill: '#505053',

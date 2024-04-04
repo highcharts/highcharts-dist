@@ -75,6 +75,9 @@ declare module "../highcharts.src" {
      * @return Rotated path.
      */
     function swapXY(path: SVGPathArray, vertical?: boolean): SVGPathArray;
+    function getCurvedPath(): void;
+    function getDefaultPath(): void;
+    function getStraightPath(): void;
 }
 export default factory;
 export let Highcharts: typeof _Highcharts;

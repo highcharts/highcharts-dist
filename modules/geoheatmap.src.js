@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.0 (2024-03-05)
+ * @license Highcharts JS v11.4.1 (2024-04-04)
  *
  * (c) 2009-2024
  *
@@ -699,7 +699,7 @@
         * @name Highcharts.InterpolationOptionsObject#blur
         * @type {number}
         */
-        ''; // adds doclets above to the transpiled file
+        ''; // Adds doclets above to the transpiled file
 
         return GeoHeatmapSeries;
     });

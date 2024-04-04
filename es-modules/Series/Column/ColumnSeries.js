@@ -63,14 +63,14 @@ class ColumnSeries extends Series {
             else {
                 attr.translateY = translatedThreshold;
             }
-            // apply final clipping (used in Highcharts Stock) (#7083)
+            // Apply final clipping (used in Highcharts Stock) (#7083)
             // animation is done by scaleY, so clipping is for panes
             if (series.clipBox) {
                 series.setClip();
             }
             series.group.attr(attr);
         }
-        else { // run the animation
+        else { // Run the animation
             translateStart = Number(series.group.attr(translateProp));
             series.group.animate({ scaleY: 1 }, extend(animObject(series.options.animation), {
                 // Do the scale synchronously to ensure smooth
@@ -98,7 +98,7 @@ class ColumnSeries extends Series {
         super.init.apply(this, arguments);
         const series = this;
         chart = series.chart;
-        // if the series is added dynamically, force redraw of other
+        // If the series is added dynamically, force redraw of other
         // series affected by a new column
         if (chart.hasRendered) {
             chart.series.forEach(function (otherSeries) {
@@ -181,8 +181,8 @@ class ColumnSeries extends Series {
      * @function Highcharts.seriesTypes.column#crispCol
      */
     crispCol(x, y, w, h) {
-        const borderWidth = this.borderWidth, xCrisp = -(borderWidth % 2 ? 0.5 : 0);
-        let right, yCrisp = borderWidth % 2 ? 0.5 : 1;
+        const borderWidth = this.borderWidth, xCrisp = -(borderWidth % 2 ? 0.5 : 0), yCrisp = borderWidth % 2 ? 0.5 : 1;
+        let right;
         // Horizontal. We need to first compute the exact right edge, then
         // round it and compute the width from there.
         if (this.options.crisp) {
@@ -287,7 +287,7 @@ class ColumnSeries extends Series {
         const series = this, chart = series.chart, options = series.options, dense = series.dense =
             series.closestPointRange * series.xAxis.transA < 2, borderWidth = series.borderWidth = pick(options.borderWidth, dense ? 0 : 1 // #3635
         ), xAxis = series.xAxis, yAxis = series.yAxis, threshold = options.threshold, minPointLength = pick(options.minPointLength, 5), metrics = series.getColumnMetrics(), seriesPointWidth = metrics.width, seriesXOffset = series.pointXOffset = metrics.offset, dataMin = series.dataMin, dataMax = series.dataMax;
-        // postprocessed for border width
+        // Postprocessed for border width
         let seriesBarW = series.barW =
             Math.max(seriesPointWidth, 1 + 2 * borderWidth), translatedThreshold = series.translatedThreshold =
             yAxis.getThreshold(threshold);
@@ -320,9 +320,9 @@ class ColumnSeries extends Series {
                     isNumber(dataMax) &&
                     point.y === threshold &&
                     dataMax <= threshold &&
-                    // and if there's room for it (#7311)
+                    // And if there's room for it (#7311)
                     (yAxis.min || 0) < threshold &&
-                    // if all points are the same value (i.e zero) not draw
+                    // If all points are the same value (i.e zero) not draw
                     // as negative points (#10646), but only if there's room
                     // for it (#14876)
                     (dataMin !== dataMax || (yAxis.max || 0) <= threshold)) {
@@ -399,7 +399,7 @@ class ColumnSeries extends Series {
     pointAttribs(point, state) {
         const options = this.options, p2o = this.pointAttrToOptions || {}, strokeOption = p2o.stroke || 'borderColor', strokeWidthOption = p2o['stroke-width'] || 'borderWidth';
         let stateOptions, zone, brightness, fill = (point && point.color) || this.color, 
-        // set to fill when borderColor null:
+        // Set to fill when borderColor null:
         stroke = ((point && point[strokeOption]) ||
             options[strokeOption] ||
             fill), dashstyle = (point && point.options.dashStyle) || options.dashStyle, strokeWidth = (point && point[strokeWidthOption]) ||
@@ -460,7 +460,7 @@ class ColumnSeries extends Series {
     drawPoints(points = this.points) {
         const series = this, chart = this.chart, options = series.options, renderer = chart.renderer, animationLimit = options.animationLimit || 250;
         let shapeArgs;
-        // draw the columns
+        // Draw the columns
         points.forEach(function (point) {
             const plotY = point.plotY;
             let graphic = point.graphic, hasGraphic = !!graphic, verb = graphic && chart.pointCount < animationLimit ?
@@ -493,7 +493,7 @@ class ColumnSeries extends Series {
                         verb = 'animate';
                     }
                 }
-                if (graphic && hasGraphic) { // update
+                if (graphic && hasGraphic) { // Update
                     graphic[verb](merge(shapeArgs));
                 }
                 // Presentational
@@ -545,7 +545,7 @@ class ColumnSeries extends Series {
         if (!series._hasTracking) {
             series.trackerGroups.forEach(function (key) {
                 if (series[key]) {
-                    // we don't always have dataLabelsGroup
+                    // We don't always have dataLabelsGroup
                     series[key]
                         .addClass('highcharts-tracker')
                         .on('mouseover', onMouseOver)
@@ -571,7 +571,7 @@ class ColumnSeries extends Series {
      */
     remove() {
         const series = this, chart = series.chart;
-        // column and bar series affects other series of the same type
+        // Column and bar series affects other series of the same type
         // as they are either stacked or grouped
         if (chart.hasRendered) {
             chart.series.forEach(function (otherSeries) {
@@ -625,4 +625,4 @@ export default ColumnSeries;
 * @name Highcharts.ColumnMetricsObject#offset
 * @type {number}
 */
-''; // detach doclets above
+''; // Detach doclets above

@@ -119,9 +119,9 @@ class Tooltip {
         let s;
         // Build the header
         s = [tooltip.tooltipFooterHeaderFormatter(items[0])];
-        // build the values
+        // Build the values
         s = s.concat(tooltip.bodyFormatter(items));
-        // footer
+        // Footer
         s.push(tooltip.tooltipFooterHeaderFormatter(items[0], true));
         return s;
     }
@@ -699,10 +699,10 @@ class Tooltip {
         tooltip.allowShared = !(!isArray(pointOrPoints) &&
             pointOrPoints.series &&
             pointOrPoints.series.noSharedTooltip);
-        // get the reference point coordinates (pie charts use tooltipPos)
+        // Get the reference point coordinates (pie charts use tooltipPos)
         tooltip.followPointer = (!tooltip.split && point.series.tooltipOptions.followPointer);
         const anchor = tooltip.getAnchor(pointOrPoints, mouseEvent), x = anchor[0], y = anchor[1];
-        // shared tooltip, array is sent over
+        // Shared tooltip, array is sent over
         if (shared && tooltip.allowShared) {
             pointer.applyInactiveState(points);
             // Now set hover state for the chosen ones:
@@ -712,7 +712,7 @@ class Tooltip {
             });
             formatterContext = point.getLabelConfig();
             formatterContext.points = pointConfig;
-            // single point tooltip
+            // Single point tooltip
         }
         else {
             formatterContext = point.getLabelConfig();
@@ -721,15 +721,15 @@ class Tooltip {
         const text = isString(formatString) ?
             format(formatString, formatterContext, chart) :
             formatter.call(formatterContext, tooltip);
-        // register the current series
+        // Register the current series
         const currentSeries = point.series;
         this.distance = pick(currentSeries.tooltipOptions.distance, 16);
-        // update the inner HTML
+        // Update the inner HTML
         if (text === false) {
             this.hide();
         }
         else {
-            // update text
+            // Update text
             if (tooltip.split && tooltip.allowShared) { // #13868
                 this.renderSplit(text, points);
             }
@@ -784,7 +784,7 @@ class Tooltip {
                     return;
                 }
             }
-            // show it
+            // Show it
             if (tooltip.isHidden && tooltip.label) {
                 tooltip.label.attr({
                     opacity: 1
@@ -1137,10 +1137,10 @@ class Tooltip {
         box.x = Math.min(0, anchorPos[0]);
         box.y = Math.min(0, anchorPos[1]);
         box.width = (anchorPos[0] < 0 ?
-            Math.max(Math.abs(anchorPos[0]), (labelBBox.width - anchorPos[0])) :
+            Math.max(Math.abs(anchorPos[0]), labelBBox.width - anchorPos[0]) :
             Math.max(Math.abs(anchorPos[0]), labelBBox.width));
         box.height = (anchorPos[1] < 0 ?
-            Math.max(Math.abs(anchorPos[1]), (labelBBox.height - Math.abs(anchorPos[1]))) :
+            Math.max(Math.abs(anchorPos[1]), labelBBox.height - Math.abs(anchorPos[1])) :
             Math.max(Math.abs(anchorPos[1]), labelBBox.height));
         if (tooltip.tracker) {
             tooltip.tracker.attr(box);
@@ -1380,4 +1380,4 @@ export default Tooltip;
 /**
  * @typedef {"callout"|"circle"|"rect"} Highcharts.TooltipShapeValue
  */
-''; // keeps doclets above in JS file
+''; // Keeps doclets above in JS file

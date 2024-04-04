@@ -158,7 +158,7 @@ const VariablePieSeriesDefaults = {
  * @product   highcharts
  * @apioption series.variablepie.data
  */
-''; // keeps doclets above separate
+''; // Keeps doclets above separate
 /* *
  *
  *  Default Export

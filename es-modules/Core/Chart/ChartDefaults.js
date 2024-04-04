@@ -630,7 +630,7 @@ const ChartDefaults = {
          */
         theme: {
         /**
-         * zIndex of the button.
+         * The z-index of the button.
          *
          * @type {number}
          * @apioption chart.resetZoomButton.theme.zIndex

@@ -185,7 +185,7 @@ class InvertModifier extends DataModifier {
         const modifier = this;
         modifier.emit({ type: 'modify', detail: eventDetail, table });
         const modified = table.modified;
-        if (table.hasColumns(['columnNames'])) { // inverted table
+        if (table.hasColumns(['columnNames'])) { // Inverted table
             const columnNames = ((table.deleteColumns(['columnNames']) || {})
                 .columnNames || []).map((column) => `${column}`), columns = {};
             for (let i = 0, iEnd = table.getRowCount(), row; i < iEnd; ++i) {
@@ -197,7 +197,7 @@ class InvertModifier extends DataModifier {
             modified.deleteColumns();
             modified.setColumns(columns);
         }
-        else { // regular table
+        else { // Regular table
             const columns = {};
             for (let i = 0, iEnd = table.getRowCount(), row; i < iEnd; ++i) {
                 row = table.getRow(i);

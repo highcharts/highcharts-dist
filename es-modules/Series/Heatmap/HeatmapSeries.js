@@ -149,7 +149,7 @@ class HeatmapSeries extends ScatterSeries {
         const options = this.options;
         // #3758, prevent resetting in setData
         options.pointRange = pick(options.pointRange, options.colsize || 1);
-        // general point range
+        // General point range
         this.yAxis.axisPointRange = options.rowsize || 1;
         // Bind new symbol names
         symbols.ellipse = symbols.circle;
@@ -328,4 +328,4 @@ export default HeatmapSeries;
 * @name Highcharts.PointOptionsObject#value
 * @type {number|null|undefined}
 */
-''; // detach doclets above
+''; // Detach doclets above

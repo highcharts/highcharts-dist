@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.0 (2024-03-05)
+ * @license Highcharts JS v11.4.1 (2024-04-04)
  *
  * (c) 2017-2024 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -266,9 +266,9 @@
                     // If the circles are overlapping, but not completely overlapping,
                     // then it exists intersecting points.
                     const r1Square = r1 * r1, r2Square = r2 * r2, 
-                    // d^2 - r^2 + R^2 / 2d
+                    // `d^2 - r^2 + R^2 / 2d`
                     x = (r1Square - r2Square + d * d) / (2 * d), 
-                    // y^2 = R^2 - x^2
+                    // `y^2 = R^2 - x^2`
                     y = Math.sqrt(r1Square - x * x), x1 = c1.x, x2 = c2.x, y1 = c1.y, y2 = c2.y, x0 = x1 + x * (x2 - x1) / d, y0 = y1 + x * (y2 - y1) / d, rx = -(y2 - y1) * (y / d), ry = -(x2 - x1) * (y / d);
                     points = [
                         { x: round(x0 + rx, 14), y: round(y0 - ry, 14) },
@@ -481,10 +481,10 @@
                         arcs: []
                     }).arcs;
                     if (arcs.length === 0) {
-                        // empty
+                        // Empty
                     }
                     else if (arcs.length === 1) {
-                        // empty
+                        // Empty
                     }
                     else {
                         arcs.unshift(['M', startPoint.x, startPoint.y]);
@@ -569,7 +569,7 @@
                         onComplete();
                     }
                 };
-                // animate only runs complete callback if something was animated.
+                // Animate only runs complete callback if something was animated.
                 if (Object.keys(animatableAttribs).length) {
                     graphic.animate(animatableAttribs, void 0, () => destroy());
                 }
@@ -815,7 +815,7 @@
          * @excluding halo
          * @apioption series.venn.states.select
          */
-        ''; // detach doclets above
+        ''; // Detach doclets above
         /* *
          *
          *  Default Export
@@ -920,7 +920,8 @@
          * Root number.
          */
         function bisect(f, a, b, tolerance, maxIterations) {
-            let fA = f(a), fB = f(b), nMax = maxIterations || 100, tol = tolerance || 1e-10, delta = b - a, n = 1, x, fX;
+            const fA = f(a), fB = f(b), nMax = maxIterations || 100, tol = tolerance || 1e-10;
+            let delta = b - a, x, fX, n = 1;
             if (a >= b) {
                 throw new Error('a must be smaller than b.');
             }
@@ -979,7 +980,8 @@
          * circles.
          */
         function getDistanceBetweenCirclesByOverlap(r1, r2, overlap) {
-            let maxDistance = r1 + r2, distance;
+            const maxDistance = r1 + r2;
+            let distance;
             if (overlap <= 0) {
                 // If overlap is below or equal to zero, then there is no overlap.
                 distance = maxDistance;
@@ -1079,10 +1081,16 @@
             return overlap;
         }
         // eslint-disable-next-line require-jsdoc
+        /**
+         *
+         */
         function isSet(x) {
             return isArray(x.sets) && x.sets.length === 1;
         }
         // eslint-disable-next-line require-jsdoc
+        /**
+         *
+         */
         function isValidRelation(x) {
             const map = {};
             return (isObject(x) &&
@@ -1100,6 +1108,9 @@
                 }));
         }
         // eslint-disable-next-line require-jsdoc
+        /**
+         *
+         */
         function isValidSet(x) {
             return (isValidRelation(x) && isSet(x) && x.value > 0);
         }
@@ -1651,7 +1662,7 @@
              * area, and center of x and y.
              */
             static getScale(targetWidth, targetHeight, field) {
-                const height = field.bottom - field.top, // top is smaller than bottom
+                const height = field.bottom - field.top, // Top is smaller than bottom
                 width = field.right - field.left, scaleX = width > 0 ? 1 / width * targetWidth : 1, scaleY = height > 0 ? 1 / height * targetHeight : 1, adjustX = (field.right + field.left) / 2, adjustY = (field.top + field.bottom) / 2, scale = Math.min(scaleX, scaleY);
                 return {
                     scale: scale,
@@ -1811,7 +1822,8 @@
                 }), scaling = VennSeries.getScale(chart.plotWidth, chart.plotHeight, field), scale = scaling.scale, centerX = scaling.centerX, centerY = scaling.centerY;
                 // Iterate all points and calculate and draw their graphics.
                 for (const point of this.points) {
-                    let sets = isArray(point.sets) ? point.sets : [], id = sets.join(), shape = mapOfIdToShape[id], shapeArgs, dataLabelValues = mapOfIdToLabelValues[id] || {}, dataLabelWidth = dataLabelValues.width, dataLabelPosition = dataLabelValues.position, dlOptions = point.options && point.options.dataLabels;
+                    const sets = isArray(point.sets) ? point.sets : [], id = sets.join(), shape = mapOfIdToShape[id], dataLabelValues = mapOfIdToLabelValues[id] || {}, dlOptions = point.options && point.options.dataLabels;
+                    let shapeArgs, dataLabelWidth = dataLabelValues.width, dataLabelPosition = dataLabelValues.position;
                     if (shape) {
                         if (shape.r) {
                             shapeArgs = {

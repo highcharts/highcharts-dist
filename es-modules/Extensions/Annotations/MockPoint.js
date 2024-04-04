@@ -488,4 +488,4 @@ export default MockPoint;
  * @name Highcharts.Point#mock
  * @type {boolean|undefined}
  */
-(''); // keeps doclets above in JS file
+(''); // Keeps doclets above in JS file

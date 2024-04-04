@@ -288,7 +288,7 @@ class SupertrendIndicator extends SMAIndicator {
         const period = params.period, multiplier = params.multiplier, xVal = series.xData, yVal = series.yData, 
         // 0- date, 1- Supertrend indicator
         st = [], xData = [], yData = [], close = 3, low = 2, high = 1, periodsOffset = (period === 0) ? 0 : period - 1, finalUp = [], finalDown = [];
-        let atrData = [], basicUp, basicDown, supertrend, prevFinalUp, prevFinalDown, prevST, // previous Supertrend
+        let atrData = [], basicUp, basicDown, supertrend, prevFinalUp, prevFinalDown, prevST, // Previous Supertrend
         prevY, y, i;
         if ((xVal.length <= period) || !isArray(yVal[0]) ||
             yVal[0].length !== 4 || period < 0) {
@@ -468,4 +468,4 @@ export default SupertrendIndicator;
  * @requires  stock/indicators/supertrend
  * @apioption series.supertrend
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

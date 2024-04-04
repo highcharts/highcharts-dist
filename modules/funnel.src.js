@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.0 (2024-03-05)
+ * @license Highcharts JS v11.4.1 (2024-04-04)
  *
  * Highcharts funnel module
  *
@@ -230,7 +230,7 @@
          * @product   highcharts
          * @apioption series.funnel.data
          */
-        ''; // keeps doclets above separate
+        ''; // Keeps doclets above separate
         /* *
          *
          *  Default Export
@@ -419,8 +419,8 @@
                             .map((i) => (reversed ? -i : i))
                     };
                 };
-                let sum = 0, cumulative = 0, // start at top
-                tempWidth, path, fraction, alpha, // the angle between top and left point's edges
+                let sum = 0, cumulative = 0, // Start at top
+                tempWidth, path, fraction, alpha, // The angle between top and left point's edges
                 maxT, x1, y1, x2, x3, y3, x4, y5;
                 series.getWidthAt = function (y) {
                     const top = (centerY - height / 2);
@@ -465,7 +465,7 @@
                     }
                 }
                 for (const point of points) {
-                    // set start and end positions
+                    // Set start and end positions
                     y5 = null;
                     fraction = sum ? point.y / sum : 0;
                     y1 = centerY - height / 2 + cumulative * height;
@@ -476,11 +476,11 @@
                     tempWidth = series.getWidthAt(y3);
                     x3 = centerX - tempWidth / 2;
                     x4 = x3 + tempWidth;
-                    // the entire point is within the neck
+                    // The entire point is within the neck
                     if (correctFloat(y1) >= neckY) {
                         x1 = x3 = centerX - neckWidth / 2;
                         x2 = x4 = centerX + neckWidth / 2;
-                        // the base of the neck
+                        // The base of the neck
                     }
                     else if (y3 > neckY) {
                         y5 = y3;
@@ -524,13 +524,15 @@
                         else {
                             path = [
                                 ['M', x1 + f.dx[0], y1 + f.dy[0]],
-                                ['C',
+                                [
+                                    'C',
                                     x1 + f.dx[1], y1 + f.dy[1],
                                     x1 + f.dx[2], y1,
                                     x1 + f.dx[3], y1
                                 ],
                                 ['L', x2 - f.dx[3], y1],
-                                ['C',
+                                [
+                                    'C',
                                     x2 - f.dx[2], y1,
                                     x2 - f.dx[1], y1 + f.dy[1],
                                     x2 - f.dx[0], y1 + f.dy[0]
@@ -541,7 +543,8 @@
                             // Closure of point with extension
                             const fr = roundingFactors(Math.PI / 2);
                             f = roundingFactors(Math.PI / 2 + alpha);
-                            path.push(['L', x4 + f.dx[0], y3 - f.dy[0]], ['C',
+                            path.push(['L', x4 + f.dx[0], y3 - f.dy[0]], [
+                                'C',
                                 x4 + f.dx[1], y3 - f.dy[1],
                                 x4, y3 + f.dy[2],
                                 x4, y3 + f.dy[3]
@@ -551,17 +554,20 @@
                                 path.push(['L', x4, y5], ['L', x3, y5]);
                             }
                             else {
-                                path.push(['L', x4, y5 - fr.dy[3]], ['C',
+                                path.push(['L', x4, y5 - fr.dy[3]], [
+                                    'C',
                                     x4, y5 - fr.dy[2],
                                     x4 - fr.dx[2], y5,
                                     x4 - fr.dx[3], y5
-                                ], ['L', x3 + fr.dx[3], y5], ['C',
+                                ], ['L', x3 + fr.dx[3], y5], [
+                                    'C',
                                     x3 + fr.dx[2], y5,
                                     x3, y5 - fr.dy[2],
                                     x3, y5 - fr.dy[3]
                                 ]);
                             }
-                            path.push(['L', x3, y3 + f.dy[3]], ['C',
+                            path.push(['L', x3, y3 + f.dy[3]], [
+                                'C',
                                 x3, y3 + f.dy[2],
                                 x3 - f.dx[1], y3 - f.dy[1],
                                 x3 - f.dx[0], y3 - f.dy[0]
@@ -574,11 +580,13 @@
                                 path.push(['L', x4, y3], ['L', x3, y3]);
                             }
                             else {
-                                path.push(['L', x4 + f.dx[0], y3 - f.dy[0]], ['C',
+                                path.push(['L', x4 + f.dx[0], y3 - f.dy[0]], [
+                                    'C',
                                     x4 + f.dx[1], y3 - f.dy[1],
                                     x4 - f.dx[2], y3,
                                     x4 - f.dx[3], y3
-                                ], ['L', x3 + f.dx[3], y3], ['C',
+                                ], ['L', x3 + f.dx[3], y3], [
+                                    'C',
                                     x3 + f.dx[2], y3,
                                     x3 - f.dx[1], y3 - f.dy[1],
                                     x3 - f.dx[0], y3 - f.dy[0]
@@ -588,7 +596,8 @@
                         else {
                             // Creating a rounded tip of the "pyramid"
                             f = roundingFactors(Math.PI - alpha * 2);
-                            path.push(['L', x3 + f.dx[0], y3 - f.dy[0]], ['C',
+                            path.push(['L', x3 + f.dx[0], y3 - f.dy[0]], [
+                                'C',
                                 x3 + f.dx[1], y3 - f.dy[1],
                                 x3 - f.dx[1], y3 - f.dy[1],
                                 x3 - f.dx[0], y3 - f.dy[0]
@@ -608,10 +617,10 @@
                         path.push(['L', x3, y3]);
                     }
                     path.push(['Z']);
-                    // prepare for using shared dr
+                    // Prepare for using shared dr
                     point.shapeType = 'path';
                     point.shapeArgs = { d: path };
-                    // for tooltips and data labels
+                    // For tooltips and data labels
                     point.percentage = fraction * 100;
                     point.plotX = centerX;
                     point.plotY = (y1 + (y5 || y3)) / 2;
@@ -788,7 +797,7 @@
          * @product   highcharts
          * @apioption series.pyramid.data
          */
-        ''; // keeps doclets above separate
+        ''; // Keeps doclets above separate
         /* *
          *
          *  Default Export

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.4.0 (2024-03-05)
+ * @license Highstock JS v11.4.1 (2024-04-04)
  *
  * Data grouping module
  *
@@ -62,7 +62,7 @@
          * @private
          */
         const ApproximationRegistry = {
-        // approximations added programmatically
+        // Approximations added programmatically
         };
         /* *
          *
@@ -186,7 +186,7 @@
             if (low === null && high === null) {
                 return null;
             }
-            // else, return is undefined
+            // Else, return is undefined
         }
         /**
          * @private
@@ -249,10 +249,10 @@
          * @private
          */
         const common = {
-            // enabled: null, // (true for stock charts, false for basic),
+            /// enabled: null, // (true for stock charts, false for basic),
             // forced: undefined,
             groupPixelWidth: 2,
-            // the first one is the point or start value, the second is the start
+            // The first one is the point or start value, the second is the start
             // value if we're dealing with range, the third one is the end value if
             // dealing with a range
             dateTimeLabelFormats: {
@@ -297,7 +297,7 @@
                     '-%Y'
                 ]
             }
-            // smoothed = false, // enable this for navigator series only
+            /// smoothed = false, // enable this for navigator series only
         };
         /**
          * Extends common options
@@ -337,7 +337,7 @@
         const units = [
             [
                 'millisecond',
-                [1, 2, 5, 10, 20, 25, 50, 100, 200, 500] // allowed multiples
+                [1, 2, 5, 10, 20, 25, 50, 100, 200, 500] // Allowed multiples
             ], [
                 'second',
                 [1, 2, 5, 10, 15, 30]
@@ -866,8 +866,8 @@
          */
         function groupData(xData, yData, groupPositions, approximation) {
             const series = this, data = series.data, dataOptions = series.options && series.options.data, groupedXData = [], groupedYData = [], groupMap = [], dataLength = xData.length, 
-            // when grouping the fake extended axis for panning,
-            // we don't need to consider y
+            // When grouping the fake extended axis for panning, we don't need to
+            // consider y
             handleYData = !!yData, values = [], pointArrayMap = series.pointArrayMap, pointArrayMapLength = pointArrayMap && pointArrayMap.length, extendedPointArrayMap = ['x'].concat(pointArrayMap || ['y']), groupAll = (this.options.dataGrouping &&
                 this.options.dataGrouping.groupAll);
             let pointX, pointY, groupedY, pos = 0, start = 0;
@@ -891,13 +891,13 @@
             for (let i = 0; i <= dataLength; i++) {
                 // Start with the first point within the X axis range (#2696)
                 if (xData[i] < groupPositions[0]) {
-                    continue; // with next point
+                    continue; // With next point
                 }
-                // when a new group is entered, summarize and initialize
+                // When a new group is entered, summarize and initialize
                 // the previous group
                 while ((typeof groupPositions[pos + 1] !== 'undefined' &&
                     xData[i] >= groupPositions[pos + 1]) ||
-                    i === dataLength) { // get the last group
+                    i === dataLength) { // Get the last group
                     // get group x and y
                     pointX = groupPositions[pos];
                     series.dataGroupInfo = {
@@ -921,30 +921,30 @@
                             delete series.dataGroupInfo.options[key];
                         });
                     }
-                    // push the grouped data
+                    // Push the grouped data
                     if (typeof groupedY !== 'undefined') {
                         groupedXData.push(pointX);
                         groupedYData.push(groupedY);
                         groupMap.push(series.dataGroupInfo);
                     }
-                    // reset the aggregate arrays
+                    // Reset the aggregate arrays
                     start = i;
                     for (let j = 0; j < valuesLen; j++) {
-                        values[j].length = 0; // faster than values[j] = []
+                        values[j].length = 0; // Faster than values[j] = []
                         values[j].hasNulls = false;
                     }
                     // Advance on the group positions
                     pos += 1;
-                    // don't loop beyond the last group
+                    // Don't loop beyond the last group
                     if (i === dataLength) {
                         break;
                     }
                 }
-                // break out
+                // Break out
                 if (i === dataLength) {
                     break;
                 }
-                // for each raw data point, push it to an array that contains all values
+                // For each raw data point, push it to an array that contains all values
                 // for this specific group
                 if (pointArrayMap) {
                     const index = (series.options.dataGrouping &&
@@ -1064,17 +1064,17 @@
         function onTooltipHeaderFormatter(e) {
             const chart = this.chart, time = chart.time, labelConfig = e.labelConfig, series = labelConfig.series, point = labelConfig.point, options = series.options, tooltipOptions = series.tooltipOptions, dataGroupingOptions = options.dataGrouping, xAxis = series.xAxis;
             let xDateFormat = tooltipOptions.xDateFormat, xDateFormatEnd, currentDataGrouping, dateTimeLabelFormats, labelFormats, formattedKey, formatString = tooltipOptions[e.isFooter ? 'footerFormat' : 'headerFormat'];
-            // apply only to grouped series
+            // Apply only to grouped series
             if (xAxis &&
                 xAxis.options.type === 'datetime' &&
                 dataGroupingOptions &&
                 isNumber(labelConfig.key)) {
-                // set variables
+                // Set variables
                 currentDataGrouping = series.currentDataGrouping;
                 dateTimeLabelFormats = dataGroupingOptions.dateTimeLabelFormats ||
                     // Fallback to commonOptions (#9693)
                     DataGroupingDefaults.common.dateTimeLabelFormats;
-                // if we have grouped data, use the grouping information to get the
+                // If we have grouped data, use the grouping information to get the
                 // right format
                 if (currentDataGrouping) {
                     labelFormats = dateTimeLabelFormats[currentDataGrouping.unitName];
@@ -1085,7 +1085,7 @@
                         xDateFormat = labelFormats[1];
                         xDateFormatEnd = labelFormats[2];
                     }
-                    // if not grouped, and we don't have set the xDateFormat option, get the
+                    // If not grouped, and we don't have set the xDateFormat option, get the
                     // best fit, so if the least distance between points is one minute, show
                     // it, but if the least distance is one day, skip hours and minutes etc.
                 }
@@ -1101,7 +1101,7 @@
                 if (series.chart.styledMode) {
                     formatString = this.styledModeFormat(formatString);
                 }
-                // return the replaced format
+                // Return the replaced format
                 e.text = format(formatString, {
                     point: extend(labelConfig.point, { key: formattedKey }),
                     series: series
@@ -1186,7 +1186,7 @@
          * @name Highcharts.Point#dataGroup
          * @type {Highcharts.DataGroupingInfoObject|undefined}
          */
-        (''); // detach doclets above
+        (''); // Detach doclets above
         /* *
          *
          *  API Options
@@ -1483,7 +1483,7 @@
          * @default   10
          * @apioption plotOptions.column.dataGrouping.groupPixelWidth
          */
-        ''; // required by JSDoc parsing
+        ''; // Required by JSDoc parsing
 
         return DataGroupingComposition;
     });

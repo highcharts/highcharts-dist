@@ -36,12 +36,12 @@ function compose(SVGRendererClass) {
 /** @private */
 function rendererFunnel3d(shapeArgs) {
     const renderer = this, funnel3d = renderer.element3d('funnel3d', shapeArgs), styledMode = renderer.styledMode, 
-    // hide stroke for Firefox
+    // Hide stroke for Firefox
     strokeAttrs = {
         'stroke-width': 1,
         stroke: 'none'
     };
-    // create groups for sides for opacity setter
+    // Create groups for sides for opacity setter
     funnel3d.upperGroup = renderer.g('funnel3d-upper-group').attr({
         zIndex: funnel3d.frontUpper.zIndex
     }).add(funnel3d);
@@ -74,11 +74,11 @@ function rendererFunnel3dPath(shapeArgs) {
         error('A required Highcharts module is missing: cylinder.js', true, charts[this.chartIndex]);
     }
     const renderer = this, chart = charts[renderer.chartIndex], 
-    // adjust angles for visible edges
+    // Adjust angles for visible edges
     // based on alpha, selected through visual tests
     alphaCorrection = shapeArgs.alphaCorrection = 90 - Math.abs((chart.options.chart.options3d.alpha % 180) -
         90), 
-    // set zIndexes of parts based on cuboid logic, for
+    // Set zIndexes of parts based on cuboid logic, for
     // consistency
     cuboidData = this.cuboidPath.call(renderer, merge(shapeArgs, {
         depth: shapeArgs.width,
@@ -96,7 +96,7 @@ function rendererFunnel3dPath(shapeArgs) {
         alphaCorrection: alphaCorrection
     }), bottom = renderer.getCylinderEnd(chart, bottomArgs, true);
     let middleWidth = bottomWidth, middleTopArgs = bottomArgs, middleTop = bottom, middleBottom = bottom, 
-    // masking for cylinders or a missing part of a side shape
+    // Masking for cylinders or a missing part of a side shape
     useAlphaCorrection;
     if (hasMiddle) {
         middleWidth = shapeArgs.middle.width;

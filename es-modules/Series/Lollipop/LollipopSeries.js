@@ -38,9 +38,6 @@ class LollipopSeries extends Series {
      * @private
      *
      * @function Highcharts.Series#drawPoints
-     *
-     * @param {Highcharts.Series} this The series of points.
-     *
      */
     drawPoints() {
         const series = this, pointLength = series.points.length;
@@ -58,8 +55,6 @@ class LollipopSeries extends Series {
      * @private
      *
      * @function Highcharts.Series#translate
-     *
-     * @param {Highcharts.Series} this The series of points.
      *
      */
     translate() {
@@ -239,4 +234,4 @@ export default LollipopSeries;
  * @product   highcharts highstock
  * @apioption series.line.data.y
  */
-(''); // adds doclets above to transpiled file
+(''); // Adds doclets above to transpiled file

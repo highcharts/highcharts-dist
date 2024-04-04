@@ -43,7 +43,7 @@ class ColumnPyramidSeries extends ColumnSeries {
         ), yAxis = series.yAxis, threshold = options.threshold, minPointLength = pick(options.minPointLength, 5), metrics = series.getColumnMetrics(), pointWidth = metrics.width, pointXOffset = series.pointXOffset = metrics.offset;
         let translatedThreshold = series.translatedThreshold =
             yAxis.getThreshold(threshold), 
-        // postprocessed for border width
+        // Postprocessed for border width
         seriesBarW = series.barW =
             Math.max(pointWidth, 1 + 2 * borderWidth);
         if (chart.inverted) {
@@ -64,7 +64,7 @@ class ColumnPyramidSeries extends ColumnSeries {
             // Don't draw too far outside plot area
             // (#1303, #2241, #4264)
             barW = seriesBarW / 2, barY = Math.min(plotY, yBottom), barH = Math.max(plotY, yBottom) - barY;
-            let barX = point.plotX + pointXOffset, stackTotal, stackHeight, topPointY, topXwidth, bottomXwidth, invBarPos, x1, x2, x3, x4, y1, y2;
+            let barX = point.plotX + pointXOffset, stackTotal, stackHeight, topXwidth, bottomXwidth, invBarPos, x1, x2, x3, x4, y1, y2;
             // Adjust for null or missing points
             if (options.centerInCategory) {
                 barX = series.adjustForMissingColumns(barX, pointWidth, point, metrics);
@@ -86,25 +86,24 @@ class ColumnPyramidSeries extends ColumnSeries {
                 ];
             stackTotal =
                 threshold + (point.total || point.y);
-            // overwrite stacktotal (always 100 / -100)
+            // Overwrite stacktotal (always 100 / -100)
             if (options.stacking === 'percent') {
                 stackTotal =
                     threshold + (point.y < 0) ?
                         -100 :
                         100;
             }
-            // get the highest point (if stack, extract from total)
-            topPointY = yAxis.toPixels((stackTotal), true);
-            // calculate height of stack (in pixels)
+            // Get the highest point (if stack, extract from total)
+            const topPointY = yAxis.toPixels((stackTotal), true);
+            // Calculate height of stack (in pixels)
             stackHeight =
                 chart.plotHeight - topPointY -
                     (chart.plotHeight - translatedThreshold);
-            // topXwidth and bottomXwidth = width of lines from the center
-            // calculated from tanges proportion.
-            // Cannot be a NaN #12514
+            // `topXwidth` and `bottomXwidth` = width of lines from the center
+            // calculated from tanges proportion. Cannot be a NaN #12514.
             topXwidth = stackHeight ?
                 (barW * (barY - topPointY)) / stackHeight : 0;
-            // like topXwidth, but with height of point
+            // Like topXwidth, but with height of point
             bottomXwidth = stackHeight ?
                 (barW * (barY + barH - topPointY)) / stackHeight :
                 0;
@@ -126,20 +125,20 @@ class ColumnPyramidSeries extends ColumnSeries {
                 y1 = barY;
                 y2 = barY + barH + minPointLength;
             }
-            // inverted chart
+            // Inverted chart
             if (chart.inverted) {
                 invBarPos = yAxis.width - barY;
                 stackHeight =
                     topPointY - (yAxis.width - translatedThreshold);
-                // proportion tanges
+                // Proportion tanges
                 topXwidth = (barW *
                     (topPointY - invBarPos)) / stackHeight;
                 bottomXwidth = (barW *
                     (topPointY - (invBarPos - barH))) / stackHeight;
-                x1 = barX + barW + topXwidth; // top bottom
-                x2 = x1 - 2 * topXwidth; // top top
-                x3 = barX - bottomXwidth + barW; // bottom top
-                x4 = barX + bottomXwidth + barW; // bottom bottom
+                x1 = barX + barW + topXwidth; // Top bottom
+                x2 = x1 - 2 * topXwidth; // Top top
+                x3 = barX - bottomXwidth + barW; // Bottom top
+                x4 = barX + bottomXwidth + barW; // Bottom bottom
                 y1 = barY;
                 y2 = barY + barH - minPointLength;
                 if (point.y < 0) {
@@ -153,7 +152,7 @@ class ColumnPyramidSeries extends ColumnSeries {
                 y: y1,
                 width: x2 - x1,
                 height: barH,
-                // path of pyramid
+                // Path of pyramid
                 d: [
                     ['M', x1, y1],
                     ['L', x2, y1],

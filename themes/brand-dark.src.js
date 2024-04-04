@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.0 (2024-03-05)
+ * @license Highcharts JS v11.4.1 (2024-04-04)
  *
  * (c) 2009-2024 Torstein Honsi
  *
@@ -62,8 +62,10 @@
              *
              * */
             BrandDarkTheme.options = {
-                colors: ['#8087E8', '#A3EDBA', '#F19E53', '#6699A1',
-                    '#E1D369', '#87B4E7', '#DA6D85', '#BBBAC5'],
+                colors: [
+                    '#8087E8', '#A3EDBA', '#F19E53', '#6699A1',
+                    '#E1D369', '#87B4E7', '#DA6D85', '#BBBAC5'
+                ],
                 chart: {
                     backgroundColor: {
                         linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
@@ -229,7 +231,7 @@
                         }
                     }
                 },
-                // scroll charts
+                // Scroll charts
                 rangeSelector: {
                     buttonTheme: {
                         fill: '#46465C',

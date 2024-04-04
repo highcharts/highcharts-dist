@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v11.4.0 (2024-03-05)
+ * @license Highcharts Gantt JS v11.4.1 (2024-04-04)
  *
  * Tree Grid
  *
@@ -299,7 +299,7 @@
                         groupingSize >= this.basePointRange) {
                         gapSize = groupingSize;
                     }
-                    // extension for ordinal breaks
+                    // Extension for ordinal breaks
                     let current, next;
                     while (i--) {
                         // Reassign next if it is not visible
@@ -313,7 +313,7 @@
                         }
                         if (next.x - current.x > gapSize) {
                             const xRange = (current.x + next.x) / 2;
-                            points.splice(// insert after this one
+                            points.splice(// Insert after this one
                             i + 1, 0, {
                                 isNull: true,
                                 x: xRange
@@ -834,7 +834,7 @@
             const options = axis.options;
             const gridOptions = options.grid || {};
             if (gridOptions.enabled === true) {
-                // compute anchor points for each of the title align options
+                // Compute anchor points for each of the title align options
                 const { axisTitle, height: axisHeight, horiz, left: axisLeft, offset, opposite, options, top: axisTop, width: axisWidth } = axis;
                 const tickSize = axis.tickSize();
                 const titleWidth = axisTitle && axisTitle.getBBox().width;
@@ -846,8 +846,8 @@
                 // TODO account for alignment
                 // the position in the perpendicular direction of the axis
                 const offAxis = ((horiz ? axisTop + axisHeight : axisLeft) +
-                    (horiz ? 1 : -1) * // horizontal axis reverses the margin
-                        (opposite ? -1 : 1) * // so does opposite axes
+                    (horiz ? 1 : -1) * // Horizontal axis reverses the margin
+                        (opposite ? -1 : 1) * // So does opposite axes
                         crispCorr +
                     (axis.side === GridAxisSide.bottom ? titleFontSize : 0));
                 e.titlePosition.x = horiz ?
@@ -1019,7 +1019,7 @@
                                 d: linePath
                             });
                         }
-                        // show or hide the line depending on options.showEmpty
+                        // Show or hide the line depending on options.showEmpty
                         axis.axisLine[axis.showAxis ? 'show' : 'hide']();
                     }
                 }
@@ -1094,7 +1094,7 @@
                         !defined(userLabels.align) &&
                         (options.dateTimeLabelFormats[tickInfo.unitName]
                             .range === false ||
-                            tickInfo.count > 1 // years
+                            tickInfo.count > 1 // Years
                         )) {
                         options.labels.align = 'left';
                         if (!defined(userLabels.x)) {
@@ -1233,7 +1233,7 @@
                                     // secondary axis show ten times the years (#11427)
                                 }
                                 else if (parentInfo.unitName === 'year') {
-                                    // unitName is 'year'
+                                    // `unitName` is 'year'
                                     count = parentInfo.count * 10;
                                 }
                                 const unitRange = timeUnits[unitName];
@@ -1348,8 +1348,8 @@
          */
         function onTickAfterGetLabelPosition(e) {
             const tick = this, label = tick.label, axis = tick.axis, reversed = axis.reversed, chart = axis.chart, options = axis.options, gridOptions = options.grid || {}, labelOpts = axis.options.labels, align = labelOpts.align, 
-            // verticalAlign is currently not supported for axis.labels.
-            verticalAlign = 'middle', // labelOpts.verticalAlign,
+            // `verticalAlign` is currently not supported for axis.labels.
+            verticalAlign = 'middle', // LabelOpts.verticalAlign,
             side = GridAxisSide[axis.side], tickmarkOffset = e.tickmarkOffset, tickPositions = axis.tickPositions, tickPos = tick.pos - tickmarkOffset, nextTickPos = (isNumber(tickPositions[e.index + 1]) ?
                 tickPositions[e.index + 1] - tickmarkOffset :
                 (axis.max || 0) + tickmarkOffset), tickSize = axis.tickSize('tick'), tickWidth = tickSize ? tickSize[0] : 0, crispCorr = tickSize ? tickSize[1] / 2 : 0;
@@ -1390,13 +1390,13 @@
                     left :
                     align === 'right' ?
                         right :
-                        left + ((right - left) / 2) // default to center
+                        left + ((right - left) / 2) // Default to center
                 );
                 e.pos.y = (verticalAlign === 'top' ?
                     top :
                     verticalAlign === 'bottom' ?
                         bottom :
-                        top + ((bottom - top) / 2) // default to middle
+                        top + ((bottom - top) / 2) // Default to middle
                 );
                 if (label) {
                     const lblMetrics = chart.renderer.fontMetrics(label), labelHeight = label.getBBox().height;
@@ -1707,7 +1707,7 @@
          * @type      {number}
          * @apioption xAxis.grid.cellHeight
          */
-        ''; // keeps doclets above in JS file
+        ''; // Keeps doclets above in JS file
 
         return GridAxis;
     });
@@ -1742,9 +1742,6 @@
          *
          * @param {Array<*>} data
          *        List of points set in options. `Array.parent` is parent id of point.
-         *
-         * @param {Array<string>} ids
-         *        List of all point ids.
          *
          * @return {Highcharts.Dictionary<Array<*>>}
          * Map from parent id to children index in data
@@ -2033,7 +2030,7 @@
                     addEvent(TickClass, 'init', onTickInit);
                     wrap(tickProto, 'getLabelPosition', wrapGetLabelPosition);
                     wrap(tickProto, 'renderLabel', wrapRenderLabel);
-                    // backwards compatibility
+                    // Backwards compatibility
                     tickProto.collapse = function (redraw) {
                         this.treeGrid.collapse(redraw);
                     };
@@ -2218,7 +2215,8 @@
          * Returns a map from level number to its given options.
          */
         function getLevelOptions(params) {
-            let result = {}, defaults, converted, i, from, to, levels;
+            const result = {};
+            let defaults, converted, i, from, to, levels;
             if (isObject(params)) {
                 from = isNumber(params.from) ? params.from : 1;
                 levels = params.levels;
@@ -2603,7 +2601,7 @@
                             });
                         }
                     }
-                    // setScale is fired after all the series is initialized,
+                    // `setScale` is fired after all the series is initialized,
                     // which is an ideal time to update the axis.categories.
                     treeGrid = getTreeGridFromData(data, uniqueNames || false, (uniqueNames === true) ? numberOfSeries : 1);
                     // Assign values to the axis.
@@ -2682,7 +2680,7 @@
                         });
                 }
                 else {
-                    // update labels depending on tick interval
+                    // Update labels depending on tick interval
                     tick.parameters.category = gridNode.name;
                     tick.options = options;
                     tick.addLabel();
@@ -2721,7 +2719,7 @@
                             const breaks = axis.treeGrid.collapse(node);
                             if (axis.brokenAxis) {
                                 axis.brokenAxis.setBreaks(breaks, false);
-                                // remove the node from the axis collapsedNodes
+                                // Remove the node from the axis collapsedNodes
                                 if (axis.treeGrid.collapsedNodes) {
                                     axis.treeGrid.collapsedNodes = axis.treeGrid
                                         .collapsedNodes

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.0 (2024-03-05)
+ * @license Highcharts JS v11.4.1 (2024-04-04)
  *
  * Series on point module
  *
@@ -413,7 +413,7 @@
          * @type       {number}
          * @apioption  plotOptions.series.onPoint.position.y
          */
-        ''; // keeps doclets above in transpiled file
+        ''; // Keeps doclets above in transpiled file
 
         return SeriesOnPointComposition;
     });

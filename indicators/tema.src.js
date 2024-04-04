@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.4.0 (2024-03-05)
+ * @license Highstock JS v11.4.1 (2024-04-04)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -99,7 +99,7 @@
                 }
                 // Accumulate first N-points
                 accumulatePeriodPoints = super.accumulatePeriodPoints(period, index, yVal);
-                // first point
+                // First point
                 sma = accumulatePeriodPoints / period;
                 accumulatePeriodPoints = 0;
                 // Calculate value one-by-one for each period in visible data
@@ -211,7 +211,7 @@
          * @requires  stock/indicators/tema
          * @apioption series.tema
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return TEMAIndicator;
     });

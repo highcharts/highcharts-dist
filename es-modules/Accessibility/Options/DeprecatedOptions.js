@@ -189,15 +189,21 @@ function copyDeprecatedTopLevelAccessibilityOptions(chart) {
         pointDateFormat: ['point', 'dateFormat'],
         pointDateFormatter: ['point', 'dateFormatter'],
         pointDescriptionFormatter: ['point', 'descriptionFormatter'],
-        pointDescriptionThreshold: ['series',
-            'pointDescriptionEnabledThreshold'],
-        pointNavigationThreshold: ['keyboardNavigation', 'seriesNavigation',
-            'pointNavigationEnabledThreshold'],
+        pointDescriptionThreshold: [
+            'series',
+            'pointDescriptionEnabledThreshold'
+        ],
+        pointNavigationThreshold: [
+            'keyboardNavigation', 'seriesNavigation',
+            'pointNavigationEnabledThreshold'
+        ],
         pointValueDecimals: ['point', 'valueDecimals'],
         pointValuePrefix: ['point', 'valuePrefix'],
         pointValueSuffix: ['point', 'valueSuffix'],
-        screenReaderSectionFormatter: ['screenReaderSection',
-            'beforeChartFormatter'],
+        screenReaderSectionFormatter: [
+            'screenReaderSection',
+            'beforeChartFormatter'
+        ],
         describeSingleSeries: ['series', 'describeSingleSeries'],
         seriesDescriptionFormatter: ['series', 'descriptionFormatter'],
         onTableAnchorClick: ['screenReaderSection', 'onViewDataTableClick'],
@@ -223,8 +229,10 @@ function copyDeprecatedLangOptions(chart) {
         mapZoomIn: ['zoom', 'mapZoomIn'],
         mapZoomOut: ['zoom', 'mapZoomOut'],
         resetZoomButton: ['zoom', 'resetZoomButton'],
-        screenReaderRegionLabel: ['screenReaderSection',
-            'beforeRegionLabel'],
+        screenReaderRegionLabel: [
+            'screenReaderSection',
+            'beforeRegionLabel'
+        ],
         rangeSelectorButton: ['rangeSelector', 'buttonText'],
         rangeSelectorMaxInput: ['rangeSelector', 'maxInputLabel'],
         rangeSelectorMinInput: ['rangeSelector', 'minInputLabel'],

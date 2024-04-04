@@ -156,7 +156,7 @@ var DarkUnicaTheme;
                 }
             }
         },
-        // scroll charts
+        // Scroll charts
         rangeSelector: {
             buttonTheme: {
                 fill: '#505053',

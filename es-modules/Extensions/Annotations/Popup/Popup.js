@@ -45,7 +45,7 @@ function getFields(parentDiv, type) {
     };
     inputList.forEach((input) => {
         const param = input.getAttribute('highcharts-data-name'), seriesId = input.getAttribute('highcharts-data-series-id');
-        // params
+        // Params
         if (seriesId) {
             fieldsOutput.seriesId = input.value;
         }
@@ -53,7 +53,7 @@ function getFields(parentDiv, type) {
             fieldsOutput.fields[param] = input.value;
         }
         else {
-            // type like sma / ema
+            // Type like sma / ema
             fieldsOutput.type = input.value;
         }
     });
@@ -130,13 +130,13 @@ class Popup extends BaseForm {
     addInput(option, indicatorType, parentDiv, inputAttributes) {
         const optionParamList = option.split('.'), optionName = optionParamList[optionParamList.length - 1], lang = this.lang, inputName = 'highcharts-' + indicatorType + '-' + pick(inputAttributes.htmlFor, optionName);
         if (!optionName.match(/^\d+$/)) {
-            // add label
+            // Add label
             createElement('label', {
                 htmlFor: inputName,
                 className: inputAttributes.labelClassName
             }, void 0, parentDiv).appendChild(doc.createTextNode(lang[optionName] || optionName));
         }
-        // add input
+        // Add input
         const input = createElement('input', {
             name: inputName,
             value: inputAttributes.value,
@@ -200,21 +200,21 @@ class Popup extends BaseForm {
         if (!chart) {
             return;
         }
-        // show blank popup
+        // Show blank popup
         this.showPopup();
-        // indicator form
+        // Indicator form
         if (type === 'indicators') {
             this.indicators.addForm.call(this, chart, options, callback);
         }
-        // annotation small toolbar
+        // Annotation small toolbar
         if (type === 'annotation-toolbar') {
             this.annotations.addToolbar.call(this, chart, options, callback);
         }
-        // annotation edit form
+        // Annotation edit form
         if (type === 'annotation-edit') {
             this.annotations.addForm.call(this, chart, options, callback);
         }
-        // flags form - add / edit
+        // Flags form - add / edit
         if (type === 'flag') {
             this.annotations.addForm.call(this, chart, options, callback, true);
         }

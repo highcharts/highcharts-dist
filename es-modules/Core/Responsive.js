@@ -139,7 +139,7 @@ export default Responsive;
  * @return {boolean}
  * Return `true` if it applies.
  */
-(''); // keeps doclets above in JS file
+(''); // Keeps doclets above in JS file
 /* *
  *
  *  API Options
@@ -252,4 +252,4 @@ export default Responsive;
  * @since     5.0.0
  * @apioption responsive.rules.condition.minWidth
  */
-(''); // keeps doclets above in JS file
+(''); // Keeps doclets above in JS file

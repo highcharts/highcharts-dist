@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.0 (2024-03-05)
+ * @license Highcharts JS v11.4.1 (2024-04-04)
  *
  * ColorAxis module
  *
@@ -220,7 +220,7 @@
                         point[key][method]();
                     }
                 });
-                this.series.buildKDTree(); // rebuild kdtree #13195
+                this.series.buildKDTree(); // Rebuild kdtree #13195
             }
             ColorAxisComposition.pointSetVisible = pointSetVisible;
             /**
@@ -993,7 +993,7 @@
                 axis.reversed = userOptions.reversed || !horiz;
                 axis.opposite = !horiz;
                 super.init(chart, userOptions, 'colorAxis');
-                // Super.init saves the extended user options, now replace it with the
+                // `super.init` saves the extended user options, now replace it with the
                 // originals
                 this.userOptions = userOptions;
                 if (isArray(chart.userOptions.colorAxis)) {
@@ -1089,6 +1089,10 @@
                     });
                     legend.render();
                     this.chart.getMargins(true);
+                    // If not drilling down/up
+                    if (!this.chart.series.some((series) => series.isDrilling)) {
+                        axis.isDirty = true; // Flag to fire drawChartBox
+                    }
                     // First time only
                     if (!axis.added) {
                         axis.added = true;
@@ -1176,7 +1180,7 @@
                 let colorValArray, colorKey, colorValIndex, pointArrayMap, calculatedExtremes, cSeries, i = series.length, yData, j;
                 this.dataMin = Infinity;
                 this.dataMax = -Infinity;
-                while (i--) { // x, y, value, other
+                while (i--) { // X, y, value, other
                     cSeries = series[i];
                     colorKey = cSeries.colorKey = pick(cSeries.options.colorKey, cSeries.colorKey, cSeries.pointValKey, cSeries.zoneAxis, 'y');
                     pointArrayMap = cSeries.pointArrayMap;
@@ -1477,7 +1481,7 @@
          *
          * @typedef {"linear"|"logarithmic"} Highcharts.ColorAxisTypeValue
          */
-        ''; // detach doclet above
+        ''; // Detach doclet above
 
         return ColorAxis;
     });

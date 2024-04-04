@@ -131,7 +131,7 @@ class DataCursor {
             }
             const emittingRegister = this.emittingRegister, emittingTag = this.buildEmittingTag(e);
             if (emittingRegister.indexOf(emittingTag) >= 0) {
-                // break call stack loops
+                // Break call stack loops
                 return this;
             }
             try {

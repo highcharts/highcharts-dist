@@ -19,6 +19,9 @@ let symbols;
  *  Functions
  *
  * */
+/**
+ *
+ */
 function bottomButton(x, y, w, h, options) {
     if (options) {
         const r = options?.r || 0;
@@ -27,11 +30,17 @@ function bottomButton(x, y, w, h, options) {
     }
     return symbols.roundedRect(x, y, w, h, options);
 }
+/**
+ *
+ */
 function compose(SVGRendererClass) {
     symbols = SVGRendererClass.prototype.symbols;
     symbols.bottombutton = bottomButton;
     symbols.topbutton = topButton;
 }
+/**
+ *
+ */
 function topButton(x, y, w, h, options) {
     if (options) {
         const r = options?.r || 0;

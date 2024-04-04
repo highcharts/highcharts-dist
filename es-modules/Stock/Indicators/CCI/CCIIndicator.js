@@ -63,7 +63,7 @@ class CCIIndicator extends SMAIndicator {
             yVal[0].length !== 4) {
             return;
         }
-        // accumulate first N-points
+        // Accumulate first N-points
         while (range < period) {
             p = yVal[range - 1];
             TP.push((p[1] + p[2] + p[3]) / 3);
@@ -112,7 +112,7 @@ CCIIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
      * @excluding index
      */
     params: {
-        index: void 0 // unused index, do not inherit (#15362)
+        index: void 0 // Unused index, do not inherit (#15362)
     }
 });
 SeriesRegistry.registerSeriesType('cci', CCIIndicator);
@@ -139,4 +139,4 @@ export default CCIIndicator;
  * @requires  stock/indicators/cci
  * @apioption series.cci
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

@@ -630,7 +630,7 @@ const HeatmapSeriesDefaults = {
  * @product   highcharts highstock
  * @apioption series.heatmap.data.marker.states.select.heightPlus
  */
-''; // keeps doclets above separate
+''; // Keeps doclets above separate
 /* *
  *
  *  Default Export

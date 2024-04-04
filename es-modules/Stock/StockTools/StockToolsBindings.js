@@ -831,7 +831,8 @@ const StockToolsBindings = {
                             }
                         },
                         { x, y },
-                        { x, y }],
+                        { x, y }
+                    ],
                     innerBackground: {
                         fill: 'rgba(100, 170, 255, 0.8)'
                     }

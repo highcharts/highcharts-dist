@@ -99,7 +99,7 @@ function onChartAfterSetChartSize() {
                         0) -
                     (this.titleOffset ? this.titleOffset[2] : 0);
         }
-        if (xAxis && yAxis) { // false if navigator is disabled (#904)
+        if (xAxis && yAxis) { // False if navigator is disabled (#904)
             if (this.inverted) {
                 xAxis.options.left = yAxis.options.left = navigator.left;
             }

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.4.0 (2024-03-05)
+ * @license Highstock JS v11.4.1 (2024-04-04)
  *
  * (c) 2010-2024 Highsoft AS
  * Author: Sebastian Domas
@@ -267,7 +267,7 @@
          * @requires  stock/indicators/cmf
          * @apioption series.cmf
          */
-        ''; // adds doclet above to the transpiled file
+        ''; // Adds doclet above to the transpiled file
 
         return CMFIndicator;
     });

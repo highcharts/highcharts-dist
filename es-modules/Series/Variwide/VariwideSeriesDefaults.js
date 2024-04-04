@@ -120,7 +120,7 @@ const VariwideSeriesDefaults = {
  * @product   highcharts
  * @apioption series.variwide.data.z
  */
-''; // adds doclets above to transpiled file
+''; // Adds doclets above to transpiled file
 /* *
  *
  *  Default Export

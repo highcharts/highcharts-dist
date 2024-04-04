@@ -264,7 +264,7 @@ var BrokenAxis;
                 groupingSize >= this.basePointRange) {
                 gapSize = groupingSize;
             }
-            // extension for ordinal breaks
+            // Extension for ordinal breaks
             let current, next;
             while (i--) {
                 // Reassign next if it is not visible
@@ -278,7 +278,7 @@ var BrokenAxis;
                 }
                 if (next.x - current.x > gapSize) {
                     const xRange = (current.x + next.x) / 2;
-                    points.splice(// insert after this one
+                    points.splice(// Insert after this one
                     i + 1, 0, {
                         isNull: true,
                         x: xRange

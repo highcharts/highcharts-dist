@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.4.0 (2024-03-05)
+ * @license Highstock JS v11.4.1 (2024-04-04)
  *
  * All technical indicators for Highcharts Stock
  *
@@ -196,7 +196,7 @@
                 // for example when using Axis.setDataGrouping(). See #16670
                 const processedData = indicator.linkedParent.options &&
                     indicator.linkedParent.yData && // #18176, #18177 indicators should
-                    indicator.linkedParent.yData.length ? // work with empty dataset
+                    indicator.linkedParent.yData.length ? // Work with empty dataset
                     (indicator.getValues(indicator.linkedParent, indicator.options.params) || emptySet) : emptySet;
                 // We need to update points to reflect changes in all,
                 // x and y's, values. However, do it only for non-grouped
@@ -384,7 +384,7 @@
          * @requires  stock/indicators/indicators
          * @apioption series.sma
          */
-        (''); // adds doclet above to the transpiled file
+        (''); // Adds doclet above to the transpiled file
 
         return SMAIndicator;
     });
@@ -448,7 +448,7 @@
                 }
                 // Accumulate first N-points
                 sum = this.accumulatePeriodPoints(period, index, yVal);
-                // first point
+                // First point
                 SMA = sum / period;
                 // Calculate value one-by-one for each period in visible data
                 for (i = period; i < yValLen + 1; i++) {
@@ -521,7 +521,7 @@
          * @requires  stock/indicators/indicators
          * @apioption series.ema
          */
-        ''; // adds doclet above to the transpiled file
+        ''; // Adds doclet above to the transpiled file
 
         return EMAIndicator;
     });
@@ -581,7 +581,7 @@
                         ' not found! Check `volumeSeriesID`.', true, series.chart);
                     return;
                 }
-                // i = period <-- skip first N-points
+                // When i = period <-- skip first N-points
                 // Calculate value one-by-one for each period in visible data
                 for (i = period; i < yValLen; i++) {
                     len = AD.length;
@@ -662,7 +662,7 @@
          * @requires  stock/indicators/accumulation-distribution
          * @apioption series.ad
          */
-        ''; // add doclet above to transpiled file
+        ''; // Add doclet above to transpiled file
 
         return ADIndicator;
     });
@@ -858,7 +858,7 @@
          * @requires  stock/indicators/ao
          * @apioption series.ao
          */
-        ''; // for including the above in the doclets
+        ''; // For including the above in the doclets
 
         return AOIndicator;
     });
@@ -1001,12 +1001,12 @@
                         gapSize: mainLineOptions.gapSize
                     }
                 }, 
-                // additional lines point place holders:
+                // Additional lines point place holders:
                 secondaryLines = [], secondaryLinesNames = getTranslatedLinesNames(indicator, pointValKey);
                 let pointsLength = mainLinePoints.length, point;
                 // Generate points for additional lines:
                 secondaryLinesNames.forEach((plotLine, index) => {
-                    // create additional lines point place holders
+                    // Create additional lines point place holders
                     secondaryLines[index] = [];
                     while (pointsLength--) {
                         point = mainLinePoints[pointsLength];
@@ -1263,7 +1263,7 @@
                 pointFormat: '<span style="color:{point.color}">\u25CF</span><b> {series.name}</b><br/>Aroon Up: {point.y}<br/>Aroon Down: {point.aroonDown}<br/>'
             },
             /**
-             * aroonDown line options.
+             * AroonDown line options.
              */
             aroonDown: {
                 /**
@@ -1320,7 +1320,7 @@
          * @requires  stock/indicators/aroon
          * @apioption series.aroon
          */
-        ''; // to avoid removal of the above jsdoc
+        ''; // To avoid removal of the above jsdoc
 
         return AroonIndicator;
     });
@@ -1438,7 +1438,7 @@
          * @requires  stock/indicators/aroon-oscillator
          * @apioption series.aroonoscillator
          */
-        ''; // adds doclet above to the transpiled file
+        ''; // Adds doclet above to the transpiled file
 
         return AroonOscillatorIndicator;
     });
@@ -1559,7 +1559,7 @@
              * @excluding index
              */
             params: {
-                index: void 0 // unused index, do not inherit (#15362)
+                index: void 0 // Unused index, do not inherit (#15362)
             }
         });
         SeriesRegistry.registerSeriesType('atr', ATRIndicator);
@@ -1585,7 +1585,7 @@
          * @requires  stock/indicators/atr
          * @apioption series.atr
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return ATRIndicator;
     });
@@ -1659,7 +1659,7 @@
                 const period = params.period, standardDeviation = params.standardDeviation, xData = [], yData = [], xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
                 // 0- date, 1-middle line, 2-top line, 3-bottom line
                 BB = [];
-                // middle line, top line and bottom line
+                // Middle line, top line and bottom line
                 let ML, TL, BL, date, slicedX, slicedY, stdDev, point, i;
                 if (xVal.length < period) {
                     return;
@@ -1814,7 +1814,7 @@
          * @requires  stock/indicators/bollinger-bands
          * @apioption series.bb
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return BBIndicator;
     });
@@ -1881,7 +1881,7 @@
                     yVal[0].length !== 4) {
                     return;
                 }
-                // accumulate first N-points
+                // Accumulate first N-points
                 while (range < period) {
                     p = yVal[range - 1];
                     TP.push((p[1] + p[2] + p[3]) / 3);
@@ -1930,7 +1930,7 @@
              * @excluding index
              */
             params: {
-                index: void 0 // unused index, do not inherit (#15362)
+                index: void 0 // Unused index, do not inherit (#15362)
             }
         });
         SeriesRegistry.registerSeriesType('cci', CCIIndicator);
@@ -1956,7 +1956,7 @@
          * @requires  stock/indicators/cci
          * @apioption series.cci
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return CCIIndicator;
     });
@@ -2193,7 +2193,7 @@
          * @requires  stock/indicators/cmf
          * @apioption series.cmf
          */
-        ''; // adds doclet above to the transpiled file
+        ''; // Adds doclet above to the transpiled file
 
         return CMFIndicator;
     });
@@ -2234,11 +2234,11 @@
                 const currentHigh = yVal[i][1], currentLow = yVal[i][2], previousHigh = yVal[i - 1][1], previousLow = yVal[i - 1][2];
                 let DM;
                 if (currentHigh - previousHigh > previousLow - currentLow) {
-                    // for +DM
+                    // For +DM
                     DM = isPositiveDM ? Math.max(currentHigh - previousHigh, 0) : 0;
                 }
                 else {
-                    // for -DM
+                    // For -DM
                     DM = !isPositiveDM ? Math.max(previousLow - currentLow, 0) : 0;
                 }
                 return correctFloat(DM);
@@ -2254,11 +2254,11 @@
             }
             getTR(currentPoint, prevPoint) {
                 return correctFloat(Math.max(
-                // currentHigh - currentLow
+                // `currentHigh - currentLow`
                 currentPoint[1] - currentPoint[2], 
-                // currentHigh - previousClose
+                // `currentHigh - previousClose`
                 !prevPoint ? 0 : Math.abs(currentPoint[1] - prevPoint[3]), 
-                // currentLow - previousClose
+                // `currentLow - previousClose`
                 !prevPoint ? 0 : Math.abs(currentPoint[2] - prevPoint[3])));
             }
             getValues(series, params) {
@@ -2353,7 +2353,7 @@
              * @excluding index
              */
             params: {
-                index: void 0 // unused index, do not inherit (#15362)
+                index: void 0 // Unused index, do not inherit (#15362)
             },
             marker: {
                 enabled: false
@@ -2386,7 +2386,7 @@
                      *
                      * @type {Highcharts.ColorString}
                      */
-                    lineColor: "#06b535" /* Palette.positiveColor */ // green-ish
+                    lineColor: "#06b535" /* Palette.positiveColor */ // Green-ish
                 }
             },
             /**
@@ -2406,7 +2406,7 @@
                      *
                      * @type {Highcharts.ColorString}
                      */
-                    lineColor: "#f21313" /* Palette.negativeColor */ // red-ish
+                    lineColor: "#f21313" /* Palette.negativeColor */ // Red-ish
                 }
             },
             dataGrouping: {
@@ -2448,7 +2448,7 @@
          * @requires  stock/indicators/dmi
          * @apioption series.dmi
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return DMIIndicator;
     });
@@ -2515,11 +2515,11 @@
                 for (j = 0; j <= yValLen - range; j++) {
                     periodIndex = j + period - 1;
                     rangeIndex = j + range - 1;
-                    // adding the last period point
+                    // Adding the last period point
                     sum = accumulatePoints(sum, yVal, periodIndex, index);
                     price = pick(yVal[rangeIndex][index], yVal[rangeIndex]);
                     oscillator = price - sum / period;
-                    // subtracting the first period point
+                    // Subtracting the first period point
                     sum = accumulatePoints(sum, yVal, j, index, true);
                     DPO.push([xVal[rangeIndex], oscillator]);
                     xData.push(xVal[rangeIndex]);
@@ -2596,7 +2596,7 @@
          * @requires  stock/indicators/dpo
          * @apioption series.dpo
          */
-        ''; // to include the above in the js output'
+        ''; // To include the above in the js output'
 
         return DPOIndicator;
     });
@@ -2758,7 +2758,7 @@
          * @requires  stock/indicators/chaikin
          * @apioption series.chaikin
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return ChaikinIndicator;
     });
@@ -2911,7 +2911,7 @@
          * @requires  stock/indicators/cmo
          * @apioption series.cmo
          */
-        (''); // to include the above in the js output
+        (''); // To include the above in the js output
 
         return CMOIndicator;
     });
@@ -2969,7 +2969,7 @@
                 // Accumulate first N-points
                 accumulatePeriodPoints =
                     super.accumulatePeriodPoints(period, index, yVal);
-                // first point
+                // First point
                 SMA = accumulatePeriodPoints / period;
                 accumulatePeriodPoints = 0;
                 // Calculate value one-by-one for each period in visible data
@@ -3058,7 +3058,7 @@
          * @requires  stock/indicators/dema
          * @apioption series.dema
          */
-        ''; // adds doclet above to the transpiled file
+        ''; // Adds doclet above to the transpiled file
 
         return DEMAIndicator;
     });
@@ -3126,7 +3126,7 @@
                 }
                 // Accumulate first N-points
                 accumulatePeriodPoints = super.accumulatePeriodPoints(period, index, yVal);
-                // first point
+                // First point
                 sma = accumulatePeriodPoints / period;
                 accumulatePeriodPoints = 0;
                 // Calculate value one-by-one for each period in visible data
@@ -3238,7 +3238,7 @@
          * @requires  stock/indicators/tema
          * @apioption series.tema
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return TEMAIndicator;
     });
@@ -3334,7 +3334,7 @@
          * @requires  stock/indicators/tema
          * @apioption series.trix
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return TRIXIndicator;
     });
@@ -3478,7 +3478,7 @@
          * @requires  stock/indicators/apo
          * @apioption series.apo
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return APOIndicator;
     });
@@ -3713,7 +3713,7 @@
                 // getGraphPath()
                 nextPoints = [
                     [],
-                    [] // NextPoints negative color
+                    [] // Next points negative color
                 ];
                 let pointsLength = mainLinePoints.length, lineIndex = 0, position, point, i, startIntersect, endIntersect, sectionPoints, sectionNextPoints, pointsPlotYSum, nextPointsPlotYSum, senkouSpanTempColor, concatArrIndex, j, k;
                 indicator.ikhMap = ikhMap;
@@ -4168,7 +4168,7 @@
          * @requires  stock/indicators/ichimoku-kinko-hyo
          * @apioption series.ikh
          */
-        (''); // add doclet above to transpiled file
+        (''); // Add doclet above to transpiled file
 
         return IKHIndicator;
     });
@@ -4228,7 +4228,7 @@
                 }), seriesATR = SeriesRegistry.seriesTypes.atr.prototype.getValues(series, {
                     period: periodATR
                 }), xData = [], yData = [];
-                // middle line, top line and bottom lineI
+                // Middle line, top line and bottom lineI
                 let ML, TL, BL, date, pointEMA, pointATR, i;
                 if (yValLen < period) {
                     return;
@@ -4382,7 +4382,7 @@
          * @requires     stock/indicators/keltner-channels
          * @apioption    series.keltnerchannels
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return KeltnerChannelsIndicator;
     });
@@ -4447,10 +4447,10 @@
             }
             getVolumeForce(yVal) {
                 const volumeForce = [];
-                let CM = 0, // cumulative measurement
-                DM, // daily measurement
-                force, i = 1, // start from second point
-                previousCM = 0, previousDM = yVal[0][1] - yVal[0][2], // initial DM
+                let CM = 0, // Cumulative measurement
+                DM, // Daily measurement
+                force, i = 1, // Start from second point
+                previousCM = 0, previousDM = yVal[0][1] - yVal[0][2], // Initial DM
                 previousTrend = 0, trend;
                 for (i; i < yVal.length; i++) {
                     trend = this.calculateTrend(yVal, i);
@@ -4479,9 +4479,7 @@
             }
             getValues(series, params) {
                 const Klinger = [], xVal = series.xData, yVal = series.yData, xData = [], yData = [], calcSingal = [];
-                let KO, i = 0, fastEMA = 0, slowEMA, 
-                // signalEMA: number|undefined = void 0,
-                previousFastEMA = void 0, previousSlowEMA = void 0, signal = null;
+                let KO, i = 0, fastEMA = 0, slowEMA, previousFastEMA = void 0, previousSlowEMA = void 0, signal = null;
                 // If the necessary conditions are not fulfilled, don't proceed.
                 if (!this.isValidData(yVal[0])) {
                     return;
@@ -4631,7 +4629,7 @@
          * @requires  stock/indicators/klinger
          * @apioption series.klinger
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return KlingerIndicator;
     });
@@ -4722,7 +4720,7 @@
                 });
             }
             destroy() {
-                // this.graph is null due to removing two times the same SVG element
+                // This.graph is null due to removing two times the same SVG element
                 this.graph = null;
                 this.graphmacd = this.graphmacd && this.graphmacd.destroy();
                 this.graphsignal = this.graphsignal && this.graphsignal.destroy();
@@ -4772,10 +4770,10 @@
                 // Histogram zones are handled by drawPoints method
                 // Here we need to apply zones for all lines
                 const histogramZones = this.zones;
-                // signalZones.zones contains all zones:
+                // `signalZones.zones` contains all zones:
                 this.zones = this.signalZones.zones;
                 SeriesRegistry.seriesTypes.sma.prototype.applyZones.call(this);
-                // applyZones hides only main series.graph, hide macd line manually
+                // `applyZones` hides only main series.graph, hide macd line manually
                 if (this.graphmacd && this.options.macdLine.zones.length) {
                     this.graphmacd.hide();
                 }
@@ -4834,7 +4832,7 @@
                 // Setting the MACD Histogram. In comparison to the loop with pure
                 // MACD this loop uses MACD x value not xData.
                 for (i = 0; i < MACD.length; i++) {
-                    // detect the first point
+                    // Detect the first point
                     if (MACD[i][0] >= signalLine[0][0]) {
                         MACD[i][2] = signalLine[j][1];
                         yMACD[i] = [0, signalLine[j][1], MACD[i][3]];
@@ -5002,7 +5000,7 @@
          * @requires  stock/indicators/macd
          * @apioption series.macd
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return MACDIndicator;
     });
@@ -5026,17 +5024,29 @@
          *
          * */
         // Utils:
+        /**
+         *
+         */
         function sumArray(array) {
             return array.reduce(function (prev, cur) {
                 return prev + cur;
             });
         }
+        /**
+         *
+         */
         function toFixed(a, n) {
             return parseFloat(a.toFixed(n));
         }
+        /**
+         *
+         */
         function calculateTypicalPrice(point) {
             return (point[1] + point[2] + point[3]) / 3;
         }
+        /**
+         *
+         */
         function calculateRawMoneyFlow(typicalPrice, volume) {
             return typicalPrice * volume;
         }
@@ -5187,7 +5197,7 @@
          * @requires  stock/indicators/mfi
          * @apioption series.mfi
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return MFIIndicator;
     });
@@ -5310,7 +5320,7 @@
          * @requires  stock/indicators/momentum
          * @apioption series.momentum
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return MomentumIndicator;
     });
@@ -5407,7 +5417,7 @@
          * @requires  stock/indicators/natr
          * @apioption series.natr
          */
-        ''; // to include the above in the js output'
+        ''; // To include the above in the js output'
 
         return NATRIndicator;
     });
@@ -5457,13 +5467,13 @@
                     for (i; i < yVal.length; i++) {
                         curentClose = hasOHLC ?
                             yVal[i][3] : yVal[i];
-                        if (curentClose > previousClose) { // up
+                        if (curentClose > previousClose) { // Up
                             curentOBV = previousOBV + volume[i];
                         }
-                        else if (curentClose === previousClose) { // constant
+                        else if (curentClose === previousClose) { // Constant
                             curentOBV = previousOBV;
                         }
-                        else { // down
+                        else { // Down
                             curentOBV = previousOBV - volume[i];
                         }
                         // Add point.
@@ -5560,7 +5570,7 @@
          * @requires  stock/indicators/obv
          * @apioption series.obv
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return OBVIndicator;
     });
@@ -5911,7 +5921,7 @@
          * @requires  stock/indicators/pivotpoints
          * @apioption series.pivotpoints
          */
-        ''; // to include the above in the js output'
+        ''; // To include the above in the js output'
 
         return PivotPointsIndicator;
     });
@@ -6057,7 +6067,7 @@
          * @requires  stock/indicators/ppo
          * @apioption series.ppo
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return PPOIndicator;
     });
@@ -6144,7 +6154,7 @@
                 const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
                 // 0- date, 1-top line, 2-middle line, 3-bottom line
                 PC = [], 
-                // middle line, top line and bottom line
+                // Middle line, top line and bottom line
                 low = 2, high = 1, xData = [], yData = [];
                 let ML, TL, BL, date, slicedY, extremes, i;
                 if (yValLen < period) {
@@ -6279,7 +6289,7 @@
          * @requires     stock/indicators/price-channel
          * @apioption    series.pc
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return PCIndicator;
     });
@@ -6333,7 +6343,7 @@
                 const period = params.period, topPercent = params.topBand, botPercent = params.bottomBand, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
                 // 0- date, 1-top line, 2-middle line, 3-bottom line
                 PE = [], 
-                // middle line, top line and bottom line
+                // Middle line, top line and bottom line
                 xData = [], yData = [];
                 let ML, TL, BL, date, slicedX, slicedY, point, i;
                 // Price envelopes requires close value
@@ -6481,7 +6491,7 @@
          * @requires  stock/indicators/price-envelopes
          * @apioption series.priceenvelopes
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return PriceEnvelopesIndicator;
     });
@@ -6505,9 +6515,15 @@
          *
          * */
         // Utils:
+        /**
+         *
+         */
         function toFixed(a, n) {
             return parseFloat(a.toFixed(n));
         }
+        /**
+         *
+         */
         function calculateDirection(previousDirection, low, high, PSAR) {
             if ((previousDirection === 1 && low > PSAR) ||
                 (previousDirection === -1 && high > PSAR)) {
@@ -6525,6 +6541,9 @@
          * maxAcc - maximum acceleration factor
          * initAcc - initial acceleration factor
          */
+        /**
+         *
+         */
         function getAccelerationFactor(dir, pDir, eP, pEP, pAcc, inc, maxAcc, initAcc) {
             if (dir === pDir) {
                 if (dir === 1 && (eP > pEP)) {
@@ -6537,15 +6556,24 @@
             }
             return initAcc;
         }
+        /**
+         *
+         */
         function getExtremePoint(high, low, previousDirection, previousExtremePoint) {
             if (previousDirection === 1) {
                 return (high > previousExtremePoint) ? high : previousExtremePoint;
             }
             return (low < previousExtremePoint) ? low : previousExtremePoint;
         }
+        /**
+         *
+         */
         function getEPMinusPSAR(EP, PSAR) {
             return EP - PSAR;
         }
+        /**
+         *
+         */
         function getAccelerationFactorMultiply(accelerationFactor, EPMinusSAR) {
             return accelerationFactor * EPMinusSAR;
         }
@@ -6560,6 +6588,9 @@
          * sHigh - second previous high
          * pHigh - previous high
          * pEP - previous extreme point
+         */
+        /**
+         *
          */
         function getPSAR(pdir, sDir, PSAR, pACCMulti, sLow, pLow, pHigh, sHigh, pEP) {
             if (pdir === sDir) {
@@ -6749,7 +6780,7 @@
          * @requires  stock/indicators/psar
          * @apioption series.psar
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return PSARIndicator;
     });
@@ -6771,6 +6802,9 @@
          *
          * */
         // Utils:
+        /**
+         *
+         */
         function populateAverage(xVal, yVal, i, period, index) {
             /* Calculated as:
 
@@ -6780,14 +6814,14 @@
                Return y as null when avoiding division by zero */
             let nDaysAgoY, rocY;
             if (index < 0) {
-                // y data given as an array of values
+                // Y data given as an array of values
                 nDaysAgoY = yVal[i - period];
                 rocY = nDaysAgoY ?
                     (yVal[i] - nDaysAgoY) / nDaysAgoY * 100 :
                     null;
             }
             else {
-                // y data given as an array of arrays and the index should be used
+                // Y data given as an array of arrays and the index should be used
                 nDaysAgoY = yVal[i - period][index];
                 rocY = nDaysAgoY ?
                     (yVal[i][index] - nDaysAgoY) / nDaysAgoY * 100 :
@@ -6827,7 +6861,7 @@
                 if (isArray(yVal[0])) {
                     index = params.index;
                 }
-                // i = period <-- skip first N-points
+                // I = period <-- skip first N-points
                 // Calculate value one-by-one for each period in visible data
                 for (i = period; i < yValLen; i++) {
                     ROCPoint = populateAverage(xVal, yVal, i, period, index);
@@ -6912,7 +6946,7 @@
          * @requires  stock/indicators/roc
          * @apioption series.roc
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return ROCIndicator;
     });
@@ -6932,6 +6966,9 @@
          *
          * */
         // Utils:
+        /**
+         *
+         */
         function toFixed(a, n) {
             return parseFloat(a.toFixed(n));
         }
@@ -6968,7 +7005,7 @@
                     values = yVal;
                 }
                 else {
-                    // in case of the situation, where the series type has data length
+                    // In case of the situation, where the series type has data length
                     // longer then 4 (HLC, range), this ensures that we are not trying
                     // to reach the index out of bounds
                     index = Math.min(index, yVal[0].length - 1);
@@ -7075,7 +7112,7 @@
          * @requires  stock/indicators/rsi
          * @apioption series.rsi
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return RSIIndicator;
     });
@@ -7292,7 +7329,7 @@
          * @requires  stock/indicators/stochastic
          * @apioption series.stochastic
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return StochasticIndicator;
     });
@@ -7421,7 +7458,7 @@
          * @requires  stock/indicators/slowstochastic
          * @apioption series.slowstochastic
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return SlowStochasticIndicator;
     });
@@ -7713,7 +7750,7 @@
                 const period = params.period, multiplier = params.multiplier, xVal = series.xData, yVal = series.yData, 
                 // 0- date, 1- Supertrend indicator
                 st = [], xData = [], yData = [], close = 3, low = 2, high = 1, periodsOffset = (period === 0) ? 0 : period - 1, finalUp = [], finalDown = [];
-                let atrData = [], basicUp, basicDown, supertrend, prevFinalUp, prevFinalDown, prevST, // previous Supertrend
+                let atrData = [], basicUp, basicDown, supertrend, prevFinalUp, prevFinalDown, prevST, // Previous Supertrend
                 prevY, y, i;
                 if ((xVal.length <= period) || !isArray(yVal[0]) ||
                     yVal[0].length !== 4 || period < 0) {
@@ -7892,7 +7929,7 @@
          * @requires  stock/indicators/supertrend
          * @apioption series.supertrend
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return SupertrendIndicator;
     });
@@ -8003,8 +8040,8 @@
              * */
             init(chart, options) {
                 const indicator = this;
-                // series.update() sends data that is not necessary
-                // as everything is calculated in getValues(), #17007
+                // Series.update() sends data that is not necessary as everything is
+                // calculated in getValues(), #17007
                 delete options.data;
                 super.init.apply(indicator, arguments);
                 // Only after series are linked add some additional logic/properties.
@@ -8511,7 +8548,7 @@
          * @requires  stock/indicators/volume-by-price
          * @apioption series.vbp
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return VBPIndicator;
     });
@@ -8689,7 +8726,7 @@
          * @requires  stock/indicators/vwap
          * @apioption series.vwap
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return VWAPIndicator;
     });
@@ -8822,7 +8859,7 @@
          * @requires  stock/indicators/williams-r
          * @apioption series.williamsr
          */
-        ''; // adds doclets above to the transpiled file
+        ''; // Adds doclets above to the transpiled file
 
         return WilliamsRIndicator;
     });
@@ -8859,7 +8896,7 @@
             // If there are 5 days, the triangular numbers are 5, 4, 3, 2, and 1.
             // The sum is 5 + 4 + 3 + 2 + 1 = 15.
             const denominator = (pLen + 1) / 2 * pLen;
-            // reduce VS loop => reduce
+            // Reduce VS loop => reduce
             return array.reduce(function (prev, cur, i) {
                 return [null, prev[1] + cur[1] * (i + 1)];
             })[1] / denominator;
@@ -8869,7 +8906,7 @@
          */
         function populateAverage(points, xVal, yVal, i) {
             const pLen = points.length, wmaY = weightedSumArray(points, pLen), wmaX = xVal[i - 1];
-            points.shift(); // remove point until range < period
+            points.shift(); // Remove point until range < period
             return [wmaX, wmaY];
         }
         /* *
@@ -8977,7 +9014,7 @@
          * @requires  stock/indicators/wma
          * @apioption series.wma
          */
-        ''; // adds doclet above to the transpiled file
+        ''; // Adds doclet above to the transpiled file
 
         return WMAIndicator;
     });
@@ -9031,21 +9068,21 @@
                 // Search for a second zigzag point candidate,
                 // this will also set first zigzag point
                 for (i = 1; i < yValLen; i++) {
-                    // required change to go down
+                    // Required change to go down
                     if (yVal[i][lowIndex] <= firstZigzagHigh * deviations.high) {
                         zigzag.push([xVal[0], firstZigzagHigh]);
-                        // second zigzag point candidate
+                        // Second zigzag point candidate
                         zigzagPoint = [xVal[i], yVal[i][lowIndex]];
-                        // next line will be going up
+                        // Next line will be going up
                         directionUp = true;
                         exitLoop = true;
-                        // required change to go up
+                        // Required change to go up
                     }
                     else if (yVal[i][highIndex] >= firstZigzagLow * deviations.low) {
                         zigzag.push([xVal[0], firstZigzagLow]);
-                        // second zigzag point candidate
+                        // Second zigzag point candidate
                         zigzagPoint = [xVal[i], yVal[i][highIndex]];
-                        // next line will be going down
+                        // Next line will be going down
                         directionUp = false;
                         exitLoop = true;
                     }
@@ -9058,31 +9095,31 @@
                 }
                 // Search for next zigzags
                 for (i = j; i < yValLen; i++) {
-                    if (directionUp) { // next line up
+                    if (directionUp) { // Next line up
                         // lower when going down -> change zigzag candidate
                         if (yVal[i][lowIndex] <= zigzagPoint[1]) {
                             zigzagPoint = [xVal[i], yVal[i][lowIndex]];
                         }
-                        // required change to go down -> new zigzagpoint and
+                        // Required change to go down -> new zigzagpoint and
                         // direction change
                         if (yVal[i][highIndex] >=
                             zigzagPoint[1] * deviations.low) {
                             yIndex = highIndex;
                         }
                     }
-                    else { // next line down
+                    else { // Next line down
                         // higher when going up -> change zigzag candidate
                         if (yVal[i][highIndex] >= zigzagPoint[1]) {
                             zigzagPoint = [xVal[i], yVal[i][highIndex]];
                         }
-                        // required change to go down -> new zigzagpoint and
+                        // Required change to go down -> new zigzagpoint and
                         // direction change
                         if (yVal[i][lowIndex] <=
                             zigzagPoint[1] * deviations.high) {
                             yIndex = lowIndex;
                         }
                     }
-                    if (yIndex !== false) { // new zigzag point and direction change
+                    if (yIndex !== false) { // New zigzag point and direction change
                         zigzag.push(zigzagPoint);
                         xData.push(zigzagPoint[0]);
                         yData.push(zigzagPoint[1]);
@@ -9092,10 +9129,10 @@
                     }
                 }
                 const zigzagLen = zigzag.length;
-                // no zigzag for last point
+                // No zigzag for last point
                 if (zigzagLen !== 0 &&
                     zigzag[zigzagLen - 1][0] < xVal[yValLen - 1]) {
-                    // set last point from zigzag candidate
+                    // Set last point from zigzag candidate
                     zigzag.push(zigzagPoint);
                     xData.push(zigzagPoint[0]);
                     yData.push(zigzagPoint[1]);
@@ -9188,7 +9225,7 @@
          * @requires  stock/indicators/zigzag
          * @apioption series.zigzag
          */
-        ''; // adds doclets above to transpiled file
+        ''; // Adds doclets above to transpiled file
 
         return ZigzagIndicator;
     });
@@ -9240,7 +9277,7 @@
              * function.
              */
             getRegressionLineParameters(xData, yData) {
-                // least squares method
+                // Least squares method
                 const yIndex = this.options.params.index, getSingleYValue = function (yValue, yIndex) {
                     return isArray(yValue) ? yValue[yIndex] : yValue;
                 }, xSum = xData.reduce(function (accX, val) {
@@ -9256,7 +9293,7 @@
                     formulaDenominator += Math.pow(xError, 2);
                 }
                 const slope = formulaDenominator ?
-                    formulaNumerator / formulaDenominator : 0; // don't divide by 0
+                    formulaNumerator / formulaDenominator : 0; // Don't divide by 0
                 return {
                     slope: slope,
                     intercept: yMean - slope * xMean
@@ -9322,7 +9359,7 @@
             // Required to be implemented - starting point for indicator's logic
             getValues(baseSeries, regressionSeriesParams) {
                 const xData = baseSeries.xData, yData = baseSeries.yData, period = regressionSeriesParams.period, 
-                // format required to be returned
+                // Format required to be returned
                 indicatorData = {
                     xData: [],
                     yData: [],
@@ -9334,7 +9371,7 @@
                 // (end point) is used to represent the y value (regression)
                 // of the entire period.
                 for (i = period - 1; i <= xData.length - 1; i++) {
-                    periodStart = i - period + 1; // adjusted for slice() function
+                    periodStart = i - period + 1; // Adjusted for slice() function
                     periodEnd = i + 1; // (as above)
                     endPointX = xData[i];
                     periodXData = xData.slice(periodStart, periodEnd);
@@ -9455,7 +9492,7 @@
          * @requires  stock/indicators/regressions
          * @apioption series.linearregression
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return LinearRegressionIndicator;
     });
@@ -9542,7 +9579,7 @@
          * @requires  stock/indicators/regressions
          * @apioption series.linearregressionslope
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return LinearRegressionSlopesIndicator;
     });
@@ -9629,7 +9666,7 @@
          * @requires  stock/indicators/regressions
          * @apioption series.linearregressionintercept
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return LinearRegressionInterceptIndicator;
     });
@@ -9673,7 +9710,7 @@
              * @return {number} angle in degrees
              */
             slopeToAngle(slope) {
-                return Math.atan(slope) * (180 / Math.PI); // rad to deg
+                return Math.atan(slope) * (180 / Math.PI); // Rad to deg
             }
             getEndPointY(lineParameters) {
                 return this.slopeToAngle(lineParameters.slope);
@@ -9726,7 +9763,7 @@
          * @requires  stock/indicators/regressions
          * @apioption series.linearregressionangle
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return LinearRegressionAngleIndicator;
     });
@@ -9793,7 +9830,7 @@
                 // ABANDS array structure:
                 // 0-date, 1-top line, 2-middle line, 3-bottom line
                 ABANDS = [], low = 2, high = 1, xData = [], yData = [];
-                // middle line, top line and bottom line
+                // Middle line, top line and bottom line
                 let ML, TL, BL, date, bandBase, pointSMA, ubSMA, lbSMA, slicedX, slicedY, i;
                 if (yValLen < period) {
                     return;
@@ -9949,7 +9986,7 @@
          * @requires  stock/indicators/acceleration-bands
          * @apioption series.abands
          */
-        ''; // to include the above in jsdoc
+        ''; // To include the above in jsdoc
 
         return ABandsIndicator;
     });
@@ -10088,7 +10125,7 @@
          * @requires  stock/indicators/trendline
          * @apioption series.trendline
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return TrendLineIndicator;
     });
@@ -10127,7 +10164,7 @@
              * */
             init() {
                 const args = arguments, ctx = this, // Disparity Index indicator
-                params = args[1].params, // options.params
+                params = args[1].params, // Options.params
                 averageType = params && params.average ? params.average : void 0;
                 ctx.averageIndicator = SeriesRegistry
                     .seriesTypes[averageType] || SMAIndicator;
@@ -10239,7 +10276,7 @@
          * @requires  stock/indicators/disparity-index
          * @apioption series.disparityindex
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return DisparityIndexIndicator;
     });

@@ -402,14 +402,14 @@ const langOptions = {
              */
             description: '{description}',
             /**
-             * xAxis description for series if there are multiple xAxes in
+             * X-axis description for series if there are multiple xAxes in
              * the chart.
              *
              * @since 6.0.6
              */
             xAxisDescription: 'X axis, {name}',
             /**
-             * yAxis description for series if there are multiple yAxes in
+             * Y-axis description for series if there are multiple yAxes in
              * the chart.
              *
              * @since 6.0.6

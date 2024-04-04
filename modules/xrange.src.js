@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.0 (2024-03-05)
+ * @license Highcharts JS v11.4.1 (2024-04-04)
  *
  * X-range series
  *
@@ -112,7 +112,7 @@
             colorByPoint: true,
             dataLabels: {
                 formatter: function () {
-                    let point = this.point, amount = point.partialFill;
+                    let amount = this.point.partialFill;
                     if (isObject(amount)) {
                         amount = amount.amount;
                     }
@@ -246,7 +246,7 @@
          * @product   highcharts highstock gantt
          * @apioption series.xrange.data.partialFill.fill
          */
-        (''); // adds doclets above to transpiled file
+        (''); // Adds doclets above to transpiled file
 
         return XRangeSeriesDefaults;
     });
@@ -399,7 +399,7 @@
         * @type {number|undefined}
         * @requires modules/xrange
         */
-        (''); // keeps doclets above in JS file
+        (''); // Keeps doclets above in JS file
 
         return XRangePoint;
     });
@@ -696,7 +696,7 @@
                 let graphic = point.graphic, pfOptions = point.partialFill;
                 if (!point.isNull && point.visible !== false) {
                     // Original graphic
-                    if (graphic) { // update
+                    if (graphic) { // Update
                         graphic.rect[verb](shapeArgs);
                     }
                     else {

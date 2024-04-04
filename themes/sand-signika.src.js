@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.0 (2024-03-05)
+ * @license Highcharts JS v11.4.1 (2024-04-04)
  *
  * (c) 2009-2024 Torstein Honsi
  *
@@ -60,8 +60,10 @@
              *
              * */
             SandSignikaTheme.options = {
-                colors: ['#f45b5b', '#8085e9', '#8d4654', '#7798BF', '#aaeeee',
-                    '#ff0066', '#eeaaee', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee'],
+                colors: [
+                    '#f45b5b', '#8085e9', '#8d4654', '#7798BF', '#aaeeee',
+                    '#ff0066', '#eeaaee', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee'
+                ],
                 chart: {
                     backgroundColor: null,
                     style: {

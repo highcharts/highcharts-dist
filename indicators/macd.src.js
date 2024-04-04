@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.4.0 (2024-03-05)
+ * @license Highstock JS v11.4.1 (2024-04-04)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -122,7 +122,7 @@
                 });
             }
             destroy() {
-                // this.graph is null due to removing two times the same SVG element
+                // This.graph is null due to removing two times the same SVG element
                 this.graph = null;
                 this.graphmacd = this.graphmacd && this.graphmacd.destroy();
                 this.graphsignal = this.graphsignal && this.graphsignal.destroy();
@@ -172,10 +172,10 @@
                 // Histogram zones are handled by drawPoints method
                 // Here we need to apply zones for all lines
                 const histogramZones = this.zones;
-                // signalZones.zones contains all zones:
+                // `signalZones.zones` contains all zones:
                 this.zones = this.signalZones.zones;
                 SeriesRegistry.seriesTypes.sma.prototype.applyZones.call(this);
-                // applyZones hides only main series.graph, hide macd line manually
+                // `applyZones` hides only main series.graph, hide macd line manually
                 if (this.graphmacd && this.options.macdLine.zones.length) {
                     this.graphmacd.hide();
                 }
@@ -234,7 +234,7 @@
                 // Setting the MACD Histogram. In comparison to the loop with pure
                 // MACD this loop uses MACD x value not xData.
                 for (i = 0; i < MACD.length; i++) {
-                    // detect the first point
+                    // Detect the first point
                     if (MACD[i][0] >= signalLine[0][0]) {
                         MACD[i][2] = signalLine[j][1];
                         yMACD[i] = [0, signalLine[j][1], MACD[i][3]];
@@ -402,7 +402,7 @@
          * @requires  stock/indicators/macd
          * @apioption series.macd
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return MACDIndicator;
     });

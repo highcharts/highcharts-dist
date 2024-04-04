@@ -73,10 +73,13 @@ declare module "./highcharts.src" {
      * Prepare axis translation.
      */
     function onAxisInitialAxisTranslation(): void;
+    function onChartAfterDrawChartBox(): void;
+    function onChartGetAxes(): void;
     /**
      * Start the bubble legend creation process.
      */
     function onLegendAfterGetAllItems(): void;
+    function onPointerAfterGetHoverData(): void;
     /**
      * Toggle bubble legend depending on the visible status of bubble series.
      */

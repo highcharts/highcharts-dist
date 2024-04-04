@@ -63,7 +63,7 @@ var RendererRegistry;
         RendererRegistry.rendererTypes[rendererType] = rendererClass;
         if (!defaultRenderer || setAsDefault) {
             defaultRenderer = rendererType;
-            H.Renderer = rendererClass; // compatibility
+            H.Renderer = rendererClass; // Compatibility
         }
     }
     RendererRegistry.registerRendererType = registerRendererType;

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.0 (2024-03-05)
+ * @license Highcharts JS v11.4.1 (2024-04-04)
  *
  * (c) 2016-2024 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -97,7 +97,7 @@
                         onComplete();
                     }
                 };
-                // animate only runs complete callback if something was animated.
+                // Animate only runs complete callback if something was animated.
                 if (Object.keys(animatableAttribs).length) {
                     graphic.animate(animatableAttribs, void 0, () => destroy());
                 }
@@ -355,7 +355,7 @@
          * @product   highcharts
          * @apioption series.wordcloud.data.weight
          */
-        ''; // detach doclets above
+        ''; // Detach doclets above
         /* *
          *
          *  Default Export
@@ -417,8 +417,8 @@
          *         Returns the two normals in an array.
          */
         function getNormals(p1, p2) {
-            const dx = p2[0] - p1[0], // x2 - x1
-            dy = p2[1] - p1[1]; // y2 - y1
+            const dx = p2[0] - p1[0], // X2 - x1
+            dy = p2[1] - p1[1]; // Y2 - y1
             return [
                 [-dy, dx],
                 [dy, -dx]
@@ -872,7 +872,7 @@
             };
             point.polygon = polygon;
             point.rotation = options.rotation;
-            /* while w intersects any previously placed words:
+            /* While w intersects any previously placed words:
                 do {
                 move w a little bit along a spiral path
                 } while any part of w is outside the playing field and
@@ -1146,7 +1146,7 @@
                 const series = this, hasRendered = series.hasRendered, xAxis = series.xAxis, yAxis = series.yAxis, chart = series.chart, group = series.group, options = series.options, animation = options.animation, allowExtendPlayingField = options.allowExtendPlayingField, renderer = chart.renderer, placed = [], placementStrategy = series.placementStrategy[options.placementStrategy], rotation = options.rotation, weights = series.points.map(function (p) {
                     return p.weight;
                 }), maxWeight = Math.max.apply(null, weights), 
-                // concat() prevents from sorting the original array.
+                // `concat()` prevents from sorting the original array.
                 points = series.points.concat().sort((a, b) => (b.weight - a.weight // Sort descending
                 ));
                 let testElement = renderer.text().add(group), field;
@@ -1250,7 +1250,7 @@
                         if (!hasRendered) {
                             attr.x = 0;
                             attr.y = 0;
-                            // or animate from previous position
+                            // Or animate from previous position
                         }
                         else {
                             delete attr.x;

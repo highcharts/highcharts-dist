@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.0 (2024-03-05)
+ * @license Highcharts JS v11.4.1 (2024-04-04)
  *
  * Sankey diagram module
  *
@@ -134,7 +134,7 @@
                     node = newNode;
                 }
                 node.formatPrefix = 'node';
-                // for use in formats
+                // For use in formats
                 node.name = node.name || node.options.id || '';
                 // Mass is used in networkgraph:
                 node.mass = pick(
@@ -200,7 +200,7 @@
                         nodeLookup[point.to].linksTo.push(point);
                         point.toNode = nodeLookup[point.to];
                     }
-                    point.name = point.name || point.id; // for use in formats
+                    point.name = point.name || point.id; // For use in formats
                 }, this);
                 // Store lookup table for later use
                 this.nodeLookup = nodeLookup;
@@ -255,7 +255,7 @@
                 pointProto.update.call(this, options, this.isNode ? false : redraw, // Hold the redraw for nodes
                 animation, runEvent);
                 if (this.isNode) {
-                    // this.index refers to `series.nodes`, not `options.nodes` array
+                    // `this.index` refers to `series.nodes`, not `options.nodes` array
                     const nodeIndex = (nodes || [])
                         .reduce(// Array.findIndex needs a polyfill
                     (prevIndex, n, index) => (this.id === n.id ? index : prevIndex), -1), 
@@ -981,7 +981,7 @@
          * @product   highcharts
          * @apioption series.sankey.data.weight
          */
-        ''; // adds doclets above to transpiled file
+        ''; // Adds doclets above to transpiled file
         /* *
          *
          *  Default Export
@@ -1200,8 +1200,8 @@
                         if (column[i] === node) {
                             return {
                                 relativeTop: offset + (defined(directionOffset) ?
-                                    // directionOffset is a percent
-                                    // of the node height
+                                    // `directionOffset` is a percent of the node
+                                    // height
                                     relativeLength(directionOffset, height) :
                                     relativeLength(optionOffset, totalNodeOffset))
                             };
@@ -1297,7 +1297,8 @@
          * Returns a map from level number to its given options.
          */
         function getLevelOptions(params) {
-            let result = {}, defaults, converted, i, from, to, levels;
+            const result = {};
+            let defaults, converted, i, from, to, levels;
             if (isObject(params)) {
                 from = isNumber(params.from) ? params.from : 1;
                 levels = params.levels;
@@ -2015,7 +2016,7 @@
         * @name Highcharts.SeriesSankeyDataLabelsFormatterContextObject#point
         * @type {Highcharts.SankeyNodeObject}
         */
-        ''; // detach doclets above
+        ''; // Detach doclets above
 
         return SankeySeries;
     });

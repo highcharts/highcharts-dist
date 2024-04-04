@@ -16,7 +16,7 @@ const { defaultOptions } = D;
 import F from '../Templating.js';
 const { format } = F;
 import U from '../Utilities.js';
-const { addEvent, erase, extend, fireEvent, getNestedProperty, isArray, isFunction, isNumber, isObject, pick, syncTimeout, removeEvent, uniqueKey } = U;
+const { addEvent, erase, extend, fireEvent, getNestedProperty, isArray, isFunction, isNumber, isObject, merge, pick, syncTimeout, removeEvent, uniqueKey } = U;
 /* eslint-disable no-invalid-this, valid-jsdoc */
 /* *
  *
@@ -165,7 +165,7 @@ class Point {
     applyOptions(options, x) {
         const point = this, series = point.series, pointValKey = series.options.pointValKey || series.pointValKey;
         options = Point.prototype.optionsToObject.call(this, options);
-        // copy options directly to point
+        // Copy options directly to point
         extend(point, options);
         point.options = point.options ?
             extend(point.options, options) :
@@ -249,7 +249,7 @@ class Point {
                 }
             };
             if (point.legendItem) {
-                // pies have legend items
+                // Pies have legend items
                 chart.legend.destroyItem(point);
             }
             if (hoverPoints) {
@@ -521,7 +521,7 @@ class Point {
             ret[pointArrayMap[0]] = options;
         }
         else if (isArray(options)) {
-            // with leading x value
+            // With leading x value
             if (!keys && options.length > valueCount) {
                 firstItemType = typeof options[0];
                 if (firstItemType === 'string') {
@@ -606,7 +606,7 @@ class Point {
     resolveColor() {
         const series = this.series, optionsChart = series.chart.options.chart, styledMode = series.chart.styledMode;
         let color, colors, colorCount = optionsChart.colorCount, colorIndex;
-        // remove points nonZonedColor for later recalculation
+        // Remove points nonZonedColor for later recalculation
         delete this.nonZonedColor;
         if (series.options.colorByPoint) {
             if (!styledMode) {
@@ -616,7 +616,7 @@ class Point {
             }
             colorIndex = series.colorCounter;
             series.colorCounter++;
-            // loop back to zero
+            // Loop back to zero
             if (series.colorCounter === colorCount) {
                 series.colorCounter = 0;
             }
@@ -700,7 +700,7 @@ class Point {
         // Loop over the point array map and replace unformatted values with
         // sprintf formatting markup
         (series.pointArrayMap || ['y']).forEach(function (key) {
-            key = '{point.' + key; // without the closing bracket
+            key = '{point.' + key; // Without the closing bracket
             if (valuePrefix || valueSuffix) {
                 pointFormat = pointFormat.replace(RegExp(key + '}', 'g'), valuePrefix + key + '}' + valueSuffix);
             }
@@ -776,7 +776,7 @@ class Point {
                     point.dataLabel = point.dataLabel.destroy(); // #2468
                 }
             }
-            // record changes in the parallel arrays
+            // Record changes in the parallel arrays
             i = point.index;
             series.updateParallelArrays(point, i);
             // Record the options to options.data. If the old or the new config
@@ -786,7 +786,7 @@ class Point {
                 isObject(options, true)) ?
                 point.options :
                 pick(options, seriesOptions.data[i]);
-            // redraw
+            // Redraw
             series.isDirty = series.isDirtyData = true;
             if (!series.fixedBox && series.hasCartesianSeries) { // #1906, #2320
                 chart.isDirtyBox = true;
@@ -866,7 +866,7 @@ class Point {
         const point = this, series = point.series, chart = series.chart;
         selected = pick(selected, !point.selected);
         this.selectedStaging = selected;
-        // fire the event with the default handler
+        // Fire the event with the default handler
         point.firePointEvent(selected ? 'select' : 'unselect', { accumulate: accumulate }, function () {
             /**
              * Whether the point is selected or not.
@@ -881,7 +881,7 @@ class Point {
             series.options.data[series.data.indexOf(point)] =
                 point.options;
             point.setState(selected && 'select');
-            // unselect all other points unless Ctrl or Cmd + click
+            // Unselect all other points unless Ctrl or Cmd + click
             if (!accumulate) {
                 chart.getSelectedPoints().forEach(function (loopPoint) {
                     const loopSeries = loopPoint.series;
@@ -947,7 +947,7 @@ class Point {
      * @function Highcharts.Point#importEvents
      */
     manageEvent(eventType) {
-        const point = this, options = point.series.options.point || {}, userEvent = options.events?.[eventType];
+        const point = this, options = merge(point.series.options.point, point.options), userEvent = options.events?.[eventType];
         if (isFunction(userEvent) &&
             (!point.hcEvents?.[eventType] ||
                 // Some HC modules, like marker-clusters, draggable-poins etc.
@@ -989,19 +989,19 @@ class Point {
             markerOptions.states &&
             markerOptions.states[state || 'normal']) || {}), stateDisabled = markerStateOptions.enabled === false, pointMarker = point.marker || {}, chart = series.chart, hasMarkers = (markerOptions && series.markerAttribs);
         let halo = series.halo, markerAttribs, pointAttribs, pointAttribsAnimation, stateMarkerGraphic = series.stateMarkerGraphic, newSymbol;
-        state = state || ''; // empty string
+        state = state || ''; // Empty string
         if (
-        // already has this state
+        // Already has this state
         (state === point.state && !move) ||
-            // selected points don't respond to hover
+            // Selected points don't respond to hover
             (point.selected && state !== 'select') ||
-            // series' state options is disabled
+            // Series' state options is disabled
             (stateOptions.enabled === false) ||
-            // general point marker's state options is disabled
+            // General point marker's state options is disabled
             (state && (stateDisabled ||
                 (normalDisabled &&
                     markerStateOptions.enabled === false))) ||
-            // individual point marker's state options is disabled
+            // Individual point marker's state options is disabled
             (state &&
                 pointMarker.states &&
                 pointMarker.states[state] &&
@@ -1052,7 +1052,7 @@ class Point {
             }
         }
         else {
-            // if a graphic is not applied to each point in the normal state,
+            // If a graphic is not applied to each point in the normal state,
             // create a shared graphic for the hover state
             if (state && markerStateOptions) {
                 newSymbol = pointMarker.symbol || series.symbol;
@@ -1355,4 +1355,4 @@ export default Point;
  * @param {Highcharts.PointInteractionEventObject} event
  *        Event that occurred.
  */
-''; // keeps doclets above in JS file.
+''; // Keeps doclets above in JS file.

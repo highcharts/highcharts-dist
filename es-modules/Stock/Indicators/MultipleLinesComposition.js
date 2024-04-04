@@ -139,12 +139,12 @@ var MultipleLinesComposition;
                 gapSize: mainLineOptions.gapSize
             }
         }, 
-        // additional lines point place holders:
+        // Additional lines point place holders:
         secondaryLines = [], secondaryLinesNames = getTranslatedLinesNames(indicator, pointValKey);
         let pointsLength = mainLinePoints.length, point;
         // Generate points for additional lines:
         secondaryLinesNames.forEach((plotLine, index) => {
-            // create additional lines point place holders
+            // Create additional lines point place holders
             secondaryLines[index] = [];
             while (pointsLength--) {
                 point = mainLinePoints[pointsLength];

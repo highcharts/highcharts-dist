@@ -142,7 +142,8 @@ class NetworkgraphPoint extends Point {
      * @private
      */
     redrawLink() {
-        let path = this.getLinkPath(), attribs;
+        const path = this.getLinkPath();
+        let attribs;
         if (this.graphic) {
             this.shapeArgs = {
                 d: path
@@ -183,7 +184,8 @@ class NetworkgraphPoint extends Point {
      *        configuration.
      */
     remove(redraw, animation) {
-        let point = this, series = point.series, nodesOptions = series.options.nodes || [], index, i = nodesOptions.length;
+        const point = this, series = point.series, nodesOptions = series.options.nodes || [];
+        let index, i = nodesOptions.length;
         // For nodes, remove all connected links:
         if (point.isNode) {
             // Temporary disable series.points array, because

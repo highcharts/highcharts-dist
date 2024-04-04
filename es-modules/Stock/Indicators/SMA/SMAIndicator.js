@@ -162,7 +162,7 @@ class SMAIndicator extends LineSeries {
         // for example when using Axis.setDataGrouping(). See #16670
         const processedData = indicator.linkedParent.options &&
             indicator.linkedParent.yData && // #18176, #18177 indicators should
-            indicator.linkedParent.yData.length ? // work with empty dataset
+            indicator.linkedParent.yData.length ? // Work with empty dataset
             (indicator.getValues(indicator.linkedParent, indicator.options.params) || emptySet) : emptySet;
         // We need to update points to reflect changes in all,
         // x and y's, values. However, do it only for non-grouped
@@ -351,4 +351,4 @@ export default SMAIndicator;
  * @requires  stock/indicators/indicators
  * @apioption series.sma
  */
-(''); // adds doclet above to the transpiled file
+(''); // Adds doclet above to the transpiled file

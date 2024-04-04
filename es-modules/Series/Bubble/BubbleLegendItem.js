@@ -211,7 +211,7 @@ class BubbleLegendItem {
             -connectorDistance : connectorDistance;
         // Set options for centered labels
         if (labelsAlign === 'center') {
-            connectorLength = 0; // do not use connector
+            connectorLength = 0; // Do not use connector
             options.connectorDistance = 0;
             range.labelAttribs.align = 'center';
         }
@@ -440,4 +440,4 @@ export default BubbleLegendItem;
 * @name Highcharts.BubbleLegendFormatterContextObject#value
 * @type {number}
 */
-''; // detach doclets above
+''; // Detach doclets above

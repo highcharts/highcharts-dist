@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.0 (2024-03-05)
+ * @license Highcharts JS v11.4.1 (2024-04-04)
  *
  * (c) 2010-2024 Highsoft AS
  * Author: Sebastian Domas
@@ -246,7 +246,7 @@
          * @type      {number|string}
          * @apioption series.histogram.baseSeries
          */
-        ''; // keeps doclets above separate
+        ''; // Keeps doclets above separate
         /* *
          *
          *  Default Export
@@ -525,7 +525,7 @@
          * @default   {highstock} 0.75
          * @apioption series.bellcurve.fillOpacity
          */
-        ''; // keeps doclets above separate
+        ''; // Keeps doclets above separate
         /* *
          *
          *  Default Export

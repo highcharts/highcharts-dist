@@ -404,6 +404,7 @@ declare module "../highcharts" {
      * @return Splitted SVG path
      */
     function splitPath(path: (string|Array<(string|number)>)): SVGPathArray;
+    function bottomButton(): void;
     /**
      * If ranges are not specified, determine ranges from rendered bubble series
      * and render legend again.
@@ -418,6 +419,7 @@ declare module "../highcharts" {
      * Toggle bubble legend depending on the visible status of bubble series.
      */
     function onSeriesLegendItemClick(): void;
+    function topButton(): void;
     /**
      * Convert a TopoJSON topology to GeoJSON. By default the first object is
      * handled. Based on https://github.com/topojson/topojson-specification

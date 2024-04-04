@@ -127,7 +127,7 @@ class TilemapSeries extends HeatmapSeries {
             padding.yPad, 0, 1, 0, 1));
         const coord2 = Math.round(axis.translate(isX ? padding.xPad : 0, 0, 1, 0, 1));
         return {
-            padding: (axis.single ? // if there is only one tick adjust padding #18647
+            padding: (axis.single ? // If there is only one tick adjust padding #18647
                 Math.abs(coord1 - coord2) / 2 :
                 Math.abs(coord1 - coord2)) || 0,
             // Offset the yAxis length to compensate for shift. Setting the
@@ -189,4 +189,4 @@ export default TilemapSeries;
 /**
  * @typedef {"circle"|"diamond"|"hexagon"|"square"} Highcharts.TilemapShapeValue
  */
-''; // keeps doclets above in JS file
+''; // Keeps doclets above in JS file

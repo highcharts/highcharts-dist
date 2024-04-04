@@ -181,17 +181,17 @@ function onChartCallback(chart) {
         const events = find(chartDestroyEvents, (e) => e[0] === chart);
         if (!events) {
             chartDestroyEvents.push([chart, [
-                    // redraw the scroller on setExtremes
+                    // Redraw the scroller on setExtremes
                     addEvent(chart.xAxis[0], 'afterSetExtremes', function (e) {
                         if (rangeSelector) {
                             rangeSelector.render(e.min, e.max);
                         }
                     }),
-                    // redraw the scroller chart resize
+                    // Redraw the scroller chart resize
                     addEvent(chart, 'redraw', redraw)
                 ]]);
         }
-        // do it now
+        // Do it now
         redraw();
     }
 }
@@ -209,6 +209,9 @@ function onChartDestroy() {
         }
     }
 }
+/**
+ *
+ */
 function onChartGetMargins() {
     const rangeSelector = this.rangeSelector;
     if (rangeSelector) {

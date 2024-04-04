@@ -209,8 +209,8 @@ var SankeyColumnComposition;
                 if (column[i] === node) {
                     return {
                         relativeTop: offset + (defined(directionOffset) ?
-                            // directionOffset is a percent
-                            // of the node height
+                            // `directionOffset` is a percent of the node
+                            // height
                             relativeLength(directionOffset, height) :
                             relativeLength(optionOffset, totalNodeOffset))
                     };

@@ -20,7 +20,7 @@ import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: Series, seriesTypes: { column: ColumnSeries } } = SeriesRegistry;
 import SVGElement from '../../Core/Renderer/SVG/SVGElement.js';
 import U from '../../Core/Utilities.js';
-const { addEvent, defined, extend, merge, objectEach, wrap } = U;
+const { addEvent, defined, extend, isNumber, merge, objectEach, wrap } = U;
 /* *
  *
  *  Classes
@@ -55,7 +55,8 @@ class FlagsSeries extends ColumnSeries {
      * @private
      */
     drawPoints() {
-        const series = this, points = series.points, chart = series.chart, renderer = chart.renderer, inverted = chart.inverted, options = series.options, optionsY = options.y, yAxis = series.yAxis, boxesMap = {}, boxes = [];
+        const series = this, points = series.points, chart = series.chart, renderer = chart.renderer, inverted = chart.inverted, options = series.options, optionsY = options.y, yAxis = series.yAxis, boxesMap = {}, boxes = [], borderRadius = isNumber(options.borderRadius) ?
+            options.borderRadius : 0;
         let plotX, plotY, shape, i, point, graphic, stackIndex, anchorY, attribs, outsideRight, centered;
         i = points.length;
         while (i--) {
@@ -72,7 +73,7 @@ class FlagsSeries extends ColumnSeries {
                     (typeof stackIndex !== 'undefined' &&
                         (stackIndex * options.stackDistance));
             }
-            // skip connectors for higher level stacked points
+            // Skip connectors for higher level stacked points
             point.anchorX = stackIndex ? void 0 : point.plotX;
             anchorY = stackIndex ? void 0 : point.plotY;
             centered = shape !== 'flag';
@@ -88,7 +89,7 @@ class FlagsSeries extends ColumnSeries {
                 }
                 // Create the flag
                 if (!graphic) {
-                    graphic = point.graphic = renderer.label('', null, null, shape, null, null, options.useHTML)
+                    graphic = point.graphic = renderer.label('', 0, void 0, shape, void 0, void 0, options.useHTML)
                         .addClass('highcharts-point')
                         .add(series.markerGroup);
                     // Add reference to the point for tracker (#6303)
@@ -101,7 +102,8 @@ class FlagsSeries extends ColumnSeries {
                     align: centered ? 'center' : 'left',
                     width: options.width,
                     height: options.height,
-                    'text-align': options.textAlign
+                    'text-align': options.textAlign,
+                    r: borderRadius
                 });
                 if (!chart.styledMode) {
                     graphic
@@ -180,10 +182,10 @@ class FlagsSeries extends ColumnSeries {
         if (options.useHTML && series.markerGroup) {
             wrap(series.markerGroup, 'on', function (proceed) {
                 return SVGElement.prototype.on.apply(
-                // for HTML
+                // For HTML
                 // eslint-disable-next-line no-invalid-this
                 proceed.apply(this, [].slice.call(arguments, 1)), 
-                // and for SVG
+                // And for SVG
                 [].slice.call(arguments, 1));
             });
         }
@@ -301,4 +303,4 @@ export default FlagsSeries;
 /**
  * @typedef {"circlepin"|"flag"|"squarepin"} Highcharts.FlagsShapeValue
  */
-''; // detach doclets above
+''; // Detach doclets above

@@ -40,7 +40,7 @@ class LinearRegressionAngleIndicator extends LinearRegressionIndicator {
      * @return {number} angle in degrees
      */
     slopeToAngle(slope) {
-        return Math.atan(slope) * (180 / Math.PI); // rad to deg
+        return Math.atan(slope) * (180 / Math.PI); // Rad to deg
     }
     getEndPointY(lineParameters) {
         return this.slopeToAngle(lineParameters.slope);
@@ -94,4 +94,4 @@ export default LinearRegressionAngleIndicator;
  * @requires  stock/indicators/regressions
  * @apioption series.linearregressionangle
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

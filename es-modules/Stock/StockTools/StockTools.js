@@ -209,7 +209,7 @@ function navigationResizeYAxes(removedYAxisProps) {
     yAxes = chart.yAxis.filter(isNotNavigatorYAxis), plotHeight = chart.plotHeight, 
     // Gather current heights (in %)
     { positions, allAxesHeight } = this.getYAxisPositions(yAxes, plotHeight, defaultHeight, removedYAxisProps), resizers = this.getYAxisResizers(yAxes);
-    // check if the axis is being either added or removed and
+    // Check if the axis is being either added or removed and
     // if the new indicator axis will fit under existing axes.
     // if so, there is no need to scale them.
     if (!removedYAxisProps &&

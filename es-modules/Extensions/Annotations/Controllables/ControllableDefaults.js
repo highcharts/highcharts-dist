@@ -77,7 +77,7 @@ const defaultMarkers = {
         children: [{
                 tagName: 'path',
                 attributes: {
-                    // reverse triangle (used as an arrow)
+                    // Reverse triangle (used as an arrow)
                     d: 'M 0 5 L 10 0 L 10 10 Z',
                     'stroke-width': 0
                 }

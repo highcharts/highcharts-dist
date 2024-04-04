@@ -92,7 +92,7 @@ class ColumnRangeSeries extends AreaRangeSeries {
     translate() {
         return columnProto.translate.apply(this);
     }
-    // public crispCol(): BBoxObject {
+    // Public crispCol(): BBoxObject {
     //     return columnProto.crispCol.apply(this, arguments as any);
     // }
     // public drawPoints(): void {
@@ -107,7 +107,7 @@ class ColumnRangeSeries extends AreaRangeSeries {
     pointAttribs() {
         return columnProto.pointAttribs.apply(this, arguments);
     }
-    // public adjustForMissingColumns(): number {
+    // Public adjustForMissingColumns(): number {
     //     return columnProto.adjustForMissingColumns.apply(this, arguments);
     // }
     // public animate(): void {
@@ -140,7 +140,7 @@ class ColumnRangeSeries extends AreaRangeSeries {
             if (isNumber(plotHigh) && isNumber(plotY)) {
                 point.plotHigh = safeBounds(plotHigh);
                 point.plotLow = safeBounds(plotY);
-                // adjust shape
+                // Adjust shape
                 y = point.plotHigh;
                 height = pick(point.rectPlotY, point.plotY) - point.plotHigh;
                 // Adjust for minPointLength
@@ -177,7 +177,7 @@ class ColumnRangeSeries extends AreaRangeSeries {
                         xAxis.left - chart.plotLeft + x + width / 2,
                         yAxis.pos - chart.plotTop + y + height / 2,
                         height
-                    ]; // don't inherit from column tooltip position - #3372
+                    ]; // Don't inherit from column tooltip position - #3372
                 }
             }
         });
@@ -204,10 +204,6 @@ extend(ColumnRangeSeries.prototype, {
     getSymbol: noop,
     drawTracker: columnProto.drawTracker,
     getColumnMetrics: columnProto.getColumnMetrics
-    // pointAttribs: columnProto.pointAttribs,
-    // polarArc: columnProto.polarArc
-    // translate3dPoints: columnProto.translate3dPoints,
-    // translate3dShapes: columnProto.translate3dShapes
 });
 SeriesRegistry.registerSeriesType('columnrange', ColumnRangeSeries);
 /* *
@@ -302,4 +298,4 @@ export default ColumnRangeSeries;
  * @product   highcharts highstock
  * @apioption series.columnrange.states.select
  */
-''; // adds doclets above into transpiled
+''; // Adds doclets above into transpiled

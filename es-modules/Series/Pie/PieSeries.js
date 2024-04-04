@@ -51,14 +51,14 @@ class PieSeries extends Series {
             points.forEach(function (point) {
                 const graphic = point.graphic, args = point.shapeArgs;
                 if (graphic && args) {
-                    // start values
+                    // Start values
                     graphic.attr({
-                        // animate from inner radius (#779)
+                        // Animate from inner radius (#779)
                         r: pick(point.startR, (series.center && series.center[3] / 2)),
                         start: startAngleRad,
                         end: startAngleRad
                     });
-                    // animate
+                    // Animate
                     graphic.animate({
                         r: args.r,
                         start: args.start,
@@ -177,7 +177,7 @@ class PieSeries extends Series {
         if (series.group && !chart.styledMode) {
             series.group.shadow(series.options.shadow);
         }
-        // draw the slices
+        // Draw the slices
         series.points.forEach(function (point) {
             const animateTo = {};
             graphic = point.graphic;
@@ -239,7 +239,7 @@ class PieSeries extends Series {
     translate(positions) {
         fireEvent(this, 'translate');
         this.generatePoints();
-        const series = this, precision = 1000, // issue #172
+        const series = this, precision = 1000, // Issue #172
         options = series.options, slicedOffset = options.slicedOffset, radians = getStartAndEndRadians(options.startAngle, options.endAngle), startAngleRad = series.startAngleRad = radians.start, endAngleRad = series.endAngleRad = radians.end, circ = endAngleRad - startAngleRad, // 2 * Math.PI,
         points = series.points, ignoreHiddenPoint = options.ignoreHiddenPoint, len = points.length;
         let start, end, angle, 

@@ -74,7 +74,7 @@ class PackedBubbleSeries extends BubbleSeries {
             if (series.is('packedbubble') && // #13574
                 series.reserveSpace()) {
                 yData = series.yData || [];
-                // add data to array only if series is visible
+                // Add data to array only if series is visible
                 for (let j = 0; j < yData.length; j++) {
                     allDataPoints.push([
                         null, null,
@@ -171,7 +171,7 @@ class PackedBubbleSeries extends BubbleSeries {
         if (zMin && zMax) {
             return [zMin, zMax];
         }
-        // it is needed to deal with null
+        // It is needed to deal with null
         // and undefined values
         allSeries.forEach((series) => {
             series.yData.forEach((y) => {
@@ -194,9 +194,9 @@ class PackedBubbleSeries extends BubbleSeries {
      * @private
      */
     checkOverlap(bubble1, bubble2) {
-        const diffX = bubble1[0] - bubble2[0], // diff of X center values
-        diffY = bubble1[1] - bubble2[1], // diff of Y center values
-        sumRad = bubble1[2] + bubble2[2]; // sum of bubble radius
+        const diffX = bubble1[0] - bubble2[0], // Diff of X center values
+        diffY = bubble1[1] - bubble2[1], // Diff of Y center values
+        sumRad = bubble1[2] + bubble2[2]; // Sum of bubble radius
         return (Math.sqrt(diffX * diffX + diffY * diffY) -
             Math.abs(sumRad)) < -0.001;
     }
@@ -268,7 +268,7 @@ class PackedBubbleSeries extends BubbleSeries {
         if (!this.visible) {
             return;
         }
-        // layout is using nodes for position calculation
+        // Layout is using nodes for position calculation
         this.addLayout();
         if (layoutOptions.splitSeries) {
             this.addSeriesLayout();
@@ -314,7 +314,7 @@ class PackedBubbleSeries extends BubbleSeries {
      * @private
      */
     drawGraph() {
-        // if the series is not using layout, don't add parent nodes
+        // If the series is not using layout, don't add parent nodes
         if (!this.layout || !this.layout.options.splitSeries) {
             return;
         }
@@ -355,7 +355,7 @@ class PackedBubbleSeries extends BubbleSeries {
     }
     drawTracker() {
         const parentNode = this.parentNode;
-        // chart = series.chart,
+        // Chart = series.chart,
         // pointer = chart.pointer,
         // onMouseOver = function (e: PointerEvent): void {
         //     const point = pointer.getPointFromEvent(e);
@@ -473,10 +473,10 @@ class PackedBubbleSeries extends BubbleSeries {
     placeBubbles(allDataPoints) {
         const checkOverlap = this.checkOverlap, positionBubble = this.positionBubble, bubblePos = [];
         let stage = 1, j = 0, k = 0, calculatedBubble, arr = [], i;
-        // sort all points
+        // Sort all points
         const sortedArr = allDataPoints.sort((a, b) => b[2] - a[2]);
         if (sortedArr.length) {
-            // create first bubble in the middle of the chart
+            // Create first bubble in the middle of the chart
             bubblePos.push([
                 [
                     0,
@@ -484,7 +484,7 @@ class PackedBubbleSeries extends BubbleSeries {
                     sortedArr[0][2],
                     sortedArr[0][3],
                     sortedArr[0][4]
-                ] // point index
+                ] // Point index
             ]); // 0 level bubble
             if (sortedArr.length > 1) {
                 bubblePos.push([
@@ -492,7 +492,7 @@ class PackedBubbleSeries extends BubbleSeries {
                         0,
                         (0 - sortedArr[1][2] -
                             sortedArr[0][2]),
-                        // move bubble above first one
+                        // Move bubble above first one
                         sortedArr[1][2],
                         sortedArr[1][3],
                         sortedArr[1][4]
@@ -501,28 +501,28 @@ class PackedBubbleSeries extends BubbleSeries {
                 // first two already positioned so starting from 2
                 for (i = 2; i < sortedArr.length; i++) {
                     sortedArr[i][2] = sortedArr[i][2] || 1;
-                    // in case if radius is calculated as 0.
-                    calculatedBubble = positionBubble(bubblePos[stage][j], bubblePos[stage - 1][k], sortedArr[i]); // calculate initial bubble position
+                    // In case if radius is calculated as 0.
+                    calculatedBubble = positionBubble(bubblePos[stage][j], bubblePos[stage - 1][k], sortedArr[i]); // Calculate initial bubble position
                     if (checkOverlap(calculatedBubble, bubblePos[stage][0])) {
-                        /* if new bubble is overlapping with first bubble
+                        /* If new bubble is overlapping with first bubble
                             * in current level (stage)
                             */
                         bubblePos.push([]);
                         k = 0;
-                        /* reset index of bubble, used for
+                        /* Reset index of bubble, used for
                             * positioning the bubbles around it,
                             * we are starting from first bubble in next
                             * stage because we are changing level to higher
                             */
                         bubblePos[stage + 1].push(positionBubble(bubblePos[stage][j], bubblePos[stage][0], sortedArr[i]));
                         // (last bubble, 1. from curr stage, new bubble)
-                        stage++; // the new level is created, above current
-                        j = 0; // set the index of bubble in curr level to 0
+                        stage++; // The new level is created, above current
+                        j = 0; // Set the index of bubble in curr level to 0
                     }
                     else if (stage > 1 &&
                         bubblePos[stage - 1][k + 1] &&
                         checkOverlap(calculatedBubble, bubblePos[stage - 1][k + 1])) {
-                        /* if new bubble is overlapping with one of the prev
+                        /* If new bubble is overlapping with one of the prev
                             * stage bubbles, it means that - bubble, used for
                             * positioning the bubbles around it has changed
                             * so we need to recalculate it
@@ -532,19 +532,19 @@ class PackedBubbleSeries extends BubbleSeries {
                         // (last bubble, prev stage bubble, new bubble)
                         j++;
                     }
-                    else { // simply add calculated bubble
+                    else { // Simply add calculated bubble
                         j++;
                         bubblePos[stage].push(calculatedBubble);
                     }
                 }
             }
             this.chart.stages = bubblePos;
-            // it may not be necessary but adding it just in case -
+            // It may not be necessary but adding it just in case -
             // it is containing all of the bubble levels
             this.chart.rawPositions =
                 []
                     .concat.apply([], bubblePos);
-            // bubble positions merged into one array
+            // Bubble positions merged into one array
             this.resizeRadius();
             arr = this.chart.rawPositions;
         }
@@ -588,27 +588,27 @@ class PackedBubbleSeries extends BubbleSeries {
      * @return {Array<number>} Bubble with correct positions
      */
     positionBubble(lastBubble, newOrigin, nextBubble) {
-        const sqrt = Math.sqrt, asin = Math.asin, acos = Math.acos, pow = Math.pow, abs = Math.abs, distance = sqrt(// dist between lastBubble and newOrigin
+        const sqrt = Math.sqrt, asin = Math.asin, acos = Math.acos, pow = Math.pow, abs = Math.abs, distance = sqrt(// Dist between lastBubble and newOrigin
         pow((lastBubble[0] - newOrigin[0]), 2) +
             pow((lastBubble[1] - newOrigin[1]), 2)), alfa = acos(
-        // from cosinus theorem: alfa is an angle used for
+        // From cosinus theorem: alfa is an angle used for
         // calculating correct position
         (pow(distance, 2) +
             pow(nextBubble[2] + newOrigin[2], 2) -
-            pow(nextBubble[2] + lastBubble[2], 2)) / (2 * (nextBubble[2] + newOrigin[2]) * distance)), beta = asin(// from sinus theorem.
+            pow(nextBubble[2] + lastBubble[2], 2)) / (2 * (nextBubble[2] + newOrigin[2]) * distance)), beta = asin(// From sinus theorem.
         abs(lastBubble[0] - newOrigin[0]) /
             distance), 
-        // providing helping variables, related to angle between
+        // Providing helping variables, related to angle between
         // lastBubble and newOrigin
         gamma = (lastBubble[1] - newOrigin[1]) < 0 ? 0 : Math.PI, 
-        // if new origin y is smaller than last bubble y value
+        // If new origin y is smaller than last bubble y value
         // (2 and 3 quarter),
         // add Math.PI to final angle
         delta = (lastBubble[0] - newOrigin[0]) *
             (lastBubble[1] - newOrigin[1]) < 0 ?
             1 : -1, // (1st and 3rd quarter)
         finalAngle = gamma + alfa + beta * delta, cosA = Math.cos(finalAngle), sinA = Math.sin(finalAngle), posX = newOrigin[0] + (newOrigin[2] + nextBubble[2]) * sinA, 
-        // center of new origin + (radius1 + radius2) * sinus A
+        // Center of new origin + (radius1 + radius2) * sinus A
         posY = newOrigin[1] - (newOrigin[2] + nextBubble[2]) * cosA;
         return [
             posX,
@@ -616,7 +616,7 @@ class PackedBubbleSeries extends BubbleSeries {
             nextBubble[2],
             nextBubble[3],
             nextBubble[4]
-        ]; // the same as described before
+        ]; // The same as described before
     }
     render() {
         const dataLabels = [];
@@ -652,7 +652,7 @@ class PackedBubbleSeries extends BubbleSeries {
     resizeRadius() {
         const chart = this.chart, positions = chart.rawPositions, min = Math.min, max = Math.max, plotLeft = chart.plotLeft, plotTop = chart.plotTop, chartHeight = chart.plotHeight, chartWidth = chart.plotWidth;
         let minX, maxX, minY, maxY, radius;
-        minX = minY = Number.POSITIVE_INFINITY; // set initial values
+        minX = minY = Number.POSITIVE_INFINITY; // Set initial values
         maxX = maxY = Number.NEGATIVE_INFINITY;
         for (const position of positions) {
             radius = position[2];
@@ -667,14 +667,14 @@ class PackedBubbleSeries extends BubbleSeries {
             (chartHeight - plotTop) / bBox[1]
         ], smallerDimension = min.apply([], spaceRatio);
         if (Math.abs(smallerDimension - 1) > 1e-10) {
-            // if bBox is considered not the same width as possible size
+            // If bBox is considered not the same width as possible size
             for (const position of positions) {
                 position[2] *= smallerDimension;
             }
             this.placeBubbles(positions);
         }
         else {
-            /** if no radius recalculation is needed, we need to position
+            /** If no radius recalculation is needed, we need to position
              * the whole bubbles in center of chart plotarea
              * for this, we are adding two parameters,
              * diffY and diffX, that are related to differences
@@ -693,9 +693,7 @@ class PackedBubbleSeries extends BubbleSeries {
      * @private
      */
     seriesBox() {
-        const chart = this.chart, data = this.data, max = Math.max, min = Math.min, 
-        // bBox = [xMin, xMax, yMin, yMax]
-        bBox = [
+        const chart = this.chart, data = this.data, max = Math.max, min = Math.min, bBox = [
             chart.plotLeft,
             chart.plotLeft + chart.plotWidth,
             chart.plotTop,
@@ -761,13 +759,13 @@ class PackedBubbleSeries extends BubbleSeries {
         let point, radius, positions;
         this.processedXData = this.xData;
         this.generatePoints();
-        // merged data is an array with all of the data from all series
+        // Merged data is an array with all of the data from all series
         if (!defined(chart.allDataPoints)) {
             chart.allDataPoints = this.accumulateAllPoints();
-            // calculate radius for all added data
+            // Calculate radius for all added data
             this.getPointRadius();
         }
-        // after getting initial radius, calculate bubble positions
+        // After getting initial radius, calculate bubble positions
         if (useSimulation) {
             positions = chart.allDataPoints;
         }
@@ -778,7 +776,7 @@ class PackedBubbleSeries extends BubbleSeries {
         // Set the shape and arguments to be picked up in drawPoints
         for (const position of positions) {
             if (position[3] === index) {
-                // update the series points with the val from positions
+                // Update the series points with the val from positions
                 // array
                 point = data[position[4]];
                 radius = pick(position[2], void 0);
@@ -824,7 +822,7 @@ extend(PackedBubbleSeries.prototype, {
     onMouseDown: DragNodesComposition.onMouseDown,
     onMouseMove: DragNodesComposition.onMouseMove,
     redrawHalo: DragNodesComposition.redrawHalo,
-    searchPoint: noop // solving #12287
+    searchPoint: noop // Solving #12287
 });
 SeriesRegistry.registerSeriesType('packedbubble', PackedBubbleSeries);
 /* *
@@ -873,4 +871,4 @@ export default PackedBubbleSeries;
 * @type {string}
 * @since 7.0.0
 */
-''; // detach doclets above
+''; // Detach doclets above
