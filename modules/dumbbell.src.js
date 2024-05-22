@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.1 (2024-04-04)
+ * @license Highcharts JS v11.4.2 (2024-05-22)
  *
  * (c) 2009-2024 Sebastian Bochan, Rafal Sebestjanski
  *
@@ -232,6 +232,25 @@
          *  API Options
          *
          * */
+        /**
+         * The dumbbell series is a cartesian series with higher and lower values
+         * for each point along an X axis, connected with a line between the
+         * values.
+         *
+         * Requires `highcharts-more.js` and `modules/dumbbell.js`.
+         *
+         * @sample {highcharts} highcharts/demo/dumbbell/
+         *         Dumbbell chart
+         * @sample {highcharts} highcharts/series-dumbbell/styled-mode-dumbbell/
+         *         Styled mode
+         *
+         * @extends      plotOptions.arearange
+         * @product      highcharts highstock
+         * @excluding    fillColor, fillOpacity, lineWidth, stack, stacking,
+         *               stickyTracking, trackByArea, boostThreshold, boostBlending
+         * @since 8.0.0
+         * @optionparent plotOptions.dumbbell
+         */
         const DumbbellSeriesDefaults = {
             /** @ignore-option */
             trackByArea: false,
@@ -360,6 +379,16 @@
          * @extends   series.arearange.data
          * @product   highcharts highstock
          * @apioption series.dumbbell.data
+         */
+        /**
+         * Color of the start markers in a twojastara dumbbell graph. This option takes
+         * priority over the series color. To avoid this, set `lowColor` to
+         * `undefined`.
+         *
+         * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+         * @since     8.0.0
+         * @product   highcharts highstock
+         * @apioption  series.dumbell.lowColor
          */
         /**
          * Options for the lower markers of the dumbbell-like series. When `lowMarker`
@@ -510,7 +539,7 @@
                             'L',
                             point.plotX,
                             pointBottom
-                        ]], connectorWidth, 'ceil')
+                        ]], connectorWidth)
                 };
                 if (!chart.styledMode) {
                     attribs.stroke = connectorColor;
@@ -611,25 +640,6 @@
                 }
             }
             /**
-             * Get non-presentational attributes for a point. Used internally for
-             * both styled mode and classic. Set correct position in link with connector
-             * line.
-             *
-             * @see Series#pointAttribs
-             *
-             * @function Highcharts.Series#markerAttribs
-             *
-             * @return {Highcharts.SVGAttributes}
-             *         A hash containing those attributes that are not settable from
-             *         CSS.
-             */
-            markerAttribs() {
-                const ret = super.markerAttribs.apply(this, arguments);
-                ret.x = Math.floor(ret.x || 0);
-                ret.y = Math.floor(ret.y || 0);
-                return ret;
-            }
-            /**
              * Get presentational attributes.
              *
              * @private
@@ -665,25 +675,6 @@
          *  Static Properties
          *
          * */
-        /**
-         * The dumbbell series is a cartesian series with higher and lower values
-         * for each point along an X axis, connected with a line between the
-         * values.
-         *
-         * Requires `highcharts-more.js` and `modules/dumbbell.js`.
-         *
-         * @sample {highcharts} highcharts/demo/dumbbell/
-         *         Dumbbell chart
-         * @sample {highcharts} highcharts/series-dumbbell/styled-mode-dumbbell/
-         *         Styled mode
-         *
-         * @extends      plotOptions.arearange
-         * @product      highcharts highstock
-         * @excluding    fillColor, fillOpacity, lineWidth, stack, stacking,
-         *               stickyTracking, trackByArea, boostThreshold, boostBlending
-         * @since 8.0.0
-         * @optionparent plotOptions.dumbbell
-         */
         DumbbellSeries.defaultOptions = merge(AreaRangeSeries.defaultOptions, DumbbellSeriesDefaults);
         extend(DumbbellSeries.prototype, {
             crispCol: ColumnSeries.prototype.crispCol,

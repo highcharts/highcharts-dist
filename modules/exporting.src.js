@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.1 (2024-04-04)
+ * @license Highcharts JS v11.4.2 (2024-05-22)
  *
  * Exporting module
  *
@@ -895,20 +895,22 @@
                      * The default fill exists only to capture hover events.
                      *
                      * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                     * @default   #ffffff
-                     * @apioption navigation.buttonOptions.theme.fill
                      */
+                    fill: "#ffffff" /* Palette.backgroundColor */,
+                    /**
+                     * Padding for the button.
+                     */
+                    padding: 5,
                     /**
                      * Default stroke for the buttons.
                      *
                      * @type      {Highcharts.ColorString}
-                     * @default   none
-                     * @apioption navigation.buttonOptions.theme.stroke
                      */
+                    stroke: 'none',
                     /**
-                     * Padding for the button.
+                     * Default stroke linecap for the buttons.
                      */
-                    padding: 5
+                    'stroke-linecap': 'round'
                 }
             },
             /**
@@ -1715,12 +1717,8 @@
                 if (btnOptions.enabled === false || !btnOptions.theme) {
                     return;
                 }
-                const attr = btnOptions.theme;
+                const theme = chart.styledMode ? {} : btnOptions.theme;
                 let callback;
-                if (!chart.styledMode) {
-                    attr.fill = pick(attr.fill, "#ffffff" /* Palette.backgroundColor */);
-                    attr.stroke = pick(attr.stroke, 'none');
-                }
                 if (onclick) {
                     callback = function (e) {
                         if (e) {
@@ -1740,22 +1738,17 @@
                     };
                 }
                 if (btnOptions.text && btnOptions.symbol) {
-                    attr.paddingLeft = pick(attr.paddingLeft, 30);
+                    theme.paddingLeft = pick(theme.paddingLeft, 30);
                 }
                 else if (!btnOptions.text) {
-                    extend(attr, {
+                    extend(theme, {
                         width: btnOptions.width,
                         height: btnOptions.height,
                         padding: 0
                     });
                 }
-                if (!chart.styledMode) {
-                    attr['stroke-linecap'] = 'round';
-                    attr.fill = pick(attr.fill, "#ffffff" /* Palette.backgroundColor */);
-                    attr.stroke = pick(attr.stroke, 'none');
-                }
                 const button = renderer
-                    .button(btnOptions.text, 0, 0, callback, attr, void 0, void 0, void 0, void 0, btnOptions.useHTML)
+                    .button(btnOptions.text, 0, 0, callback, theme, void 0, void 0, void 0, void 0, btnOptions.useHTML)
                     .addClass(options.className)
                     .attr({
                     title: pick(chart.options.lang[btnOptions._titleKey || btnOptions.titleKey], '')
@@ -1764,7 +1757,7 @@
                     'highcharts-menu-' + chart.btnCount++);
                 if (btnOptions.symbol) {
                     symbol = renderer
-                        .symbol(btnOptions.symbol, btnOptions.symbolX - (symbolSize / 2), btnOptions.symbolY - (symbolSize / 2), symbolSize, symbolSize
+                        .symbol(btnOptions.symbol, Math.round((btnOptions.symbolX || 0) - (symbolSize / 2)), Math.round((btnOptions.symbolY || 0) - (symbolSize / 2)), symbolSize, symbolSize
                     // If symbol is an image, scale it (#7957)
                     , {
                         width: symbolSize,
@@ -2097,15 +2090,15 @@
                 }
                 const menuStyle = { display: 'block' };
                 // If outside right, right align it
-                if (x + chart.exportMenuWidth > chartWidth) {
+                if (x + (chart.exportMenuWidth || 0) > chartWidth) {
                     menuStyle.right = (chartWidth - x - width - menuPadding) + 'px';
                 }
                 else {
                     menuStyle.left = (x - menuPadding) + 'px';
                 }
                 // If outside bottom, bottom align it
-                if (y + height + chart.exportMenuHeight > chartHeight &&
-                    button.alignOptions.verticalAlign !== 'top') {
+                if (y + height + (chart.exportMenuHeight || 0) > chartHeight &&
+                    button.alignOptions?.verticalAlign !== 'top') {
                     menuStyle.bottom = (chartHeight - y - menuPadding) + 'px';
                 }
                 else {
@@ -2487,6 +2480,9 @@
                         }
                         i = denylist.length;
                         while (i-- && !denylisted) {
+                            if (prop.length > 1000 /* RegexLimits.shortLimit */) {
+                                throw new Error('Input too long');
+                            }
                             denylisted = (denylist[i].test(prop) ||
                                 typeof val === 'function');
                         }
@@ -2535,7 +2531,8 @@
                             // won't do)
                             const s = win.getComputedStyle(dummy, null), defaults = {};
                             for (const key in s) {
-                                if (typeof s[key] === 'string' &&
+                                if (key.length < 1000 /* RegexLimits.shortLimit */ &&
+                                    typeof s[key] === 'string' &&
                                     !/^[0-9]+$/.test(key)) {
                                     defaults[key] = s[key];
                                 }

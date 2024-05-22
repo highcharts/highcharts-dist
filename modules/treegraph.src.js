@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.1 (2024-04-04)
+ * @license Highcharts JS v11.4.2 (2024-05-22)
  * Treegraph chart series type
  *
  *  (c) 2010-2024 Pawel Lysy Grzegorz Blachlinski
@@ -555,20 +555,20 @@
         class LinkPoint extends ColumnPoint {
             /* *
              *
-             *  Functions
+             *  Constructor
              *
              * */
             constructor(series, options, x, point) {
                 super(series, options, x);
                 /* *
-                *
-                *  Class properties
-                *
-                * */
+                 *
+                 *  Properties
+                 *
+                 * */
+                this.dataLabelOnNull = true;
+                this.formatPrefix = 'link';
                 this.isLink = true;
                 this.node = {};
-                this.formatPrefix = 'link';
-                this.dataLabelOnNull = true;
                 this.formatPrefix = 'link';
                 this.dataLabelOnNull = true;
                 if (point) {
@@ -578,6 +578,11 @@
                     this.id = this.toNode.id + '-' + this.fromNode.id;
                 }
             }
+            /* *
+             *
+             *  Functions
+             *
+             * */
             update(options, redraw, animation, runEvent) {
                 const oldOptions = {
                     id: this.id,
@@ -1226,7 +1231,7 @@
         const { series: { prototype: seriesProto }, seriesTypes: { treemap: TreemapSeries, column: ColumnSeries } } = SeriesRegistry;
         const { prototype: { symbols } } = SVGRenderer;
         const { getLevelOptions, getNodeWidth } = TU;
-        const { arrayMax, extend, merge, pick, relativeLength, splat } = U;
+        const { arrayMax, crisp, extend, merge, pick, relativeLength, splat } = U;
         /* *
          *
          *  Class
@@ -1413,13 +1418,12 @@
                 }
             }
             translateLink(link) {
-                const fromNode = link.fromNode, toNode = link.toNode, linkWidth = this.options.link.lineWidth, crisp = (Math.round(linkWidth) % 2) / 2, factor = pick(this.options.link.curveFactor, 0.5), type = pick(link.options.link && link.options.link.type, this.options.link.type);
+                const fromNode = link.fromNode, toNode = link.toNode, linkWidth = this.options.link?.lineWidth || 0, factor = pick(this.options.link?.curveFactor, 0.5), type = pick(link.options.link?.type, this.options.link?.type, 'default');
                 if (fromNode.shapeArgs && toNode.shapeArgs) {
-                    const fromNodeWidth = (fromNode.shapeArgs.width || 0), inverted = this.chart.inverted, y1 = Math.floor((fromNode.shapeArgs.y || 0) +
-                        (fromNode.shapeArgs.height || 0) / 2) + crisp, y2 = Math.floor((toNode.shapeArgs.y || 0) +
-                        (toNode.shapeArgs.height || 0) / 2) + crisp;
-                    let x1 = Math.floor((fromNode.shapeArgs.x || 0) + fromNodeWidth) +
-                        crisp, x2 = Math.floor(toNode.shapeArgs.x || 0) + crisp;
+                    const fromNodeWidth = (fromNode.shapeArgs.width || 0), inverted = this.chart.inverted, y1 = crisp((fromNode.shapeArgs.y || 0) +
+                        (fromNode.shapeArgs.height || 0) / 2, linkWidth), y2 = crisp((toNode.shapeArgs.y || 0) +
+                        (toNode.shapeArgs.height || 0) / 2, linkWidth);
+                    let x1 = crisp((fromNode.shapeArgs.x || 0) + fromNodeWidth, linkWidth), x2 = crisp(toNode.shapeArgs.x || 0, linkWidth);
                     if (inverted) {
                         x1 -= fromNodeWidth;
                         x2 += (toNode.shapeArgs.width || 0);
@@ -1427,7 +1431,7 @@
                     const diff = toNode.node.xPosition - fromNode.node.xPosition;
                     link.shapeType = 'path';
                     const fullWidth = Math.abs(x2 - x1) + fromNodeWidth, width = (fullWidth / diff) - fromNodeWidth, offset = width * factor * (inverted ? -1 : 1);
-                    const xMiddle = Math.floor((x2 + x1) / 2) + crisp;
+                    const xMiddle = crisp((x2 + x1) / 2, linkWidth);
                     link.plotX = xMiddle;
                     link.plotY = y2;
                     link.shapeArgs = {
@@ -1440,7 +1444,7 @@
                             offset,
                             inverted,
                             parentVisible: toNode.visible,
-                            radius: this.options.link.radius
+                            radius: this.options.link?.radius
                         })
                     };
                     link.dlBox = {

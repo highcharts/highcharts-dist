@@ -23,7 +23,7 @@ import SeriesRegistry from './SeriesRegistry.js';
 const { seriesTypes } = SeriesRegistry;
 import SVGElement from '../Renderer/SVG/SVGElement.js';
 import U from '../Utilities.js';
-const { arrayMax, arrayMin, clamp, correctFloat, defined, destroyObjectProperties, diffObjects, erase, error, extend, find, fireEvent, getClosestDistance, getNestedProperty, insertItem, isArray, isNumber, isString, merge, objectEach, pick, removeEvent, splat, syncTimeout } = U;
+const { arrayMax, arrayMin, clamp, correctFloat, crisp, defined, destroyObjectProperties, diffObjects, erase, error, extend, find, fireEvent, getClosestDistance, getNestedProperty, insertItem, isArray, isNumber, isString, merge, objectEach, pick, removeEvent, splat, syncTimeout } = U;
 /* *
  *
  *  Class
@@ -987,10 +987,7 @@ class Series {
      * Force getting extremes of a total series data range.
      */
     getProcessedData(forceExtremesFromAll) {
-        const series = this, xAxis = series.xAxis, options = series.options, cropThreshold = options.cropThreshold, getExtremesFromAll = forceExtremesFromAll ||
-            series.getExtremesFromAll ||
-            options.getExtremesFromAll, // #4599
-        logarithmic = xAxis?.logarithmic, isCartesian = series.isCartesian;
+        const series = this, xAxis = series.xAxis, options = series.options, cropThreshold = options.cropThreshold, logarithmic = xAxis?.logarithmic, isCartesian = series.isCartesian;
         let croppedData, cropped, cropStart = 0, xExtremes, min, max, 
         // Copied during slice operation:
         processedXData = series.xData, processedYData = series.yData, updatingNames = false;
@@ -1005,7 +1002,7 @@ class Series {
         // Optionally filter out points outside the plot area
         if (isCartesian &&
             series.sorted &&
-            !getExtremesFromAll &&
+            !forceExtremesFromAll &&
             (!cropThreshold ||
                 dataLength > cropThreshold ||
                 series.forceCrop)) {
@@ -1246,16 +1243,24 @@ class Series {
      * Force getting extremes of a total series data range.
      */
     getExtremes(yData, forceExtremesFromAll) {
-        const xAxis = this.xAxis, yAxis = this.yAxis, xData = this.processedXData || this.xData, activeYData = [], 
+        const xAxis = this.xAxis, yAxis = this.yAxis, activeYData = [], 
         // Handle X outside the viewed area. This does not work with
         // non-sorted data like scatter (#7639).
         shoulder = this.requireSorting && !this.is('column') ?
             1 : 0, 
         // #2117, need to compensate for log X axis
-        positiveValuesOnly = yAxis ? yAxis.positiveValuesOnly : false;
-        let xExtremes, validValue, withinRange, x, y, i, j, xMin = 0, xMax = 0, activeCounter = 0;
-        yData = yData || this.stackedYData || this.processedYData || [];
-        const yDataLength = yData.length;
+        positiveValuesOnly = yAxis ? yAxis.positiveValuesOnly : false, getExtremesFromAll = forceExtremesFromAll ||
+            this.getExtremesFromAll ||
+            this.options.getExtremesFromAll; // #4599
+        let { processedXData, processedYData } = this, xExtremes, validValue, withinRange, x, y, i, j, xMin = 0, xMax = 0, activeCounter = 0;
+        // Get the processed data from the full range (#21003)
+        if (this.cropped && getExtremesFromAll) {
+            const processedData = this.getProcessedData(true);
+            processedXData = processedData.xData;
+            processedYData = processedData.yData;
+        }
+        yData = yData || this.stackedYData || processedYData || [];
+        const yDataLength = yData.length, xData = processedXData || this.xData;
         if (xAxis) {
             xExtremes = xAxis.getExtremes();
             xMin = xExtremes.min;
@@ -1825,12 +1830,16 @@ class Series {
         }
         const pos = point.pos();
         if (isNumber(radius) && pos) {
+            if (seriesOptions.crisp) {
+                pos[0] = crisp(pos[0], point.hasImage ?
+                    0 :
+                    symbol === 'rect' ?
+                        // Rectangle symbols need crisp edges, others don't
+                        seriesMarkerOptions?.lineWidth || 0 :
+                        1);
+            }
             attribs.x = pos[0] - radius;
             attribs.y = pos[1] - radius;
-            if (seriesOptions.crisp) {
-                // Math.floor for #1843:
-                attribs.x = Math.floor(attribs.x);
-            }
         }
         if (radius) {
             attribs.width = attribs.height = 2 * radius;

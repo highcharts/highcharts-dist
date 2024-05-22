@@ -246,9 +246,6 @@ class ControllableLabel extends Controllable {
                 .css(options.style)
                 .shadow(options.shadow);
         }
-        if (options.className) {
-            this.graphic.addClass(options.className);
-        }
         this.graphic.labelrank = options.labelrank;
         super.render();
     }

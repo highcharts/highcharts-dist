@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.1 (2024-04-04)
+ * @license Highcharts JS v11.4.2 (2024-05-22)
  *
  * (c) 2017-2024 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -773,7 +773,7 @@
          * @sample {highcharts} highcharts/demo/euler-diagram/
          *         Euler diagram
          *
-         * @type      {number}
+         * @type      {string}
          * @since     7.0.0
          * @product   highcharts
          * @apioption series.venn.data.name
@@ -815,7 +815,7 @@
          * @excluding halo
          * @apioption series.venn.states.select
          */
-        ''; // Detach doclets above
+        ''; // Detachs doclets above
         /* *
          *
          *  Default Export

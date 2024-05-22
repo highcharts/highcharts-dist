@@ -405,7 +405,8 @@ class Measure extends Annotation {
         }
         this.initShape(extend({
             type: 'path',
-            points: this.shapePointsOptions()
+            points: this.shapePointsOptions(),
+            className: 'highcharts-measure-background'
         }, this.options.typeOptions.background), 2);
     }
     /**
@@ -457,8 +458,8 @@ class Measure extends Annotation {
         }
         else {
             // Add new crosshairs
-            crosshairOptionsX = merge(defaultOptions, options.crosshairX);
-            crosshairOptionsY = merge(defaultOptions, options.crosshairY);
+            crosshairOptionsX = merge(defaultOptions, { className: 'highcharts-measure-crosshair-x' }, options.crosshairX);
+            crosshairOptionsY = merge(defaultOptions, { className: 'highcharts-measure-crosshair-y' }, options.crosshairY);
             this.initShape(extend({ d: pathH }, crosshairOptionsX), 0);
             this.initShape(extend({ d: pathV }, crosshairOptionsY), 1);
         }

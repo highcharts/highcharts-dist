@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v11.4.1 (2024-04-04)
+ * @license Highmaps JS v11.4.2 (2024-05-22)
  *
  * Highmaps as a plugin for Highcharts or Highcharts Stock.
  *
@@ -729,7 +729,7 @@
              *            Percentage width and pixel height for color axis
              *
              * @type      {number|string}
-             * @since     @next
+             * @since     11.3.0
              * @product   highcharts highstock highmaps
              * @apioption colorAxis.width
              */
@@ -744,7 +744,7 @@
              *            Percentage width and pixel height for color axis
              *
              * @type      {number|string}
-             * @since     @next
+             * @since     11.3.0
              * @product   highcharts highstock highmaps
              * @apioption colorAxis.height
              */
@@ -1437,7 +1437,7 @@
              * @private
              */
             getSize() {
-                const axis = this, { chart, horiz } = axis, { legend: legendOptions, height: colorAxisHeight, width: colorAxisWidth } = axis.options, width = pick(defined(colorAxisWidth) ?
+                const axis = this, { chart, horiz } = axis, { height: colorAxisHeight, width: colorAxisWidth } = axis.options, { legend: legendOptions } = chart.options, width = pick(defined(colorAxisWidth) ?
                     relativeLength(colorAxisWidth, chart.chartWidth) : void 0, legendOptions?.symbolWidth, horiz ? ColorAxis.defaultLegendLength : 12), height = pick(defined(colorAxisHeight) ?
                     relativeLength(colorAxisHeight, chart.chartHeight) : void 0, legendOptions?.symbolHeight, horiz ? 12 : ColorAxis.defaultLegendLength);
                 return {
@@ -2052,7 +2052,7 @@
                     this.handler.call(chart, e);
                     stopEvent(e); // Stop default click event (#4444)
                 };
-                let navOptions = chart.options.mapNavigation, attr;
+                let navOptions = chart.options.mapNavigation;
                 // Merge in new options in case of update, and register back to chart
                 // options.
                 if (options) {
@@ -2074,9 +2074,12 @@
                     }
                     objectEach(navOptions.buttons, (buttonOptions, n) => {
                         buttonOptions = merge(navOptions.buttonOptions, buttonOptions);
+                        const attr = {
+                            padding: buttonOptions.padding
+                        };
                         // Presentational
                         if (!chart.styledMode && buttonOptions.theme) {
-                            attr = buttonOptions.theme;
+                            extend(attr, buttonOptions.theme);
                             attr.style = merge(buttonOptions.theme.style, buttonOptions.style // #3203
                             );
                         }
@@ -2094,7 +2097,6 @@
                             width,
                             height,
                             title: chart.options.lang[n],
-                            padding: buttonOptions.padding,
                             zIndex: 5
                         })
                             .add(mapNav.navButtonsGroup);
@@ -2231,7 +2233,7 @@
 
         return MapNavigation;
     });
-    _registerModule(_modules, 'Series/ColorMapComposition.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/ColorMapComposition.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, SVGElement, U) {
         /* *
          *
          *  (c) 2010-2024 Torstein Honsi
@@ -2288,11 +2290,34 @@
              * @private
              */
             function onPointAfterSetState(e) {
-                const point = this;
+                const point = this, series = point.series, renderer = series.chart.renderer;
                 if (point.moveToTopOnHover && point.graphic) {
-                    point.graphic.attr({
-                        zIndex: e && e.state === 'hover' ? 1 : 0
-                    });
+                    if (!series.stateMarkerGraphic) {
+                        // Create a `use` element and add it to the end of the group,
+                        // which would make it appear on top of the other elements. This
+                        // deals with z-index without reordering DOM elements (#13049).
+                        series.stateMarkerGraphic = new SVGElement(renderer, 'use')
+                            .css({
+                            pointerEvents: 'none'
+                        })
+                            .add(point.graphic.parentGroup);
+                    }
+                    if (e?.state === 'hover') {
+                        // Give the graphic DOM element the same id as the Point
+                        // instance
+                        point.graphic.attr({
+                            id: this.id
+                        });
+                        series.stateMarkerGraphic.attr({
+                            href: `${renderer.url}#${this.id}`,
+                            visibility: 'visible'
+                        });
+                    }
+                    else {
+                        series.stateMarkerGraphic.attr({
+                            href: ''
+                        });
+                    }
                 }
             }
             /**
@@ -4687,7 +4712,7 @@
          * operator, and preserves the distinction between -180 and 180.
          * @private
          */
-        function wrapLon(lon) {
+        const wrapLon = (lon) => {
             // Replacing the if's with while would increase the range, but make it prone
             // to crashes on bad data
             if (lon < -180) {
@@ -4697,7 +4722,20 @@
                 lon -= 360;
             }
             return lon;
-        }
+        };
+        /**
+         * Calculate the haversine of an angle.
+         * @private
+         */
+        const hav = (radians) => (1 - Math.cos(radians)) / 2;
+        /**
+        * Calculate the haversine of an angle from two coordinates.
+        * @private
+        */
+        const havFromCoords = (point1, point2) => {
+            const cos = Math.cos, lat1 = point1[1] * deg2rad, lon1 = point1[0] * deg2rad, lat2 = point2[1] * deg2rad, lon2 = point2[0] * deg2rad, deltaLat = lat2 - lat1, deltaLon = lon2 - lon1, havFromCoords = hav(deltaLat) + cos(lat1) * cos(lat2) * hav(deltaLon);
+            return havFromCoords;
+        };
         /* *
          *
          *  Class
@@ -4717,14 +4755,19 @@
                 Projection.registry[name] = definition;
             }
             /**
-             * Calculate the great circle between two given coordinates.
+             * Calculate the distance in meters between two given coordinates.
              * @private
              */
-            static greatCircle(point1, point2, inclusive) {
-                const { atan2, cos, sin, sqrt } = Math, lat1 = point1[1] * deg2rad, lon1 = point1[0] * deg2rad, lat2 = point2[1] * deg2rad, lon2 = point2[0] * deg2rad, deltaLat = lat2 - lat1, deltaLng = lon2 - lon1, calcA = sin(deltaLat / 2) * sin(deltaLat / 2) +
-                    cos(lat1) * cos(lat2) * sin(deltaLng / 2) * sin(deltaLng / 2), calcB = 2 * atan2(sqrt(calcA), sqrt(1 - calcA)), distance = calcB * 6371e3, // In meters
-                jumps = Math.round(distance / 500000), // 500 km each jump
-                lineString = [];
+            static distance(point1, point2) {
+                const { atan2, sqrt } = Math, hav = havFromCoords(point1, point2), angularDistance = 2 * atan2(sqrt(hav), sqrt(1 - hav)), distance = angularDistance * 6371e3;
+                return distance;
+            }
+            /**
+             * Calculate the geodesic line string between two given coordinates.
+             * @private
+             */
+            static geodesic(point1, point2, inclusive, stepDistance = 500000) {
+                const { atan2, cos, sin, sqrt } = Math, distance = Projection.distance, lat1 = point1[1] * deg2rad, lon1 = point1[0] * deg2rad, lat2 = point2[1] * deg2rad, lon2 = point2[0] * deg2rad, cosLat1CosLon1 = cos(lat1) * cos(lon1), cosLat2CosLon2 = cos(lat2) * cos(lon2), cosLat1SinLon1 = cos(lat1) * sin(lon1), cosLat2SinLon2 = cos(lat2) * sin(lon2), sinLat1 = sin(lat1), sinLat2 = sin(lat2), pointDistance = distance(point1, point2), angDistance = pointDistance / 6371e3, sinAng = sin(angDistance), jumps = Math.round(pointDistance / stepDistance), lineString = [];
                 if (inclusive) {
                     lineString.push(point1);
                 }
@@ -4732,7 +4775,8 @@
                     const step = 1 / jumps;
                     for (let fraction = step; fraction < 0.999; // Account for float errors
                      fraction += step) {
-                        const A = sin((1 - fraction) * calcB) / sin(calcB), B = sin(fraction * calcB) / sin(calcB), x = A * cos(lat1) * cos(lon1) + B * cos(lat2) * cos(lon2), y = A * cos(lat1) * sin(lon1) + B * cos(lat2) * sin(lon2), z = A * sin(lat1) + B * sin(lat2), lat3 = atan2(z, sqrt(x * x + y * y)), lon3 = atan2(y, x);
+                        // Add intermediate point to lineString
+                        const A = sin((1 - fraction) * angDistance) / sinAng, B = sin(fraction * angDistance) / sinAng, x = A * cosLat1CosLon1 + B * cosLat2CosLon2, y = A * cosLat1SinLon1 + B * cosLat2SinLon2, z = A * sinLat1 + B * sinLat2, lat3 = atan2(z, sqrt(x * x + y * y)), lon3 = atan2(y, x);
                         lineString.push([lon3 / deg2rad, lat3 / deg2rad]);
                     }
                 }
@@ -4741,16 +4785,16 @@
                 }
                 return lineString;
             }
-            static insertGreatCircles(poly) {
+            static insertGeodesics(poly) {
                 let i = poly.length - 1;
                 while (i--) {
                     // Distance in degrees, either in lon or lat. Avoid heavy
                     // calculation of true distance.
                     const roughDistance = Math.max(Math.abs(poly[i][0] - poly[i + 1][0]), Math.abs(poly[i][1] - poly[i + 1][1]));
                     if (roughDistance > 10) {
-                        const greatCircle = Projection.greatCircle(poly[i], poly[i + 1]);
-                        if (greatCircle.length) {
-                            poly.splice(i + 1, 0, ...greatCircle);
+                        const geodesic = Projection.geodesic(poly[i], poly[i + 1]);
+                        if (geodesic.length) {
+                            poly.splice(i + 1, 0, ...geodesic);
                         }
                     }
                 }
@@ -4945,9 +4989,9 @@
                                 intersections[i].direction * floatCorrection);
                             const slice = poly.splice(index, intersections[i + 1].i - index, 
                             // Add interpolated points close to the cut
-                            ...Projection.greatCircle([lonPlus, intersections[i].lat], [lonPlus, intersections[i + 1].lat], true));
+                            ...Projection.geodesic([lonPlus, intersections[i].lat], [lonPlus, intersections[i + 1].lat], true));
                             // Add interpolated points close to the cut
-                            slice.push(...Projection.greatCircle([lonMinus, intersections[i + 1].lat], [lonMinus, intersections[i].lat], true));
+                            slice.push(...Projection.geodesic([lonMinus, intersections[i + 1].lat], [lonMinus, intersections[i].lat], true));
                             polygons.push(slice);
                             i -= 2;
                         }
@@ -4962,7 +5006,7 @@
                                         direction * floatCorrection);
                                     const lon2 = wrapLon(antimeridian -
                                         direction * floatCorrection);
-                                    const polarSegment = Projection.greatCircle([lon1, lat], [lon1, polarLatitude], true);
+                                    const polarSegment = Projection.geodesic([lon1, lat], [lon1, polarLatitude], true);
                                     // Circle around the pole point in order to make
                                     // polygon clipping right. Without this, Antarctica
                                     // would wrap the wrong way in an LLC projection
@@ -4970,7 +5014,7 @@
                                     for (let lon = lon1 + 120 * direction; lon > -180 && lon < 180; lon += 120 * direction) {
                                         polarSegment.push([lon, polarLatitude]);
                                     }
-                                    polarSegment.push(...Projection.greatCircle([lon2, polarLatitude], [lon2, polarIntersection.lat], true));
+                                    polarSegment.push(...Projection.geodesic([lon2, polarLatitude], [lon2, polarIntersection.lat], true));
                                     poly.splice(indexOf, 0, ...polarSegment);
                                     break;
                                 }
@@ -5059,7 +5103,7 @@
                     let polygons = [poly];
                     if (hasGeoProjection) {
                         // Insert great circles into long straight lines
-                        Projection.insertGreatCircles(poly);
+                        Projection.insertGeodesics(poly);
                         if (projectingToPlane) {
                             polygons = this.cutOnAntimeridian(poly, isPolygon);
                         }
@@ -5156,8 +5200,8 @@
                                         // we may have to rewrite this to use the small
                                         // circle related to the current lon0 and lat0.
                                         if (isPolygon && hasGeoProjection) {
-                                            const greatCircle = Projection.greatCircle(lastValidLonLat, lonLat);
-                                            greatCircle.forEach((lonLat) => pushToPath(postclip.forward(lonLat)));
+                                            const geodesic = Projection.geodesic(lastValidLonLat, lonLat);
+                                            geodesic.forEach((lonLat) => pushToPath(postclip.forward(lonLat)));
                                             // For lines, just jump over the gap
                                         }
                                         else {
@@ -5225,7 +5269,7 @@
         const { composed } = H;
         const { topo2geo } = GeoJSONComposition;
         const { boundsFromPath, pointInPolygon } = MU;
-        const { addEvent, clamp, fireEvent, isArray, isNumber, isObject, isString, merge, pick, pushUnique, relativeLength } = U;
+        const { addEvent, clamp, crisp, fireEvent, isArray, isNumber, isObject, isString, merge, pick, pushUnique, relativeLength } = U;
         /* *
          *
          *  Constants
@@ -5702,7 +5746,7 @@
              *
              * @function Highcharts.MapView#recommendMapView
              *
-             * @since @next
+             * @since 11.4.0
              *
              * @param {Highcharts.Chart} chart
              *        Chart object
@@ -6275,7 +6319,7 @@
                             'stroke-width': options.borderWidth
                         });
                     }
-                    const crisp = Math.round(this.border.strokeWidth()) % 2 / 2, field = (options.relativeTo === 'mapBoundingBox' &&
+                    const strokeWidth = this.border.strokeWidth(), field = (options.relativeTo === 'mapBoundingBox' &&
                         mapView.getMapBBox()) || mapView.playingField;
                     const d = (borderPath.coordinates || []).reduce((d, lineString) => lineString.reduce((d, point, i) => {
                         let [x, y] = point;
@@ -6283,8 +6327,8 @@
                             x = chart.plotLeft + relativeLength(`${x}%`, field.width, field.x);
                             y = chart.plotTop + relativeLength(`${y}%`, field.height, field.y);
                         }
-                        x = Math.floor(x) + crisp;
-                        y = Math.floor(y) + crisp;
+                        x = crisp(x, strokeWidth);
+                        y = crisp(y, strokeWidth);
                         d.push(i === 0 ? ['M', x, y] : ['L', x, y]);
                         return d;
                     }, d), []);
@@ -7068,6 +7112,11 @@
             fillColor: 'none',
             legendSymbol: 'lineMarker'
         };
+        /* *
+         *
+         *  Default Export
+         *
+         * */
         /**
          * A `mapline` series. If the [type](#series.mapline.type) option is
          * not specified, it is inherited from [chart.type](#chart.type).
@@ -7146,11 +7195,7 @@
          * @excluding borderWidth
          * @apioption plotOptions.mapline.states.hover
          */
-        /* *
-         *
-         *  Default Export
-         *
-         * */
+        (''); // Keeps doclets above in JS file
 
         return MapLineSeriesDefaults;
     });
@@ -7302,6 +7347,16 @@
             },
             legendSymbol: 'lineMarker'
         };
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
+         *
+         * */
         /**
          * A `mappoint` series. If the [type](#series.mappoint.type) option
          * is not specified, it is inherited from [chart.type](#chart.type).
@@ -7443,16 +7498,12 @@
          * @apioption series.mappoint.data.y
          */
         /**
-        * @type      {number}
-        * @product   highmaps
-        * @excluding borderColor, borderWidth
-        * @apioption plotOptions.mappoint
-        */
-        /* *
-         *
-         *  Default Export
-         *
-         * */
+         * @type      {number}
+         * @product   highmaps
+         * @excluding borderColor, borderWidth
+         * @apioption plotOptions.mappoint
+         */
+        (''); // Keeps doclets above in JS file
 
         return MapPointSeriesDefaults;
     });
@@ -8780,18 +8831,17 @@
                     this.points.length < this.options.animationLimit // #8099
                 ) {
                     this.points.forEach(function (point) {
-                        const { graphic } = point;
+                        const { graphic, plotX = 0, plotY = 0 } = point;
                         if (graphic && graphic.width) { // URL symbols don't have width
                             // Start values
                             if (!this.hasRendered) {
                                 graphic.attr({
-                                    x: point.plotX,
-                                    y: point.plotY,
+                                    x: plotX,
+                                    y: plotY,
                                     width: 1,
                                     height: 1
                                 });
                             }
-                            // Run animation
                             graphic.animate(this.markerAttribs(point), this.options.animation);
                         }
                     }, this);
@@ -8887,6 +8937,19 @@
             /**
              * @private
              */
+            markerAttribs(point, state) {
+                const attr = super.markerAttribs(point, state), { height = 0, width = 0 } = attr;
+                // Bubble needs a specific `markerAttribs` override because the markers
+                // are rendered into the potentially inverted `series.group`. Unlike
+                // regular markers, which are rendered into the `markerGroup` (#21125).
+                return this.chart.inverted ? extend(attr, {
+                    x: (point.plotX || 0) - width / 2,
+                    y: (point.plotY || 0) - height / 2
+                }) : attr;
+            }
+            /**
+             * @private
+             */
             pointAttribs(point, state) {
                 const markerOptions = this.options.marker, fillOpacity = markerOptions.fillOpacity, attr = Series.prototype.pointAttribs.call(this, point, state);
                 if (fillOpacity !== 1) {
@@ -8911,8 +8974,7 @@
                 // Set the shape type and arguments to be picked up in drawPoints
                 let i = data.length;
                 while (i--) {
-                    const point = data[i];
-                    const radius = radii ? radii[i] : 0; // #1737
+                    const point = data[i], radius = radii ? radii[i] : 0; // #1737
                     // Negative points means negative z values (#9728)
                     if (this.zoneAxis === 'z') {
                         point.negative = (point.z || 0) < (options.zThreshold || 0);

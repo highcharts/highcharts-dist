@@ -19,7 +19,7 @@ import ScrollbarDefaults from '../../Stock/Scrollbar/ScrollbarDefaults.js';
 import StockUtilities from '../../Stock/Utilities/StockUtilities.js';
 const { setFixedRange } = StockUtilities;
 import U from '../Utilities.js';
-const { addEvent, clamp, defined, extend, find, isNumber, isString, merge, pick, splat } = U;
+const { addEvent, clamp, crisp, defined, extend, find, isNumber, isString, merge, pick, splat } = U;
 /* *
  *
  *  Functions
@@ -638,15 +638,11 @@ addEvent(Chart, 'update', function (e) {
         // normalize to a crisp line
         for (let i = 0; i < points.length; i = i + 2) {
             const start = points[i], end = points[i + 1];
-            if (start[1] === end[1]) {
-                // Subtract due to #1129. Now bottom and left axis gridlines
-                // behave the same.
-                start[1] = end[1] =
-                    Math.round(start[1]) - (width % 2 / 2);
+            if (defined(start[1]) && start[1] === end[1]) {
+                start[1] = end[1] = crisp(start[1], width);
             }
-            if (start[2] === end[2]) {
-                start[2] = end[2] =
-                    Math.round(start[2]) + (width % 2 / 2);
+            if (defined(start[2]) && start[2] === end[2]) {
+                start[2] = end[2] = crisp(start[2], width);
             }
         }
         return points;

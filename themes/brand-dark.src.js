@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.1 (2024-04-04)
+ * @license Highcharts JS v11.4.2 (2024-05-22)
  *
  * (c) 2009-2024 Torstein Honsi
  *
@@ -146,7 +146,7 @@
                         lowColor: '#f0f0f0'
                     },
                     map: {
-                        borderColor: 'rgba(200, 200, 200, 1)',
+                        borderColor: '#909090',
                         nullColor: '#78758C'
                     }
                 },
@@ -198,6 +198,18 @@
                             fontWeight: '300'
                         }
                     }
+                },
+                colorAxis: {
+                    gridLineColor: '#45445d',
+                    labels: {
+                        style: {
+                            color: '#fff',
+                            fontSize: '12px'
+                        }
+                    },
+                    minColor: '#342f95',
+                    maxColor: '#2caffe',
+                    tickColor: '#45445d'
                 },
                 mapNavigation: {
                     enabled: true,

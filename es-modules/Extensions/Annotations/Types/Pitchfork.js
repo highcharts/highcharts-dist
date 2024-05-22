@@ -57,26 +57,30 @@ class Pitchfork extends InfinityLine {
         this.addBackgrounds();
     }
     addLines() {
+        const className = 'highcharts-pitchfork-lines';
         this.initShape({
             type: 'path',
             points: [
                 this.points[0],
                 Pitchfork.middleLineEdgePoint
-            ]
+            ],
+            className
         }, 0);
         this.initShape({
             type: 'path',
             points: [
                 this.points[1],
                 Pitchfork.topLineEdgePoint
-            ]
+            ],
+            className
         }, 1);
         this.initShape({
             type: 'path',
             points: [
                 this.points[2],
                 Pitchfork.bottomLineEdgePoint
-            ]
+            ],
+            className
         }, 2);
     }
     addBackgrounds() {
@@ -104,7 +108,8 @@ class Pitchfork extends InfinityLine {
                         yAxis: midPointOptions.yAxis
                     };
                 }
-            ]
+            ],
+            className: 'highcharts-pitchfork-inner-background'
         }), 3);
         const outerBackground = this.initShape(merge(typeOptions.outerBackground, {
             type: 'path',
@@ -113,7 +118,8 @@ class Pitchfork extends InfinityLine {
                 shapes[1].points[1],
                 shapes[2].points[1],
                 this.points[2]
-            ]
+            ],
+            className: 'highcharts-pitchfork-outer-background'
         }), 4);
         typeOptions.innerBackground = innerBackground.options;
         typeOptions.outerBackground = outerBackground.options;

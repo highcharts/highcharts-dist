@@ -251,7 +251,7 @@ declare module "../highcharts.src" {
         compareBase?: (0|100);
         /**
          * (Highstock) Defines if comparison should start from the first point
-         * within the visible range or should start from the first point
+         * within the visible range or should start from the last point
          * **before** the range.
          *
          * In other words, this flag determines if first point within the
@@ -311,6 +311,17 @@ declare module "../highcharts.src" {
          * `sum`.
          */
         cumulative?: boolean;
+        /**
+         * (Highstock) Defines if cumulation should start from the first point
+         * within the visible range or should start from the last point
+         * **before** the range.
+         *
+         * In other words, this flag determines if first point within the
+         * visible range will start at 0 (`cumulativeStart=true`) or should have
+         * been already calculated according to the previous point
+         * (`cumulativeStart=false`).
+         */
+        cumulativeStart?: boolean;
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) You can set the cursor to
          * "pointer" if you have click events attached to the series, to signal

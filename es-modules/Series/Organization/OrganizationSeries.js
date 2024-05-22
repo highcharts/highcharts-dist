@@ -16,7 +16,7 @@ import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import PathUtilities from '../PathUtilities.js';
 const { sankey: SankeySeries } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
-const { css, extend, isNumber, merge, pick } = U;
+const { css, crisp, extend, isNumber, merge, pick } = U;
 /* *
  *
  *  Class
@@ -97,29 +97,29 @@ class OrganizationSeries extends SankeySeries {
         return attribs;
     }
     translateLink(point) {
-        const chart = this.chart, options = this.options, fromNode = point.fromNode, toNode = point.toNode, linkWidth = pick(options.linkLineWidth, options.link.lineWidth), crisp = (Math.round(linkWidth) % 2) / 2, factor = pick(options.link.offset, 0.5), type = pick(point.options.link && point.options.link.type, options.link.type);
+        const chart = this.chart, options = this.options, fromNode = point.fromNode, toNode = point.toNode, linkWidth = pick(options.linkLineWidth, options.link.lineWidth, 0), factor = pick(options.link.offset, 0.5), type = pick(point.options.link && point.options.link.type, options.link.type);
         if (fromNode.shapeArgs && toNode.shapeArgs) {
             const hangingIndent = options.hangingIndent, hangingRight = options.hangingSide === 'right', toOffset = toNode.options.offset, percentOffset = /%$/.test(toOffset) && parseInt(toOffset, 10), inverted = chart.inverted;
-            let x1 = Math.floor((fromNode.shapeArgs.x || 0) +
-                (fromNode.shapeArgs.width || 0)) + crisp, y1 = Math.floor((fromNode.shapeArgs.y || 0) +
-                (fromNode.shapeArgs.height || 0) / 2) + crisp, x2 = Math.floor(toNode.shapeArgs.x || 0) + crisp, y2 = Math.floor((toNode.shapeArgs.y || 0) +
-                (toNode.shapeArgs.height || 0) / 2) + crisp, xMiddle;
+            let x1 = crisp((fromNode.shapeArgs.x || 0) +
+                (fromNode.shapeArgs.width || 0), linkWidth), y1 = crisp((fromNode.shapeArgs.y || 0) +
+                (fromNode.shapeArgs.height || 0) / 2, linkWidth), x2 = crisp(toNode.shapeArgs.x || 0, linkWidth), y2 = crisp((toNode.shapeArgs.y || 0) +
+                (toNode.shapeArgs.height || 0) / 2, linkWidth), xMiddle;
             if (inverted) {
                 x1 -= (fromNode.shapeArgs.width || 0);
                 x2 += (toNode.shapeArgs.width || 0);
             }
             xMiddle = this.colDistance ?
-                Math.floor(x2 +
+                crisp(x2 +
                     ((inverted ? 1 : -1) *
                         (this.colDistance - this.nodeWidth)) /
-                        2) + crisp :
-                Math.floor((x2 + x1) / 2) + crisp;
+                        2, linkWidth) :
+                crisp((x2 + x1) / 2, linkWidth);
             // Put the link on the side of the node when an offset is given. HR
             // node in the main demo.
             if (percentOffset &&
                 (percentOffset >= 50 || percentOffset <= -50)) {
-                xMiddle = x2 = Math.floor(x2 + (inverted ? -0.5 : 0.5) *
-                    (toNode.shapeArgs.width || 0)) + crisp;
+                xMiddle = x2 = crisp(x2 + (inverted ? -0.5 : 0.5) *
+                    (toNode.shapeArgs.width || 0), linkWidth);
                 y2 = toNode.shapeArgs.y || 0;
                 if (percentOffset > 0) {
                     y2 += toNode.shapeArgs.height || 0;
@@ -128,20 +128,18 @@ class OrganizationSeries extends SankeySeries {
             if (toNode.hangsFrom === fromNode) {
                 if (chart.inverted) {
                     y1 = !hangingRight ?
-                        Math.floor((fromNode.shapeArgs.y || 0) +
+                        crisp((fromNode.shapeArgs.y || 0) +
                             (fromNode.shapeArgs.height || 0) -
-                            hangingIndent / 2) + crisp :
-                        Math.floor((fromNode.shapeArgs.y || 0) +
-                            hangingIndent / 2) + crisp;
+                            hangingIndent / 2, linkWidth) :
+                        crisp((fromNode.shapeArgs.y || 0) + hangingIndent / 2, linkWidth);
                     y2 = !hangingRight ? ((toNode.shapeArgs.y || 0) +
                         (toNode.shapeArgs.height || 0)) : (toNode.shapeArgs.y || 0) + hangingIndent / 2;
                 }
                 else {
-                    y1 = Math.floor((fromNode.shapeArgs.y || 0) +
-                        hangingIndent / 2) + crisp;
+                    y1 = crisp((fromNode.shapeArgs.y || 0) + hangingIndent / 2, linkWidth);
                 }
-                xMiddle = x2 = Math.floor((toNode.shapeArgs.x || 0) +
-                    (toNode.shapeArgs.width || 0) / 2) + crisp;
+                xMiddle = x2 = crisp((toNode.shapeArgs.x || 0) +
+                    (toNode.shapeArgs.width || 0) / 2, linkWidth);
             }
             point.plotX = xMiddle;
             point.plotY = (y1 + y2) / 2;

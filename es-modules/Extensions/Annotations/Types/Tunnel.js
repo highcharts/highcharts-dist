@@ -78,14 +78,16 @@ class Tunnel extends CrookedLine {
                     return pointOptions;
                 },
                 this.points[3]
-            ]
+            ],
+            className: 'highcharts-tunnel-lines'
         }), 0);
         this.options.typeOptions.line = line.options;
     }
     addBackground() {
         const background = this.initShape(merge(this.options.typeOptions.background, {
             type: 'path',
-            points: this.points.slice()
+            points: this.points.slice(),
+            className: 'highcharts-tunnel-background'
         }), 1);
         this.options.typeOptions.background = background.options;
     }

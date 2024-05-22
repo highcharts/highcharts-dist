@@ -176,9 +176,6 @@ class ControllablePath extends Controllable {
             .path([['M', 0, 0]])
             .attr(attrs)
             .add(parent);
-        if (options.className) {
-            this.graphic.addClass(options.className);
-        }
         this.tracker = this.annotation.chart.renderer
             .path([['M', 0, 0]])
             .addClass('highcharts-tracker-line')

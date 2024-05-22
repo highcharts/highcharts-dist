@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.1 (2024-04-04)
+ * @license Highcharts JS v11.4.2 (2024-05-22)
  *
  * Annotations module
  *
@@ -1155,11 +1155,13 @@
                         annotation.cancelClick = emitter.hasDragged;
                     }
                     emitter.cancelClick = emitter.hasDragged;
-                    emitter.hasDragged = false;
                     emitter.chart.hasDraggedAnnotation = false;
-                    // ControlPoints vs Annotation:
-                    fireEvent(pick(annotation, // #15952
-                    emitter), 'afterUpdate');
+                    if (emitter.hasDragged) {
+                        // ControlPoints vs Annotation:
+                        fireEvent(pick(annotation, // #15952
+                        emitter), 'afterUpdate');
+                    }
+                    emitter.hasDragged = false;
                     emitter.onMouseUp();
                 }, isTouchDevice || firesTouchEvents ? { passive: false } : void 0);
             }
@@ -1167,9 +1169,7 @@
              * Mouse up handler.
              */
             onMouseUp() {
-                const chart = this.chart, annotation = this.target || this, annotationsOptions = chart.options.annotations, index = chart.annotations.indexOf(annotation);
                 this.removeDocEvents();
-                annotationsOptions[index] = annotation.options;
             }
             /**
              * Remove emitter document events.
@@ -2204,6 +2204,9 @@
             render(
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             _parentGroup) {
+                if (this.options.className && this.graphic) {
+                    this.graphic.addClass(this.options.className);
+                }
                 this.renderControlPoints();
             }
             /**
@@ -2614,9 +2617,6 @@
                     .path([['M', 0, 0]])
                     .attr(attrs)
                     .add(parent);
-                if (options.className) {
-                    this.graphic.addClass(options.className);
-                }
                 this.tracker = this.annotation.chart.renderer
                     .path([['M', 0, 0]])
                     .addClass('highcharts-tracker-line')
@@ -3382,9 +3382,6 @@
                     this.graphic
                         .css(options.style)
                         .shadow(options.shadow);
-                }
-                if (options.className) {
-                    this.graphic.addClass(options.className);
                 }
                 this.graphic.labelrank = options.labelrank;
                 super.render();
@@ -4939,7 +4936,7 @@
                 this.popup = new Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
                     (this.chart.options.stockTools &&
                         this.chart.options.stockTools.gui.iconsURL) ||
-                    'https://code.highcharts.com/11.4.1/gfx/stock-icons/'), this.chart);
+                    'https://code.highcharts.com/11.4.2/gfx/stock-icons/'), this.chart);
             }
             this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
         }
@@ -6101,7 +6098,7 @@
              * from a different server.
              *
              * @type      {string}
-             * @default   https://code.highcharts.com/11.4.1/gfx/stock-icons/
+             * @default   https://code.highcharts.com/11.4.2/gfx/stock-icons/
              * @since     7.1.3
              * @apioption navigation.iconsURL
              */
@@ -7047,6 +7044,8 @@
                 if (options.shapes) {
                     delete options.labelOptions;
                     const type = options.shapes[0].type;
+                    options.shapes[0].className =
+                        (options.shapes[0].className || '') + ' highcharts-basic-shape';
                     // The rectangle is rendered as a path, whereas other basic shapes
                     // are rendered as their respective SVG shapes.
                     if (type && type !== 'path') {
@@ -7284,6 +7283,7 @@
             addShapes() {
                 const typeOptions = this.options.typeOptions, shape = this.initShape(merge(typeOptions.line, {
                     type: 'path',
+                    className: 'highcharts-crooked-lines',
                     points: this.points.map((_point, i) => (function (target) {
                         return target.annotation.points[i];
                     }))
@@ -7544,14 +7544,16 @@
                             return pointOptions;
                         },
                         this.points[3]
-                    ]
+                    ],
+                    className: 'highcharts-tunnel-lines'
                 }), 0);
                 this.options.typeOptions.line = line.options;
             }
             addBackground() {
                 const background = this.initShape(merge(this.options.typeOptions.background, {
                     type: 'path',
-                    points: this.points.slice()
+                    points: this.points.slice(),
+                    className: 'highcharts-tunnel-background'
                 }), 1);
                 this.options.typeOptions.background = background.options;
             }
@@ -7763,7 +7765,8 @@
                 }
                 const line = this.initShape(merge(typeOptions.line, {
                     type: 'path',
-                    points: points
+                    points: points,
+                    className: 'highcharts-infinity-lines'
                 }), 0);
                 typeOptions.line = line.options;
             }
@@ -7886,7 +7889,8 @@
                 const shape = this.initShape(merge(typeOptions.line, {
                     type: 'path',
                     d: this.getPath(),
-                    points: this.options.points
+                    points: this.options.points,
+                    className: 'highcharts-timecycles-lines'
                 }), 0);
                 typeOptions.line = shape.options;
             }
@@ -8072,14 +8076,16 @@
                     this.initShape({
                         type: 'path',
                         d: createPathDGenerator(i),
-                        stroke: lineColors[i] || lineColor
+                        stroke: lineColors[i] || lineColor,
+                        className: 'highcharts-fibonacci-line'
                     }, i);
                     if (i > 0) {
                         this.initShape({
                             type: 'path',
                             fill: backgroundColors[i - 1],
                             strokeWidth: 0,
-                            d: createPathDGenerator(i, true)
+                            d: createPathDGenerator(i, true),
+                            className: 'highcharts-fibonacci-background-' + (i - 1)
                         });
                     }
                 }, this);
@@ -8294,7 +8300,8 @@
                     }
                     this.initShape(merge(this.options.typeOptions.line, {
                         type: 'path',
-                        points: points
+                        points: points,
+                        className: 'highcharts-fibonacci-timezones-lines'
                     }), i // Shape's index. Can be found in annotation.shapes[i].index
                     );
                 }
@@ -8440,26 +8447,30 @@
                 this.addBackgrounds();
             }
             addLines() {
+                const className = 'highcharts-pitchfork-lines';
                 this.initShape({
                     type: 'path',
                     points: [
                         this.points[0],
                         Pitchfork.middleLineEdgePoint
-                    ]
+                    ],
+                    className
                 }, 0);
                 this.initShape({
                     type: 'path',
                     points: [
                         this.points[1],
                         Pitchfork.topLineEdgePoint
-                    ]
+                    ],
+                    className
                 }, 1);
                 this.initShape({
                     type: 'path',
                     points: [
                         this.points[2],
                         Pitchfork.bottomLineEdgePoint
-                    ]
+                    ],
+                    className
                 }, 2);
             }
             addBackgrounds() {
@@ -8487,7 +8498,8 @@
                                 yAxis: midPointOptions.yAxis
                             };
                         }
-                    ]
+                    ],
+                    className: 'highcharts-pitchfork-inner-background'
                 }), 3);
                 const outerBackground = this.initShape(merge(typeOptions.outerBackground, {
                     type: 'path',
@@ -8496,7 +8508,8 @@
                         shapes[1].points[1],
                         shapes[2].points[1],
                         this.points[2]
-                    ]
+                    ],
+                    className: 'highcharts-pitchfork-outer-background'
                 }), 4);
                 typeOptions.innerBackground = innerBackground.options;
                 typeOptions.outerBackground = outerBackground.options;
@@ -8607,7 +8620,8 @@
                     points: [
                         VerticalLine.connectorFirstPoint,
                         VerticalLine.connectorSecondPoint
-                    ]
+                    ],
+                    className: 'highcharts-vertical-line'
                 }), 0);
                 typeOptions.connector = connector.options;
                 this.userOptions.typeOptions.point = typeOptions.point;
@@ -9091,7 +9105,8 @@
                 }
                 this.initShape(extend({
                     type: 'path',
-                    points: this.shapePointsOptions()
+                    points: this.shapePointsOptions(),
+                    className: 'highcharts-measure-background'
                 }, this.options.typeOptions.background), 2);
             }
             /**
@@ -9143,8 +9158,8 @@
                 }
                 else {
                     // Add new crosshairs
-                    crosshairOptionsX = merge(defaultOptions, options.crosshairX);
-                    crosshairOptionsY = merge(defaultOptions, options.crosshairY);
+                    crosshairOptionsX = merge(defaultOptions, { className: 'highcharts-measure-crosshair-x' }, options.crosshairX);
+                    crosshairOptionsY = merge(defaultOptions, { className: 'highcharts-measure-crosshair-y' }, options.crosshairY);
                     this.initShape(extend({ d: pathH }, crosshairOptionsX), 0);
                     this.initShape(extend({ d: pathV }, crosshairOptionsY), 1);
                 }

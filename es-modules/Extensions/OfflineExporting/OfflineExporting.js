@@ -308,41 +308,49 @@ var OfflineExporting;
                     failCallback(e);
                 }
             }, function () {
+                if (svg.length > 100000000 /* RegexLimits.svgLimit */) {
+                    throw new Error('Input too long');
+                }
                 // Failed due to tainted canvas
                 // Create new and untainted canvas
-                const canvas = doc.createElement('canvas'), ctx = canvas.getContext('2d'), imageWidth = svg.match(/^<svg[^>]*width\s*=\s*\"?(\d+)\"?[^>]*>/)[1] * scale, imageHeight = svg.match(/^<svg[^>]*height\s*=\s*\"?(\d+)\"?[^>]*>/)[1] * scale, downloadWithCanVG = function () {
-                    const v = win.canvg.Canvg.fromString(ctx, svg);
-                    v.start();
-                    try {
-                        downloadURL(win.navigator.msSaveOrOpenBlob ?
-                            canvas.msToBlob() :
-                            canvas.toDataURL(imageType), filename);
-                        if (successCallback) {
-                            successCallback();
+                const canvas = doc.createElement('canvas'), ctx = canvas.getContext('2d'), matchedImageWidth = svg.match(
+                // eslint-disable-next-line max-len
+                /^<svg[^>]*\s{,1000}width\s{,1000}=\s{,1000}\"?(\d+)\"?[^>]*>/), matchedImageHeight = svg.match(
+                // eslint-disable-next-line max-len
+                /^<svg[^>]*\s{0,1000}height\s{,1000}=\s{,1000}\"?(\d+)\"?[^>]*>/);
+                if (ctx && matchedImageWidth && matchedImageHeight) {
+                    const imageWidth = +matchedImageWidth[1] * scale, imageHeight = +matchedImageHeight[1] * scale, downloadWithCanVG = () => {
+                        const v = win.canvg.Canvg.fromString(ctx, svg);
+                        v.start();
+                        try {
+                            downloadURL(win.navigator.msSaveOrOpenBlob ?
+                                canvas.msToBlob() :
+                                canvas.toDataURL(imageType), filename);
+                            if (successCallback) {
+                                successCallback();
+                            }
                         }
-                    }
-                    catch (e) {
-                        failCallback(e);
-                    }
-                    finally {
-                        finallyHandler();
-                    }
-                };
-                canvas.width = imageWidth;
-                canvas.height = imageHeight;
-                if (win.canvg) {
-                    // Use preloaded canvg
-                    downloadWithCanVG();
-                }
-                else {
-                    // Must load canVG first. // Don't destroy the object
-                    // URL yet since we are doing things asynchronously. A
-                    // cleaner solution would be nice, but this will do for
-                    // now.
-                    objectURLRevoke = true;
-                    getScript(libURL + 'canvg.js', function () {
+                        catch (e) {
+                            failCallback(e);
+                        }
+                        finally {
+                            finallyHandler();
+                        }
+                    };
+                    canvas.width = imageWidth;
+                    canvas.height = imageHeight;
+                    if (win.canvg) {
+                        // Use preloaded canvg
                         downloadWithCanVG();
-                    });
+                    }
+                    else {
+                        // Must load canVG first.
+                        // Don't destroy the object URL yet since we are
+                        // doing things asynchronously. A cleaner solution
+                        // would be nice, but this will do for now.
+                        objectURLRevoke = true;
+                        getScript(libURL + 'canvg.js', downloadWithCanVG);
+                    }
                 }
             }, 
             // No canvas support

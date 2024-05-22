@@ -219,6 +219,7 @@ function applyGrouping(hasExtremesChanged) {
     }
     else {
         series.groupMap = null;
+        series.currentDataGrouping = void 0;
     }
     series.hasGroupedData = hasGroupedData;
     series.preventGraphAnimation =

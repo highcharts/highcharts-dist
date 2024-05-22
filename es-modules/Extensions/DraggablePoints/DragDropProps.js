@@ -202,6 +202,22 @@ const boxplot = {
         propValidate: (val, point) => (val >= point.q3)
     }
 };
+// Errorbar series - move x, resize or move low/high
+const errorbar = {
+    x: column.x,
+    low: {
+        ...boxplot.low,
+        propValidate: (val, point) => (val <= point.high)
+    },
+    high: {
+        ...boxplot.high,
+        propValidate: (val, point) => (val >= point.low)
+    }
+};
+/**
+ * @exclude      draggableQ1, draggableQ3
+ * @optionparent plotOptions.errorbar.dragDrop
+ */
 // Bullet graph, x/y same as column, but also allow target to be dragged.
 const bullet = {
     x: column.x,
@@ -583,6 +599,7 @@ const DragDropProps = {
     bullet,
     column,
     columnrange,
+    errorbar,
     flags,
     gantt,
     line,

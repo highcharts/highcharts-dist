@@ -96,6 +96,15 @@ declare module "../highcharts.src" {
          */
         align?: (Highcharts.AlignValue|null);
         /**
+         * (Highcharts) Alignment method for data labels. If set to `plotEdges`,
+         * the labels are aligned within the plot area in the direction of the
+         * y-axis. So in a regular column chart, the labels are aligned
+         * vertically according to the `verticalAlign` setting. In a bar chart,
+         * which is inverted, the labels are aligned horizontally according to
+         * the `align` setting. Applies to cartesian series only.
+         */
+        alignTo?: string;
+        /**
          * (Highcharts) Whether to allow data labels to overlap. To make the
          * labels less sensitive for overlapping, the dataLabels.padding can be
          * set to 0.

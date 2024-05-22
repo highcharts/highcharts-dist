@@ -85,6 +85,7 @@ function compose(ChartClass, SeriesClass) {
             'bullet',
             'column',
             'columnrange',
+            'errorbar',
             'flags',
             'gantt',
             'ohlc',

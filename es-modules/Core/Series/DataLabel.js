@@ -46,7 +46,7 @@ var DataLabel;
      * @private
      */
     function alignDataLabel(point, dataLabel, options, alignTo, isNew) {
-        const series = this, chart = this.chart, inverted = this.isCartesian && chart.inverted, enabledDataSorting = this.enabledDataSorting, plotX = point.plotX, plotY = point.plotY, rotation = options.rotation || 0, isInsidePlot = defined(plotX) &&
+        const series = this, { chart, enabledDataSorting } = this, inverted = this.isCartesian && chart.inverted, plotX = point.plotX, plotY = point.plotY, rotation = options.rotation || 0, isInsidePlot = defined(plotX) &&
             defined(plotY) &&
             chart.isInsidePlot(plotX, Math.round(plotY), {
                 inverted,
@@ -66,10 +66,10 @@ var DataLabel;
                 (enabledDataSorting && !justify) ||
                 isInsidePlot ||
                 (
-                // If the data label is inside the align box, it is
-                // enough that parts of the align box is inside the
-                // plot area (#12370). When stacking, it is always
-                // inside regardless of the option (#15148).
+                // If the data label is inside the align box, it is enough
+                // that parts of the align box is inside the plot area
+                // (#12370). When stacking, it is always inside regardless
+                // of the option (#15148).
                 pick(options.inside, !!this.options.stacking) &&
                     alignTo &&
                     chart.isInsidePlot(plotX, inverted ?
@@ -95,6 +95,11 @@ var DataLabel;
                 width: 0,
                 height: 0
             }, alignTo || {});
+            // Align to plot edges
+            if (options.alignTo === 'plotEdges' && series.isCartesian) {
+                alignTo[inverted ? 'x' : 'y'] = 0;
+                alignTo[inverted ? 'width' : 'height'] = this.yAxis?.len || 0;
+            }
             // Add the text size for alignment calculation
             extend(options, {
                 width: bBox.width,
@@ -432,10 +437,12 @@ var DataLabel;
      * @private
      */
     function justifyDataLabel(dataLabel, options, alignAttr, bBox, alignTo, isNew) {
-        const chart = this.chart, align = options.align, verticalAlign = options.verticalAlign, padding = dataLabel.box ? 0 : (dataLabel.padding || 0);
+        const chart = this.chart, align = options.align, verticalAlign = options.verticalAlign, padding = dataLabel.box ? 0 : (dataLabel.padding || 0), horizontalAxis = chart.inverted ? this.yAxis : this.xAxis, horizontalAxisShift = horizontalAxis ?
+            horizontalAxis.left - chart.plotLeft : 0, verticalAxis = chart.inverted ? this.xAxis : this.yAxis, verticalAxisShift = verticalAxis ?
+            verticalAxis.top - chart.plotTop : 0;
         let { x = 0, y = 0 } = options, off, justified;
         // Off left
-        off = (alignAttr.x || 0) + padding;
+        off = (alignAttr.x || 0) + padding + horizontalAxisShift;
         if (off < 0) {
             if (align === 'right' && x >= 0) {
                 options.align = 'left';
@@ -447,7 +454,7 @@ var DataLabel;
             justified = true;
         }
         // Off right
-        off = (alignAttr.x || 0) + bBox.width - padding;
+        off = (alignAttr.x || 0) + bBox.width - padding + horizontalAxisShift;
         if (off > chart.plotWidth) {
             if (align === 'left' && x <= 0) {
                 options.align = 'right';
@@ -459,7 +466,7 @@ var DataLabel;
             justified = true;
         }
         // Off top
-        off = alignAttr.y + padding;
+        off = alignAttr.y + padding + verticalAxisShift;
         if (off < 0) {
             if (verticalAlign === 'bottom' && y >= 0) {
                 options.verticalAlign = 'top';
@@ -471,7 +478,7 @@ var DataLabel;
             justified = true;
         }
         // Off bottom
-        off = (alignAttr.y || 0) + bBox.height - padding;
+        off = (alignAttr.y || 0) + bBox.height - padding + verticalAxisShift;
         if (off > chart.plotHeight) {
             if (verticalAlign === 'top' && y <= 0) {
                 options.verticalAlign = 'bottom';

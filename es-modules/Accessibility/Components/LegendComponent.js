@@ -426,7 +426,7 @@ class LegendComponent extends AccessibilityComponent {
             scrollLegendToItem(this.legend, ix);
             const legendItemProp = legendItem.label;
             const proxyBtn = itemToHighlight.a11yProxyElement &&
-                itemToHighlight.a11yProxyElement.element;
+                itemToHighlight.a11yProxyElement.innerElement;
             if (legendItemProp && legendItemProp.element && proxyBtn) {
                 this.setFocusToElement(legendItemProp, proxyBtn);
             }

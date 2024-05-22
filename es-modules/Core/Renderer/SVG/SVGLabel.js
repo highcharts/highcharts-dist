@@ -176,9 +176,11 @@ class SVGLabel extends SVGElement {
         return bBox;
     }
     getCrispAdjust() {
-        return this.renderer.styledMode && this.box ?
-            this.box.strokeWidth() % 2 / 2 :
-            (this['stroke-width'] ? parseInt(this['stroke-width'], 10) : 0) % 2 / 2;
+        return (this.renderer.styledMode && this.box ?
+            this.box.strokeWidth() :
+            (this['stroke-width'] ?
+                parseInt(this['stroke-width'], 10) :
+                0)) % 2 / 2;
     }
     heightSetter(value) {
         this.heightSetting = value;
@@ -236,6 +238,7 @@ class SVGLabel extends SVGElement {
             this.text.attr({ text });
         }
         this.updateTextPadding();
+        this.reAlign();
     }
     /*
      * This function runs after the label is added to the DOM (when the bounding

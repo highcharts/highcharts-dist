@@ -231,7 +231,7 @@ function format(str = '', ctx, chart) {
             // Block helpers may return true or false. They may also return a
             // string, like the `each` helper.
             if (match.isBlock && typeof replacement === 'boolean') {
-                replacement = format(replacement ? body : elseBody, ctx);
+                replacement = format(replacement ? body : elseBody, ctx, chart);
             }
             // Simple variable replacement
         }
@@ -347,6 +347,9 @@ function numberFormat(number, decimals, decimalPoint, thousandsSep) {
     if (decimals) {
         // Get the decimal component
         ret += decimalPoint + roundedNumber.slice(-decimals);
+    }
+    else if (+ret === 0) { // Remove signed minus #20564
+        ret = '0';
     }
     if (exponent[1] && +ret !== 0) {
         ret += 'e' + exponent[1];

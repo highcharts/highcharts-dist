@@ -9,6 +9,8 @@
  * */
 'use strict';
 import AST from '../HTML/AST.js';
+import D from '../../Defaults.js';
+const { defaultOptions } = D;
 import Color from '../../Color/Color.js';
 import H from '../../Globals.js';
 const { charts, deg2rad, doc, isFirefox, isMS, isWebKit, noop, SVG_NS, symbolSizes, win } = H;
@@ -18,7 +20,7 @@ import SVGLabel from './SVGLabel.js';
 import Symbols from './Symbols.js';
 import TextBuilder from './TextBuilder.js';
 import U from '../../Utilities.js';
-const { addEvent, attr, createElement, css, defined, destroyObjectProperties, extend, isArray, isNumber, isObject, isString, merge, pick, pInt, replaceNested, uniqueKey } = U;
+const { addEvent, attr, createElement, crisp, css, defined, destroyObjectProperties, extend, isArray, isNumber, isObject, isString, merge, pick, pInt, replaceNested, uniqueKey } = U;
 /* *
  *
  *  Variables
@@ -500,7 +502,9 @@ class SVGRenderer {
         return 1.05 / (l + 0.05) > (l + 0.05) / 0.05 ? '#FFFFFF' : '#000000';
     }
     /**
-     * Create a button with preset states.
+     * Create a button with preset states. Styles for the button can either be
+     * set as arguments, or a general theme for all buttons can be set by the
+     * `global.buttonTheme` option.
      *
      * @function Highcharts.SVGRenderer#button
      *
@@ -538,56 +542,31 @@ class SVGRenderer {
      * The button element.
      */
     button(text, x, y, callback, theme = {}, hoverState, selectState, disabledState, shape, useHTML) {
-        const label = this.label(text, x, y, shape, void 0, void 0, useHTML, void 0, 'button'), styledMode = this.styledMode, states = theme.states || {};
+        const label = this.label(text, x, y, shape, void 0, void 0, useHTML, void 0, 'button'), styledMode = this.styledMode, args = arguments;
         let curState = 0;
-        theme = merge(theme);
+        theme = merge(defaultOptions.global.buttonTheme, theme);
+        // @todo Consider moving this to a lower level, like .attr
+        if (styledMode) {
+            delete theme.fill;
+            delete theme.stroke;
+            delete theme['stroke-width'];
+        }
+        const states = theme.states || {}, normalStyle = theme.style || {};
         delete theme.states;
-        const normalStyle = merge({
-            color: "#333333" /* Palette.neutralColor80 */,
-            cursor: 'pointer',
-            fontSize: '0.8em',
-            fontWeight: 'normal'
-        }, theme.style);
         delete theme.style;
-        // Remove stylable attributes. Pass in the ButtonThemeObject and get the
-        // SVGAttributes subset back.
-        let normalState = AST.filterUserAttributes(theme);
-        // Default, non-stylable attributes
-        label.attr(merge({ padding: 8, r: 2 }, normalState));
-        // Presentational. The string type is a mistake, it is just for
-        // compliance with SVGAttribute and is not used in button theme.
-        let hoverStyle, selectStyle, disabledStyle;
+        // Presentational
+        const stateAttribs = [
+            AST.filterUserAttributes(theme)
+        ], 
+        // The string type is a mistake, it is just for compliance with
+        // SVGAttribute and is not used in button theme.
+        stateStyles = [normalStyle];
         if (!styledMode) {
-            // Normal state - prepare the attributes
-            normalState = merge({
-                fill: "#f7f7f7" /* Palette.neutralColor3 */,
-                stroke: "#cccccc" /* Palette.neutralColor20 */,
-                'stroke-width': 1
-            }, normalState);
-            // Hover state
-            hoverState = merge(normalState, {
-                fill: "#e6e6e6" /* Palette.neutralColor10 */
-            }, AST.filterUserAttributes(hoverState || states.hover || {}));
-            hoverStyle = hoverState.style;
-            delete hoverState.style;
-            // Pressed state
-            selectState = merge(normalState, {
-                fill: "#e6e9ff" /* Palette.highlightColor10 */,
-                style: {
-                    color: "#000000" /* Palette.neutralColor100 */,
-                    fontWeight: 'bold'
-                }
-            }, AST.filterUserAttributes(selectState || states.select || {}));
-            selectStyle = selectState.style;
-            delete selectState.style;
-            // Disabled state
-            disabledState = merge(normalState, {
-                style: {
-                    color: "#cccccc" /* Palette.neutralColor20 */
-                }
-            }, AST.filterUserAttributes(disabledState || states.disabled || {}));
-            disabledStyle = disabledState.style;
-            delete disabledState.style;
+            ['hover', 'select', 'disabled'].forEach((stateName, i) => {
+                stateAttribs.push(merge(stateAttribs[0], AST.filterUserAttributes(args[i + 5] || states[stateName] || {})));
+                stateStyles.push(stateAttribs[i + 1].style);
+                delete stateAttribs[i + 1].style;
+            });
         }
         // Add the events. IE9 and IE10 need mouseover and mouseout to function
         // (#667).
@@ -601,7 +580,7 @@ class SVGRenderer {
                 label.setState(curState);
             }
         });
-        label.setState = function (state) {
+        label.setState = (state = 0) => {
             // Hover state is temporary, don't record it
             if (state !== 1) {
                 label.state = curState = state;
@@ -610,31 +589,19 @@ class SVGRenderer {
             label
                 .removeClass(/highcharts-button-(normal|hover|pressed|disabled)/)
                 .addClass('highcharts-button-' +
-                ['normal', 'hover', 'pressed', 'disabled'][state || 0]);
+                ['normal', 'hover', 'pressed', 'disabled'][state]);
             if (!styledMode) {
-                label
-                    .attr([
-                    normalState,
-                    hoverState,
-                    selectState,
-                    disabledState
-                ][state || 0]);
-                const css = [
-                    normalStyle,
-                    hoverStyle,
-                    selectStyle,
-                    disabledStyle
-                ][state || 0];
+                label.attr(stateAttribs[state]);
+                const css = stateStyles[state];
                 if (isObject(css)) {
                     label.css(css);
                 }
             }
         };
+        label.attr(stateAttribs[0]);
         // Presentational attributes
         if (!styledMode) {
-            label
-                .attr(normalState)
-                .css(extend({ cursor: 'default' }, normalStyle));
+            label.css(extend({ cursor: 'default' }, normalStyle));
             // HTML labels don't need to handle pointer events because click and
             // mouseenter/mouseleave is bound to the underlying <g> element.
             // Should this be reconsidered, we need more complex logic to share
@@ -664,26 +631,17 @@ class SVGRenderer {
      * @param {number} width
      *        The width of the line.
      *
-     * @param {string} [roundingFunction=round]
-     *        The rounding function name on the `Math` object, can be one of
-     *        `round`, `floor` or `ceil`.
-     *
      * @return {Highcharts.SVGPathArray}
      *         The original points array, but modified to render crisply.
      */
-    crispLine(points, width, roundingFunction = 'round') {
-        const start = points[0];
-        const end = points[1];
+    crispLine(points, width) {
+        const [start, end] = points;
         // Normalize to a crisp line
         if (defined(start[1]) && start[1] === end[1]) {
-            // Subtract due to #1129. Now bottom and left axis gridlines behave
-            // the same.
-            start[1] = end[1] =
-                Math[roundingFunction](start[1]) - (width % 2 / 2);
+            start[1] = end[1] = crisp(start[1], width);
         }
         if (defined(start[2]) && start[2] === end[2]) {
-            start[2] = end[2] =
-                Math[roundingFunction](start[2]) + (width % 2 / 2);
+            start[2] = end[2] = crisp(start[2], width);
         }
         return points;
     }
@@ -1082,7 +1040,7 @@ class SVGRenderer {
         if (symbolFn) {
             // Check if there's a path defined for this symbol
             if (typeof x === 'number') {
-                path = symbolFn.call(this.symbols, Math.round(x || 0), Math.round(y || 0), width || 0, height || 0, options);
+                path = symbolFn.call(this.symbols, x || 0, y || 0, width || 0, height || 0, options);
             }
             obj = this.path(path);
             if (!ren.styledMode) {

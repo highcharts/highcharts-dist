@@ -114,12 +114,12 @@ class PackedBubbleLayout extends ReingoldFruchtermanLayout {
         }
     }
     repulsiveForces() {
-        const layout = this, bubblePadding = layout.options.bubblePadding;
+        const layout = this, bubblePadding = layout.options.bubblePadding, nodes = layout.nodes;
         let force, distanceR, distanceXY;
-        layout.nodes.forEach((node) => {
+        nodes.forEach((node) => {
             node.degree = node.mass;
             node.neighbours = 0;
-            layout.nodes.forEach((repNode) => {
+            nodes.forEach((repNode) => {
                 force = 0;
                 if (
                 // Node cannot repulse itself:

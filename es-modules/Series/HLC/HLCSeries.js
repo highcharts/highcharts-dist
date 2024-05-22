@@ -13,7 +13,7 @@ import HLCSeriesDefaults from './HLCSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
-const { extend, merge } = U;
+const { crisp, extend, merge } = U;
 /* *
  *
  *  Class
@@ -60,10 +60,9 @@ class HLCSeries extends ColumnSeries {
      */
     getPointPath(point, graphic) {
         // Crisp vector coordinates
-        const strokeWidth = graphic.strokeWidth(), series = point.series, crispCorr = (strokeWidth % 2) / 2, 
+        const strokeWidth = graphic.strokeWidth(), series = point.series, 
         // #2596:
-        crispX = Math.round(point.plotX) - crispCorr, halfWidth = Math.round(point.shapeArgs.width / 2);
-        let plotClose = point.plotClose;
+        crispX = crisp(point.plotX || 0, strokeWidth), halfWidth = Math.round(point.shapeArgs.width / 2);
         // The vertical stem
         const path = [
             ['M', crispX, Math.round(point.yBottom)],
@@ -71,7 +70,7 @@ class HLCSeries extends ColumnSeries {
         ];
         // Close
         if (point.close !== null) {
-            plotClose = Math.round(point.plotClose) + crispCorr;
+            const plotClose = crisp(point.plotClose, strokeWidth);
             path.push(['M', crispX, plotClose], ['L', crispX + halfWidth, plotClose]);
             series.extendStem(path, strokeWidth / 2, plotClose);
         }

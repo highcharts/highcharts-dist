@@ -411,11 +411,6 @@ declare module "../highcharts.src" {
      */
     function chartDrawChartBox(): void;
     /**
-     * Add logic to pad each axis with the amount of pixels necessary to avoid
-     * the bubbles to overflow.
-     */
-    function onAxisFoundExtremes(): void;
-    /**
      * Toggle bubble legend depending on the visible status of bubble series.
      */
     function onSeriesLegendItemClick(): void;

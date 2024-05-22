@@ -164,12 +164,14 @@ function compose(SeriesClass, seriesTypes, wglMode) {
  */
 function createAndAttachRenderer(chart, series) {
     const ChartClass = chart.constructor, targetGroup = chart.seriesGroup || series.group, alpha = 1;
-    let width = chart.chartWidth, height = chart.chartHeight, target = chart, foSupported = typeof SVGForeignObjectElement !== 'undefined';
+    let width = chart.chartWidth, height = chart.chartHeight, target = chart, foSupported = typeof SVGForeignObjectElement !== 'undefined', hasClickHandler = false;
     if (isChartSeriesBoosting(chart)) {
         target = chart;
     }
     else {
         target = series;
+        hasClickHandler = Boolean(series.options.events?.click ||
+            series.options.point?.events?.click);
     }
     const boost = target.boost =
         target.boost ||
@@ -234,10 +236,11 @@ function createAndAttachRenderer(chart, series) {
                 height
             })
                 .css({
-                pointerEvents: 'none',
+                pointerEvents: hasClickHandler ? void 0 : 'none',
                 mixedBlendMode: 'normal',
                 opacity: alpha
-            });
+            })
+                .addClass(hasClickHandler ? 'highcharts-tracker' : '');
             if (target instanceof ChartClass) {
                 target.boost.markerGroup.translate(chart.plotLeft, chart.plotTop);
             }
@@ -672,7 +675,7 @@ function seriesRenderCanvas() {
             this.markerGroup === chart.boost.markerGroup) {
             this.markerGroup = void 0;
         }
-        this.markerGroup = this.plotGroup('markerGroup', 'markers', true, 1, chart.seriesGroup);
+        this.markerGroup = this.plotGroup('markerGroup', 'markers', 'visible', 1, chart.seriesGroup).addClass('highcharts-tracker');
     }
     else {
         // If series has a private markerGroup, remove that

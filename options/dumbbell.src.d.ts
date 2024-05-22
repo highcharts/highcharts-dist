@@ -267,7 +267,7 @@ declare module "../highcharts.src" {
         compareBase?: (0|100);
         /**
          * (Highstock) Defines if comparison should start from the first point
-         * within the visible range or should start from the first point
+         * within the visible range or should start from the last point
          * **before** the range.
          *
          * In other words, this flag determines if first point within the
@@ -295,6 +295,11 @@ declare module "../highcharts.src" {
          * point's values. By default it is the series' color.
          */
         connectorColor?: string;
+        /**
+         * (Highcharts, Highstock) Pixel width of the line that connects the
+         * dumbbell point's values.
+         */
+        connectorWidth?: number;
         /**
          * (Highcharts, Highstock, Gantt) When true, each point or column edge
          * is rounded to its nearest pixel in order to render sharp on screen.
@@ -327,6 +332,17 @@ declare module "../highcharts.src" {
          * `sum`.
          */
         cumulative?: boolean;
+        /**
+         * (Highstock) Defines if cumulation should start from the first point
+         * within the visible range or should start from the last point
+         * **before** the range.
+         *
+         * In other words, this flag determines if first point within the
+         * visible range will start at 0 (`cumulativeStart=true`) or should have
+         * been already calculated according to the previous point
+         * (`cumulativeStart=false`).
+         */
+        cumulativeStart?: boolean;
         /**
          * (Highcharts, Highstock) You can set the cursor to "pointer" if you
          * have click events attached to the series, to signal to the user that
@@ -449,6 +465,7 @@ declare module "../highcharts.src" {
          * visible data. Cartesian series only.
          */
         getExtremesFromAll?: boolean;
+        groupPadding?: number;
         /**
          * (Highcharts, Highstock) Highlight only the hovered point and fade the
          * remaining points.
@@ -526,6 +543,12 @@ declare module "../highcharts.src" {
          */
         linkedTo?: string;
         /**
+         * (Highcharts, Highstock) Color of the start markers in a dumbbell
+         * graph. This option takes priority over the series color. To avoid
+         * this, set `lowColor` to `undefined`.
+         */
+        lowColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        /**
          * (Highcharts, Highstock) Options for the lower markers of the
          * dumbbell-like series. When `lowMarker` is not defined, options
          * inherit form the marker.
@@ -561,7 +584,8 @@ declare module "../highcharts.src" {
          */
         negativeColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
         /**
-         * (Highcharts) A separate color for the negative part of the area.
+         * (Highcharts) A separate color for the negative part of the area. Note
+         * that `zones` takes precedence over the negative fill color.
          *
          * In styled mode, a negative color is set with the
          * `.highcharts-negative` class name.
@@ -623,6 +647,7 @@ declare module "../highcharts.src" {
          * interval of the axis ticks, which is independent.
          */
         pointIntervalUnit?: Highcharts.OptionsPointIntervalUnitValue;
+        pointPadding?: number;
         /**
          * (Highcharts, Highstock, Gantt) Possible values: `"on"`, `"between"`,
          * `number`.

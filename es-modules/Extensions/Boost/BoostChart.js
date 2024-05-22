@@ -38,14 +38,22 @@ function compose(ChartClass, wglMode) {
  * @function Highcharts.Chart#getBoostClipRect
  */
 function getBoostClipRect(chart, target) {
+    const navigator = chart.navigator;
     let clipBox = {
         x: chart.plotLeft,
         y: chart.plotTop,
         width: chart.plotWidth,
-        height: chart.navigator ? // #17820
-            chart.navigator.top + chart.navigator.height - chart.plotTop :
-            chart.plotHeight
+        height: chart.plotHeight
     };
+    if (navigator && chart.inverted) { // #17820, #20936
+        clipBox.width += navigator.top + navigator.height;
+        if (!navigator.opposite) {
+            clipBox.x = navigator.left;
+        }
+    }
+    else if (navigator && !chart.inverted) {
+        clipBox.height = navigator.top + navigator.height - chart.plotTop;
+    }
     // Clipping of individual series (#11906, #19039).
     if (target.getClipBox) {
         const { xAxis, yAxis } = target;

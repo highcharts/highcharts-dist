@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.1 (2024-04-04)
+ * @license Highcharts JS v11.4.2 (2024-05-22)
  *
  * Highcharts Drilldown module
  *
@@ -2161,6 +2161,8 @@
                                                 });
                                                 chart.mapView
                                                     .fitToBounds(void 0, void 0);
+                                                chart.mapView.allowTransformAnimation =
+                                                    true; // #20857
                                             }
                                             fireEvent(chart, 'afterApplyDrilldown');
                                         }
@@ -2265,7 +2267,8 @@
                         // series are added for the same axis, #16135.
                         if (oldSeries.xAxis &&
                             oldSeries.xAxis.names &&
-                            (drilldownLevelsNumber === 0 || i === drilldownLevelsNumber)) {
+                            (drilldownLevelsNumber === 0 ||
+                                i === drilldownLevelsNumber - 1)) {
                             oldSeries.xAxis.names.length = 0;
                         }
                         level.levelSeriesOptions.forEach((el) => {
@@ -2308,13 +2311,6 @@
                         }
                         if (!chart.mapView) {
                             fireEvent(chart, 'afterDrillUp');
-                            chart.redraw();
-                            if (chart.ddDupes) {
-                                chart.ddDupes.length = 0; // #3315
-                            } // #8324
-                            // Fire a once-off event after all series have been drilled
-                            // up (#5158)
-                            fireEvent(chart, 'drillupall');
                         }
                         else {
                             const shouldAnimate = level.levelNumber === levelNumber &&
@@ -2355,6 +2351,7 @@
                                                 }
                                             }
                                         });
+                                        newSeries._hasTracking = false;
                                     }
                                     else {
                                         // When user don't want to zoom into region only
@@ -2378,17 +2375,20 @@
                                         }
                                     }
                                     newSeries.isDrilling = false;
-                                    if (chart.ddDupes) {
-                                        chart.ddDupes.length = 0; // #3315
-                                    } // #8324
-                                    // Fire a once-off event after all series have been
-                                    // drilled up (#5158)
-                                    fireEvent(chart, 'drillupall');
                                 }
                             }
                         }
                     }
                 }
+                if (!chart.mapView) {
+                    chart.redraw();
+                }
+                if (chart.ddDupes) {
+                    chart.ddDupes.length = 0; // #3315
+                } // #8324
+                // Fire a once-off event after all series have been
+                // drilled up (#5158)
+                fireEvent(chart, 'drillupall');
             }
             /**
              * A function to fade in a group. First, the element is being hidden, then,

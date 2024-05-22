@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.1 (2024-04-04)
+ * @license Highcharts JS v11.4.2 (2024-05-22)
  *
  * (c) 2016-2024 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -1011,7 +1011,7 @@
 
         return Breadcrumbs;
     });
-    _registerModule(_modules, 'Series/ColorMapComposition.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/ColorMapComposition.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, SVGElement, U) {
         /* *
          *
          *  (c) 2010-2024 Torstein Honsi
@@ -1068,11 +1068,34 @@
              * @private
              */
             function onPointAfterSetState(e) {
-                const point = this;
+                const point = this, series = point.series, renderer = series.chart.renderer;
                 if (point.moveToTopOnHover && point.graphic) {
-                    point.graphic.attr({
-                        zIndex: e && e.state === 'hover' ? 1 : 0
-                    });
+                    if (!series.stateMarkerGraphic) {
+                        // Create a `use` element and add it to the end of the group,
+                        // which would make it appear on top of the other elements. This
+                        // deals with z-index without reordering DOM elements (#13049).
+                        series.stateMarkerGraphic = new SVGElement(renderer, 'use')
+                            .css({
+                            pointerEvents: 'none'
+                        })
+                            .add(point.graphic.parentGroup);
+                    }
+                    if (e?.state === 'hover') {
+                        // Give the graphic DOM element the same id as the Point
+                        // instance
+                        point.graphic.attr({
+                            id: this.id
+                        });
+                        series.stateMarkerGraphic.attr({
+                            href: `${renderer.url}#${this.id}`,
+                            visibility: 'visible'
+                        });
+                    }
+                    else {
+                        series.stateMarkerGraphic.attr({
+                            href: ''
+                        });
+                    }
                 }
             }
             /**
@@ -1496,7 +1519,7 @@
              * @since 10.0.0
              * @product   highcharts
              * @extends   navigation.breadcrumbs
-             * @optionparent plotOptions.treemap.breadcrumbs
+             * @apioption plotOptions.treemap.breadcrumbs
              */
             /**
              * When the series contains less points than the crop threshold, all
@@ -2256,7 +2279,7 @@
         const { composed, noop } = H;
         const { column: ColumnSeries, scatter: ScatterSeries } = SeriesRegistry.seriesTypes;
         const { getColor, getLevelOptions, updateRootId } = TU;
-        const { addEvent, correctFloat, defined, error, extend, fireEvent, isArray, isObject, isString, merge, pick, pushUnique, stableSort } = U;
+        const { addEvent, correctFloat, crisp, defined, error, extend, fireEvent, isArray, isObject, isString, merge, pick, pushUnique, stableSort } = U;
         /* *
          *
          *  Constants
@@ -2940,19 +2963,19 @@
                 // using point.graphic.strokeWidth(), then modify and apply the
                 // shapeArgs. This applies also to column series, but the
                 // downside is performance and code complexity.
-                const getCrispCorrection = (point) => (styledMode ?
+                const getStrokeWidth = (point) => (styledMode ?
                     0 :
-                    ((series.pointAttribs(point)['stroke-width'] || 0) % 2) / 2);
+                    (series.pointAttribs(point)['stroke-width'] || 0));
                 for (const point of points) {
                     const { pointValues: values, visible } = point.node;
                     // Points which is ignored, have no values.
                     if (values && visible) {
                         const { height, width, x, y } = values;
-                        const crispCorr = getCrispCorrection(point);
-                        const x1 = Math.round(xAxis.toPixels(x, true)) - crispCorr;
-                        const x2 = Math.round(xAxis.toPixels(x + width, true)) - crispCorr;
-                        const y1 = Math.round(yAxis.toPixels(y, true)) - crispCorr;
-                        const y2 = Math.round(yAxis.toPixels(y + height, true)) - crispCorr;
+                        const strokeWidth = getStrokeWidth(point);
+                        const x1 = crisp(xAxis.toPixels(x, true), strokeWidth, true);
+                        const x2 = crisp(xAxis.toPixels(x + width, true), strokeWidth, true);
+                        const y1 = crisp(yAxis.toPixels(y, true), strokeWidth, true);
+                        const y2 = crisp(yAxis.toPixels(y + height, true), strokeWidth, true);
                         // Set point values
                         const shapeArgs = {
                             x: Math.min(x1, x2),
@@ -3485,7 +3508,7 @@
              * @since 10.0.0
              * @product   highcharts
              * @extends   navigation.breadcrumbs
-             * @optionparent plotOptions.sunburst.breadcrumbs
+             * @apioption plotOptions.sunburst.breadcrumbs
              */
             /**
              * Set options on specific levels. Takes precedence over series options,

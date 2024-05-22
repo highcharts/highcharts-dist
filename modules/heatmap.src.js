@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v11.4.1 (2024-04-04)
+ * @license Highmaps JS v11.4.2 (2024-05-22)
  *
  * (c) 2009-2024 Torstein Honsi
  *
@@ -727,7 +727,7 @@
              *            Percentage width and pixel height for color axis
              *
              * @type      {number|string}
-             * @since     @next
+             * @since     11.3.0
              * @product   highcharts highstock highmaps
              * @apioption colorAxis.width
              */
@@ -742,7 +742,7 @@
              *            Percentage width and pixel height for color axis
              *
              * @type      {number|string}
-             * @since     @next
+             * @since     11.3.0
              * @product   highcharts highstock highmaps
              * @apioption colorAxis.height
              */
@@ -1435,7 +1435,7 @@
              * @private
              */
             getSize() {
-                const axis = this, { chart, horiz } = axis, { legend: legendOptions, height: colorAxisHeight, width: colorAxisWidth } = axis.options, width = pick(defined(colorAxisWidth) ?
+                const axis = this, { chart, horiz } = axis, { height: colorAxisHeight, width: colorAxisWidth } = axis.options, { legend: legendOptions } = chart.options, width = pick(defined(colorAxisWidth) ?
                     relativeLength(colorAxisWidth, chart.chartWidth) : void 0, legendOptions?.symbolWidth, horiz ? ColorAxis.defaultLegendLength : 12), height = pick(defined(colorAxisHeight) ?
                     relativeLength(colorAxisHeight, chart.chartHeight) : void 0, legendOptions?.symbolHeight, horiz ? 12 : ColorAxis.defaultLegendLength);
                 return {
@@ -1491,7 +1491,7 @@
 
         return Highcharts;
     });
-    _registerModule(_modules, 'Series/ColorMapComposition.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/ColorMapComposition.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, SVGElement, U) {
         /* *
          *
          *  (c) 2010-2024 Torstein Honsi
@@ -1548,11 +1548,34 @@
              * @private
              */
             function onPointAfterSetState(e) {
-                const point = this;
+                const point = this, series = point.series, renderer = series.chart.renderer;
                 if (point.moveToTopOnHover && point.graphic) {
-                    point.graphic.attr({
-                        zIndex: e && e.state === 'hover' ? 1 : 0
-                    });
+                    if (!series.stateMarkerGraphic) {
+                        // Create a `use` element and add it to the end of the group,
+                        // which would make it appear on top of the other elements. This
+                        // deals with z-index without reordering DOM elements (#13049).
+                        series.stateMarkerGraphic = new SVGElement(renderer, 'use')
+                            .css({
+                            pointerEvents: 'none'
+                        })
+                            .add(point.graphic.parentGroup);
+                    }
+                    if (e?.state === 'hover') {
+                        // Give the graphic DOM element the same id as the Point
+                        // instance
+                        point.graphic.attr({
+                            id: this.id
+                        });
+                        series.stateMarkerGraphic.attr({
+                            href: `${renderer.url}#${this.id}`,
+                            visibility: 'visible'
+                        });
+                    }
+                    else {
+                        series.stateMarkerGraphic.attr({
+                            href: ''
+                        });
+                    }
                 }
             }
             /**

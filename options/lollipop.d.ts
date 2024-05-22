@@ -266,7 +266,7 @@ declare module "../highcharts" {
         compareBase?: (0|100);
         /**
          * (Highstock) Defines if comparison should start from the first point
-         * within the visible range or should start from the first point
+         * within the visible range or should start from the last point
          * **before** the range.
          *
          * In other words, this flag determines if first point within the
@@ -294,6 +294,11 @@ declare module "../highcharts" {
          * point's values. By default it is the series' color.
          */
         connectorColor?: string;
+        /**
+         * (Highcharts, Highstock) Pixel width of the line that connects the
+         * dumbbell point's values.
+         */
+        connectorWidth?: number;
         /**
          * (Highcharts, Highstock, Gantt) When true, each point or column edge
          * is rounded to its nearest pixel in order to render sharp on screen.
@@ -326,6 +331,17 @@ declare module "../highcharts" {
          * `sum`.
          */
         cumulative?: boolean;
+        /**
+         * (Highstock) Defines if cumulation should start from the first point
+         * within the visible range or should start from the last point
+         * **before** the range.
+         *
+         * In other words, this flag determines if first point within the
+         * visible range will start at 0 (`cumulativeStart=true`) or should have
+         * been already calculated according to the previous point
+         * (`cumulativeStart=false`).
+         */
+        cumulativeStart?: boolean;
         /**
          * (Highcharts, Highstock) You can set the cursor to "pointer" if you
          * have click events attached to the series, to signal to the user that
@@ -454,6 +470,7 @@ declare module "../highcharts" {
          * points will be laid out individually and overlap each other.
          */
         grouping?: boolean;
+        groupPadding?: number;
         /**
          * (Highcharts, Highstock) Highlight only the hovered point and fade the
          * remaining points.
@@ -566,7 +583,8 @@ declare module "../highcharts" {
          */
         negativeColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
         /**
-         * (Highcharts) A separate color for the negative part of the area.
+         * (Highcharts) A separate color for the negative part of the area. Note
+         * that `zones` takes precedence over the negative fill color.
          *
          * In styled mode, a negative color is set with the
          * `.highcharts-negative` class name.
@@ -628,6 +646,7 @@ declare module "../highcharts" {
          * interval of the axis ticks, which is independent.
          */
         pointIntervalUnit?: Highcharts.OptionsPointIntervalUnitValue;
+        pointPadding?: number;
         /**
          * (Highcharts, Highstock, Gantt) Possible values: `"on"`, `"between"`,
          * `number`.

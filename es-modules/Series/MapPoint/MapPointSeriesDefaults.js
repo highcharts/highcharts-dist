@@ -44,6 +44,17 @@ const MapPointSeriesDefaults = {
     },
     legendSymbol: 'lineMarker'
 };
+/* *
+ *
+ *  Default Export
+ *
+ * */
+export default MapPointSeriesDefaults;
+/* *
+ *
+ *  API Options
+ *
+ * */
 /**
  * A `mappoint` series. If the [type](#series.mappoint.type) option
  * is not specified, it is inherited from [chart.type](#chart.type).
@@ -185,14 +196,9 @@ const MapPointSeriesDefaults = {
  * @apioption series.mappoint.data.y
  */
 /**
-* @type      {number}
-* @product   highmaps
-* @excluding borderColor, borderWidth
-* @apioption plotOptions.mappoint
-*/
-/* *
- *
- *  Default Export
- *
- * */
-export default MapPointSeriesDefaults;
+ * @type      {number}
+ * @product   highmaps
+ * @excluding borderColor, borderWidth
+ * @apioption plotOptions.mappoint
+ */
+(''); // Keeps doclets above in JS file

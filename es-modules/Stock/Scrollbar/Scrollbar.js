@@ -14,7 +14,7 @@ import H from '../../Core/Globals.js';
 import ScrollbarAxis from '../../Core/Axis/ScrollbarAxis.js';
 import ScrollbarDefaults from './ScrollbarDefaults.js';
 import U from '../../Core/Utilities.js';
-const { addEvent, correctFloat, defined, destroyObjectProperties, fireEvent, merge, pick, removeEvent } = U;
+const { addEvent, correctFloat, crisp, defined, destroyObjectProperties, fireEvent, merge, pick, removeEvent } = U;
 /* *
  *
  *  Constants
@@ -246,9 +246,8 @@ class Scrollbar {
             rect.attr(rect.crisp({
                 x: -0.5,
                 y: -0.5,
-                // +1 to compensate for crispifying in rect method
-                width: size + 1,
-                height: size + 1,
+                width: size,
+                height: size,
                 r: options.buttonBorderRadius
             }, rect.strokeWidth()));
             // Button arrow
@@ -458,8 +457,8 @@ class Scrollbar {
         const trackBorderWidth = scroller.trackBorderWidth =
             scroller.track.strokeWidth();
         scroller.track.attr({
-            x: -trackBorderWidth % 2 / 2,
-            y: -trackBorderWidth % 2 / 2
+            x: -crisp(0, trackBorderWidth),
+            y: -crisp(0, trackBorderWidth)
         });
         // Draw the scrollbar itself
         scroller.scrollbarGroup = renderer.g().add(group);
@@ -493,7 +492,7 @@ class Scrollbar {
             });
         }
         scroller.scrollbarStrokeWidth = scroller.scrollbar.strokeWidth();
-        scroller.scrollbarGroup.translate(-scroller.scrollbarStrokeWidth % 2 / 2, -scroller.scrollbarStrokeWidth % 2 / 2);
+        scroller.scrollbarGroup.translate(-crisp(0, scroller.scrollbarStrokeWidth), -crisp(0, scroller.scrollbarStrokeWidth));
         // Draw the buttons:
         scroller.drawScrollbarButton(0);
         scroller.drawScrollbarButton(1);

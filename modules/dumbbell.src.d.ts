@@ -17,23 +17,6 @@ declare module "../highcharts.src" {
         high?: number;
         low?: number;
     }
-    interface Series {
-        /**
-         * Get non-presentational attributes for a point. Used internally for
-         * both styled mode and classic. Can be overridden for different series
-         * types.
-         *
-         * @param point
-         *        The Point to inspect.
-         *
-         * @param state
-         *        The state, can be either `hover`, `select` or undefined.
-         *
-         * @return A hash containing those attributes that are not settable from
-         *         CSS.
-         */
-        markerAttribs(point: Point, state?: string): SVGAttributes;
-    }
 }
 export default factory;
 export let Highcharts: typeof _Highcharts;

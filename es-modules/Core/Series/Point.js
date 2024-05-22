@@ -16,7 +16,7 @@ const { defaultOptions } = D;
 import F from '../Templating.js';
 const { format } = F;
 import U from '../Utilities.js';
-const { addEvent, erase, extend, fireEvent, getNestedProperty, isArray, isFunction, isNumber, isObject, merge, pick, syncTimeout, removeEvent, uniqueKey } = U;
+const { addEvent, crisp, erase, extend, fireEvent, getNestedProperty, isArray, isFunction, isNumber, isObject, merge, pick, syncTimeout, removeEvent, uniqueKey } = U;
 /* eslint-disable no-invalid-this, valid-jsdoc */
 /* *
  *
@@ -1124,7 +1124,8 @@ class Point {
                 }, AST.filterUserAttributes(haloOptions.attributes || {})));
             }
         }
-        else if (halo && halo.point && halo.point.haloPath) {
+        else if (halo?.point?.haloPath &&
+            !halo.point.destroyed) {
             // Animate back to 0 on the current halo point (#6055)
             halo.animate({ d: halo.point.haloPath(0) }, null, 
             // Hide after unhovering. The `complete` callback runs in the
@@ -1147,7 +1148,7 @@ class Point {
      */
     haloPath(size) {
         const pos = this.pos();
-        return pos ? this.series.chart.renderer.symbols.circle(Math.floor(pos[0]) - size, pos[1] - size, size * 2, size * 2) : [];
+        return pos ? this.series.chart.renderer.symbols.circle(crisp(pos[0], 1) - size, pos[1] - size, size * 2, size * 2) : [];
     }
 }
 /* *

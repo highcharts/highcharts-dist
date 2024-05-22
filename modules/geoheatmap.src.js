@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.1 (2024-04-04)
+ * @license Highcharts JS v11.4.2 (2024-05-22)
  *
  * (c) 2009-2024
  *
@@ -519,9 +519,6 @@
              * @sample maps/demo/geoheatmap-europe/
              *         1 by default, set to 5
              *
-             * @type      {number}
-             * @default   1
-             * @since 11.0.0
              * @product   highmaps
              * @apioption plotOptions.geoheatmap.colsize
              */
@@ -533,7 +530,6 @@
              * default value is pulled from the [options.colors](#colors) array.
              *
              * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-             * @since 11.0.0
              * @product   highmaps
              * @apioption plotOptions.geoheatmap.color
              */
@@ -544,9 +540,6 @@
              * @sample maps/demo/geoheatmap-europe/
              *         1 by default, set to 5
              *
-             * @type      {number}
-             * @default   1
-             * @since 11.0.0
              * @product   highmaps
              * @apioption plotOptions.geoheatmap.rowsize
              */
@@ -561,14 +554,14 @@
              *         datasets
              *
              * @type      {boolean|Highcharts.InterpolationOptionsObject}
-             * @since     @next
+             * @since     11.2.0
              * @product   highmaps
              */
             interpolation: {
                 /**
                  * Enable or disable the interpolation of the geoheatmap series.
                  *
-                 * @since     @next
+                 * @since 11.2.0
                  */
                 enabled: false,
                 /**
@@ -583,7 +576,7 @@
                  * @sample maps/series-geoheatmap/turkey-fire-areas
                  *         Simple demo of GeoHeatmap interpolation
                  *
-                 * @since     @next
+                 * @since  11.2.0
                  */
                 blur: 1
             }

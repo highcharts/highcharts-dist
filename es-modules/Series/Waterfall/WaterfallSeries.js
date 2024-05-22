@@ -11,7 +11,7 @@
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries, line: LineSeries } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
-const { addEvent, arrayMax, arrayMin, correctFloat, extend, isNumber, merge, objectEach, pick } = U;
+const { addEvent, arrayMax, arrayMin, correctFloat, crisp, extend, isNumber, merge, objectEach, pick } = U;
 import WaterfallAxis from '../../Core/Axis/WaterfallAxis.js';
 import WaterfallPoint from './WaterfallPoint.js';
 import WaterfallSeriesDefaults from './WaterfallSeriesDefaults.js';
@@ -134,7 +134,7 @@ class WaterfallSeries extends ColumnSeries {
     // Draw columns' connector lines
     getCrispPath() {
         const // Skip points where Y is not a number (#18636)
-        data = this.data.filter((d) => isNumber(d.y)), yAxis = this.yAxis, length = data.length, graphNormalizer = Math.round(this.graph.strokeWidth()) % 2 / 2, borderNormalizer = Math.round(this.borderWidth) % 2 / 2, reversedXAxis = this.xAxis.reversed, reversedYAxis = this.yAxis.reversed, stacking = this.options.stacking, path = [];
+        data = this.data.filter((d) => isNumber(d.y)), yAxis = this.yAxis, length = data.length, graphLineWidth = this.graph?.strokeWidth() || 0, reversedXAxis = this.xAxis.reversed, reversedYAxis = this.yAxis.reversed, stacking = this.options.stacking, path = [];
         for (let i = 1; i < length; i++) {
             if (!( // Skip lines that would pass over the null point (#18636)
             this.options.connectNulls ||
@@ -154,13 +154,11 @@ class WaterfallSeries extends ColumnSeries {
                 let yPos;
                 if (stacking) {
                     const connectorThreshold = prevStackX.connectorThreshold;
-                    yPos = Math.round((yAxis.translate(connectorThreshold, false, true, false, true) +
-                        (reversedYAxis ? isPos : 0))) - graphNormalizer;
+                    yPos = crisp(yAxis.translate(connectorThreshold, false, true, false, true) +
+                        (reversedYAxis ? isPos : 0), graphLineWidth);
                 }
                 else {
-                    yPos =
-                        prevBox.y + prevPoint.minPointLengthOffset +
-                            borderNormalizer - graphNormalizer;
+                    yPos = crisp(prevBox.y + (prevPoint.minPointLengthOffset || 0), graphLineWidth);
                 }
                 path.push([
                     'M',
@@ -492,15 +490,12 @@ addEvent(WaterfallSeries, 'afterColumnTranslate', function () {
                 box.height *= -1;
             }
         }
-        point.plotY = box.y =
-            Math.round(box.y || 0) - (series.borderWidth % 2) / 2;
-        // #3151
-        box.height =
-            Math.max(Math.round(box.height || 0), 0.001);
+        point.plotY = box.y;
         point.yBottom = box.y + box.height;
         if (box.height <= minPointLength && !point.isNull) {
             box.height = minPointLength;
             box.y -= halfMinPointLength;
+            point.yBottom = box.y + box.height;
             point.plotY = box.y;
             if (pointY < 0) {
                 point.minPointLengthOffset = -halfMinPointLength;
@@ -531,6 +526,10 @@ addEvent(WaterfallSeries, 'afterColumnTranslate', function () {
         }
         // Check point position after recalculation (#16788)
         point.isInside = this.isPointInside(point);
+        // Crisp vector coordinates
+        const crispBottom = crisp(point.yBottom, series.borderWidth);
+        box.y = crisp(box.y, series.borderWidth);
+        box.height = crispBottom - box.y;
         merge(true, point.shapeArgs, box);
     }
 }, { order: 2 });

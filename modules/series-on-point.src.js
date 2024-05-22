@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.1 (2024-04-04)
+ * @license Highcharts JS v11.4.2 (2024-05-22)
  *
  * Series on point module
  *
@@ -182,7 +182,7 @@
                         d: SVGRenderer.prototype.crispLine([
                             ['M', xFrom, yFrom],
                             ['L', xTo, yTo]
-                        ], width, 'ceil'),
+                        ], width),
                         'stroke-width': width
                     };
                     if (!chart.styledMode) {
@@ -255,7 +255,7 @@
                 seriesShowOrHide() {
                     const allSeries = this.chart.series;
                     // When toggling a series visibility, loop through all points
-                    this.points.forEach((point) => {
+                    this.points?.forEach((point) => {
                         // Find all series that are on toggled points
                         const series = find(allSeries, (series) => {
                             const id = ((series.onPoint || {}).options || {}).id;

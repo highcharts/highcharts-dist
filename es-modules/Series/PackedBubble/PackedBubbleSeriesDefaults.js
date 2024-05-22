@@ -112,7 +112,6 @@ const PackedBubbleSeriesDefaults = {
         allowPointSelect: false
     },
     /**
-    /**
      *
      * @declare Highcharts.SeriesPackedBubbleDataLabelsOptionsObject
      *

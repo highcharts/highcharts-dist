@@ -115,6 +115,15 @@ const NavigatorDefaults = {
          */
         width: 7,
         /**
+         * Border radius of the handles.
+         *
+         * @sample {highstock} stock/navigator/handles-border-radius/
+         *      Border radius on the navigator handles.
+         *
+         * @since 11.4.2
+         */
+        borderRadius: 0,
+        /**
          * Height for handles.
          *
          * @sample {highstock} stock/navigator/styled-handles/
@@ -425,6 +434,7 @@ const NavigatorDefaults = {
         tickLength: 0,
         lineWidth: 0,
         gridLineColor: "#e6e6e6" /* Palette.neutralColor10 */,
+        id: 'navigator-x-axis',
         gridLineWidth: 1,
         tickPixelInterval: 200,
         labels: {
@@ -478,6 +488,7 @@ const NavigatorDefaults = {
         startOnTick: false,
         endOnTick: false,
         minPadding: 0.1,
+        id: 'navigator-y-axis',
         maxPadding: 0.1,
         labels: {
             enabled: false

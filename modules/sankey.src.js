@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.1 (2024-04-04)
+ * @license Highcharts JS v11.4.2 (2024-05-22)
  *
  * Sankey diagram module
  *
@@ -579,7 +579,7 @@
              *         Sankey diagram with gradients and explanation
              *
              * @type      {('from'|'gradient'|'to')}
-             * @since     @next
+             * @since     11.2.0
              */
             linkColorMode: 'from',
             /**
@@ -1449,7 +1449,7 @@
         const { column: ColumnSeries, line: LineSeries } = SeriesRegistry.seriesTypes;
         const { parse: color } = Color;
         const { getLevelOptions, getNodeWidth } = TU;
-        const { clamp, extend, isObject, merge, pick, relativeLength, stableSort } = U;
+        const { clamp, crisp, extend, isObject, merge, pick, relativeLength, stableSort } = U;
         /* *
          *
          *  Class
@@ -1813,12 +1813,11 @@
              * @private
              */
             translateNode(node, column) {
-                const translationFactor = this.translationFactor, chart = this.chart, options = this.options, { borderRadius, borderWidth = 0 } = options, sum = node.getSum(), nodeHeight = Math.max(Math.round(sum * translationFactor), this.options.minLinkWidth), nodeWidth = Math.round(this.nodeWidth), crisp = Math.round(borderWidth) % 2 / 2, nodeOffset = column.sankeyColumn.offset(node, translationFactor), fromNodeTop = Math.floor(pick(nodeOffset.absoluteTop, (column.sankeyColumn.top(translationFactor) +
-                    nodeOffset.relativeTop))) + crisp, left = Math.floor(this.colDistance * node.column +
-                    borderWidth / 2) + relativeLength(node.options[chart.inverted ?
+                const translationFactor = this.translationFactor, chart = this.chart, options = this.options, { borderRadius, borderWidth = 0 } = options, sum = node.getSum(), nodeHeight = Math.max(Math.round(sum * translationFactor), this.options.minLinkWidth), nodeWidth = Math.round(this.nodeWidth), nodeOffset = column.sankeyColumn.offset(node, translationFactor), fromNodeTop = crisp(pick(nodeOffset.absoluteTop, (column.sankeyColumn.top(translationFactor) +
+                    nodeOffset.relativeTop)), borderWidth), left = crisp(this.colDistance * node.column +
+                    borderWidth / 2, borderWidth) + relativeLength(node.options[chart.inverted ?
                     'offsetVertical' :
-                    'offsetHorizontal'] || 0, nodeWidth) +
-                    crisp, nodeLeft = chart.inverted ?
+                    'offsetHorizontal'] || 0, nodeWidth), nodeLeft = chart.inverted ?
                     chart.plotSizeX - left :
                     left;
                 node.sum = sum;

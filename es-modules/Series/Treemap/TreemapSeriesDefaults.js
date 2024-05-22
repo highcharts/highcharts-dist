@@ -71,7 +71,7 @@ const TreemapSeriesDefaults = {
      * @since 10.0.0
      * @product   highcharts
      * @extends   navigation.breadcrumbs
-     * @optionparent plotOptions.treemap.breadcrumbs
+     * @apioption plotOptions.treemap.breadcrumbs
      */
     /**
      * When the series contains less points than the crop threshold, all

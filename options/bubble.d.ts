@@ -104,6 +104,16 @@ declare module "../highcharts" {
          */
         align?: (Highcharts.AlignValue|null);
         /**
+         * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+         * labels. If set to `plotEdges`, the labels are aligned within the plot
+         * area in the direction of the y-axis. So in a regular column chart,
+         * the labels are aligned vertically according to the `verticalAlign`
+         * setting. In a bar chart, which is inverted, the labels are aligned
+         * horizontally according to the `align` setting. Applies to cartesian
+         * series only.
+         */
+        alignTo?: string;
+        /**
          * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels
          * to overlap. To make the labels less sensitive for overlapping, the
          * dataLabels.padding can be set to 0.
@@ -536,7 +546,7 @@ declare module "../highcharts" {
         compareBase?: (0|100);
         /**
          * (Highstock) Defines if comparison should start from the first point
-         * within the visible range or should start from the first point
+         * within the visible range or should start from the last point
          * **before** the range.
          *
          * In other words, this flag determines if first point within the
@@ -579,6 +589,17 @@ declare module "../highcharts" {
          * `sum`.
          */
         cumulative?: boolean;
+        /**
+         * (Highstock) Defines if cumulation should start from the first point
+         * within the visible range or should start from the last point
+         * **before** the range.
+         *
+         * In other words, this flag determines if first point within the
+         * visible range will start at 0 (`cumulativeStart=true`) or should have
+         * been already calculated according to the previous point
+         * (`cumulativeStart=false`).
+         */
+        cumulativeStart?: boolean;
         /**
          * (Highcharts, Highstock) You can set the cursor to "pointer" if you
          * have click events attached to the series, to signal to the user that

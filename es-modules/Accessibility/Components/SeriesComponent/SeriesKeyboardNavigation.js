@@ -267,9 +267,16 @@ class SeriesKeyboardNavigation {
                     function (keyCode, event) {
                         const point = chart.highlightedPoint;
                         if (point) {
-                            event.point = point;
+                            const { plotLeft, plotTop } = this.chart, { plotX = 0, plotY = 0 } = point;
+                            event = {
+                                ...event,
+                                chartX: plotLeft + plotX,
+                                chartY: plotTop + plotY,
+                                point: point,
+                                target: point.graphic?.element || event.target
+                            };
                             fireEvent(point.series, 'click', event);
-                            point.firePointEvent('click');
+                            point.firePointEvent('click', event);
                         }
                         return this.response.success;
                     }

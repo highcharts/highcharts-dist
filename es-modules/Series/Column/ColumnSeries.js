@@ -18,7 +18,7 @@ const { noop } = H;
 import Series from '../../Core/Series/Series.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import U from '../../Core/Utilities.js';
-const { clamp, defined, extend, fireEvent, isArray, isNumber, merge, pick, objectEach } = U;
+const { clamp, crisp, defined, extend, fireEvent, isArray, isNumber, merge, pick, objectEach } = U;
 /* *
  *
  *  Class
@@ -50,17 +50,27 @@ class ColumnSeries extends Series {
      *        Whether to initialize the animation or run it
      */
     animate(init) {
-        const series = this, yAxis = this.yAxis, yAxisPos = yAxis.pos, options = series.options, inverted = this.chart.inverted, attr = {}, translateProp = inverted ?
+        const series = this, yAxis = this.yAxis, yAxisPos = yAxis.pos, reversed = yAxis.reversed, options = series.options, { clipOffset, inverted } = this.chart, attr = {}, translateProp = inverted ?
             'translateX' :
             'translateY';
         let translateStart, translatedThreshold;
-        if (init) {
+        if (init && clipOffset) {
             attr.scaleY = 0.001;
             translatedThreshold = clamp(yAxis.toPixels(options.threshold), yAxisPos, yAxisPos + yAxis.len);
             if (inverted) {
+                // Make sure the columns don't cover the axis line during
+                // entrance animation
+                translatedThreshold += reversed ?
+                    -Math.floor(clipOffset[0]) :
+                    Math.ceil(clipOffset[2]);
                 attr.translateX = translatedThreshold - yAxis.len;
             }
             else {
+                // Make sure the columns don't cover the axis line during
+                // entrance animation
+                translatedThreshold += reversed ?
+                    Math.ceil(clipOffset[0]) :
+                    -Math.floor(clipOffset[2]);
                 attr.translateY = translatedThreshold;
             }
             // Apply final clipping (used in Highcharts Stock) (#7083)
@@ -180,31 +190,19 @@ class ColumnSeries extends Series {
      * @private
      * @function Highcharts.seriesTypes.column#crispCol
      */
-    crispCol(x, y, w, h) {
-        const borderWidth = this.borderWidth, xCrisp = -(borderWidth % 2 ? 0.5 : 0), yCrisp = borderWidth % 2 ? 0.5 : 1;
-        let right;
+    crispCol(x, y, width, height) {
+        const borderWidth = this.borderWidth, inverted = this.chart.inverted, bottom = crisp(y + height, borderWidth, inverted);
+        // Vertical
+        y = crisp(y, borderWidth, inverted);
+        height = bottom - y;
         // Horizontal. We need to first compute the exact right edge, then
         // round it and compute the width from there.
         if (this.options.crisp) {
-            right = Math.round(x + w) + xCrisp;
-            x = Math.round(x) + xCrisp;
-            w = right - x;
+            const right = crisp(x + width, borderWidth);
+            x = crisp(x, borderWidth);
+            width = right - x;
         }
-        // Vertical
-        const bottom = Math.round(y + h) + yCrisp, fromTop = Math.abs(y) <= 0.5 && bottom > 0.5; // #4504, #4656
-        y = Math.round(y) + yCrisp;
-        h = bottom - y;
-        // Top edges are exceptions
-        if (fromTop && h) { // #5146
-            y -= 1;
-            h += 1;
-        }
-        return {
-            x: x,
-            y: y,
-            width: w,
-            height: h
-        };
+        return { x, y, width, height };
     }
     /**
      * Adjust for missing columns, according to the `centerInCategory`
@@ -286,14 +284,11 @@ class ColumnSeries extends Series {
     translate() {
         const series = this, chart = series.chart, options = series.options, dense = series.dense =
             series.closestPointRange * series.xAxis.transA < 2, borderWidth = series.borderWidth = pick(options.borderWidth, dense ? 0 : 1 // #3635
-        ), xAxis = series.xAxis, yAxis = series.yAxis, threshold = options.threshold, minPointLength = pick(options.minPointLength, 5), metrics = series.getColumnMetrics(), seriesPointWidth = metrics.width, seriesXOffset = series.pointXOffset = metrics.offset, dataMin = series.dataMin, dataMax = series.dataMax;
+        ), xAxis = series.xAxis, yAxis = series.yAxis, threshold = options.threshold, minPointLength = pick(options.minPointLength, 5), metrics = series.getColumnMetrics(), seriesPointWidth = metrics.width, seriesXOffset = series.pointXOffset = metrics.offset, dataMin = series.dataMin, dataMax = series.dataMax, translatedThreshold = series.translatedThreshold =
+            yAxis.getThreshold(threshold);
         // Postprocessed for border width
         let seriesBarW = series.barW =
-            Math.max(seriesPointWidth, 1 + 2 * borderWidth), translatedThreshold = series.translatedThreshold =
-            yAxis.getThreshold(threshold);
-        if (chart.inverted) {
-            translatedThreshold -= 0.5; // #3355
-        }
+            Math.max(seriesPointWidth, 1 + 2 * borderWidth);
         // When the pointPadding is 0, we want the columns to be packed
         // tightly, so we allow individual columns to have individual sizes.
         // When pointPadding is greater, we strive for equal-width columns

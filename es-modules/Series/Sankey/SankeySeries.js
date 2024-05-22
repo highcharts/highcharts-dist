@@ -22,7 +22,7 @@ const { parse: color } = Color;
 import TU from '../TreeUtilities.js';
 const { getLevelOptions, getNodeWidth } = TU;
 import U from '../../Core/Utilities.js';
-const { clamp, extend, isObject, merge, pick, relativeLength, stableSort } = U;
+const { clamp, crisp, extend, isObject, merge, pick, relativeLength, stableSort } = U;
 /* *
  *
  *  Class
@@ -386,12 +386,11 @@ class SankeySeries extends ColumnSeries {
      * @private
      */
     translateNode(node, column) {
-        const translationFactor = this.translationFactor, chart = this.chart, options = this.options, { borderRadius, borderWidth = 0 } = options, sum = node.getSum(), nodeHeight = Math.max(Math.round(sum * translationFactor), this.options.minLinkWidth), nodeWidth = Math.round(this.nodeWidth), crisp = Math.round(borderWidth) % 2 / 2, nodeOffset = column.sankeyColumn.offset(node, translationFactor), fromNodeTop = Math.floor(pick(nodeOffset.absoluteTop, (column.sankeyColumn.top(translationFactor) +
-            nodeOffset.relativeTop))) + crisp, left = Math.floor(this.colDistance * node.column +
-            borderWidth / 2) + relativeLength(node.options[chart.inverted ?
+        const translationFactor = this.translationFactor, chart = this.chart, options = this.options, { borderRadius, borderWidth = 0 } = options, sum = node.getSum(), nodeHeight = Math.max(Math.round(sum * translationFactor), this.options.minLinkWidth), nodeWidth = Math.round(this.nodeWidth), nodeOffset = column.sankeyColumn.offset(node, translationFactor), fromNodeTop = crisp(pick(nodeOffset.absoluteTop, (column.sankeyColumn.top(translationFactor) +
+            nodeOffset.relativeTop)), borderWidth), left = crisp(this.colDistance * node.column +
+            borderWidth / 2, borderWidth) + relativeLength(node.options[chart.inverted ?
             'offsetVertical' :
-            'offsetHorizontal'] || 0, nodeWidth) +
-            crisp, nodeLeft = chart.inverted ?
+            'offsetHorizontal'] || 0, nodeWidth), nodeLeft = chart.inverted ?
             chart.plotSizeX - left :
             left;
         node.sum = sum;

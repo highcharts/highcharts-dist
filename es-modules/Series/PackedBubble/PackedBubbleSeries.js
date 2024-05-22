@@ -221,7 +221,8 @@ class PackedBubbleSeries extends BubbleSeries {
                 Math.PI * Math.pow(p.marker.radius, 2);
         });
         this.calculateParentRadius();
-        parentNodeLayout.nodes.forEach((node) => {
+        parentNodeLayout.nodes
+            .forEach((node) => {
             if (node.seriesIndex === this.index) {
                 nodeAdded = true;
             }
@@ -731,8 +732,7 @@ class PackedBubbleSeries extends BubbleSeries {
             }
             else {
                 series.graph.hide();
-                series.parentNodeLayout
-                    .removeElementFromCollection(series.parentNode, series.parentNodeLayout.nodes);
+                series.parentNodeLayout.removeElementFromCollection(series.parentNode, series.parentNodeLayout.nodes);
                 if (series.parentNode.dataLabel) {
                     series.parentNode.dataLabel.hide();
                 }

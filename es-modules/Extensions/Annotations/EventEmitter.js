@@ -203,11 +203,13 @@ class EventEmitter {
                 annotation.cancelClick = emitter.hasDragged;
             }
             emitter.cancelClick = emitter.hasDragged;
-            emitter.hasDragged = false;
             emitter.chart.hasDraggedAnnotation = false;
-            // ControlPoints vs Annotation:
-            fireEvent(pick(annotation, // #15952
-            emitter), 'afterUpdate');
+            if (emitter.hasDragged) {
+                // ControlPoints vs Annotation:
+                fireEvent(pick(annotation, // #15952
+                emitter), 'afterUpdate');
+            }
+            emitter.hasDragged = false;
             emitter.onMouseUp();
         }, isTouchDevice || firesTouchEvents ? { passive: false } : void 0);
     }
@@ -215,9 +217,7 @@ class EventEmitter {
      * Mouse up handler.
      */
     onMouseUp() {
-        const chart = this.chart, annotation = this.target || this, annotationsOptions = chart.options.annotations, index = chart.annotations.indexOf(annotation);
         this.removeDocEvents();
-        annotationsOptions[index] = annotation.options;
     }
     /**
      * Remove emitter document events.

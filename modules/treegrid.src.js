@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v11.4.1 (2024-04-04)
+ * @license Highcharts Gantt JS v11.4.2 (2024-05-22)
  *
  * Tree Grid
  *
@@ -945,7 +945,7 @@
                         const linePath = axis.getLinePath(lineWidth), startPoint = linePath[0], endPoint = linePath[1], 
                         // Negate distance if top or left axis
                         // Subtract 1px to draw the line at the end of the tick
-                        tickLength = (axis.tickSize('tick') || [1])[0], distance = (tickLength - 1) * ((axis.side === GridAxisSide.top ||
+                        tickLength = (axis.tickSize('tick') || [1])[0], distance = tickLength * ((axis.side === GridAxisSide.top ||
                             axis.side === GridAxisSide.left) ? -1 : 1);
                         // If axis is horizontal, reposition line path vertically
                         if (startPoint[0] === 'M' && endPoint[0] === 'L') {

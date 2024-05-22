@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.1 (2024-04-04)
+ * @license Highcharts JS v11.4.2 (2024-05-22)
  *
  * ColorAxis module
  *
@@ -729,7 +729,7 @@
              *            Percentage width and pixel height for color axis
              *
              * @type      {number|string}
-             * @since     @next
+             * @since     11.3.0
              * @product   highcharts highstock highmaps
              * @apioption colorAxis.width
              */
@@ -744,7 +744,7 @@
              *            Percentage width and pixel height for color axis
              *
              * @type      {number|string}
-             * @since     @next
+             * @since     11.3.0
              * @product   highcharts highstock highmaps
              * @apioption colorAxis.height
              */
@@ -1437,7 +1437,7 @@
              * @private
              */
             getSize() {
-                const axis = this, { chart, horiz } = axis, { legend: legendOptions, height: colorAxisHeight, width: colorAxisWidth } = axis.options, width = pick(defined(colorAxisWidth) ?
+                const axis = this, { chart, horiz } = axis, { height: colorAxisHeight, width: colorAxisWidth } = axis.options, { legend: legendOptions } = chart.options, width = pick(defined(colorAxisWidth) ?
                     relativeLength(colorAxisWidth, chart.chartWidth) : void 0, legendOptions?.symbolWidth, horiz ? ColorAxis.defaultLegendLength : 12), height = pick(defined(colorAxisHeight) ?
                     relativeLength(colorAxisHeight, chart.chartHeight) : void 0, legendOptions?.symbolHeight, horiz ? 12 : ColorAxis.defaultLegendLength);
                 return {

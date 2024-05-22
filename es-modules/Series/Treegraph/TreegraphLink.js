@@ -25,20 +25,20 @@ const { seriesTypes: { column: { prototype: { pointClass: ColumnPoint } } } } = 
 class LinkPoint extends ColumnPoint {
     /* *
      *
-     *  Functions
+     *  Constructor
      *
      * */
     constructor(series, options, x, point) {
         super(series, options, x);
         /* *
-        *
-        *  Class properties
-        *
-        * */
+         *
+         *  Properties
+         *
+         * */
+        this.dataLabelOnNull = true;
+        this.formatPrefix = 'link';
         this.isLink = true;
         this.node = {};
-        this.formatPrefix = 'link';
-        this.dataLabelOnNull = true;
         this.formatPrefix = 'link';
         this.dataLabelOnNull = true;
         if (point) {
@@ -48,6 +48,11 @@ class LinkPoint extends ColumnPoint {
             this.id = this.toNode.id + '-' + this.fromNode.id;
         }
     }
+    /* *
+     *
+     *  Functions
+     *
+     * */
     update(options, redraw, animation, runEvent) {
         const oldOptions = {
             id: this.id,

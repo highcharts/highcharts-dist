@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.1 (2024-04-04)
+ * @license Highcharts JS v11.4.2 (2024-05-22)
  *
  * Force directed graph module
  *
@@ -1310,7 +1310,7 @@
          *
          * @type      {Array<Object|Array|number>}
          * @extends   series.line.data
-         * @excluding drilldown,marker,x,y,draDrop
+         * @excluding drilldown,marker,x,y,dragDrop
          * @sample    {highcharts} highcharts/chart/reflow-true/
          *            Numerical values
          * @sample    {highcharts} highcharts/series/data-array-of-arrays/
@@ -2625,7 +2625,7 @@
                 const nodes = this.nodes;
                 for (const node of nodes) {
                     if (node.fixedPosition) {
-                        return;
+                        continue;
                     }
                     this.integration.integrate(this, node);
                     this.applyLimitBox(node, this.box);

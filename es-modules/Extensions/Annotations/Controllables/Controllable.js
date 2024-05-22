@@ -111,6 +111,9 @@ class Controllable {
     render(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _parentGroup) {
+        if (this.options.className && this.graphic) {
+            this.graphic.addClass(this.options.className);
+        }
         this.renderControlPoints();
     }
     /**

@@ -97,7 +97,7 @@ class SeriesComponent extends AccessibilityComponent {
         chart.series.forEach(function (series) {
             const shouldDescribeSeries = (series.options.accessibility &&
                 series.options.accessibility.enabled) !== false &&
-                series.visible && series.data.length !== 0;
+                series.visible && series.getPointsCollection().length !== 0;
             if (shouldDescribeSeries) {
                 describeSeries(series);
             }

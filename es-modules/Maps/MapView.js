@@ -17,7 +17,7 @@ import MU from './MapUtilities.js';
 const { boundsFromPath, pointInPolygon } = MU;
 import Projection from './Projection.js';
 import U from '../Core/Utilities.js';
-const { addEvent, clamp, fireEvent, isArray, isNumber, isObject, isString, merge, pick, pushUnique, relativeLength } = U;
+const { addEvent, clamp, crisp, fireEvent, isArray, isNumber, isObject, isString, merge, pick, pushUnique, relativeLength } = U;
 /* *
  *
  *  Constants
@@ -494,7 +494,7 @@ class MapView {
      *
      * @function Highcharts.MapView#recommendMapView
      *
-     * @since @next
+     * @since 11.4.0
      *
      * @param {Highcharts.Chart} chart
      *        Chart object
@@ -1067,7 +1067,7 @@ class MapViewInset extends MapView {
                     'stroke-width': options.borderWidth
                 });
             }
-            const crisp = Math.round(this.border.strokeWidth()) % 2 / 2, field = (options.relativeTo === 'mapBoundingBox' &&
+            const strokeWidth = this.border.strokeWidth(), field = (options.relativeTo === 'mapBoundingBox' &&
                 mapView.getMapBBox()) || mapView.playingField;
             const d = (borderPath.coordinates || []).reduce((d, lineString) => lineString.reduce((d, point, i) => {
                 let [x, y] = point;
@@ -1075,8 +1075,8 @@ class MapViewInset extends MapView {
                     x = chart.plotLeft + relativeLength(`${x}%`, field.width, field.x);
                     y = chart.plotTop + relativeLength(`${y}%`, field.height, field.y);
                 }
-                x = Math.floor(x) + crisp;
-                y = Math.floor(y) + crisp;
+                x = crisp(x, strokeWidth);
+                y = crisp(y, strokeWidth);
                 d.push(i === 0 ? ['M', x, y] : ['L', x, y]);
                 return d;
             }, d), []);

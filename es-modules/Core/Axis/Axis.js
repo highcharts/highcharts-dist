@@ -227,7 +227,7 @@ class Axis {
          * @name Highcharts.Axis#len
          * @type {number}
          */
-        axis.len = 0;
+        axis.len ?? (axis.len = 0);
         axis.minRange = axis.userMinRange = options.minRange || options.maxZoom;
         axis.range = options.range;
         axis.offset = options.offset || 0;
@@ -305,13 +305,17 @@ class Axis {
             // Top and bottom axis defaults
             {
                 labels: {
-                    autoRotation: [-45]
+                    autoRotation: [-45],
+                    padding: 4
                 },
                 margin: 15
             } :
             // Left and right axis, title rotated 90 or 270 degrees
             // respectively
             {
+                labels: {
+                    padding: 1
+                },
                 title: {
                     rotation: 90 * this.side
                 }
@@ -521,10 +525,13 @@ class Axis {
                 val = axis.val2lin(val);
             }
             const value = sign * (val - localMin) * localA;
-            returnValue = (!axis.isRadial ? correctFloat(value) : value) +
+            returnValue = value +
                 cvsOffset +
                 (sign * minPixelPadding) +
                 (isNumber(pointPlacement) ? localA * pointPlacement : 0);
+            if (!axis.isRadial) {
+                returnValue = correctFloat(returnValue);
+            }
         }
         return returnValue;
     }
@@ -612,8 +619,8 @@ class Axis {
             // Keep the translated value within sane bounds, and avoid Infinity
             // to fail the isNumber test (#7709).
             translatedValue = clamp(translatedValue, -1e5, 1e5);
-            x1 = x2 = Math.round(translatedValue + transB);
-            y1 = y2 = Math.round(cHeight - translatedValue - transB);
+            x1 = x2 = translatedValue + transB;
+            y1 = y2 = cHeight - translatedValue - transB;
             if (!isNumber(translatedValue)) { // No min or max
                 skip = true;
                 force = false; // #7175, don't force it when path is invalid
@@ -1944,17 +1951,17 @@ class Axis {
      * @function Highcharts.Axis#unsquish
      */
     unsquish() {
-        const labelOptions = this.options.labels, horiz = this.horiz, tickInterval = this.tickInterval, slotSize = this.len / (((this.categories ? 1 : 0) +
+        const labelOptions = this.options.labels, padding = labelOptions.padding || 0, horiz = this.horiz, tickInterval = this.tickInterval, slotSize = this.len / (((this.categories ? 1 : 0) +
             this.max -
             this.min) /
             tickInterval), rotationOption = labelOptions.rotation, 
         // We don't know the actual rendered line height at this point, but
-        // it defaults to 0.75em
-        lineHeight = this.labelMetrics().h, range = Math.max(this.max - this.min, 0), 
+        // it defaults to 0.8em
+        lineHeight = correctFloat(this.labelMetrics().h * 0.8), range = Math.max(this.max - this.min, 0), 
         // Return the multiple of tickInterval that is needed to avoid
         // collision
         getStep = function (spaceNeeded) {
-            let step = spaceNeeded / (slotSize || 1);
+            let step = (spaceNeeded + 2 * padding) / (slotSize || 1);
             step = step > 1 ? Math.ceil(step) : 1;
             // Guard for very small or negative angles (#9835)
             if (step * tickInterval > range &&
@@ -2050,7 +2057,10 @@ class Axis {
      * @function Highcharts.Axis#renderUnsquish
      */
     renderUnsquish() {
-        const chart = this.chart, renderer = chart.renderer, tickPositions = this.tickPositions, ticks = this.ticks, labelOptions = this.options.labels, labelStyleOptions = labelOptions.style, horiz = this.horiz, slotWidth = this.getSlotWidth(), innerWidth = Math.max(1, Math.round(slotWidth - 2 * labelOptions.padding)), attr = {}, labelMetrics = this.labelMetrics(), textOverflowOption = labelStyleOptions.textOverflow;
+        const chart = this.chart, renderer = chart.renderer, tickPositions = this.tickPositions, ticks = this.ticks, labelOptions = this.options.labels, labelStyleOptions = labelOptions.style, horiz = this.horiz, slotWidth = this.getSlotWidth(), innerWidth = Math.max(1, Math.round(slotWidth - (horiz ?
+            2 * (labelOptions.padding || 0) :
+            labelOptions.distance || 0 // #21172
+        ))), attr = {}, labelMetrics = this.labelMetrics(), textOverflowOption = labelStyleOptions.textOverflow;
         let commonWidth, commonTextOverflow, maxLabelLength = 0, label, i, pos;
         // Set rotation option unless it is "auto", like in gauges
         if (!isString(labelOptions.rotation)) {
@@ -2367,7 +2377,7 @@ class Axis {
         }
         // Due to GridAxis.tickSize, tickSize should be calculated after ticks
         // has rendered.
-        if (coll !== 'colorAxis') {
+        if (coll !== 'colorAxis' && clipOffset) {
             const tickSize = this.tickSize('tick');
             axisOffset[side] = Math.max(axisOffset[side], (axis.axisTitleMargin || 0) + titleOffset +
                 directionFactor * axis.offset, labelOffsetPadded, // #3027
@@ -2379,10 +2389,9 @@ class Axis {
             // the plot area and axis lines
             const clip = !axis.axisLine || options.offset ?
                 0 :
-                // #4308, #4371:
-                Math.floor(axis.axisLine.strokeWidth() / 2) * 2;
-            clipOffset[invertedSide] =
-                Math.max(clipOffset[invertedSide], clip);
+                // #4308, #4371
+                axis.axisLine.strokeWidth() / 2;
+            clipOffset[invertedSide] = Math.max(clipOffset[invertedSide], clip);
         }
         fireEvent(this, 'afterGetOffset');
     }
@@ -3017,6 +3026,7 @@ Axis.keepProps = [
     'coll',
     'extKey',
     'hcEvents',
+    'len',
     'names',
     'series',
     'userMax',

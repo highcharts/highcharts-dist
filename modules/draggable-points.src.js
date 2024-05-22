@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.1 (2024-04-04)
+ * @license Highcharts JS v11.4.2 (2024-05-22)
  *
  * (c) 2009-2024 Torstein Honsi
  *
@@ -1475,6 +1475,22 @@
                 propValidate: (val, point) => (val >= point.q3)
             }
         };
+        // Errorbar series - move x, resize or move low/high
+        const errorbar = {
+            x: column.x,
+            low: {
+                ...boxplot.low,
+                propValidate: (val, point) => (val <= point.high)
+            },
+            high: {
+                ...boxplot.high,
+                propValidate: (val, point) => (val >= point.low)
+            }
+        };
+        /**
+         * @exclude      draggableQ1, draggableQ3
+         * @optionparent plotOptions.errorbar.dragDrop
+         */
         // Bullet graph, x/y same as column, but also allow target to be dragged.
         const bullet = {
             x: column.x,
@@ -1856,6 +1872,7 @@
             bullet,
             column,
             columnrange,
+            errorbar,
             flags,
             gantt,
             line,
@@ -1948,6 +1965,7 @@
                     'bullet',
                     'column',
                     'columnrange',
+                    'errorbar',
                     'flags',
                     'gantt',
                     'ohlc',

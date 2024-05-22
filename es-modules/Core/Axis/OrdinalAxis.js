@@ -174,7 +174,7 @@ var OrdinalAxis;
                 }
                 translatedArr[i] = lastTranslated = translated;
             }
-            distances.sort();
+            distances.sort((a, b) => a - b);
             medianDistance = distances[Math.floor(distances.length / 2)];
             if (medianDistance < tickPixelIntervalOption * 0.6) {
                 medianDistance = null;

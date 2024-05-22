@@ -15,7 +15,7 @@ import OHLCSeriesDefaults from './OHLCSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { hlc: HLCSeries } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
-const { addEvent, extend, merge, pushUnique } = U;
+const { addEvent, crisp, extend, merge, pushUnique } = U;
 /* *
  *
  *  Functions
@@ -81,11 +81,9 @@ class OHLCSeries extends HLCSeries {
      *
      * */
     getPointPath(point, graphic) {
-        const path = super.getPointPath(point, graphic), strokeWidth = graphic.strokeWidth(), crispCorr = (strokeWidth % 2) / 2, crispX = Math.round(point.plotX) - crispCorr, halfWidth = Math.round(point.shapeArgs.width / 2);
-        let plotOpen = point.plotOpen;
-        // Crisp vector coordinates
+        const path = super.getPointPath(point, graphic), strokeWidth = graphic.strokeWidth(), crispX = crisp(point.plotX || 0, strokeWidth), halfWidth = Math.round(point.shapeArgs.width / 2);
         if (point.open !== null) {
-            plotOpen = Math.round(point.plotOpen) + crispCorr;
+            const plotOpen = crisp(point.plotOpen, strokeWidth);
             path.push(['M', crispX, plotOpen], ['L', crispX - halfWidth, plotOpen]);
             super.extendStem(path, strokeWidth / 2, plotOpen);
         }

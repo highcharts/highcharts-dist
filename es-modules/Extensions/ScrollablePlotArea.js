@@ -226,23 +226,7 @@ class ScrollablePlotArea {
      * @private
      */
     moveFixedElements() {
-        const { container, inverted, scrollablePixelsX, scrollablePixelsY } = this.chart, fixedRenderer = this.fixedRenderer, fixedSelectors = [
-            '.highcharts-breadcrumbs-group',
-            '.highcharts-contextbutton',
-            '.highcharts-caption',
-            '.highcharts-credits',
-            '.highcharts-legend',
-            '.highcharts-legend-checkbox',
-            '.highcharts-navigator-series',
-            '.highcharts-navigator-xaxis',
-            '.highcharts-navigator-yaxis',
-            '.highcharts-navigator',
-            '.highcharts-reset-zoom',
-            '.highcharts-drillup-button',
-            '.highcharts-scrollbar',
-            '.highcharts-subtitle',
-            '.highcharts-title'
-        ];
+        const { container, inverted, scrollablePixelsX, scrollablePixelsY } = this.chart, fixedRenderer = this.fixedRenderer, fixedSelectors = ScrollablePlotArea.fixedSelectors;
         let axisClass;
         if (scrollablePixelsX && !inverted) {
             axisClass = '.highcharts-yaxis';
@@ -269,6 +253,24 @@ class ScrollablePlotArea {
         }
     }
 }
+ScrollablePlotArea.fixedSelectors = [
+    '.highcharts-breadcrumbs-group',
+    '.highcharts-contextbutton',
+    '.highcharts-caption',
+    '.highcharts-credits',
+    '.highcharts-drillup-button',
+    '.highcharts-legend',
+    '.highcharts-legend-checkbox',
+    '.highcharts-navigator-series',
+    '.highcharts-navigator-xaxis',
+    '.highcharts-navigator-yaxis',
+    '.highcharts-navigator',
+    '.highcharts-range-selector-group',
+    '.highcharts-reset-zoom',
+    '.highcharts-scrollbar',
+    '.highcharts-subtitle',
+    '.highcharts-title'
+];
 /* *
  *
  *  Default Export

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.1 (2024-04-04)
+ * @license Highcharts JS v11.4.2 (2024-05-22)
  *
  * Highcharts variwide module
  *
@@ -332,7 +332,7 @@
          *
          * */
         const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
-        const { addEvent, extend, merge, pick } = U;
+        const { addEvent, crisp, extend, merge, pick } = U;
         /* *
          *
          *  Class
@@ -446,7 +446,7 @@
         // Extend translation by distorting X position based on Z.
         addEvent(VariwideSeries, 'afterColumnTranslate', function () {
             // Temporarily disable crisping when computing original shapeArgs
-            const xAxis = this.xAxis, inverted = this.chart.inverted, crisp = this.borderWidth % 2 / 2;
+            const xAxis = this.xAxis, inverted = this.chart.inverted;
             let i = -1;
             // Distort the points to reflect z dimension
             for (const point of this.points) {
@@ -464,8 +464,8 @@
                     right = xAxis.translate(point.x + z, false, false, false, true);
                 }
                 if (this.crispOption) {
-                    left = Math.round(left) - crisp;
-                    right = Math.round(right) - crisp;
+                    left = crisp(left, this.borderWidth);
+                    right = crisp(right, this.borderWidth);
                 }
                 shapeArgs.x = left;
                 shapeArgs.width = Math.max(right - left, 1);

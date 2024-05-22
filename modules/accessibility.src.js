@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.1 (2024-04-04)
+ * @license Highcharts JS v11.4.2 (2024-05-22)
  *
  * Accessibility module
  *
@@ -3840,7 +3840,7 @@
                     scrollLegendToItem(this.legend, ix);
                     const legendItemProp = legendItem.label;
                     const proxyBtn = itemToHighlight.a11yProxyElement &&
-                        itemToHighlight.a11yProxyElement.element;
+                        itemToHighlight.a11yProxyElement.innerElement;
                     if (legendItemProp && legendItemProp.element && proxyBtn) {
                         this.setFocusToElement(legendItemProp, proxyBtn);
                     }
@@ -4325,6 +4325,15 @@
                  */
                 width: 7,
                 /**
+                 * Border radius of the handles.
+                 *
+                 * @sample {highstock} stock/navigator/handles-border-radius/
+                 *      Border radius on the navigator handles.
+                 *
+                 * @since 11.4.2
+                 */
+                borderRadius: 0,
+                /**
                  * Height for handles.
                  *
                  * @sample {highstock} stock/navigator/styled-handles/
@@ -4635,6 +4644,7 @@
                 tickLength: 0,
                 lineWidth: 0,
                 gridLineColor: "#e6e6e6" /* Palette.neutralColor10 */,
+                id: 'navigator-x-axis',
                 gridLineWidth: 1,
                 tickPixelInterval: 200,
                 labels: {
@@ -4688,6 +4698,7 @@
                 startOnTick: false,
                 endOnTick: false,
                 minPadding: 0.1,
+                id: 'navigator-y-axis',
                 maxPadding: 0.1,
                 labels: {
                     enabled: false
@@ -4726,7 +4737,7 @@
 
         return NavigatorDefaults;
     });
-    _registerModule(_modules, 'Stock/Navigator/NavigatorSymbols.js', [], function () {
+    _registerModule(_modules, 'Stock/Navigator/NavigatorSymbols.js', [_modules['Core/Renderer/SVG/Symbols.js'], _modules['Core/Utilities.js']], function (rect, U) {
         /* *
          *
          *  (c) 2010-2024 Torstein Honsi
@@ -4736,6 +4747,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        const { relativeLength } = U;
         /* *
          *
          *  Constants
@@ -4746,18 +4758,14 @@
          * @private
          */
         function navigatorHandle(_x, _y, width, height, options = {}) {
-            const halfWidth = options.width ? options.width / 2 : width, markerPosition = Math.round(halfWidth / 3) + 0.5;
+            const halfWidth = options.width ? options.width / 2 : width, markerPosition = 1.5, r = relativeLength(options.borderRadius || 0, Math.min(halfWidth * 2, height));
             height = options.height || height;
             return [
-                ['M', -halfWidth - 1, 0.5],
-                ['L', halfWidth, 0.5],
-                ['L', halfWidth, height + 0.5],
-                ['L', -halfWidth - 1, height + 0.5],
-                ['L', -halfWidth - 1, 0.5],
-                ['M', -markerPosition, 4],
-                ['L', -markerPosition, height - 3],
-                ['M', markerPosition - 1, 4],
-                ['L', markerPosition - 1, height - 3]
+                ['M', -markerPosition, height / 2 - 3.5],
+                ['L', -markerPosition, height / 2 + 4.5],
+                ['M', markerPosition - 1, height / 2 - 3.5],
+                ['L', markerPosition - 1, height / 2 + 4.5],
+                ...rect.rect(-halfWidth - 1, 0.5, halfWidth * 2 + 1, height, { r })
             ];
         }
         /* *
@@ -5310,7 +5318,7 @@
          *
          * */
         const { defaultOptions } = D;
-        const { addEvent, correctFloat, defined, destroyObjectProperties, fireEvent, merge, pick, removeEvent } = U;
+        const { addEvent, correctFloat, crisp, defined, destroyObjectProperties, fireEvent, merge, pick, removeEvent } = U;
         /* *
          *
          *  Constants
@@ -5542,9 +5550,8 @@
                     rect.attr(rect.crisp({
                         x: -0.5,
                         y: -0.5,
-                        // +1 to compensate for crispifying in rect method
-                        width: size + 1,
-                        height: size + 1,
+                        width: size,
+                        height: size,
                         r: options.buttonBorderRadius
                     }, rect.strokeWidth()));
                     // Button arrow
@@ -5754,8 +5761,8 @@
                 const trackBorderWidth = scroller.trackBorderWidth =
                     scroller.track.strokeWidth();
                 scroller.track.attr({
-                    x: -trackBorderWidth % 2 / 2,
-                    y: -trackBorderWidth % 2 / 2
+                    x: -crisp(0, trackBorderWidth),
+                    y: -crisp(0, trackBorderWidth)
                 });
                 // Draw the scrollbar itself
                 scroller.scrollbarGroup = renderer.g().add(group);
@@ -5789,7 +5796,7 @@
                     });
                 }
                 scroller.scrollbarStrokeWidth = scroller.scrollbar.strokeWidth();
-                scroller.scrollbarGroup.translate(-scroller.scrollbarStrokeWidth % 2 / 2, -scroller.scrollbarStrokeWidth % 2 / 2);
+                scroller.scrollbarGroup.translate(-crisp(0, scroller.scrollbarStrokeWidth), -crisp(0, scroller.scrollbarStrokeWidth));
                 // Draw the buttons:
                 scroller.drawScrollbarButton(0);
                 scroller.drawScrollbarButton(1);
@@ -6791,8 +6798,6 @@
                         ordinal: baseXaxis.options.ordinal,
                         overscroll: baseXaxis.options.overscroll
                     }, navigatorOptions.xAxis, {
-                        id: 'navigator-x-axis',
-                        yAxis: 'navigator-y-axis',
                         type: 'datetime',
                         index: xAxisIndex,
                         isInternal: true,
@@ -6811,7 +6816,6 @@
                         height: height
                     }), 'xAxis');
                     navigator.yAxis = new Axis(chart, merge(navigatorOptions.yAxis, {
-                        id: 'navigator-y-axis',
                         alignTicks: false,
                         offset: 0,
                         index: yAxisIndex,
@@ -6963,8 +6967,8 @@
                     linkedTo: null,
                     group: 'nav',
                     padXAxis: false,
-                    xAxis: 'navigator-x-axis',
-                    yAxis: 'navigator-y-axis',
+                    xAxis: this.navigatorOptions.xAxis?.id,
+                    yAxis: this.navigatorOptions.yAxis?.id,
                     showInLegend: false,
                     stacking: void 0,
                     isInternal: true,
@@ -9779,9 +9783,16 @@
                             function (keyCode, event) {
                                 const point = chart.highlightedPoint;
                                 if (point) {
-                                    event.point = point;
+                                    const { plotLeft, plotTop } = this.chart, { plotX = 0, plotY = 0 } = point;
+                                    event = {
+                                        ...event,
+                                        chartX: plotLeft + plotX,
+                                        chartY: plotTop + plotY,
+                                        point: point,
+                                        target: point.graphic?.element || event.target
+                                    };
                                     fireEvent(point.series, 'click', event);
-                                    point.firePointEvent('click');
+                                    point.firePointEvent('click', event);
                                 }
                                 return this.response.success;
                             }
@@ -10318,7 +10329,7 @@
                 chart.series.forEach(function (series) {
                     const shouldDescribeSeries = (series.options.accessibility &&
                         series.options.accessibility.enabled) !== false &&
-                        series.visible && series.data.length !== 0;
+                        series.visible && series.getPointsCollection().length !== 0;
                     if (shouldDescribeSeries) {
                         describeSeries(series);
                     }

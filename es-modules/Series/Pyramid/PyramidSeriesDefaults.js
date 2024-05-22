@@ -17,19 +17,19 @@
  * */
 const PyramidSeriesDefaults = {
     /**
-     * The pyramid neck width is zero by default, as opposed to the funnel,
+     * The pyramid neck height is zero by default, as opposed to the funnel,
      * which shares the same layout logic.
      *
      * @since 3.0.10
      */
-    neckWidth: '0%',
+    neckHeight: '0%',
     /**
      * The pyramid neck width is zero by default, as opposed to the funnel,
      * which shares the same layout logic.
      *
      * @since 3.0.10
      */
-    neckHeight: '0%',
+    neckWidth: '0%',
     /**
      * The pyramid is reversed by default, as opposed to the funnel, which
      * shares the layout engine, and is not reversed.

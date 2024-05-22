@@ -14,7 +14,7 @@ import Color from '../../Color/Color.js';
 import H from '../../Globals.js';
 const { deg2rad, doc, svg, SVG_NS, win } = H;
 import U from '../../Utilities.js';
-const { addEvent, attr, createElement, css, defined, erase, extend, fireEvent, isArray, isFunction, isObject, isString, merge, objectEach, pick, pInt, replaceNested, syncTimeout, uniqueKey } = U;
+const { addEvent, attr, createElement, crisp, css, defined, erase, extend, fireEvent, isArray, isFunction, isObject, isString, merge, objectEach, pick, pInt, pushUnique, replaceNested, syncTimeout, uniqueKey } = U;
 /* *
  *
  *  Class
@@ -200,7 +200,7 @@ class SVGElement {
      * @param {boolean} [alignByTranslate]
      *        Align element by translation.
      *
-     * @param {string|Highcharts.BBoxObject} [box]
+     * @param {string|Highcharts.BBoxObject} [alignTo]
      *        The box to align to, needs a width and height. When the box is a
      *        string, it refers to an object in the Renderer. For example, when
      *        box is `spacingBox`, it refers to `Renderer.spacingBox` which
@@ -212,34 +212,39 @@ class SVGElement {
      *
      * @return {Highcharts.SVGElement} Returns the SVGElement for chaining.
      */
-    align(alignOptions, alignByTranslate, box, redraw = true) {
-        const attribs = {}, renderer = this.renderer, alignedObjects = renderer.alignedObjects;
-        let x, y, alignTo, alignFactor, vAlignFactor;
+    align(alignOptions, alignByTranslate, alignTo, redraw = true) {
+        const attribs = {}, renderer = this.renderer, alignedObjects = renderer.alignedObjects, initialAlignment = Boolean(alignOptions);
+        let x, y, alignFactor, vAlignFactor;
         // First call on instanciate
         if (alignOptions) {
             this.alignOptions = alignOptions;
             this.alignByTranslate = alignByTranslate;
-            if (!box || isString(box)) {
-                this.alignTo = alignTo = box || 'renderer';
-                // Prevent duplicates, like legendGroup after resize
-                erase(alignedObjects, this);
-                alignedObjects.push(this);
-                box = void 0; // Reassign it below
-            }
+            this.alignTo = alignTo;
             // When called on resize, no arguments are supplied
         }
         else {
-            alignOptions = this.alignOptions;
+            alignOptions = this.alignOptions || {};
             alignByTranslate = this.alignByTranslate;
             alignTo = this.alignTo;
         }
-        box = pick(box, renderer[alignTo], renderer);
+        const alignToKey = !alignTo || isString(alignTo) ?
+            alignTo || 'renderer' :
+            void 0;
+        // When aligned to a key, automatically re-align on redraws
+        if (alignToKey) {
+            // Prevent duplicates, like legendGroup after resize
+            if (initialAlignment) {
+                pushUnique(alignedObjects, this);
+            }
+            alignTo = void 0; // Do not use the box
+        }
+        const alignToBox = pick(alignTo, renderer[alignToKey], renderer);
         // Assign variables
         const align = alignOptions.align, vAlign = alignOptions.verticalAlign;
         // Default: left align
-        x = (box.x || 0) + (alignOptions.x || 0);
+        x = (alignToBox.x || 0) + (alignOptions.x || 0);
         // Default: top align
-        y = (box.y || 0) + (alignOptions.y || 0);
+        y = (alignToBox.y || 0) + (alignOptions.y || 0);
         // Align
         if (align === 'right') {
             alignFactor = 1;
@@ -248,7 +253,7 @@ class SVGElement {
             alignFactor = 2;
         }
         if (alignFactor) {
-            x += (box.width - (alignOptions.width || 0)) /
+            x += ((alignToBox.width || 0) - (alignOptions.width || 0)) /
                 alignFactor;
         }
         attribs[alignByTranslate ? 'translateX' : 'x'] = Math.round(x);
@@ -260,7 +265,7 @@ class SVGElement {
             vAlignFactor = 2;
         }
         if (vAlignFactor) {
-            y += (box.height - (alignOptions.height || 0)) /
+            y += ((alignToBox.height || 0) - (alignOptions.height || 0)) /
                 vAlignFactor;
         }
         attribs[alignByTranslate ? 'translateY' : 'y'] = Math.round(y);
@@ -480,7 +485,7 @@ class SVGElement {
     *         used as a getter, the current value of the attribute is returned.
     */
     attr(hash, val, complete, continueAnimation) {
-        const element = this.element, symbolCustomAttribs = SVGElement.symbolCustomAttribs;
+        const { element } = this, symbolCustomAttribs = SVGElement.symbolCustomAttribs;
         let key, hasSetSymbolSize, ret = this, skipAttr, setter;
         // Single key-value pair
         if (typeof hash === 'string' && typeof val !== 'undefined') {
@@ -570,15 +575,17 @@ class SVGElement {
      * The modified rectangle arguments.
      */
     crisp(rect, strokeWidth) {
-        const wrapper = this;
-        strokeWidth = strokeWidth || rect.strokeWidth || 0;
         // Math.round because strokeWidth can sometimes have roundoff errors
-        const normalizer = Math.round(strokeWidth) % 2 / 2;
-        // Normalize for crisp edges
-        rect.x = Math.floor(rect.x || wrapper.x || 0) + normalizer;
-        rect.y = Math.floor(rect.y || wrapper.y || 0) + normalizer;
-        rect.width = Math.floor((rect.width || wrapper.width || 0) - 2 * normalizer);
-        rect.height = Math.floor((rect.height || wrapper.height || 0) - 2 * normalizer);
+        strokeWidth = Math.round(strokeWidth || rect.strokeWidth || 0);
+        const x1 = rect.x || this.x || 0, y1 = rect.y || this.y || 0, x2 = (rect.width || this.width || 0) + x1, y2 = (rect.height || this.height || 0) + y1, 
+        // Find all the rounded coordinates for corners
+        x = crisp(x1, strokeWidth), y = crisp(y1, strokeWidth), x2Crisp = crisp(x2, strokeWidth), y2Crisp = crisp(y2, strokeWidth);
+        extend(rect, {
+            x,
+            y,
+            width: x2Crisp - x,
+            height: y2Crisp - y
+        });
         if (defined(rect.strokeWidth)) {
             rect.strokeWidth = strokeWidth;
         }
@@ -853,7 +860,7 @@ class SVGElement {
             parentToClean = grandParent;
         }
         // Remove from alignObjects
-        if (wrapper.alignTo) {
+        if (wrapper.alignOptions) {
             erase(renderer.alignedObjects, wrapper);
         }
         objectEach(wrapper, function (val, key) {
@@ -1229,6 +1236,20 @@ class SVGElement {
         element.setAttribute(key, opacity);
     }
     /**
+     * Re-align an aligned text or label after setting the text.
+     *
+     * @private
+     * @function Highcharts.SVGElement#reAlign
+     *
+     */
+    reAlign() {
+        if (this.alignOptions?.width && this.alignOptions.align !== 'left') {
+            this.alignOptions.width = this.getBBox().width;
+            this.placed = false; // Block animation
+            this.align();
+        }
+    }
+    /**
      * Remove a class name from the element.
      *
      * @function Highcharts.SVGElement#removeClass
@@ -1527,6 +1548,7 @@ class SVGElement {
             if (this.added) {
                 this.renderer.buildText(this);
             }
+            this.reAlign();
         }
     }
     /**

@@ -208,8 +208,7 @@ class AxisResizer {
                 let height, top;
                 // Skip if axis is not found
                 // or it is navigator's yAxis (#7732)
-                if (!axisOptions ||
-                    axisOptions.id === 'navigator-y-axis') {
+                if (!axisOptions || axisOptions.isInternal) {
                     isFirst = false;
                     continue;
                 }

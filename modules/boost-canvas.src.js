@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.1 (2024-04-04)
+ * @license Highcharts JS v11.4.2 (2024-05-22)
  *
  * Boost module
  *
@@ -147,14 +147,22 @@
          * @function Highcharts.Chart#getBoostClipRect
          */
         function getBoostClipRect(chart, target) {
+            const navigator = chart.navigator;
             let clipBox = {
                 x: chart.plotLeft,
                 y: chart.plotTop,
                 width: chart.plotWidth,
-                height: chart.navigator ? // #17820
-                    chart.navigator.top + chart.navigator.height - chart.plotTop :
-                    chart.plotHeight
+                height: chart.plotHeight
             };
+            if (navigator && chart.inverted) { // #17820, #20936
+                clipBox.width += navigator.top + navigator.height;
+                if (!navigator.opposite) {
+                    clipBox.x = navigator.left;
+                }
+            }
+            else if (navigator && !chart.inverted) {
+                clipBox.height = navigator.top + navigator.height - chart.plotTop;
+            }
             // Clipping of individual series (#11906, #19039).
             if (target.getClipBox) {
                 const { xAxis, yAxis } = target;
@@ -1945,8 +1953,17 @@
                         shader.setTexture(shapeTexture.handle);
                     }
                     if (chart.styledMode) {
-                        fillColor = (s.series.markerGroup &&
-                            s.series.markerGroup.getStyle('fill'));
+                        if (s.series.markerGroup === s.series.chart.boost?.markerGroup) {
+                            // Create a temporary markerGroup to get the fill color
+                            delete s.series.markerGroup;
+                            s.series.markerGroup = s.series.plotGroup('markerGroup', 'markers', 'visible', 1, chart.seriesGroup).addClass('highcharts-tracker');
+                            fillColor = s.series.markerGroup.getStyle('fill');
+                            s.series.markerGroup.destroy();
+                            s.series.markerGroup = s.series.chart.boost?.markerGroup;
+                        }
+                        else {
+                            fillColor = s.series.markerGroup?.getStyle('fill');
+                        }
                     }
                     else {
                         fillColor =
@@ -2395,12 +2412,14 @@
          */
         function createAndAttachRenderer(chart, series) {
             const ChartClass = chart.constructor, targetGroup = chart.seriesGroup || series.group, alpha = 1;
-            let width = chart.chartWidth, height = chart.chartHeight, target = chart, foSupported = typeof SVGForeignObjectElement !== 'undefined';
+            let width = chart.chartWidth, height = chart.chartHeight, target = chart, foSupported = typeof SVGForeignObjectElement !== 'undefined', hasClickHandler = false;
             if (isChartSeriesBoosting(chart)) {
                 target = chart;
             }
             else {
                 target = series;
+                hasClickHandler = Boolean(series.options.events?.click ||
+                    series.options.point?.events?.click);
             }
             const boost = target.boost =
                 target.boost ||
@@ -2465,10 +2484,11 @@
                         height
                     })
                         .css({
-                        pointerEvents: 'none',
+                        pointerEvents: hasClickHandler ? void 0 : 'none',
                         mixedBlendMode: 'normal',
                         opacity: alpha
-                    });
+                    })
+                        .addClass(hasClickHandler ? 'highcharts-tracker' : '');
                     if (target instanceof ChartClass) {
                         target.boost.markerGroup.translate(chart.plotLeft, chart.plotTop);
                     }
@@ -2903,7 +2923,7 @@
                     this.markerGroup === chart.boost.markerGroup) {
                     this.markerGroup = void 0;
                 }
-                this.markerGroup = this.plotGroup('markerGroup', 'markers', true, 1, chart.seriesGroup);
+                this.markerGroup = this.plotGroup('markerGroup', 'markers', 'visible', 1, chart.seriesGroup).addClass('highcharts-tracker');
             }
             else {
                 // If series has a private markerGroup, remove that

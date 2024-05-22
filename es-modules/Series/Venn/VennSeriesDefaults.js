@@ -136,7 +136,7 @@ const VennSeriesDefaults = {
  * @sample {highcharts} highcharts/demo/euler-diagram/
  *         Euler diagram
  *
- * @type      {number}
+ * @type      {string}
  * @since     7.0.0
  * @product   highcharts
  * @apioption series.venn.data.name
@@ -178,7 +178,7 @@ const VennSeriesDefaults = {
  * @excluding halo
  * @apioption series.venn.states.select
  */
-''; // Detach doclets above
+''; // Detachs doclets above
 /* *
  *
  *  Default Export

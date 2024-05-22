@@ -150,7 +150,7 @@ var SeriesOnPointComposition;
                 d: SVGRenderer.prototype.crispLine([
                     ['M', xFrom, yFrom],
                     ['L', xTo, yTo]
-                ], width, 'ceil'),
+                ], width),
                 'stroke-width': width
             };
             if (!chart.styledMode) {
@@ -223,7 +223,7 @@ var SeriesOnPointComposition;
         seriesShowOrHide() {
             const allSeries = this.chart.series;
             // When toggling a series visibility, loop through all points
-            this.points.forEach((point) => {
+            this.points?.forEach((point) => {
                 // Find all series that are on toggled points
                 const series = find(allSeries, (series) => {
                     const id = ((series.onPoint || {}).options || {}).id;

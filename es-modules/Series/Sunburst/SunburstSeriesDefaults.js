@@ -44,7 +44,7 @@ const SunburstSeriesDefaults = {
      * @since 10.0.0
      * @product   highcharts
      * @extends   navigation.breadcrumbs
-     * @optionparent plotOptions.sunburst.breadcrumbs
+     * @apioption plotOptions.sunburst.breadcrumbs
      */
     /**
      * Set options on specific levels. Takes precedence over series options,

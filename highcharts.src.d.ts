@@ -6526,9 +6526,9 @@ export interface ChartParallelAxesLabelsOptions {
     overflow?: OptionsOverflowValue;
     /**
      * (Highcharts, Gantt) The pixel padding for axis labels, to ensure white
-     * space between them.
+     * space between them. Defaults to 4 for horizontal axes, 1 for vertical.
      */
-    padding?: number;
+    padding?: string;
     /**
      * (Highcharts) Defines how the labels are be repositioned according to the
      * 3D chart orientation.
@@ -7643,9 +7643,9 @@ export interface ColorAxisLabelsOptions {
     overflow?: OptionsOverflowValue;
     /**
      * (Highcharts, Gantt) The pixel padding for axis labels, to ensure white
-     * space between them.
+     * space between them. Defaults to 4 for horizontal axes, 1 for vertical.
      */
-    padding?: number;
+    padding?: string;
     /**
      * (Highcharts) Defines how the labels are be repositioned according to the
      * 3D chart orientation.
@@ -8867,6 +8867,15 @@ export interface DataLabelsOptions {
      */
     align?: (AlignValue|null);
     /**
+     * (Highcharts, Highstock, Gantt) Alignment method for data labels. If set
+     * to `plotEdges`, the labels are aligned within the plot area in the
+     * direction of the y-axis. So in a regular column chart, the labels are
+     * aligned vertically according to the `verticalAlign` setting. In a bar
+     * chart, which is inverted, the labels are aligned horizontally according
+     * to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
+    /**
      * (Highcharts, Highstock, Gantt) Whether to allow data labels to overlap.
      * To make the labels less sensitive for overlapping, the dataLabels.padding
      * can be set to 0.
@@ -9869,6 +9878,11 @@ export interface ExportingButtonsContextButtonThemeOptions {
      * (Highcharts, Highstock, Highmaps, Gantt) Default stroke for the buttons.
      */
     stroke?: ColorString;
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Default stroke linecap for the
+     * buttons.
+     */
+    "stroke-linecap"?: string;
 }
 /**
  * (Highcharts, Highstock, Highmaps, Gantt) Options for the export related
@@ -10626,6 +10640,125 @@ export interface GeoJSONTranslation {
      * Y offset of projected coordinates after scaling.
      */
     ypan?: number;
+}
+/**
+ * (Highcharts, Highstock, Highmaps, Gantt) General theme for buttons. This
+ * applies to the zoom button, exporting context menu, map navigation, range
+ * selector buttons and custom buttons generated using the `SVGRenderer.button`
+ * function. However, each of these may be overridden with more specific
+ * options.
+ */
+export interface GlobalButtonThemeOptions {
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) The fill color for buttons
+     */
+    fill?: string;
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) The padding of buttons
+     */
+    padding?: number;
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) The border radius for buttons
+     */
+    r?: number;
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) State overrides for the buttons
+     */
+    states?: GlobalButtonThemeStatesOptions;
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) The stroke color for buttons
+     */
+    stroke?: string;
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) The stroke width for buttons
+     */
+    "stroke-width"?: number;
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) CSS styling for the buttons'
+     * text
+     */
+    style?: GlobalButtonThemeStyleOptions;
+}
+/**
+ * (Highcharts, Highstock, Highmaps, Gantt) Disabled state overrides for the
+ * buttons are applied in addition to the normal state options
+ */
+export interface GlobalButtonThemeStatesDisabledOptions {
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Disabled state CSS style
+     * overrides for the buttons' text
+     */
+    style?: GlobalButtonThemeStatesDisabledStyleOptions;
+}
+/**
+ * (Highcharts, Highstock, Highmaps, Gantt) Disabled state CSS style overrides
+ * for the buttons' text
+ */
+export interface GlobalButtonThemeStatesDisabledStyleOptions {
+    color?: string;
+}
+/**
+ * (Highcharts, Highstock, Highmaps, Gantt) Hover state overrides for the
+ * buttons are applied in addition to the normal state options
+ */
+export interface GlobalButtonThemeStatesHoverOptions {
+    fill?: string;
+}
+/**
+ * (Highcharts, Highstock, Highmaps, Gantt) State overrides for the buttons
+ */
+export interface GlobalButtonThemeStatesOptions {
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Disabled state overrides for the
+     * buttons are applied in addition to the normal state options
+     */
+    disabled?: GlobalButtonThemeStatesDisabledOptions;
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Hover state overrides for the
+     * buttons are applied in addition to the normal state options
+     */
+    hover?: GlobalButtonThemeStatesHoverOptions;
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Select state overrides for the
+     * buttons are applied in addition to the normal state options
+     */
+    select?: GlobalButtonThemeStatesSelectOptions;
+}
+/**
+ * (Highcharts, Highstock, Highmaps, Gantt) Select state overrides for the
+ * buttons are applied in addition to the normal state options
+ */
+export interface GlobalButtonThemeStatesSelectOptions {
+    fill?: string;
+    style?: GlobalButtonThemeStatesSelectStyleOptions;
+}
+export interface GlobalButtonThemeStatesSelectStyleOptions {
+    color?: string;
+    fontWeight?: string;
+}
+/**
+ * (Highcharts, Highstock, Highmaps, Gantt) CSS styling for the buttons' text
+ */
+export interface GlobalButtonThemeStyleOptions {
+    color?: string;
+    cursor?: string;
+    fontSize?: number;
+    fontWeight?: string;
+}
+/**
+ * (Highcharts, Highstock, Highmaps, Gantt) Global options that don't apply to
+ * each chart. These options, like the `lang` options, must be set using the
+ * `Highcharts.setOptions` method. (see online documentation for example)
+ */
+export interface GlobalOptions {
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) General theme for buttons. This
+     * applies to the zoom button, exporting context menu, map navigation, range
+     * selector buttons and custom buttons generated using the
+     * `SVGRenderer.button` function. However, each of these may be overridden
+     * with more specific options.
+     */
+    buttonTheme?: GlobalButtonThemeOptions;
 }
 /**
  * Gradient options instead of a solid color.
@@ -14464,6 +14597,11 @@ export interface NavigationButtonThemeOptions {
      * (Highcharts, Highstock, Highmaps, Gantt) Default stroke for the buttons.
      */
     stroke?: ColorString;
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Default stroke linecap for the
+     * buttons.
+     */
+    "stroke-linecap"?: string;
 }
 /**
  * (Highcharts, Highstock) Events to communicate between Stock Tools and custom
@@ -14592,6 +14730,10 @@ export interface NavigatorHandlesOptions {
      * inside.
      */
     borderColor?: (ColorString|GradientColorObject|PatternObject);
+    /**
+     * (Highstock, Gantt) Border radius of the handles.
+     */
+    borderRadius?: number;
     /**
      * (Highstock, Gantt) Allows to enable/disable handles.
      */
@@ -14749,6 +14891,15 @@ export interface NavigatorSeriesDataLabelsOptions {
      * the inside option. Can be one of `left`, `center` or `right`.
      */
     align?: (AlignValue|null);
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
@@ -15330,9 +15481,9 @@ export interface NavigatorXAxisLabelsOptions {
     overflow?: OptionsOverflowValue;
     /**
      * (Highcharts, Gantt) The pixel padding for axis labels, to ensure white
-     * space between them.
+     * space between them. Defaults to 4 for horizontal axes, 1 for vertical.
      */
-    padding?: number;
+    padding?: string;
     /**
      * (Highcharts, Highstock, Gantt) Whether to reserve space for the labels.
      * By default, space is reserved for the labels in these cases:
@@ -16060,6 +16211,11 @@ export interface NavigatorXAxisPlotBandsOptions {
      */
     borderColor?: ColorString;
     /**
+     * (Highcharts, Highstock, Gantt) Border radius for the plot band. Applies
+     * only to gauges. Can be a pixel value or a percentage, for example `50%`.
+     */
+    borderRadius?: (number|string);
+    /**
      * (Highcharts, Highstock, Gantt) Border width for the plot band. Also
      * requires `borderColor` to be set.
      */
@@ -16555,9 +16711,9 @@ export interface NavigatorYAxisLabelsOptions {
     overflow?: OptionsOverflowValue;
     /**
      * (Highcharts, Gantt) The pixel padding for axis labels, to ensure white
-     * space between them.
+     * space between them. Defaults to 4 for horizontal axes, 1 for vertical.
      */
-    padding?: number;
+    padding?: string;
     /**
      * (Highcharts, Highstock, Gantt) Whether to reserve space for the labels.
      * By default, space is reserved for the labels in these cases:
@@ -17269,6 +17425,11 @@ export interface NavigatorYAxisPlotBandsOptions {
      */
     borderColor?: ColorString;
     /**
+     * (Highcharts, Highstock, Gantt) Border radius for the plot band. Applies
+     * only to gauges. Can be a pixel value or a percentage, for example `50%`.
+     */
+    borderRadius?: (number|string);
+    /**
      * (Highcharts, Highstock, Gantt) Border width for the plot band. Also
      * requires `borderColor` to be set.
      */
@@ -17772,7 +17933,13 @@ export interface Options {
      * module. For an overview on the matter, see the docs.
      */
     exporting?: ExportingOptions;
-    global?: any;
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Global options that don't apply
+     * to each chart. These options, like the `lang` options, must be set using
+     * the `Highcharts.setOptions` method. (see online documentation for
+     * example)
+     */
+    global?: GlobalOptions;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Language object. The language
      * object is global and it can't be set on each chart initialization.
@@ -17961,6 +18128,11 @@ export interface PaneBackgroundOptions {
      * (Highcharts) The pane background border color.
      */
     borderColor?: (ColorString|GradientColorObject|PatternObject);
+    /**
+     * (Highcharts) The border radius of the pane background when the shape is
+     * `arc`. Can be a number (pixels) or a percentage string.
+     */
+    borderRadius?: (number|string);
     /**
      * (Highcharts) The pixel border width of the pane background.
      */
@@ -18303,7 +18475,7 @@ export interface PlotAbandsOptions {
     colorKey?: string;
     /**
      * (Highstock) Defines if comparison should start from the first point
-     * within the visible range or should start from the first point **before**
+     * within the visible range or should start from the last point **before**
      * the range.
      *
      * In other words, this flag determines if first point within the visible
@@ -18356,6 +18528,17 @@ export interface PlotAbandsOptions {
      * `sum`.
      */
     cumulative?: boolean;
+    /**
+     * (Highstock) Defines if cumulation should start from the first point
+     * within the visible range or should start from the last point **before**
+     * the range.
+     *
+     * In other words, this flag determines if first point within the visible
+     * range will start at 0 (`cumulativeStart=true`) or should have been
+     * already calculated according to the previous point
+     * (`cumulativeStart=false`).
+     */
+    cumulativeStart?: boolean;
     /**
      * (Highstock) You can set the cursor to "pointer" if you have click events
      * attached to the series, to signal to the user that the points and lines
@@ -18808,6 +18991,15 @@ export interface PlotAdDataLabelsOptions {
      * the inside option. Can be one of `left`, `center` or `right`.
      */
     align?: (AlignValue|null);
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
@@ -19300,7 +19492,7 @@ export interface PlotAoOptions {
     compareBase?: (0|100);
     /**
      * (Highstock) Defines if comparison should start from the first point
-     * within the visible range or should start from the first point **before**
+     * within the visible range or should start from the last point **before**
      * the range.
      *
      * In other words, this flag determines if first point within the visible
@@ -19353,6 +19545,17 @@ export interface PlotAoOptions {
      * `sum`.
      */
     cumulative?: boolean;
+    /**
+     * (Highstock) Defines if cumulation should start from the first point
+     * within the visible range or should start from the last point **before**
+     * the range.
+     *
+     * In other words, this flag determines if first point within the visible
+     * range will start at 0 (`cumulativeStart=true`) or should have been
+     * already calculated according to the previous point
+     * (`cumulativeStart=false`).
+     */
+    cumulativeStart?: boolean;
     /**
      * (Highstock) You can set the cursor to "pointer" if you have click events
      * attached to the series, to signal to the user that the points and lines
@@ -19807,6 +20010,15 @@ export interface PlotApoDataLabelsOptions {
      * the inside option. Can be one of `left`, `center` or `right`.
      */
     align?: (AlignValue|null);
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
@@ -20792,7 +21004,7 @@ export interface PlotAreaOptions {
     compareBase?: (0|100);
     /**
      * (Highstock) Defines if comparison should start from the first point
-     * within the visible range or should start from the first point **before**
+     * within the visible range or should start from the last point **before**
      * the range.
      *
      * In other words, this flag determines if first point within the visible
@@ -20845,6 +21057,17 @@ export interface PlotAreaOptions {
      * `sum`.
      */
     cumulative?: boolean;
+    /**
+     * (Highstock) Defines if cumulation should start from the first point
+     * within the visible range or should start from the last point **before**
+     * the range.
+     *
+     * In other words, this flag determines if first point within the visible
+     * range will start at 0 (`cumulativeStart=true`) or should have been
+     * already calculated according to the previous point
+     * (`cumulativeStart=false`).
+     */
+    cumulativeStart?: boolean;
     /**
      * (Highcharts, Highstock) You can set the cursor to "pointer" if you have
      * click events attached to the series, to signal to the user that the
@@ -21094,7 +21317,8 @@ export interface PlotAreaOptions {
      */
     negativeColor?: (ColorString|GradientColorObject|PatternObject);
     /**
-     * (Highcharts) A separate color for the negative part of the area.
+     * (Highcharts) A separate color for the negative part of the area. Note
+     * that `zones` takes precedence over the negative fill color.
      *
      * In styled mode, a negative color is set with the `.highcharts-negative`
      * class name.
@@ -21519,6 +21743,15 @@ export interface PlotAreasplineDataLabelsOptions {
      * the inside option. Can be one of `left`, `center` or `right`.
      */
     align?: (AlignValue|null);
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
@@ -22047,7 +22280,7 @@ export interface PlotAreasplinerangeOptions {
     compareBase?: (0|100);
     /**
      * (Highstock) Defines if comparison should start from the first point
-     * within the visible range or should start from the first point **before**
+     * within the visible range or should start from the last point **before**
      * the range.
      *
      * In other words, this flag determines if first point within the visible
@@ -22100,6 +22333,17 @@ export interface PlotAreasplinerangeOptions {
      * `sum`.
      */
     cumulative?: boolean;
+    /**
+     * (Highstock) Defines if cumulation should start from the first point
+     * within the visible range or should start from the last point **before**
+     * the range.
+     *
+     * In other words, this flag determines if first point within the visible
+     * range will start at 0 (`cumulativeStart=true`) or should have been
+     * already calculated according to the previous point
+     * (`cumulativeStart=false`).
+     */
+    cumulativeStart?: boolean;
     /**
      * (Highcharts, Highstock) You can set the cursor to "pointer" if you have
      * click events attached to the series, to signal to the user that the
@@ -22350,7 +22594,8 @@ export interface PlotAreasplinerangeOptions {
      */
     negativeColor?: (ColorString|GradientColorObject|PatternObject);
     /**
-     * (Highcharts) A separate color for the negative part of the area.
+     * (Highcharts) A separate color for the negative part of the area. Note
+     * that `zones` takes precedence over the negative fill color.
      *
      * In styled mode, a negative color is set with the `.highcharts-negative`
      * class name.
@@ -22790,7 +23035,7 @@ export interface PlotAroonOptions {
     colorKey?: string;
     /**
      * (Highstock) Defines if comparison should start from the first point
-     * within the visible range or should start from the first point **before**
+     * within the visible range or should start from the last point **before**
      * the range.
      *
      * In other words, this flag determines if first point within the visible
@@ -22843,6 +23088,17 @@ export interface PlotAroonOptions {
      * `sum`.
      */
     cumulative?: boolean;
+    /**
+     * (Highstock) Defines if cumulation should start from the first point
+     * within the visible range or should start from the last point **before**
+     * the range.
+     *
+     * In other words, this flag determines if first point within the visible
+     * range will start at 0 (`cumulativeStart=true`) or should have been
+     * already calculated according to the previous point
+     * (`cumulativeStart=false`).
+     */
+    cumulativeStart?: boolean;
     /**
      * (Highstock) You can set the cursor to "pointer" if you have click events
      * attached to the series, to signal to the user that the points and lines
@@ -23383,7 +23639,7 @@ export interface PlotAroonoscillatorOptions {
     colorKey?: string;
     /**
      * (Highstock) Defines if comparison should start from the first point
-     * within the visible range or should start from the first point **before**
+     * within the visible range or should start from the last point **before**
      * the range.
      *
      * In other words, this flag determines if first point within the visible
@@ -23436,6 +23692,17 @@ export interface PlotAroonoscillatorOptions {
      * `sum`.
      */
     cumulative?: boolean;
+    /**
+     * (Highstock) Defines if cumulation should start from the first point
+     * within the visible range or should start from the last point **before**
+     * the range.
+     *
+     * In other words, this flag determines if first point within the visible
+     * range will start at 0 (`cumulativeStart=true`) or should have been
+     * already calculated according to the previous point
+     * (`cumulativeStart=false`).
+     */
+    cumulativeStart?: boolean;
     /**
      * (Highstock) You can set the cursor to "pointer" if you have click events
      * attached to the series, to signal to the user that the points and lines
@@ -24000,7 +24267,7 @@ export interface PlotAtrOptions {
     compareBase?: (0|100);
     /**
      * (Highstock) Defines if comparison should start from the first point
-     * within the visible range or should start from the first point **before**
+     * within the visible range or should start from the last point **before**
      * the range.
      *
      * In other words, this flag determines if first point within the visible
@@ -24053,6 +24320,17 @@ export interface PlotAtrOptions {
      * `sum`.
      */
     cumulative?: boolean;
+    /**
+     * (Highstock) Defines if cumulation should start from the first point
+     * within the visible range or should start from the last point **before**
+     * the range.
+     *
+     * In other words, this flag determines if first point within the visible
+     * range will start at 0 (`cumulativeStart=true`) or should have been
+     * already calculated according to the previous point
+     * (`cumulativeStart=false`).
+     */
+    cumulativeStart?: boolean;
     /**
      * (Highstock) You can set the cursor to "pointer" if you have click events
      * attached to the series, to signal to the user that the points and lines
@@ -24497,6 +24775,15 @@ export interface PlotBarDataLabelsOptions {
      */
     align?: string;
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
      * dataLabels.padding can be set to 0.
@@ -24875,6 +25162,15 @@ export interface PlotBbDataLabelsOptions {
      * the inside option. Can be one of `left`, `center` or `right`.
      */
     align?: (AlignValue|null);
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
@@ -25572,7 +25868,8 @@ export interface PlotBellcurveOptions {
      */
     negativeColor?: (ColorString|GradientColorObject|PatternObject);
     /**
-     * (Highcharts) A separate color for the negative part of the area.
+     * (Highcharts) A separate color for the negative part of the area. Note
+     * that `zones` takes precedence over the negative fill color.
      *
      * In styled mode, a negative color is set with the `.highcharts-negative`
      * class name.
@@ -26691,6 +26988,15 @@ export interface PlotBulletDataLabelsOptions {
      */
     align?: string;
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
      * dataLabels.padding can be set to 0.
@@ -27633,6 +27939,15 @@ export interface PlotCandlestickDataLabelsOptions {
      */
     align?: string;
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
      * dataLabels.padding can be set to 0.
@@ -27997,6 +28312,15 @@ export interface PlotCciDataLabelsOptions {
      * the inside option. Can be one of `left`, `center` or `right`.
      */
     align?: (AlignValue|null);
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
@@ -28483,7 +28807,7 @@ export interface PlotChaikinOptions {
     compareBase?: (0|100);
     /**
      * (Highstock) Defines if comparison should start from the first point
-     * within the visible range or should start from the first point **before**
+     * within the visible range or should start from the last point **before**
      * the range.
      *
      * In other words, this flag determines if first point within the visible
@@ -28536,6 +28860,17 @@ export interface PlotChaikinOptions {
      * `sum`.
      */
     cumulative?: boolean;
+    /**
+     * (Highstock) Defines if cumulation should start from the first point
+     * within the visible range or should start from the last point **before**
+     * the range.
+     *
+     * In other words, this flag determines if first point within the visible
+     * range will start at 0 (`cumulativeStart=true`) or should have been
+     * already calculated according to the previous point
+     * (`cumulativeStart=false`).
+     */
+    cumulativeStart?: boolean;
     /**
      * (Highstock) You can set the cursor to "pointer" if you have click events
      * attached to the series, to signal to the user that the points and lines
@@ -28980,6 +29315,15 @@ export interface PlotCmfDataLabelsOptions {
      * the inside option. Can be one of `left`, `center` or `right`.
      */
     align?: (AlignValue|null);
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
@@ -29472,7 +29816,7 @@ export interface PlotCmoOptions {
     compareBase?: (0|100);
     /**
      * (Highstock) Defines if comparison should start from the first point
-     * within the visible range or should start from the first point **before**
+     * within the visible range or should start from the last point **before**
      * the range.
      *
      * In other words, this flag determines if first point within the visible
@@ -29525,6 +29869,17 @@ export interface PlotCmoOptions {
      * `sum`.
      */
     cumulative?: boolean;
+    /**
+     * (Highstock) Defines if cumulation should start from the first point
+     * within the visible range or should start from the last point **before**
+     * the range.
+     *
+     * In other words, this flag determines if first point within the visible
+     * range will start at 0 (`cumulativeStart=true`) or should have been
+     * already calculated according to the previous point
+     * (`cumulativeStart=false`).
+     */
+    cumulativeStart?: boolean;
     /**
      * (Highstock) You can set the cursor to "pointer" if you have click events
      * attached to the series, to signal to the user that the points and lines
@@ -29970,6 +30325,15 @@ export interface PlotColumnDataLabelsOptions {
      */
     align?: string;
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
      * dataLabels.padding can be set to 0.
@@ -30337,6 +30701,15 @@ export interface PlotColumnpyramidDataLabelsOptions {
      * the inside option. Can be one of `left`, `center` or `right`.
      */
     align?: string;
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
@@ -30850,6 +31223,15 @@ export interface PlotCylinderDataLabelsOptions {
      */
     align?: string;
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
      * dataLabels.padding can be set to 0.
@@ -31214,6 +31596,15 @@ export interface PlotDemaDataLabelsOptions {
      * the inside option. Can be one of `left`, `center` or `right`.
      */
     align?: (AlignValue|null);
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
@@ -31687,6 +32078,15 @@ export interface PlotDisparityindexDataLabelsOptions {
      * the inside option. Can be one of `left`, `center` or `right`.
      */
     align?: (AlignValue|null);
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
@@ -32201,7 +32601,7 @@ export interface PlotDmiOptions {
     compareBase?: (0|100);
     /**
      * (Highstock) Defines if comparison should start from the first point
-     * within the visible range or should start from the first point **before**
+     * within the visible range or should start from the last point **before**
      * the range.
      *
      * In other words, this flag determines if first point within the visible
@@ -32254,6 +32654,17 @@ export interface PlotDmiOptions {
      * `sum`.
      */
     cumulative?: boolean;
+    /**
+     * (Highstock) Defines if cumulation should start from the first point
+     * within the visible range or should start from the last point **before**
+     * the range.
+     *
+     * In other words, this flag determines if first point within the visible
+     * range will start at 0 (`cumulativeStart=true`) or should have been
+     * already calculated according to the previous point
+     * (`cumulativeStart=false`).
+     */
+    cumulativeStart?: boolean;
     /**
      * (Highstock) You can set the cursor to "pointer" if you have click events
      * attached to the series, to signal to the user that the points and lines
@@ -32715,6 +33126,15 @@ export interface PlotDpoDataLabelsOptions {
      */
     align?: (AlignValue|null);
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
      * dataLabels.padding can be set to 0.
@@ -33165,6 +33585,15 @@ export interface PlotEmaDataLabelsOptions {
      * the inside option. Can be one of `left`, `center` or `right`.
      */
     align?: (AlignValue|null);
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
@@ -34387,7 +34816,7 @@ export interface PlotFlagsOptions {
     compareBase?: (0|100);
     /**
      * (Highstock) Defines if comparison should start from the first point
-     * within the visible range or should start from the first point **before**
+     * within the visible range or should start from the last point **before**
      * the range.
      *
      * In other words, this flag determines if first point within the visible
@@ -34415,6 +34844,17 @@ export interface PlotFlagsOptions {
      * `sum`.
      */
     cumulative?: boolean;
+    /**
+     * (Highstock) Defines if cumulation should start from the first point
+     * within the visible range or should start from the last point **before**
+     * the range.
+     *
+     * In other words, this flag determines if first point within the visible
+     * range will start at 0 (`cumulativeStart=true`) or should have been
+     * already calculated according to the previous point
+     * (`cumulativeStart=false`).
+     */
+    cumulativeStart?: boolean;
     /**
      * (Highstock) You can set the cursor to "pointer" if you have click events
      * attached to the series, to signal to the user that the points and lines
@@ -35505,6 +35945,15 @@ export interface PlotGanttDataLabelsOptions {
      */
     align?: string;
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
      * dataLabels.padding can be set to 0.
@@ -36317,6 +36766,15 @@ export interface PlotGeoheatmapDataLabelsOptions {
      * the inside option. Can be one of `left`, `center` or `right`.
      */
     align?: (AlignValue|null);
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
@@ -37573,7 +38031,7 @@ export interface PlotHeikinashiOptions {
     compareBase?: (0|100);
     /**
      * (Highstock) Defines if comparison should start from the first point
-     * within the visible range or should start from the first point **before**
+     * within the visible range or should start from the last point **before**
      * the range.
      *
      * In other words, this flag determines if first point within the visible
@@ -37603,6 +38061,17 @@ export interface PlotHeikinashiOptions {
      * `sum`.
      */
     cumulative?: boolean;
+    /**
+     * (Highstock) Defines if cumulation should start from the first point
+     * within the visible range or should start from the last point **before**
+     * the range.
+     *
+     * In other words, this flag determines if first point within the visible
+     * range will start at 0 (`cumulativeStart=true`) or should have been
+     * already calculated according to the previous point
+     * (`cumulativeStart=false`).
+     */
+    cumulativeStart?: boolean;
     /**
      * (Highstock) You can set the cursor to "pointer" if you have click events
      * attached to the series, to signal to the user that the points and lines
@@ -38949,7 +39418,7 @@ export interface PlotHlcOptions {
     compareBase?: (0|100);
     /**
      * (Highstock) Defines if comparison should start from the first point
-     * within the visible range or should start from the first point **before**
+     * within the visible range or should start from the last point **before**
      * the range.
      *
      * In other words, this flag determines if first point within the visible
@@ -38979,6 +39448,17 @@ export interface PlotHlcOptions {
      * `sum`.
      */
     cumulative?: boolean;
+    /**
+     * (Highstock) Defines if cumulation should start from the first point
+     * within the visible range or should start from the last point **before**
+     * the range.
+     *
+     * In other words, this flag determines if first point within the visible
+     * range will start at 0 (`cumulativeStart=true`) or should have been
+     * already calculated according to the previous point
+     * (`cumulativeStart=false`).
+     */
+    cumulativeStart?: boolean;
     /**
      * (Highstock) You can set the cursor to "pointer" if you have click events
      * attached to the series, to signal to the user that the points and lines
@@ -39648,7 +40128,7 @@ export interface PlotHollowcandlestickOptions {
     compareBase?: (0|100);
     /**
      * (Highstock) Defines if comparison should start from the first point
-     * within the visible range or should start from the first point **before**
+     * within the visible range or should start from the last point **before**
      * the range.
      *
      * In other words, this flag determines if first point within the visible
@@ -39678,6 +40158,17 @@ export interface PlotHollowcandlestickOptions {
      * `sum`.
      */
     cumulative?: boolean;
+    /**
+     * (Highstock) Defines if cumulation should start from the first point
+     * within the visible range or should start from the last point **before**
+     * the range.
+     *
+     * In other words, this flag determines if first point within the visible
+     * range will start at 0 (`cumulativeStart=true`) or should have been
+     * already calculated according to the previous point
+     * (`cumulativeStart=false`).
+     */
+    cumulativeStart?: boolean;
     /**
      * (Highstock) You can set the cursor to "pointer" if you have click events
      * attached to the series, to signal to the user that the points and lines
@@ -40351,7 +40842,7 @@ export interface PlotIkhOptions {
     colorKey?: string;
     /**
      * (Highstock) Defines if comparison should start from the first point
-     * within the visible range or should start from the first point **before**
+     * within the visible range or should start from the last point **before**
      * the range.
      *
      * In other words, this flag determines if first point within the visible
@@ -40404,6 +40895,17 @@ export interface PlotIkhOptions {
      * `sum`.
      */
     cumulative?: boolean;
+    /**
+     * (Highstock) Defines if cumulation should start from the first point
+     * within the visible range or should start from the last point **before**
+     * the range.
+     *
+     * In other words, this flag determines if first point within the visible
+     * range will start at 0 (`cumulativeStart=true`) or should have been
+     * already calculated according to the previous point
+     * (`cumulativeStart=false`).
+     */
+    cumulativeStart?: boolean;
     /**
      * (Highstock) You can set the cursor to "pointer" if you have click events
      * attached to the series, to signal to the user that the points and lines
@@ -41433,7 +41935,7 @@ export interface PlotKeltnerchannelsOptions {
     colorKey?: string;
     /**
      * (Highstock) Defines if comparison should start from the first point
-     * within the visible range or should start from the first point **before**
+     * within the visible range or should start from the last point **before**
      * the range.
      *
      * In other words, this flag determines if first point within the visible
@@ -41486,6 +41988,17 @@ export interface PlotKeltnerchannelsOptions {
      * `sum`.
      */
     cumulative?: boolean;
+    /**
+     * (Highstock) Defines if cumulation should start from the first point
+     * within the visible range or should start from the last point **before**
+     * the range.
+     *
+     * In other words, this flag determines if first point within the visible
+     * range will start at 0 (`cumulativeStart=true`) or should have been
+     * already calculated according to the previous point
+     * (`cumulativeStart=false`).
+     */
+    cumulativeStart?: boolean;
     /**
      * (Highstock) You can set the cursor to "pointer" if you have click events
      * attached to the series, to signal to the user that the points and lines
@@ -41947,6 +42460,15 @@ export interface PlotKlingerDataLabelsOptions {
      * the inside option. Can be one of `left`, `center` or `right`.
      */
     align?: (AlignValue|null);
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
@@ -42532,7 +43054,7 @@ export interface PlotLinearregressionangleOptions {
     compareBase?: (0|100);
     /**
      * (Highstock) Defines if comparison should start from the first point
-     * within the visible range or should start from the first point **before**
+     * within the visible range or should start from the last point **before**
      * the range.
      *
      * In other words, this flag determines if first point within the visible
@@ -42585,6 +43107,17 @@ export interface PlotLinearregressionangleOptions {
      * `sum`.
      */
     cumulative?: boolean;
+    /**
+     * (Highstock) Defines if cumulation should start from the first point
+     * within the visible range or should start from the last point **before**
+     * the range.
+     *
+     * In other words, this flag determines if first point within the visible
+     * range will start at 0 (`cumulativeStart=true`) or should have been
+     * already calculated according to the previous point
+     * (`cumulativeStart=false`).
+     */
+    cumulativeStart?: boolean;
     /**
      * (Highstock) You can set the cursor to "pointer" if you have click events
      * attached to the series, to signal to the user that the points and lines
@@ -43177,7 +43710,7 @@ export interface PlotLinearregressioninterceptOptions {
     compareBase?: (0|100);
     /**
      * (Highstock) Defines if comparison should start from the first point
-     * within the visible range or should start from the first point **before**
+     * within the visible range or should start from the last point **before**
      * the range.
      *
      * In other words, this flag determines if first point within the visible
@@ -43230,6 +43763,17 @@ export interface PlotLinearregressioninterceptOptions {
      * `sum`.
      */
     cumulative?: boolean;
+    /**
+     * (Highstock) Defines if cumulation should start from the first point
+     * within the visible range or should start from the last point **before**
+     * the range.
+     *
+     * In other words, this flag determines if first point within the visible
+     * range will start at 0 (`cumulativeStart=true`) or should have been
+     * already calculated according to the previous point
+     * (`cumulativeStart=false`).
+     */
+    cumulativeStart?: boolean;
     /**
      * (Highstock) You can set the cursor to "pointer" if you have click events
      * attached to the series, to signal to the user that the points and lines
@@ -43871,7 +44415,7 @@ export interface PlotLinearregressionslopeOptions {
     compareBase?: (0|100);
     /**
      * (Highstock) Defines if comparison should start from the first point
-     * within the visible range or should start from the first point **before**
+     * within the visible range or should start from the last point **before**
      * the range.
      *
      * In other words, this flag determines if first point within the visible
@@ -43924,6 +44468,17 @@ export interface PlotLinearregressionslopeOptions {
      * `sum`.
      */
     cumulative?: boolean;
+    /**
+     * (Highstock) Defines if cumulation should start from the first point
+     * within the visible range or should start from the last point **before**
+     * the range.
+     *
+     * In other words, this flag determines if first point within the visible
+     * range will start at 0 (`cumulativeStart=true`) or should have been
+     * already calculated according to the previous point
+     * (`cumulativeStart=false`).
+     */
+    cumulativeStart?: boolean;
     /**
      * (Highstock) You can set the cursor to "pointer" if you have click events
      * attached to the series, to signal to the user that the points and lines
@@ -44490,7 +45045,7 @@ export interface PlotLineOptions {
     compareBase?: (0|100);
     /**
      * (Highstock) Defines if comparison should start from the first point
-     * within the visible range or should start from the first point **before**
+     * within the visible range or should start from the last point **before**
      * the range.
      *
      * In other words, this flag determines if first point within the visible
@@ -44543,6 +45098,17 @@ export interface PlotLineOptions {
      * `sum`.
      */
     cumulative?: boolean;
+    /**
+     * (Highstock) Defines if cumulation should start from the first point
+     * within the visible range or should start from the last point **before**
+     * the range.
+     *
+     * In other words, this flag determines if first point within the visible
+     * range will start at 0 (`cumulativeStart=true`) or should have been
+     * already calculated according to the previous point
+     * (`cumulativeStart=false`).
+     */
+    cumulativeStart?: boolean;
     /**
      * (Highcharts, Highstock) You can set the cursor to "pointer" if you have
      * click events attached to the series, to signal to the user that the
@@ -45173,6 +45739,15 @@ export interface PlotMacdDataLabelsOptions {
      */
     align?: (AlignValue|null);
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
      * dataLabels.padding can be set to 0.
@@ -45593,6 +46168,15 @@ export interface PlotMapbubbleDataLabelsOptions {
      * the inside option. Can be one of `left`, `center` or `right`.
      */
     align?: (AlignValue|null);
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
@@ -46251,6 +46835,15 @@ export interface PlotMapDataLabelsOptions {
      */
     align?: (AlignValue|null);
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
      * dataLabels.padding can be set to 0.
@@ -46796,6 +47389,15 @@ export interface PlotMappointDataLabelsOptions {
      * the inside option. Can be one of `left`, `center` or `right`.
      */
     align?: (AlignValue|null);
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
@@ -47613,7 +48215,7 @@ export interface PlotMfiOptions {
     compareBase?: (0|100);
     /**
      * (Highstock) Defines if comparison should start from the first point
-     * within the visible range or should start from the first point **before**
+     * within the visible range or should start from the last point **before**
      * the range.
      *
      * In other words, this flag determines if first point within the visible
@@ -47666,6 +48268,17 @@ export interface PlotMfiOptions {
      * `sum`.
      */
     cumulative?: boolean;
+    /**
+     * (Highstock) Defines if cumulation should start from the first point
+     * within the visible range or should start from the last point **before**
+     * the range.
+     *
+     * In other words, this flag determines if first point within the visible
+     * range will start at 0 (`cumulativeStart=true`) or should have been
+     * already calculated according to the previous point
+     * (`cumulativeStart=false`).
+     */
+    cumulativeStart?: boolean;
     /**
      * (Highstock) You can set the cursor to "pointer" if you have click events
      * attached to the series, to signal to the user that the points and lines
@@ -48109,6 +48722,15 @@ export interface PlotMomentumDataLabelsOptions {
      * the inside option. Can be one of `left`, `center` or `right`.
      */
     align?: (AlignValue|null);
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
@@ -48601,7 +49223,7 @@ export interface PlotNatrOptions {
     compareBase?: (0|100);
     /**
      * (Highstock) Defines if comparison should start from the first point
-     * within the visible range or should start from the first point **before**
+     * within the visible range or should start from the last point **before**
      * the range.
      *
      * In other words, this flag determines if first point within the visible
@@ -48654,6 +49276,17 @@ export interface PlotNatrOptions {
      * `sum`.
      */
     cumulative?: boolean;
+    /**
+     * (Highstock) Defines if cumulation should start from the first point
+     * within the visible range or should start from the last point **before**
+     * the range.
+     *
+     * In other words, this flag determines if first point within the visible
+     * range will start at 0 (`cumulativeStart=true`) or should have been
+     * already calculated according to the previous point
+     * (`cumulativeStart=false`).
+     */
+    cumulativeStart?: boolean;
     /**
      * (Highstock) You can set the cursor to "pointer" if you have click events
      * attached to the series, to signal to the user that the points and lines
@@ -49677,7 +50310,7 @@ export interface PlotObvOptions {
     compareBase?: (0|100);
     /**
      * (Highstock) Defines if comparison should start from the first point
-     * within the visible range or should start from the first point **before**
+     * within the visible range or should start from the last point **before**
      * the range.
      *
      * In other words, this flag determines if first point within the visible
@@ -49730,6 +50363,17 @@ export interface PlotObvOptions {
      * `sum`.
      */
     cumulative?: boolean;
+    /**
+     * (Highstock) Defines if cumulation should start from the first point
+     * within the visible range or should start from the last point **before**
+     * the range.
+     *
+     * In other words, this flag determines if first point within the visible
+     * range will start at 0 (`cumulativeStart=true`) or should have been
+     * already calculated according to the previous point
+     * (`cumulativeStart=false`).
+     */
+    cumulativeStart?: boolean;
     /**
      * (Highstock) You can set the cursor to "pointer" if you have click events
      * attached to the series, to signal to the user that the points and lines
@@ -50173,6 +50817,15 @@ export interface PlotOhlcDataLabelsOptions {
      * the inside option. Can be one of `left`, `center` or `right`.
      */
     align?: string;
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
@@ -53498,6 +54151,15 @@ export interface PlotParetoDataLabelsOptions {
      */
     align?: (AlignValue|null);
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
      * dataLabels.padding can be set to 0.
@@ -53873,6 +54535,15 @@ export interface PlotPcDataLabelsOptions {
      * the inside option. Can be one of `left`, `center` or `right`.
      */
     align?: (AlignValue|null);
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
@@ -55419,7 +56090,7 @@ export interface PlotPivotpointsOptions {
     compareBase?: (0|100);
     /**
      * (Highstock) Defines if comparison should start from the first point
-     * within the visible range or should start from the first point **before**
+     * within the visible range or should start from the last point **before**
      * the range.
      *
      * In other words, this flag determines if first point within the visible
@@ -55472,6 +56143,17 @@ export interface PlotPivotpointsOptions {
      * `sum`.
      */
     cumulative?: boolean;
+    /**
+     * (Highstock) Defines if cumulation should start from the first point
+     * within the visible range or should start from the last point **before**
+     * the range.
+     *
+     * In other words, this flag determines if first point within the visible
+     * range will start at 0 (`cumulativeStart=true`) or should have been
+     * already calculated according to the previous point
+     * (`cumulativeStart=false`).
+     */
+    cumulativeStart?: boolean;
     /**
      * (Highstock) You can set the cursor to "pointer" if you have click events
      * attached to the series, to signal to the user that the points and lines
@@ -55917,6 +56599,15 @@ export interface PlotPolygonDataLabelsOptions {
      */
     align?: (AlignValue|null);
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
      * dataLabels.padding can be set to 0.
@@ -56283,6 +56974,15 @@ export interface PlotPpoDataLabelsOptions {
      * the inside option. Can be one of `left`, `center` or `right`.
      */
     align?: (AlignValue|null);
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
@@ -56790,7 +57490,7 @@ export interface PlotPriceenvelopesOptions {
     compareBase?: (0|100);
     /**
      * (Highstock) Defines if comparison should start from the first point
-     * within the visible range or should start from the first point **before**
+     * within the visible range or should start from the last point **before**
      * the range.
      *
      * In other words, this flag determines if first point within the visible
@@ -56843,6 +57543,17 @@ export interface PlotPriceenvelopesOptions {
      * `sum`.
      */
     cumulative?: boolean;
+    /**
+     * (Highstock) Defines if cumulation should start from the first point
+     * within the visible range or should start from the last point **before**
+     * the range.
+     *
+     * In other words, this flag determines if first point within the visible
+     * range will start at 0 (`cumulativeStart=true`) or should have been
+     * already calculated according to the previous point
+     * (`cumulativeStart=false`).
+     */
+    cumulativeStart?: boolean;
     /**
      * (Highstock) You can set the cursor to "pointer" if you have click events
      * attached to the series, to signal to the user that the points and lines
@@ -57296,6 +58007,15 @@ export interface PlotPsarDataLabelsOptions {
      * the inside option. Can be one of `left`, `center` or `right`.
      */
     align?: (AlignValue|null);
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
@@ -57885,6 +58605,15 @@ export interface PlotRocDataLabelsOptions {
      */
     align?: (AlignValue|null);
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
      * dataLabels.padding can be set to 0.
@@ -58376,7 +59105,7 @@ export interface PlotRsiOptions {
     compareBase?: (0|100);
     /**
      * (Highstock) Defines if comparison should start from the first point
-     * within the visible range or should start from the first point **before**
+     * within the visible range or should start from the last point **before**
      * the range.
      *
      * In other words, this flag determines if first point within the visible
@@ -58429,6 +59158,17 @@ export interface PlotRsiOptions {
      * `sum`.
      */
     cumulative?: boolean;
+    /**
+     * (Highstock) Defines if cumulation should start from the first point
+     * within the visible range or should start from the last point **before**
+     * the range.
+     *
+     * In other words, this flag determines if first point within the visible
+     * range will start at 0 (`cumulativeStart=true`) or should have been
+     * already calculated according to the previous point
+     * (`cumulativeStart=false`).
+     */
+    cumulativeStart?: boolean;
     /**
      * (Highstock) You can set the cursor to "pointer" if you have click events
      * attached to the series, to signal to the user that the points and lines
@@ -59014,6 +59754,15 @@ export interface PlotScatter3dDataLabelsOptions {
      * the inside option. Can be one of `left`, `center` or `right`.
      */
     align?: (AlignValue|null);
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
@@ -60044,6 +60793,15 @@ export interface PlotSeriesDataLabelsOptions {
      */
     align?: (AlignValue|null);
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
      * dataLabels.padding can be set to 0.
@@ -60531,7 +61289,7 @@ export interface PlotSlowstochasticOptions {
     compareBase?: (0|100);
     /**
      * (Highstock) Defines if comparison should start from the first point
-     * within the visible range or should start from the first point **before**
+     * within the visible range or should start from the last point **before**
      * the range.
      *
      * In other words, this flag determines if first point within the visible
@@ -60584,6 +61342,17 @@ export interface PlotSlowstochasticOptions {
      * `sum`.
      */
     cumulative?: boolean;
+    /**
+     * (Highstock) Defines if cumulation should start from the first point
+     * within the visible range or should start from the last point **before**
+     * the range.
+     *
+     * In other words, this flag determines if first point within the visible
+     * range will start at 0 (`cumulativeStart=true`) or should have been
+     * already calculated according to the previous point
+     * (`cumulativeStart=false`).
+     */
+    cumulativeStart?: boolean;
     /**
      * (Highstock) You can set the cursor to "pointer" if you have click events
      * attached to the series, to signal to the user that the points and lines
@@ -61041,6 +61810,15 @@ export interface PlotSmaDataLabelsOptions {
      */
     align?: (AlignValue|null);
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
      * dataLabels.padding can be set to 0.
@@ -61492,6 +62270,15 @@ export interface PlotSplineDataLabelsOptions {
      */
     align?: (AlignValue|null);
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
      * dataLabels.padding can be set to 0.
@@ -61858,6 +62645,15 @@ export interface PlotStochasticDataLabelsOptions {
      * the inside option. Can be one of `left`, `center` or `right`.
      */
     align?: (AlignValue|null);
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
@@ -62352,7 +63148,7 @@ export interface PlotStreamgraphOptions {
     compareBase?: (0|100);
     /**
      * (Highstock) Defines if comparison should start from the first point
-     * within the visible range or should start from the first point **before**
+     * within the visible range or should start from the last point **before**
      * the range.
      *
      * In other words, this flag determines if first point within the visible
@@ -62405,6 +63201,17 @@ export interface PlotStreamgraphOptions {
      * `sum`.
      */
     cumulative?: boolean;
+    /**
+     * (Highstock) Defines if cumulation should start from the first point
+     * within the visible range or should start from the last point **before**
+     * the range.
+     *
+     * In other words, this flag determines if first point within the visible
+     * range will start at 0 (`cumulativeStart=true`) or should have been
+     * already calculated according to the previous point
+     * (`cumulativeStart=false`).
+     */
+    cumulativeStart?: boolean;
     /**
      * (Highcharts, Highstock) You can set the cursor to "pointer" if you have
      * click events attached to the series, to signal to the user that the
@@ -62654,7 +63461,8 @@ export interface PlotStreamgraphOptions {
      */
     negativeColor?: (ColorString|GradientColorObject|PatternObject);
     /**
-     * (Highcharts) A separate color for the negative part of the area.
+     * (Highcharts) A separate color for the negative part of the area. Note
+     * that `zones` takes precedence over the negative fill color.
      *
      * In styled mode, a negative color is set with the `.highcharts-negative`
      * class name.
@@ -63165,6 +63973,15 @@ export interface PlotSupertrendDataLabelsOptions {
      */
     align?: (AlignValue|null);
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
      * dataLabels.padding can be set to 0.
@@ -63642,7 +64459,7 @@ export interface PlotTemaOptions {
     colorKey?: string;
     /**
      * (Highstock) Defines if comparison should start from the first point
-     * within the visible range or should start from the first point **before**
+     * within the visible range or should start from the last point **before**
      * the range.
      *
      * In other words, this flag determines if first point within the visible
@@ -63695,6 +64512,17 @@ export interface PlotTemaOptions {
      * `sum`.
      */
     cumulative?: boolean;
+    /**
+     * (Highstock) Defines if cumulation should start from the first point
+     * within the visible range or should start from the last point **before**
+     * the range.
+     *
+     * In other words, this flag determines if first point within the visible
+     * range will start at 0 (`cumulativeStart=true`) or should have been
+     * already calculated according to the previous point
+     * (`cumulativeStart=false`).
+     */
+    cumulativeStart?: boolean;
     /**
      * (Highstock) You can set the cursor to "pointer" if you have click events
      * attached to the series, to signal to the user that the points and lines
@@ -65039,6 +65867,15 @@ export interface PlotTreemapLevelsDataLabelsOptions {
      */
     align?: (AlignValue|null);
     /**
+     * (Highcharts) Alignment method for data labels. If set to `plotEdges`, the
+     * labels are aligned within the plot area in the direction of the y-axis.
+     * So in a regular column chart, the labels are aligned vertically according
+     * to the `verticalAlign` setting. In a bar chart, which is inverted, the
+     * labels are aligned horizontally according to the `align` setting. Applies
+     * to cartesian series only.
+     */
+    alignTo?: string;
+    /**
      * (Highcharts) Whether to allow data labels to overlap. To make the labels
      * less sensitive for overlapping, the dataLabels.padding can be set to 0.
      */
@@ -65390,6 +66227,15 @@ export interface PlotTrendlineDataLabelsOptions {
      * the inside option. Can be one of `left`, `center` or `right`.
      */
     align?: (AlignValue|null);
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
@@ -65862,7 +66708,7 @@ export interface PlotTrixOptions {
     colorKey?: string;
     /**
      * (Highstock) Defines if comparison should start from the first point
-     * within the visible range or should start from the first point **before**
+     * within the visible range or should start from the last point **before**
      * the range.
      *
      * In other words, this flag determines if first point within the visible
@@ -65915,6 +66761,17 @@ export interface PlotTrixOptions {
      * `sum`.
      */
     cumulative?: boolean;
+    /**
+     * (Highstock) Defines if cumulation should start from the first point
+     * within the visible range or should start from the last point **before**
+     * the range.
+     *
+     * In other words, this flag determines if first point within the visible
+     * range will start at 0 (`cumulativeStart=true`) or should have been
+     * already calculated according to the previous point
+     * (`cumulativeStart=false`).
+     */
+    cumulativeStart?: boolean;
     /**
      * (Highstock) You can set the cursor to "pointer" if you have click events
      * attached to the series, to signal to the user that the points and lines
@@ -66482,6 +67339,15 @@ export interface PlotVariwideDataLabelsOptions {
      */
     align?: string;
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
      * dataLabels.padding can be set to 0.
@@ -66846,6 +67712,15 @@ export interface PlotVbpDataLabelsOptions {
      * the inside option. Can be one of `left`, `center` or `right`.
      */
     align?: (AlignValue|null);
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
@@ -67355,6 +68230,15 @@ export interface PlotVectorDataLabelsOptions {
      */
     align?: (AlignValue|null);
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
      * dataLabels.padding can be set to 0.
@@ -67836,6 +68720,15 @@ export interface PlotVennDataLabelsOptions {
      * the inside option. Can be one of `left`, `center` or `right`.
      */
     align?: (AlignValue|null);
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
@@ -68614,7 +69507,7 @@ export interface PlotVwapOptions {
     compareBase?: (0|100);
     /**
      * (Highstock) Defines if comparison should start from the first point
-     * within the visible range or should start from the first point **before**
+     * within the visible range or should start from the last point **before**
      * the range.
      *
      * In other words, this flag determines if first point within the visible
@@ -68667,6 +69560,17 @@ export interface PlotVwapOptions {
      * `sum`.
      */
     cumulative?: boolean;
+    /**
+     * (Highstock) Defines if cumulation should start from the first point
+     * within the visible range or should start from the last point **before**
+     * the range.
+     *
+     * In other words, this flag determines if first point within the visible
+     * range will start at 0 (`cumulativeStart=true`) or should have been
+     * already calculated according to the previous point
+     * (`cumulativeStart=false`).
+     */
+    cumulativeStart?: boolean;
     /**
      * (Highstock) You can set the cursor to "pointer" if you have click events
      * attached to the series, to signal to the user that the points and lines
@@ -69111,6 +70015,15 @@ export interface PlotWaterfallDataLabelsOptions {
      */
     align?: string;
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
      * dataLabels.padding can be set to 0.
@@ -69475,6 +70388,15 @@ export interface PlotWilliamsrDataLabelsOptions {
      * the inside option. Can be one of `left`, `center` or `right`.
      */
     align?: (AlignValue|null);
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
@@ -70003,7 +70925,7 @@ export interface PlotWindbarbOptions {
     compareBase?: (0|100);
     /**
      * (Highstock) Defines if comparison should start from the first point
-     * within the visible range or should start from the first point **before**
+     * within the visible range or should start from the last point **before**
      * the range.
      *
      * In other words, this flag determines if first point within the visible
@@ -70031,6 +70953,17 @@ export interface PlotWindbarbOptions {
      * `sum`.
      */
     cumulative?: boolean;
+    /**
+     * (Highstock) Defines if cumulation should start from the first point
+     * within the visible range or should start from the last point **before**
+     * the range.
+     *
+     * In other words, this flag determines if first point within the visible
+     * range will start at 0 (`cumulativeStart=true`) or should have been
+     * already calculated according to the previous point
+     * (`cumulativeStart=false`).
+     */
+    cumulativeStart?: boolean;
     /**
      * (Highcharts, Highstock) You can set the cursor to "pointer" if you have
      * click events attached to the series, to signal to the user that the
@@ -70679,7 +71612,7 @@ export interface PlotWmaOptions {
     compareBase?: (0|100);
     /**
      * (Highstock) Defines if comparison should start from the first point
-     * within the visible range or should start from the first point **before**
+     * within the visible range or should start from the last point **before**
      * the range.
      *
      * In other words, this flag determines if first point within the visible
@@ -70732,6 +71665,17 @@ export interface PlotWmaOptions {
      * `sum`.
      */
     cumulative?: boolean;
+    /**
+     * (Highstock) Defines if cumulation should start from the first point
+     * within the visible range or should start from the last point **before**
+     * the range.
+     *
+     * In other words, this flag determines if first point within the visible
+     * range will start at 0 (`cumulativeStart=true`) or should have been
+     * already calculated according to the previous point
+     * (`cumulativeStart=false`).
+     */
+    cumulativeStart?: boolean;
     /**
      * (Highstock) You can set the cursor to "pointer" if you have click events
      * attached to the series, to signal to the user that the points and lines
@@ -71645,6 +72589,15 @@ export interface PlotXrangeDataLabelsOptions {
      */
     align?: string;
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
      * dataLabels.padding can be set to 0.
@@ -72133,7 +73086,7 @@ export interface PlotZigzagOptions {
     compareBase?: (0|100);
     /**
      * (Highstock) Defines if comparison should start from the first point
-     * within the visible range or should start from the first point **before**
+     * within the visible range or should start from the last point **before**
      * the range.
      *
      * In other words, this flag determines if first point within the visible
@@ -72186,6 +73139,17 @@ export interface PlotZigzagOptions {
      * `sum`.
      */
     cumulative?: boolean;
+    /**
+     * (Highstock) Defines if cumulation should start from the first point
+     * within the visible range or should start from the last point **before**
+     * the range.
+     *
+     * In other words, this flag determines if first point within the visible
+     * range will start at 0 (`cumulativeStart=true`) or should have been
+     * already calculated according to the previous point
+     * (`cumulativeStart=false`).
+     */
+    cumulativeStart?: boolean;
     /**
      * (Highstock) You can set the cursor to "pointer" if you have click events
      * attached to the series, to signal to the user that the points and lines
@@ -73151,7 +74115,7 @@ Array<SeriesSunburstDataLabelsOptionsObject>|Array<SeriesTreegraphDataLabelsOpti
     /**
      * (Highcharts) The name decides the text for a word.
      */
-    name?: (number|string);
+    name?: string;
     /**
      * (Highstock) The opening value of each data point.
      */
@@ -74166,6 +75130,15 @@ export interface SeriesArcDiagramDataLabelsOptionsObject {
      */
     align?: string;
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
      * dataLabels.padding can be set to 0.
@@ -74574,6 +75547,15 @@ export interface SeriesAreaRangeDataLabelsOptionsObject {
      * Can be one of `left`, `center` or `right`.
      */
     align?: string;
+    /**
+     * (Highcharts, Highstock) Alignment method for data labels. If set to
+     * `plotEdges`, the labels are aligned within the plot area in the direction
+     * of the y-axis. So in a regular column chart, the labels are aligned
+     * vertically according to the `verticalAlign` setting. In a bar chart,
+     * which is inverted, the labels are aligned horizontally according to the
+     * `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
     /**
      * (Highcharts, Highstock) Whether to allow data labels to overlap. To make
      * the labels less sensitive for overlapping, the dataLabels.padding can be
@@ -75745,6 +76727,14 @@ export interface SeriesDumbbellOptions extends PlotDumbbellOptions, SeriesOption
      * unknown sources.
      */
     type: "dumbbell";
+}
+export interface SeriesDumbellOptions {
+    /**
+     * (Highcharts, Highstock) Color of the start markers in a twojastara
+     * dumbbell graph. This option takes priority over the series color. To
+     * avoid this, set `lowColor` to `undefined`.
+     */
+    lowColor?: (ColorString|GradientColorObject|PatternObject);
 }
 /**
  * (Highcharts) A `errorbar` series. If the type option is not specified, it is
@@ -77271,6 +78261,15 @@ export interface SeriesNetworkgraphDataLabelsOptionsObject {
      */
     align?: (AlignValue|null);
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
      * dataLabels.padding can be set to 0.
@@ -77601,6 +78600,7 @@ export interface SeriesOhlcDataDataLabelsAnimationOptions {
  *
  */
 export interface SeriesOptions {
+    dumbell?: SeriesDumbellOptions;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) An id for the series. This can
      * be used after render time to get a pointer to the series object through
@@ -77799,6 +78799,15 @@ export interface SeriesOrganizationDataLabelsOptionsObject {
      * the inside option. Can be one of `left`, `center` or `right`.
      */
     align?: string;
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
@@ -78125,6 +79134,15 @@ export interface SeriesPackedBubbleDataLabelsOptionsObject {
      * the inside option. Can be one of `left`, `center` or `right`.
      */
     align?: (AlignValue|null);
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
@@ -79085,6 +80103,15 @@ export interface SeriesSankeyDataLabelsOptionsObject {
      */
     align?: string;
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
      * dataLabels.padding can be set to 0.
@@ -79378,7 +80405,7 @@ Array<SeriesOrganizationDataLabelsOptionsObject>|Array<SeriesSankeyDataLabelsOpt
      * children will hang below their parent, allowing a tighter packing of
      * nodes in the diagram.
      *
-     * Note: Since @next version, the `hanging` layout is set by default for
+     * Note: Since version 10.0.0, the `hanging` layout is set by default for
      * children of a parent using `hanging` layout.
      */
     layout?: SeriesOrganizationNodesLayoutValue;
@@ -80244,6 +81271,11 @@ export interface SeriesStatesHoverOptionsObject {
      */
     color?: (ColorString|GradientColorObject|PatternObject);
     /**
+     * (Highcharts, Highstock) The additional connector line width for a hovered
+     * point.
+     */
+    connectorWidthPlus?: number;
+    /**
      * (Highstock) Enable separate styles for the hovered series to visualize
      * that the user hovers either the series itself or the legend.
      */
@@ -81026,13 +82058,13 @@ export interface SeriesTooltipOptionsObject {
      */
     footerFormat?: string;
     /**
-     * (Highstock) A format string for the whole tooltip. When format strings
-     * are a requirement, it is usually more convenient to use `headerFormat`,
-     * `pointFormat` and `footerFormat`, but the `format` option allows
-     * combining them into one setting.
+     * (Highstock) A format string for the whole shared tooltip. When format
+     * strings are a requirement, it is usually more convenient to use
+     * `headerFormat`, `pointFormat` and `footerFormat`, but the `format` option
+     * allows combining them into one setting.
      *
-     * The context of the format string is the same as that of the `formatter`
-     * callback.
+     * The context of the format string is the same as that of the
+     * `tooltip.formatter` callback.
      */
     format?: string;
     /**
@@ -81129,6 +82161,15 @@ export interface SeriesTreegraphDataLabelsOptionsObject {
      * the inside option. Can be one of `left`, `center` or `right`.
      */
     align?: (AlignValue|null);
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
@@ -84271,6 +85312,15 @@ export interface TimelineDataLabelsOptionsObject {
      */
     align?: (AlignValue|null);
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+     * labels. If set to `plotEdges`, the labels are aligned within the plot
+     * area in the direction of the y-axis. So in a regular column chart, the
+     * labels are aligned vertically according to the `verticalAlign` setting.
+     * In a bar chart, which is inverted, the labels are aligned horizontally
+     * according to the `align` setting. Applies to cartesian series only.
+     */
+    alignTo?: string;
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels to
      * overlap. To make the labels less sensitive for overlapping, the
      * dataLabels.padding can be set to 0.
@@ -84561,6 +85611,11 @@ export interface TimeOptions {
      * provides a hook for drawing time based charts in specific time zones
      * using their local DST crossover dates, with the help of external
      * libraries.
+     *
+     * This option is deprecated as of v11.4.1 and will be removed in a future
+     * release. Use the time.timezone option instead.
+     *
+     * @deprecated 11.4.2
      */
     getTimezoneOffset?: TimezoneOffsetCallbackFunction;
     /**
@@ -84568,7 +85623,7 @@ export interface TimeOptions {
      * names rely on the browser implementations, as described in the mdn docs.
      * If the given time zone is not recognized by the browser, Highcharts
      * provides a warning and falls back to returning a 0 offset, corresponding
-     * to the UCT time zone.
+     * to the UTC time zone.
      *
      * Until v11.2.0, this option depended on moment.js.
      */
@@ -84578,6 +85633,11 @@ export interface TimeOptions {
      * values are west, negative values are east of UTC, as in the ECMAScript
      * getTimezoneOffset method. Use this to display UTC based data in a
      * predefined time zone.
+     *
+     * This option is deprecated as of v11.4.1 and will be removed in a future
+     * release. Use the time.timezone option instead.
+     *
+     * @deprecated 11.4.2
      */
     timezoneOffset?: number;
     /**
@@ -84688,6 +85748,13 @@ export interface TitleStyleOptions {
     fontWeight?: string;
 }
 /**
+ * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable animation of the
+ * tooltip.
+ */
+export interface TooltipAnimationOptions {
+    duration?: number;
+}
+/**
  * Configuration for the tooltip formatters.
  */
 export interface TooltipFormatterContextObject extends PointLabelObject {
@@ -84705,7 +85772,7 @@ export interface TooltipOptions {
      * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable animation of
      * the tooltip.
      */
-    animation?: boolean;
+    animation?: (boolean|TooltipAnimationOptions|Partial<AnimationOptionsObject>);
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) The background color or gradient
      * for the tooltip.
@@ -84807,12 +85874,12 @@ export interface TooltipOptions {
     footerFormat?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) A format string for the whole
-     * tooltip. When format strings are a requirement, it is usually more
+     * shared tooltip. When format strings are a requirement, it is usually more
      * convenient to use `headerFormat`, `pointFormat` and `footerFormat`, but
      * the `format` option allows combining them into one setting.
      *
-     * The context of the format string is the same as that of the `formatter`
-     * callback.
+     * The context of the format string is the same as that of the
+     * `tooltip.formatter` callback.
      */
     format?: string;
     /**
@@ -85357,9 +86424,9 @@ export interface XAxisLabelsOptions {
     overflow?: OptionsOverflowValue;
     /**
      * (Highcharts, Gantt) The pixel padding for axis labels, to ensure white
-     * space between them.
+     * space between them. Defaults to 4 for horizontal axes, 1 for vertical.
      */
-    padding?: number;
+    padding?: string;
     /**
      * (Highcharts) Defines how the labels are be repositioned according to the
      * 3D chart orientation.
@@ -86219,6 +87286,11 @@ export interface XAxisPlotBandsOptions {
      * requires `borderWidth` to be set.
      */
     borderColor?: ColorString;
+    /**
+     * (Highcharts, Highstock, Gantt) Border radius for the plot band. Applies
+     * only to gauges. Can be a pixel value or a percentage, for example `50%`.
+     */
+    borderRadius?: (number|string);
     /**
      * (Highcharts, Highstock, Gantt) Border width for the plot band. Also
      * requires `borderColor` to be set.
@@ -87087,9 +88159,9 @@ export interface YAxisLabelsOptions {
     overflow?: OptionsOverflowValue;
     /**
      * (Highcharts, Gantt) The pixel padding for axis labels, to ensure white
-     * space between them.
+     * space between them. Defaults to 4 for horizontal axes, 1 for vertical.
      */
-    padding?: number;
+    padding?: string;
     /**
      * (Highcharts) Defines how the labels are be repositioned according to the
      * 3D chart orientation.
@@ -88029,6 +89101,11 @@ export interface YAxisPlotBandsOptions {
      */
     borderColor?: ColorString;
     /**
+     * (Highcharts, Highstock, Gantt) Border radius for the plot band. Applies
+     * only to gauges. Can be a pixel value or a percentage, for example `50%`.
+     */
+    borderRadius?: (number|string);
+    /**
      * (Highcharts, Highstock, Gantt) Border width for the plot band. Also
      * requires `borderColor` to be set.
      */
@@ -88824,9 +89901,9 @@ export interface ZAxisLabelsOptions {
     overflow?: OptionsOverflowValue;
     /**
      * (Highcharts, Gantt) The pixel padding for axis labels, to ensure white
-     * space between them.
+     * space between them. Defaults to 4 for horizontal axes, 1 for vertical.
      */
-    padding?: number;
+    padding?: string;
     /**
      * (Highcharts) Defines how the labels are be repositioned according to the
      * 3D chart orientation.
@@ -89529,6 +90606,11 @@ export interface ZAxisPlotBandsOptions {
      * requires `borderWidth` to be set.
      */
     borderColor?: ColorString;
+    /**
+     * (Highcharts, Highstock, Gantt) Border radius for the plot band. Applies
+     * only to gauges. Can be a pixel value or a percentage, for example `50%`.
+     */
+    borderRadius?: (number|string);
     /**
      * (Highcharts, Highstock, Gantt) Border width for the plot band. Also
      * requires `borderColor` to be set.
@@ -92108,7 +93190,7 @@ export class SVGElement {
      * @param alignByTranslate
      *        Align element by translation.
      *
-     * @param box
+     * @param alignTo
      *        The box to align to, needs a width and height. When the box is a
      *        string, it refers to an object in the Renderer. For example, when
      *        box is `spacingBox`, it refers to `Renderer.spacingBox` which
@@ -92120,7 +93202,7 @@ export class SVGElement {
      *
      * @return Returns the SVGElement for chaining.
      */
-    align(alignOptions?: AlignObject, alignByTranslate?: boolean, box?: (string|BBoxObject), redraw?: boolean): SVGElement;
+    align(alignOptions?: AlignObject, alignByTranslate?: boolean, alignTo?: (string|BBoxObject), redraw?: boolean): SVGElement;
     /**
      * Animate to given attributes or CSS properties.
      *
@@ -92497,7 +93579,9 @@ export class SVGRenderer {
      */
     arc(x?: number, y?: number, r?: number, innerR?: number, start?: number, end?: number): SVGElement;
     /**
-     * Create a button with preset states.
+     * Create a button with preset states. Styles for the button can either be
+     * set as arguments, or a general theme for all buttons can be set by the
+     * `global.buttonTheme` option.
      *
      * @param text
      *        The text or HTML to draw.
@@ -92587,13 +93671,9 @@ disabledState?: SVGAttributes, shape?: SymbolKeyValue, useHTML?: boolean): SVGEl
      * @param width
      *        The width of the line.
      *
-     * @param roundingFunction
-     *        The rounding function name on the `Math` object, can be one of
-     *        `round`, `floor` or `ceil`.
-     *
      * @return The original points array, but modified to render crisply.
      */
-    crispLine(points: SVGPathArray, width: number, roundingFunction?: string): SVGPathArray;
+    crispLine(points: SVGPathArray, width: number): SVGPathArray;
     /**
      * General method for adding a definition to the SVG `defs` tag. Can be used
      * for gradients, fills, filters etc. Styled mode only. A hook for adding
@@ -94161,6 +95241,24 @@ export function callout(): void;
  */
 export function centerImage(): void;
 export function circle(): void;
+/**
+ * Utility for crisping a line position to the nearest full pixel depening on
+ * the line width
+ *
+ * @param value
+ *        The raw pixel position
+ *
+ * @param lineWidth
+ *        The line width
+ *
+ * @param inverted
+ *        Whether the containing group is inverted. Crisping round numbers on
+ *        the y-scale need to go to the other side because the coordinate system
+ *        is flipped (scaleY is -1)
+ *
+ * @return The pixel position to use for a crisp display
+ */
+export function crisp(value: number, lineWidth: number, inverted?: boolean): number;
 export function diamond(): void;
 /**
  * Gets a registered renderer class. If no renderer type is provided or the

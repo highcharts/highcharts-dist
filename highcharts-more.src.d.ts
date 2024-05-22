@@ -76,6 +76,10 @@ declare module "./highcharts.src" {
     function onChartAfterDrawChartBox(): void;
     function onChartGetAxes(): void;
     /**
+     * Update default options for radial axes from setOptions method.
+     */
+    function onGlobalSetOptions(): void;
+    /**
      * Start the bubble legend creation process.
      */
     function onLegendAfterGetAllItems(): void;

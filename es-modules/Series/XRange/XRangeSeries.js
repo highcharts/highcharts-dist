@@ -17,7 +17,7 @@ const { parse: color } = Color;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
-const { addEvent, clamp, defined, extend, find, isNumber, isObject, merge, pick, pushUnique, relativeLength } = U;
+const { addEvent, clamp, crisp, defined, extend, find, isNumber, isObject, merge, pick, pushUnique, relativeLength } = U;
 import XRangeSeriesDefaults from './XRangeSeriesDefaults.js';
 import XRangePoint from './XRangePoint.js';
 /* *
@@ -166,7 +166,7 @@ class XRangeSeries extends ColumnSeries {
     translatePoint(point) {
         const xAxis = this.xAxis, yAxis = this.yAxis, metrics = this.columnMetrics, options = this.options, minPointLength = options.minPointLength || 0, oldColWidth = (point.shapeArgs && point.shapeArgs.width || 0) / 2, seriesXOffset = this.pointXOffset = metrics.offset, posX = pick(point.x2, point.x + (point.len || 0)), borderRadius = options.borderRadius, plotTop = this.chart.plotTop, plotLeft = this.chart.plotLeft;
         let plotX = point.plotX, plotX2 = xAxis.translate(posX, 0, 0, 0, 1);
-        const length = Math.abs(plotX2 - plotX), inverted = this.chart.inverted, borderWidth = pick(options.borderWidth, 1), crisper = borderWidth % 2 / 2;
+        const length = Math.abs(plotX2 - plotX), inverted = this.chart.inverted, borderWidth = pick(options.borderWidth, 1);
         let widthDifference, partialFill, yOffset = metrics.offset, pointHeight = Math.round(metrics.width), dlLeft, dlRight, dlWidth, clipRectWidth;
         if (minPointLength) {
             widthDifference = minPointLength - length;
@@ -189,13 +189,13 @@ class XRangeSeries extends ColumnSeries {
             yAxis.categories) {
             point.plotY = yAxis.translate(point.y, 0, 1, 0, 1, options.pointPlacement);
         }
-        const x = Math.floor(Math.min(plotX, plotX2)) + crisper, x2 = Math.floor(Math.max(plotX, plotX2)) + crisper, width = x2 - x;
+        const x = crisp(Math.min(plotX, plotX2), borderWidth), x2 = crisp(Math.max(plotX, plotX2), borderWidth), width = x2 - x;
         const r = Math.min(relativeLength((typeof borderRadius === 'object' ?
             borderRadius.radius :
             borderRadius || 0), pointHeight), Math.min(width, pointHeight) / 2);
         const shapeArgs = {
             x,
-            y: Math.floor(point.plotY + yOffset) + crisper,
+            y: crisp((point.plotY || 0) + yOffset, borderWidth),
             width,
             height: pointHeight,
             r

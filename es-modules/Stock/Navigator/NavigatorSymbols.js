@@ -8,6 +8,9 @@
  *
  * */
 'use strict';
+import rect from '../../Core/Renderer/SVG/Symbols.js';
+import U from '../../Core/Utilities.js';
+const { relativeLength } = U;
 /* *
  *
  *  Constants
@@ -18,18 +21,14 @@
  * @private
  */
 function navigatorHandle(_x, _y, width, height, options = {}) {
-    const halfWidth = options.width ? options.width / 2 : width, markerPosition = Math.round(halfWidth / 3) + 0.5;
+    const halfWidth = options.width ? options.width / 2 : width, markerPosition = 1.5, r = relativeLength(options.borderRadius || 0, Math.min(halfWidth * 2, height));
     height = options.height || height;
     return [
-        ['M', -halfWidth - 1, 0.5],
-        ['L', halfWidth, 0.5],
-        ['L', halfWidth, height + 0.5],
-        ['L', -halfWidth - 1, height + 0.5],
-        ['L', -halfWidth - 1, 0.5],
-        ['M', -markerPosition, 4],
-        ['L', -markerPosition, height - 3],
-        ['M', markerPosition - 1, 4],
-        ['L', markerPosition - 1, height - 3]
+        ['M', -markerPosition, height / 2 - 3.5],
+        ['L', -markerPosition, height / 2 + 4.5],
+        ['M', markerPosition - 1, height / 2 - 3.5],
+        ['L', markerPosition - 1, height / 2 + 4.5],
+        ...rect.rect(-halfWidth - 1, 0.5, halfWidth * 2 + 1, height, { r })
     ];
 }
 /* *

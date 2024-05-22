@@ -173,7 +173,7 @@ class Tick {
                     });
                     if (label.getBBox().width <
                         axis.getSlotWidth(tick) - 2 *
-                            labelOptions.padding) {
+                            (labelOptions.padding || 0)) {
                         return;
                     }
                 }
@@ -362,7 +362,7 @@ class Tick {
      * Extendible method to return the path of the marker
      * @private
      */
-    getMarkPath(x, y, tickLength, tickWidth, horiz, renderer) {
+    getMarkPath(x, y, tickLength, tickWidth, horiz = false, renderer) {
         return renderer.crispLine([[
                 'M',
                 x,
@@ -490,9 +490,7 @@ class Tick {
      * @param {number} [opacity]
      */
     render(index, old, opacity) {
-        const tick = this, axis = tick.axis, horiz = axis.horiz, pos = tick.pos, tickmarkOffset = pick(tick.tickmarkOffset, axis.tickmarkOffset), xy = tick.getPosition(horiz, pos, tickmarkOffset, old), x = xy.x, y = xy.y, axisStart = axis.pos, axisEnd = axisStart + axis.len, reverseCrisp = ((horiz && x === axisEnd) ||
-            (!horiz && y === axisStart)) ? -1 : 1, // #1480, #1687
-        pxPos = horiz ? x : y;
+        const tick = this, axis = tick.axis, horiz = axis.horiz, pos = tick.pos, tickmarkOffset = pick(tick.tickmarkOffset, axis.tickmarkOffset), xy = tick.getPosition(horiz, pos, tickmarkOffset, old), x = xy.x, y = xy.y, axisStart = axis.pos, axisEnd = axisStart + axis.len, pxPos = horiz ? x : y;
         // Anything that is not between `axis.pos` and `axis.pos + axis.length`
         // should not be visible (#20166). The `correctFloat` is for reversed
         // axes in Safari.
@@ -506,9 +504,9 @@ class Tick {
         opacity = pick(opacity, 1);
         this.isActive = true;
         // Create the grid line
-        this.renderGridLine(old, opacity, reverseCrisp);
+        this.renderGridLine(old, opacity);
         // Create the tick mark
-        this.renderMark(xy, opacity, reverseCrisp);
+        this.renderMark(xy, opacity);
         // The label is created on init - now move it into place
         this.renderLabel(xy, old, labelOpacity, index);
         tick.isNew = false;
@@ -521,9 +519,8 @@ class Tick {
      * @function Highcharts.Tick#renderGridLine
      * @param {boolean} old  Whether or not the tick is old
      * @param {number} opacity  The opacity of the grid line
-     * @param {number} reverseCrisp  Modifier for avoiding overlapping 1 or -1
      */
-    renderGridLine(old, opacity, reverseCrisp) {
+    renderGridLine(old, opacity) {
         const tick = this, axis = tick.axis, options = axis.options, attribs = {}, pos = tick.pos, type = tick.type, tickmarkOffset = pick(tick.tickmarkOffset, axis.tickmarkOffset), renderer = axis.chart.renderer;
         let gridLine = tick.gridLine, gridLinePath, gridLineWidth = options.gridLineWidth, gridLineColor = options.gridLineColor, dashStyle = options.gridLineDashStyle;
         if (tick.type === 'minor') {
@@ -556,7 +553,7 @@ class Tick {
         if (gridLine) {
             gridLinePath = axis.getPlotLinePath({
                 value: pos + tickmarkOffset,
-                lineWidth: gridLine.strokeWidth() * reverseCrisp,
+                lineWidth: gridLine.strokeWidth(),
                 force: 'pass',
                 old: old,
                 acrossPanes: false // #18025
@@ -578,9 +575,8 @@ class Tick {
      * @function Highcharts.Tick#renderMark
      * @param {Highcharts.PositionObject} xy  The position vector of the mark
      * @param {number} opacity  The opacity of the mark
-     * @param {number} reverseCrisp  Modifier for avoiding overlapping 1 or -1
      */
-    renderMark(xy, opacity, reverseCrisp) {
+    renderMark(xy, opacity) {
         const tick = this, axis = tick.axis, options = axis.options, renderer = axis.chart.renderer, type = tick.type, tickSize = axis.tickSize(type ? type + 'Tick' : 'tick'), x = xy.x, y = xy.y, tickWidth = pick(options[type !== 'minor' ? 'tickWidth' : 'minorTickWidth'], !type && axis.isXAxis ? 1 : 0), // X axis defaults to 1
         tickColor = options[type !== 'minor' ? 'tickColor' : 'minorTickColor'];
         let mark = tick.mark;
@@ -608,7 +604,7 @@ class Tick {
                 }
             }
             mark[isNewMark ? 'attr' : 'animate']({
-                d: tick.getMarkPath(x, y, tickSize[0], mark.strokeWidth() * reverseCrisp, axis.horiz, renderer),
+                d: tick.getMarkPath(x, y, tickSize[0], mark.strokeWidth(), axis.horiz, renderer),
                 opacity: opacity
             });
         }

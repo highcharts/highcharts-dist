@@ -100,7 +100,7 @@ class MapNavigation {
             this.handler.call(chart, e);
             stopEvent(e); // Stop default click event (#4444)
         };
-        let navOptions = chart.options.mapNavigation, attr;
+        let navOptions = chart.options.mapNavigation;
         // Merge in new options in case of update, and register back to chart
         // options.
         if (options) {
@@ -122,9 +122,12 @@ class MapNavigation {
             }
             objectEach(navOptions.buttons, (buttonOptions, n) => {
                 buttonOptions = merge(navOptions.buttonOptions, buttonOptions);
+                const attr = {
+                    padding: buttonOptions.padding
+                };
                 // Presentational
                 if (!chart.styledMode && buttonOptions.theme) {
-                    attr = buttonOptions.theme;
+                    extend(attr, buttonOptions.theme);
                     attr.style = merge(buttonOptions.theme.style, buttonOptions.style // #3203
                     );
                 }
@@ -142,7 +145,6 @@ class MapNavigation {
                     width,
                     height,
                     title: chart.options.lang[n],
-                    padding: buttonOptions.padding,
                     zIndex: 5
                 })
                     .add(mapNav.navButtonsGroup);

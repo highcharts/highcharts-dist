@@ -398,7 +398,7 @@ class ReingoldFruchtermanLayout {
         const nodes = this.nodes;
         for (const node of nodes) {
             if (node.fixedPosition) {
-                return;
+                continue;
             }
             this.integration.integrate(this, node);
             this.applyLimitBox(node, this.box);
