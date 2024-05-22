@@ -1,5 +1,5 @@
 !/**
- * Highstock JS v11.4.2 (2024-05-22)
+ * Highstock JS v11.4.3 (2024-05-22)
  *
  * HeikinAshi series type for Highcharts Stock
  *

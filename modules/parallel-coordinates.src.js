@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.2 (2024-05-22)
+ * @license Highcharts JS v11.4.3 (2024-05-22)
  *
  * Support for parallel coordinates in Highcharts
  *
