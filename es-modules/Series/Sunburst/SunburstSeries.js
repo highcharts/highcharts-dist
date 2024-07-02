@@ -26,6 +26,9 @@ import U from '../../Core/Utilities.js';
 import SunburstNode from './SunburstNode.js';
 import SunburstSeriesDefaults from './SunburstSeriesDefaults.js';
 const { defined, error, extend, fireEvent, isNumber, isObject, isString, merge, splat } = U;
+import SVGElement from '../../Core/Renderer/SVG/SVGElement.js';
+import TextPath from '../../Extensions/TextPath.js';
+TextPath.compose(SVGElement);
 /* *
  *
  *  Constants
@@ -333,7 +336,7 @@ class SunburstSeries extends TreemapSeries {
             attribs = {
                 translateX: center[0] + plotLeft,
                 translateY: center[1] + plotTop,
-                scaleX: 0.001,
+                scaleX: 0.001, // #1499
                 scaleY: 0.001,
                 rotation: 10,
                 opacity: 0.01
@@ -408,12 +411,12 @@ class SunburstSeries extends TreemapSeries {
                 };
             }
             extend(point, {
-                shapeExisting: shape,
+                shapeExisting: shape, // Store for use in animation
                 tooltipPos: [shape.plotX, shape.plotY],
                 drillId: getDrillId(point, idRoot, nodeMap),
                 name: '' + (point.name || point.id || point.index),
-                plotX: shape.plotX,
-                plotY: shape.plotY,
+                plotX: shape.plotX, // Used for data label position
+                plotY: shape.plotY, // Used for data label position
                 value: node.val,
                 isInside: visible,
                 isNull: !visible // Used for dataLabels & point.draw
@@ -615,7 +618,7 @@ class SunburstSeries extends TreemapSeries {
 SunburstSeries.defaultOptions = merge(TreemapSeries.defaultOptions, SunburstSeriesDefaults);
 extend(SunburstSeries.prototype, {
     axisTypes: [],
-    drawDataLabels: noop,
+    drawDataLabels: noop, // `drawDataLabels` is called in `drawPoints`
     getCenter: getCenter,
     isCartesian: false,
     // Mark that the sunburst is supported by the series on point feature.

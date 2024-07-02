@@ -88,9 +88,9 @@ function applyBorderRadius(path, i, r) {
                 'A',
                 r,
                 r,
-                0,
-                0,
-                1,
+                0, // Slanting,
+                0, // Long arc
+                1, // Clockwise
                 cx + bigR * Math.cos(params.start),
                 cy + bigR * Math.sin(params.start)
             ]);

@@ -164,7 +164,7 @@ class HLCSeries extends ColumnSeries {
 HLCSeries.defaultOptions = merge(ColumnSeries.defaultOptions, HLCSeriesDefaults);
 extend(HLCSeries.prototype, {
     pointClass: HLCPoint,
-    animate: null,
+    animate: null, // Disable animation
     directTouch: false,
     pointArrayMap: ['high', 'low', 'close'],
     pointAttrToOptions: {

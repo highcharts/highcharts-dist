@@ -131,7 +131,7 @@ var ColumnDataLabel;
      */
     function drawDataLabels() {
         const series = this, points = series.points, chart = series.chart, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, plotLeft = chart.plotLeft, maxWidth = Math.round(chart.chartWidth / 3), seriesCenter = series.center, radius = seriesCenter[2] / 2, centerY = seriesCenter[1], halves = [
-            [],
+            [], // Right
             [] // Left
         ], overflow = [0, 0, 0, 0], // Top, right, bottom, left
         dataLabelPositioners = series.dataLabelPositioners;
@@ -207,11 +207,12 @@ var ColumnDataLabel;
                             labelPosition.top = Math.max(0, centerY - radius - labelPosition.distance);
                             labelPosition.bottom = Math.min(centerY + radius + labelPosition.distance, chart.plotHeight);
                             size = dataLabel.getBBox().height || 21;
+                            dataLabel.lineHeight = chart.renderer.fontMetrics(dataLabel.text || dataLabel).h + 2 * dataLabel.padding;
                             point.distributeBox = {
                                 target: ((dataLabel.dataLabelPosition
                                     ?.natural.y || 0) -
                                     labelPosition.top +
-                                    size / 2),
+                                    dataLabel.lineHeight / 2),
                                 size,
                                 rank: point.y
                             };
@@ -226,7 +227,7 @@ var ColumnDataLabel;
             points.forEach((point) => {
                 (point.dataLabels || []).forEach((dataLabel) => {
                     const dataLabelOptions = (dataLabel.options || {}), distributeBox = point.distributeBox, labelPosition = dataLabel.dataLabelPosition, naturalY = labelPosition?.natural.y || 0, connectorPadding = dataLabelOptions
-                        .connectorPadding || 0;
+                        .connectorPadding || 0, lineHeight = dataLabel.lineHeight || 21, bBox = dataLabel.getBBox(), topOffset = (lineHeight - bBox.height) / 2;
                     let x = 0, y = naturalY, visibility = 'inherit';
                     if (labelPosition) {
                         if (positions &&
@@ -256,7 +257,7 @@ var ColumnDataLabel;
                                     x = dataLabelPositioners.alignToPlotEdges(dataLabel, halfIdx, plotWidth, plotLeft);
                                     break;
                                 default:
-                                    x = dataLabelPositioners.radialDistributionX(series, point, y, naturalY, dataLabel);
+                                    x = dataLabelPositioners.radialDistributionX(series, point, y - topOffset, naturalY, dataLabel);
                             }
                         }
                         // Record the placement and visibility
@@ -274,10 +275,10 @@ var ColumnDataLabel;
                             y: y +
                                 (dataLabelOptions.y || 0) - // (#12985)
                                 // Vertically center
-                                dataLabel.getBBox().height / 2
+                                lineHeight / 2
                         };
                         labelPosition.computed.x = x;
-                        labelPosition.computed.y = y;
+                        labelPosition.computed.y = y - topOffset;
                         // Detect overflowing data labels
                         if (pick(dataLabelOptions.crop, true)) {
                             dataLabelWidth = dataLabel.getBBox().width;

@@ -42,7 +42,7 @@ const MapSeriesDefaults = {
      * @private
      */
     affectsMapView: true,
-    animation: false,
+    animation: false, // Makes the complex shapes slow
     dataLabels: {
         crop: false,
         formatter: function () {
@@ -52,7 +52,7 @@ const MapSeriesDefaults = {
                 numberFormatter(value, -1) :
                 this.point.name; // #20231
         },
-        inside: true,
+        inside: true, // For the color
         overflow: false,
         padding: 0,
         verticalAlign: 'middle'

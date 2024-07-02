@@ -447,14 +447,22 @@ class TreemapSeries extends ScatterSeries {
      * @private
      */
     drillToByLeaf(point) {
+        const { traverseToLeaf } = point.series.options;
         let drillId = false, nodeParent;
         if ((point.node.parent !== this.rootNode) &&
             point.node.isLeaf) {
-            nodeParent = point.node;
-            while (!drillId) {
-                nodeParent = this.nodeMap[nodeParent.parent];
-                if (nodeParent.parent === this.rootNode) {
-                    drillId = nodeParent.id;
+            if (traverseToLeaf) {
+                drillId = point.id;
+            }
+            else {
+                nodeParent = point.node;
+                while (!drillId) {
+                    if (typeof nodeParent.parent !== 'undefined') {
+                        nodeParent = this.nodeMap[nodeParent.parent];
+                    }
+                    if (nodeParent.parent === this.rootNode) {
+                        drillId = nodeParent.id;
+                    }
                 }
             }
         }
@@ -874,7 +882,7 @@ class TreemapSeries extends ScatterSeries {
         const tree = series.tree = series.getTree();
         rootNode = series.nodeMap[rootId];
         if (rootId !== '' &&
-            (!rootNode || !rootNode.children.length)) {
+            (!rootNode)) {
             series.setRootNode('', false);
             rootId = series.rootNode;
             rootNode = series.nodeMap[rootId];
@@ -950,7 +958,7 @@ TreemapSeries.defaultOptions = merge(ScatterSeries.defaultOptions, TreemapSeries
 extend(TreemapSeries.prototype, {
     buildKDTree: noop,
     colorAttribs: ColorMapComposition.seriesMembers.colorAttribs,
-    colorKey: 'colorValue',
+    colorKey: 'colorValue', // Point color option key
     directTouch: true,
     getExtremesFromAll: true,
     getSymbol: noop,

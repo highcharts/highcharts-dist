@@ -71,7 +71,7 @@ class SVGElement {
     _defaultGetter(key) {
         let ret = pick(this[key + 'Value'], // Align getter
         this[key], this.element ? this.element.getAttribute(key) : null, 0);
-        if (/^[\-0-9\.]+$/.test(ret)) { // Is numerical
+        if (/^-?[\d\.]+$/.test(ret)) { // Is numerical
             ret = parseFloat(ret);
         }
         return ret;
@@ -970,7 +970,7 @@ class SVGElement {
             // bounding box as others of the same length. Unless there is inner
             // HTML in the label. In that case, leave the numbers as is (#5899).
             if (cacheKey.indexOf('<') === -1) {
-                cacheKey = cacheKey.replace(/[0-9]/g, '0');
+                cacheKey = cacheKey.replace(/\d/g, '0');
             }
             // Properties that affect bounding box
             cacheKey += [
@@ -978,9 +978,9 @@ class SVGElement {
                 renderer.rootFontSize,
                 fontSize,
                 rotation,
-                wrapper.textWidth,
+                wrapper.textWidth, // #7874, also useHTML
                 alignValue,
-                styles.textOverflow,
+                styles.textOverflow, // #5968
                 styles.fontWeight // #12163
             ].join(',');
         }
@@ -988,7 +988,7 @@ class SVGElement {
             bBox = cache[cacheKey];
         }
         // No cache found
-        if (!bBox) {
+        if (!bBox || bBox.polygon) {
             // SVG elements
             if (isSVG || renderer.forExport) {
                 try { // Fails in Firefox if the container has display: none.
@@ -1057,6 +1057,11 @@ class SVGElement {
             if (rotation) {
                 bBox = this.getRotatedBox(bBox, rotation);
             }
+            // Create a reference to catch changes to bBox
+            const e = { bBox };
+            fireEvent(this, 'afterGetBBox', e);
+            // Pick up any changes after the fired event
+            bBox = e.bBox;
         }
         // Cache it. When loading a chart in a hidden iframe in Firefox and
         // IE/Edge, the bounding box height is 0, so don't cache it (#5620).
@@ -1097,11 +1102,31 @@ class SVGElement {
         aX = pX + baseline * cosRad90, bX = aX + wCosRad, cX = bX - height * cosRad90, dX = cX - wCosRad, aY = pY + baseline * sinRad90, bY = aY + wSinRad, cY = bY - height * sinRad90, dY = cY - wSinRad;
         // Deduct the bounding box from the corners
         const x = Math.min(aX, bX, cX, dX), y = Math.min(aY, bY, cY, dY), boxWidth = Math.max(aX, bX, cX, dX) - x, boxHeight = Math.max(aY, bY, cY, dY) - y;
+        /* Uncomment to debug boxes
+        this.renderer.path([
+            ['M', aX, aY],
+            ['L', bX, bY],
+            ['L', cX, cY],
+            ['L', dX, dY],
+            ['Z']
+        ])
+            .attr({
+                stroke: 'red',
+                'stroke-width': 1
+            })
+            .add();
+        // */
         return {
             x,
             y,
             width: boxWidth,
-            height: boxHeight
+            height: boxHeight,
+            polygon: [
+                [aX, aY],
+                [bX, bY],
+                [cX, cY],
+                [dX, dY]
+            ]
         };
     }
     /**
@@ -1315,98 +1340,6 @@ class SVGElement {
         // to be repositioned (#3801)
         if (existingGradient && existingGradient.radAttr) {
             existingGradient.animate(this.renderer.getRadialAttr(coordinates, existingGradient.radAttr));
-        }
-        return this;
-    }
-    /**
-     * Set a text path for a `text` or `label` element, allowing the text to
-     * flow along a path.
-     *
-     * In order to unset the path for an existing element, call `setTextPath`
-     * with `{ enabled: false }` as the second argument.
-     *
-     * @sample highcharts/members/renderer-textpath/ Text path demonstrated
-     *
-     * @function Highcharts.SVGElement#setTextPath
-     *
-     * @param {Highcharts.SVGElement|undefined} path
-     *        Path to follow. If undefined, it allows changing options for the
-     *        existing path.
-     *
-     * @param {Highcharts.DataLabelsTextPathOptionsObject} textPathOptions
-     *        Options.
-     *
-     * @return {Highcharts.SVGElement} Returns the SVGElement for chaining.
-     */
-    setTextPath(path, textPathOptions) {
-        // Defaults
-        textPathOptions = merge(true, {
-            enabled: true,
-            attributes: {
-                dy: -5,
-                startOffset: '50%',
-                textAnchor: 'middle'
-            }
-        }, textPathOptions);
-        const url = this.renderer.url, textWrapper = this.text || this, textPath = textWrapper.textPath, { attributes, enabled } = textPathOptions;
-        path = path || (textPath && textPath.path);
-        // Remove previously added event
-        if (textPath) {
-            textPath.undo();
-        }
-        if (path && enabled) {
-            const undo = addEvent(textWrapper, 'afterModifyTree', (e) => {
-                if (path && enabled) {
-                    // Set ID for the path
-                    let textPathId = path.attr('id');
-                    if (!textPathId) {
-                        path.attr('id', textPathId = uniqueKey());
-                    }
-                    // Set attributes for the <text>
-                    const textAttribs = {
-                        // `dx`/`dy` options must by set on <text> (parent), the
-                        // rest should be set on <textPath>
-                        x: 0,
-                        y: 0
-                    };
-                    if (defined(attributes.dx)) {
-                        textAttribs.dx = attributes.dx;
-                        delete attributes.dx;
-                    }
-                    if (defined(attributes.dy)) {
-                        textAttribs.dy = attributes.dy;
-                        delete attributes.dy;
-                    }
-                    textWrapper.attr(textAttribs);
-                    // Handle label properties
-                    this.attr({ transform: '' });
-                    if (this.box) {
-                        this.box = this.box.destroy();
-                    }
-                    // Wrap the nodes in a textPath
-                    const children = e.nodes.slice(0);
-                    e.nodes.length = 0;
-                    e.nodes[0] = {
-                        tagName: 'textPath',
-                        attributes: extend(attributes, {
-                            'text-anchor': attributes.textAnchor,
-                            href: `${url}#${textPathId}`
-                        }),
-                        children
-                    };
-                }
-            });
-            // Set the reference
-            textWrapper.textPath = { path, undo };
-        }
-        else {
-            textWrapper.attr({ dx: 0, dy: 0 });
-            delete textWrapper.textPath;
-        }
-        if (this.added) {
-            // Rebuild text after added
-            textWrapper.textCache = '';
-            this.renderer.buildText(textWrapper);
         }
         return this;
     }

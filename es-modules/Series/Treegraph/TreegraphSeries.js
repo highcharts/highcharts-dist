@@ -23,6 +23,9 @@ const { arrayMax, crisp, extend, merge, pick, relativeLength, splat } = U;
 import TreegraphLink from './TreegraphLink.js';
 import TreegraphLayout from './TreegraphLayout.js';
 import TreegraphSeriesDefaults from './TreegraphSeriesDefaults.js';
+import SVGElement from '../../Core/Renderer/SVG/SVGElement.js';
+import TextPath from '../../Extensions/TextPath.js';
+TextPath.compose(SVGElement);
 /* *
  *
  *  Class
@@ -56,6 +59,24 @@ class TreegraphSeries extends TreemapSeries {
     init() {
         super.init.apply(this, arguments);
         this.layoutAlgorythm = new TreegraphLayout();
+        // Register the link data labels in the label collector for overlap
+        // detection.
+        const series = this, collectors = this.chart.labelCollectors, collectorFunc = function () {
+            const linkLabels = [];
+            // Check links for overlap
+            if (!splat(series.options.dataLabels)[0].allowOverlap) {
+                for (const link of series.links) {
+                    if (link.dataLabel) {
+                        linkLabels.push(link.dataLabel);
+                    }
+                }
+            }
+            return linkLabels;
+        };
+        // Only add the collector function if it is not present
+        if (!collectors.some((f) => f.name === 'collectorFunc')) {
+            collectors.push(collectorFunc);
+        }
     }
     /**
      * Calculate `a` and `b` parameters of linear transformation, where
@@ -445,8 +466,8 @@ export default TreegraphSeries;
  * relativeXValue, softThreshold, stack, stacking, step,
  * traverseUpButton, xAxis, yAxis, zoneAxis, zones
  * @product   highcharts
- * @requires  modules/treemap.js
- * @requires  modules/treegraph.js
+ * @requires  modules/treemap
+ * @requires  modules/treegraph
  * @apioption series.treegraph
  */
 /**

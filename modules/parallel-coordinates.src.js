@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.3 (2024-05-22)
+ * @license Highcharts JS v11.4.4 (2024-07-02)
  *
  * Support for parallel coordinates in Highcharts
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -615,7 +615,7 @@
                  * Flag used in parallel coordinates plot to check if chart has
                  * ||-coords (parallel coords).
                  *
-                 * @requires module:modules/parallel-coordinates
+                 * @requires modules/parallel-coordinates
                  *
                  * @name Highcharts.Chart#hasParallelCoordinates
                  * @type {boolean}

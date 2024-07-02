@@ -2483,9 +2483,9 @@ class Axis {
                 (opposite ? -1 : 1) * // So does opposite axes
                 (this.axisTitleMargin || 0) +
             [
-                -textHeightOvershoot,
-                textHeightOvershoot,
-                fontMetrics.f,
+                -textHeightOvershoot, // Top
+                textHeightOvershoot, // Right
+                fontMetrics.f, // Bottom
                 -textHeightOvershoot // Left
             ][this.side], titlePosition = {
             x: horiz ?

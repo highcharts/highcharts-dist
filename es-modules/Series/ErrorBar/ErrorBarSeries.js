@@ -70,8 +70,8 @@ addEvent(ErrorBarSeries, 'afterTranslate', function () {
     }
 }, { order: 0 });
 extend(ErrorBarSeries.prototype, {
-    pointArrayMap: ['low', 'high'],
-    pointValKey: 'high',
+    pointArrayMap: ['low', 'high'], // Array point configs are mapped to this
+    pointValKey: 'high', // Defines the top of the tracker
     doQuartiles: false
 });
 SeriesRegistry.registerSeriesType('errorbar', ErrorBarSeries);

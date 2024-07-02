@@ -76,8 +76,6 @@ function axisGetDDPoints(x) {
  * This method creates an array of arrays containing a level number
  * with the corresponding series/point.
  *
- * @requires  modules/breadcrumbs
- *
  * @private
  * @param {Highcharts.Chart} chart
  *        Highcharts Chart object.

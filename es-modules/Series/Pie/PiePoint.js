@@ -148,18 +148,18 @@ extend(PiePoint.prototype, {
         // Only one available before v7.0.0
         fixedOffset: function (labelPosition, connectorPosition, options) {
             const breakAt = connectorPosition.breakAt, touchingSliceAt = connectorPosition.touchingSliceAt, lineSegment = options.softConnector ? [
-                'C',
+                'C', // Soft break
                 // 1st control point (of the curve)
                 labelPosition.x +
                     // 5 gives the connector a little horizontal bend
                     (labelPosition.alignment === 'left' ? -5 : 5),
-                labelPosition.y,
-                2 * breakAt.x - touchingSliceAt.x,
-                2 * breakAt.y - touchingSliceAt.y,
-                breakAt.x,
+                labelPosition.y, //
+                2 * breakAt.x - touchingSliceAt.x, // 2nd control point
+                2 * breakAt.y - touchingSliceAt.y, //
+                breakAt.x, // End of the curve
                 breakAt.y //
             ] : [
-                'L',
+                'L', // Pointy break
                 breakAt.x,
                 breakAt.y
             ];

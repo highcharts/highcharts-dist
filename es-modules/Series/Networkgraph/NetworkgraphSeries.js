@@ -10,6 +10,7 @@
  *
  * */
 'use strict';
+import SVGElement from '../../Core/Renderer/SVG/SVGElement.js';
 import DragNodesComposition from '../DragNodesComposition.js';
 import GraphLayout from '../GraphLayoutComposition.js';
 import H from '../../Core/Globals.js';
@@ -24,6 +25,8 @@ import D from '../SimulationSeriesUtilities.js';
 const { initDataLabels, initDataLabelsDefer } = D;
 import U from '../../Core/Utilities.js';
 const { addEvent, defined, extend, merge, pick } = U;
+import TextPath from '../../Extensions/TextPath.js';
+TextPath.compose(SVGElement);
 /* *
  *
  *  Class
@@ -329,7 +332,7 @@ class NetworkgraphSeries extends Series {
 NetworkgraphSeries.defaultOptions = merge(Series.defaultOptions, NetworkgraphSeriesDefaults);
 extend(NetworkgraphSeries.prototype, {
     pointClass: NetworkgraphPoint,
-    animate: void 0,
+    animate: void 0, // Animation is run in `series.simulation`
     directTouch: true,
     drawGraph: void 0,
     forces: ['barycenter', 'repulsive', 'attractive'],

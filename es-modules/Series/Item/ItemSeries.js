@@ -26,7 +26,7 @@ const { defined, extend, fireEvent, isNumber, merge, pick } = U;
 /**
  * The item series type.
  *
- * @requires module:modules/item-series
+ * @requires modules/item-series
  *
  * @private
  * @class

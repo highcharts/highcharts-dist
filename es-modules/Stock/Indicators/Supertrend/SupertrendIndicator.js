@@ -80,8 +80,8 @@ class SupertrendIndicator extends SMAIndicator {
         }, 
         // Sorted supertrend points array
         groupedPoints = {
-            top: [],
-            bottom: [],
+            top: [], // Rising trend line points
+            bottom: [], // Falling trend line points
             intersect: [] // Change trend line points
         }, 
         // Options for trend lines
@@ -372,7 +372,7 @@ SupertrendIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
      * @excluding index
      */
     params: {
-        index: void 0,
+        index: void 0, // Unchangeable index, do not inherit (#15362)
         /**
          * Multiplier for Supertrend Indicator.
          */

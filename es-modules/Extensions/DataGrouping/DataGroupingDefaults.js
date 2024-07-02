@@ -105,7 +105,7 @@ const seriesSpecific = {
  */
 const units = [
     [
-        'millisecond',
+        'millisecond', // Unit name
         [1, 2, 5, 10, 20, 25, 50, 100, 200, 500] // Allowed multiples
     ], [
         'second',

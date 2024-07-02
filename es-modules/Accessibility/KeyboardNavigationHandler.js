@@ -23,7 +23,7 @@ const { find } = U;
  * layer for keyboard navigation, and defines a map of keyCodes to handler
  * functions.
  *
- * @requires module:modules/accessibility
+ * @requires modules/accessibility
  *
  * @sample highcharts/accessibility/custom-component
  *         Custom accessibility component
@@ -51,10 +51,10 @@ class KeyboardNavigationHandler {
         this.terminate = options.terminate;
         // Response enum
         this.response = {
-            success: 1,
-            prev: 2,
-            next: 3,
-            noHandler: 4,
+            success: 1, // Keycode was handled
+            prev: 2, // Move to prev module
+            next: 3, // Move to next module
+            noHandler: 4, // There is no handler for this keycode
             fail: 5 // Handler failed
         };
     }

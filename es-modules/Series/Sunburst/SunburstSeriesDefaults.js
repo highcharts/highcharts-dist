@@ -31,7 +31,7 @@
  *               ignoreHiddenPoint, innerSize, joinBy, legendType, linecap,
  *               minSize, navigatorOptions, pointRange
  * @product      highcharts
- * @requires     modules/sunburst.js
+ * @requires     modules/sunburst
  * @optionparent plotOptions.sunburst
  *
  * @private
@@ -299,7 +299,7 @@ const SunburstSeriesDefaults = {
  * @excluding dataParser, dataURL, stack, dataSorting, boostThreshold,
  *            boostBlending
  * @product   highcharts
- * @requires  modules/sunburst.js
+ * @requires  modules/sunburst
  * @apioption series.sunburst
  */
 /**

@@ -17,9 +17,7 @@ import U from '../../Core/Utilities.js';
 const { clamp, defined, extend, getNestedProperty, merge, pick } = U;
 import T from '../../Core/Templating.js';
 const { format } = T;
-const isNoteDefinition = (str) => 
-// eslint-disable-next-line require-unicode-regexp
-(/^([a-g][#b]?)[0-8]$/i).test(str);
+const isNoteDefinition = (str) => (/^([a-g][#b]?)[0-8]$/i).test(str);
 /**
  * Get the value of a point property from string.
  * @private

@@ -204,7 +204,7 @@ function getHeadingTagNameForElement(element) {
         const headingLevel = parseInt(tagName.slice(1), 10), newLevel = Math.min(6, headingLevel + 1);
         return 'h' + newLevel;
     };
-    const isHeading = (tagName) => /H[1-6]/.test(tagName);
+    const isHeading = (tagName) => /^H[1-6]$/i.test(tagName);
     const getPreviousSiblingsHeading = (el) => {
         let sibling = el;
         while (sibling = sibling.previousSibling) { // eslint-disable-line

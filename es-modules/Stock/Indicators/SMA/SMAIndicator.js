@@ -325,7 +325,7 @@ extend(SMAIndicator.prototype, {
     },
     hasDerivedData: true,
     nameComponents: ['period'],
-    nameSuffixes: [],
+    nameSuffixes: [], // E.g. Zig Zag uses extra '%'' in the legend name
     useCommonDataGrouping: true
 });
 SeriesRegistry.registerSeriesType('sma', SMAIndicator);

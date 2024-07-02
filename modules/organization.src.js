@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.3 (2024-05-22)
+ * @license Highcharts JS v11.4.4 (2024-07-02)
  * Organization chart series type
  *
  * (c) 2019-2024 Torstein Honsi
@@ -11,7 +11,7 @@
         factory['default'] = factory;
         module.exports = factory;
     } else if (typeof define === 'function' && define.amd) {
-        define('highcharts/modules/organization', ['highcharts', 'highcharts/modules/sankey'], function (Highcharts) {
+        define('highcharts/modules/organization', ['highcharts', 'modules/sankey'], function (Highcharts) {
             factory(Highcharts);
             factory.Highcharts = Highcharts;
             return factory;
@@ -27,7 +27,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -760,7 +760,7 @@
 
         return PathUtilities;
     });
-    _registerModule(_modules, 'Series/Organization/OrganizationSeries.js', [_modules['Series/Organization/OrganizationPoint.js'], _modules['Series/Organization/OrganizationSeriesDefaults.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/PathUtilities.js'], _modules['Core/Utilities.js']], function (OrganizationPoint, OrganizationSeriesDefaults, SeriesRegistry, PathUtilities, U) {
+    _registerModule(_modules, 'Series/Organization/OrganizationSeries.js', [_modules['Series/Organization/OrganizationPoint.js'], _modules['Series/Organization/OrganizationSeriesDefaults.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/PathUtilities.js'], _modules['Core/Utilities.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Extensions/TextPath.js']], function (OrganizationPoint, OrganizationSeriesDefaults, SeriesRegistry, PathUtilities, U, SVGElement, TextPath) {
         /* *
          *
          *  Organization chart module
@@ -774,6 +774,7 @@
          * */
         const { sankey: SankeySeries } = SeriesRegistry.seriesTypes;
         const { css, crisp, extend, isNumber, merge, pick } = U;
+        TextPath.compose(SVGElement);
         /* *
          *
          *  Class

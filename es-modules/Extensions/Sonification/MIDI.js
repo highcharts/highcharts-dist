@@ -15,10 +15,10 @@ import SonificationInstrument from './SonificationInstrument.js';
 import U from '../../Core/Utilities.js';
 const { pick } = U;
 const freqToNote = (f) => Math.round(12 * Math.log(f) / Math.LN2 - 48.37632), b = (byte, n) => n >>> 8 * byte & 0xFF, getHeader = (nTracks) => [
-    0x4D, 0x54, 0x68, 0x64,
-    0, 0, 0, 6,
-    0, nTracks > 1 ? 1 : 0,
-    b(1, nTracks), b(0, nTracks),
+    0x4D, 0x54, 0x68, 0x64, // HD_TYPE
+    0, 0, 0, 6, // HD_SIZE
+    0, nTracks > 1 ? 1 : 0, // HD_FORMAT
+    b(1, nTracks), b(0, nTracks), // HD_NTRACKS
     // SMTPE: 0xE7 0x28
     // -25/40 time div gives us millisecond SMTPE, but not widely supported.
     1, 0xF4 // HD_TIMEDIV, 500 ticks per beat = millisecond at 120bpm
@@ -51,7 +51,7 @@ varLenEnc = (n) => {
         const o = e.instrumentEventOptions || {}, t = e.time, dur = cachedDur = pick(o.noteDuration, cachedDur), tNOF = dur && e.time + dur, ctrl = [{
                 valMap: (n) => 64 + 63 * n & 0x7F,
                 data: {
-                    0x0A: o.pan,
+                    0x0A: o.pan, // Use MSB only, no need for fine adjust
                     0x5C: o.tremoloDepth,
                     0x5D: o.tremoloSpeed
                 }
@@ -122,8 +122,8 @@ varLenEnc = (n) => {
         metaEvents.length +
         trackEvents.length + trackEnd.length;
     return [
-        0x4D, 0x54, 0x72, 0x6B,
-        b(3, size), b(2, size),
+        0x4D, 0x54, 0x72, 0x6B, // TRK_TYPE
+        b(3, size), b(2, size), // TRK_SIZE
         b(1, size), b(0, size)
     ].concat(addTimeInfo ? timeInfo : [], metaEvents, trackEvents, trackEnd // SYSEX_TRACK_END
     );

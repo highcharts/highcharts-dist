@@ -57,7 +57,7 @@ const WordcloudSeriesDefaults = {
     /**
      * @ignore-option
      */
-    clip: false,
+    clip: false, // Something goes wrong with clip. // @todo fix this
     colorByPoint: true,
     cropThreshold: Infinity,
     /**

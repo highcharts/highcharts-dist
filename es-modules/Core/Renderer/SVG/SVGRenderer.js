@@ -429,7 +429,7 @@ class SVGRenderer {
             `highcharts-drop-shadow-${this.chartIndex}`,
             ...Object.keys(shadowOptions)
                 .map((key) => `${key}-${shadowOptions[key]}`)
-        ].join('-').toLowerCase().replace(/[^a-z0-9\-]/g, ''), options = merge({
+        ].join('-').toLowerCase().replace(/[^a-z\d\-]/g, ''), options = merge({
             color: '#000000',
             offsetX: 1,
             offsetY: 1,
@@ -443,21 +443,36 @@ class SVGRenderer {
                     id,
                     filterUnits: options.filterUnits
                 },
-                children: [{
-                        tagName: 'feDropShadow',
-                        attributes: {
-                            dx: options.offsetX,
-                            dy: options.offsetY,
-                            'flood-color': options.color,
-                            // Tuned and modified to keep a preserve compatibility
-                            // with the old settings
-                            'flood-opacity': Math.min(options.opacity * 5, 1),
-                            stdDeviation: options.width / 2
-                        }
-                    }]
+                children: this.getShadowFilterContent(options)
             });
         }
         return id;
+    }
+    /**
+     * Get shadow filter content.
+     * NOTE! Overridden in es5 module for IE11 compatibility.
+     *
+     * @private
+     * @function Highcharts.SVGRenderer#getShadowFilterContent
+     *
+     * @param {ShadowOptionsObject} options
+     * The shadow options.
+     * @return {Array<AST.Node>}
+     * The shadow filter content.
+     */
+    getShadowFilterContent(options) {
+        return [{
+                tagName: 'feDropShadow',
+                attributes: {
+                    dx: options.offsetX,
+                    dy: options.offsetY,
+                    'flood-color': options.color,
+                    // Tuned and modified to keep a preserve compatibility
+                    // with the old settings
+                    'flood-opacity': Math.min(options.opacity * 5, 1),
+                    stdDeviation: options.width / 2
+                }
+            }];
     }
     /**
      * Parse a simple HTML string into SVG tspans. Called internally when text
@@ -1629,7 +1644,7 @@ extend(SVGRenderer.prototype, {
         '&': '&amp;',
         '<': '&lt;',
         '>': '&gt;',
-        "'": '&#39;',
+        "'": '&#39;', // eslint-disable-line quotes
         '"': '&quot;'
     },
     /**

@@ -202,14 +202,20 @@ function onChartCallback(chart) {
     addEvent(chart, 'redraw', canvasToSVG);
     let prevX = -1;
     let prevY = -1;
-    addEvent(chart.pointer, 'afterGetHoverData', () => {
-        const series = chart.hoverSeries;
+    addEvent(chart.pointer, 'afterGetHoverData', (e) => {
+        const series = e.hoverPoint?.series;
         chart.boost = chart.boost || {};
         if (chart.boost.markerGroup && series) {
             const xAxis = chart.inverted ? series.yAxis : series.xAxis;
             const yAxis = chart.inverted ? series.xAxis : series.yAxis;
             if ((xAxis && xAxis.pos !== prevX) ||
                 (yAxis && yAxis.pos !== prevY)) {
+                // #21176: If the axis is changed, hide teh halo without
+                // animation  to prevent flickering of halos sharing the
+                // same marker group
+                chart.series.forEach((s) => {
+                    s.halo?.hide();
+                });
                 // #10464: Keep the marker group position in sync with the
                 // position of the hovered series axes since there is only
                 // one shared marker group when boosting.

@@ -95,7 +95,10 @@ var Responsive;
             // Undo previous rules. Before we apply a new set of rules, we
             // need to roll back completely to base options (#6291).
             if (currentResponsive) {
+                this.currentResponsive = void 0;
+                this.updatingResponsive = true;
                 this.update(currentResponsive.undoOptions, redraw, true);
+                this.updatingResponsive = false;
             }
             if (ruleIds) {
                 // Get undo-options for matching rules. The `undoOptions``
@@ -108,7 +111,9 @@ var Responsive;
                     mergedOptions: mergedOptions,
                     undoOptions: undoOptions
                 };
-                this.update(mergedOptions, redraw, true);
+                if (!this.updatingResponsive) {
+                    this.update(mergedOptions, redraw, true);
+                }
             }
             else {
                 this.currentResponsive = void 0;

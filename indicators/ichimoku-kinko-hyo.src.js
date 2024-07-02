@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.4.3 (2024-05-22)
+ * @license Highstock JS v11.4.4 (2024-07-02)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -12,7 +12,7 @@
         factory['default'] = factory;
         module.exports = factory;
     } else if (typeof define === 'function' && define.amd) {
-        define('highcharts/indicators/ichimoku-kinko-hyo', ['highcharts', 'highcharts/modules/stock'], function (Highcharts) {
+        define('highcharts/indicators/ichimoku-kinko-hyo', ['highcharts', 'modules/stock'], function (Highcharts) {
             factory(Highcharts);
             factory.Highcharts = Highcharts;
             return factory;
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -259,13 +259,13 @@
                     senkouSpanOptions.styles.fill, negativeColor = senkouSpanOptions.negativeColor, 
                 // Points to create color and negativeColor senkouSpan
                 points = [
-                    [],
+                    [], // Points color
                     [] // Points negative color
                 ], 
                 // For span, we need an access to the next points, used in
                 // getGraphPath()
                 nextPoints = [
-                    [],
+                    [], // Next points color
                     [] // Next points negative color
                 ];
                 let pointsLength = mainLinePoints.length, lineIndex = 0, position, point, i, startIntersect, endIntersect, sectionPoints, sectionNextPoints, pointsPlotYSum, nextPointsPlotYSum, senkouSpanTempColor, concatArrIndex, j, k;
@@ -530,7 +530,7 @@
              * @excluding index
              */
             params: {
-                index: void 0,
+                index: void 0, // Unused index, do not inherit (#15362)
                 period: 26,
                 /**
                  * The base period for Tenkan calculations.

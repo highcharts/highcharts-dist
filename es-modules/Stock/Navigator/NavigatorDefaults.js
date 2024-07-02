@@ -348,7 +348,7 @@ const NavigatorDefaults = {
          *
          * @type {Highcharts.ColorString|null}
          */
-        lineColor: null,
+        lineColor: null, // #4602
         marker: {
             enabled: false
         },

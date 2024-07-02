@@ -73,7 +73,7 @@ const GanttSeriesDefaults = {
             align: 'left'
         },
         endMarker: {
-            enabled: false,
+            enabled: false, // Only show arrow on the dependent task
             align: 'right'
         }
     }

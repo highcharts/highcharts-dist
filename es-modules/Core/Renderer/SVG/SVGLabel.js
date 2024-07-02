@@ -32,6 +32,7 @@ class SVGLabel extends SVGElement {
         super(renderer, 'g');
         this.paddingLeftSetter = this.paddingSetter;
         this.paddingRightSetter = this.paddingSetter;
+        this.doUpdate = false;
         this.textStr = str;
         this.x = x;
         this.y = y;
@@ -184,6 +185,24 @@ class SVGLabel extends SVGElement {
     }
     heightSetter(value) {
         this.heightSetting = value;
+        this.doUpdate = true;
+    }
+    /**
+     * This method is executed in the end of `attr()`, after setting all
+     * attributes in the hash. In can be used to efficiently consolidate
+     * multiple attributes in one SVG property -- e.g., translate, rotate and
+     * scale are merged in one "transform" attribute in the SVG node.
+     * Also updating height or width should trigger update of the box size.
+     *
+     * @private
+     * @function Highcharts.SVGLabel#afterSetters
+     */
+    afterSetters() {
+        super.afterSetters();
+        if (this.doUpdate) {
+            this.updateBoxSize();
+            this.doUpdate = false;
+        }
     }
     /*
      * After the text element is added, get the desired size of the border
@@ -332,6 +351,7 @@ class SVGLabel extends SVGElement {
     widthSetter(value) {
         // `width:auto` => null
         this.widthSetting = isNumber(value) ? value : void 0;
+        this.doUpdate = true;
     }
     getPaddedWidth() {
         const padding = this.padding;

@@ -92,7 +92,7 @@ function compose(ChartClass, AxisClass, SeriesClass, seriesTypes, ColorClass) {
 /**
  * Returns true if the current browser supports WebGL.
  *
- * @requires module:modules/boost
+ * @requires modules/boost
  *
  * @function Highcharts.hasWebGLSupport
  *

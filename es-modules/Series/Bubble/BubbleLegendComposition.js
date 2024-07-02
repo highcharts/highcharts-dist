@@ -92,11 +92,8 @@ function chartDrawChartBox(proceed, options, callback) {
  *
  * @param {Highcharts.Legend} LegendClass
  * Core legend class to use with Bubble series.
- *
- * @param {Highcharts.Series} SeriesClass
- * Core series class to use with Bubble series.
  */
-function compose(ChartClass, LegendClass, SeriesClass) {
+function compose(ChartClass, LegendClass) {
     if (pushUnique(composed, 'Series.BubbleLegend')) {
         setOptions({
             // Set default bubble legend options
@@ -106,7 +103,7 @@ function compose(ChartClass, LegendClass, SeriesClass) {
         });
         wrap(ChartClass.prototype, 'drawChartBox', chartDrawChartBox);
         addEvent(LegendClass, 'afterGetAllItems', onLegendAfterGetAllItems);
-        addEvent(SeriesClass, 'legendItemClick', onSeriesLegendItemClick);
+        addEvent(LegendClass, 'itemClick', onLegendItemClick);
     }
 }
 /**
@@ -198,12 +195,12 @@ function onLegendAfterGetAllItems(e) {
 /**
  * Toggle bubble legend depending on the visible status of bubble series.
  */
-function onSeriesLegendItemClick(e) {
+function onLegendItemClick(e) {
     // #14080 don't fire this code if click function is prevented
     if (e.defaultPrevented) {
         return false;
     }
-    const series = this, chart = series.chart, visible = series.visible, legend = series.chart.legend;
+    const legend = this, series = e.legendItem, chart = legend.chart, visible = series.visible;
     let status;
     if (legend && legend.bubbleLegend) {
         // Temporary correct 'visible' property

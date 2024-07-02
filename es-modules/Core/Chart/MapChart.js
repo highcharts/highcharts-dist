@@ -67,7 +67,7 @@ class MapChart extends Chart {
                     '{geojson.copyrightShort}</a>'),
                 mapTextFull: pick(defaultCreditsOptions.mapTextFull, '{geojson.copyright}')
             },
-            mapView: {},
+            mapView: {}, // Required to enable Chart.mapView
             tooltip: {
                 followTouchMove: false
             }
@@ -203,7 +203,7 @@ class MapChart extends Chart {
         if (typeof path === 'string') {
             path = path
                 // Move letters apart
-                .replace(/([A-Za-z])/g, ' $1 ')
+                .replace(/([A-Z])/gi, ' $1 ')
                 // Trim
                 .replace(/^\s*/, '').replace(/\s*$/, '');
             // Split on spaces and commas. The semicolon is bogus, designed to
@@ -211,7 +211,7 @@ class MapChart extends Chart {
             // specific styled mode files.
             const split = path.split(/[ ,;]+/);
             arr = split.map((item) => {
-                if (!/[A-Za-z]/.test(item)) {
+                if (!/[A-Z]/i.test(item)) {
                     return parseFloat(item);
                 }
                 return item;

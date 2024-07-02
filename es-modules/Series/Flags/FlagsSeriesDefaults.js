@@ -61,7 +61,7 @@ const FlagsSeriesDefaults = {
      * @product   highstock
      * @apioption plotOptions.flags.onSeries
      */
-    pointRange: 0,
+    pointRange: 0, // #673
     /**
      * Whether the flags are allowed to overlap sideways. If `false`, the
      * flags are moved sideways using an algorithm that seeks to place every

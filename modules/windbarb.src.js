@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.3 (2024-05-22)
+ * @license Highcharts JS v11.4.4 (2024-07-02)
  *
  * Wind barb series module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -615,7 +615,7 @@
                 }
                 // The stem and the arrow head
                 const path = [
-                    ['M', 0, 7 * u],
+                    ['M', 0, 7 * u], // Base of arrow
                     ['L', -1.5 * u, 7 * u],
                     ['L', 0, 10 * u],
                     ['L', 1.5 * u, 7 * u],
@@ -732,7 +732,7 @@
             beaufortFloor: [
                 0, 0.3, 1.6, 3.4, 5.5, 8.0, 10.8, 13.9, 17.2, 20.8,
                 24.5, 28.5, 32.7
-            ],
+            ], // @todo dictionary with names?
             beaufortName: [
                 'Calm', 'Light air', 'Light breeze',
                 'Gentle breeze', 'Moderate breeze', 'Fresh breeze',

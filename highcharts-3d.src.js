@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.3 (2024-05-22)
+ * @license Highcharts JS v11.4.4 (2024-07-02)
  *
  * 3D features for Highcharts JS
  *
@@ -26,7 +26,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -4564,7 +4564,7 @@
                         attribs = {
                             translateX: center[0],
                             translateY: center[1],
-                            scaleX: 0.001,
+                            scaleX: 0.001, // #1499
                             scaleY: 0.001
                         };
                         group.attr(attribs);

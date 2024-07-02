@@ -30,7 +30,7 @@ class PackedBubblePoint extends BubblePoint {
      * @private
      */
     destroy() {
-        if (this.series.layout) {
+        if (this.series?.layout) {
             this.series.layout.removeElementFromCollection(this, this.series.layout.nodes);
         }
         return Point.prototype.destroy.apply(this, arguments);

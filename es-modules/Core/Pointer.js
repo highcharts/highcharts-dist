@@ -276,7 +276,7 @@ class Pointer {
                         ((a.coll === 'xAxis' && this.zoomX) ||
                             (a.coll === 'yAxis' && this.zoomY))),
                     selection: {
-                        originalEvent: e,
+                        originalEvent: e, // #4890
                         xAxis: [],
                         yAxis: [],
                         ...from
@@ -741,7 +741,6 @@ class Pointer {
         this.onContainerMouseMove(e);
         // #4886, MS Touch end fires mouseleave but with no related target
         if (pointer &&
-            e.relatedTarget &&
             !this.inClass(e.relatedTarget, 'highcharts-tooltip')) {
             pointer.reset();
             // Also reset the chart position, used in #149 fix
@@ -836,8 +835,8 @@ class Pointer {
                 visiblePlotOnly: true
             }) &&
             !(tooltip &&
-                tooltip.shouldStickOnContact(pEvt)) &&
-            !this.inClass(pEvt.target, 'highcharts-tracker')) {
+                tooltip.shouldStickOnContact(pEvt)) && (pEvt.target === chart.container.ownerDocument ||
+            !this.inClass(pEvt.target, 'highcharts-tracker'))) {
             this.reset();
         }
     }
@@ -885,6 +884,7 @@ class Pointer {
         if (e.type === 'touchstart') {
             pointer.pinchDown = touches;
             pointer.res = true; // Reset on next move
+            chart.mouseDownX = e.chartX;
             // Optionally move the tooltip on touchmove
         }
         else if (followTouchMove) {
@@ -1359,7 +1359,11 @@ class Pointer {
         const hoverChart = H.charts[pick(Pointer.hoverChartIndex, -1)];
         if (hoverChart &&
             hoverChart !== chart) {
-            hoverChart.pointer?.onContainerMouseLeave(e || { relatedTarget: chart.container });
+            const relatedTargetObj = { relatedTarget: chart.container };
+            if (e && !e?.relatedTarget) {
+                e = { ...relatedTargetObj, ...e };
+            }
+            hoverChart.pointer?.onContainerMouseLeave(e || relatedTargetObj);
         }
         if (!hoverChart ||
             !hoverChart.mouseIsDown) {
@@ -1375,8 +1379,8 @@ class Pointer {
         const { chart, pinchDown = [] } = this;
         let hasMoved, isInside;
         this.setHoverChartIndex();
+        e = this.normalize(e);
         if (e.touches.length === 1) {
-            e = this.normalize(e);
             isInside = chart.isInsidePlot(e.chartX - chart.plotLeft, e.chartY - chart.plotTop, {
                 visiblePlotOnly: true
             });

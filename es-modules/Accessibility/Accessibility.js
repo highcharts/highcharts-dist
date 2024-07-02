@@ -45,7 +45,7 @@ import copyDeprecatedOptions from './Options/DeprecatedOptions.js';
  * The Accessibility class
  *
  * @private
- * @requires module:modules/accessibility
+ * @requires modules/accessibility
  *
  * @class
  * @name Highcharts.Accessibility

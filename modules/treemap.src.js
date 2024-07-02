@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.3 (2024-05-22)
+ * @license Highcharts JS v11.4.4 (2024-07-02)
  *
  * (c) 2014-2024 Highsoft AS
  * Authors: Jon Arild Nygard / Oystein Moseng
@@ -27,7 +27,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -447,8 +447,6 @@
             /**
              * Update Breadcrumbs properties, like level and list.
              *
-             * @requires  modules/breadcrumbs
-             *
              * @function Highcharts.Breadcrumbs#updateProperties
              * @param {Highcharts.Breadcrumbs} this
              *        Breadcrumbs class.
@@ -462,8 +460,6 @@
              * Set breadcrumbs list.
              * @function Highcharts.Breadcrumbs#setList
              *
-             * @requires  modules/breadcrumbs
-             *
              * @param {Highcharts.Breadcrumbs} this
              *        Breadcrumbs class.
              * @param {Highcharts.BreadcrumbsOptions} list
@@ -475,8 +471,6 @@
             /**
              * Calculate level on which chart currently is.
              *
-             * @requires  modules/breadcrumbs
-             *
              * @function Highcharts.Breadcrumbs#setLevel
              * @param {Highcharts.Breadcrumbs} this
              *        Breadcrumbs class.
@@ -487,8 +481,6 @@
             /**
              * Get Breadcrumbs level
              *
-             * @requires  modules/breadcrumbs
-             *
              * @function Highcharts.Breadcrumbs#getLevel
              * @param {Highcharts.Breadcrumbs} this
              *        Breadcrumbs class.
@@ -498,8 +490,6 @@
             }
             /**
              * Default button text formatter.
-             *
-             * @requires  modules/breadcrumbs
              *
              * @function Highcharts.Breadcrumbs#getButtonText
              * @param {Highcharts.Breadcrumbs} this
@@ -528,8 +518,6 @@
             /**
              * Redraw.
              *
-             * @requires  modules/breadcrumbs
-             *
              * @function Highcharts.Breadcrumbs#redraw
              * @param {Highcharts.Breadcrumbs} this
              *        Breadcrumbs class.
@@ -545,8 +533,6 @@
             }
             /**
              * Create a group, then draw breadcrumbs together with the separators.
-             *
-             * @requires  modules/breadcrumbs
              *
              * @function Highcharts.Breadcrumbs#render
              * @param {Highcharts.Breadcrumbs} this
@@ -576,8 +562,6 @@
             /**
              * Draw breadcrumbs together with the separators.
              *
-             * @requires  modules/breadcrumbs
-             *
              * @function Highcharts.Breadcrumbs#renderFullPathButtons
              * @param {Highcharts.Breadcrumbs} this
              *        Breadcrumbs class.
@@ -592,8 +576,6 @@
             /**
              * Render Single button - when showFullPath is not used. The button is
              * similar to the old drillUpButton
-             *
-             * @requires  modules/breadcrumbs
              *
              * @function Highcharts.Breadcrumbs#renderSingleButton
              * @param {Highcharts.Breadcrumbs} this Breadcrumbs class.
@@ -624,8 +606,6 @@
             /**
              * Update group position based on align and it's width.
              *
-             * @requires  modules/breadcrumbs
-             *
              * @function Highcharts.Breadcrumbs#renderSingleButton
              * @param {Highcharts.Breadcrumbs} this
              *        Breadcrumbs class.
@@ -655,8 +635,6 @@
             }
             /**
              * Render a button.
-             *
-             * @requires  modules/breadcrumbs
              *
              * @function Highcharts.Breadcrumbs#renderButton
              * @param {Highcharts.Breadcrumbs} this
@@ -704,8 +682,6 @@
             /**
              * Render a separator.
              *
-             * @requires  modules/breadcrumbs
-             *
              * @function Highcharts.Breadcrumbs#renderSeparator
              * @param {Highcharts.Breadcrumbs} this
              *        Breadcrumbs class.
@@ -731,8 +707,6 @@
              * Update.
              * @function Highcharts.Breadcrumbs#update
              *
-             * @requires  modules/breadcrumbs
-             *
              * @param {Highcharts.Breadcrumbs} this
              *        Breadcrumbs class.
              * @param {Highcharts.BreadcrumbsOptions} options
@@ -749,8 +723,6 @@
              * Update button text when the showFullPath set to false.
              * @function Highcharts.Breadcrumbs#updateSingleButton
              *
-             * @requires  modules/breadcrumbs
-             *
              * @param {Highcharts.Breadcrumbs} this
              *        Breadcrumbs class.
              */
@@ -764,8 +736,6 @@
             }
             /**
              * Destroy the chosen breadcrumbs group
-             *
-             * @requires  modules/breadcrumbs
              *
              * @function Highcharts.Breadcrumbs#destroy
              * @param {Highcharts.Breadcrumbs} this
@@ -784,8 +754,6 @@
             }
             /**
              * Destroy the elements' buttons and separators.
-             *
-             * @requires  modules/breadcrumbs
              *
              * @function Highcharts.Breadcrumbs#destroyListElements
              * @param {Highcharts.Breadcrumbs} this
@@ -811,8 +779,6 @@
             /**
              * Destroy the single button if exists.
              *
-             * @requires  modules/breadcrumbs
-             *
              * @function Highcharts.Breadcrumbs#destroySingleButton
              * @param {Highcharts.Breadcrumbs} this
              *        Breadcrumbs class.
@@ -826,8 +792,6 @@
             /**
              * Reset state for all buttons in elementList.
              *
-             * @requires  modules/breadcrumbs
-             *
              * @function Highcharts.Breadcrumbs#resetElementListState
              * @param {Highcharts.Breadcrumbs} this
              *        Breadcrumbs class.
@@ -839,8 +803,6 @@
             }
             /**
              * Update rendered elements inside the elementList.
-             *
-             * @requires  modules/breadcrumbs
              *
              * @function Highcharts.Breadcrumbs#updateListElements
              *
@@ -1402,7 +1364,8 @@
                 const series = this.series, options = series.options;
                 let className = super.getClassName();
                 // Above the current level
-                if (this.node.level <= series.nodeMap[series.rootNode].level) {
+                if (this.node.level <= series.nodeMap[series.rootNode].level &&
+                    this.node.children.length) {
                     className += ' highcharts-above-level';
                 }
                 else if (!this.node.isLeaf &&
@@ -1907,7 +1870,21 @@
                     shadow: false
                 }
             },
-            legendSymbol: 'rectangle'
+            legendSymbol: 'rectangle',
+            /**
+             * This option enables automatic traversing to the last child level upon
+             * node interaction. This feature simplifies navigation by immediately
+             * focusing on the deepest layer of the data structure without intermediate
+             * steps.
+             *
+             * @sample {highcharts} highcharts/plotoptions/treemap-traverse-to-leaf/
+             *         Traverse to leaf enabled
+             *
+             * @since   @next
+             *
+             * @product highcharts
+             */
+            traverseToLeaf: false
         };
         /**
          * A `treemap` series. If the [type](#series.treemap.type) option is
@@ -2700,14 +2677,22 @@
              * @private
              */
             drillToByLeaf(point) {
+                const { traverseToLeaf } = point.series.options;
                 let drillId = false, nodeParent;
                 if ((point.node.parent !== this.rootNode) &&
                     point.node.isLeaf) {
-                    nodeParent = point.node;
-                    while (!drillId) {
-                        nodeParent = this.nodeMap[nodeParent.parent];
-                        if (nodeParent.parent === this.rootNode) {
-                            drillId = nodeParent.id;
+                    if (traverseToLeaf) {
+                        drillId = point.id;
+                    }
+                    else {
+                        nodeParent = point.node;
+                        while (!drillId) {
+                            if (typeof nodeParent.parent !== 'undefined') {
+                                nodeParent = this.nodeMap[nodeParent.parent];
+                            }
+                            if (nodeParent.parent === this.rootNode) {
+                                drillId = nodeParent.id;
+                            }
                         }
                     }
                 }
@@ -3127,7 +3112,7 @@
                 const tree = series.tree = series.getTree();
                 rootNode = series.nodeMap[rootId];
                 if (rootId !== '' &&
-                    (!rootNode || !rootNode.children.length)) {
+                    (!rootNode)) {
                     series.setRootNode('', false);
                     rootId = series.rootNode;
                     rootNode = series.nodeMap[rootId];
@@ -3203,7 +3188,7 @@
         extend(TreemapSeries.prototype, {
             buildKDTree: noop,
             colorAttribs: ColorMapComposition.seriesMembers.colorAttribs,
-            colorKey: 'colorValue',
+            colorKey: 'colorValue', // Point color option key
             directTouch: true,
             getExtremesFromAll: true,
             getSymbol: noop,

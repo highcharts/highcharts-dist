@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.3 (2024-05-22)
+ * @license Highcharts JS v11.4.4 (2024-07-02)
  *
  * Boost module
  *
@@ -30,7 +30,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -312,14 +312,20 @@
             addEvent(chart, 'redraw', canvasToSVG);
             let prevX = -1;
             let prevY = -1;
-            addEvent(chart.pointer, 'afterGetHoverData', () => {
-                const series = chart.hoverSeries;
+            addEvent(chart.pointer, 'afterGetHoverData', (e) => {
+                const series = e.hoverPoint?.series;
                 chart.boost = chart.boost || {};
                 if (chart.boost.markerGroup && series) {
                     const xAxis = chart.inverted ? series.yAxis : series.xAxis;
                     const yAxis = chart.inverted ? series.xAxis : series.yAxis;
                     if ((xAxis && xAxis.pos !== prevX) ||
                         (yAxis && yAxis.pos !== prevY)) {
+                        // #21176: If the axis is changed, hide teh halo without
+                        // animation  to prevent flickering of halos sharing the
+                        // same marker group
+                        chart.series.forEach((s) => {
+                            s.halo?.hide();
+                        });
                         // #10464: Keep the marker group position in sync with the
                         // position of the hovered series axes since there is only
                         // one shared marker group when boosting.
@@ -549,7 +555,7 @@
             'cvsOffset -= sign * len;',
             '}',
             'return sign * (val - localMin) * localA + cvsOffset + ',
-            '(sign * minPixelPadding);',
+            '(sign * minPixelPadding);', // ' + localA * pointPlacement * pointRange;',
             '}',
             'float xToPixels(float value) {',
             'if (skipTranslation){',
@@ -2491,7 +2497,7 @@
                     })
                         .addClass(hasClickHandler ? 'highcharts-tracker' : '');
                     if (target instanceof ChartClass) {
-                        target.boost.markerGroup.translate(chart.plotLeft, chart.plotTop);
+                        target.boost?.markerGroup?.translate(chart.plotLeft, chart.plotTop);
                     }
                 };
                 boost.clipRect = chart.renderer.clipRect();
@@ -2670,7 +2676,15 @@
          * @function Highcharts.Series#exitBoost
          */
         function exitBoost(series) {
-            const boost = series.boost;
+            const boost = series.boost, chart = series.chart, chartBoost = chart.boost;
+            if (chartBoost?.markerGroup) {
+                chartBoost.markerGroup.destroy();
+                chartBoost.markerGroup = void 0;
+                for (const s of chart.series) {
+                    s.markerGroup = void 0;
+                    s.markerGroup = s.plotGroup('markerGroup', 'markers', 'visible', 1, chart.seriesGroup).addClass('highcharts-tracker');
+                }
+            }
             // Reset instance properties and/or delete instance properties and go back
             // to prototype
             if (boost) {
@@ -2890,13 +2904,13 @@
          * @function Highcharts.Series#renderCanvas
          */
         function seriesRenderCanvas() {
-            const options = this.options || {}, chart = this.chart, xAxis = this.xAxis, yAxis = this.yAxis, xData = options.xData || this.processedXData, yData = options.yData || this.processedYData, rawData = this.processedData || options.data, xExtremes = xAxis.getExtremes(), 
+            const options = this.options || {}, chart = this.chart, chartBoost = chart.boost, seriesBoost = this.boost, xAxis = this.xAxis, yAxis = this.yAxis, xData = options.xData || this.processedXData, yData = options.yData || this.processedYData, rawData = this.processedData || options.data, xExtremes = xAxis.getExtremes(), 
             // Taking into account the offset of the min point #19497
             xMin = xExtremes.min - (xAxis.minPointOffset || 0), xMax = xExtremes.max + (xAxis.minPointOffset || 0), yExtremes = yAxis.getExtremes(), yMin = yExtremes.min - (yAxis.minPointOffset || 0), yMax = yExtremes.max + (yAxis.minPointOffset || 0), pointTaken = {}, sampling = !!this.sampling, enableMouseTracking = options.enableMouseTracking, threshold = options.threshold, isRange = this.pointArrayMap &&
                 this.pointArrayMap.join(',') === 'low,high', isStacked = !!options.stacking, cropStart = this.cropStart || 0, requireSorting = this.requireSorting, useRaw = !xData, compareX = options.findNearestPointBy === 'x', xDataFull = (this.xData ||
                 this.options.xData ||
                 this.processedXData ||
-                false);
+                false), lineWidth = pick(options.lineWidth, 1);
             let renderer = false, lastClientX, yBottom = yAxis.getThreshold(threshold), minVal, maxVal, minI, maxI;
             // When touch-zooming or mouse-panning, re-rendering the canvas would not
             // perform fast enough. Instead, let the axes redraw, but not the series.
@@ -2920,8 +2934,7 @@
             if (!isChartSeriesBoosting(chart)) {
                 // If all series were boosting, but are not anymore
                 // restore private markerGroup
-                if (chart.boost &&
-                    this.markerGroup === chart.boost.markerGroup) {
+                if (this.markerGroup === chartBoost?.markerGroup) {
                     this.markerGroup = void 0;
                 }
                 this.markerGroup = this.plotGroup('markerGroup', 'markers', 'visible', 1, chart.seriesGroup).addClass('highcharts-tracker');
@@ -2930,15 +2943,17 @@
                 // If series has a private markerGroup, remove that
                 // and use common markerGroup
                 if (this.markerGroup &&
-                    this.markerGroup !== chart.boost.markerGroup) {
+                    this.markerGroup !== chartBoost?.markerGroup) {
                     this.markerGroup.destroy();
                 }
                 // Use a single group for the markers
-                this.markerGroup = chart.boost.markerGroup;
+                this.markerGroup = chartBoost?.markerGroup;
                 // When switching from chart boosting mode, destroy redundant
                 // series boosting targets
-                if (this.boost && this.boost.target) {
-                    this.renderTarget = this.boost.target = this.boost.target.destroy();
+                if (seriesBoost && seriesBoost.target) {
+                    this.renderTarget =
+                        seriesBoost.target =
+                            seriesBoost.target.destroy();
                 }
             }
             const points = this.points = [], addKDPoint = (clientX, plotY, i, percentage) => {
@@ -2982,6 +2997,28 @@
             // Do not start building while drawing
             this.buildKDTree = noop;
             fireEvent(this, 'renderCanvas');
+            if (this.is('line') &&
+                lineWidth > 1 &&
+                seriesBoost?.target &&
+                chartBoost &&
+                !chartBoost.lineWidthFilter) {
+                chartBoost.lineWidthFilter = chart.renderer.definition({
+                    tagName: 'filter',
+                    children: [
+                        {
+                            tagName: 'feMorphology',
+                            attributes: {
+                                operator: 'dilate',
+                                radius: 0.25 * lineWidth
+                            }
+                        }
+                    ],
+                    attributes: { id: 'linewidth' }
+                });
+                seriesBoost.target.attr({
+                    filter: 'url(#linewidth)'
+                });
+            }
             if (renderer) {
                 allocateIfNotSeriesBoosting(renderer, this);
                 renderer.pushSeries(this);
@@ -3526,7 +3563,7 @@
         /**
          * Returns true if the current browser supports WebGL.
          *
-         * @requires module:modules/boost
+         * @requires modules/boost
          *
          * @function Highcharts.hasWebGLSupport
          *

@@ -36,6 +36,9 @@ const { addEvent, clamp, css, discardElement, extend, fireEvent, isArray, isNumb
  *
  * @param {Highcharts.TooltipOptions} options
  * Tooltip options.
+ *
+ * @param {Highcharts.Pointer} pointer
+ * The pointer instance.
  */
 class Tooltip {
     /* *
@@ -371,7 +374,7 @@ class Tooltip {
         buildDimensionArray = (dim) => {
             const isX = dim === 'x';
             return [
-                dim,
+                dim, // Dimension - x or y
                 isX ? outerWidth : outerHeight,
                 isX ? boxWidth : boxHeight
             ].concat(outside ? [
@@ -719,12 +722,12 @@ class Tooltip {
                         });
                     }
                     label.attr({
+                        // Add class before the label BBox calculation (#21035)
+                        'class': tooltip.getClassName(point),
                         text: text && text.join ?
                             text.join('') :
                             text
                     });
-                    // Set the stroke color of the box to reflect the point
-                    label.addClass(tooltip.getClassName(point), true);
                     if (!styledMode) {
                         label.attr({
                             stroke: (options.borderColor ||

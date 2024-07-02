@@ -387,16 +387,7 @@ var DataLabel;
                                 // read text bounding box
                                 dataLabel.css(style).shadow(labelOptions.shadow);
                             }
-                            const textPathOptions = labelOptions[point.formatPrefix + 'TextPath'] || labelOptions.textPath;
-                            if (textPathOptions && !labelOptions.useHTML) {
-                                dataLabel.setTextPath(point.getDataLabelPath?.(dataLabel) ||
-                                    point.graphic, textPathOptions);
-                                if (point.dataLabelPath &&
-                                    !textPathOptions.enabled) {
-                                    // Clean the DOM
-                                    point.dataLabelPath = (point.dataLabelPath.destroy());
-                                }
-                            }
+                            fireEvent(dataLabel, 'beforeAddingDataLabel', { labelOptions, point });
                             if (!dataLabel.added) {
                                 dataLabel.add(dataLabelsGroup);
                             }

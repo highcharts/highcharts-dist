@@ -51,7 +51,7 @@ class DataConverter {
          */
         this.dateFormats = {
             'YYYY/mm/dd': {
-                regex: /^([0-9]{4})([\-\.\/])([0-9]{1,2})\2([0-9]{1,2})$/,
+                regex: /^(\d{4})([\-\.\/])(\d{1,2})\2(\d{1,2})$/,
                 parser: function (match) {
                     return (match ?
                         Date.UTC(+match[1], match[3] - 1, +match[4]) :
@@ -59,7 +59,7 @@ class DataConverter {
                 }
             },
             'dd/mm/YYYY': {
-                regex: /^([0-9]{1,2})([\-\.\/])([0-9]{1,2})\2([0-9]{4})$/,
+                regex: /^(\d{1,2})([\-\.\/])(\d{1,2})\2(\d{4})$/,
                 parser: function (match) {
                     return (match ?
                         Date.UTC(+match[4], match[3] - 1, +match[1]) :
@@ -68,7 +68,7 @@ class DataConverter {
                 alternative: 'mm/dd/YYYY' // Different format with the same regex
             },
             'mm/dd/YYYY': {
-                regex: /^([0-9]{1,2})([\-\.\/])([0-9]{1,2})\2([0-9]{4})$/,
+                regex: /^(\d{1,2})([\-\.\/])(\d{1,2})\2(\d{4})$/,
                 parser: function (match) {
                     return (match ?
                         Date.UTC(+match[4], match[1] - 1, +match[3]) :
@@ -76,7 +76,7 @@ class DataConverter {
                 }
             },
             'dd/mm/YY': {
-                regex: /^([0-9]{1,2})([\-\.\/])([0-9]{1,2})\2([0-9]{2})$/,
+                regex: /^(\d{1,2})([\-\.\/])(\d{1,2})\2(\d{2})$/,
                 parser: function (match) {
                     const d = new Date();
                     if (!match) {
@@ -94,7 +94,7 @@ class DataConverter {
                 alternative: 'mm/dd/YY' // Different format with the same regex
             },
             'mm/dd/YY': {
-                regex: /^([0-9]{1,2})([\-\.\/])([0-9]{1,2})\2([0-9]{2})$/,
+                regex: /^(\d{1,2})([\-\.\/])(\d{1,2})\2(\d{2})$/,
                 parser: function (match) {
                     return (match ?
                         Date.UTC(+match[4] + 2000, match[1] - 1, +match[3]) :
@@ -256,7 +256,7 @@ class DataConverter {
                 data[i] && data[i].length) {
                 thing = data[i]
                     .trim()
-                    .replace(/[-\.\/]/g, ' ')
+                    .replace(/[\-\.\/]/g, ' ')
                     .split(' ');
                 guessedFormat = [
                     '',
@@ -523,7 +523,7 @@ class DataConverter {
         if (typeof str === 'string') {
             str = str.replace(/^\s+|\s+$/g, '');
             // Clear white space insdie the string, like thousands separators
-            if (inside && /^[0-9\s]+$/.test(str)) {
+            if (inside && /^[\d\s]+$/.test(str)) {
                 str = str.replace(/\s/g, '');
             }
         }

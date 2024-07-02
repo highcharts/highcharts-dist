@@ -16,7 +16,7 @@
 /**
  * The area series type.
  *
- * @sample {highcharts} highcharts/demo/area-basic/
+ * @sample {highcharts} highcharts/demo/area-chart/
  *         Area chart
  * @sample {highstock} stock/demo/area/
  *         Area chart

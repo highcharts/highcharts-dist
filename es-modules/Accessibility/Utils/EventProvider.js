@@ -33,7 +33,7 @@ class EventProvider {
     addEvent() {
         const remover = addEvent.apply(H, arguments);
         this.eventRemovers.push({
-            element: arguments[0],
+            element: arguments[0], // HTML element
             remover
         });
         return remover;

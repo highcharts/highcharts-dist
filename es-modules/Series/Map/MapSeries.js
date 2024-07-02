@@ -65,7 +65,7 @@ class MapSeries extends ScatterSeries {
             group.attr({
                 translateX: chart.plotLeft + chart.plotWidth / 2,
                 translateY: chart.plotTop + chart.plotHeight / 2,
-                scaleX: 0.001,
+                scaleX: 0.001, // #1499
                 scaleY: 0.001
             });
             // Run the animation

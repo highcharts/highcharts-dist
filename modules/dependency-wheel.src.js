@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.3 (2024-05-22)
+ * @license Highcharts JS v11.4.4 (2024-07-02)
  *
  * Dependency wheel module
  *
@@ -12,7 +12,7 @@
         factory['default'] = factory;
         module.exports = factory;
     } else if (typeof define === 'function' && define.amd) {
-        define('highcharts/modules/dependency-wheel', ['highcharts', 'highcharts/modules/sankey'], function (Highcharts) {
+        define('highcharts/modules/dependency-wheel', ['highcharts', 'modules/sankey'], function (Highcharts) {
             factory(Highcharts);
             factory.Highcharts = Highcharts;
             return factory;
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -291,7 +291,7 @@
 
         return DependencyWheelSeriesDefaults;
     });
-    _registerModule(_modules, 'Series/DependencyWheel/DependencyWheelSeries.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Series/DependencyWheel/DependencyWheelPoint.js'], _modules['Series/DependencyWheel/DependencyWheelSeriesDefaults.js'], _modules['Core/Globals.js'], _modules['Series/Sankey/SankeyColumnComposition.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (A, DependencyWheelPoint, DependencyWheelSeriesDefaults, H, SankeyColumnComposition, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/DependencyWheel/DependencyWheelSeries.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Series/DependencyWheel/DependencyWheelPoint.js'], _modules['Series/DependencyWheel/DependencyWheelSeriesDefaults.js'], _modules['Core/Globals.js'], _modules['Series/Sankey/SankeyColumnComposition.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Extensions/TextPath.js']], function (A, DependencyWheelPoint, DependencyWheelSeriesDefaults, H, SankeyColumnComposition, SeriesRegistry, U, SVGElement, TextPath) {
         /* *
          *
          *  Dependency wheel module
@@ -307,6 +307,7 @@
         const { deg2rad } = H;
         const { pie: PieSeries, sankey: SankeySeries } = SeriesRegistry.seriesTypes;
         const { extend, merge, relativeLength } = U;
+        TextPath.compose(SVGElement);
         /* *
          *
          *  Class
@@ -479,8 +480,8 @@
                                             'A',
                                             innerR, innerR,
                                             0,
-                                            0,
-                                            1,
+                                            0, // Long arc
+                                            1, // Clockwise
                                             corners[1].x, corners[1].y
                                         ], [
                                             'C',

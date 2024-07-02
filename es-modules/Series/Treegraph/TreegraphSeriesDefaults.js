@@ -36,8 +36,8 @@
  *
  * @product      highcharts
  * @since 10.3.0
- * @requires     modules/treemap.js
- * @requires     modules/treegraph.js
+ * @requires     modules/treemap
+ * @requires     modules/treegraph
  * @optionparent plotOptions.treegraph
  */
 const TreegraphSeriesDefaults = {

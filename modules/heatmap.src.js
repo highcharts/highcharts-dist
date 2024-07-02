@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v11.4.3 (2024-05-22)
+ * @license Highmaps JS v11.4.4 (2024-07-02)
  *
  * (c) 2009-2024 Torstein Honsi
  *
@@ -26,7 +26,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -712,9 +712,13 @@
              * Fires when the legend item belonging to the colorAxis is clicked.
              * One parameter, `event`, is passed to the function.
              *
-             * @type      {Function}
-             * @product   highcharts highstock highmaps
-             * @apioption colorAxis.events.legendItemClick
+             * **Note:** This option is deprecated in favor of
+             * [legend.events.itemClick](#legend.events.itemClick).
+             *
+             * @deprecated
+             * @type       {Function}
+             * @product    highcharts highstock highmaps
+             * @apioption  colorAxis.events.legendItemClick
              */
             /**
              * The width of the color axis. If it's a number, it is interpreted as
@@ -2010,14 +2014,14 @@
             },
             clip: true,
             /** @ignore-option */
-            pointRange: null,
+            pointRange: null, // Dynamically set to colsize by default
             tooltip: {
                 pointFormat: '{point.x}, {point.y}: {point.value}<br/>'
             },
             states: {
                 hover: {
                     /** @ignore-option */
-                    halo: false,
+                    halo: false, // #3406, halo is disabled on heatmaps by default
                     /**
                      * How much to brighten the point on interaction. Requires the
                      * main color to be defined in hex or rgb(a) format.

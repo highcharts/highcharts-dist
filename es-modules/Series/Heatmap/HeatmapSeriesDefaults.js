@@ -282,14 +282,14 @@ const HeatmapSeriesDefaults = {
     },
     clip: true,
     /** @ignore-option */
-    pointRange: null,
+    pointRange: null, // Dynamically set to colsize by default
     tooltip: {
         pointFormat: '{point.x}, {point.y}: {point.value}<br/>'
     },
     states: {
         hover: {
             /** @ignore-option */
-            halo: false,
+            halo: false, // #3406, halo is disabled on heatmaps by default
             /**
              * How much to brighten the point on interaction. Requires the
              * main color to be defined in hex or rgb(a) format.

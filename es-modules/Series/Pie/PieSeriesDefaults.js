@@ -74,13 +74,14 @@ const PieSeriesDefaults = {
      * event information. The default action is to toggle the visibility of
      * the point. This can be prevented by calling `event.preventDefault()`.
      *
-     * @sample {highcharts} highcharts/plotoptions/pie-point-events-legenditemclick/
-     *         Confirm toggle visibility
+     *  **Note:** This option is deprecated in favor of
+     * [legend.events.itemClick](#legend.events.itemClick).
      *
-     * @type      {Highcharts.PointLegendItemClickCallbackFunction}
-     * @since     1.2.0
-     * @product   highcharts highmaps
-     * @apioption plotOptions.pie.point.events.legendItemClick
+     * @deprecated
+     * @type       {Highcharts.PointLegendItemClickCallbackFunction}
+     * @since      1.2.0
+     * @product    highcharts highmaps
+     * @apioption  plotOptions.pie.point.events.legendItemClick
      */
     /**
      * The center of the pie chart relative to the plot area. Can be
@@ -130,7 +131,7 @@ const PieSeriesDefaults = {
      *
      * @private
      */
-    colorByPoint: true,
+    colorByPoint: true, // Always true for pies
     /**
      * A series specific or series type specific color set to use instead
      * of the global [colors](#colors).
@@ -426,7 +427,7 @@ const PieSeriesDefaults = {
      *
      * @private
      */
-    marker: null,
+    marker: null, // Point options are specified in the base options
     /**
      * The minimum size for a pie in response to auto margins. The pie will
      * try to shrink to make room for data labels in side the plot area,
@@ -553,7 +554,7 @@ const PieSeriesDefaults = {
      * @ignore-option
      * @private
      */
-    lineWidth: void 0,
+    lineWidth: void 0, // #12222
     states: {
         /**
          * @extends   plotOptions.series.states.hover

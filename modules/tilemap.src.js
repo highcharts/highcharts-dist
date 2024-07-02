@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v11.4.3 (2024-05-22)
+ * @license Highmaps JS v11.4.4 (2024-07-02)
  *
  * Tilemap module
  *
@@ -12,7 +12,7 @@
         factory['default'] = factory;
         module.exports = factory;
     } else if (typeof define === 'function' && define.amd) {
-        define('highcharts/modules/tilemap', ['highcharts', 'highcharts/modules/map'], function (Highcharts) {
+        define('highcharts/modules/tilemap', ['highcharts', 'modules/map'], function (Highcharts) {
             factory(Highcharts);
             factory.Highcharts = Highcharts;
             return factory;
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -121,7 +121,7 @@
          * @excluding    jitter, joinBy, shadow, allAreas, mapData, marker, data,
          *               dataSorting, boostThreshold, boostBlending
          * @product      highcharts highmaps
-         * @requires     modules/tilemap.js
+         * @requires     modules/tilemap
          * @optionparent plotOptions.tilemap
          */
         const TilemapSeriesDefaults = {
@@ -197,7 +197,7 @@
          *            pointRange, shadow, stack, dataSorting, boostThreshold,
          *            boostBlending
          * @product   highcharts highmaps
-         * @requires  modules/tilemap.js
+         * @requires  modules/tilemap
          * @apioption series.tilemap
          */
         /**

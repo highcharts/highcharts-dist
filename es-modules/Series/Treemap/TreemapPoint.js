@@ -42,7 +42,8 @@ class TreemapPoint extends ScatterPoint {
         const series = this.series, options = series.options;
         let className = super.getClassName();
         // Above the current level
-        if (this.node.level <= series.nodeMap[series.rootNode].level) {
+        if (this.node.level <= series.nodeMap[series.rootNode].level &&
+            this.node.children.length) {
             className += ' highcharts-above-level';
         }
         else if (!this.node.isLeaf &&

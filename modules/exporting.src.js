@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.3 (2024-05-22)
+ * @license Highcharts JS v11.4.4 (2024-07-02)
  *
  * Exporting module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -1655,17 +1655,17 @@
              * */
             // These CSS properties are not inlined. Remember camelCase.
             const inlineDenylist = [
-                /-/,
-                /^(clipPath|cssText|d|height|width)$/,
-                /^font$/,
+                /-/, // In Firefox, both hyphened and camelCased names are listed
+                /^(clipPath|cssText|d|height|width)$/, // Full words
+                /^font$/, // More specific props are set
                 /[lL]ogical(Width|Height)$/,
                 /^parentRule$/,
-                /^(cssRules|ownerRules)$/,
+                /^(cssRules|ownerRules)$/, // #19516 read-only properties
                 /perspective/,
                 /TapHighlightColor/,
                 /^transition/,
-                /^length$/,
-                /^[0-9]+$/ // #17538
+                /^length$/, // #7700
+                /^\d+$/ // #17538
             ];
             // These ones are translated to attributes rather than styles
             const inlineToAttributes = [
@@ -2249,7 +2249,7 @@
                         .toLowerCase()
                         .replace(/<\/?[^>]+(>|$)/g, '') // Strip HTML tags
                         .replace(/[\s_]+/g, '-')
-                        .replace(/[^a-z0-9\-]/g, '') // Preserve only latin
+                        .replace(/[^a-z\d\-]/g, '') // Preserve only latin
                         .replace(/^[\-]+/g, '') // Dashes in the start
                         .replace(/[\-]+/g, '-') // Dashes in a row
                         .substr(0, 24)
@@ -2321,7 +2321,7 @@
                 options.series = [];
                 chart.series.forEach(function (serie) {
                     seriesOptions = merge(serie.userOptions, {
-                        animation: false,
+                        animation: false, // Turn off animation
                         enableMouseTracking: false,
                         showCheckbox: false,
                         visible: serie.visible
@@ -2410,8 +2410,8 @@
              * Hyphenated property name
              */
             function hyphenate(prop) {
-                return prop.replace(/([A-Z])/g, function (a, b) {
-                    return '-' + b.toLowerCase();
+                return prop.replace(/[A-Z]/g, function (match) {
+                    return '-' + match.toLowerCase();
                 });
             }
             /**
@@ -2533,7 +2533,7 @@
                             for (const key in s) {
                                 if (key.length < 1000 /* RegexLimits.shortLimit */ &&
                                     typeof s[key] === 'string' &&
-                                    !/^[0-9]+$/.test(key)) {
+                                    !/^\d+$/.test(key)) {
                                     defaults[key] = s[key];
                                 }
                             }
@@ -2744,14 +2744,14 @@
                 svg = svg
                     .replace(/zIndex="[^"]+"/g, '')
                     .replace(/symbolName="[^"]+"/g, '')
-                    .replace(/jQuery[0-9]+="[^"]+"/g, '')
+                    .replace(/jQuery\d+="[^"]+"/g, '')
                     .replace(/url\(("|&quot;)(.*?)("|&quot;)\;?\)/g, 'url($2)')
                     .replace(/url\([^#]+#/g, 'url(#')
                     .replace(/<svg /, '<svg xmlns:xlink="http://www.w3.org/1999/xlink" ')
-                    .replace(/ (|NS[0-9]+\:)href=/g, ' xlink:href=') // #3567
+                    .replace(/ (NS\d+\:)?href=/g, ' xlink:href=') // #3567
                     .replace(/\n+/g, ' ')
                     // Batik doesn't support rgba fills and strokes (#3095)
-                    .replace(/(fill|stroke)="rgba\(([ 0-9]+,[ 0-9]+,[ 0-9]+),([ 0-9\.]+)\)"/g, // eslint-disable-line max-len
+                    .replace(/(fill|stroke)="rgba\(([ \d]+,[ \d]+,[ \d]+),([ \d\.]+)\)"/g, // eslint-disable-line max-len
                 '$1="rgb($2)" $1-opacity="$3"')
                     // Replace HTML entities, issue #347
                     .replace(/&nbsp;/g, '\u00A0') // No-break space

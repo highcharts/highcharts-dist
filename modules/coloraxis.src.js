@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.3 (2024-05-22)
+ * @license Highcharts JS v11.4.4 (2024-07-02)
  *
  * ColorAxis module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -714,9 +714,13 @@
              * Fires when the legend item belonging to the colorAxis is clicked.
              * One parameter, `event`, is passed to the function.
              *
-             * @type      {Function}
-             * @product   highcharts highstock highmaps
-             * @apioption colorAxis.events.legendItemClick
+             * **Note:** This option is deprecated in favor of
+             * [legend.events.itemClick](#legend.events.itemClick).
+             *
+             * @deprecated
+             * @type       {Function}
+             * @product    highcharts highstock highmaps
+             * @apioption  colorAxis.events.legendItemClick
              */
             /**
              * The width of the color axis. If it's a number, it is interpreted as

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.4.3 (2024-05-22)
+ * @license Highstock JS v11.4.4 (2024-07-02)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -12,7 +12,7 @@
         factory['default'] = factory;
         module.exports = factory;
     } else if (typeof define === 'function' && define.amd) {
-        define('highcharts/indicators/indicators', ['highcharts', 'highcharts/modules/stock'], function (Highcharts) {
+        define('highcharts/indicators/indicators', ['highcharts', 'modules/stock'], function (Highcharts) {
             factory(Highcharts);
             factory.Highcharts = Highcharts;
             return factory;
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -359,7 +359,7 @@
             },
             hasDerivedData: true,
             nameComponents: ['period'],
-            nameSuffixes: [],
+            nameSuffixes: [], // E.g. Zig Zag uses extra '%'' in the legend name
             useCommonDataGrouping: true
         });
         SeriesRegistry.registerSeriesType('sma', SMAIndicator);

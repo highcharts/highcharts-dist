@@ -679,15 +679,23 @@ declare module "../highcharts.src" {
          */
         tooltip?: Highcharts.SeriesTooltipOptionsObject;
         /**
-         * (Highcharts, Highstock, Gantt) When a series contains a data array
-         * that is longer than this, only one dimensional arrays of numbers, or
-         * two dimensional arrays with x and y values are allowed. Also, only
-         * the first point is tested, and the rest are assumed to be the same
-         * format. This saves expensive data checking and indexing in long
-         * series. Set it to `0` disable.
+         * (Highcharts, Highstock, Gantt) When a series contains a `data` array
+         * that is longer than this, the Series class looks for data
+         * configurations of plain numbers or arrays of numbers. The first and
+         * last valid points are checked. If found, the rest of the data is
+         * assumed to be the same. This saves expensive data checking and
+         * indexing in long series, and makes data-heavy charts render faster.
          *
-         * Note: In boost mode turbo threshold is forced. Only array of numbers
-         * or two dimensional arrays are allowed.
+         * Set it to `0` disable.
+         *
+         * Note:
+         *
+         * - In boost mode turbo threshold is forced. Only array of numbers or
+         * two dimensional arrays are allowed.
+         *
+         * - In version 11.4.3 and earlier, if object configurations were passed
+         * beyond the turbo threshold, a warning was logged in the console and
+         * the data series didn't render.
          */
         turboThreshold?: number;
         /**

@@ -92,7 +92,7 @@ const background = {
         ]
     },
     /** @ignore-option */
-    from: -Number.MAX_VALUE,
+    from: -Number.MAX_VALUE, // Corrected to axis min
     /**
      * The inner radius of the pane background. Can be either numeric
      * (pixels) or a percentage string.
@@ -103,7 +103,7 @@ const background = {
      */
     innerRadius: 0,
     /** @ignore-option */
-    to: Number.MAX_VALUE,
+    to: Number.MAX_VALUE, // Corrected to axis max
     /**
      * The outer radius of the circular pane background. Can be either
      * numeric (pixels) or a percentage string.
@@ -118,6 +118,7 @@ const background = {
  * The pane serves as a container for axes and backgrounds for circular
  * gauges and polar charts.
  *
+ * @type         {*|Array<*>}
  * @since        2.3.0
  * @product      highcharts
  * @requires     highcharts-more

@@ -15,11 +15,11 @@
      * @private
      */
 const defaultCircularOptions = {
-    gridLineWidth: 1,
+    gridLineWidth: 1, // Spokes
     labels: {
-        align: void 0,
+        align: void 0, // Auto
         x: 0,
-        y: void 0,
+        y: void 0, // Auto
         style: {
             textOverflow: 'none' // Wrap lines by default (#7248)
         }

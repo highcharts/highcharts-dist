@@ -525,7 +525,7 @@ function onAfterSetOptions(e) {
             // for example we shouldn't have one grid cell spanning
             // two days.
             units: [[
-                    'millisecond',
+                    'millisecond', // Unit name
                     [1, 10, 100]
                 ], [
                     'second',

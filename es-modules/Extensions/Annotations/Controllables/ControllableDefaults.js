@@ -57,7 +57,7 @@ const defaultMarkers = {
         children: [{
                 tagName: 'path',
                 attributes: {
-                    d: 'M 0 0 L 10 5 L 0 10 Z',
+                    d: 'M 0 0 L 10 5 L 0 10 Z', // Triangle (used as an arrow)
                     'stroke-width': 0
                 }
             }]

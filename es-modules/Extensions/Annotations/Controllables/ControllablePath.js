@@ -185,7 +185,7 @@ class ControllablePath extends Controllable {
             .add(parent);
         if (!this.annotation.chart.styledMode) {
             this.tracker.attr({
-                'stroke-linejoin': 'round',
+                'stroke-linejoin': 'round', // #1225
                 stroke: TRACKER_FILL,
                 fill: TRACKER_FILL,
                 'stroke-width': this.graphic.strokeWidth() +

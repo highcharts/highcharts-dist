@@ -87,8 +87,8 @@ class BubbleSeries extends ScatterSeries {
      *  Static Functions
      *
      * */
-    static compose(AxisClass, ChartClass, LegendClass, SeriesClass) {
-        BubbleLegendComposition.compose(ChartClass, LegendClass, SeriesClass);
+    static compose(AxisClass, ChartClass, LegendClass) {
+        BubbleLegendComposition.compose(ChartClass, LegendClass);
         if (pushUnique(composed, 'Series.Bubble')) {
             addEvent(AxisClass, 'foundExtremes', onAxisFoundExtremes);
         }
@@ -363,7 +363,7 @@ BubbleSeries.defaultOptions = merge(ScatterSeries.defaultOptions, {
      * @excluding enabled, enabledThreshold, height, radius, width
      */
     marker: {
-        lineColor: null,
+        lineColor: null, // Inherit from series.color
         lineWidth: 1,
         /**
          * The fill opacity of the bubble markers.
@@ -555,7 +555,7 @@ extend(BubbleSeries.prototype, {
     pointClass: BubblePoint,
     parallelArrays: ['x', 'y', 'z'],
     trackerGroups: ['group', 'dataLabelsGroup'],
-    specialGroup: 'group',
+    specialGroup: 'group', // To allow clipping (#6296)
     zoneAxis: 'z'
 });
 // On updated data in any series, delete the chart-level Z extremes cache

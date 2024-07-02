@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v11.4.3 (2024-05-22)
+ * @license Highcharts Gantt JS v11.4.4 (2024-07-02)
  *
  * Tree Grid
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -1165,7 +1165,7 @@
                     // for example we shouldn't have one grid cell spanning
                     // two days.
                     units: [[
-                            'millisecond',
+                            'millisecond', // Unit name
                             [1, 10, 100]
                         ], [
                             'second',

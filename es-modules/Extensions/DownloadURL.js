@@ -40,7 +40,7 @@ const domurl = win.URL || win.webkitURL || win;
 function dataURLtoBlob(dataURL) {
     const parts = dataURL
         .replace(/filename=.*;/, '')
-        .match(/data:([^;]*)(;base64)?,([0-9A-Za-z+/]+)/);
+        .match(/data:([^;]*)(;base64)?,([A-Z+\d\/]+)/i);
     if (parts &&
         parts.length > 3 &&
         (win.atob) &&

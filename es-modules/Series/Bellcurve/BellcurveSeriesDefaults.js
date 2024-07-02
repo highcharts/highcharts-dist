@@ -29,7 +29,7 @@
  * @product      highcharts
  * @excluding    boostThreshold, connectNulls, dragDrop, stacking,
  *               pointInterval, pointIntervalUnit
- * @requires     modules/bellcurve
+ * @requires     modules/histogram-bellcurve
  * @optionparent plotOptions.bellcurve
  */
 const BellcurveSeriesDefaults = {
@@ -86,7 +86,7 @@ const BellcurveSeriesDefaults = {
  * @since     6.0.0
  * @product   highcharts
  * @excluding dataParser, dataURL, data, boostThreshold, boostBlending
- * @requires  modules/bellcurve
+ * @requires  modules/histogram-bellcurve
  * @apioption series.bellcurve
  */
 /**

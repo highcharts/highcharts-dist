@@ -47,7 +47,7 @@ function onAxisAfterDrawCrosshair(e) {
  */
 function onAxisAfterRender() {
     const axis = this;
-    if (!this.horiz && this.variwide) {
+    if (this.variwide) {
         this.chart.labelCollectors.push(function () {
             return axis.tickPositions
                 .filter((pos) => !!axis.ticks[pos].label)

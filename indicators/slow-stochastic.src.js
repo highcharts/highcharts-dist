@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.4.3 (2024-05-22)
+ * @license Highstock JS v11.4.4 (2024-07-02)
  *
  * Slow Stochastic series type for Highcharts Stock
  *
@@ -12,7 +12,7 @@
         factory['default'] = factory;
         module.exports = factory;
     } else if (typeof define === 'function' && define.amd) {
-        define('highcharts/indicators/indicators', ['highcharts', 'highcharts/modules/stock'], function (Highcharts) {
+        define('highcharts/indicators/indicators', ['highcharts', 'modules/stock'], function (Highcharts) {
             factory(Highcharts);
             factory.Highcharts = Highcharts;
             return factory;
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -120,7 +120,7 @@
          * @product      highstock
          * @requires     stock/indicators/indicators
          * @requires     stock/indicators/stochastic
-         * @requires     stock/indicators/slowstochastic
+         * @requires     stock/indicators/slow-stochastic
          * @optionparent plotOptions.slowstochastic
          */
         SlowStochasticIndicator.defaultOptions = merge(StochasticIndicator.defaultOptions, {
@@ -157,7 +157,7 @@
          * @product   highstock
          * @requires  stock/indicators/indicators
          * @requires  stock/indicators/stochastic
-         * @requires  stock/indicators/slowstochastic
+         * @requires  stock/indicators/slow-stochastic
          * @apioption series.slowstochastic
          */
         ''; // To include the above in the js output

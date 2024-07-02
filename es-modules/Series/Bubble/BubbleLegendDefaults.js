@@ -183,19 +183,19 @@ const BubbleLegendDefaults = {
      * not specified, the `minSize` and the `maxSize` are calculated
      * from bubble series.
      */
-    maxSize: 60,
+    maxSize: 60, // Number
     /**
      * Minimum bubble legend range size. If values for ranges are
      * not specified, the `minSize` and the `maxSize` are calculated
      * from bubble series.
      */
-    minSize: 10,
+    minSize: 10, // Number
     /**
      * The position of the bubble legend in the legend.
      * @sample highcharts/bubble-legend/connectorandlabels/
      *         Bubble legend as last item in legend
      */
-    legendIndex: 0,
+    legendIndex: 0, // Number
     /**
      * Options for specific range. One range consists of bubble,
      * label and connector.

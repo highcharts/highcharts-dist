@@ -453,7 +453,7 @@ const Options = {
          * @type  {string|Highcharts.HTMLDOMElement}
          * @since 8.0.0
          */
-        linkedDescription: '*[data-highcharts-chart="{index}"] + .highcharts-description',
+        linkedDescription: '*[data-highcharts-chart="{index}"] + .highcharts-description', // eslint-disable-line
         /**
          * A hook for adding custom components to the accessibility module.
          * Should be an object mapping component names to instances of classes

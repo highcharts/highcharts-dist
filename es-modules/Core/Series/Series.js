@@ -162,7 +162,7 @@ class Series {
              * @name Highcharts.Series#visible
              * @type {boolean}
              */
-            visible,
+            visible, // True by default
             /**
              * Read only. The series' selected state as set by {@link
              * Highcharts.Series#select}.
@@ -788,7 +788,7 @@ class Series {
      */
     setData(data, redraw = true, animation, updatePoints) {
         const series = this, oldData = series.points, oldDataLength = (oldData && oldData.length) || 0, options = series.options, chart = series.chart, dataSorting = options.dataSorting, xAxis = series.xAxis, turboThreshold = options.turboThreshold, xData = this.xData, yData = this.yData, pointArrayMap = series.pointArrayMap, valueCount = pointArrayMap && pointArrayMap.length, keys = options.keys;
-        let i, pt, updatedData, indexOfX = 0, indexOfY = 1, firstPoint = null, copiedData;
+        let i, pt, updatedData, indexOfX = 0, indexOfY = 1, copiedData;
         if (!chart.options.chart.allowMutatingData) { // #4259
             // Remove old reference
             if (options.data) {
@@ -826,21 +826,24 @@ class Series {
             this.parallelArrays.forEach(function (key) {
                 series[key + 'Data'].length = 0;
             });
-            // In turbo mode, only one- or twodimensional arrays of numbers
-            // are allowed. The first value is tested, and we assume that
-            // all the rest are defined the same way. Although the 'for'
-            // loops are similar, they are repeated inside each if-else
-            // conditional for max performance.
-            if (turboThreshold && dataLength > turboThreshold) {
-                firstPoint = series.getFirstValidPoint(data);
-                if (isNumber(firstPoint)) { // Assume all points are numbers
+            // In turbo mode, look for one- or twodimensional arrays of numbers.
+            // The first and the last valid value are tested, and we assume that
+            // all the rest are defined the same way. Although the 'for' loops
+            // are similar, they are repeated inside each if-else conditional
+            // for max performance.
+            let runTurbo = turboThreshold && dataLength > turboThreshold;
+            if (runTurbo) {
+                const firstPoint = series.getFirstValidPoint(data), lastPoint = series.getFirstValidPoint(data, dataLength - 1, -1), isShortArray = (a) => Boolean(isArray(a) && (keys || isNumber(a[0])));
+                // Assume all points are numbers
+                if (isNumber(firstPoint) && isNumber(lastPoint)) {
                     for (i = 0; i < dataLength; i++) {
                         xData[i] = this.autoIncrement();
                         yData[i] = data[i];
                     }
                     // Assume all points are arrays when first point is
                 }
-                else if (isArray(firstPoint)) {
+                else if (isShortArray(firstPoint) &&
+                    isShortArray(lastPoint)) {
                     if (valueCount) { // [x, low, high] or [x, o, h, l, c]
                         if (firstPoint.length === valueCount) {
                             for (i = 0; i < dataLength; i++) {
@@ -885,10 +888,10 @@ class Series {
                 else {
                     // Highcharts expects configs to be numbers or arrays in
                     // turbo mode
-                    error(12, false, chart);
+                    runTurbo = false;
                 }
             }
-            else {
+            if (!runTurbo) {
                 for (i = 0; i < dataLength; i++) {
                     pt = { series: series };
                     series.pointClass.prototype.applyOptions.apply(pt, [data[i]]);
@@ -1296,7 +1299,7 @@ class Series {
             }
         }
         const dataExtremes = {
-            activeYData,
+            activeYData, // Needed for Stock Cumulative Sum
             dataMin: arrayMin(activeYData),
             dataMax: arrayMax(activeYData)
         };
@@ -1334,21 +1337,26 @@ class Series {
         return dataExtremes;
     }
     /**
-     * Find and return the first non null point in the data
+     * Find and return the first non nullish point in the data
      *
      * @private
      * @function Highcharts.Series.getFirstValidPoint
      * @param {Array<Highcharts.PointOptionsType>} data
-     * Array of options for points
+     *        Array of options for points
+     * @param {number} [start=0]
+     *        Index to start searching from
+     * @param {number} [increment=1]
+     *        Index increment, set -1 to search backwards
      */
-    getFirstValidPoint(data) {
+    getFirstValidPoint(data, start = 0, increment = 1) {
         const dataLength = data.length;
-        let i = 0, firstPoint = null;
-        while (firstPoint === null && i < dataLength) {
-            firstPoint = data[i];
-            i++;
+        let i = start;
+        while (i >= 0 && i < dataLength) {
+            if (defined(data[i])) {
+                return data[i];
+            }
+            i += increment;
         }
-        return firstPoint;
     }
     /**
      * Translate data points from raw data values to chart specific
@@ -2187,7 +2195,7 @@ class Series {
             rotationOriginY: inverted ?
                 (horAxis.len + vertAxis.len) / 2 :
                 0,
-            scaleX: inverted ? -1 : 1,
+            scaleX: inverted ? -1 : 1, // #1623
             scaleY: 1
         };
     }
@@ -2510,7 +2518,7 @@ class Series {
             if (!chart.styledMode) {
                 tracker.attr({
                     'stroke-linecap': 'round',
-                    'stroke-linejoin': 'round',
+                    'stroke-linejoin': 'round', // #1225
                     stroke: TRACKER_FILL,
                     fill: trackByArea ? TRACKER_FILL : 'none',
                     'stroke-width': series.graph.strokeWidth() +
@@ -3478,6 +3486,10 @@ export default Series;
  * default action is to toggle the visibility of the series. This can be
  * prevented by returning `false` or calling `event.preventDefault()`.
  *
+ * **Note:** This option is deprecated in favor of
+ * Highcharts.LegendItemClickCallbackFunction.
+ *
+ * @deprecated
  * @callback Highcharts.SeriesLegendItemClickCallbackFunction
  *
  * @param {Highcharts.Series} this
@@ -3489,6 +3501,10 @@ export default Series;
 /**
  * Information about the event.
  *
+ * **Note:** This option is deprecated in favor of
+ * Highcharts.LegendItemClickEventObject.
+ *
+ * @deprecated
  * @interface Highcharts.SeriesLegendItemClickEventObject
  */ /**
 * Related browser event.

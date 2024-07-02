@@ -11,7 +11,10 @@
  * */
 'use strict';
 import U from '../../Core/Utilities.js';
-const { addEvent, createElement, css, fireEvent, getStyle, isArray, merge, pick } = U;
+import AST from '../../Core/Renderer/HTML/AST.js';
+import StockToolsUtilities from './StockToolsUtilities.js';
+const { addEvent, createElement, css, defined, fireEvent, getStyle, isArray, merge, pick } = U;
+const { shallowArraysEqual } = StockToolsUtilities;
 /* *
  *
  *  Classes
@@ -39,6 +42,8 @@ class Toolbar {
      *
      * */
     constructor(options, langOptions, chart) {
+        this.width = 0;
+        this.isDirty = false;
         this.chart = chart;
         this.options = options;
         this.lang = langOptions;
@@ -46,14 +51,15 @@ class Toolbar {
         this.iconsURL = this.getIconsURL();
         this.guiEnabled = options.enabled;
         this.visible = pick(options.visible, true);
-        this.placed = pick(options.placed, false);
+        this.guiClassName = options.className;
+        this.toolbarClassName = options.toolbarClassName;
         // General events collection which should be removed upon
         // destroy/update:
         this.eventsToUnbind = [];
         if (this.guiEnabled) {
-            this.createHTML();
-            this.init();
-            this.showHideNavigatorion();
+            this.createContainer();
+            this.createButtons();
+            this.showHideNavigation();
         }
         fireEvent(this, 'afterInit');
     }
@@ -63,12 +69,12 @@ class Toolbar {
      *
      * */
     /**
-     * Initialize the toolbar. Create buttons and submenu for each option
-     * defined in `stockTools.gui`.
+     * Create and set up stockTools buttons with their events and submenus.
      * @private
      */
-    init() {
+    createButtons() {
         const lang = this.lang, guiOptions = this.options, toolbar = this.toolbar, buttons = guiOptions.buttons, defs = guiOptions.definitions, allButtons = toolbar.childNodes;
+        this.buttonList = buttons;
         // Create buttons
         buttons.forEach((btnName) => {
             const button = this.addButton(toolbar, defs, btnName, lang);
@@ -292,11 +298,11 @@ class Toolbar {
         }));
     }
     /*
-     * Create stockTools HTML main elements.
+     * Create the stockTools container and sets up event bindings.
      *
      */
-    createHTML() {
-        const chart = this.chart, guiOptions = this.options, container = chart.container, navigation = chart.options.navigation, bindingsClassName = navigation && navigation.bindingsClassName;
+    createContainer() {
+        const chart = this.chart, guiOptions = this.options, container = chart.container, navigation = chart.options.navigation, bindingsClassName = navigation?.bindingsClassName, self = this;
         let listWrapper, toolbar;
         // Create main container
         const wrapper = this.wrapper = createElement('div', {
@@ -304,6 +310,17 @@ class Toolbar {
                 guiOptions.className + ' ' + bindingsClassName
         });
         container.appendChild(wrapper);
+        this.showHideBtn = createElement('div', {
+            className: 'highcharts-toggle-toolbar highcharts-arrow-left'
+        }, void 0, wrapper);
+        // Toggle menu
+        this.eventsToUnbind.push(addEvent(this.showHideBtn, 'click', () => {
+            this.update({
+                gui: {
+                    visible: !self.visible
+                }
+            });
+        }));
         // Mimic event behaviour of being outside chart.container
         [
             'mousedown',
@@ -333,7 +350,7 @@ class Toolbar {
      * Function called in redraw verifies if the navigation should be visible.
      * @private
      */
-    showHideNavigatorion() {
+    showHideNavigation() {
         // Arrows
         // 50px space for arrows
         if (this.visible &&
@@ -352,42 +369,31 @@ class Toolbar {
      * @private
      */
     showHideToolbar() {
-        const chart = this.chart, wrapper = this.wrapper, toolbar = this.listWrapper, submenu = this.submenu, 
+        const wrapper = this.wrapper, toolbar = this.listWrapper, submenu = this.submenu, 
         // Show hide toolbar
-        showhideBtn = this.showhideBtn = createElement('div', {
-            className: 'highcharts-toggle-toolbar highcharts-arrow-left'
-        }, void 0, wrapper);
+        showHideBtn = this.showHideBtn;
         let visible = this.visible;
-        showhideBtn.style.backgroundImage =
+        showHideBtn.style.backgroundImage =
             'url(' + this.iconsURL + 'arrow-right.svg)';
         if (!visible) {
             // Hide
             if (submenu) {
                 submenu.style.display = 'none';
             }
-            showhideBtn.style.left = '0px';
+            showHideBtn.style.left = '0px';
             visible = this.visible = false;
             toolbar.classList.add('highcharts-hide');
-            showhideBtn.classList.toggle('highcharts-arrow-right');
-            wrapper.style.height = showhideBtn.offsetHeight + 'px';
+            showHideBtn.classList.add('highcharts-arrow-right');
+            wrapper.style.height = showHideBtn.offsetHeight + 'px';
         }
         else {
             wrapper.style.height = '100%';
-            showhideBtn.style.top = getStyle(toolbar, 'padding-top') + 'px';
-            showhideBtn.style.left = (wrapper.offsetWidth +
+            toolbar.classList.remove('highcharts-hide');
+            showHideBtn.classList.remove('highcharts-arrow-right');
+            showHideBtn.style.top = getStyle(toolbar, 'padding-top') + 'px';
+            showHideBtn.style.left = (wrapper.offsetWidth +
                 getStyle(toolbar, 'padding-left')) + 'px';
         }
-        // Toggle menu
-        this.eventsToUnbind.push(addEvent(showhideBtn, 'click', () => {
-            chart.update({
-                stockTools: {
-                    gui: {
-                        visible: !visible,
-                        placed: true
-                    }
-                }
-            });
-        }));
     }
     /*
      * In main GUI button, replace icon and class with submenu button's
@@ -451,9 +457,10 @@ class Toolbar {
      * @private
      */
     update(options, redraw) {
+        this.isDirty = !!options.gui.definitions;
         merge(true, this.chart.options.stockTools, options);
-        this.destroy();
-        this.chart.setStockTools(options);
+        merge(true, this.options, options.gui);
+        this.visible = pick(this.options.visible && this.options.enabled, true);
         // If Stock Tools are updated, then bindings should be updated too:
         if (this.chart.navigationBindings) {
             this.chart.navigationBindings.update();
@@ -476,11 +483,82 @@ class Toolbar {
         }
     }
     /**
-     * Redraw, GUI requires to verify if the navigation should be visible.
+     * Redraws the toolbar based on the current state of the options.
      * @private
      */
     redraw() {
-        this.showHideNavigatorion();
+        if (this.options.enabled !== this.guiEnabled) {
+            this.handleGuiEnabledChange();
+        }
+        else {
+            if (!this.guiEnabled) {
+                return;
+            }
+            this.updateClassNames();
+            this.updateButtons();
+            this.updateVisibility();
+            this.showHideNavigation();
+            this.showHideToolbar();
+        }
+    }
+    /**
+     * Hadles the change of the `enabled` option.
+     * @private
+     */
+    handleGuiEnabledChange() {
+        if (this.options.enabled === false) {
+            this.destroy();
+            this.visible = false;
+        }
+        if (this.options.enabled === true) {
+            this.createContainer();
+            this.createButtons();
+        }
+        this.guiEnabled = this.options.enabled;
+    }
+    /**
+     * Updates the class names of the GUI and toolbar elements.
+     * @private
+     */
+    updateClassNames() {
+        if (this.options.className !== this.guiClassName) {
+            if (this.guiClassName) {
+                this.wrapper.classList.remove(this.guiClassName);
+            }
+            if (this.options.className) {
+                this.wrapper.classList.add(this.options.className);
+            }
+            this.guiClassName = this.options.className;
+        }
+        if (this.options.toolbarClassName !== this.toolbarClassName) {
+            if (this.toolbarClassName) {
+                this.toolbar.classList.remove(this.toolbarClassName);
+            }
+            if (this.options.toolbarClassName) {
+                this.toolbar.classList.add(this.options.toolbarClassName);
+            }
+            this.toolbarClassName = this.options.toolbarClassName;
+        }
+    }
+    /**
+     * Updates the buttons in the toolbar if the button options have changed.
+     * @private
+     */
+    updateButtons() {
+        if (!shallowArraysEqual(this.options.buttons, this.buttonList) ||
+            this.isDirty) {
+            this.toolbar.innerHTML = AST.emptyHTML;
+            this.createButtons();
+        }
+    }
+    /**
+     * Updates visibility based on current options.
+     * @private
+     */
+    updateVisibility() {
+        if (defined(this.options.visible)) {
+            this.visible = this.options.visible;
+        }
     }
     /**
      * @private

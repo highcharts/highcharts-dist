@@ -78,6 +78,7 @@ class JSONConnector extends DataConnector {
                 table.deleteColumns();
                 converter.parse({ data });
                 table.setColumns(converter.getTable().getColumns());
+                table.setRowKeysColumn(data.length);
             }
             return connector.setModifierOptions(dataModifier).then(() => data);
         })

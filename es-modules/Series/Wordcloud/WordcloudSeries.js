@@ -120,7 +120,7 @@ class WordcloudSeries extends ColumnSeries {
             }), attr = extend(series.pointAttribs(point, (point.selected && 'select')), {
                 align: 'center',
                 'alignment-baseline': 'middle',
-                'dominant-baseline': 'middle',
+                'dominant-baseline': 'middle', // #15973: Firefox
                 x: placement.x,
                 y: placement.y,
                 text: point.name,
@@ -217,7 +217,7 @@ class WordcloudSeries extends ColumnSeries {
         return {
             translateX: x + (width / 2),
             translateY: y + (height / 2),
-            scaleX: 1,
+            scaleX: 1, // #1623
             scaleY: 1
         };
     }

@@ -99,7 +99,7 @@ class WindbarbSeries extends ColumnSeries {
         }
         // The stem and the arrow head
         const path = [
-            ['M', 0, 7 * u],
+            ['M', 0, 7 * u], // Base of arrow
             ['L', -1.5 * u, 7 * u],
             ['L', 0, 10 * u],
             ['L', 1.5 * u, 7 * u],
@@ -216,7 +216,7 @@ extend(WindbarbSeries.prototype, {
     beaufortFloor: [
         0, 0.3, 1.6, 3.4, 5.5, 8.0, 10.8, 13.9, 17.2, 20.8,
         24.5, 28.5, 32.7
-    ],
+    ], // @todo dictionary with names?
     beaufortName: [
         'Calm', 'Light air', 'Light breeze',
         'Gentle breeze', 'Moderate breeze', 'Fresh breeze',

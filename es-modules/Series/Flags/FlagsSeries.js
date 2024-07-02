@@ -276,11 +276,11 @@ OnSeriesComposition.compose(FlagsSeries);
 extend(FlagsSeries.prototype, {
     allowDG: false,
     forceCrop: true,
-    invertible: false,
+    invertible: false, // Flags series group should not be invertible (#14063).
     noSharedTooltip: true,
     pointClass: FlagsPoint,
     sorted: false,
-    takeOrdinalPosition: false,
+    takeOrdinalPosition: false, // #1074
     trackerGroups: ['markerGroup'],
     buildKDTree: noop,
     /**

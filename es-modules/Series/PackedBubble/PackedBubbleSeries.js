@@ -23,6 +23,9 @@ import D from '../SimulationSeriesUtilities.js';
 const { initDataLabels, initDataLabelsDefer } = D;
 import U from '../../Core/Utilities.js';
 const { addEvent, clamp, defined, extend, fireEvent, isArray, isNumber, merge, pick } = U;
+import SVGElement from '../../Core/Renderer/SVG/SVGElement.js';
+import TextPath from '../../Extensions/TextPath.js';
+TextPath.compose(SVGElement);
 /* *
  *
  *  Class
@@ -52,8 +55,8 @@ class PackedBubbleSeries extends BubbleSeries {
      *  Static Functions
      *
      * */
-    static compose(AxisClass, ChartClass, LegendClass, SeriesClass) {
-        BubbleSeries.compose(AxisClass, ChartClass, LegendClass, SeriesClass);
+    static compose(AxisClass, ChartClass, LegendClass) {
+        BubbleSeries.compose(AxisClass, ChartClass, LegendClass);
         DragNodesComposition.compose(ChartClass);
         PackedBubbleLayout.compose(ChartClass);
     }
@@ -480,10 +483,10 @@ class PackedBubbleSeries extends BubbleSeries {
             // Create first bubble in the middle of the chart
             bubblePos.push([
                 [
+                    0, // Starting in 0,0 coordinates
                     0,
-                    0,
-                    sortedArr[0][2],
-                    sortedArr[0][3],
+                    sortedArr[0][2], // Radius
+                    sortedArr[0][3], // Series index
                     sortedArr[0][4]
                 ] // Point index
             ]); // 0 level bubble

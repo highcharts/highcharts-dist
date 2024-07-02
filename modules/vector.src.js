@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.3 (2024-05-22)
+ * @license Highcharts JS v11.4.4 (2024-07-02)
  *
  * Vector plot series module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -256,7 +256,7 @@
                 // The stem and the arrow head. Draw the arrow first with rotation
                 // 0, which is the arrow pointing down (vector from north to south).
                 path = [
-                    ['M', 0, 7 * u + o],
+                    ['M', 0, 7 * u + o], // Base of arrow
                     ['L', -1.5 * u, 7 * u + o],
                     ['L', 0, 10 * u + o],
                     ['L', 1.5 * u, 7 * u + o],

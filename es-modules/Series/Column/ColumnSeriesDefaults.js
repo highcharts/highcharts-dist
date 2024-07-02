@@ -117,7 +117,7 @@ const ColumnSeriesDefaults = {
      * @apioption plotOptions.column.grouping
      */
     /** @ignore-option */
-    marker: null,
+    marker: null, // Point options are specified in the base options
     /**
      * The maximum allowed pixel width for a column, translated to the
      * height of a bar in a bar chart. This prevents the columns from

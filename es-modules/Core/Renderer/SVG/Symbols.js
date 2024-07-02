@@ -34,12 +34,12 @@ function arc(cx, cy, w, h, options) {
         // Proximity takes care of rounding errors around PI (#6971)
         longArc = pick(options.longArc, end - start - Math.PI < proximity ? 0 : 1);
         let arcSegment = [
-            'A',
-            rx,
-            ry,
-            0,
-            longArc,
-            pick(options.clockwise, 1),
+            'A', // ArcTo
+            rx, // X radius
+            ry, // Y radius
+            0, // Slanting
+            longArc, // Long or short arc
+            pick(options.clockwise, 1), // Clockwise
             cx + rx * cosEnd,
             cy + ry * sinEnd
         ];
@@ -51,11 +51,11 @@ function arc(cx, cy, w, h, options) {
         ], arcSegment);
         if (defined(innerRadius)) {
             arcSegment = [
-                'A',
-                innerRadius,
-                innerRadius,
-                0,
-                longArc,
+                'A', // ArcTo
+                innerRadius, // X radius
+                innerRadius, // Y radius
+                0, // Slanting
+                longArc, // Long or short arc
                 // Clockwise - opposite to the outer arc clockwise
                 defined(options.clockwise) ? 1 - options.clockwise : 0,
                 cx + innerRadius * cosStart,
@@ -192,13 +192,13 @@ function roundedRect(x, y, w, h, options) {
     const r = options?.r || 0;
     return [
         ['M', x + r, y],
-        ['L', x + w - r, y],
-        ['A', r, r, 0, 0, 1, x + w, y + r],
-        ['L', x + w, y + h - r],
-        ['A', r, r, 0, 0, 1, x + w - r, y + h],
-        ['L', x + r, y + h],
-        ['A', r, r, 0, 0, 1, x, y + h - r],
-        ['L', x, y + r],
+        ['L', x + w - r, y], // Top side
+        ['A', r, r, 0, 0, 1, x + w, y + r], // Top-right corner
+        ['L', x + w, y + h - r], // Right side
+        ['A', r, r, 0, 0, 1, x + w - r, y + h], // Bottom-right corner
+        ['L', x + r, y + h], // Bottom side
+        ['A', r, r, 0, 0, 1, x, y + h - r], // Bottom-left corner
+        ['L', x, y + r], // Left side
         ['A', r, r, 0, 0, 1, x + r, y],
         ['Z'] // Top-left corner
     ];

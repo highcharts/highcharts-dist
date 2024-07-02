@@ -413,7 +413,7 @@ declare module "../highcharts" {
     /**
      * Toggle bubble legend depending on the visible status of bubble series.
      */
-    function onSeriesLegendItemClick(): void;
+    function onLegendItemClick(): void;
     function topButton(): void;
     /**
      * Convert a TopoJSON topology to GeoJSON. By default the first object is

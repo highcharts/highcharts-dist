@@ -49,7 +49,7 @@ const decorateSVGGroup = (g, container) => {
             ...g.styles,
             // Add g attributes that correspond to CSS
             display: g.display,
-            opacity: g.opacity,
+            opacity: g.opacity, // #5075
             visibility: g.visibility
         }, 
         // The top group is appended to container
@@ -260,7 +260,7 @@ class HTMLElement extends SVGElement {
                     css(element, {
                         width: (textPxLength > textWidthNum) || rotation ?
                             textWidth + 'px' :
-                            'auto',
+                            'auto', // #16261
                         display: 'block',
                         whiteSpace: whiteSpace || 'normal' // #3331
                     });

@@ -534,6 +534,18 @@ export type HTMLAttributes = Dictionary<(boolean|number|string|Function)>;
  */
 export type HTMLDOMElement = HTMLElement;
 /**
+ * Gets fired when the legend item is clicked. The default action is to toggle
+ * the visibility of the series or point. This can be prevented by returning
+ * `false` or calling `event.preventDefault()`.
+ *
+ * @param this
+ *        The legend on which the event occurred.
+ *
+ * @param event
+ *        The event that occurred.
+ */
+export type LegendItemClickCallbackFunction = (this: Legend, event: LegendItemClickEventObject) => void;
+/**
  * An array of longitude, latitude.
  */
 export type LonLatArray = Array<number>;
@@ -709,6 +721,9 @@ export type PointDropCallbackFunction = (this: Point, event: PointDropEventObjec
  * Gets fired when the legend item belonging to a point is clicked. The default
  * action is to toggle the visibility of the point. This can be prevented by
  * returning `false` or calling `event.preventDefault()`.
+ *
+ * **Note:** This option is deprecated in favor of
+ * Highcharts.LegendItemClickCallbackFunction.
  *
  * @param this
  *        The point on which the event occurred.
@@ -886,9 +901,12 @@ export type SeriesClickCallbackFunction = (this: Series, event: SeriesClickEvent
  */
 export type SeriesHideCallbackFunction = (this: Series, event: Event) => void;
 /**
- * Gets fired when the legend item belonging to a series is clicked. The default
- * action is to toggle the visibility of the series. This can be prevented by
- * returning `false` or calling `event.preventDefault()`.
+ * Gets fired when the legend item belonging to the series is clicked. The
+ * default action is to toggle the visibility of the series. This can be
+ * prevented by returning `false` or calling `event.preventDefault()`.
+ *
+ * **Note:** This option is deprecated in favor of
+ * Highcharts.LegendItemClickCallbackFunction.
  *
  * @param this
  *        The series where the event occurred.
@@ -6528,7 +6546,7 @@ export interface ChartParallelAxesLabelsOptions {
      * (Highcharts, Gantt) The pixel padding for axis labels, to ensure white
      * space between them. Defaults to 4 for horizontal axes, 1 for vertical.
      */
-    padding?: string;
+    padding?: number;
     /**
      * (Highcharts) Defines how the labels are be repositioned according to the
      * 3D chart orientation.
@@ -7536,12 +7554,6 @@ export interface ColorAxisEventsOptions {
      */
     afterSetExtremes?: AxisSetExtremesEventCallbackFunction;
     /**
-     * (Highcharts, Highstock, Highmaps) Fires when the legend item belonging to
-     * the colorAxis is clicked. One parameter, `event`, is passed to the
-     * function.
-     */
-    legendItemClick?: Function;
-    /**
      * (Highcharts, Highstock, Gantt) An event fired when a point is outside a
      * break after zoom.
      */
@@ -7645,7 +7657,7 @@ export interface ColorAxisLabelsOptions {
      * (Highcharts, Gantt) The pixel padding for axis labels, to ensure white
      * space between them. Defaults to 4 for horizontal axes, 1 for vertical.
      */
-    padding?: string;
+    padding?: number;
     /**
      * (Highcharts) Defines how the labels are be repositioned according to the
      * 3D chart orientation.
@@ -12163,6 +12175,48 @@ export interface LegendBubbleLegendRangesOptions {
      */
     value?: number;
 }
+/**
+ * (Highcharts, Highstock, Highmaps, Gantt) General event handlers for the
+ * legend. These event hooks can also be attached to the legend at run time
+ * using the `Highcharts.addEvent` function.
+ */
+export interface LegendEventsOptionsObject {
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Fires when the legend item
+     * belonging to the series is clicked. One parameter, `event`, is passed to
+     * the function. The default action is to toggle the visibility of the
+     * series, point or data class. This can be prevented by returning `false`
+     * or calling `event.preventDefault()`.
+     */
+    itemClick?: LegendItemClickCallbackFunction;
+}
+/**
+ * Information about the legend click event.
+ */
+export interface LegendItemClickEventObject {
+    /**
+     * Related browser event.
+     */
+    browserEvent: PointerEvent;
+    /**
+     * Related legend item, it can be series, point, color axis or data class
+     * from color axis.
+     */
+    legendItem: (LegendItemObject|Point|Series);
+    /**
+     * Prevent the default action of toggle the visibility of the series or
+     * point.
+     */
+    preventDefault: Function;
+    /**
+     * Related legend.
+     */
+    target: Legend;
+    /**
+     * Event type.
+     */
+    type: "itemClick";
+}
 export interface LegendItemObject {
     item?: SVGElement;
     line?: SVGElement;
@@ -12285,6 +12339,12 @@ export interface LegendOptions {
      * so it must set to `true` in order to show the legend for the series.
      */
     enabled?: boolean;
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) General event handlers for the
+     * legend. These event hooks can also be attached to the legend at run time
+     * using the `Highcharts.addEvent` function.
+     */
+    events?: LegendEventsOptionsObject;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) When the legend is floating, the
      * plot area ignores it and is allowed to be placed below it.
@@ -15483,7 +15543,7 @@ export interface NavigatorXAxisLabelsOptions {
      * (Highcharts, Gantt) The pixel padding for axis labels, to ensure white
      * space between them. Defaults to 4 for horizontal axes, 1 for vertical.
      */
-    padding?: string;
+    padding?: number;
     /**
      * (Highcharts, Highstock, Gantt) Whether to reserve space for the labels.
      * By default, space is reserved for the labels in these cases:
@@ -16713,7 +16773,7 @@ export interface NavigatorYAxisLabelsOptions {
      * (Highcharts, Gantt) The pixel padding for axis labels, to ensure white
      * space between them. Defaults to 4 for horizontal axes, 1 for vertical.
      */
-    padding?: string;
+    padding?: number;
     /**
      * (Highcharts, Highstock, Gantt) Whether to reserve space for the labels.
      * By default, space is reserved for the labels in these cases:
@@ -18001,7 +18061,7 @@ export interface Options {
      * (Highcharts) The pane serves as a container for axes and backgrounds for
      * circular gauges and polar charts.
      */
-    pane?: PaneOptions;
+    pane?: (PaneOptions|Array<PaneOptions>);
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) The plotOptions is a wrapper
      * object for config objects for each series type. The config objects for
@@ -18863,15 +18923,23 @@ export interface PlotAbandsOptions {
     tooltip?: SeriesTooltipOptionsObject;
     topLine?: PlotAbandsTopLineOptions;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -19885,15 +19953,23 @@ export interface PlotAoOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -20772,15 +20848,23 @@ export interface PlotArcdiagramOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -21547,15 +21631,23 @@ export interface PlotAreaOptions {
      */
     trackByArea?: boolean;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -22802,15 +22894,23 @@ export interface PlotAreasplinerangeOptions {
      */
     trackByArea?: boolean;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -23417,15 +23517,23 @@ export interface PlotAroonOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -24021,15 +24129,23 @@ export interface PlotAroonoscillatorOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -24649,15 +24765,23 @@ export interface PlotAtrOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -26042,15 +26166,23 @@ export interface PlotBellcurveOptions {
      */
     trackByArea?: boolean;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -26746,15 +26878,23 @@ export interface PlotBoxplotOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -27813,15 +27953,23 @@ export interface PlotBulletOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -29190,15 +29338,23 @@ export interface PlotChaikinOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -30198,15 +30354,23 @@ export interface PlotCmoOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -32991,15 +33155,23 @@ export interface PlotDmiOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -34544,15 +34716,23 @@ export interface PlotErrorbarOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -37758,15 +37938,23 @@ export interface PlotHeatmapOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -38497,15 +38685,23 @@ export interface PlotHeikinashiOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -39150,15 +39346,23 @@ export interface PlotHistogramOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -39867,15 +40071,23 @@ export interface PlotHlcOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -40592,15 +40804,23 @@ export interface PlotHollowcandlestickOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -41244,15 +41464,23 @@ export interface PlotIkhOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -42326,15 +42554,23 @@ export interface PlotKeltnerchannelsOptions {
      */
     topLine?: PlotKeltnerchannelsTopLineOptions;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -43436,15 +43672,23 @@ export interface PlotLinearregressionangleOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -44092,15 +44336,23 @@ export interface PlotLinearregressioninterceptOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -44797,15 +45049,23 @@ export interface PlotLinearregressionslopeOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -45538,15 +45798,23 @@ export interface PlotLineOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -48597,15 +48865,23 @@ export interface PlotMfiOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -49605,15 +49881,23 @@ export interface PlotNatrOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -50078,15 +50362,23 @@ export interface PlotNetworkgraphOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -50692,15 +50984,23 @@ export interface PlotObvOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -54010,15 +54310,23 @@ export interface PlotPackedbubbleOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -55389,15 +55697,23 @@ export interface PlotPictorialOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -56472,15 +56788,23 @@ export interface PlotPivotpointsOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -57876,15 +58200,23 @@ export interface PlotPriceenvelopesOptions {
      */
     topLine?: PlotPriceenvelopesTopLineOptions;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -59487,15 +59819,23 @@ export interface PlotRsiOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -60500,15 +60840,23 @@ export interface PlotScatter3dOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -61675,15 +62023,23 @@ export interface PlotSlowstochasticOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -63686,15 +64042,23 @@ export interface PlotStreamgraphOptions {
      */
     trackByArea?: boolean;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -64841,15 +65205,23 @@ export interface PlotTemaOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -67090,15 +67462,23 @@ export interface PlotTrixOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -69287,15 +69667,23 @@ export interface PlotVennOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -69889,15 +70277,23 @@ export interface PlotVwapOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -71361,15 +71757,23 @@ export interface PlotWindbarbOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -71994,15 +72398,23 @@ export interface PlotWmaOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -72476,15 +72888,23 @@ export interface PlotWordcloudOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -73468,15 +73888,23 @@ export interface PlotZigzagOptions {
      */
     tooltip?: SeriesTooltipOptionsObject;
     /**
-     * (Highcharts, Highstock, Gantt) When a series contains a data array that
-     * is longer than this, only one dimensional arrays of numbers, or two
-     * dimensional arrays with x and y values are allowed. Also, only the first
-     * point is tested, and the rest are assumed to be the same format. This
-     * saves expensive data checking and indexing in long series. Set it to `0`
-     * disable.
+     * (Highcharts, Highstock, Gantt) When a series contains a `data` array that
+     * is longer than this, the Series class looks for data configurations of
+     * plain numbers or arrays of numbers. The first and last valid points are
+     * checked. If found, the rest of the data is assumed to be the same. This
+     * saves expensive data checking and indexing in long series, and makes
+     * data-heavy charts render faster.
      *
-     * Note: In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * Set it to `0` disable.
+     *
+     * Note:
+     *
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     * dimensional arrays are allowed.
+     *
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     * beyond the turbo threshold, a warning was logged in the console and the
+     * data series didn't render.
      */
     turboThreshold?: number;
     /**
@@ -73693,14 +74121,6 @@ export interface PointEventsOptionsObject {
      */
     drop?: PointDropCallbackFunction;
     /**
-     * (Highcharts, Highmaps) Fires when the legend item belonging to the pie
-     * point (slice) is clicked. The `this` keyword refers to the point itself.
-     * One parameter, `event`, is passed to the function, containing common
-     * event information. The default action is to toggle the visibility of the
-     * point. This can be prevented by calling `event.preventDefault()`.
-     */
-    legendItemClick?: PointLegendItemClickCallbackFunction;
-    /**
      * (Highcharts, Highstock, Gantt) Fires when the mouse leaves the area close
      * to the point. One parameter, `event`, is passed to the function,
      * containing common event information.
@@ -73795,6 +74215,9 @@ export interface PointLabelObject {
 }
 /**
  * Information about the legend click event.
+ *
+ * **Note:** This option is deprecated in favor of
+ * Highcharts.LegendItemClickEventObject.
  */
 export interface PointLegendItemClickEventObject {
     /**
@@ -76728,14 +77151,6 @@ export interface SeriesDumbbellOptions extends PlotDumbbellOptions, SeriesOption
      */
     type: "dumbbell";
 }
-export interface SeriesDumbellOptions {
-    /**
-     * (Highcharts, Highstock) Color of the start markers in a twojastara
-     * dumbbell graph. This option takes priority over the series color. To
-     * avoid this, set `lowColor` to `undefined`.
-     */
-    lowColor?: (ColorString|GradientColorObject|PatternObject);
-}
 /**
  * (Highcharts) A `errorbar` series. If the type option is not specified, it is
  * inherited from chart.type.
@@ -76827,13 +77242,6 @@ export interface SeriesEventsOptionsObject {
      * either by clicking the legend item or by calling `.hide()`.
      */
     hide?: SeriesHideCallbackFunction;
-    /**
-     * (Highstock) Fires when the legend item belonging to the series is
-     * clicked. One parameter, `event`, is passed to the function. The default
-     * action is to toggle the visibility of the series. This can be prevented
-     * by returning `false` or calling `event.preventDefault()`.
-     */
-    legendItemClick?: SeriesLegendItemClickCallbackFunction;
     /**
      * (Highstock) Fires when the mouse leaves the graph. One parameter,
      * `event`, is passed to the function, containing common event information.
@@ -77689,7 +78097,10 @@ export interface SeriesLastVisiblePriceOptionsObject {
     label?: SeriesLastVisiblePriceLabelOptionsObject;
 }
 /**
- * Information about the legend click event.
+ * Information about the event.
+ *
+ * **Note:** This option is deprecated in favor of
+ * Highcharts.LegendItemClickEventObject.
  */
 export interface SeriesLegendItemClickEventObject {
     /**
@@ -78600,7 +79011,6 @@ export interface SeriesOhlcDataDataLabelsAnimationOptions {
  *
  */
 export interface SeriesOptions {
-    dumbell?: SeriesDumbellOptions;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) An id for the series. This can
      * be used after render time to get a pointer to the series object through
@@ -84966,6 +85376,10 @@ export interface StockToolsGuiOptions {
      * allowing unique CSS styling for each chart.
      */
     toolbarClassName?: string;
+    /**
+     * (Highstock) Whether the stock tools toolbar is visible.
+     */
+    visible?: boolean;
 }
 /**
  * (Highstock) Configure the stockTools gui strings in the chart. Requires the
@@ -86426,7 +86840,7 @@ export interface XAxisLabelsOptions {
      * (Highcharts, Gantt) The pixel padding for axis labels, to ensure white
      * space between them. Defaults to 4 for horizontal axes, 1 for vertical.
      */
-    padding?: string;
+    padding?: number;
     /**
      * (Highcharts) Defines how the labels are be repositioned according to the
      * 3D chart orientation.
@@ -88161,7 +88575,7 @@ export interface YAxisLabelsOptions {
      * (Highcharts, Gantt) The pixel padding for axis labels, to ensure white
      * space between them. Defaults to 4 for horizontal axes, 1 for vertical.
      */
-    padding?: string;
+    padding?: number;
     /**
      * (Highcharts) Defines how the labels are be repositioned according to the
      * 3D chart orientation.
@@ -89903,7 +90317,7 @@ export interface ZAxisLabelsOptions {
      * (Highcharts, Gantt) The pixel padding for axis labels, to ensure white
      * space between them. Defaults to 4 for horizontal axes, 1 for vertical.
      */
-    padding?: string;
+    padding?: number;
     /**
      * (Highcharts) Defines how the labels are be repositioned according to the
      * 3D chart orientation.
@@ -93384,23 +93798,6 @@ export class SVGElement {
      */
     setRadialReference(coordinates: Array<number>): SVGElement;
     /**
-     * Set a text path for a `text` or `label` element, allowing the text to
-     * flow along a path.
-     *
-     * In order to unset the path for an existing element, call `setTextPath`
-     * with `{ enabled: false }` as the second argument.
-     *
-     * @param path
-     *        Path to follow. If undefined, it allows changing options for the
-     *        existing path.
-     *
-     * @param textPathOptions
-     *        Options.
-     *
-     * @return Returns the SVGElement for chaining.
-     */
-    setTextPath(path: (SVGElement|undefined), textPathOptions: DataLabelsTextPathOptionsObject): SVGElement;
-    /**
      * Add a shadow to the element. In styled mode, this method is not used,
      * instead use `defs` and filters.
      *
@@ -94192,8 +94589,11 @@ export class Tooltip {
      *
      * @param options
      *        Tooltip options.
+     *
+     * @param pointer
+     *        The pointer instance.
      */
-    constructor(chart: Chart, options: TooltipOptions);
+    constructor(chart: Chart, options: TooltipOptions, pointer: Pointer);
     /**
      * Chart of the tooltip.
      */

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.3 (2024-05-22)
+ * @license Highcharts JS v11.4.4 (2024-07-02)
  *
  * (c) 2009-2024 Sebastian Bochan, Rafal Sebestjanski
  *
@@ -26,7 +26,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -381,14 +381,14 @@
          * @apioption series.dumbbell.data
          */
         /**
-         * Color of the start markers in a twojastara dumbbell graph. This option takes
+         * Color of the start markers in a dumbbell graph. This option takes
          * priority over the series color. To avoid this, set `lowColor` to
          * `undefined`.
          *
          * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
          * @since     8.0.0
          * @product   highcharts highstock
-         * @apioption  series.dumbell.lowColor
+         * @apioption  series.dumbbell.lowColor
          */
         /**
          * Options for the lower markers of the dumbbell-like series. When `lowMarker`

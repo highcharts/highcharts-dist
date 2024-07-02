@@ -132,7 +132,7 @@ class LinearRegressionIndicator extends SMAIndicator {
         const xData = baseSeries.xData, yData = baseSeries.yData, period = regressionSeriesParams.period, 
         // Format required to be returned
         indicatorData = {
-            xData: [],
+            xData: [], // By getValues() method
             yData: [],
             values: []
         }, xAxisUnit = this.options.params.xAxisUnit ||

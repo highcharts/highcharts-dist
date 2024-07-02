@@ -139,7 +139,8 @@ class BoxPlotSeries extends ColumnSeries {
                 }
                 let d;
                 // The stem
-                const stemX = crisp(point.plotX || 0, point.stem.strokeWidth());
+                const stemX = crisp((point.plotX || 0) + (series.pointXOffset || 0) +
+                    ((series.barW || 0) / 2), point.stem.strokeWidth());
                 d = [
                     // Stem up
                     ['M', stemX, q3Plot],

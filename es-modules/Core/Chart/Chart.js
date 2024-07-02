@@ -1015,7 +1015,11 @@ class Chart {
         let chartWidth = chart.chartWidth;
         // Allow table cells and flex-boxes to shrink without the chart blocking
         // them out (#6427)
-        css(renderTo, { overflow: 'hidden' });
+        css(renderTo, {
+            overflow: 'hidden',
+            // #21144, retest and remove in future version of Chrome
+            pointerEvents: H.isChrome ? 'fill' : 'auto'
+        });
         // Create the inner container
         if (!chart.styledMode) {
             containerStyle = extend({
@@ -1026,10 +1030,10 @@ class Chart {
                 width: chartWidth + 'px',
                 height: chartHeight + 'px',
                 textAlign: 'left',
-                lineHeight: 'normal',
-                zIndex: 0,
+                lineHeight: 'normal', // #427
+                zIndex: 0, // #1072
                 '-webkit-tap-highlight-color': 'rgba(0,0,0,0)',
-                userSelect: 'none',
+                userSelect: 'none', // #13503
                 'touch-action': 'manipulation',
                 outline: 'none'
             }, optionsChart.style || {});
@@ -2579,7 +2583,7 @@ class Chart {
      */
     transform(params) {
         const { axes = this.axes, event, from = {}, reset, selection, to = {}, trigger } = params, { inverted } = this;
-        let hasZoomed = false, displayButton;
+        let hasZoomed = false, displayButton, isAnyAxisPanning;
         // Remove active points for shared tooltip
         this.hoverPoints?.forEach((point) => point.setState());
         for (const axis of axes) {
@@ -2678,6 +2682,9 @@ class Chart {
                         // panning/zooming hard. Reset and redraw after the
                         // operation has finished.
                         axis.isPanning = trigger !== 'zoom';
+                        if (axis.isPanning) {
+                            isAnyAxisPanning = true; // #21319
+                        }
                         axis.setExtremes(reset ? void 0 : newMin, reset ? void 0 : newMax, false, false, { move, trigger, scale });
                         if (!reset &&
                             (newMin > floor || newMax < ceiling) &&
@@ -2705,8 +2712,10 @@ class Chart {
                 });
             }
             else {
-                // Show or hide the Reset zoom button
-                if (displayButton && !this.resetZoomButton) {
+                // Show or hide the Reset zoom button, but not while panning
+                if (displayButton &&
+                    !isAnyAxisPanning &&
+                    !this.resetZoomButton) {
                     this.showResetZoom();
                 }
                 else if (!displayButton && this.resetZoomButton) {

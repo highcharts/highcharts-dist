@@ -143,7 +143,7 @@ const vertexShader = [
     'cvsOffset -= sign * len;',
     '}',
     'return sign * (val - localMin) * localA + cvsOffset + ',
-    '(sign * minPixelPadding);',
+    '(sign * minPixelPadding);', // ' + localA * pointPlacement * pointRange;',
     '}',
     'float xToPixels(float value) {',
     'if (skipTranslation){',

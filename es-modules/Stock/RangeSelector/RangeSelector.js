@@ -682,7 +682,7 @@ class RangeSelector {
                 position: 'absolute',
                 border: 0,
                 boxShadow: '0 0 15px rgba(0,0,0,0.3)',
-                width: '1px',
+                width: '1px', // Chrome needs a pixel to see it
                 height: '1px',
                 padding: 0,
                 textAlign: 'center',

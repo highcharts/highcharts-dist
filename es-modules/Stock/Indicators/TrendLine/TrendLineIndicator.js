@@ -97,7 +97,7 @@ TrendLineIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
      * @excluding period
      */
     params: {
-        period: void 0,
+        period: void 0, // Unchangeable period, do not inherit (#15362)
         /**
          * The point index which indicator calculations will base. For
          * example using OHLC data, index=2 means the indicator will be

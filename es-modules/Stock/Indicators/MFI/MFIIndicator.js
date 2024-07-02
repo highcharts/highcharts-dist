@@ -154,7 +154,7 @@ MFIIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
      * @excluding index
      */
     params: {
-        index: void 0,
+        index: void 0, // Unchangeable index, do not inherit (#15362)
         /**
          * The id of volume series which is mandatory.
          * For example using OHLC data, volumeSeriesID='volume' means

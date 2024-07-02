@@ -225,7 +225,7 @@ PSARIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
      * @excluding period
      */
     params: {
-        period: void 0,
+        period: void 0, // Unchangeable period, do not inherit (#15362)
         /**
          * The initial value for acceleration factor.
          * Acceleration factor is starting with this value

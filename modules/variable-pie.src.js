@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.3 (2024-05-22)
+ * @license Highcharts JS v11.4.4 (2024-07-02)
  *
  * Variable Pie module for Highcharts
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -65,7 +65,7 @@
          * @excluding    dragDrop
          * @since        6.0.0
          * @product      highcharts
-         * @requires     modules/variable-pie.js
+         * @requires     modules/variable-pie
          * @optionparent plotOptions.variablepie
          */
         const VariablePieSeriesDefaults = {
@@ -144,7 +144,7 @@
          * @excluding dataParser, dataURL, stack, xAxis, yAxis, dataSorting,
          *            boostThreshold, boostBlending
          * @product   highcharts
-         * @requires  modules/variable-pie.js
+         * @requires  modules/variable-pie
          * @apioption series.variablepie
          */
         /**

@@ -69,7 +69,7 @@ class Pie3DSeries extends PieSeries {
                 attribs = {
                     translateX: center[0],
                     translateY: center[1],
-                    scaleX: 0.001,
+                    scaleX: 0.001, // #1499
                     scaleY: 0.001
                 };
                 group.attr(attribs);

@@ -62,8 +62,8 @@ class NavigatorComponent extends AccessibilityComponent {
      * @private
      */
     onChartUpdate() {
-        const chart = this.chart, options = chart.options;
-        if (options.navigator.accessibility?.enabled) {
+        const chart = this.chart, options = chart.options, navigator = options.navigator;
+        if (navigator.enabled && navigator.accessibility?.enabled) {
             const verbosity = options.accessibility.landmarkVerbosity, groupFormatStr = options.lang
                 .accessibility?.navigator.groupLabel;
             // We just recreate the group for simplicity. Could consider

@@ -245,9 +245,11 @@ class Fx {
      */
     initPath(elem, fromD, toD) {
         const startX = elem.startX, endX = elem.endX, end = toD.slice(), // Copy
-        isArea = elem.isArea, positionFactor = isArea ? 2 : 1;
+        isArea = elem.isArea, positionFactor = isArea ? 2 : 1, disableAnimation = fromD &&
+            toD.length > fromD.length &&
+            toD.hasStackedCliffs; // #16925
         let shift, fullLength, i, reverse, start = fromD && fromD.slice(); // Copy
-        if (!start) {
+        if (!start || disableAnimation) {
             return [end, end];
         }
         /**

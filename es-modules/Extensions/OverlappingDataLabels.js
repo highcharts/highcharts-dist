@@ -11,6 +11,8 @@
  *
  * */
 'use strict';
+import GeometryUtilities from '../Core/Geometry/GeometryUtilities.js';
+const { pointInPolygon } = GeometryUtilities;
 import U from '../Core/Utilities.js';
 const { addEvent, fireEvent, objectEach, pick } = U;
 /* *
@@ -33,7 +35,14 @@ function chartHideOverlappingLabels(labels) {
     const chart = this, len = labels.length, isIntersectRect = (box1, box2) => !(box2.x >= box1.x + box1.width ||
         box2.x + box2.width <= box1.x ||
         box2.y >= box1.y + box1.height ||
-        box2.y + box2.height <= box1.y);
+        box2.y + box2.height <= box1.y), isPolygonOverlap = (box1Poly, box2Poly) => {
+        for (const p of box1Poly) {
+            if (pointInPolygon({ x: p[0], y: p[1] }, box2Poly)) {
+                return true;
+            }
+        }
+        return false;
+    };
     /**
      * Get the box with its position inside the chart, as opposed to getBBox
      * that only reports the position relative to the parent.
@@ -50,7 +59,8 @@ function chartHideOverlappingLabels(labels) {
                 x: pos.x + (label.parentGroup?.translateX || 0) + padding,
                 y: pos.y + (label.parentGroup?.translateY || 0) + padding,
                 width: (label.width || 0) - 2 * padding,
-                height: (label.height || 0) - 2 * padding
+                height: (label.height || 0) - 2 * padding,
+                polygon: bBox?.polygon
             };
         }
     }
@@ -71,9 +81,11 @@ function chartHideOverlappingLabels(labels) {
     for (let i = 0; i < len; ++i) {
         label1 = labels[i];
         box1 = label1 && label1.absoluteBox;
+        const box1Poly = box1?.polygon;
         for (let j = i + 1; j < len; ++j) {
             label2 = labels[j];
             box2 = label2 && label2.absoluteBox;
+            let toHide = false;
             if (box1 &&
                 box2 &&
                 label1 !== label2 && // #6465, polar chart with connectEnds
@@ -82,9 +94,28 @@ function chartHideOverlappingLabels(labels) {
                 // #15863 dataLabels are no longer hidden by translation
                 label1.visibility !== 'hidden' &&
                 label2.visibility !== 'hidden') {
-                if (isIntersectRect(box1, box2)) {
-                    (label1.labelrank < label2.labelrank ? label1 : label2)
-                        .newOpacity = 0;
+                const box2Poly = box2.polygon;
+                // If labels have polygons, only evaluate
+                // based on polygons
+                if (box1Poly &&
+                    box2Poly &&
+                    box1Poly !== box2Poly) {
+                    if (isPolygonOverlap(box1Poly, box2Poly)) {
+                        toHide = true;
+                    }
+                    // If there are no polygons, evaluate rectangles coliding
+                }
+                else if (isIntersectRect(box1, box2)) {
+                    toHide = true;
+                }
+                if (toHide) {
+                    const overlappingLabel = (label1.labelrank < label2.labelrank ?
+                        label1 :
+                        label2), labelText = overlappingLabel.text;
+                    overlappingLabel.newOpacity = 0;
+                    if (labelText?.element.querySelector('textPath')) {
+                        labelText.hide();
+                    }
                 }
             }
         }

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.3 (2024-05-22)
+ * @license Highcharts JS v11.4.4 (2024-07-02)
  *
  * Highcharts
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -331,6 +331,7 @@
          *  Authors:
          *  - Sophie Bremer
          *  - Gøran Slettemark
+         *  - Jomar Hønsi
          *
          * */
         const { addEvent, fireEvent, uniqueKey } = U;
@@ -434,7 +435,7 @@
                 this.autoId = !options.id;
                 this.columns = {};
                 /**
-                 * ID of the table for indentification purposes.
+                 * ID of the table for identification purposes.
                  *
                  * @name Highcharts.DataTable#id
                  * @type {string}
@@ -443,6 +444,7 @@
                 this.modified = this;
                 this.rowCount = 0;
                 this.versionTag = uniqueKey();
+                this.rowKeysId = options.rowKeysId;
                 const columns = options.columns || {}, columnNames = Object.keys(columns), thisColumns = this.columns;
                 let rowCount = 0;
                 for (let i = 0, iEnd = columnNames.length, column, columnName; i < iEnd; ++i) {
@@ -460,6 +462,7 @@
                     alias = aliasKeys[i];
                     thisAliases[alias] = aliases[alias];
                 }
+                this.setRowKeysColumn(rowCount);
             }
             /* *
              *
@@ -494,6 +497,9 @@
                 }
                 if (!table.autoId) {
                     tableOptions.id = table.id;
+                }
+                if (table.rowKeysId) {
+                    tableOptions.rowKeysId = table.rowKeysId;
                 }
                 const tableClone = new DataTable(tableOptions);
                 if (!skipColumns) {
@@ -565,7 +571,13 @@
                         }
                         delete columns[columnName];
                     }
-                    if (!Object.keys(columns).length) {
+                    let nColumns = Object.keys(columns).length;
+                    if (table.rowKeysId && nColumns === 1) {
+                        // All columns deleted, remove row keys column
+                        delete columns[table.rowKeysId];
+                        nColumns = 0;
+                    }
+                    if (!nColumns) {
                         table.rowCount = 0;
                     }
                     if (modifier) {
@@ -735,7 +747,7 @@
                     case 'number':
                         return (isNaN(cellValue) && !useNaN ? null : cellValue);
                 }
-                cellValue = parseFloat(`${cellValue}`);
+                cellValue = parseFloat(`${cellValue ?? ''}`);
                 return (isNaN(cellValue) && !useNaN ? null : cellValue);
             }
             /**
@@ -757,6 +769,7 @@
                 columnNameOrAlias = (table.aliases[columnNameOrAlias] ||
                     columnNameOrAlias);
                 const column = table.columns[columnNameOrAlias];
+                // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
                 return `${(column && column[rowIndex])}`;
             }
             /**
@@ -836,6 +849,7 @@
              */
             getColumnNames() {
                 const table = this, columnNames = Object.keys(table.columns);
+                this.removeRowKeysColumn(columnNames);
                 return columnNames;
             }
             /**
@@ -856,6 +870,7 @@
             getColumns(columnNamesOrAliases, asReference) {
                 const table = this, tableAliasMap = table.aliases, tableColumns = table.columns, columns = {};
                 columnNamesOrAliases = (columnNamesOrAliases || Object.keys(tableColumns));
+                this.removeRowKeysColumn(columnNamesOrAliases);
                 for (let i = 0, iEnd = columnNamesOrAliases.length, column, columnName; i < iEnd; ++i) {
                     columnName = columnNamesOrAliases[i];
                     column = tableColumns[(tableAliasMap[columnName] || columnName)];
@@ -972,6 +987,7 @@
             getRowObjects(rowIndex = 0, rowCount = (this.rowCount - rowIndex), columnNamesOrAliases) {
                 const table = this, aliases = table.aliases, columns = table.columns, rows = new Array(rowCount);
                 columnNamesOrAliases = (columnNamesOrAliases || Object.keys(columns));
+                this.removeRowKeysColumn(columnNamesOrAliases);
                 for (let i = rowIndex, i2 = 0, iEnd = Math.min(table.rowCount, (rowIndex + rowCount)), column, row; i < iEnd; ++i, ++i2) {
                     row = rows[i2] = {};
                     for (const columnName of columnNamesOrAliases) {
@@ -1108,6 +1124,10 @@
                         }
                         columns[newColumnName] = columns[columnName];
                         delete columns[columnName];
+                        if (table.rowKeysId) {
+                            // Ensure that row keys column is last
+                            this.moveRowKeysColumnToLast(columns, table.rowKeysId);
+                        }
                     }
                     return true;
                 }
@@ -1243,6 +1263,10 @@
                 if (tableModifier) {
                     tableModifier.modifyColumns(table, columns, (rowIndex || 0));
                 }
+                if (table.rowKeysId) {
+                    // Ensure that the row keys column is always last
+                    this.moveRowKeysColumnToLast(tableColumns, table.rowKeysId);
+                }
                 table.emit({
                     type: 'afterSetColumns',
                     columns,
@@ -1250,6 +1274,63 @@
                     detail: eventDetail,
                     rowIndex
                 });
+            }
+            /**
+             * Sets the row key column. This column is invisible and the cells
+             * serve as identifiers to the rows they are contained in. Accessing
+             * rows by keys instead of indexes is necessary in cases where rows
+             * are rearranged by a DataModifier (e.g. SortModifier or RangeModifier).
+             *
+             * @function Highcharts.DataTable#setRowKeysColumn
+             *
+             * @param {number} nRows
+             * Number of rows to add to the column.
+             *
+             */
+            setRowKeysColumn(nRows) {
+                const id = this.rowKeysId;
+                if (!id) {
+                    return;
+                }
+                this.columns[id] = [];
+                const keysArray = this.columns[id];
+                for (let i = 0; i < nRows; i++) {
+                    keysArray.push(id + '_' + i);
+                }
+            }
+            /**
+             * Get the row key column.
+             *
+             * @function Highcharts.DataTable#getRowKeysColumn
+             *     *
+             * @return {DataTable.Column|undefined}
+             * Returns row keys if rowKeysId is defined, else undefined.
+             */
+            getRowKeysColumn() {
+                const id = this.rowKeysId;
+                if (id) {
+                    return this.columns[id];
+                }
+            }
+            /**
+             * Get the row index in the original (unmodified) data table.
+             *
+             * @function Highcharts.DataTable#getRowIndexOriginal
+             *
+             * @param {number} idx
+             * Row index in the modified data table.
+             *
+             * @return {string}
+             * Row index in the original data table.
+             */
+            getRowIndexOriginal(idx) {
+                const id = this.rowKeysId;
+                if (id) {
+                    const rowKeyCol = this.columns[id];
+                    const idxOrig = '' + rowKeyCol[idx];
+                    return idxOrig.split('_')[1];
+                }
+                return String(idx);
             }
             /**
              * Sets or unsets the modifier for the table.
@@ -1262,7 +1343,7 @@
              * Custom information for pending events.
              *
              * @return {Promise<Highcharts.DataTable>}
-             * Resolves to this table if successfull, or rejects on failure.
+             * Resolves to this table if successful, or rejects on failure.
              *
              * @emits #setModifier
              * @emits #afterSetModifier
@@ -1338,7 +1419,7 @@
              * Row values to set.
              *
              * @param {number} [rowIndex]
-             * Index of the first row to set. Leave `undefind` to add as new rows.
+             * Index of the first row to set. Leave `undefined` to add as new rows.
              *
              * @param {Highcharts.DataTableEventDetail} [eventDetail]
              * Custom information for pending events.
@@ -1386,6 +1467,9 @@
                         columns[columnNames[i]].length = indexRowCount;
                     }
                 }
+                if (this.rowKeysId && !columnNames.includes(this.rowKeysId)) {
+                    this.setRowKeysColumn(rowCount);
+                }
                 if (modifier) {
                     modifier.modifyRows(table, rows, rowIndex);
                 }
@@ -1396,6 +1480,23 @@
                     rowIndex,
                     rows
                 });
+            }
+            // The row keys column must always be the last column
+            moveRowKeysColumnToLast(columns, id) {
+                const rowKeyColumn = columns[id];
+                delete columns[id];
+                columns[id] = rowKeyColumn;
+            }
+            // The row keys column must be removed in some methods
+            // (API backwards compatibility)
+            removeRowKeysColumn(columnNamesOrAliases) {
+                if (this.rowKeysId) {
+                    const pos = columnNamesOrAliases.indexOf(this.rowKeysId);
+                    if (pos !== -1) {
+                        // Always the last column
+                        columnNamesOrAliases.pop();
+                    }
+                }
             }
         }
         /* *
@@ -1760,7 +1861,7 @@
                  */
                 this.dateFormats = {
                     'YYYY/mm/dd': {
-                        regex: /^([0-9]{4})([\-\.\/])([0-9]{1,2})\2([0-9]{1,2})$/,
+                        regex: /^(\d{4})([\-\.\/])(\d{1,2})\2(\d{1,2})$/,
                         parser: function (match) {
                             return (match ?
                                 Date.UTC(+match[1], match[3] - 1, +match[4]) :
@@ -1768,7 +1869,7 @@
                         }
                     },
                     'dd/mm/YYYY': {
-                        regex: /^([0-9]{1,2})([\-\.\/])([0-9]{1,2})\2([0-9]{4})$/,
+                        regex: /^(\d{1,2})([\-\.\/])(\d{1,2})\2(\d{4})$/,
                         parser: function (match) {
                             return (match ?
                                 Date.UTC(+match[4], match[3] - 1, +match[1]) :
@@ -1777,7 +1878,7 @@
                         alternative: 'mm/dd/YYYY' // Different format with the same regex
                     },
                     'mm/dd/YYYY': {
-                        regex: /^([0-9]{1,2})([\-\.\/])([0-9]{1,2})\2([0-9]{4})$/,
+                        regex: /^(\d{1,2})([\-\.\/])(\d{1,2})\2(\d{4})$/,
                         parser: function (match) {
                             return (match ?
                                 Date.UTC(+match[4], match[1] - 1, +match[3]) :
@@ -1785,7 +1886,7 @@
                         }
                     },
                     'dd/mm/YY': {
-                        regex: /^([0-9]{1,2})([\-\.\/])([0-9]{1,2})\2([0-9]{2})$/,
+                        regex: /^(\d{1,2})([\-\.\/])(\d{1,2})\2(\d{2})$/,
                         parser: function (match) {
                             const d = new Date();
                             if (!match) {
@@ -1803,7 +1904,7 @@
                         alternative: 'mm/dd/YY' // Different format with the same regex
                     },
                     'mm/dd/YY': {
-                        regex: /^([0-9]{1,2})([\-\.\/])([0-9]{1,2})\2([0-9]{2})$/,
+                        regex: /^(\d{1,2})([\-\.\/])(\d{1,2})\2(\d{2})$/,
                         parser: function (match) {
                             return (match ?
                                 Date.UTC(+match[4] + 2000, match[1] - 1, +match[3]) :
@@ -1965,7 +2066,7 @@
                         data[i] && data[i].length) {
                         thing = data[i]
                             .trim()
-                            .replace(/[-\.\/]/g, ' ')
+                            .replace(/[\-\.\/]/g, ' ')
                             .split(' ');
                         guessedFormat = [
                             '',
@@ -2232,7 +2333,7 @@
                 if (typeof str === 'string') {
                     str = str.replace(/^\s+|\s+$/g, '');
                     // Clear white space insdie the string, like thousands separators
-                    if (inside && /^[0-9\s]+$/.test(str)) {
+                    if (inside && /^[\d\s]+$/.test(str)) {
                         str = str.replace(/\s/g, '');
                     }
                 }
@@ -3009,12 +3110,12 @@
          * `.`-separated decimal.
          * @private
          */
-        const decimal1RegExp = /^[+-]?\d+(?:\.\d+)?(?:e[+-]\d+)?/;
+        const decimal1RegExp = /^[+\-]?\d+(?:\.\d+)?(?:e[+\-]\d+)?/;
         /**
          * `,`-separated decimal.
          * @private
          */
-        const decimal2RegExp = /^[+-]?\d+(?:,\d+)?(?:e[+-]\d+)?/;
+        const decimal2RegExp = /^[+\-]?\d+(?:,\d+)?(?:e[+\-]\d+)?/;
         /**
          * - Group 1: Function name
          * @private
@@ -5696,7 +5797,7 @@
                     read(i);
                     if (c === '#') {
                         // If there are hexvalues remaining (#13283)
-                        if (!/^#[0-9a-f]{3,3}|[0-9a-f]{6,6}/i.test(columnStr.substring(i))) {
+                        if (!/^#[A-F\d]{3,3}|[A-F\d]{6,6}/i.test(columnStr.substring(i))) {
                             // The rest of the row is a comment
                             push();
                             return;
@@ -6227,6 +6328,7 @@
                         table.deleteColumns();
                         converter.parse({ data });
                         table.setColumns(converter.getTable().getColumns());
+                        table.setRowKeysColumn(data.length);
                     }
                     return connector.setModifierOptions(dataModifier).then(() => data);
                 })

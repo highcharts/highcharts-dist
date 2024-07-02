@@ -279,8 +279,6 @@ export default DataSeriesAdditions;
 /* *
  * Indicates data is structured as columns instead of rows.
  *
- * @requires  es-modules/Data/DataSeriesComposition.js
- *
  * @type      {boolean}
  * @since     Future
  * @apioption plotOptions.series.dataAsColumns

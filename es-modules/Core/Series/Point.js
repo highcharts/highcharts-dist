@@ -207,12 +207,7 @@ class Point {
             point.x = series.xAxis.nameToX(point);
         }
         if (typeof point.x === 'undefined' && series) {
-            if (typeof x === 'undefined') {
-                point.x = series.autoIncrement();
-            }
-            else {
-                point.x = x;
-            }
+            point.x = x ?? series.autoIncrement();
         }
         else if (isNumber(options.x) && series.options.relativeXValue) {
             point.x = series.autoIncrement(options.x);
@@ -955,16 +950,18 @@ class Point {
                 // callback function is different
                 point.hcEvents?.[eventType]?.map((el) => el.fn)
                     .indexOf(userEvent) === -1)) {
-            addEvent(point, eventType, userEvent);
-            point.hasImportedEvents = true;
+            // While updating the existing callback event the old one should be
+            // removed
+            point.importedUserEvent?.();
+            point.importedUserEvent = addEvent(point, eventType, userEvent);
         }
-        else if (point.hasImportedEvents &&
+        else if (point.importedUserEvent &&
             !userEvent &&
             point.hcEvents?.[eventType]) {
             removeEvent(point, eventType);
             delete point.hcEvents[eventType];
             if (!Object.keys(point.hcEvents)) {
-                point.hasImportedEvents = false;
+                delete point.importedUserEvent;
             }
         }
     }

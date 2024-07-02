@@ -103,7 +103,7 @@ PPOIndicator.defaultOptions = merge(EMAIndicator.defaultOptions, {
      * @excluding period
      */
     params: {
-        period: void 0,
+        period: void 0, // Unchangeable period, do not inherit (#15362)
         /**
          * Periods for Percentage Price Oscillator calculations.
          *

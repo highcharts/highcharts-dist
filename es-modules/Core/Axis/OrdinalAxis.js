@@ -62,6 +62,7 @@ var OrdinalAxis;
             addEvent(AxisClass, 'afterSetScale', onAxisAfterSetScale);
             addEvent(AxisClass, 'initialAxisTranslation', onAxisInitialAxisTranslation);
             addEvent(ChartClass, 'pan', onChartPan);
+            addEvent(ChartClass, 'touchpan', onChartPan);
             addEvent(SeriesClass, 'updatedData', onSeriesUpdatedData);
         }
         return AxisClass;
@@ -371,7 +372,9 @@ var OrdinalAxis;
         if (panning &&
             panning.type !== 'y' &&
             xAxis.options.ordinal &&
-            xAxis.series.length) {
+            xAxis.series.length &&
+            // On touch devices, let default function handle the pinching
+            (!e.touches || e.touches.length <= 1)) {
             const mouseDownX = chart.mouseDownX, extremes = xAxis.getExtremes(), dataMin = extremes.dataMin, dataMax = extremes.dataMax, min = extremes.min, max = extremes.max, hoverPoints = chart.hoverPoints, closestPointRange = (xAxis.closestPointRange ||
                 (xAxis.ordinal && xAxis.ordinal.overscrollPointsRange)), pointPixelWidth = (xAxis.translationSlope *
                 (xAxis.ordinal.slope || closestPointRange)), 
@@ -792,7 +795,7 @@ var OrdinalAxis;
                     ordinal: {
                         getGroupIntervalFactor: this.getGroupIntervalFactor
                     },
-                    ordinal2lin: axisProto.ordinal2lin,
+                    ordinal2lin: axisProto.ordinal2lin, // #6276
                     getIndexOfPoint: axisProto.getIndexOfPoint,
                     val2lin: axisProto.val2lin // #2590
                 };

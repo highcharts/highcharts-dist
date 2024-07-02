@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.3 (2024-05-22)
+ * @license Highcharts JS v11.4.4 (2024-07-02)
  *
  * (c) 2016-2024 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -27,7 +27,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -216,7 +216,7 @@
             /**
              * @ignore-option
              */
-            clip: false,
+            clip: false, // Something goes wrong with clip. // @todo fix this
             colorByPoint: true,
             cropThreshold: Infinity,
             /**
@@ -1193,7 +1193,7 @@
                     }), attr = extend(series.pointAttribs(point, (point.selected && 'select')), {
                         align: 'center',
                         'alignment-baseline': 'middle',
-                        'dominant-baseline': 'middle',
+                        'dominant-baseline': 'middle', // #15973: Firefox
                         x: placement.x,
                         y: placement.y,
                         text: point.name,
@@ -1290,7 +1290,7 @@
                 return {
                     translateX: x + (width / 2),
                     translateY: y + (height / 2),
-                    scaleX: 1,
+                    scaleX: 1, // #1623
                     scaleY: 1
                 };
             }

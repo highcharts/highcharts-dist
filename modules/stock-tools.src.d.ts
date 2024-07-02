@@ -12,6 +12,20 @@ import * as _Highcharts from "../highcharts.src";
  *        The imported Highcharts namespace to extend.
  */
 export function factory(highcharts: typeof Highcharts): void;
-declare module "../highcharts.src" {}
+declare module "../highcharts.src" {
+    /**
+     * Compares two arrays of strings, checking their length and if
+     * corresponding elements are equal.
+     *
+     * @param a
+     *        The first array to compare.
+     *
+     * @param b
+     *        The second array to compare.
+     *
+     * @return Return `true` if the arrays are equal, otherwise `false`.
+     */
+    function shallowArraysEqual(a: Array<string>, b: Array<string>): boolean;
+}
 export default factory;
 export let Highcharts: typeof _Highcharts;

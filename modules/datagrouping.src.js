@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.4.3 (2024-05-22)
+ * @license Highstock JS v11.4.4 (2024-07-02)
  *
  * Data grouping module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -336,7 +336,7 @@
          */
         const units = [
             [
-                'millisecond',
+                'millisecond', // Unit name
                 [1, 2, 5, 10, 20, 25, 50, 100, 200, 500] // Allowed multiples
             ], [
                 'second',
@@ -1210,8 +1210,7 @@
          *
          * @declare   Highcharts.DataGroupingOptionsObject
          * @product   highstock
-         * @requires  product:highstock
-         * @requires  module:modules/datagrouping
+         * @requires  modules/stock
          * @apioption plotOptions.series.dataGrouping
          */
         /**

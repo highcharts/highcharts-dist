@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.3 (2024-05-22)
+ * @license Highcharts JS v11.4.4 (2024-07-02)
  *
  * Annotations module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -2405,7 +2405,7 @@
                 children: [{
                         tagName: 'path',
                         attributes: {
-                            d: 'M 0 0 L 10 5 L 0 10 Z',
+                            d: 'M 0 0 L 10 5 L 0 10 Z', // Triangle (used as an arrow)
                             'stroke-width': 0
                         }
                     }]
@@ -2626,7 +2626,7 @@
                     .add(parent);
                 if (!this.annotation.chart.styledMode) {
                     this.tracker.attr({
-                        'stroke-linejoin': 'round',
+                        'stroke-linejoin': 'round', // #1225
                         stroke: TRACKER_FILL,
                         fill: TRACKER_FILL,
                         'stroke-width': this.graphic.strokeWidth() +
@@ -4936,7 +4936,7 @@
                 this.popup = new Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
                     (this.chart.options.stockTools &&
                         this.chart.options.stockTools.gui.iconsURL) ||
-                    'https://code.highcharts.com/11.4.3/gfx/stock-icons/'), this.chart);
+                    'https://code.highcharts.com/11.4.4/gfx/stock-icons/'), this.chart);
             }
             this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
         }
@@ -6098,7 +6098,7 @@
              * from a different server.
              *
              * @type      {string}
-             * @default   https://code.highcharts.com/11.4.3/gfx/stock-icons/
+             * @default   https://code.highcharts.com/11.4.4/gfx/stock-icons/
              * @since     7.1.3
              * @apioption navigation.iconsURL
              */
@@ -6545,8 +6545,7 @@
                     }
                 }
                 else {
-                    chart.stockTools &&
-                        chart.stockTools.toggleButtonActiveClass(button);
+                    chart.stockTools && button.classList.remove('highcharts-active');
                     svgContainer.removeClass('highcharts-draw-mode');
                     navigation.nextEvent = false;
                     navigation.mouseMoveEvent = false;

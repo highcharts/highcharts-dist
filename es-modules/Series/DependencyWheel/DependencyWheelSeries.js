@@ -21,6 +21,9 @@ import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { pie: PieSeries, sankey: SankeySeries } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
 const { extend, merge, relativeLength } = U;
+import SVGElement from '../../Core/Renderer/SVG/SVGElement.js';
+import TextPath from '../../Extensions/TextPath.js';
+TextPath.compose(SVGElement);
 /* *
  *
  *  Class
@@ -193,8 +196,8 @@ class DependencyWheelSeries extends SankeySeries {
                                     'A',
                                     innerR, innerR,
                                     0,
-                                    0,
-                                    1,
+                                    0, // Long arc
+                                    1, // Clockwise
                                     corners[1].x, corners[1].y
                                 ], [
                                     'C',

@@ -23,6 +23,9 @@ import TU from '../TreeUtilities.js';
 const { getLevelOptions, getNodeWidth } = TU;
 import U from '../../Core/Utilities.js';
 const { clamp, crisp, extend, isObject, merge, pick, relativeLength, stableSort } = U;
+import SVGElement from '../../Core/Renderer/SVG/SVGElement.js';
+import TextPath from '../../Extensions/TextPath.js';
+TextPath.compose(SVGElement);
 /* *
  *
  *  Class
@@ -214,18 +217,18 @@ class SankeySeries extends ColumnSeries {
             // should be the level of the root node.
             from: 1,
             levels: options.levels,
-            to: nodeColumns.length - 1,
+            to: nodeColumns.length - 1, // Height of the tree
             defaults: {
                 borderColor: options.borderColor,
-                borderRadius: options.borderRadius,
+                borderRadius: options.borderRadius, // Organization series
                 borderWidth: options.borderWidth,
                 color: series.color,
                 colorByPoint: options.colorByPoint,
                 // NOTE: if support for allowTraversingTree is added, then
                 // levelIsConstant should be optional.
                 levelIsConstant: true,
-                linkColor: options.linkColor,
-                linkLineWidth: options.linkLineWidth,
+                linkColor: options.linkColor, // Organization series
+                linkLineWidth: options.linkLineWidth, // Organization series
                 linkOpacity: options.linkOpacity,
                 states: options.states
             }

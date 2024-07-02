@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.3 (2024-05-22)
+ * @license Highcharts JS v11.4.4 (2024-07-02)
  *
  * Sonification module
  *
@@ -29,7 +29,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -2885,7 +2885,6 @@
              * @private
              */
             static noteStringToC0Distance(note) {
-                // eslint-disable-next-line require-unicode-regexp
                 const match = note.match(/^([a-g][#b]?)([0-8])$/i), semitone = match ? match[1] : 'a', wholetone = semitone[0].toLowerCase(), accidental = semitone[1], octave = match ? parseInt(match[2], 10) : 4, accidentalOffset = accidental === '#' ?
                     1 : accidental === 'b' ? -1 : 0;
                 return ({
@@ -3298,10 +3297,10 @@
         /* eslint-disable no-multi-spaces */
         const { pick } = U;
         const freqToNote = (f) => Math.round(12 * Math.log(f) / Math.LN2 - 48.37632), b = (byte, n) => n >>> 8 * byte & 0xFF, getHeader = (nTracks) => [
-            0x4D, 0x54, 0x68, 0x64,
-            0, 0, 0, 6,
-            0, nTracks > 1 ? 1 : 0,
-            b(1, nTracks), b(0, nTracks),
+            0x4D, 0x54, 0x68, 0x64, // HD_TYPE
+            0, 0, 0, 6, // HD_SIZE
+            0, nTracks > 1 ? 1 : 0, // HD_FORMAT
+            b(1, nTracks), b(0, nTracks), // HD_NTRACKS
             // SMTPE: 0xE7 0x28
             // -25/40 time div gives us millisecond SMTPE, but not widely supported.
             1, 0xF4 // HD_TIMEDIV, 500 ticks per beat = millisecond at 120bpm
@@ -3334,7 +3333,7 @@
                 const o = e.instrumentEventOptions || {}, t = e.time, dur = cachedDur = pick(o.noteDuration, cachedDur), tNOF = dur && e.time + dur, ctrl = [{
                         valMap: (n) => 64 + 63 * n & 0x7F,
                         data: {
-                            0x0A: o.pan,
+                            0x0A: o.pan, // Use MSB only, no need for fine adjust
                             0x5C: o.tremoloDepth,
                             0x5D: o.tremoloSpeed
                         }
@@ -3405,8 +3404,8 @@
                 metaEvents.length +
                 trackEvents.length + trackEnd.length;
             return [
-                0x4D, 0x54, 0x72, 0x6B,
-                b(3, size), b(2, size),
+                0x4D, 0x54, 0x72, 0x6B, // TRK_TYPE
+                b(3, size), b(2, size), // TRK_SIZE
                 b(1, size), b(0, size)
             ].concat(addTimeInfo ? timeInfo : [], metaEvents, trackEvents, trackEnd // SYSEX_TRACK_END
             );
@@ -3470,7 +3469,7 @@
         function dataURLtoBlob(dataURL) {
             const parts = dataURL
                 .replace(/filename=.*;/, '')
-                .match(/data:([^;]*)(;base64)?,([0-9A-Za-z+/]+)/);
+                .match(/data:([^;]*)(;base64)?,([A-Z+\d\/]+)/i);
             if (parts &&
                 parts.length > 3 &&
                 (win.atob) &&
@@ -4046,9 +4045,7 @@
          * */
         const { clamp, defined, extend, getNestedProperty, merge, pick } = U;
         const { format } = T;
-        const isNoteDefinition = (str) => 
-        // eslint-disable-next-line require-unicode-regexp
-        (/^([a-g][#b]?)[0-8]$/i).test(str);
+        const isNoteDefinition = (str) => (/^([a-g][#b]?)[0-8]$/i).test(str);
         /**
          * Get the value of a point property from string.
          * @private

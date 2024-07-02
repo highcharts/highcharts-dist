@@ -228,7 +228,7 @@ class PivotPointsIndicator extends SMAIndicator {
  * @since        6.0.0
  * @product      highstock
  * @requires     stock/indicators/indicators
- * @requires     stock/indicators/pivotpoints
+ * @requires     stock/indicators/pivot-points
  * @optionparent plotOptions.pivotpoints
  */
 PivotPointsIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
@@ -236,7 +236,7 @@ PivotPointsIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
      * @excluding index
      */
     params: {
-        index: void 0,
+        index: void 0, // Unchangeable index, do not inherit (#15362)
         period: 28,
         /**
          * Algorithm used to calculate resistance and support lines based
@@ -289,7 +289,7 @@ export default PivotPointsIndicator;
  * @product   highstock
  * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
- * @requires  stock/indicators/pivotpoints
+ * @requires  stock/indicators/pivot-points
  * @apioption series.pivotpoints
  */
 ''; // To include the above in the js output'

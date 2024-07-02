@@ -326,7 +326,7 @@ const rangeSelector = {
      * @type  {number|undefined}
      * @since 2.1.9
      */
-    height: void 0,
+    height: void 0, // Reserved space for buttons and input
     /**
      * The border color of the date input boxes.
      *

@@ -66,7 +66,7 @@ const SankeySeriesDefaults = {
      */
     dataLabels: {
         enabled: true,
-        backgroundColor: 'none',
+        backgroundColor: 'none', // Enable padding
         crop: false,
         /**
          * The

@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v11.4.3 (2024-05-22)
+ * @license Highmaps JS v11.4.4 (2024-07-02)
  *
  * Highmaps as a plugin for Highcharts or Highcharts Stock.
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -714,9 +714,13 @@
              * Fires when the legend item belonging to the colorAxis is clicked.
              * One parameter, `event`, is passed to the function.
              *
-             * @type      {Function}
-             * @product   highcharts highstock highmaps
-             * @apioption colorAxis.events.legendItemClick
+             * **Note:** This option is deprecated in favor of
+             * [legend.events.itemClick](#legend.events.itemClick).
+             *
+             * @deprecated
+             * @type       {Function}
+             * @product    highcharts highstock highmaps
+             * @apioption  colorAxis.events.legendItemClick
              */
             /**
              * The width of the color axis. If it's a number, it is interpreted as
@@ -2422,7 +2426,7 @@
                             '{geojson.copyrightShort}</a>'),
                         mapTextFull: pick(defaultCreditsOptions.mapTextFull, '{geojson.copyright}')
                     },
-                    mapView: {},
+                    mapView: {}, // Required to enable Chart.mapView
                     tooltip: {
                         followTouchMove: false
                     }
@@ -2558,7 +2562,7 @@
                 if (typeof path === 'string') {
                     path = path
                         // Move letters apart
-                        .replace(/([A-Za-z])/g, ' $1 ')
+                        .replace(/([A-Z])/gi, ' $1 ')
                         // Trim
                         .replace(/^\s*/, '').replace(/\s*$/, '');
                     // Split on spaces and commas. The semicolon is bogus, designed to
@@ -2566,7 +2570,7 @@
                     // specific styled mode files.
                     const split = path.split(/[ ,;]+/);
                     arr = split.map((item) => {
-                        if (!/[A-Za-z]/.test(item)) {
+                        if (!/[A-Z]/i.test(item)) {
                             return parseFloat(item);
                         }
                         return item;
@@ -2615,32 +2619,13 @@
                 return { x1, y1, x2, y2 };
             }
         };
-        /**
-         * Test for point in polygon. Polygon defined as array of [x,y] points.
-         * @private
-         */
-        const pointInPolygon = function ({ x, y }, polygon) {
-            let i, j, rel1, rel2, c = false;
-            for (i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-                rel1 = polygon[i][1] > y;
-                rel2 = polygon[j][1] > y;
-                if (rel1 !== rel2 &&
-                    (x < (polygon[j][0] - polygon[i][0]) * (y - polygon[i][1]) /
-                        (polygon[j][1] - polygon[i][1]) +
-                        polygon[i][0])) {
-                    c = !c;
-                }
-            }
-            return c;
-        };
         /* *
          *
          *  Default Export
          *
          * */
         const MapUtilities = {
-            boundsFromPath,
-            pointInPolygon
+            boundsFromPath
         };
 
         return MapUtilities;
@@ -2878,7 +2863,7 @@
              * @private
              */
             affectsMapView: true,
-            animation: false,
+            animation: false, // Makes the complex shapes slow
             dataLabels: {
                 crop: false,
                 formatter: function () {
@@ -2888,7 +2873,7 @@
                         numberFormatter(value, -1) :
                         this.point.name; // #20231
                 },
-                inside: true,
+                inside: true, // For the color
                 overflow: false,
                 padding: 0,
                 verticalAlign: 'middle'
@@ -5256,7 +5241,7 @@
 
         return Projection;
     });
-    _registerModule(_modules, 'Maps/MapView.js', [_modules['Core/Globals.js'], _modules['Maps/MapViewDefaults.js'], _modules['Maps/GeoJSONComposition.js'], _modules['Maps/MapUtilities.js'], _modules['Maps/Projection.js'], _modules['Core/Utilities.js']], function (H, MapViewDefaults, GeoJSONComposition, MU, Projection, U) {
+    _registerModule(_modules, 'Maps/MapView.js', [_modules['Core/Globals.js'], _modules['Maps/MapViewDefaults.js'], _modules['Maps/GeoJSONComposition.js'], _modules['Core/Geometry/GeometryUtilities.js'], _modules['Maps/MapUtilities.js'], _modules['Maps/Projection.js'], _modules['Core/Utilities.js']], function (H, MapViewDefaults, GeoJSONComposition, GeometryUtilities, MU, Projection, U) {
         /* *
          *
          *  (c) 2010-2024 Torstein Honsi
@@ -5267,8 +5252,9 @@
          *
          * */
         const { composed } = H;
+        const { pointInPolygon } = GeometryUtilities;
         const { topo2geo } = GeoJSONComposition;
-        const { boundsFromPath, pointInPolygon } = MU;
+        const { boundsFromPath } = MU;
         const { addEvent, clamp, crisp, fireEvent, isArray, isNumber, isObject, isString, merge, pick, pushUnique, relativeLength } = U;
         /* *
          *
@@ -6413,7 +6399,7 @@
                     group.attr({
                         translateX: chart.plotLeft + chart.plotWidth / 2,
                         translateY: chart.plotTop + chart.plotHeight / 2,
-                        scaleX: 0.001,
+                        scaleX: 0.001, // #1499
                         scaleY: 0.001
                     });
                     // Run the animation
@@ -7886,19 +7872,19 @@
              * not specified, the `minSize` and the `maxSize` are calculated
              * from bubble series.
              */
-            maxSize: 60,
+            maxSize: 60, // Number
             /**
              * Minimum bubble legend range size. If values for ranges are
              * not specified, the `minSize` and the `maxSize` are calculated
              * from bubble series.
              */
-            minSize: 10,
+            minSize: 10, // Number
             /**
              * The position of the bubble legend in the legend.
              * @sample highcharts/bubble-legend/connectorandlabels/
              *         Bubble legend as last item in legend
              */
-            legendIndex: 0,
+            legendIndex: 0, // Number
             /**
              * Options for specific range. One range consists of bubble,
              * label and connector.
@@ -8499,11 +8485,8 @@
          *
          * @param {Highcharts.Legend} LegendClass
          * Core legend class to use with Bubble series.
-         *
-         * @param {Highcharts.Series} SeriesClass
-         * Core series class to use with Bubble series.
          */
-        function compose(ChartClass, LegendClass, SeriesClass) {
+        function compose(ChartClass, LegendClass) {
             if (pushUnique(composed, 'Series.BubbleLegend')) {
                 setOptions({
                     // Set default bubble legend options
@@ -8513,7 +8496,7 @@
                 });
                 wrap(ChartClass.prototype, 'drawChartBox', chartDrawChartBox);
                 addEvent(LegendClass, 'afterGetAllItems', onLegendAfterGetAllItems);
-                addEvent(SeriesClass, 'legendItemClick', onSeriesLegendItemClick);
+                addEvent(LegendClass, 'itemClick', onLegendItemClick);
             }
         }
         /**
@@ -8605,12 +8588,12 @@
         /**
          * Toggle bubble legend depending on the visible status of bubble series.
          */
-        function onSeriesLegendItemClick(e) {
+        function onLegendItemClick(e) {
             // #14080 don't fire this code if click function is prevented
             if (e.defaultPrevented) {
                 return false;
             }
-            const series = this, chart = series.chart, visible = series.visible, legend = series.chart.legend;
+            const legend = this, series = e.legendItem, chart = legend.chart, visible = series.visible;
             let status;
             if (legend && legend.bubbleLegend) {
                 // Temporary correct 'visible' property
@@ -8811,8 +8794,8 @@
              *  Static Functions
              *
              * */
-            static compose(AxisClass, ChartClass, LegendClass, SeriesClass) {
-                BubbleLegendComposition.compose(ChartClass, LegendClass, SeriesClass);
+            static compose(AxisClass, ChartClass, LegendClass) {
+                BubbleLegendComposition.compose(ChartClass, LegendClass);
                 if (pushUnique(composed, 'Series.Bubble')) {
                     addEvent(AxisClass, 'foundExtremes', onAxisFoundExtremes);
                 }
@@ -9087,7 +9070,7 @@
              * @excluding enabled, enabledThreshold, height, radius, width
              */
             marker: {
-                lineColor: null,
+                lineColor: null, // Inherit from series.color
                 lineWidth: 1,
                 /**
                  * The fill opacity of the bubble markers.
@@ -9279,7 +9262,7 @@
             pointClass: BubblePoint,
             parallelArrays: ['x', 'y', 'z'],
             trackerGroups: ['group', 'dataLabelsGroup'],
-            specialGroup: 'group',
+            specialGroup: 'group', // To allow clipping (#6296)
             zoneAxis: 'z'
         });
         // On updated data in any series, delete the chart-level Z extremes cache
@@ -10163,14 +10146,14 @@
             },
             clip: true,
             /** @ignore-option */
-            pointRange: null,
+            pointRange: null, // Dynamically set to colsize by default
             tooltip: {
                 pointFormat: '{point.x}, {point.y}: {point.value}<br/>'
             },
             states: {
                 hover: {
                     /** @ignore-option */
-                    halo: false,
+                    halo: false, // #3406, halo is disabled on heatmaps by default
                     /**
                      * How much to brighten the point on interaction. Requires the
                      * main color to be defined in hex or rgb(a) format.
@@ -10933,7 +10916,7 @@
         G.topo2geo = GeoJSONComposition.topo2geo;
         // Compositions
         GeoJSONComposition.compose(G.Chart);
-        MapBubbleSeries.compose(G.Axis, G.Chart, G.Legend, G.Series);
+        MapBubbleSeries.compose(G.Axis, G.Chart, G.Legend);
         MapNavigation.compose(MapChart, G.Pointer, G.SVGRenderer);
         MapView.compose(MapChart);
         // Default Export

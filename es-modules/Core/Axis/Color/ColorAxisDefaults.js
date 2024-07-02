@@ -413,9 +413,13 @@ const colorAxisDefaults = {
      * Fires when the legend item belonging to the colorAxis is clicked.
      * One parameter, `event`, is passed to the function.
      *
-     * @type      {Function}
-     * @product   highcharts highstock highmaps
-     * @apioption colorAxis.events.legendItemClick
+     * **Note:** This option is deprecated in favor of
+     * [legend.events.itemClick](#legend.events.itemClick).
+     *
+     * @deprecated
+     * @type       {Function}
+     * @product    highcharts highstock highmaps
+     * @apioption  colorAxis.events.legendItemClick
      */
     /**
      * The width of the color axis. If it's a number, it is interpreted as
