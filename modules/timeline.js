@@ -1,5 +1,5 @@
 !/**
- * Highcharts JS v11.4.4 (2024-07-02)
+ * Highcharts JS v11.4.5 (2024-07-04)
  *
  * Timeline series
  *

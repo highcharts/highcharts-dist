@@ -7554,6 +7554,16 @@ export interface ColorAxisEventsOptions {
      */
     afterSetExtremes?: AxisSetExtremesEventCallbackFunction;
     /**
+     * (Highcharts, Highstock, Highmaps) Fires when the legend item belonging to
+     * the colorAxis is clicked. One parameter, `event`, is passed to the
+     * function.
+     *
+     * **Note:** This option is deprecated in favor of legend.events.itemClick.
+     *
+     * @deprecated 11.4.4
+     */
+    legendItemClick?: Function;
+    /**
      * (Highcharts, Highstock, Gantt) An event fired when a point is outside a
      * break after zoom.
      */
@@ -74121,6 +74131,18 @@ export interface PointEventsOptionsObject {
      */
     drop?: PointDropCallbackFunction;
     /**
+     * (Highcharts, Highmaps) Fires when the legend item belonging to the pie
+     * point (slice) is clicked. The `this` keyword refers to the point itself.
+     * One parameter, `event`, is passed to the function, containing common
+     * event information. The default action is to toggle the visibility of the
+     * point. This can be prevented by calling `event.preventDefault()`.
+     *
+     *  **Note:** This option is deprecated in favor of legend.events.itemClick.
+     *
+     * @deprecated 11.4.4
+     */
+    legendItemClick?: PointLegendItemClickCallbackFunction;
+    /**
      * (Highcharts, Highstock, Gantt) Fires when the mouse leaves the area close
      * to the point. One parameter, `event`, is passed to the function,
      * containing common event information.
@@ -77242,6 +77264,17 @@ export interface SeriesEventsOptionsObject {
      * either by clicking the legend item or by calling `.hide()`.
      */
     hide?: SeriesHideCallbackFunction;
+    /**
+     * (Highstock) Fires when the legend item belonging to the series is
+     * clicked. One parameter, `event`, is passed to the function. The default
+     * action is to toggle the visibility of the series. This can be prevented
+     * by returning `false` or calling `event.preventDefault()`.
+     *
+     * **Note:** This option is deprecated in favor of legend.events.itemClick.
+     *
+     * @deprecated 11.4.4
+     */
+    legendItemClick?: SeriesLegendItemClickCallbackFunction;
     /**
      * (Highstock) Fires when the mouse leaves the graph. One parameter,
      * `event`, is passed to the function, containing common event information.

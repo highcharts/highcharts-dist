@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.4 (2024-07-02)
+ * @license Highcharts JS v11.4.5 (2024-07-04)
  *
  * (c) 2016-2024 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -3988,7 +3988,9 @@
                     }
                 }
                 // Close it
-                polygon.push(polygon[0].slice());
+                if (polygon.length) {
+                    polygon.push(polygon[0].slice());
+                }
                 bBox.polygon = polygon;
             }
             return bBox;

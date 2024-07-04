@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.4.4 (2024-07-02)
+ * @license Highstock JS v11.4.5 (2024-07-04)
  *
  * (c) 2009-2024 Torstein Honsi
  *
@@ -62,7 +62,7 @@
              *  Constants
              *
              * */
-            Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '11.4.4', Globals.win = (typeof window !== 'undefined' ?
+            Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '11.4.5', Globals.win = (typeof window !== 'undefined' ?
                 window :
                 {}), // eslint-disable-line node/no-unsupported-features/es-builtins
             Globals.doc = Globals.win.document, Globals.svg = (Globals.doc &&
@@ -12530,7 +12530,7 @@
                 this.url = this.getReferenceURL();
                 // Add description
                 const desc = this.createElement('desc').add();
-                desc.element.appendChild(doc.createTextNode('Created with Highcharts 11.4.4'));
+                desc.element.appendChild(doc.createTextNode('Created with Highcharts 11.4.5'));
                 this.defs = this.createElement('defs').add();
                 this.allowHTML = allowHTML;
                 this.forExport = forExport;
@@ -19063,7 +19063,9 @@
                     }
                     else if (axis.horiz) {
                         y1 = axisTop;
-                        y2 = cHeight - axis.bottom + (chart.scrollablePixelsY || 0);
+                        y2 = cHeight - axis.bottom + (axis.options.isInternal ?
+                            0 :
+                            (chart.scrollablePixelsY || 0)); // #20354, scrollablePixelsY shouldn't be used for navigator
                         x1 = x2 = between(x1, axisLeft, axisLeft + axis.width);
                     }
                     else {
@@ -28605,7 +28607,7 @@
              * [legend.events.itemClick](#legend.events.itemClick).
              *
              * @type       {Highcharts.SeriesLegendItemClickCallbackFunction}
-             * @deprecated
+             * @deprecated 11.4.4
              * @context    Highcharts.Series
              * @apioption  plotOptions.series.events.legendItemClick
              */
@@ -33694,7 +33696,7 @@
          * **Note:** This option is deprecated in favor of
          * Highcharts.LegendItemClickCallbackFunction.
          *
-         * @deprecated
+         * @deprecated 11.4.4
          * @callback Highcharts.SeriesLegendItemClickCallbackFunction
          *
          * @param {Highcharts.Series} this
@@ -33709,7 +33711,7 @@
          * **Note:** This option is deprecated in favor of
          * Highcharts.LegendItemClickEventObject.
          *
-         * @deprecated
+         * @deprecated 11.4.4
          * @interface Highcharts.SeriesLegendItemClickEventObject
          */ /**
         * Related browser event.
@@ -35188,7 +35190,7 @@
          * **Note:** This option is deprecated in favor of
          * Highcharts.LegendItemClickCallbackFunction.
          *
-         * @deprecated
+         * @deprecated 11.4.4
          * @callback Highcharts.PointLegendItemClickCallbackFunction
          *
          * @param {Highcharts.Point} this
@@ -35203,7 +35205,7 @@
          * **Note:** This option is deprecated in favor of
          * Highcharts.LegendItemClickEventObject.
          *
-         * @deprecated
+         * @deprecated 11.4.4
          * @interface Highcharts.PointLegendItemClickEventObject
          */ /**
         * Related browser event.
@@ -35240,7 +35242,7 @@
          * **Note:** This option is deprecated in favor of
          * Highcharts.LegendItemClickCallbackFunction.
          *
-         * @deprecated
+         * @deprecated 11.4.4
          * @callback Highcharts.SeriesLegendItemClickCallbackFunction
          *
          * @param {Highcharts.Series} this
@@ -35255,7 +35257,7 @@
          * **Note:** This option is deprecated in favor of
          * Highcharts.LegendItemClickEventObject.
          *
-         * @deprecated
+         * @deprecated 11.4.4
          * @interface Highcharts.SeriesLegendItemClickEventObject
          */ /**
         * Related browser event.
@@ -43468,7 +43470,7 @@
              *  **Note:** This option is deprecated in favor of
              * [legend.events.itemClick](#legend.events.itemClick).
              *
-             * @deprecated
+             * @deprecated 11.4.4
              * @type       {Highcharts.PointLegendItemClickCallbackFunction}
              * @since      1.2.0
              * @product    highcharts highmaps

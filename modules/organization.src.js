@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.4 (2024-07-02)
+ * @license Highcharts JS v11.4.5 (2024-07-04)
  * Organization chart series type
  *
  * (c) 2019-2024 Torstein Honsi
@@ -11,7 +11,7 @@
         factory['default'] = factory;
         module.exports = factory;
     } else if (typeof define === 'function' && define.amd) {
-        define('highcharts/modules/organization', ['highcharts', 'modules/sankey'], function (Highcharts) {
+        define('highcharts/modules/organization', ['highcharts', 'highcharts/modules/sankey'], function (Highcharts) {
             factory(Highcharts);
             factory.Highcharts = Highcharts;
             return factory;

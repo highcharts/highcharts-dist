@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.4 (2024-07-02)
+ * @license Highcharts JS v11.4.5 (2024-07-04)
  *
  * Client side exporting module
  *
@@ -12,7 +12,7 @@
         factory['default'] = factory;
         module.exports = factory;
     } else if (typeof define === 'function' && define.amd) {
-        define('highcharts/modules/offline-exporting', ['highcharts', 'modules/exporting'], function (Highcharts) {
+        define('highcharts/modules/offline-exporting', ['highcharts', 'highcharts/modules/exporting'], function (Highcharts) {
             factory(Highcharts);
             factory.Highcharts = Highcharts;
             return factory;
@@ -180,7 +180,7 @@
          *
          * */
         const OfflineExportingDefaults = {
-            libURL: 'https://code.highcharts.com/11.4.4/lib/',
+            libURL: 'https://code.highcharts.com/11.4.5/lib/',
             // When offline-exporting is loaded, redefine the menu item definitions
             // related to download.
             menuItemDefinitions: {

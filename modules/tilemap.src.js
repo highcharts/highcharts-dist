@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v11.4.4 (2024-07-02)
+ * @license Highmaps JS v11.4.5 (2024-07-04)
  *
  * Tilemap module
  *
@@ -12,7 +12,7 @@
         factory['default'] = factory;
         module.exports = factory;
     } else if (typeof define === 'function' && define.amd) {
-        define('highcharts/modules/tilemap', ['highcharts', 'modules/map'], function (Highcharts) {
+        define('highcharts/modules/tilemap', ['highcharts', 'highcharts/modules/map'], function (Highcharts) {
             factory(Highcharts);
             factory.Highcharts = Highcharts;
             return factory;

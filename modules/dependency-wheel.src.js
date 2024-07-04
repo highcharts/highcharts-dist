@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.4 (2024-07-02)
+ * @license Highcharts JS v11.4.5 (2024-07-04)
  *
  * Dependency wheel module
  *
@@ -12,7 +12,7 @@
         factory['default'] = factory;
         module.exports = factory;
     } else if (typeof define === 'function' && define.amd) {
-        define('highcharts/modules/dependency-wheel', ['highcharts', 'modules/sankey'], function (Highcharts) {
+        define('highcharts/modules/dependency-wheel', ['highcharts', 'highcharts/modules/sankey'], function (Highcharts) {
             factory(Highcharts);
             factory.Highcharts = Highcharts;
             return factory;

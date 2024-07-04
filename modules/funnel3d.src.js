@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.4 (2024-07-02)
+ * @license Highcharts JS v11.4.5 (2024-07-04)
  *
  * Highcharts funnel module
  *
@@ -12,7 +12,7 @@
         factory['default'] = factory;
         module.exports = factory;
     } else if (typeof define === 'function' && define.amd) {
-        define('highcharts/modules/funnel3d', ['highcharts', 'highcharts-3d', 'modules/cylinder'], function (Highcharts) {
+        define('highcharts/modules/funnel3d', ['highcharts', 'highcharts-3d', 'highcharts/modules/cylinder'], function (Highcharts) {
             factory(Highcharts);
             factory.Highcharts = Highcharts;
             return factory;

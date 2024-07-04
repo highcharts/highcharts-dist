@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.4 (2024-07-02)
+ * @license Highcharts JS v11.4.5 (2024-07-04)
  *
  * Arc diagram module
  *
@@ -12,7 +12,7 @@
         factory['default'] = factory;
         module.exports = factory;
     } else if (typeof define === 'function' && define.amd) {
-        define('modules/arc-diagram', ['modules/sankey'], function (Highcharts) {
+        define('modules/arc-diagram', ['highcharts/modules/sankey'], function (Highcharts) {
             factory(Highcharts);
             factory.Highcharts = Highcharts;
             return factory;
@@ -1436,7 +1436,7 @@
              * [legend.events.itemClick](#legend.events.itemClick).
              *
              * @type       {Highcharts.SeriesLegendItemClickCallbackFunction}
-             * @deprecated
+             * @deprecated 11.4.4
              * @context    Highcharts.Series
              * @apioption  plotOptions.series.events.legendItemClick
              */
@@ -6415,7 +6415,7 @@
          * **Note:** This option is deprecated in favor of
          * Highcharts.LegendItemClickCallbackFunction.
          *
-         * @deprecated
+         * @deprecated 11.4.4
          * @callback Highcharts.SeriesLegendItemClickCallbackFunction
          *
          * @param {Highcharts.Series} this
@@ -6430,7 +6430,7 @@
          * **Note:** This option is deprecated in favor of
          * Highcharts.LegendItemClickEventObject.
          *
-         * @deprecated
+         * @deprecated 11.4.4
          * @interface Highcharts.SeriesLegendItemClickEventObject
          */ /**
         * Related browser event.
@@ -7970,7 +7970,7 @@
                 this.url = this.getReferenceURL();
                 // Add description
                 const desc = this.createElement('desc').add();
-                desc.element.appendChild(doc.createTextNode('Created with Highcharts 11.4.4'));
+                desc.element.appendChild(doc.createTextNode('Created with Highcharts 11.4.5'));
                 this.defs = this.createElement('defs').add();
                 this.allowHTML = allowHTML;
                 this.forExport = forExport;

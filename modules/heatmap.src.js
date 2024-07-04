@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v11.4.4 (2024-07-02)
+ * @license Highmaps JS v11.4.5 (2024-07-04)
  *
  * (c) 2009-2024 Torstein Honsi
  *
@@ -228,7 +228,8 @@
              * @function Highcharts.colorSeriesMixin.translateColors
              */
             function seriesTranslateColors() {
-                const series = this, points = this.data.length ? this.data : this.points, nullColor = this.options.nullColor, colorAxis = this.colorAxis, colorKey = this.colorKey;
+                const series = this, points = this.getPointsCollection(), // #17945
+                nullColor = this.options.nullColor, colorAxis = this.colorAxis, colorKey = this.colorKey;
                 points.forEach((point) => {
                     const value = point.getNestedProperty(colorKey), color = point.options.color || (point.isNull || point.value === null ?
                         nullColor :
@@ -715,7 +716,7 @@
              * **Note:** This option is deprecated in favor of
              * [legend.events.itemClick](#legend.events.itemClick).
              *
-             * @deprecated
+             * @deprecated 11.4.4
              * @type       {Function}
              * @product    highcharts highstock highmaps
              * @apioption  colorAxis.events.legendItemClick

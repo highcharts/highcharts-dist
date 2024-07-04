@@ -901,7 +901,7 @@ const seriesDefaults = {
      * [legend.events.itemClick](#legend.events.itemClick).
      *
      * @type       {Highcharts.SeriesLegendItemClickCallbackFunction}
-     * @deprecated
+     * @deprecated 11.4.4
      * @context    Highcharts.Series
      * @apioption  plotOptions.series.events.legendItemClick
      */

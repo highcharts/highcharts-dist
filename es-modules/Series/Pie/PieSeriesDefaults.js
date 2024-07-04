@@ -77,7 +77,7 @@ const PieSeriesDefaults = {
      *  **Note:** This option is deprecated in favor of
      * [legend.events.itemClick](#legend.events.itemClick).
      *
-     * @deprecated
+     * @deprecated 11.4.4
      * @type       {Highcharts.PointLegendItemClickCallbackFunction}
      * @since      1.2.0
      * @product    highcharts highmaps

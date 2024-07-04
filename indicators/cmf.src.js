@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.4.4 (2024-07-02)
+ * @license Highstock JS v11.4.5 (2024-07-04)
  *
  * (c) 2010-2024 Highsoft AS
  * Author: Sebastian Domas
@@ -11,7 +11,7 @@
         factory['default'] = factory;
         module.exports = factory;
     } else if (typeof define === 'function' && define.amd) {
-        define('highcharts/indicators/cmf', ['highcharts', 'modules/stock'], function (Highcharts) {
+        define('highcharts/indicators/cmf', ['highcharts', 'highcharts/modules/stock'], function (Highcharts) {
             factory(Highcharts);
             factory.Highcharts = Highcharts;
             return factory;

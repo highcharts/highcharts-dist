@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.4 (2024-07-02)
+ * @license Highcharts JS v11.4.5 (2024-07-04)
  * Treegraph chart series type
  *
  *  (c) 2010-2024 Pawel Lysy Grzegorz Blachlinski
@@ -11,7 +11,7 @@
         factory['default'] = factory;
         module.exports = factory;
     } else if (typeof define === 'function' && define.amd) {
-        define('highcharts/modules/treegraph', ['highcharts', 'modules/treemap'], function (Highcharts) {
+        define('highcharts/modules/treegraph', ['highcharts', 'highcharts/modules/treemap'], function (Highcharts) {
             factory(Highcharts);
             factory.Highcharts = Highcharts;
             return factory;
@@ -1401,7 +1401,9 @@
                     }
                 }
                 // Close it
-                polygon.push(polygon[0].slice());
+                if (polygon.length) {
+                    polygon.push(polygon[0].slice());
+                }
                 bBox.polygon = polygon;
             }
             return bBox;
