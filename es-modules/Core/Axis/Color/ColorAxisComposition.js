@@ -195,7 +195,8 @@ var ColorAxisComposition;
      * @function Highcharts.colorSeriesMixin.translateColors
      */
     function seriesTranslateColors() {
-        const series = this, points = this.data.length ? this.data : this.points, nullColor = this.options.nullColor, colorAxis = this.colorAxis, colorKey = this.colorKey;
+        const series = this, points = this.getPointsCollection(), // #17945
+        nullColor = this.options.nullColor, colorAxis = this.colorAxis, colorKey = this.colorKey;
         points.forEach((point) => {
             const value = point.getNestedProperty(colorKey), color = point.options.color || (point.isNull || point.value === null ?
                 nullColor :

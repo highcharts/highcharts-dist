@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.4 (2024-07-02)
+ * @license Highcharts JS v11.4.4 (2024-07-04)
  * Organization chart series type
  *
  * (c) 2019-2024 Torstein Honsi

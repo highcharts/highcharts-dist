@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.4 (2024-07-02)
+ * @license Highcharts JS v11.4.4 (2024-07-04)
  *
  * Boost module
  *
@@ -2820,7 +2820,10 @@
          * @private
          */
         function scatterProcessData(force) {
-            var _a, _b, _c, _d;
+            var _a,
+                _b,
+                _c,
+                _d;
             const series = this, { options, xAxis, yAxis } = series;
             // Process only on changes
             if (!series.isDirty &&

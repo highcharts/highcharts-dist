@@ -169,7 +169,7 @@ class SVGRenderer {
         this.url = this.getReferenceURL();
         // Add description
         const desc = this.createElement('desc').add();
-        desc.element.appendChild(doc.createTextNode('Created with @product.name@ @product.version@'));
+        desc.element.appendChild(doc.createTextNode('Created with Highcharts 11.4.4'));
         this.defs = this.createElement('defs').add();
         this.allowHTML = allowHTML;
         this.forExport = forExport;

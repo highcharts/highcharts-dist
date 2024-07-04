@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v@product.version@ (@product.date@)
+ * @license Highcharts JS v11.4.4 (2024-07-04)
  * @module highcharts/modules/funnel3d
  * @requires highcharts
  * @requires highcharts-3d

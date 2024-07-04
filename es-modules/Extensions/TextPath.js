@@ -184,7 +184,9 @@ function setPolygon(event) {
             }
         }
         // Close it
-        polygon.push(polygon[0].slice());
+        if (polygon.length) {
+            polygon.push(polygon[0].slice());
+        }
         bBox.polygon = polygon;
     }
     return bBox;

@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v11.4.4 (2024-07-02)
+ * @license Highmaps JS v11.4.4 (2024-07-04)
  *
  * (c) 2011-2024 Torstein Honsi
  *
@@ -19063,7 +19063,9 @@
                     }
                     else if (axis.horiz) {
                         y1 = axisTop;
-                        y2 = cHeight - axis.bottom + (chart.scrollablePixelsY || 0);
+                        y2 = cHeight - axis.bottom + (axis.options.isInternal ?
+                            0 :
+                            (chart.scrollablePixelsY || 0)); // #20354, scrollablePixelsY shouldn't be used for navigator
                         x1 = x2 = between(x1, axisLeft, axisLeft + axis.width);
                     }
                     else {
@@ -46147,7 +46149,8 @@
              * @function Highcharts.colorSeriesMixin.translateColors
              */
             function seriesTranslateColors() {
-                const series = this, points = this.data.length ? this.data : this.points, nullColor = this.options.nullColor, colorAxis = this.colorAxis, colorKey = this.colorKey;
+                const series = this, points = this.getPointsCollection(), // #17945
+                nullColor = this.options.nullColor, colorAxis = this.colorAxis, colorKey = this.colorKey;
                 points.forEach((point) => {
                     const value = point.getNestedProperty(colorKey), color = point.options.color || (point.isNull || point.value === null ?
                         nullColor :

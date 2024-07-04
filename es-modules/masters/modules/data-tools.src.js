@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v@product.version@ (@product.date@)
+ * @license Highcharts JS v11.4.4 (2024-07-04)
  * @module highcharts/modules/data-tools
  * @requires highcharts
  *

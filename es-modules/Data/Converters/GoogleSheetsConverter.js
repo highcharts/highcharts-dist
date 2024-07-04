@@ -64,8 +64,8 @@ class GoogleSheetsConverter extends DataConverter {
      * @emits GoogleSheetsParser#afterParse
      */
     parse(options, eventDetail) {
-        const converter = this, parseOptions = merge(converter.options, options), columns = ((parseOptions.json &&
-            parseOptions.json.values) || []).map((column) => column.slice());
+        const converter = this, parseOptions = merge(converter.options, options);
+        let columns = ((parseOptions.json?.values) || []).map((column) => column.slice());
         if (columns.length === 0) {
             return false;
         }
@@ -77,8 +77,13 @@ class GoogleSheetsConverter extends DataConverter {
             detail: eventDetail,
             headers: converter.header
         });
-        converter.columns = columns;
+        // If beforeParse is defined, use it to modify the data
+        const { beforeParse, json } = parseOptions;
+        if (beforeParse && json) {
+            columns = beforeParse(json.values);
+        }
         let column;
+        converter.columns = columns;
         for (let i = 0, iEnd = columns.length; i < iEnd; i++) {
             column = columns[i];
             converter.header[i] = (parseOptions.firstRowAsNames ?

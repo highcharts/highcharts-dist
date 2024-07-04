@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v@product.version@ (@product.date@)
+ * @license Highcharts Gantt JS v11.4.4 (2024-07-04)
  * @module highcharts/modules/static-scale
  * @requires highcharts
  *

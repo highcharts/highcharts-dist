@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v@product.version@ (@product.date@)
+ * @license Highcharts JS v11.4.4 (2024-07-04)
  * Organization chart series type
  * @module highcharts/modules/organization
  * @requires highcharts

@@ -1,5 +1,5 @@
 !/**
- * Highstock JS v11.4.4 (2024-07-02)
+ * Highstock JS v11.4.4 (2024-07-04)
  *
  * Parabolic SAR Indicator for Highcharts Stock
  *
