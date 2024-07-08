@@ -23,7 +23,6 @@ const { merge } = U;
 /**
  * Sort table rows according to values of a column.
  *
- * @private
  */
 class SortModifier extends DataModifier {
     /* *

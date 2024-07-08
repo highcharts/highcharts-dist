@@ -1014,7 +1014,6 @@ class DataTable {
     }
     /**
      * Sets or unsets the modifier for the table.
-     * @private
      *
      * @param {Highcharts.DataModifier} [modifier]
      * Modifier to set, or `undefined` to unset.

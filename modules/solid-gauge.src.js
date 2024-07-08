@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.5 (2024-07-04)
+ * @license Highcharts JS v11.4.6 (2024-07-08)
  *
  * Solid angular gauge module
  *
@@ -12,7 +12,7 @@
         factory['default'] = factory;
         module.exports = factory;
     } else if (typeof define === 'function' && define.amd) {
-        define('highcharts/modules/solid-gauge', ['highcharts', 'highcharts-more'], function (Highcharts) {
+        define('highcharts/modules/solid-gauge', ['highcharts', 'highcharts/highcharts-more'], function (Highcharts) {
             factory(Highcharts);
             factory.Highcharts = Highcharts;
             return factory;

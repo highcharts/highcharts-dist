@@ -1,5 +1,5 @@
 !/**
- * Highstock JS v11.4.5 (2024-07-04)
+ * Highstock JS v11.4.6 (2024-07-08)
  *
  * (c) 2010-2024 Highsoft AS
  * Author: Sebastian Domas

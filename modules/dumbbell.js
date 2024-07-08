@@ -1,5 +1,5 @@
 !/**
- * Highcharts JS v11.4.5 (2024-07-04)
+ * Highcharts JS v11.4.6 (2024-07-08)
  *
  * (c) 2009-2024 Sebastian Bochan, Rafal Sebestjanski
  *

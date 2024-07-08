@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.5 (2024-07-04)
+ * @license Highcharts JS v11.4.6 (2024-07-08)
  *
  * Arc diagram module
  *
@@ -7970,7 +7970,7 @@
                 this.url = this.getReferenceURL();
                 // Add description
                 const desc = this.createElement('desc').add();
-                desc.element.appendChild(doc.createTextNode('Created with Highcharts 11.4.5'));
+                desc.element.appendChild(doc.createTextNode('Created with Highcharts 11.4.6'));
                 this.defs = this.createElement('defs').add();
                 this.allowHTML = allowHTML;
                 this.forExport = forExport;

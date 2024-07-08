@@ -22,7 +22,6 @@ const { addEvent, fireEvent, merge } = U;
 /**
  * Abstract class to provide an interface for modifying a table.
  *
- * @private
  */
 class DataModifier {
     /* *
@@ -228,7 +227,6 @@ class DataModifier {
  * */
 /**
  * Additionally provided types for modifier events and options.
- * @private
  */
 (function (DataModifier) {
     /* *
