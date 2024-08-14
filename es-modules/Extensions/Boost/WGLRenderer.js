@@ -926,12 +926,6 @@ class WGLRenderer {
             if (!settings.useAlpha) {
                 scolor[3] = 1.0;
             }
-            // This is very much temporary
-            if (s.drawMode === 'LINES' &&
-                settings.useAlpha &&
-                scolor[3] < 1) {
-                scolor[3] /= 10;
-            }
             // Blending
             if (options.boostBlending === 'add') {
                 gl.blendFunc(gl.SRC_ALPHA, gl.ONE);

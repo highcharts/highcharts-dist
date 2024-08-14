@@ -1015,11 +1015,7 @@ class Chart {
         let chartWidth = chart.chartWidth;
         // Allow table cells and flex-boxes to shrink without the chart blocking
         // them out (#6427)
-        css(renderTo, {
-            overflow: 'hidden',
-            // #21144, retest and remove in future version of Chrome
-            pointerEvents: H.isChrome ? 'fill' : 'auto'
-        });
+        css(renderTo, { overflow: 'hidden' });
         // Create the inner container
         if (!chart.styledMode) {
             containerStyle = extend({

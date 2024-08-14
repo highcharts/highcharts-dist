@@ -55,8 +55,6 @@ declare module "../highcharts" {
      * slice where the size (arc) of the slice relates to the Y value and the
      * radius of pie slice relates to the Z value.
      *
-     * In TypeScript the type option must always be set.
-     *
      * Configuration options for the series are given in three levels:
      *
      * 1. Options for all series in a chart are defined in the
@@ -67,6 +65,15 @@ declare module "../highcharts" {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     interface PlotVariablepieOptions {
         /**
@@ -485,8 +492,6 @@ declare module "../highcharts" {
      * (Highcharts) A `variablepie` series. If the type option is not specified,
      * it is inherited from chart.type.
      *
-     * In TypeScript the type option must always be set.
-     *
      * Configuration options for the series are given in three levels:
      *
      * 1. Options for all series in a chart are defined in the
@@ -497,6 +502,15 @@ declare module "../highcharts" {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      *
      * You have to extend the `SeriesVariablepieOptions` via an interface to
      * allow custom properties: ``` declare interface SeriesVariablepieOptions {

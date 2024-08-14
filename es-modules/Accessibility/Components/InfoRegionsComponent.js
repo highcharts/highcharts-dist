@@ -157,6 +157,14 @@ class InfoRegionsComponent extends AccessibilityComponent {
                     .setAttribute('aria-expanded', 'false');
             }
         });
+        if (chart.exporting) {
+            // Needed when print logic in exporting does not trigger
+            // rerendering thus repositioning of screen reader DOM elements
+            // (#21554)
+            this.addEvent(chart, 'afterPrint', function () {
+                component.updateAllScreenReaderSections();
+            });
+        }
         this.announcer = new Announcer(chart, 'assertive');
     }
     /**
@@ -211,9 +219,12 @@ class InfoRegionsComponent extends AccessibilityComponent {
      * to get a11y info from series.
      */
     onChartRender() {
-        const component = this;
         this.linkedDescriptionElement = this.getLinkedDescriptionElement();
         this.setLinkedDescriptionAttrs();
+        this.updateAllScreenReaderSections();
+    }
+    updateAllScreenReaderSections() {
+        const component = this;
         Object.keys(this.screenReaderSections).forEach(function (regionKey) {
             component.updateScreenReaderSection(regionKey);
         });

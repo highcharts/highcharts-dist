@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.6 (2024-07-08)
+ * @license Highcharts JS v11.4.7 (2024-08-14)
  *
  * Boost module
  *
@@ -1988,12 +1988,6 @@
                     if (!settings.useAlpha) {
                         scolor[3] = 1.0;
                     }
-                    // This is very much temporary
-                    if (s.drawMode === 'LINES' &&
-                        settings.useAlpha &&
-                        scolor[3] < 1) {
-                        scolor[3] /= 10;
-                    }
                     // Blending
                     if (options.boostBlending === 'add') {
                         gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
@@ -3225,7 +3219,9 @@
         function wrapSeriesProcessData(proceed) {
             let dataToMeasure = this.options.data;
             if (boostEnabled(this.chart) && BoostableMap[this.type]) {
-                const series = this, isScatter = series.is('scatter') && !series.is('bubble');
+                const series = this, isScatter = series.is('scatter') &&
+                    !series.is('bubble') &&
+                    !series.is('heatmap');
                 // If there are no extremes given in the options, we also need to
                 // process the data to read the data extremes. If this is a heatmap,
                 // do default behaviour.

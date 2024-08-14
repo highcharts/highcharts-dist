@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v11.4.6 (2024-07-08)
+ * @license Highmaps JS v11.4.7 (2024-08-14)
  *
  * (c) 2009-2024 Torstein Honsi
  *
@@ -2576,7 +2576,7 @@
              * @private
              */
             hasData() {
-                return !!this.processedXData.length; // != 0
+                return !!this.xData; // != 0
             }
             /**
              * Override the init method to add point ranges on both axes.
@@ -2680,6 +2680,11 @@
              */
             translate() {
                 const series = this, options = series.options, { borderRadius, marker } = options, symbol = marker && marker.symbol || 'rect', shape = symbols[symbol] ? symbol : 'rect', hasRegularShape = ['circle', 'square'].indexOf(shape) !== -1;
+                if (!series.processedXData) {
+                    const { xData, yData } = series.getProcessedData();
+                    series.processedXData = xData;
+                    series.processedYData = yData;
+                }
                 series.generatePoints();
                 for (const point of series.points) {
                     const cellAttr = point.getCellAttributes();

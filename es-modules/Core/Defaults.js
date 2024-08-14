@@ -1053,7 +1053,7 @@ const defaultOptions = {
          * can be prevented by returning `false` or calling
          * `event.preventDefault()`.
          *
-         * @sample {highcharts} highcharts/legend/series-legend-itemclick/
+         * @sample {highcharts} highcharts/legend/itemclick/
          *         Confirm hiding and showing
          * @sample {highcharts} highcharts/legend/pie-legend-itemclick/
          *         Confirm toggle visibility of pie slices

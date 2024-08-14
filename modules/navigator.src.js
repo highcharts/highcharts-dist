@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.6 (2024-07-08)
+ * @license Highcharts JS v11.4.7 (2024-08-14)
  *
  * Standalone navigator module
  *
@@ -3024,6 +3024,7 @@
                         overscroll: baseXaxis.options.overscroll
                     }, navigatorOptions.xAxis, {
                         type: 'datetime',
+                        yAxis: navigatorOptions.yAxis?.id,
                         index: xAxisIndex,
                         isInternal: true,
                         offset: 0,

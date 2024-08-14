@@ -82,8 +82,6 @@ declare module "../highcharts.src" {
      * option to be set and should be loaded after the
      * `stock/indicators/indicators.js` and `stock/indicators/sma.js`.
      *
-     * In TypeScript the type option must always be set.
-     *
      * Configuration options for the series are given in three levels:
      *
      * 1. Options for all series in a chart are defined in the
@@ -94,6 +92,15 @@ declare module "../highcharts.src" {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     interface PlotSupertrendOptions {
         /**

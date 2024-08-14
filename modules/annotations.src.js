@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.6 (2024-07-08)
+ * @license Highcharts JS v11.4.7 (2024-08-14)
  *
  * Annotations module
  *
@@ -4936,7 +4936,7 @@
                 this.popup = new Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
                     (this.chart.options.stockTools &&
                         this.chart.options.stockTools.gui.iconsURL) ||
-                    'https://code.highcharts.com/11.4.6/gfx/stock-icons/'), this.chart);
+                    'https://code.highcharts.com/11.4.7/gfx/stock-icons/'), this.chart);
             }
             this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
         }
@@ -5483,8 +5483,8 @@
                 this.destroy();
                 this.initProperties(chart, options);
                 this.init(chart, options);
-                // Update options in chart options, used in exporting (#9767):
-                chart.options.annotations[userOptionsIndex] = options;
+                // Update options in chart options, used in exporting (#9767, #21507):
+                chart.options.annotations[userOptionsIndex] = this.options;
                 this.isUpdating = true;
                 if (pick(redraw, true)) {
                     chart.drawAnnotations();
@@ -6098,7 +6098,7 @@
              * from a different server.
              *
              * @type      {string}
-             * @default   https://code.highcharts.com/11.4.6/gfx/stock-icons/
+             * @default   https://code.highcharts.com/11.4.7/gfx/stock-icons/
              * @since     7.1.3
              * @apioption navigation.iconsURL
              */

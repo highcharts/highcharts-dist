@@ -971,7 +971,9 @@ function wrapSeriesGetExtremes(proceed) {
 function wrapSeriesProcessData(proceed) {
     let dataToMeasure = this.options.data;
     if (boostEnabled(this.chart) && BoostableMap[this.type]) {
-        const series = this, isScatter = series.is('scatter') && !series.is('bubble');
+        const series = this, isScatter = series.is('scatter') &&
+            !series.is('bubble') &&
+            !series.is('heatmap');
         // If there are no extremes given in the options, we also need to
         // process the data to read the data extremes. If this is a heatmap,
         // do default behaviour.

@@ -72,8 +72,8 @@ class MathModifier extends DataModifier {
      * @param {Highcharts.DataTable} table
      * Table to extract column from and use as reference.
      *
-     * @param {string} columnNameOrAlias
-     * Name or alias of column to process.
+     * @param {string} columnName
+     * Name of column to process.
      *
      * @param {number} rowIndex
      * Row index to start the replacing process from.
@@ -81,8 +81,8 @@ class MathModifier extends DataModifier {
      * @return {Highcharts.DataTableColumn}
      * Returns the processed table column.
      */
-    processColumn(table, columnNameOrAlias, rowIndex = 0) {
-        const alternativeSeparators = this.options.alternativeSeparators, column = (table.getColumn(columnNameOrAlias, true) || [])
+    processColumn(table, columnName, rowIndex = 0) {
+        const alternativeSeparators = this.options.alternativeSeparators, column = (table.getColumn(columnName, true) || [])
             .slice(rowIndex > 0 ? rowIndex : 0);
         for (let i = 0, iEnd = column.length, cacheFormula = [], cacheString = '', cell; i < iEnd; ++i) {
             cell = column[i];

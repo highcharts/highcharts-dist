@@ -22,7 +22,7 @@
         if (!obj.hasOwnProperty(path)) {
             obj[path] = fn.apply(null, args);
 
-            if (typeof CustomEvent === 'function') {
+            if (window && typeof CustomEvent === 'function') {
                 window.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
@@ -56,7 +56,7 @@
              *  Constants
              *
              * */
-            Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '11.4.6', Globals.win = (typeof window !== 'undefined' ?
+            Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '11.4.7', Globals.win = (typeof window !== 'undefined' ?
                 window :
                 {}), // eslint-disable-line node/no-unsupported-features/es-builtins
             Globals.doc = Globals.win.document, Globals.svg = (Globals.doc &&
@@ -5391,7 +5391,7 @@
                  * can be prevented by returning `false` or calling
                  * `event.preventDefault()`.
                  *
-                 * @sample {highcharts} highcharts/legend/series-legend-itemclick/
+                 * @sample {highcharts} highcharts/legend/itemclick/
                  *         Confirm hiding and showing
                  * @sample {highcharts} highcharts/legend/pie-legend-itemclick/
                  *         Confirm toggle visibility of pie slices
@@ -11714,8 +11714,8 @@
                 // proximity is too small, the arc disappears. If it is too great, a
                 // gap appears. This can be seen in the animation of the official
                 // bubble demo (#20586).
-                proximity = 0.0002 / Math.max(rx, 1), fullCircle = (Math.abs((options.end || 0) - start - 2 * Math.PI) <
-                    proximity), end = (options.end || 0) - proximity, innerRadius = options.innerR, open = pick(options.open, fullCircle), cosStart = Math.cos(start), sinStart = Math.sin(start), cosEnd = Math.cos(end), sinEnd = Math.sin(end), 
+                proximity = 0.0002 / (options.borderRadius ? 1 : Math.max(rx, 1)), fullCircle = (Math.abs((options.end || 0) - start - 2 * Math.PI) <
+                    proximity), end = (options.end || 0) - (fullCircle ? proximity : 0), innerRadius = options.innerR, open = pick(options.open, fullCircle), cosStart = Math.cos(start), sinStart = Math.sin(start), cosEnd = Math.cos(end), sinEnd = Math.sin(end), 
                 // Proximity takes care of rounding errors around PI (#6971)
                 longArc = pick(options.longArc, end - start - Math.PI < proximity ? 0 : 1);
                 let arcSegment = [
@@ -12524,7 +12524,7 @@
                 this.url = this.getReferenceURL();
                 // Add description
                 const desc = this.createElement('desc').add();
-                desc.element.appendChild(doc.createTextNode('Created with Highcharts 11.4.6'));
+                desc.element.appendChild(doc.createTextNode('Created with Highcharts 11.4.7'));
                 this.defs = this.createElement('defs').add();
                 this.allowHTML = allowHTML;
                 this.forExport = forExport;
@@ -23480,7 +23480,7 @@
              * @return {Highcharts.SVGElement}
              * Tooltip label
              */
-            getLabel() {
+            getLabel({ anchorX, anchorY } = { anchorX: 0, anchorY: 0 }) {
                 const tooltip = this, styledMode = this.chart.styledMode, options = this.options, doSplit = this.split && this.allowShared;
                 let container = this.container, renderer = this.chart.renderer;
                 // If changing from a split tooltip to a non-split tooltip, we must
@@ -23529,7 +23529,7 @@
                     }
                     else {
                         this.label = renderer
-                            .label('', 0, 0, options.shape, void 0, void 0, options.useHTML, void 0, 'tooltip')
+                            .label('', anchorX, anchorY, options.shape, void 0, void 0, options.useHTML, void 0, 'tooltip')
                             .attr({
                             padding: options.padding,
                             r: options.borderRadius
@@ -23896,7 +23896,7 @@
              */
             refresh(pointOrPoints, mouseEvent) {
                 const tooltip = this, { chart, options, pointer, shared } = this, points = splat(pointOrPoints), point = points[0], pointConfig = [], formatString = options.format, formatter = options.formatter || tooltip.defaultFormatter, styledMode = chart.styledMode;
-                let formatterContext = {};
+                let formatterContext = {}, wasShared = tooltip.allowShared;
                 if (!options.enabled || !point.series) { // #16820
                     return;
                 }
@@ -23906,6 +23906,7 @@
                 tooltip.allowShared = !(!isArray(pointOrPoints) &&
                     pointOrPoints.series &&
                     pointOrPoints.series.noSharedTooltip);
+                wasShared = wasShared && !tooltip.allowShared;
                 // Get the reference point coordinates (pie charts use tooltipPos)
                 tooltip.followPointer = (!tooltip.split && point.series.tooltipOptions.followPointer);
                 const anchor = tooltip.getAnchor(pointOrPoints, mouseEvent), x = anchor[0], y = anchor[1];
@@ -23953,7 +23954,7 @@
                             points.some((p) => // #16004
                              pointer.isDirectTouch || // ##17929
                                 p.series.shouldShowTooltip(checkX, checkY))) {
-                            const label = tooltip.getLabel();
+                            const label = tooltip.getLabel(wasShared && tooltip.tt || {});
                             // Prevent the tooltip from flowing over the chart box
                             // (#6659)
                             if (!options.style.width || styledMode) {
@@ -26036,7 +26037,7 @@
                 this.eventsToUnbind = [];
                 if (!H.chartCount) {
                     if (Pointer.unbindDocumentMouseUp) {
-                        Pointer.unbindDocumentMouseUp = Pointer.unbindDocumentMouseUp();
+                        Pointer.unbindDocumentMouseUp.forEach((e) => e());
                     }
                     if (Pointer.unbindDocumentTouchEnd) {
                         Pointer.unbindDocumentTouchEnd = (Pointer.unbindDocumentTouchEnd());
@@ -27226,8 +27227,9 @@
                 container.onclick = this.onContainerClick.bind(this);
                 this.eventsToUnbind.push(addEvent(container, 'mouseenter', this.onContainerMouseEnter.bind(this)), addEvent(container, 'mouseleave', this.onContainerMouseLeave.bind(this)));
                 if (!Pointer.unbindDocumentMouseUp) {
-                    Pointer.unbindDocumentMouseUp = addEvent(ownerDoc, 'mouseup', this.onDocumentMouseUp.bind(this));
+                    Pointer.unbindDocumentMouseUp = [];
                 }
+                Pointer.unbindDocumentMouseUp.push(addEvent(ownerDoc, 'mouseup', this.onDocumentMouseUp.bind(this)));
                 // In case we are dealing with overflow, reset the chart position when
                 // scrolling parent elements
                 let parent = this.chart.renderTo.parentElement;
@@ -36277,11 +36279,7 @@
                 let chartWidth = chart.chartWidth;
                 // Allow table cells and flex-boxes to shrink without the chart blocking
                 // them out (#6427)
-                css(renderTo, {
-                    overflow: 'hidden',
-                    // #21144, retest and remove in future version of Chrome
-                    pointerEvents: H.isChrome ? 'fill' : 'auto'
-                });
+                css(renderTo, { overflow: 'hidden' });
                 // Create the inner container
                 if (!chart.styledMode) {
                     containerStyle = extend({
@@ -48937,6 +48935,7 @@
                         overscroll: baseXaxis.options.overscroll
                     }, navigatorOptions.xAxis, {
                         type: 'datetime',
+                        yAxis: navigatorOptions.yAxis?.id,
                         index: xAxisIndex,
                         isInternal: true,
                         offset: 0,

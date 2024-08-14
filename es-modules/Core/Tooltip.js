@@ -238,7 +238,7 @@ class Tooltip {
      * @return {Highcharts.SVGElement}
      * Tooltip label
      */
-    getLabel() {
+    getLabel({ anchorX, anchorY } = { anchorX: 0, anchorY: 0 }) {
         const tooltip = this, styledMode = this.chart.styledMode, options = this.options, doSplit = this.split && this.allowShared;
         let container = this.container, renderer = this.chart.renderer;
         // If changing from a split tooltip to a non-split tooltip, we must
@@ -287,7 +287,7 @@ class Tooltip {
             }
             else {
                 this.label = renderer
-                    .label('', 0, 0, options.shape, void 0, void 0, options.useHTML, void 0, 'tooltip')
+                    .label('', anchorX, anchorY, options.shape, void 0, void 0, options.useHTML, void 0, 'tooltip')
                     .attr({
                     padding: options.padding,
                     r: options.borderRadius
@@ -654,7 +654,7 @@ class Tooltip {
      */
     refresh(pointOrPoints, mouseEvent) {
         const tooltip = this, { chart, options, pointer, shared } = this, points = splat(pointOrPoints), point = points[0], pointConfig = [], formatString = options.format, formatter = options.formatter || tooltip.defaultFormatter, styledMode = chart.styledMode;
-        let formatterContext = {};
+        let formatterContext = {}, wasShared = tooltip.allowShared;
         if (!options.enabled || !point.series) { // #16820
             return;
         }
@@ -664,6 +664,7 @@ class Tooltip {
         tooltip.allowShared = !(!isArray(pointOrPoints) &&
             pointOrPoints.series &&
             pointOrPoints.series.noSharedTooltip);
+        wasShared = wasShared && !tooltip.allowShared;
         // Get the reference point coordinates (pie charts use tooltipPos)
         tooltip.followPointer = (!tooltip.split && point.series.tooltipOptions.followPointer);
         const anchor = tooltip.getAnchor(pointOrPoints, mouseEvent), x = anchor[0], y = anchor[1];
@@ -711,7 +712,7 @@ class Tooltip {
                     points.some((p) => // #16004
                      pointer.isDirectTouch || // ##17929
                         p.series.shouldShowTooltip(checkX, checkY))) {
-                    const label = tooltip.getLabel();
+                    const label = tooltip.getLabel(wasShared && tooltip.tt || {});
                     // Prevent the tooltip from flowing over the chart box
                     // (#6659)
                     if (!options.style.width || styledMode) {

@@ -372,8 +372,6 @@ declare module "../highcharts.src" {
      * It requires that the `highcharts-3d.js`, `cylinder.js` and `funnel3d.js`
      * module are loaded.
      *
-     * In TypeScript the type option must always be set.
-     *
      * Configuration options for the series are given in three levels:
      *
      * 1. Options for all series in a chart are defined in the
@@ -383,6 +381,15 @@ declare module "../highcharts.src" {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     interface PlotFunnel3dOptions {
         /**
@@ -1070,8 +1077,6 @@ declare module "../highcharts.src" {
      * stages in a sales project, where the top are the initial stages with the
      * most clients. It requires that the modules/funnel.js file is loaded.
      *
-     * In TypeScript the type option must always be set.
-     *
      * Configuration options for the series are given in three levels:
      *
      * 1. Options for all series in a chart are defined in the
@@ -1081,6 +1086,15 @@ declare module "../highcharts.src" {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     interface PlotFunnelOptions {
         /**

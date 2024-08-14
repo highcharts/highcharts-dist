@@ -138,7 +138,7 @@ class HeatmapSeries extends ScatterSeries {
      * @private
      */
     hasData() {
-        return !!this.processedXData.length; // != 0
+        return !!this.xData; // != 0
     }
     /**
      * Override the init method to add point ranges on both axes.
@@ -242,6 +242,11 @@ class HeatmapSeries extends ScatterSeries {
      */
     translate() {
         const series = this, options = series.options, { borderRadius, marker } = options, symbol = marker && marker.symbol || 'rect', shape = symbols[symbol] ? symbol : 'rect', hasRegularShape = ['circle', 'square'].indexOf(shape) !== -1;
+        if (!series.processedXData) {
+            const { xData, yData } = series.getProcessedData();
+            series.processedXData = xData;
+            series.processedYData = yData;
+        }
         series.generatePoints();
         for (const point of series.points) {
             const cellAttr = point.getCellAttributes();

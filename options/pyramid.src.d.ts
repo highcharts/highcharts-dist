@@ -369,8 +369,6 @@ declare module "../highcharts.src" {
      * charts are a type of chart often used to visualize stages in a sales
      * project, where the top are the initial stages with the most clients.
      *
-     * In TypeScript the type option must always be set.
-     *
      * Configuration options for the series are given in three levels:
      *
      * 1. Options for all series in a chart are defined in the
@@ -381,6 +379,15 @@ declare module "../highcharts.src" {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     interface PlotPyramid3dOptions {
         /**
@@ -1057,8 +1064,6 @@ declare module "../highcharts.src" {
      * (Highcharts) A pyramid series is a special type of funnel, without neck
      * and reversed by default.
      *
-     * In TypeScript the type option must always be set.
-     *
      * Configuration options for the series are given in three levels:
      *
      * 1. Options for all series in a chart are defined in the
@@ -1068,6 +1073,15 @@ declare module "../highcharts.src" {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     interface PlotPyramidOptions {
         /**
@@ -1447,8 +1461,6 @@ declare module "../highcharts.src" {
      * (Highcharts) A `pyramid3d` series. If the type option is not specified,
      * it is inherited from chart.type.
      *
-     * In TypeScript the type option must always be set.
-     *
      * Configuration options for the series are given in three levels:
      *
      * 1. Options for all series in a chart are defined in the
@@ -1459,6 +1471,15 @@ declare module "../highcharts.src" {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      *
      * You have to extend the `SeriesPyramid3dOptions` via an interface to allow
      * custom properties: ``` declare interface SeriesPyramid3dOptions {
@@ -1494,8 +1515,6 @@ declare module "../highcharts.src" {
      * (Highcharts) A `pyramid` series. If the type option is not specified, it
      * is inherited from chart.type.
      *
-     * In TypeScript the type option must always be set.
-     *
      * Configuration options for the series are given in three levels:
      *
      * 1. Options for all series in a chart are defined in the
@@ -1505,6 +1524,15 @@ declare module "../highcharts.src" {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      *
      * You have to extend the `SeriesPyramidOptions` via an interface to allow
      * custom properties: ``` declare interface SeriesPyramidOptions {

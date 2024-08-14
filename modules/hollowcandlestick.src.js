@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.4.6 (2024-07-08)
+ * @license Highstock JS v11.4.7 (2024-08-14)
  *
  * Hollow Candlestick series type for Highcharts Stock
  *

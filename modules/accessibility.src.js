@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.6 (2024-07-08)
+ * @license Highcharts JS v11.4.7 (2024-08-14)
  *
  * Accessibility module
  *
@@ -2169,6 +2169,14 @@
                             .setAttribute('aria-expanded', 'false');
                     }
                 });
+                if (chart.exporting) {
+                    // Needed when print logic in exporting does not trigger
+                    // rerendering thus repositioning of screen reader DOM elements
+                    // (#21554)
+                    this.addEvent(chart, 'afterPrint', function () {
+                        component.updateAllScreenReaderSections();
+                    });
+                }
                 this.announcer = new Announcer(chart, 'assertive');
             }
             /**
@@ -2223,9 +2231,12 @@
              * to get a11y info from series.
              */
             onChartRender() {
-                const component = this;
                 this.linkedDescriptionElement = this.getLinkedDescriptionElement();
                 this.setLinkedDescriptionAttrs();
+                this.updateAllScreenReaderSections();
+            }
+            updateAllScreenReaderSections() {
+                const component = this;
                 Object.keys(this.screenReaderSections).forEach(function (regionKey) {
                     component.updateScreenReaderSection(regionKey);
                 });
@@ -6868,6 +6879,7 @@
                         overscroll: baseXaxis.options.overscroll
                     }, navigatorOptions.xAxis, {
                         type: 'datetime',
+                        yAxis: navigatorOptions.yAxis?.id,
                         index: xAxisIndex,
                         isInternal: true,
                         offset: 0,

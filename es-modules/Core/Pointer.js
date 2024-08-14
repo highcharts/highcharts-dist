@@ -94,7 +94,7 @@ class Pointer {
         this.eventsToUnbind = [];
         if (!H.chartCount) {
             if (Pointer.unbindDocumentMouseUp) {
-                Pointer.unbindDocumentMouseUp = Pointer.unbindDocumentMouseUp();
+                Pointer.unbindDocumentMouseUp.forEach((e) => e());
             }
             if (Pointer.unbindDocumentTouchEnd) {
                 Pointer.unbindDocumentTouchEnd = (Pointer.unbindDocumentTouchEnd());
@@ -1284,8 +1284,9 @@ class Pointer {
         container.onclick = this.onContainerClick.bind(this);
         this.eventsToUnbind.push(addEvent(container, 'mouseenter', this.onContainerMouseEnter.bind(this)), addEvent(container, 'mouseleave', this.onContainerMouseLeave.bind(this)));
         if (!Pointer.unbindDocumentMouseUp) {
-            Pointer.unbindDocumentMouseUp = addEvent(ownerDoc, 'mouseup', this.onDocumentMouseUp.bind(this));
+            Pointer.unbindDocumentMouseUp = [];
         }
+        Pointer.unbindDocumentMouseUp.push(addEvent(ownerDoc, 'mouseup', this.onDocumentMouseUp.bind(this)));
         // In case we are dealing with overflow, reset the chart position when
         // scrolling parent elements
         let parent = this.chart.renderTo.parentElement;

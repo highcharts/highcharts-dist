@@ -18421,8 +18421,6 @@ export interface PlotAbandsOnPointOptions {
  * option to be set and should be loaded after the
  * `stock/indicators/indicators.js`.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -18432,6 +18430,15 @@ export interface PlotAbandsOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotAbandsOptions {
     /**
@@ -19433,8 +19440,6 @@ export interface PlotAoOnPointOptions {
  * (Highstock) Awesome Oscillator. This series requires the `linkedTo` option to
  * be set and should be loaded after the `stock/indicators/indicators.js`
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -19444,6 +19449,15 @@ export interface PlotAoOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotAoOptions {
     /**
@@ -20490,8 +20504,6 @@ export interface PlotArcdiagramOnPointOptions {
  * the edges are drawn as a semicircle in one of the two half-planes delimited
  * by the line, or as smooth curves formed by sequences of semicircles.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -20501,6 +20513,15 @@ export interface PlotArcdiagramOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotArcdiagramOptions {
     /**
@@ -20949,8 +20970,6 @@ export interface PlotAreaOnPointOptions {
 /**
  * (Highcharts, Highstock) The area series type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -20960,6 +20979,15 @@ export interface PlotAreaOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotAreaOptions {
     /**
@@ -22252,8 +22280,6 @@ export interface PlotAreasplinerangeOnPointOptions {
  * higher and lower Y values along an X axis. The area inside the range is
  * colored, and the graph outlining the area is a smoothed spline.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -22264,6 +22290,15 @@ export interface PlotAreasplinerangeOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotAreasplinerangeOptions {
     /**
@@ -23018,8 +23053,6 @@ export interface PlotAroonOnPointOptions {
  * (Highstock) Aroon. This series requires the `linkedTo` option to be set and
  * should be loaded after the `stock/indicators/indicators.js`.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -23029,6 +23062,15 @@ export interface PlotAroonOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotAroonOptions {
     /**
@@ -23633,8 +23675,6 @@ export interface PlotAroonoscillatorOnPointOptions {
  * be set and should be loaded after the `stock/indicators/indicators.js` and
  * `stock/indicators/aroon.js`.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -23645,6 +23685,15 @@ export interface PlotAroonoscillatorOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotAroonoscillatorOptions {
     /**
@@ -24256,8 +24305,6 @@ export interface PlotAtrOnPointOptions {
  * (Highstock) Average true range indicator (ATR). This series requires
  * `linkedTo` option to be set.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -24267,6 +24314,15 @@ export interface PlotAtrOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotAtrOptions {
     /**
@@ -25679,8 +25735,6 @@ export interface PlotBellcurveOnPointOptions {
  * and standard deviation of the base series data and plots the curve according
  * to the calculated parameters.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -25690,6 +25744,15 @@ export interface PlotBellcurveOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotBellcurveOptions {
     /**
@@ -26283,8 +26346,6 @@ export interface PlotBoxplotOnPointOptions {
  * minimum), lower quartile (Q1), median (Q2), upper quartile (Q3), and largest
  * observation (sample maximum).
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -26294,6 +26355,15 @@ export interface PlotBoxplotOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotBoxplotOptions {
     /**
@@ -27397,8 +27467,6 @@ export interface PlotBulletOnPointOptions {
  * context of qualitative ranges of performance that could be set using
  * plotBands on yAxis.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -27408,6 +27476,15 @@ export interface PlotBulletOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotBulletOptions {
     /**
@@ -28828,8 +28905,6 @@ export interface PlotChaikinOnPointOptions {
  * (Highstock) Chaikin Oscillator. This series requires the `linkedTo` option to
  * be set and should be loaded after the `stock/indicators/indicators.js`.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -28839,6 +28914,15 @@ export interface PlotChaikinOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotChaikinOptions {
     /**
@@ -29845,8 +29929,6 @@ export interface PlotCmoOnPointOptions {
  * requires the `linkedTo` option to be set and should be loaded after the
  * `stock/indicators/indicators.js` file.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -29856,6 +29938,15 @@ export interface PlotCmoOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotCmoOptions {
     /**
@@ -32638,8 +32729,6 @@ export interface PlotDmiOnPointOptions {
  * `linkedTo` option to be set and should be loaded after the
  * `stock/indicators/indicators.js` file.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -32649,6 +32738,15 @@ export interface PlotDmiOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotDmiOptions {
     /**
@@ -34135,8 +34233,6 @@ export interface PlotErrorbarOnPointOptions {
  * data and are used on graphs to indicate the error, or uncertainty in a
  * reported measurement.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -34146,6 +34242,15 @@ export interface PlotErrorbarOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotErrorbarOptions {
     /**
@@ -34854,8 +34959,6 @@ export interface PlotFlagsOnPointOptions {
  * (Highstock) Flags are used to mark events in stock charts. They can be added
  * on the timeline, or attached to a specific series.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -34865,6 +34968,15 @@ export interface PlotFlagsOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotFlagsOptions {
     /**
@@ -35529,8 +35641,6 @@ export interface PlotFlagsOptions {
  * allowing to display route paths (e.g. flight or ship routes) or flows on a
  * map. It creates a link between two points on a map chart.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -35540,6 +35650,15 @@ export interface PlotFlagsOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotFlowmapOptions {
     /**
@@ -36520,8 +36639,6 @@ export interface PlotGaugeOnPointOptions {
  * (Highcharts) Gauges are circular plots displaying one or more values with a
  * dial pointing to values along the perimeter.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -36531,6 +36648,15 @@ export interface PlotGaugeOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotGaugeOptions {
     /**
@@ -37193,8 +37319,6 @@ export interface PlotGeoheatmapDataLabelsOptions {
  * longitude, and individual values contained in a matrix are represented as
  * colors.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -37204,6 +37328,15 @@ export interface PlotGeoheatmapDataLabelsOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotGeoheatmapOptions {
     /**
@@ -37576,8 +37709,6 @@ export interface PlotHeatmapOnPointOptions {
  * (Highcharts, Highmaps) A heatmap is a graphical representation of data where
  * the individual values contained in a matrix are represented as colors.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -37587,6 +37718,15 @@ export interface PlotHeatmapOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotHeatmapOptions {
     /**
@@ -38058,8 +38198,6 @@ export interface PlotHeikinashiOnPointOptions {
  * describe price movements over time. It displays open, high, low and close
  * values per data point.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -38069,6 +38207,15 @@ export interface PlotHeikinashiOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotHeikinashiOptions {
     /**
@@ -38813,8 +38960,6 @@ export interface PlotHistogramOnPointOptions {
  * of the data set in the base series. Histogram splits data into bins and shows
  * their frequencies.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -38824,6 +38969,15 @@ export interface PlotHistogramOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotHistogramOptions {
     /**
@@ -39461,8 +39615,6 @@ export interface PlotHlcOnPointOptions {
  * (Highstock) An HLC chart is a style of financial chart used to describe price
  * movements over time. It displays high, low and close values per data point.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -39472,6 +39624,15 @@ export interface PlotHlcOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotHlcOptions {
     /**
@@ -40186,8 +40347,6 @@ export interface PlotHollowcandlestickOnPointOptions {
  * (Highstock) A hollow candlestick chart is a style of financial chart used to
  * describe price movements over time.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -40198,6 +40357,15 @@ export interface PlotHollowcandlestickOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotHollowcandlestickOptions {
     /**
@@ -40945,8 +41113,6 @@ export interface PlotIkhOnPointOptions {
  * (Highstock) Ichimoku Kinko Hyo (IKH). This series requires `linkedTo` option
  * to be set.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -40956,6 +41122,15 @@ export interface PlotIkhOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotIkhOptions {
     /**
@@ -41603,8 +41778,6 @@ export interface PlotItemOnPointOptions {
  * series options, like `center`, `size` and data label positioning, are
  * inherited from the pie series and don't apply for rectangular layouts.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -41614,6 +41787,15 @@ export interface PlotItemOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotItemOptions {
     /**
@@ -42045,8 +42227,6 @@ export interface PlotKeltnerchannelsOnPointOptions {
  * be set and should be loaded after the `stock/indicators/indicators.js`,
  * `stock/indicators/atr.js`, and `stock/ema/.js`.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -42057,6 +42237,15 @@ export interface PlotKeltnerchannelsOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotKeltnerchannelsOptions {
     /**
@@ -43162,8 +43351,6 @@ export interface PlotLinearregressionangleOnPointOptions {
  * (Highstock) Linear regression angle indicator. This series requires
  * `linkedTo` option to be set.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -43174,6 +43361,15 @@ export interface PlotLinearregressionangleOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotLinearregressionangleOptions {
     /**
@@ -43826,8 +44022,6 @@ export interface PlotLinearregressioninterceptOnPointOptions {
  * (Highstock) Linear regression intercept indicator. This series requires
  * `linkedTo` option to be set.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -43838,6 +44032,15 @@ export interface PlotLinearregressioninterceptOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotLinearregressioninterceptOptions {
     /**
@@ -44539,8 +44742,6 @@ export interface PlotLinearregressionslopeOnPointOptions {
  * (Highstock) Linear regression slope indicator. This series requires
  * `linkedTo` option to be set.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -44551,6 +44752,15 @@ export interface PlotLinearregressionslopeOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotLinearregressionslopeOptions {
     /**
@@ -45166,8 +45376,6 @@ export interface PlotLineOnPointOptions {
  * (Highcharts, Highstock) A line series displays information as a series of
  * data points connected by straight line segments.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -45177,6 +45385,15 @@ export interface PlotLineOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotLineOptions {
     /**
@@ -46704,8 +46921,6 @@ export interface PlotMapbubbleOnPointOptions {
  * (Highmaps) A map bubble series is a bubble series laid out on top of a map
  * series, where each bubble is tied to a specific map area.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -46715,6 +46930,15 @@ export interface PlotMapbubbleOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotMapbubbleOptions {
     /**
@@ -47925,8 +48149,6 @@ export interface PlotMappointOnPointOptions {
  * (Highmaps) A mappoint series is a special form of scatter series where the
  * points can be laid out in map coordinates on top of a map.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -47936,6 +48158,15 @@ export interface PlotMappointOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotMappointOptions {
     /**
@@ -48356,8 +48587,6 @@ export interface PlotMfiOnPointOptions {
  * (Highstock) Money Flow Index. This series requires `linkedTo` option to be
  * set and should be loaded after the `stock/indicators/indicators.js` file.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -48367,6 +48596,15 @@ export interface PlotMfiOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotMfiOptions {
     /**
@@ -49372,8 +49610,6 @@ export interface PlotNatrOnPointOptions {
  * requires `linkedTo` option to be set and should be loaded after the
  * `stock/indicators/indicators.js` and `stock/indicators/atr.js`.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -49383,6 +49619,15 @@ export interface PlotNatrOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotNatrOptions {
     /**
@@ -50077,8 +50322,6 @@ export interface PlotNetworkgraphOnPointOptions {
  * connnections (links) attracts nodes (points) and other nodes repulse each
  * other.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -50089,6 +50332,15 @@ export interface PlotNetworkgraphOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotNetworkgraphOptions {
     /**
@@ -50475,8 +50727,6 @@ export interface PlotObvOnPointOptions {
  * `stock/indicators/indicators.js` file. Through the `volumeSeriesID` there
  * also should be linked the volume series.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -50486,6 +50736,15 @@ export interface PlotObvOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotObvOptions {
     /**
@@ -51424,8 +51683,6 @@ export interface PlotOptions {
      * `linkedTo` option to be set and should be loaded after the
      * `stock/indicators/indicators.js`.
      *
-     * In TypeScript the type option must always be set.
-     *
      * Configuration options for the series are given in three levels:
      *
      * 1. Options for all series in a chart are defined in the
@@ -51435,13 +51692,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     abands?: PlotAbandsOptions;
     /**
      * (Highstock) Accumulation Distribution (AD). This series requires
      * `linkedTo` option to be set.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -51452,14 +51716,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     ad?: PlotAdOptions;
     /**
      * (Highstock) Awesome Oscillator. This series requires the `linkedTo`
      * option to be set and should be loaded after the
      * `stock/indicators/indicators.js`
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -51470,14 +51741,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     ao?: PlotAoOptions;
     /**
      * (Highstock) Absolute Price Oscillator. This series requires the
      * `linkedTo` option to be set and should be loaded after the
      * `stock/indicators/indicators.js`.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -51488,6 +51766,15 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     apo?: PlotApoOptions;
     /**
@@ -51496,8 +51783,6 @@ export interface PlotOptions {
      * and the edges are drawn as a semicircle in one of the two half-planes
      * delimited by the line, or as smooth curves formed by sequences of
      * semicircles.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -51509,12 +51794,19 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     arcdiagram?: PlotArcdiagramOptions;
     /**
      * (Highcharts, Highstock) The area series type.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -51525,14 +51817,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     area?: PlotAreaOptions;
     /**
      * (Highcharts, Highstock) The area range series is a carteseian series with
      * higher and lower values for each point along an X axis, where the area
      * between the values is shaded.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -51544,13 +51843,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     arearange?: PlotArearangeOptions;
     /**
      * (Highcharts, Highstock) The area spline series is an area series where
      * the graph between the points is smoothed into a spline.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -51562,14 +51868,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     areaspline?: PlotAreasplineOptions;
     /**
      * (Highcharts, Highstock) The area spline range is a cartesian series type
      * with higher and lower Y values along an X axis. The area inside the range
      * is colored, and the graph outlining the area is a smoothed spline.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -51581,13 +51894,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     areasplinerange?: PlotAreasplinerangeOptions;
     /**
      * (Highstock) Aroon. This series requires the `linkedTo` option to be set
      * and should be loaded after the `stock/indicators/indicators.js`.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -51598,14 +51918,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     aroon?: PlotAroonOptions;
     /**
      * (Highstock) Aroon Oscillator. This series requires the `linkedTo` option
      * to be set and should be loaded after the `stock/indicators/indicators.js`
      * and `stock/indicators/aroon.js`.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -51617,13 +51944,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     aroonoscillator?: PlotAroonoscillatorOptions;
     /**
      * (Highstock) Average true range indicator (ATR). This series requires
      * `linkedTo` option to be set.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -51634,13 +51968,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     atr?: PlotAtrOptions;
     /**
      * (Highcharts) A bar series is a special type of column series where the
      * columns are horizontal.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -51651,14 +51992,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     bar?: PlotBarOptions;
     /**
      * (Highstock) Bollinger bands (BB). This series requires the `linkedTo`
      * option to be set and should be loaded after the
      * `stock/indicators/indicators.js` file.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -51669,6 +52017,15 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     bb?: PlotBbOptions;
     /**
@@ -51676,8 +52033,6 @@ export interface PlotOptions {
      * probability density function of the normal distribution. It calculates
      * mean and standard deviation of the base series data and plots the curve
      * according to the calculated parameters.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -51689,6 +52044,15 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     bellcurve?: PlotBellcurveOptions;
     /**
@@ -51696,8 +52060,6 @@ export interface PlotOptions {
      * through their five-number summaries: the smallest observation (sample
      * minimum), lower quartile (Q1), median (Q2), upper quartile (Q3), and
      * largest observation (sample maximum).
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -51708,6 +52070,15 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     boxplot?: PlotBoxplotOptions;
     /**
@@ -51715,8 +52086,6 @@ export interface PlotOptions {
      * type where each point renders an X, Y and Z value. Each points is drawn
      * as a bubble where the position along the X and Y axes mark the X and Y
      * values, and the size of the bubble relates to the Z value.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -51727,6 +52096,15 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     bubble?: PlotBubbleOptions;
     /**
@@ -51734,8 +52112,6 @@ export interface PlotOptions {
      * graph features a single measure, compares it to a target, and displays it
      * in the context of qualitative ranges of performance that could be set
      * using plotBands on yAxis.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -51746,13 +52122,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     bullet?: PlotBulletOptions;
     /**
      * (Highstock) A candlestick chart is a style of financial chart used to
      * describe price movements over time.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -51764,13 +52147,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     candlestick?: PlotCandlestickOptions;
     /**
      * (Highstock) Commodity Channel Index (CCI). This series requires
      * `linkedTo` option to be set.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -51781,14 +52171,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     cci?: PlotCciOptions;
     /**
      * (Highstock) Chaikin Oscillator. This series requires the `linkedTo`
      * option to be set and should be loaded after the
      * `stock/indicators/indicators.js`.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -51799,12 +52196,19 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     chaikin?: PlotChaikinOptions;
     /**
      * (Highstock) Chaikin Money Flow indicator (cmf).
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -51815,14 +52219,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     cmf?: PlotCmfOptions;
     /**
      * (Highstock) Chande Momentum Oscilator (CMO) technical indicator. This
      * series requires the `linkedTo` option to be set and should be loaded
      * after the `stock/indicators/indicators.js` file.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -51833,13 +52244,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     cmo?: PlotCmoOptions;
     /**
      * (Highcharts, Highstock) Column series display one column per value along
      * an X axis.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -51850,14 +52268,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     column?: PlotColumnOptions;
     /**
      * (Highcharts, Highstock) Column pyramid series display one pyramid per
      * value along an X axis. To display horizontal pyramids, set chart.inverted
      * to `true`.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -51869,14 +52294,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     columnpyramid?: PlotColumnpyramidOptions;
     /**
      * (Highcharts, Highstock) The column range is a cartesian series type with
      * higher and lower Y values along an X axis. To display horizontal bars,
      * set chart.inverted to `true`.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -51888,13 +52320,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     columnrange?: PlotColumnrangeOptions;
     /**
      * (Highcharts) A cylinder graph is a variation of a 3d column graph. The
      * cylinder graph features cylindrical points.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -51905,14 +52344,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     cylinder?: PlotCylinderOptions;
     /**
      * (Highstock) Double exponential moving average (DEMA) indicator. This
      * series requires `linkedTo` option to be set and should be loaded after
      * the `stock/indicators/indicators.js`.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -51923,14 +52369,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     dema?: PlotDemaOptions;
     /**
      * (Highcharts) A dependency wheel chart is a type of flow diagram, where
      * all nodes are laid out in a circle, and the flow between the are drawn as
      * link bands.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -51942,14 +52395,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     dependencywheel?: PlotDependencywheelOptions;
     /**
      * (Highstock) Disparity Index. This series requires the `linkedTo` option
      * to be set and should be loaded after the `stock/indicators/indicators.js`
      * file.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -51961,14 +52421,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     disparityindex?: PlotDisparityindexOptions;
     /**
      * (Highstock) Directional Movement Index (DMI). This series requires the
      * `linkedTo` option to be set and should be loaded after the
      * `stock/indicators/indicators.js` file.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -51979,14 +52446,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     dmi?: PlotDmiOptions;
     /**
      * (Highstock) Detrended Price Oscillator. This series requires the
      * `linkedTo` option to be set and should be loaded after the
      * `stock/indicators/indicators.js`.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -51997,6 +52471,15 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     dpo?: PlotDpoOptions;
     /**
@@ -52005,8 +52488,6 @@ export interface PlotOptions {
      * line between the values.
      *
      * Requires `highcharts-more.js` and `modules/dumbbell.js`.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52017,13 +52498,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     dumbbell?: PlotDumbbellOptions;
     /**
      * (Highstock) Exponential moving average indicator (EMA). This series
      * requires the `linkedTo` option to be set.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52034,14 +52522,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     ema?: PlotEmaOptions;
     /**
      * (Highcharts) Error bars are a graphical representation of the variability
      * of data and are used on graphs to indicate the error, or uncertainty in a
      * reported measurement.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52052,13 +52547,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     errorbar?: PlotErrorbarOptions;
     /**
      * (Highstock) Flags are used to mark events in stock charts. They can be
      * added on the timeline, or attached to a specific series.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52069,14 +52571,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     flags?: PlotFlagsOptions;
     /**
      * (Highmaps) A flowmap series is a series laid out on top of a map series
      * allowing to display route paths (e.g. flight or ship routes) or flows on
      * a map. It creates a link between two points on a map chart.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52087,14 +52596,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     flowmap?: PlotFlowmapOptions;
     /**
      * (Highcharts) Funnel charts are a type of chart often used to visualize
      * stages in a sales project, where the top are the initial stages with the
      * most clients. It requires that the modules/funnel.js file is loaded.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52105,6 +52621,15 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     funnel?: PlotFunnelOptions;
     /**
@@ -52115,8 +52640,6 @@ export interface PlotOptions {
      * It requires that the `highcharts-3d.js`, `cylinder.js` and `funnel3d.js`
      * module are loaded.
      *
-     * In TypeScript the type option must always be set.
-     *
      * Configuration options for the series are given in three levels:
      *
      * 1. Options for all series in a chart are defined in the
@@ -52126,13 +52649,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     funnel3d?: PlotFunnel3dOptions;
     /**
      * (Gantt) A `gantt` series. If the type option is not specified, it is
      * inherited from chart.type.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52143,13 +52673,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     gantt?: PlotGanttOptions;
     /**
      * (Highcharts) Gauges are circular plots displaying one or more values with
      * a dial pointing to values along the perimeter.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52160,6 +52697,15 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     gauge?: PlotGaugeOptions;
     /**
@@ -52167,8 +52713,6 @@ export interface PlotOptions {
      * into the map projection, where the units are expressed in the latitude
      * and longitude, and individual values contained in a matrix are
      * represented as colors.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52180,14 +52724,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     geoheatmap?: PlotGeoheatmapOptions;
     /**
      * (Highcharts, Highmaps) A heatmap is a graphical representation of data
      * where the individual values contained in a matrix are represented as
      * colors.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52198,14 +52749,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     heatmap?: PlotHeatmapOptions;
     /**
      * (Highstock) An HeikinAshi series is a style of financial chart used to
      * describe price movements over time. It displays open, high, low and close
      * values per data point.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52217,14 +52775,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     heikinashi?: PlotHeikinashiOptions;
     /**
      * (Highcharts) A histogram is a column series which represents the
      * distribution of the data set in the base series. Histogram splits data
      * into bins and shows their frequencies.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52236,14 +52801,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     histogram?: PlotHistogramOptions;
     /**
      * (Highstock) An HLC chart is a style of financial chart used to describe
      * price movements over time. It displays high, low and close values per
      * data point.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52254,13 +52826,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     hlc?: PlotHlcOptions;
     /**
      * (Highstock) A hollow candlestick chart is a style of financial chart used
      * to describe price movements over time.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52272,13 +52851,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     hollowcandlestick?: PlotHollowcandlestickOptions;
     /**
      * (Highstock) Ichimoku Kinko Hyo (IKH). This series requires `linkedTo`
      * option to be set.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52289,6 +52875,15 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     ikh?: PlotIkhOptions;
     /**
@@ -52301,8 +52896,6 @@ export interface PlotOptions {
      * series options, like `center`, `size` and data label positioning, are
      * inherited from the pie series and don't apply for rectangular layouts.
      *
-     * In TypeScript the type option must always be set.
-     *
      * Configuration options for the series are given in three levels:
      *
      * 1. Options for all series in a chart are defined in the
@@ -52312,6 +52905,15 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     item?: PlotItemOptions;
     /**
@@ -52319,8 +52921,6 @@ export interface PlotOptions {
      * to be set and should be loaded after the
      * `stock/indicators/indicators.js`, `stock/indicators/atr.js`, and
      * `stock/ema/.js`.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52332,14 +52932,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     keltnerchannels?: PlotKeltnerchannelsOptions;
     /**
      * (Highstock) Klinger oscillator. This series requires the `linkedTo`
      * option to be set and should be loaded after the
      * `stock/indicators/indicators.js` file.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52350,13 +52957,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     klinger?: PlotKlingerOptions;
     /**
      * (Highcharts, Highstock) A line series displays information as a series of
      * data points connected by straight line segments.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52367,13 +52981,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     line?: PlotLineOptions;
     /**
      * (Highstock) Linear regression indicator. This series requires `linkedTo`
      * option to be set.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52385,13 +53006,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     linearregression?: PlotLinearregressionOptions;
     /**
      * (Highstock) Linear regression angle indicator. This series requires
      * `linkedTo` option to be set.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52403,13 +53031,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     linearregressionangle?: PlotLinearregressionangleOptions;
     /**
      * (Highstock) Linear regression intercept indicator. This series requires
      * `linkedTo` option to be set.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52421,13 +53056,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     linearregressionintercept?: PlotLinearregressioninterceptOptions;
     /**
      * (Highstock) Linear regression slope indicator. This series requires
      * `linkedTo` option to be set.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52439,6 +53081,15 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     linearregressionslope?: PlotLinearregressionslopeOptions;
     /**
@@ -52446,8 +53097,6 @@ export interface PlotOptions {
      * line anchored from the x axis and a dot at the end to mark the value.
      * Requires `highcharts-more.js`, `modules/dumbbell.js` and
      * `modules/lollipop.js`.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52458,14 +53107,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     lollipop?: PlotLollipopOptions;
     /**
      * (Highstock) Moving Average Convergence Divergence (MACD). This series
      * requires `linkedTo` option to be set and should be loaded after the
      * `stock/indicators/indicators.js`.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52476,13 +53132,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     macd?: PlotMacdOptions;
     /**
      * (Highmaps) The map series is used for basic choropleth maps, where each
      * map area has a color based on its value.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52493,13 +53156,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     map?: PlotMapOptions;
     /**
      * (Highmaps) A map bubble series is a bubble series laid out on top of a
      * map series, where each bubble is tied to a specific map area.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52511,14 +53181,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     mapbubble?: PlotMapbubbleOptions;
     /**
      * (Highmaps) A mapline series is a special case of the map series where the
      * value colors are applied to the strokes rather than the fills. It can
      * also be used for freeform drawing, like dividers, in the map.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52529,13 +53206,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     mapline?: PlotMaplineOptions;
     /**
      * (Highmaps) A mappoint series is a special form of scatter series where
      * the points can be laid out in map coordinates on top of a map.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52546,14 +53230,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     mappoint?: (number|PlotMappointOptions);
     /**
      * (Highstock) Money Flow Index. This series requires `linkedTo` option to
      * be set and should be loaded after the `stock/indicators/indicators.js`
      * file.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52564,12 +53255,19 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     mfi?: PlotMfiOptions;
     /**
      * (Highstock) Momentum. This series requires `linkedTo` option to be set.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52580,14 +53278,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     momentum?: PlotMomentumOptions;
     /**
      * (Highstock) Normalized average true range indicator (NATR). This series
      * requires `linkedTo` option to be set and should be loaded after the
      * `stock/indicators/indicators.js` and `stock/indicators/atr.js`.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52598,14 +53303,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     natr?: PlotNatrOptions;
     /**
      * (Highcharts) A networkgraph is a type of relationship chart, where
      * connnections (links) attracts nodes (points) and other nodes repulse each
      * other.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52617,6 +53329,15 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     networkgraph?: PlotNetworkgraphOptions;
     /**
@@ -52624,8 +53345,6 @@ export interface PlotOptions {
      * requires the `linkedTo` option to be set and should be loaded after the
      * `stock/indicators/indicators.js` file. Through the `volumeSeriesID` there
      * also should be linked the volume series.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52636,14 +53355,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     obv?: PlotObvOptions;
     /**
      * (Highstock) An OHLC chart is a style of financial chart used to describe
      * price movements over time. It displays open, high, low and close values
      * per data point.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52654,14 +53380,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     ohlc?: PlotOhlcOptions;
     /**
      * (Highcharts) An organization chart is a diagram that shows the structure
      * of an organization and the relationships and relative ranks of its parts
      * and positions.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52673,6 +53406,15 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     organization?: PlotOrganizationOptions;
     /**
@@ -52680,8 +53422,6 @@ export interface PlotOptions {
      * where each point renders a value in X, Y position. Each point is drawn as
      * a bubble where the bubbles don't overlap with each other and the radius
      * of the bubble relates to the value.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52693,14 +53433,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     packedbubble?: PlotPackedbubbleOptions;
     /**
      * (Highcharts) A pareto diagram is a type of chart that contains both bars
      * and a line graph, where individual values are represented in descending
      * order by bars, and the cumulative total is represented by the line.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52711,14 +53458,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     pareto?: PlotParetoOptions;
     /**
      * (Highstock) Price channel (PC). This series requires the `linkedTo`
      * option to be set and should be loaded after the
      * `stock/indicators/indicators.js`.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52729,13 +53483,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     pc?: PlotPcOptions;
     /**
      * (Highcharts) A pictorial chart uses vector images to represents the data.
      * The shape of the data point is taken from the path parameter.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52747,13 +53508,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     pictorial?: PlotPictorialOptions;
     /**
      * (Highcharts, Highmaps) A pie chart is a circular graphic which is divided
      * into slices to illustrate numerical proportion.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52764,14 +53532,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     pie?: PlotPieOptions;
     /**
      * (Highstock) Pivot points indicator. This series requires the `linkedTo`
      * option to be set and should be loaded after
      * `stock/indicators/indicators.js` file.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52783,6 +53558,15 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     pivotpoints?: PlotPivotpointsOptions;
     /**
@@ -52790,8 +53574,6 @@ export interface PlotOptions {
      * shape in the cartesian coordinate system. A fill is applied with the
      * `color` option, and stroke is applied through `lineWidth` and `lineColor`
      * options.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52802,14 +53584,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     polygon?: PlotPolygonOptions;
     /**
      * (Highstock) Percentage Price Oscillator. This series requires the
      * `linkedTo` option to be set and should be loaded after the
      * `stock/indicators/indicators.js`.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52820,14 +53609,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     ppo?: PlotPpoOptions;
     /**
      * (Highstock) Price envelopes indicator based on SMA calculations. This
      * series requires the `linkedTo` option to be set and should be loaded
      * after the `stock/indicators/indicators.js` file.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52839,13 +53635,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     priceenvelopes?: PlotPriceenvelopesOptions;
     /**
      * (Highstock) Parabolic SAR. This series requires `linkedTo` option to be
      * set and should be loaded after `stock/indicators/indicators.js` file.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52856,13 +53659,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     psar?: PlotPsarOptions;
     /**
      * (Highcharts) A pyramid series is a special type of funnel, without neck
      * and reversed by default.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52873,14 +53683,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     pyramid?: PlotPyramidOptions;
     /**
      * (Highcharts) A pyramid3d is a 3d version of pyramid series type. Pyramid
      * charts are a type of chart often used to visualize stages in a sales
      * project, where the top are the initial stages with the most clients.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52892,6 +53709,15 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     pyramid3d?: PlotPyramid3dOptions;
     /**
@@ -52906,8 +53732,6 @@ export interface PlotOptions {
      *
      * This series requires `linkedTo` option to be set.
      *
-     * In TypeScript the type option must always be set.
-     *
      * Configuration options for the series are given in three levels:
      *
      * 1. Options for all series in a chart are defined in the
@@ -52917,14 +53741,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     roc?: PlotRocOptions;
     /**
      * (Highstock) Relative strength index (RSI) technical indicator. This
      * series requires the `linkedTo` option to be set and should be loaded
      * after the `stock/indicators/indicators.js` file.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52935,14 +53766,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     rsi?: PlotRsiOptions;
     /**
      * (Highcharts) A sankey diagram is a type of flow diagram, in which the
      * width of the link between two nodes is shown proportionally to the flow
      * quantity.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52953,13 +53791,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     sankey?: PlotSankeyOptions;
     /**
      * (Highcharts, Highstock) A scatter plot uses cartesian coordinates to
      * display values for two variables for a set of data.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52970,13 +53815,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     scatter?: PlotScatterOptions;
     /**
      * (Highcharts) A 3D scatter plot uses x, y and z coordinates to display
      * values for three variables for a set of data.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -52988,13 +53840,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     scatter3d?: PlotScatter3dOptions;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) General options for all series
      * types.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -53005,6 +53864,15 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     series?: PlotSeriesOptions;
     /**
@@ -53012,8 +53880,6 @@ export interface PlotOptions {
      * `linkedTo` option to be set and should be loaded after
      * `stock/indicators/indicators.js` and `stock/indicators/stochastic.js`
      * files.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -53025,13 +53891,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     slowstochastic?: PlotSlowstochasticOptions;
     /**
      * (Highstock) Simple moving average indicator (SMA). This series requires
      * `linkedTo` option to be set.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -53042,14 +53915,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     sma?: PlotSmaOptions;
     /**
      * (Highcharts) A solid gauge is a circular gauge where the value is
      * indicated by a filled arc, and the color of the arc may variate with the
      * value.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -53061,13 +53941,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     solidgauge?: PlotSolidgaugeOptions;
     /**
      * (Highcharts, Highstock) A spline series is a special type of line series,
      * where the segments between the data points are smoothed.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -53078,14 +53965,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     spline?: PlotSplineOptions;
     /**
      * (Highstock) Stochastic oscillator. This series requires the `linkedTo`
      * option to be set and should be loaded after the
      * `stock/indicators/indicators.js` file.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -53097,14 +53991,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     stochastic?: PlotStochasticOptions;
     /**
      * (Highcharts, Highstock) A streamgraph is a type of stacked area graph
      * which is displaced around a central axis, resulting in a flowing, organic
      * shape.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -53116,6 +54017,15 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     streamgraph?: PlotStreamgraphOptions;
     /**
@@ -53123,8 +54033,6 @@ export interface PlotOptions {
      * hierarchy is represented by a circle. The center represents the root node
      * of the tree. The visualization bears a resemblance to both treemap and
      * pie charts.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -53135,14 +54043,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     sunburst?: PlotSunburstOptions;
     /**
      * (Highstock) Supertrend indicator. This series requires the `linkedTo`
      * option to be set and should be loaded after the
      * `stock/indicators/indicators.js` and `stock/indicators/sma.js`.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -53154,14 +54069,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     supertrend?: PlotSupertrendOptions;
     /**
      * (Highstock) Triple exponential moving average (TEMA) indicator. This
      * series requires `linkedTo` option to be set and should be loaded after
      * the `stock/indicators/indicators.js`.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -53172,13 +54094,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     tema?: PlotTemaOptions;
     /**
      * (Highmaps) A tiledwebmap series allows user to display dynamically joined
      * individual images (tiles) and join them together to create a map.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -53190,13 +54119,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     tiledwebmap?: PlotTiledwebmapOptions;
     /**
      * (Highcharts, Highmaps) A tilemap series is a type of heatmap where the
      * tile shapes are configurable.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -53207,13 +54143,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     tilemap?: PlotTilemapOptions;
     /**
      * (Highcharts) The timeline series presents given events along a drawn
      * line.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -53224,6 +54167,15 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     timeline?: PlotTimelineOptions;
     /**
@@ -53233,8 +54185,6 @@ export interface PlotOptions {
      * are e.g. genealogy tree or directory structure.
      *
      * TODO change back the demo path
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -53246,14 +54196,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     treegraph?: PlotTreegraphOptions;
     /**
      * (Highcharts) A treemap displays hierarchical data using nested
      * rectangles. The data can be laid out in varying ways depending on
      * options.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -53264,14 +54221,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     treemap?: PlotTreemapOptions;
     /**
      * (Highstock) Trendline (linear regression) fits a straight line to the
      * selected data using a method called the Sum Of Least Squares. This series
      * requires the `linkedTo` option to be set.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -53283,13 +54247,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     trendline?: PlotTrendlineOptions;
     /**
      * (Highstock) Triple exponential average (TRIX) oscillator. This series
      * requires `linkedTo` option to be set.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -53300,6 +54271,15 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     trix?: PlotTrixOptions;
     /**
@@ -53307,8 +54287,6 @@ export interface PlotOptions {
      * where each point renders an Y and Z value. Each point is drawn as a pie
      * slice where the size (arc) of the slice relates to the Y value and the
      * radius of pie slice relates to the Z value.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -53320,13 +54298,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     variablepie?: PlotVariablepieOptions;
     /**
      * (Highcharts) A variwide chart (related to marimekko chart) is a column
      * chart with a variable width expressing a third dimension.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -53337,14 +54322,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     variwide?: PlotVariwideOptions;
     /**
      * (Highstock) Volume By Price indicator.
      *
      * This series requires `linkedTo` option to be set.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -53355,14 +54347,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     vbp?: PlotVbpOptions;
     /**
      * (Highcharts, Highstock) A vector plot is a type of cartesian chart where
      * each point has an X and Y position, a length and a direction. Vectors are
      * drawn as arrows.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -53373,6 +54372,15 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     vector?: PlotVectorOptions;
     /**
@@ -53381,8 +54389,6 @@ export interface PlotOptions {
      * circles, and the relation between the sets are displayed by the overlap
      * or lack of overlap between them. The venn diagram is a special case of
      * Euler diagrams, which can also be displayed by this series type.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -53393,14 +54399,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     venn?: PlotVennOptions;
     /**
      * (Highstock) Volume Weighted Average Price indicator.
      *
      * This series requires `linkedTo` option to be set.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -53411,13 +54424,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     vwap?: PlotVwapOptions;
     /**
      * (Highcharts) A waterfall chart displays sequentially introduced positive
      * or negative values in cumulative columns.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -53429,13 +54449,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     waterfall?: PlotWaterfallOptions;
     /**
      * (Highstock) Williams %R. This series requires the `linkedTo` option to be
      * set and should be loaded after the `stock/indicators/indicators.js`.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -53447,14 +54474,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     williamsr?: PlotWilliamsrOptions;
     /**
      * (Highcharts, Highstock) Wind barbs are a convenient way to represent wind
      * speed and direction in one graphical form. Wind direction is given by the
      * stem direction, and wind speed by the number and shape of barbs.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -53465,13 +54499,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     windbarb?: PlotWindbarbOptions;
     /**
      * (Highstock) Weighted moving average indicator (WMA). This series requires
      * `linkedTo` option to be set.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -53482,13 +54523,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     wma?: PlotWmaOptions;
     /**
      * (Highcharts) A word cloud is a visualization of a set of words, where the
      * size and placement of a word is determined by how it is weighted.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -53500,13 +54548,20 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     wordcloud?: PlotWordcloudOptions;
     /**
      * (Highcharts, Highstock, Gantt) The X-range series displays ranges on the
      * X axis, typically time intervals with a start and end date.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -53517,14 +54572,21 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     xrange?: PlotXrangeOptions;
     /**
      * (Highstock) Zig Zag indicator.
      *
      * This series requires `linkedTo` option to be set.
-     *
-     * In TypeScript the type option must always be set.
      *
      * Configuration options for the series are given in three levels:
      *
@@ -53535,6 +54597,15 @@ export interface PlotOptions {
      *
      * 3. Options for one single series are given in the series instance array.
      * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - the type option must always be set.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
      */
     zigzag?: PlotZigzagOptions;
 }
@@ -53868,8 +54939,6 @@ export interface PlotPackedbubbleOnPointOptions {
  * where the bubbles don't overlap with each other and the radius of the bubble
  * relates to the value.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -53880,6 +54949,15 @@ export interface PlotPackedbubbleOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotPackedbubbleOptions {
     /**
@@ -55179,8 +56257,6 @@ export interface PlotPictorialDataLabelsAnimationOptions {
  * (Highcharts) A pictorial chart uses vector images to represents the data. The
  * shape of the data point is taken from the path parameter.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -55190,6 +56266,15 @@ export interface PlotPictorialDataLabelsAnimationOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotPictorialOptions {
     /**
@@ -55794,8 +56879,6 @@ export interface PlotPieOnPointOptions {
  * (Highcharts, Highmaps) A pie chart is a circular graphic which is divided
  * into slices to illustrate numerical proportion.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -55805,6 +56888,15 @@ export interface PlotPieOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotPieOptions {
     /**
@@ -56278,8 +57370,6 @@ export interface PlotPivotpointsOnPointOptions {
  * option to be set and should be loaded after `stock/indicators/indicators.js`
  * file.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -56290,6 +57380,15 @@ export interface PlotPivotpointsOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotPivotpointsOptions {
     /**
@@ -57682,8 +58781,6 @@ export interface PlotPriceenvelopesOnPointOptions {
  * requires the `linkedTo` option to be set and should be loaded after the
  * `stock/indicators/indicators.js` file.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -57694,6 +58791,15 @@ export interface PlotPriceenvelopesOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotPriceenvelopesOptions {
     /**
@@ -59310,8 +60416,6 @@ export interface PlotRsiOnPointOptions {
  * requires the `linkedTo` option to be set and should be loaded after the
  * `stock/indicators/indicators.js` file.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -59321,6 +60425,15 @@ export interface PlotRsiOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotRsiOptions {
     /**
@@ -60390,8 +61503,6 @@ export interface PlotScatter3dOnPointOptions {
  * (Highcharts) A 3D scatter plot uses x, y and z coordinates to display values
  * for three variables for a set of data.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -60401,6 +61512,15 @@ export interface PlotScatter3dOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotScatter3dOptions {
     /**
@@ -61509,8 +62629,6 @@ export interface PlotSlowstochasticOnPointOptions {
  * option to be set and should be loaded after `stock/indicators/indicators.js`
  * and `stock/indicators/stochastic.js` files.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -61521,6 +62639,15 @@ export interface PlotSlowstochasticOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotSlowstochasticOptions {
     /**
@@ -63384,8 +64511,6 @@ export interface PlotStreamgraphOnPointOptions {
  * (Highcharts, Highstock) A streamgraph is a type of stacked area graph which
  * is displaced around a central axis, resulting in a flowing, organic shape.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -63396,6 +64521,15 @@ export interface PlotStreamgraphOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotStreamgraphOptions {
     /**
@@ -64710,8 +65844,6 @@ export interface PlotTemaOnPointOptions {
  * requires `linkedTo` option to be set and should be loaded after the
  * `stock/indicators/indicators.js`.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -64721,6 +65853,15 @@ export interface PlotTemaOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotTemaOptions {
     /**
@@ -65479,8 +66620,6 @@ export interface PlotTimelineOnPointOptions {
 /**
  * (Highcharts) The timeline series presents given events along a drawn line.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -65490,6 +66629,15 @@ export interface PlotTimelineOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotTimelineOptions {
     /**
@@ -66967,8 +68115,6 @@ export interface PlotTrixOnPointOptions {
  * (Highstock) Triple exponential average (TRIX) oscillator. This series
  * requires `linkedTo` option to be set.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -66978,6 +68124,15 @@ export interface PlotTrixOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotTrixOptions {
     /**
@@ -69371,8 +70526,6 @@ export interface PlotVennOnPointOptions {
  * between them. The venn diagram is a special case of Euler diagrams, which can
  * also be displayed by this series type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -69382,6 +70535,15 @@ export interface PlotVennOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotVennOptions {
     /**
@@ -69768,8 +70930,6 @@ export interface PlotVwapOnPointOptions {
  *
  * This series requires `linkedTo` option to be set.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -69779,6 +70939,15 @@ export interface PlotVwapOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotVwapOptions {
     /**
@@ -71153,8 +72322,6 @@ export interface PlotWindbarbOnPointOptions {
  * speed and direction in one graphical form. Wind direction is given by the
  * stem direction, and wind speed by the number and shape of barbs.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -71164,6 +72331,15 @@ export interface PlotWindbarbOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotWindbarbOptions {
     /**
@@ -71889,8 +73065,6 @@ export interface PlotWmaOnPointOptions {
  * (Highstock) Weighted moving average indicator (WMA). This series requires
  * `linkedTo` option to be set.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -71900,6 +73074,15 @@ export interface PlotWmaOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotWmaOptions {
     /**
@@ -72548,8 +73731,6 @@ export interface PlotWordcloudOnPointOptions {
  * (Highcharts) A word cloud is a visualization of a set of words, where the
  * size and placement of a word is determined by how it is weighted.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -72559,6 +73740,15 @@ export interface PlotWordcloudOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotWordcloudOptions {
     /**
@@ -73379,8 +74569,6 @@ export interface PlotZigzagOnPointOptions {
  *
  * This series requires `linkedTo` option to be set.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -73390,6 +74578,15 @@ export interface PlotZigzagOnPointOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  */
 export interface PlotZigzagOptions {
     /**
@@ -75526,8 +76723,6 @@ export interface SeriesAfterAnimateEventObject {
  * (Highstock) An `AO` series. If the type option is not specified, it is
  * inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -75537,6 +76732,15 @@ export interface SeriesAfterAnimateEventObject {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesAoOptions` via an interface to allow custom
  * properties: ``` declare interface SeriesAoOptions { customProperty: string; }
@@ -75830,8 +77034,6 @@ export interface SeriesArcDiagramDataLabelsOptionsObject {
  * (Highcharts) An `arcdiagram` series. If the type option is not specified, it
  * is inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -75841,6 +77043,15 @@ export interface SeriesArcDiagramDataLabelsOptionsObject {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesArcdiagramOptions` via an interface to allow
  * custom properties: ``` declare interface SeriesArcdiagramOptions {
@@ -75918,8 +77129,6 @@ export interface SeriesArcdiagramOptions extends PlotArcdiagramOptions, SeriesOp
  * (Highcharts, Highstock) A `area` series. If the type option is not specified,
  * it is inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -75929,6 +77138,15 @@ export interface SeriesArcdiagramOptions extends PlotArcdiagramOptions, SeriesOp
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesAreaOptions` via an interface to allow custom
  * properties: ``` declare interface SeriesAreaOptions { customProperty: string;
@@ -76279,8 +77497,6 @@ export interface SeriesAreasplinerangeDataDataLabelsAnimationOptions {
  * (Highstock) A Aroon indicator. If the type option is not specified, it is
  * inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -76290,6 +77506,15 @@ export interface SeriesAreasplinerangeDataDataLabelsAnimationOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesAroonOptions` via an interface to allow custom
  * properties: ``` declare interface SeriesAroonOptions { customProperty:
@@ -76316,8 +77541,6 @@ export interface SeriesAroonOptions extends PlotAroonOptions, SeriesOptions {
  * (Highstock) A `ATR` series. If the type option is not specified, it is
  * inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -76327,6 +77550,15 @@ export interface SeriesAroonOptions extends PlotAroonOptions, SeriesOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesAtrOptions` via an interface to allow custom
  * properties: ``` declare interface SeriesAtrOptions { customProperty: string;
@@ -76353,8 +77585,6 @@ export interface SeriesAtrOptions extends PlotAtrOptions, SeriesOptions {
  * (Highcharts) A `bar` series. If the type option is not specified, it is
  * inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -76364,6 +77594,15 @@ export interface SeriesAtrOptions extends PlotAtrOptions, SeriesOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesBarOptions` via an interface to allow custom
  * properties: ``` declare interface SeriesBarOptions { customProperty: string;
@@ -76416,8 +77655,6 @@ export interface SeriesBarOptions extends PlotBarOptions, SeriesOptions {
  * the plotOptions.series options structure. To apply to all series of this
  * specific type, apply it to plotOptions.bellcurve.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -76427,6 +77664,15 @@ export interface SeriesBarOptions extends PlotBarOptions, SeriesOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesBellcurveOptions` via an interface to allow
  * custom properties: ``` declare interface SeriesBellcurveOptions {
@@ -76462,8 +77708,6 @@ export interface SeriesBellcurveOptions extends PlotBellcurveOptions, SeriesOpti
  * (Highcharts) A `boxplot` series. If the type option is not specified, it is
  * inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -76473,6 +77717,15 @@ export interface SeriesBellcurveOptions extends PlotBellcurveOptions, SeriesOpti
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesBoxplotOptions` via an interface to allow
  * custom properties: ``` declare interface SeriesBoxplotOptions {
@@ -76522,8 +77775,6 @@ export interface SeriesBoxplotOptions extends PlotBoxplotOptions, SeriesOptions 
  * (Highcharts, Highstock) A `bubble` series. If the type option is not
  * specified, it is inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -76533,6 +77784,15 @@ export interface SeriesBoxplotOptions extends PlotBoxplotOptions, SeriesOptions 
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesBubbleOptions` via an interface to allow custom
  * properties: ``` declare interface SeriesBubbleOptions { customProperty:
@@ -76640,8 +77900,6 @@ export interface SeriesCandlestickDataDataLabelsAnimationOptions {
  * (Highstock) A `CCI` series. If the type option is not specified, it is
  * inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -76651,6 +77909,15 @@ export interface SeriesCandlestickDataDataLabelsAnimationOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesCciOptions` via an interface to allow custom
  * properties: ``` declare interface SeriesCciOptions { customProperty: string;
@@ -76707,8 +77974,6 @@ export interface SeriesClickEventObject extends Event {
  * (Highstock) A `CMF` series. If the type option is not specified, it is
  * inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -76718,6 +77983,15 @@ export interface SeriesClickEventObject extends Event {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesCmfOptions` via an interface to allow custom
  * properties: ``` declare interface SeriesCmfOptions { customProperty: string;
@@ -76865,8 +78139,6 @@ export interface SeriesConnectorsOptionsObject {
  * (Highcharts) A `cylinder` series. If the type option is not specified, it is
  * inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -76876,6 +78148,15 @@ export interface SeriesConnectorsOptionsObject {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesCylinderOptions` via an interface to allow
  * custom properties: ``` declare interface SeriesCylinderOptions {
@@ -76935,8 +78216,6 @@ export interface SeriesDependencywheelNodesDataLabelsAnimationOptions {
  * (Highstock) The Disparity Index indicator series. If the type option is not
  * specified, it is inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -76947,6 +78226,15 @@ export interface SeriesDependencywheelNodesDataLabelsAnimationOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesDisparityindexOptions` via an interface to
  * allow custom properties: ``` declare interface SeriesDisparityindexOptions {
@@ -76973,8 +78261,6 @@ export interface SeriesDisparityindexOptions extends PlotDisparityindexOptions, 
  * (Highstock) A Detrended Price Oscillator. If the type option is not
  * specified, it is inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -76984,6 +78270,15 @@ export interface SeriesDisparityindexOptions extends PlotDisparityindexOptions, 
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesDpoOptions` via an interface to allow custom
  * properties: ``` declare interface SeriesDpoOptions { customProperty: string;
@@ -77130,8 +78425,6 @@ export interface SeriesDragDropOptionsObject {
  * (Highcharts, Highstock) The `dumbbell` series. If the type option is not
  * specified, it is inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -77141,6 +78434,15 @@ export interface SeriesDragDropOptionsObject {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesDumbbellOptions` via an interface to allow
  * custom properties: ``` declare interface SeriesDumbbellOptions {
@@ -77177,8 +78479,6 @@ export interface SeriesDumbbellOptions extends PlotDumbbellOptions, SeriesOption
  * (Highcharts) A `errorbar` series. If the type option is not specified, it is
  * inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -77188,6 +78488,15 @@ export interface SeriesDumbbellOptions extends PlotDumbbellOptions, SeriesOption
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesErrorbarOptions` via an interface to allow
  * custom properties: ``` declare interface SeriesErrorbarOptions {
@@ -77331,8 +78640,6 @@ export interface SeriesFlowmapDataMarkerEndOptions {
  * (Highmaps) A `flowmap` series. If the type option is not specified, it is
  * inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -77342,6 +78649,15 @@ export interface SeriesFlowmapDataMarkerEndOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesFlowmapOptions` via an interface to allow
  * custom properties: ``` declare interface SeriesFlowmapOptions {
@@ -77411,8 +78727,6 @@ export interface SeriesFlowMapSeriesOptionsObject {
  * (Highcharts) A `funnel3d` series. If the type option is not specified, it is
  * inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -77422,6 +78736,15 @@ export interface SeriesFlowMapSeriesOptionsObject {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesFunnel3dOptions` via an interface to allow
  * custom properties: ``` declare interface SeriesFunnel3dOptions {
@@ -77457,8 +78780,6 @@ export interface SeriesFunnel3dOptions extends PlotFunnel3dOptions, SeriesOption
  * (Highcharts) A `funnel` series. If the type option is not specified, it is
  * inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -77468,6 +78789,15 @@ export interface SeriesFunnel3dOptions extends PlotFunnel3dOptions, SeriesOption
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesFunnelOptions` via an interface to allow custom
  * properties: ``` declare interface SeriesFunnelOptions { customProperty:
@@ -77567,8 +78897,6 @@ export interface SeriesGeoheatmapDataGeometryOptions {
  * (Highmaps) A `geoheatmap` series. If the type option is not specified, it is
  * inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -77578,6 +78906,15 @@ export interface SeriesGeoheatmapDataGeometryOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesGeoheatmapOptions` via an interface to allow
  * custom properties: ``` declare interface SeriesGeoheatmapOptions {
@@ -77622,8 +78959,6 @@ export interface SeriesGeoheatmapOptions extends PlotGeoheatmapOptions, SeriesOp
  * (Highcharts, Highmaps) A `heatmap` series. If the type option is not
  * specified, it is inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -77633,6 +78968,15 @@ export interface SeriesGeoheatmapOptions extends PlotGeoheatmapOptions, SeriesOp
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesHeatmapOptions` via an interface to allow
  * custom properties: ``` declare interface SeriesHeatmapOptions {
@@ -77681,8 +79025,6 @@ export interface SeriesHeatmapOptions extends PlotHeatmapOptions, SeriesOptions 
  * (Highstock) A `heikinashi` series. If the type option is not specified, it is
  * inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -77692,6 +79034,15 @@ export interface SeriesHeatmapOptions extends PlotHeatmapOptions, SeriesOptions 
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesHeikinashiOptions` via an interface to allow
  * custom properties: ``` declare interface SeriesHeikinashiOptions {
@@ -77775,8 +79126,6 @@ export interface SeriesHollowcandlestickDataDataLabelsAnimationOptions {
  * (Highstock) A `IKH` series. If the type option is not specified, it is
  * inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -77786,6 +79135,15 @@ export interface SeriesHollowcandlestickDataDataLabelsAnimationOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesIkhOptions` via an interface to allow custom
  * properties: ``` declare interface SeriesIkhOptions { customProperty: string;
@@ -77812,8 +79170,6 @@ export interface SeriesIkhOptions extends PlotIkhOptions, SeriesOptions {
  * (Highcharts) An `item` series. If the type option is not specified, it is
  * inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -77823,6 +79179,15 @@ export interface SeriesIkhOptions extends PlotIkhOptions, SeriesOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesItemOptions` via an interface to allow custom
  * properties: ``` declare interface SeriesItemOptions { customProperty: string;
@@ -77875,8 +79240,6 @@ export interface SeriesItemOptions extends PlotItemOptions, SeriesOptions {
  * (Highstock) A Klinger oscillator. If the type option is not specified, it is
  * inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -77886,6 +79249,15 @@ export interface SeriesItemOptions extends PlotItemOptions, SeriesOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesKlingerOptions` via an interface to allow
  * custom properties: ``` declare interface SeriesKlingerOptions {
@@ -78157,8 +79529,6 @@ export interface SeriesLegendItemClickEventObject {
  * (Highstock) A linear regression intercept series. If the type option is not
  * specified, it is inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -78169,6 +79539,15 @@ export interface SeriesLegendItemClickEventObject {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesLinearregressioninterceptOptions` via an
  * interface to allow custom properties: ``` declare interface
@@ -78195,8 +79574,6 @@ export interface SeriesLinearregressioninterceptOptions extends PlotLinearregres
  * (Highstock) A linear regression intercept series. If the type option is not
  * specified, it is inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -78207,6 +79584,15 @@ export interface SeriesLinearregressioninterceptOptions extends PlotLinearregres
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesLinearregressionslopeOptions` via an interface
  * to allow custom properties: ``` declare interface
@@ -78326,8 +79712,6 @@ export interface SeriesLollipopDataDataLabelsAnimationOptions {
  * (Highstock) A `MACD` series. If the type option is not specified, it is
  * inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -78337,6 +79721,15 @@ export interface SeriesLollipopDataDataLabelsAnimationOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesMacdOptions` via an interface to allow custom
  * properties: ``` declare interface SeriesMacdOptions { customProperty: string;
@@ -78480,8 +79873,6 @@ export interface SeriesMaplineDataGeometryOptions {
  * (Highmaps) A `mapline` series. If the type option is not specified, it is
  * inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -78491,6 +79882,15 @@ export interface SeriesMaplineDataGeometryOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesMaplineOptions` via an interface to allow
  * custom properties: ``` declare interface SeriesMaplineOptions {
@@ -78556,8 +79956,6 @@ export interface SeriesMappointDataGeometryOptions {
  * (Highmaps) A `mappoint` series. If the type option is not specified, it is
  * inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -78567,6 +79965,15 @@ export interface SeriesMappointDataGeometryOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesMappointOptions` via an interface to allow
  * custom properties: ``` declare interface SeriesMappointOptions {
@@ -78613,8 +80020,6 @@ export interface SeriesMappointOptions extends PlotMappointOptions, SeriesOption
  * (Highstock) A `Momentum` series. If the type option is not specified, it is
  * inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -78624,6 +80029,15 @@ export interface SeriesMappointOptions extends PlotMappointOptions, SeriesOption
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesMomentumOptions` via an interface to allow
  * custom properties: ``` declare interface SeriesMomentumOptions {
@@ -78960,8 +80374,6 @@ export interface SeriesNetworkgraphDataLabelsOptionsObject {
  * (Highcharts) A `networkgraph` series. If the type option is not specified, it
  * is inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -78972,6 +80384,15 @@ export interface SeriesNetworkgraphDataLabelsOptionsObject {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesNetworkgraphOptions` via an interface to allow
  * custom properties: ``` declare interface SeriesNetworkgraphOptions {
@@ -79496,8 +80917,6 @@ export interface SeriesOrganizationDataLabelsOptionsObject {
  * (Highcharts) An `organization` series. If the type option is not specified,
  * it is inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -79508,6 +80927,15 @@ export interface SeriesOrganizationDataLabelsOptionsObject {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesOrganizationOptions` via an interface to allow
  * custom properties: ``` declare interface SeriesOrganizationOptions {
@@ -79845,8 +81273,6 @@ export interface SeriesParetoDataDataLabelsAnimationOptions {
  * (Highstock) A Price channel indicator. If the type option is not specified,
  * it is inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -79856,6 +81282,15 @@ export interface SeriesParetoDataDataLabelsAnimationOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesPcOptions` via an interface to allow custom
  * properties: ``` declare interface SeriesPcOptions { customProperty: string; }
@@ -79881,8 +81316,6 @@ export interface SeriesPcOptions extends PlotPcOptions, SeriesOptions {
  * (Highcharts) A `pictorial` series. If the type option is not specified, it is
  * inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -79892,6 +81325,15 @@ export interface SeriesPcOptions extends PlotPcOptions, SeriesOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesPictorialOptions` via an interface to allow
  * custom properties: ``` declare interface SeriesPictorialOptions {
@@ -80273,8 +81715,6 @@ PlotVariablepieDataLabelsAnimationOptions|Partial<AnimationOptionsObject>);
  * (Highstock) A pivot points indicator. If the type option is not specified, it
  * is inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -80285,6 +81725,15 @@ PlotVariablepieDataLabelsAnimationOptions|Partial<AnimationOptionsObject>);
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesPivotpointsOptions` via an interface to allow
  * custom properties: ``` declare interface SeriesPivotpointsOptions {
@@ -80320,8 +81769,6 @@ export interface SeriesPlotBoxObject {
  * (Highcharts, Highstock) A `polygon` series. If the type option is not
  * specified, it is inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -80331,6 +81778,15 @@ export interface SeriesPlotBoxObject {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesPolygonOptions` via an interface to allow
  * custom properties: ``` declare interface SeriesPolygonOptions {
@@ -80383,8 +81839,6 @@ export interface SeriesPolygonOptions extends PlotPolygonOptions, SeriesOptions 
  * (Highstock) A price envelopes indicator. If the type option is not specified,
  * it is inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -80395,6 +81849,15 @@ export interface SeriesPolygonOptions extends PlotPolygonOptions, SeriesOptions 
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesPriceenvelopesOptions` via an interface to
  * allow custom properties: ``` declare interface SeriesPriceenvelopesOptions {
@@ -80470,8 +81933,6 @@ export interface SeriesPyramidDataDataLabelsAnimationOptions {
  *
  * This series requires `linkedTo` option to be set.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -80481,6 +81942,15 @@ export interface SeriesPyramidDataDataLabelsAnimationOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesRocOptions` via an interface to allow custom
  * properties: ``` declare interface SeriesRocOptions { customProperty: string;
@@ -80994,8 +82464,6 @@ Array<SeriesArcDiagramDataLabelsOptionsObject>|Array<SeriesOrganizationDataLabel
  *
  * scatter3d](#plotOptions.scatter3d).
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -81005,6 +82473,15 @@ Array<SeriesArcDiagramDataLabelsOptionsObject>|Array<SeriesOrganizationDataLabel
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesScatter3dOptions` via an interface to allow
  * custom properties: ``` declare interface SeriesScatter3dOptions {
@@ -81038,8 +82515,6 @@ export interface SeriesScatter3dOptions extends PlotScatter3dOptions, SeriesOpti
  * (Highcharts, Highstock) A `scatter` series. If the type option is not
  * specified, it is inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -81049,6 +82524,15 @@ export interface SeriesScatter3dOptions extends PlotScatter3dOptions, SeriesOpti
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesScatterOptions` via an interface to allow
  * custom properties: ``` declare interface SeriesScatterOptions {
@@ -81101,8 +82585,6 @@ export interface SeriesScatterOptions extends PlotScatterOptions, SeriesOptions 
  * (Highstock) A `SMA` series. If the type option is not specified, it is
  * inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -81112,6 +82594,15 @@ export interface SeriesScatterOptions extends PlotScatterOptions, SeriesOptions 
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesSmaOptions` via an interface to allow custom
  * properties: ``` declare interface SeriesSmaOptions { customProperty: string;
@@ -81142,8 +82633,6 @@ export interface SeriesSmaOptions extends PlotSmaOptions, SeriesOptions {
  * (Highcharts) A `solidgauge` series. If the type option is not specified, it
  * is inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -81153,6 +82642,15 @@ export interface SeriesSmaOptions extends PlotSmaOptions, SeriesOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesSolidgaugeOptions` via an interface to allow
  * custom properties: ``` declare interface SeriesSolidgaugeOptions {
@@ -81595,8 +83093,6 @@ export interface SeriesSonificationTracksOptions {
  * (Highcharts, Highstock) A `spline` series. If the type option is not
  * specified, it is inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -81606,6 +83102,15 @@ export interface SeriesSonificationTracksOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesSplineOptions` via an interface to allow custom
  * properties: ``` declare interface SeriesSplineOptions { customProperty:
@@ -82226,8 +83731,6 @@ export interface SeriesSunburstDataLabelsOptionsObject {
  * (Highstock) A `Supertrend indicator` series. If the type option is not
  * specified, it is inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -82237,6 +83740,15 @@ export interface SeriesSunburstDataLabelsOptionsObject {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesSupertrendOptions` via an interface to allow
  * custom properties: ``` declare interface SeriesSupertrendOptions {
@@ -82267,8 +83779,6 @@ export interface SeriesSupertrendOptions extends PlotSupertrendOptions, SeriesOp
  * (Highmaps) A `tiledwebmap` series. The type option is not specified, it is
  * inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -82279,6 +83789,15 @@ export interface SeriesSupertrendOptions extends PlotSupertrendOptions, SeriesOp
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesTiledwebmapOptions` via an interface to allow
  * custom properties: ``` declare interface SeriesTiledwebmapOptions {
@@ -82325,8 +83844,6 @@ export interface SeriesTiledwebmapOptions extends PlotTiledwebmapOptions, Series
  * (Highcharts, Highmaps) A `tilemap` series. If the type option is not
  * specified, it is inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -82336,6 +83853,15 @@ export interface SeriesTiledwebmapOptions extends PlotTiledwebmapOptions, Series
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesTilemapOptions` via an interface to allow
  * custom properties: ``` declare interface SeriesTilemapOptions {
@@ -82390,8 +83916,6 @@ export interface SeriesTilemapOptions extends PlotTilemapOptions, SeriesOptions 
  * (Highcharts) The `timeline` series. If the type option is not specified, it
  * is inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -82401,6 +83925,15 @@ export interface SeriesTilemapOptions extends PlotTilemapOptions, SeriesOptions 
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesTimelineOptions` via an interface to allow
  * custom properties: ``` declare interface SeriesTimelineOptions {
@@ -82867,8 +84400,6 @@ export interface SeriesTreemapDataDataLabelsAnimationOptions {
  * (Highstock) A `TrendLine` series. If the type option is not specified, it is
  * inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -82878,6 +84409,15 @@ export interface SeriesTreemapDataDataLabelsAnimationOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesTrendlineOptions` via an interface to allow
  * custom properties: ``` declare interface SeriesTrendlineOptions {
@@ -82942,8 +84482,6 @@ export interface SeriesVariwideDataDataLabelsAnimationOptions {
  * (Highstock) A `Volume By Price (VBP)` series. If the type option is not
  * specified, it is inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -82953,6 +84491,15 @@ export interface SeriesVariwideDataDataLabelsAnimationOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesVbpOptions` via an interface to allow custom
  * properties: ``` declare interface SeriesVbpOptions { customProperty: string;
@@ -82979,8 +84526,6 @@ export interface SeriesVbpOptions extends PlotVbpOptions, SeriesOptions {
  * (Highcharts, Highstock) A `vector` series. If the type option is not
  * specified, it is inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -82990,6 +84535,15 @@ export interface SeriesVbpOptions extends PlotVbpOptions, SeriesOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesVectorOptions` via an interface to allow custom
  * properties: ``` declare interface SeriesVectorOptions { customProperty:
@@ -83031,8 +84585,6 @@ export interface SeriesVectorOptions extends PlotVectorOptions, SeriesOptions {
  * (Highcharts) A `venn` series. If the type option is not specified, it is
  * inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -83042,6 +84594,15 @@ export interface SeriesVectorOptions extends PlotVectorOptions, SeriesOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesVennOptions` via an interface to allow custom
  * properties: ``` declare interface SeriesVennOptions { customProperty: string;
@@ -83125,8 +84686,6 @@ export interface SeriesWaterfallDataDataLabelsAnimationOptions {
  * (Highstock) A `Williams %R Oscillator` series. If the type option is not
  * specified, it is inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -83136,6 +84695,15 @@ export interface SeriesWaterfallDataDataLabelsAnimationOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesWilliamsrOptions` via an interface to allow
  * custom properties: ``` declare interface SeriesWilliamsrOptions {
@@ -83162,8 +84730,6 @@ export interface SeriesWilliamsrOptions extends PlotWilliamsrOptions, SeriesOpti
  * (Highcharts, Highstock) A `windbarb` series. If the type option is not
  * specified, it is inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -83173,6 +84739,15 @@ export interface SeriesWilliamsrOptions extends PlotWilliamsrOptions, SeriesOpti
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesWindbarbOptions` via an interface to allow
  * custom properties: ``` declare interface SeriesWindbarbOptions {
@@ -83252,8 +84827,6 @@ export interface SeriesXrangeDataDataLabelsAnimationOptions {
  * (Highstock) A `Zig Zag` series. If the type option is not specified, it is
  * inherited from chart.type.
  *
- * In TypeScript the type option must always be set.
- *
  * Configuration options for the series are given in three levels:
  *
  * 1. Options for all series in a chart are defined in the plotOptions.series
@@ -83263,6 +84836,15 @@ export interface SeriesXrangeDataDataLabelsAnimationOptions {
  *
  * 3. Options for one single series are given in the series instance array. (see
  * online documentation for example)
+ *
+ * **TypeScript:**
+ *
+ * - the type option must always be set.
+ *
+ * - when accessing an array of series, the combined set of all series types is
+ * represented by Highcharts.SeriesOptionsType . Narrowing down to the specific
+ * type can be done by checking the `type` property. (see online documentation
+ * for example)
  *
  * You have to extend the `SeriesZigzagOptions` via an interface to allow custom
  * properties: ``` declare interface SeriesZigzagOptions { customProperty:

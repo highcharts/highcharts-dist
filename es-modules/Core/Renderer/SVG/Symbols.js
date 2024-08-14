@@ -29,8 +29,8 @@ function arc(cx, cy, w, h, options) {
         // proximity is too small, the arc disappears. If it is too great, a
         // gap appears. This can be seen in the animation of the official
         // bubble demo (#20586).
-        proximity = 0.0002 / Math.max(rx, 1), fullCircle = (Math.abs((options.end || 0) - start - 2 * Math.PI) <
-            proximity), end = (options.end || 0) - proximity, innerRadius = options.innerR, open = pick(options.open, fullCircle), cosStart = Math.cos(start), sinStart = Math.sin(start), cosEnd = Math.cos(end), sinEnd = Math.sin(end), 
+        proximity = 0.0002 / (options.borderRadius ? 1 : Math.max(rx, 1)), fullCircle = (Math.abs((options.end || 0) - start - 2 * Math.PI) <
+            proximity), end = (options.end || 0) - (fullCircle ? proximity : 0), innerRadius = options.innerR, open = pick(options.open, fullCircle), cosStart = Math.cos(start), sinStart = Math.sin(start), cosEnd = Math.cos(end), sinEnd = Math.sin(end), 
         // Proximity takes care of rounding errors around PI (#6971)
         longArc = pick(options.longArc, end - start - Math.PI < proximity ? 0 : 1);
         let arcSegment = [

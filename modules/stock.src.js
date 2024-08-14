@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.4.6 (2024-07-08)
+ * @license Highstock JS v11.4.7 (2024-08-14)
  *
  * Highcharts Stock as a plugin for Highcharts
  *
@@ -3573,6 +3573,7 @@
                         overscroll: baseXaxis.options.overscroll
                     }, navigatorOptions.xAxis, {
                         type: 'datetime',
+                        yAxis: navigatorOptions.yAxis?.id,
                         index: xAxisIndex,
                         isInternal: true,
                         offset: 0,
@@ -7921,13 +7922,11 @@
                     // Get the related axes based options.*Axis setting #2810
                     axes2 = (axis.isXAxis ? chart.yAxis : chart.xAxis);
                     for (const A of axes2) {
-                        if (defined(A.options.id) ?
-                            A.options.id.indexOf('navigator') === -1 :
-                            true) {
-                            const a = (A.isXAxis ? 'yAxis' : 'xAxis'), rax = (defined(A.options[a]) ?
+                        if (!A.options.isInternal) {
+                            const a = (A.isXAxis ? 'yAxis' : 'xAxis'), relatedAxis = (defined(A.options[a]) ?
                                 chart[a][A.options[a]] :
                                 chart[a][0]);
-                            if (axis === rax) {
+                            if (axis === relatedAxis) {
                                 axes.push(A);
                             }
                         }

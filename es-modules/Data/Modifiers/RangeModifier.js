@@ -8,6 +8,7 @@
  *
  *  Authors:
  *  - Sophie Bremer
+ *  - Dawid Dragula
  *
  * */
 'use strict';
@@ -59,6 +60,7 @@ class RangeModifier extends DataModifier {
     modifyTable(table, eventDetail) {
         const modifier = this;
         modifier.emit({ type: 'modify', detail: eventDetail, table });
+        let indexes = [];
         const { additive, ranges, strict } = modifier.options;
         if (ranges.length) {
             const modified = table.modified;
@@ -72,11 +74,13 @@ class RangeModifier extends DataModifier {
                 if (i > 0 && !additive) {
                     modified.deleteRows();
                     modified.setRows(rows);
+                    modified.setOriginalRowIndexes(indexes, true);
                     columns = modified.getColumns();
                     rows = [];
+                    indexes = [];
                 }
                 rangeColumn = (columns[range.column] || []);
-                for (let j = 0, jEnd = rangeColumn.length, cell, row; j < jEnd; ++j) {
+                for (let j = 0, jEnd = rangeColumn.length, cell, row, originalRowIndex; j < jEnd; ++j) {
                     cell = rangeColumn[j];
                     switch (typeof cell) {
                         default:
@@ -92,17 +96,24 @@ class RangeModifier extends DataModifier {
                     }
                     if (cell >= range.minValue &&
                         cell <= range.maxValue) {
-                        row = (additive ?
-                            table.getRow(j) :
-                            modified.getRow(j));
+                        if (additive) {
+                            row = table.getRow(j);
+                            originalRowIndex = table.getOriginalRowIndex(j);
+                        }
+                        else {
+                            row = modified.getRow(j);
+                            originalRowIndex = modified.getOriginalRowIndex(j);
+                        }
                         if (row) {
                             rows.push(row);
+                            indexes.push(originalRowIndex);
                         }
                     }
                 }
             }
             modified.deleteRows();
             modified.setRows(rows);
+            modified.setOriginalRowIndexes(indexes);
         }
         modifier.emit({ type: 'afterModify', detail: eventDetail, table });
         return table;

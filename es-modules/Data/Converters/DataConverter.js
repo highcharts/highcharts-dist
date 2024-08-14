@@ -439,8 +439,6 @@ class DataConverter {
     /**
      * Parse a date and return it as a number.
      *
-     * @function Highcharts.Data#parseDate
-     *
      * @param {string} value
      * Value to parse.
      *

@@ -11,6 +11,7 @@
  *  - Gøran Slettemark
  *  - Wojciech Chmiel
  *  - Sophie Bremer
+ *  - Jomar Hønsi
  *
  * */
 'use strict';
@@ -83,6 +84,9 @@ class GoogleSheetsConnector extends DataConnector {
             table,
             url
         });
+        if (!URL.canParse(url)) {
+            throw new Error('Invalid URL: ' + url);
+        }
         return fetch(url)
             .then((response) => (response.json()))
             .then((json) => {
@@ -129,7 +133,6 @@ class GoogleSheetsConnector extends DataConnector {
 GoogleSheetsConnector.defaultOptions = {
     googleAPIKey: '',
     googleSpreadsheetKey: '',
-    worksheet: 1,
     enablePolling: false,
     dataRefreshRate: 2,
     firstRowAsNames: true
@@ -161,18 +164,20 @@ GoogleSheetsConnector.defaultOptions = {
      * @private
      */
     function buildFetchURL(apiKey, sheetKey, options = {}) {
-        return (`https://sheets.googleapis.com/v4/spreadsheets/${sheetKey}/values/` +
-            (options.onlyColumnNames ?
-                'A1:Z1' :
-                buildQueryRange(options)) +
-            '?alt=json' +
-            (options.onlyColumnNames ?
-                '' :
-                '&dateTimeRenderOption=FORMATTED_STRING' +
-                    '&majorDimension=COLUMNS' +
-                    '&valueRenderOption=UNFORMATTED_VALUE') +
-            '&prettyPrint=false' +
-            `&key=${apiKey}`);
+        const url = new URL(`https://sheets.googleapis.com/v4/spreadsheets/${sheetKey}/values/`);
+        const range = options.onlyColumnNames ?
+            'A1:Z1' : buildQueryRange(options);
+        url.pathname += range;
+        const searchParams = url.searchParams;
+        searchParams.set('alt', 'json');
+        if (!options.onlyColumnNames) {
+            searchParams.set('dateTimeRenderOption', 'FORMATTED_STRING');
+            searchParams.set('majorDimension', 'COLUMNS');
+            searchParams.set('valueRenderOption', 'UNFORMATTED_VALUE');
+        }
+        searchParams.set('prettyPrint', 'false');
+        searchParams.set('key', apiKey);
+        return url.href;
     }
     GoogleSheetsConnector.buildFetchURL = buildFetchURL;
     /**
