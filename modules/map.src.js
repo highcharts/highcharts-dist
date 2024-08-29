@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v11.4.7 (2024-08-14)
+ * @license Highmaps JS v11.4.8 (2024-08-29)
  *
  * Highmaps as a plugin for Highcharts or Highcharts Stock.
  *
@@ -4022,11 +4022,6 @@
              */
             function wrapChartAddCredit(proceed, credits) {
                 credits = merge(true, this.options.credits, credits);
-                // Disable credits link if map credits enabled. This to allow for
-                // in-text anchors.
-                if (this.mapCredits) {
-                    credits.href = void 0;
-                }
                 proceed.call(this, credits);
                 // Add full map credits to hover
                 if (this.credits && this.mapCreditsFull) {
@@ -9616,10 +9611,10 @@
              * @apioption plotOptions.mapbubble.sizeByAbsoluteValue
              */
             /**
-             * The minimum for the Z value range. Defaults to the highest Z
-             * value in the data.
+             * The maximum for the Z value range. Defaults to the highest Z value in
+             * the data.
              *
-             * @see [zMax](#plotOptions.mapbubble.zMin)
+             * @see [zMin](#plotOptions.mapbubble.zMin)
              *
              * @sample {highmaps} highcharts/plotoptions/bubble-zmin-zmax/
              *         Z has a possible range of 0-100

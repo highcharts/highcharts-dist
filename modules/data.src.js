@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.7 (2024-08-14)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
  * Data module
  *
@@ -242,7 +242,7 @@
 
         return HttpUtilities;
     });
-    _registerModule(_modules, 'Extensions/Data.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Core/HttpUtilities.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Chart, D, G, HU, Point, SeriesRegistry, U) {
+    _registerModule(_modules, 'Extensions/Data.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Core/HttpUtilities.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Axis, Chart, D, G, HU, Point, SeriesRegistry, U) {
         /* *
          *
          *  Data module
@@ -370,7 +370,7 @@
                         regex: /^(\d{4})[\-\/\.](\d{1,2})[\-\/\.](\d{1,2})$/,
                         parser: function (match) {
                             return (match ?
-                                Date.UTC(+match[1], match[2] - 1, +match[3]) :
+                                Date.UTC(+match[1], +match[2] - 1, +match[3]) :
                                 NaN);
                         }
                     },
@@ -378,7 +378,7 @@
                         regex: /^(\d{1,2})[\-\/\.](\d{1,2})[\-\/\.](\d{4})$/,
                         parser: function (match) {
                             return (match ?
-                                Date.UTC(+match[3], match[2] - 1, +match[1]) :
+                                Date.UTC(+match[3], +match[2] - 1, +match[1]) :
                                 NaN);
                         },
                         alternative: 'mm/dd/YYYY' // Different format with the same regex
@@ -387,7 +387,7 @@
                         regex: /^(\d{1,2})[\-\/\.](\d{1,2})[\-\/\.](\d{4})$/,
                         parser: function (match) {
                             return (match ?
-                                Date.UTC(+match[3], match[1] - 1, +match[2]) :
+                                Date.UTC(+match[3], +match[1] - 1, +match[2]) :
                                 NaN);
                         }
                     },
@@ -405,7 +405,7 @@
                             else {
                                 year += 2000;
                             }
-                            return Date.UTC(year, match[2] - 1, +match[1]);
+                            return Date.UTC(year, +match[2] - 1, +match[1]);
                         },
                         alternative: 'mm/dd/YY' // Different format with the same regex
                     },
@@ -413,7 +413,7 @@
                         regex: /^(\d{1,2})[\-\/\.](\d{1,2})[\-\/\.](\d{2})$/,
                         parser: function (match) {
                             return (match ?
-                                Date.UTC(+match[3] + 2000, match[1] - 1, +match[2]) :
+                                Date.UTC(+match[3] + 2000, +match[1] - 1, +match[2]) :
                                 NaN);
                         }
                     }
@@ -485,7 +485,7 @@
                     hasData = this.parseGoogleSpreadsheet();
                 }
                 if (!hasData && dataOptions.afterComplete) {
-                    dataOptions.afterComplete();
+                    dataOptions.afterComplete(this);
                 }
             }
             /**
@@ -496,24 +496,20 @@
              * @function Highcharts.Data#getColumnDistribution
              */
             getColumnDistribution() {
-                const chartOptions = this.chartOptions, options = this.options, xColumns = [], getValueCount = function (type) {
-                    return (seriesTypes[type || 'line'].prototype.pointArrayMap || [0]).length;
-                }, getPointArrayMap = function (type) {
-                    return seriesTypes[type || 'line'].prototype.pointArrayMap;
-                }, globalType = (chartOptions &&
-                    chartOptions.chart &&
-                    chartOptions.chart.type), individualCounts = [], seriesBuilders = [], 
+                const chartOptions = this.chartOptions, options = this.options, xColumns = [], getValueCount = function (type = 'line') {
+                    return (seriesTypes[type].prototype.pointArrayMap || [0]).length;
+                }, getPointArrayMap = function (type = 'line') {
+                    return seriesTypes[type].prototype.pointArrayMap;
+                }, globalType = chartOptions?.chart?.type, individualCounts = [], seriesBuilders = [], 
                 // If no series mapping is defined, check if the series array is
                 // defined with types.
-                seriesMapping = ((options && options.seriesMapping) ||
-                    (chartOptions &&
-                        chartOptions.series &&
-                        chartOptions.series.map(function () {
-                            return { x: 0 };
-                        })) ||
+                seriesMapping = (options?.seriesMapping ||
+                    chartOptions?.series?.map(function () {
+                        return { x: 0 };
+                    }) ||
                     []);
-                let seriesIndex = 0, i;
-                ((chartOptions && chartOptions.series) || []).forEach((series) => {
+                let seriesIndex = 0;
+                (chartOptions?.series || []).forEach((series) => {
                     individualCounts.push(getValueCount(series.type || globalType));
                 });
                 // Collect the x-column indexes from seriesMapping
@@ -529,7 +525,7 @@
                 // the mapping options.
                 seriesMapping.forEach((mapping) => {
                     const builder = new SeriesBuilder(), numberOfValueColumnsNeeded = individualCounts[seriesIndex] ||
-                        getValueCount(globalType), seriesArr = (chartOptions && chartOptions.series) || [], series = seriesArr[seriesIndex] || {}, defaultPointArrayMap = getPointArrayMap(series.type || globalType), pointArrayMap = defaultPointArrayMap || ['y'];
+                        getValueCount(globalType), seriesArr = chartOptions?.series ?? [], series = seriesArr[seriesIndex] ?? {}, defaultPointArrayMap = getPointArrayMap(series.type || globalType), pointArrayMap = defaultPointArrayMap ?? ['y'];
                     if (
                     // User-defined x.mapping
                     defined(mapping.x) ||
@@ -549,7 +545,7 @@
                         }
                     });
                     // Add missing columns
-                    for (i = 0; i < numberOfValueColumnsNeeded; i++) {
+                    for (let i = 0; i < numberOfValueColumnsNeeded; i++) {
                         if (!builder.hasReader(pointArrayMap[i])) {
                             // Create and add a column reader for the next free column
                             // index
@@ -598,8 +594,7 @@
              * @function Highcharts.Data#parseCSV
              */
             parseCSV(inOptions) {
-                const self = this, columns = this.columns = [], options = inOptions || this.options, startColumn = (typeof options.startColumn !== 'undefined' &&
-                    options.startColumn) ? options.startColumn : 0, endColumn = options.endColumn || Number.MAX_VALUE, dataTypes = [], 
+                const self = this, columns = this.columns = [], options = inOptions || this.options, startColumn = options.startColumn || 0, endColumn = options.endColumn || Number.MAX_VALUE, dataTypes = [], 
                 // We count potential delimiters in the prepass, and use the
                 // result as the basis of half-intelligent guesses.
                 potDelimiters = {
@@ -607,9 +602,7 @@
                     ';': 0,
                     '\t': 0
                 };
-                let csv = options.csv, startRow = (typeof options.startRow !== 'undefined' && options.startRow ?
-                    options.startRow :
-                    0), endRow = options.endRow || Number.MAX_VALUE, itemDelimiter, lines, rowIt = 0;
+                let csv = options.csv, startRow = options.startRow || 0, endRow = options.endRow || Number.MAX_VALUE, itemDelimiter, lines, rowIt = 0;
                 /*
                     This implementation is quite verbose. It will be shortened once
                     it's stable and passes all the test.
@@ -728,7 +721,7 @@
                             }
                             // Perform "plugin" handling
                         }
-                        else if (callbacks && callbacks[c]) {
+                        else if (callbacks?.[c]) {
                             if (callbacks[c](c, token)) {
                                 push();
                             }
@@ -853,7 +846,7 @@
                     }
                     for (; i < limit; i++) {
                         if (typeof data[i] !== 'undefined' &&
-                            data[i] && data[i].length) {
+                            data[i]?.length) {
                             thing = data[i]
                                 .trim()
                                 .replace(/\//g, ' ')
@@ -927,22 +920,12 @@
                         // error.
                         if (!(options.dateFormats || self.dateFormats)[calculatedFormat]) {
                             // This should emit an event instead
-                            fireEvent('deduceDateFailed');
+                            fireEvent(self, 'deduceDateFailed');
                             return format;
                         }
                         return calculatedFormat;
                     }
                     return format;
-                }
-                /**
-                 * @todo
-                 * Figure out the best axis types for the data
-                 * - If the first column is a number, we're good
-                 * - If the first column is a date, set to date/time
-                 * - If the first column is a string, set to categories
-                 * @private
-                 */
-                function deduceAxisTypes() {
                 }
                 if (csv && options.beforeParse) {
                     csv = options.beforeParse.call(this, csv);
@@ -962,7 +945,6 @@
                         itemDelimiter = options.itemDelimiter;
                     }
                     else {
-                        itemDelimiter = null;
                         itemDelimiter = guessDelimiter(lines);
                     }
                     let offset = 0;
@@ -974,10 +956,6 @@
                             parseRow(lines[rowIt], rowIt - startRow - offset);
                         }
                     }
-                    // Make sure that there's header columns for everything
-                    // columns.forEach(function (col) {
-                    // });
-                    deduceAxisTypes();
                     if ((!options.columnTypes || options.columnTypes.length === 0) &&
                         dataTypes.length &&
                         dataTypes[0].length &&
@@ -1108,7 +1086,7 @@
                             url: url,
                             dataType: tp || 'json',
                             success: function (res) {
-                                if (chart && chart.series) {
+                                if (chart?.series) {
                                     done(res);
                                 }
                                 poll();
@@ -1117,7 +1095,7 @@
                                 if (++currentRetries < maxRetries) {
                                     poll();
                                 }
-                                return options.error && options.error(text, xhr);
+                                return options.error?.(text, xhr);
                             }
                         });
                         return true;
@@ -1204,7 +1182,7 @@
                             }
                         },
                         error: function (xhr, text) {
-                            return options.error && options.error(text, xhr);
+                            return options.error?.(text, xhr);
                         }
                     });
                 }
@@ -1226,7 +1204,7 @@
                                 }
                             }
                         });
-                        if (chart && chart.series) {
+                        if (chart?.series) {
                             chart.update({
                                 data: {
                                     columns: columns
@@ -1293,9 +1271,8 @@
              *        Column index
              */
             parseColumn(column, col) {
-                const rawColumns = this.rawColumns, columns = this.columns, firstRowAsNames = this.firstRowAsNames, isXColumn = this.valueCount.xColumns.indexOf(col) !== -1, backup = [], chartOptions = this.chartOptions, columnTypes = this.options.columnTypes || [], columnType = columnTypes[col], forceCategory = (isXColumn &&
-                    (chartOptions &&
-                        chartOptions.xAxis &&
+                const rawColumns = this.rawColumns, columns = this.columns = this.columns || [], firstRowAsNames = this.firstRowAsNames, isXColumn = this.valueCount?.xColumns.indexOf(col) !== -1, backup = [], chartOptions = this.chartOptions, columnTypes = this.options.columnTypes || [], columnType = columnTypes[col], forceCategory = (isXColumn &&
+                    (chartOptions?.xAxis &&
                         splat(chartOptions.xAxis)[0].type === 'category')) || columnType === 'string', columnHasName = defined(column.name);
                 let row = column.length, val, floatVal, trimVal, trimInsideVal, dateVal, diff, descending;
                 if (!rawColumns[col]) {
@@ -1334,7 +1311,7 @@
                         // string
                     }
                     else {
-                        if (trimVal && trimVal.length) {
+                        if (trimVal?.length) {
                             dateVal = this.parseDate(val);
                         }
                         // Only allow parsing of dates if this column is an x-column
@@ -1387,7 +1364,10 @@
                     for (col = 0; col < columns.length; col++) {
                         columns[col].reverse();
                         if (firstRowAsNames) {
-                            columns[col].unshift(columns[col].pop());
+                            const poppedColumn = columns[col].pop();
+                            if (poppedColumn) {
+                                columns[col].unshift(poppedColumn);
+                            }
                         }
                     }
                 }
@@ -1468,11 +1448,11 @@
              *
              * @function Highcharts.Data#getData
              *
-             * @return {Array<Array<(number|string)>>|undefined} Data rows
+             * @return {Array<Array<DataValueType>>|undefined} Data rows
              */
             getData() {
                 if (this.columns) {
-                    return this.rowsToColumns(this.columns).slice(1);
+                    return this.rowsToColumns(this.columns)?.slice(1);
                 }
             }
             /**
@@ -1489,11 +1469,13 @@
              * If a complete callback function is provided in the options, interpret the
              * columns into a Highcharts options object.
              *
+             * The function requires that the context has the `valueCount` property set.
+             *
              * @function Highcharts.Data#complete
              */
             complete() {
-                const columns = this.columns, xColumns = [], options = this.options, allSeriesBuilders = [];
-                let type, series, data, i, j, r, seriesIndex, chartOptions, builder, freeIndexes, typeCol, index;
+                const columns = this.columns = this.columns || [], xColumns = [], options = this.options, allSeriesBuilders = [];
+                let type = 'linear', series, data, i, j, r, seriesIndex, chartOptions, builder, freeIndexes, typeCol, index;
                 xColumns.length = columns.length;
                 if (options.complete || options.afterComplete) {
                     // Get the names and shift the top row
@@ -1507,7 +1489,7 @@
                     }
                     // Use the next columns for series
                     series = [];
-                    freeIndexes = getFreeIndexes(columns.length, this.valueCount.seriesBuilders);
+                    freeIndexes = getFreeIndexes(columns?.length || 0, this.valueCount.seriesBuilders);
                     // Populate defined series
                     for (seriesIndex = 0; seriesIndex < this.valueCount.seriesBuilders.length; seriesIndex++) {
                         builder = this.valueCount.seriesBuilders[seriesIndex];
@@ -1540,7 +1522,7 @@
                     // Get the data-type from the first series x column
                     if (allSeriesBuilders.length > 0 &&
                         allSeriesBuilders[0].readers.length > 0) {
-                        typeCol = columns[allSeriesBuilders[0].readers[0].columnIndex];
+                        typeCol = columns?.[allSeriesBuilders[0].readers[0].columnIndex ?? -1];
                         if (typeof typeCol !== 'undefined') {
                             if (typeCol.isDatetime) {
                                 type = 'datetime';
@@ -1573,35 +1555,62 @@
                         }
                         // Add the series
                         series[seriesIndex] = {
-                            data: data
+                            data,
+                            pointStart: data[0] && (builder.pointIsArray ?
+                                data[0]?.[0] :
+                                data[0]?.x) || void 0
                         };
                         if (builder.name) {
                             series[seriesIndex].name = builder.name;
                         }
                         if (type === 'category') {
                             series[seriesIndex].turboThreshold = 0;
+                            series[seriesIndex].pointStart = 0;
                         }
                     }
                     // Do the callback
-                    chartOptions = {
-                        series: series
-                    };
-                    if (type) {
-                        chartOptions.xAxis = {
-                            type: type
-                        };
+                    chartOptions = { series };
+                    // Prepare the axis options
+                    if (type === 'linear' && (!this.xAxisOptions ||
+                        this.xAxisOptions.type === type)) {
+                        // Clear default value ('linear') if it is not changing the
+                        // axis type to avoid loosing animation
+                        type = this.xAxisOptions = void 0;
+                    }
+                    else {
+                        this.xAxisOptions = { type };
                         if (type === 'category') {
-                            chartOptions.xAxis.uniqueNames = false;
+                            this.xAxisOptions.uniqueNames = false;
                         }
                     }
-                    if (options.complete) {
-                        options.complete(chartOptions);
+                    // Merge the xAxisOptions for the standalone Data module
+                    if (!this.chart) {
+                        merge(true, chartOptions, { xAxis: this.xAxisOptions || {} });
                     }
+                    options.complete?.(chartOptions);
                     // The afterComplete hook is used internally to avoid conflict with
                     // the externally available complete option.
-                    if (options.afterComplete) {
-                        options.afterComplete(chartOptions);
-                    }
+                    options.afterComplete?.(this, chartOptions);
+                }
+            }
+            /**
+             * Sets properties directly on the xAxis object.
+             *
+             * @private
+             */
+            xAxisUpdateHandler(axis) {
+                const options = this.xAxisOptions;
+                if (!options) {
+                    return;
+                }
+                // Set the axis properties if not blocked by the axis options that could
+                // have changed in the update event.
+                if (!axis.options.type && options.type) {
+                    axis.type = options.type;
+                }
+                if (!axis.options.uniqueNames &&
+                    options.uniqueNames === false) {
+                    axis.uniqueNames = options.uniqueNames;
                 }
             }
             /**
@@ -1610,39 +1619,58 @@
              * @function Highcharts.Data#update
              *
              * @param {Highcharts.DataOptions} options
+             *        The new data options.
              *
              * @param {boolean} [redraw=true]
+             *        Whether to redraw the chart after the new options are set.
              */
             update(options, redraw) {
                 const chart = this.chart, chartOptions = chart.options;
                 if (options) {
                     // Set the complete handler
-                    options.afterComplete = function (dataOptions) {
-                        // Avoid setting axis options unless the type changes. Running
-                        // Axis.update will cause the whole structure to be destroyed
-                        // and rebuilt, and animation is lost.
-                        if (dataOptions) {
-                            if (dataOptions.xAxis &&
-                                chart.xAxis[0] &&
-                                dataOptions.xAxis.type ===
-                                    chart.xAxis[0].options.type) {
-                                delete dataOptions.xAxis;
-                            }
-                            // @todo looks not right:
-                            chart.update(dataOptions, redraw, true);
+                    options.afterComplete = function (dataInstance, dataOptions) {
+                        if (!dataOptions) {
+                            return;
                         }
+                        // Avoid setting axis options unless they change. Running
+                        // Axis.update will cause the whole structure to be
+                        // destroyed and rebuilt, and animation is lost.
+                        const xAxis = chart.xAxis[0], xAxisOptions = dataInstance.xAxisOptions;
+                        // Update axis if xAxisOptions are different from the current
+                        // and not blocked by the axis options.
+                        if (xAxisOptions && xAxis && ((xAxis.type !== xAxisOptions.type && !xAxis.options.type) ||
+                            (xAxis.uniqueNames &&
+                                xAxisOptions.uniqueNames === false &&
+                                xAxis.options.uniqueNames === void 0))) {
+                            xAxis.update({}, false);
+                        }
+                        else {
+                            // Prefer smooth points update when no axis update
+                            (dataOptions?.series || []).forEach(function (seriesOptions) {
+                                delete seriesOptions.pointStart;
+                            });
+                        }
+                        chart.update(dataOptions, redraw, true);
                     };
                     // Apply it
                     merge(true, chartOptions.data, options);
                     // Reset columns if fetching spreadsheet, to force a re-fetch
-                    if (chartOptions.data && chartOptions.data.googleSpreadsheetKey &&
-                        !options.columns) {
+                    if (chartOptions.data?.googleSpreadsheetKey && !options.columns) {
                         delete chartOptions.data.columns;
                     }
-                    this.init(chartOptions.data);
+                    this.init(chartOptions.data || {}, chartOptions);
                 }
             }
         }
+        // Fire 1st xAxis properties modifier after the options are set.
+        addEvent(Axis, 'afterSetOptions', function () {
+            // Target first xAxis only
+            if (this.isXAxis &&
+                // Init or update
+                (!this.chart.xAxis.length || this.chart.xAxis[0] === this)) {
+                this.chart.data?.xAxisUpdateHandler(this);
+            }
+        });
         // Extend Chart.init so that the Chart constructor accepts a new configuration
         // option group, data.
         addEvent(Chart, 'init', function (e) {
@@ -1659,19 +1687,15 @@
                  */
                 const dataOptions = merge(defaultDataOptions, userOptions.data);
                 chart.data = new Data(extend(dataOptions, {
-                    afterComplete: function (dataOptions) {
+                    afterComplete: function (dataInstance, dataOptions) {
                         let i, series;
                         // Merge series configs
                         if (Object.hasOwnProperty.call(userOptions, 'series')) {
                             if (typeof userOptions.series === 'object') {
-                                i = Math.max(userOptions.series.length, dataOptions && dataOptions.series ?
-                                    dataOptions.series.length :
-                                    0);
+                                i = Math.max(userOptions.series.length, dataOptions?.series?.length ?? 0);
                                 while (i--) {
                                     series = userOptions.series[i] || {};
-                                    userOptions.series[i] = merge(series, dataOptions && dataOptions.series ?
-                                        dataOptions.series[i] :
-                                        {});
+                                    userOptions.series[i] = merge(series, dataOptions?.series?.[i] ?? {});
                                 }
                             }
                             else { // Allow merging in dataOptions.series (#2856)
@@ -1680,6 +1704,8 @@
                         }
                         // Do the merge
                         userOptions = merge(dataOptions, userOptions);
+                        // Register for access in events (Axis' afterSetOptions)
+                        chart.data = dataInstance;
                         // Run chart.init again
                         chart.init(userOptions, callback);
                     }

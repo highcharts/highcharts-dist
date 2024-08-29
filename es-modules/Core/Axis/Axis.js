@@ -150,7 +150,11 @@ class Axis {
          * @type {Highcharts.AxisOptions}
          */
         axis.setOptions(userOptions);
-        const options = this.options, labelsOptions = options.labels, type = options.type;
+        const options = axis.options, labelsOptions = options.labels;
+        // Set the type and fire an event
+        axis.type ?? (axis.type = options.type || 'linear');
+        axis.uniqueNames ?? (axis.uniqueNames = options.uniqueNames ?? true);
+        fireEvent(axis, 'afterSetType');
         /**
          * User's options for this axis without defaults.
          *
@@ -170,7 +174,7 @@ class Axis {
         axis.visible = options.visible;
         axis.zoomEnabled = options.zoomEnabled;
         // Initial categories
-        axis.hasNames = type === 'category' || options.categories === true;
+        axis.hasNames = this.type === 'category' || options.categories === true;
         /**
          * If categories are present for the axis, names are used instead of
          * numbers for that axis.
@@ -543,7 +547,7 @@ class Axis {
      * @param {number} value
      * A value in terms of axis units.
      *
-     * @param {boolean} paneCoordinates
+     * @param {boolean} [paneCoordinates=false]
      * Whether to return the pixel coordinate relative to the chart or just the
      * axis/pane itself.
      *
@@ -618,7 +622,7 @@ class Axis {
             translatedValue = pick(translatedValue, axis.translate(value, void 0, void 0, old));
             // Keep the translated value within sane bounds, and avoid Infinity
             // to fail the isNumber test (#7709).
-            translatedValue = clamp(translatedValue, -1e5, 1e5);
+            translatedValue = clamp(translatedValue, -1e9, 1e9);
             x1 = x2 = translatedValue + transB;
             y1 = y2 = cHeight - translatedValue - transB;
             if (!isNumber(translatedValue)) { // No min or max
@@ -893,7 +897,7 @@ class Axis {
         let nameX = point.options.x, x;
         point.series.requireSorting = false;
         if (!defined(nameX)) {
-            nameX = this.options.uniqueNames && names ?
+            nameX = this.uniqueNames && names ?
                 (explicitCategories ?
                     names.indexOf(point.name) :
                     pick(names.keys[point.name], -1)) :
@@ -1079,7 +1083,7 @@ class Axis {
             linkedParentExtremes = linkedParent.getExtremes();
             axis.min = pick(linkedParentExtremes.min, linkedParentExtremes.dataMin);
             axis.max = pick(linkedParentExtremes.max, linkedParentExtremes.dataMax);
-            if (options.type !== linkedParent.options.type) {
+            if (this.type !== linkedParent.type) {
                 // Can't link axes of different type
                 error(11, true, chart);
             }
@@ -1286,12 +1290,6 @@ class Axis {
         this.tickmarkOffset = (this.categories &&
             options.tickmarkPlacement === 'between' &&
             this.tickInterval === 1) ? 0.5 : 0; // #3202
-        // Get minorTickInterval
-        this.minorTickInterval =
-            minorTickIntervalOption === 'auto' &&
-                this.tickInterval ?
-                this.tickInterval / options.minorTicksPerMajor :
-                minorTickIntervalOption;
         // When there is only one point, or all points have the same value on
         // this axis, then min and max are equal and tickPositions.length is 0
         // or 1. In this case, add some padding in order to center the point,
@@ -1379,6 +1377,11 @@ class Axis {
             }
         }
         this.tickPositions = tickPositions;
+        // Get minorTickInterval
+        this.minorTickInterval =
+            minorTickIntervalOption === 'auto' && this.tickInterval ?
+                this.tickInterval / options.minorTicksPerMajor :
+                minorTickIntervalOption;
         // Reset min/max or remove extremes based on start/end on tick
         this.paddedTicks = tickPositions.slice(0); // Used for logarithmic minor
         this.trimTicks(tickPositions, startOnTick, endOnTick);

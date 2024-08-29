@@ -150,6 +150,7 @@ class PictorialSeries extends ColumnSeries {
  *  Static Properties
  *
  * */
+PictorialSeries.defaultOptions = merge(ColumnSeries.defaultOptions, 
 /**
  * A pictorial chart uses vector images to represents the data.
  * The shape of the data point is taken from the path parameter.
@@ -168,7 +169,7 @@ class PictorialSeries extends ColumnSeries {
  * @requires     modules/pictorial
  * @optionparent plotOptions.pictorial
  */
-PictorialSeries.defaultOptions = merge(ColumnSeries.defaultOptions, {
+{
     borderWidth: 0
 });
 /* *

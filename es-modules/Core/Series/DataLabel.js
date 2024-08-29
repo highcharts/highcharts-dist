@@ -387,6 +387,15 @@ var DataLabel;
                                 // read text bounding box
                                 dataLabel.css(style).shadow(labelOptions.shadow);
                             }
+                            else if (style.width) {
+                                // In styled mode with a width property set,
+                                // the width should be applied to the
+                                // dataLabel. (#20499)
+                                dataLabel.css({
+                                    width: style.width,
+                                    textOverflow: style.textOverflow
+                                });
+                            }
                             fireEvent(dataLabel, 'beforeAddingDataLabel', { labelOptions, point });
                             if (!dataLabel.added) {
                                 dataLabel.add(dataLabelsGroup);

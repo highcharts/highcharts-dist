@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.7 (2024-08-14)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
  * Accessibility module
  *
@@ -1076,7 +1076,7 @@
 
         return EventProvider;
     });
-    _registerModule(_modules, 'Accessibility/AccessibilityComponent.js', [_modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/Utils/DOMElementProvider.js'], _modules['Accessibility/Utils/EventProvider.js'], _modules['Accessibility/Utils/HTMLUtilities.js'], _modules['Core/Utilities.js']], function (CU, DOMElementProvider, EventProvider, HU, U) {
+    _registerModule(_modules, 'Accessibility/AccessibilityComponent.js', [_modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/Utils/DOMElementProvider.js'], _modules['Accessibility/Utils/EventProvider.js'], _modules['Accessibility/Utils/HTMLUtilities.js']], function (CU, DOMElementProvider, EventProvider, HU) {
         /* *
          *
          *  (c) 2009-2024 Øystein Moseng
@@ -1090,7 +1090,6 @@
          * */
         const { fireEventOnWrappedOrUnwrappedElement } = CU;
         const { getFakeMouseEvent } = HU;
-        const { extend } = U;
         /* *
          *
          *  Class
@@ -1102,8 +1101,8 @@
          * create a custom accessibility component for a chart.
          *
          * Components should take care to destroy added elements and unregister event
-         * handlers on destroy. This is handled automatically if using this.addEvent and
-         * this.createElement.
+         * handlers on destroy. This is handled automatically if using `this.addEvent`
+         * and `this.createElement`.
          *
          * @sample highcharts/accessibility/custom-component
          *         Custom accessibility component
@@ -1118,6 +1117,41 @@
              *  Functions
              *
              * */
+            /**
+             * Called when accessibility is disabled or chart is destroyed.
+             *
+             * @function Highcharts.AccessibilityComponent#destroy
+             */
+            destroy() { }
+            /**
+             * Get keyboard navigation handler for this component.
+             *
+             * @function Highcharts.AccessibilityComponent#getKeyboardNavigation
+             * @return   {Highcharts.KeyboardNavigationHandler|Array<Highcharts.KeyboardNavigationHandler>}
+             *           The keyboard navigation handler(s) for this component.
+             */
+            getKeyboardNavigation() {
+                return [];
+            }
+            /**
+             * Called on component initialization.
+             *
+             * @function Highcharts.AccessibilityComponent#init
+             */
+            init() { }
+            /**
+             * Called on every chart render.
+             *
+             * @function Highcharts.AccessibilityComponent#onChartRender
+             */
+            onChartRender() { }
+            /**
+             * Called on updates to the chart, including options changes.
+             * Note that this is also called on first render of chart.
+             *
+             * @function Highcharts.AccessibilityComponent#onChartUpdate
+             */
+            onChartUpdate() { }
             /**
              * Initialize the class
              * @private
@@ -1164,6 +1198,7 @@
             /**
              * Fire a fake click event on an element. It is useful to have this on
              * AccessibilityComponent for users of custom components.
+             * @private
              */
             fakeClickEvent(el) {
                 const fakeEvent = getFakeMouseEvent('click');
@@ -1178,32 +1213,6 @@
                 this.eventProvider.removeAddedEvents();
             }
         }
-        extend(AccessibilityComponent.prototype, 
-        /** @lends Highcharts.AccessibilityComponent */
-        {
-            /**
-             * Called on component initialization.
-             */
-            init() { },
-            /**
-             * Get keyboard navigation handler for this component.
-             * @private
-             */
-            getKeyboardNavigation: function () { },
-            /**
-             * Called on updates to the chart, including options changes.
-             * Note that this is also called on first render of chart.
-             */
-            onChartUpdate() { },
-            /**
-             * Called on every chart render.
-             */
-            onChartRender() { },
-            /**
-             * Called when accessibility is disabled or chart is destroyed.
-             */
-            destroy() { }
-        });
         /* *
          *
          *  Default Export
@@ -5063,12 +5072,22 @@
                         isNaN(scrollMax) ||
                         !defined(axis.min) ||
                         !defined(axis.max) ||
-                        axis.min === axis.max // #10733
+                        axis.dataMin === axis.dataMax // #10733
                     ) {
-                        // Default action: when extremes are the same or there is
+                        // Default action: when data extremes are the same or there is
                         // not extremes on the axis, but scrollbar exists, make it
                         // full size
                         scrollbar.setRange(0, 1);
+                    }
+                    else if (axis.min === axis.max) { // #20359
+                        // When the extremes are the same, set the scrollbar to a point
+                        // within the extremes range. Utilize pointRange to perform the
+                        // calculations. (#20359)
+                        const interval = axis.pointRange / (axis.dataMax +
+                            1);
+                        from = interval * axis.min;
+                        to = interval * (axis.max + 1);
+                        scrollbar.setRange(from, to);
                     }
                     else {
                         from = ((axis.min - scrollMin) /
@@ -6279,7 +6298,10 @@
                     const handlesOptions = navigatorOptions.handles, { height, width } = handlesOptions;
                     [0, 1].forEach((index) => {
                         const symbolName = handlesOptions.symbols[index];
-                        if (!navigator.handles[index]) {
+                        if (!navigator.handles[index] ||
+                            navigator.handles[index].symbolUrl !== symbolName) {
+                            // Generate symbol from scratch if we're dealing with an URL
+                            navigator.handles[index]?.destroy();
                             navigator.handles[index] = renderer.symbol(symbolName, -width / 2 - 1, 0, width, height, handlesOptions);
                             // Z index is 6 for right handle, 7 for left. Can't be 10,
                             // because of the tooltip in inverted chart (#2908).
@@ -6287,9 +6309,11 @@
                                 .addClass('highcharts-navigator-handle ' +
                                 'highcharts-navigator-handle-' +
                                 ['left', 'right'][index]).add(navigatorGroup);
+                            navigator.addMouseEvents();
                             // If the navigator symbol changed, update its path and name
                         }
-                        else if (symbolName !== navigator.handles[index].symbolName) {
+                        else if (!navigator.handles[index].isImg &&
+                            navigator.handles[index].symbolName !== symbolName) {
                             const symbolFn = symbols[symbolName], path = symbolFn.call(symbols, -width / 2 - 1, 0, width, height);
                             navigator.handles[index].attr({
                                 d: path
@@ -13023,7 +13047,7 @@
              */
             function chartUpdateA11yEnabled() {
                 let a11y = this.accessibility;
-                const accessibilityOptions = this.options.accessibility;
+                const accessibilityOptions = this.options.accessibility, svg = this.renderer.boxWrapper.element, title = this.title;
                 if (accessibilityOptions && accessibilityOptions.enabled) {
                     if (a11y && !a11y.zombie) {
                         a11y.update();
@@ -13032,6 +13056,10 @@
                         this.accessibility = a11y = new Accessibility(this);
                         if (a11y && !a11y.zombie) {
                             a11y.update();
+                        }
+                        // If a11y has been disabled, and is now enabled
+                        if (svg.getAttribute('role') === 'img') {
+                            svg.removeAttribute('role');
                         }
                     }
                 }
@@ -13043,8 +13071,16 @@
                     delete this.accessibility;
                 }
                 else {
-                    // Just hide container
-                    this.renderTo.setAttribute('aria-hidden', true);
+                    // If a11y has been disabled dynamically or is disabled
+                    this.renderTo.setAttribute('role', 'img');
+                    this.renderTo.setAttribute('aria-hidden', false);
+                    this.renderTo.setAttribute('aria-label', ((title && title.element.textContent) || '').replace(/</g, '&lt;'));
+                    svg.setAttribute('aria-hidden', true);
+                    const description = document.getElementsByClassName('highcharts-description')[0];
+                    if (description) {
+                        description.setAttribute('aria-hidden', false);
+                        description.classList.remove('highcharts-linked-description');
+                    }
                 }
             }
             /**

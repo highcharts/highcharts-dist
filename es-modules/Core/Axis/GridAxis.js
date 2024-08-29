@@ -151,7 +151,7 @@ function getMaxLabelDimensions(ticks, tickPositions) {
         }
     });
     // For tree grid, add indentation
-    if (this.options.type === 'treegrid' &&
+    if (this.type === 'treegrid' &&
         this.treeGrid &&
         this.treeGrid.mapOfPosToGridNode) {
         const treeDepth = this.treeGrid.mapOfPosToGridNode[-1].height || 0;
@@ -465,7 +465,7 @@ function onAfterSetAxisTranslation() {
         else {
             // Don't trim ticks which not in min/max range but
             // they are still in the min/max plus tickInterval.
-            if (this.options.type !== 'treegrid' &&
+            if (this.type !== 'treegrid' &&
                 axis.grid &&
                 axis.grid.columns) {
                 this.minPointOffset = this.tickInterval;

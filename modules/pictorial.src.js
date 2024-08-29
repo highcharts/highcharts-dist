@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.7 (2024-08-14)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
  * Pictorial graph series type for Highcharts
  *
@@ -1003,6 +1003,7 @@
          *  Static Properties
          *
          * */
+        PictorialSeries.defaultOptions = merge(ColumnSeries.defaultOptions, 
         /**
          * A pictorial chart uses vector images to represents the data.
          * The shape of the data point is taken from the path parameter.
@@ -1021,7 +1022,7 @@
          * @requires     modules/pictorial
          * @optionparent plotOptions.pictorial
          */
-        PictorialSeries.defaultOptions = merge(ColumnSeries.defaultOptions, {
+        {
             borderWidth: 0
         });
         /* *

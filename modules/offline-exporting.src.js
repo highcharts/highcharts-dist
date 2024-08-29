@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.7 (2024-08-14)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
  * Client side exporting module
  *
@@ -180,7 +180,7 @@
          *
          * */
         const OfflineExportingDefaults = {
-            libURL: 'https://code.highcharts.com/11.4.7/lib/',
+            libURL: 'https://code.highcharts.com/11.4.8/lib/',
             // When offline-exporting is loaded, redefine the menu item definitions
             // related to download.
             menuItemDefinitions: {
@@ -445,7 +445,10 @@
                         outlineElements =
                             el.getElementsByClassName('highcharts-text-outline');
                         while (outlineElements.length > 0) {
-                            el.removeChild(outlineElements[0]);
+                            const outline = outlineElements[0];
+                            if (outline.parentNode) {
+                                outline.parentNode.removeChild(outline);
+                            }
                         }
                     });
                     const svgNode = dummySVGContainer.querySelector('svg');

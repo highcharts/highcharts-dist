@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v11.4.7 (2024-08-14)
+ * @license Highcharts Gantt JS v11.4.8 (2024-08-29)
  *
  * Tree Grid
  *
@@ -791,7 +791,7 @@
                 }
             });
             // For tree grid, add indentation
-            if (this.options.type === 'treegrid' &&
+            if (this.type === 'treegrid' &&
                 this.treeGrid &&
                 this.treeGrid.mapOfPosToGridNode) {
                 const treeDepth = this.treeGrid.mapOfPosToGridNode[-1].height || 0;
@@ -1105,7 +1105,7 @@
                 else {
                     // Don't trim ticks which not in min/max range but
                     // they are still in the min/max plus tickInterval.
-                    if (this.options.type !== 'treegrid' &&
+                    if (this.type !== 'treegrid' &&
                         axis.grid &&
                         axis.grid.columns) {
                         this.minPointOffset = this.tickInterval;
@@ -1922,7 +1922,7 @@
          * @private
          */
         function wrapGetLabelPosition(proceed, x, y, label, horiz, labelOptions, tickmarkOffset, index, step) {
-            const tick = this, lbOptions = pick(tick.options && tick.options.labels, labelOptions), pos = tick.pos, axis = tick.axis, options = axis.options, isTreeGrid = options.type === 'treegrid', result = proceed.apply(tick, [x, y, label, horiz, lbOptions, tickmarkOffset, index, step]);
+            const tick = this, lbOptions = pick(tick.options && tick.options.labels, labelOptions), pos = tick.pos, axis = tick.axis, isTreeGrid = axis.type === 'treegrid', result = proceed.apply(tick, [x, y, label, horiz, lbOptions, tickmarkOffset, index, step]);
             let mapOfPosToGridNode, node, level;
             if (isTreeGrid) {
                 const { width = 0, padding = axis.linkedParent ? 0 : 5 } = (lbOptions && isObject(lbOptions.symbol, true) ?
@@ -1947,7 +1947,7 @@
         function wrapRenderLabel(proceed) {
             const tick = this, { pos, axis, label, treeGrid: tickGrid, options: tickOptions } = tick, icon = tickGrid?.labelIcon, labelElement = label?.element, { treeGrid: axisGrid, options: axisOptions, chart, tickPositions } = axis, mapOfPosToGridNode = axisGrid.mapOfPosToGridNode, labelOptions = pick(tickOptions?.labels, axisOptions?.labels), symbolOptions = (labelOptions && isObject(labelOptions.symbol, true) ?
                 labelOptions.symbol :
-                {}), node = mapOfPosToGridNode && mapOfPosToGridNode[pos], { descendants, depth } = node || {}, hasDescendants = node && descendants && descendants > 0, level = depth, isTreeGridElement = (axisOptions.type === 'treegrid') && labelElement, shouldRender = tickPositions.indexOf(pos) > -1, prefixClassName = 'highcharts-treegrid-node-', prefixLevelClass = prefixClassName + 'level-', styledMode = chart.styledMode;
+                {}), node = mapOfPosToGridNode && mapOfPosToGridNode[pos], { descendants, depth } = node || {}, hasDescendants = node && descendants && descendants > 0, level = depth, isTreeGridElement = (axis.type === 'treegrid') && labelElement, shouldRender = tickPositions.indexOf(pos) > -1, prefixClassName = 'highcharts-treegrid-node-', prefixLevelClass = prefixClassName + 'level-', styledMode = chart.styledMode;
             let collapsed, addClassName, removeClassName;
             if (isTreeGridElement && node) {
                 // Add class name for hierarchical styling.
@@ -2422,8 +2422,7 @@
          * @todo Add unit-tests.
          */
         function getTreeGridFromData(data, uniqueNames, numberOfSeries) {
-            const categories = [], collapsedNodes = [], mapOfIdToNode = {}, uniqueNamesEnabled = typeof uniqueNames === 'boolean' ?
-                uniqueNames : false;
+            const categories = [], collapsedNodes = [], mapOfIdToNode = {}, uniqueNamesEnabled = uniqueNames || false;
             let mapOfPosToGridNode = {}, posIterator = -1;
             // Build the tree from the series data.
             const treeParams = {
@@ -2548,10 +2547,8 @@
          */
         function onBeforeRender(e) {
             const chart = e.target, axes = chart.axes;
-            axes.filter(function (axis) {
-                return axis.options.type === 'treegrid';
-            }).forEach(function (axis) {
-                const options = axis.options || {}, labelOptions = options.labels, uniqueNames = options.uniqueNames, max = options.max, 
+            axes.filter((axis) => axis.type === 'treegrid').forEach(function (axis) {
+                const options = axis.options || {}, labelOptions = options.labels, uniqueNames = axis.uniqueNames, max = options.max, 
                 // Check whether any of series is rendering for the first
                 // time, visibility has changed, or its data is dirty, and
                 // only then update. #10570, #10580. Also check if
@@ -2659,7 +2656,7 @@
          * The tick position in axis values.
          */
         function wrapGenerateTick(proceed, pos) {
-            const axis = this, mapOptionsToLevel = axis.treeGrid.mapOptionsToLevel || {}, isTreeGrid = axis.options.type === 'treegrid', ticks = axis.ticks;
+            const axis = this, mapOptionsToLevel = axis.treeGrid.mapOptionsToLevel || {}, isTreeGrid = axis.type === 'treegrid', ticks = axis.ticks;
             let tick = ticks[pos], levelOptions, options, gridNode;
             if (isTreeGrid &&
                 axis.treeGrid.mapOfPosToGridNode) {
@@ -2839,7 +2836,7 @@
         function wrapSetTickInterval(proceed) {
             const axis = this, options = axis.options, linkedParent = typeof options.linkedTo === 'number' ?
                 this.chart[axis.coll]?.[options.linkedTo] :
-                void 0, isTreeGrid = options.type === 'treegrid';
+                void 0, isTreeGrid = axis.type === 'treegrid';
             if (isTreeGrid) {
                 axis.min = pick(axis.userMin, options.min, axis.dataMin);
                 axis.max = pick(axis.userMax, options.max, axis.dataMax);
@@ -2874,7 +2871,7 @@
          * The original setTickInterval function.
          */
         function wrapRedraw(proceed) {
-            const axis = this, options = axis.options, isTreeGrid = options.type === 'treegrid';
+            const axis = this, isTreeGrid = this.type === 'treegrid';
             if (isTreeGrid && axis.visible) {
                 axis.tickPositions.forEach(function (pos) {
                     const tick = axis.ticks[pos];

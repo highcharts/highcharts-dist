@@ -76,6 +76,8 @@ function getLabelsAndShapesOptions(baseOptions, newOptions) {
  * shapes. Created items are positioned on the chart either by linking them to
  * existing points or created mock points
  *
+ * @requires modules/annotations
+ *
  * @class
  * @name Highcharts.Annotation
  *
@@ -561,6 +563,8 @@ Annotation.MockPoint = MockPoint;
  * An object uses for mapping between a shape type and a constructor.
  * To add a new shape type extend this object with type name as a key
  * and a constructor as its value.
+ *
+ * @private
  */
 Annotation.shapesMap = {
     'rect': ControllableRect,

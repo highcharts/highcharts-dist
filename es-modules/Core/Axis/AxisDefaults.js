@@ -1958,9 +1958,10 @@ var AxisDefaults;
          *         Logarithmic with extension to emulate negative values
          *
          * @type    {Highcharts.AxisTypeValue}
+         * @default linear
          * @product highcharts gantt
+         * @apioption xAxis.type
          */
-        type: 'linear',
         /**
          * If there are multiple axes on the same side of the chart, the pixel
          * margin between the axes. Defaults to 0 on vertical axes, 15 on
@@ -1986,8 +1987,9 @@ var AxisDefaults;
          *
          * @since     4.2.7
          * @product   highcharts gantt
+         * @type      {boolean}
+         * @default   true
          */
-        uniqueNames: true,
         /**
          * Datetime axis only. An array determining what time intervals the
          * ticks are allowed to fall on. Each array item is an array where the

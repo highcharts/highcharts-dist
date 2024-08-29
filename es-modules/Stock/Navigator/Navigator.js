@@ -311,7 +311,10 @@ class Navigator {
             const handlesOptions = navigatorOptions.handles, { height, width } = handlesOptions;
             [0, 1].forEach((index) => {
                 const symbolName = handlesOptions.symbols[index];
-                if (!navigator.handles[index]) {
+                if (!navigator.handles[index] ||
+                    navigator.handles[index].symbolUrl !== symbolName) {
+                    // Generate symbol from scratch if we're dealing with an URL
+                    navigator.handles[index]?.destroy();
                     navigator.handles[index] = renderer.symbol(symbolName, -width / 2 - 1, 0, width, height, handlesOptions);
                     // Z index is 6 for right handle, 7 for left. Can't be 10,
                     // because of the tooltip in inverted chart (#2908).
@@ -319,9 +322,11 @@ class Navigator {
                         .addClass('highcharts-navigator-handle ' +
                         'highcharts-navigator-handle-' +
                         ['left', 'right'][index]).add(navigatorGroup);
+                    navigator.addMouseEvents();
                     // If the navigator symbol changed, update its path and name
                 }
-                else if (symbolName !== navigator.handles[index].symbolName) {
+                else if (!navigator.handles[index].isImg &&
+                    navigator.handles[index].symbolName !== symbolName) {
                     const symbolFn = symbols[symbolName], path = symbolFn.call(symbols, -width / 2 - 1, 0, width, height);
                     navigator.handles[index].attr({
                         d: path

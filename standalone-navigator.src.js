@@ -56,7 +56,7 @@
              *  Constants
              *
              * */
-            Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '11.4.7', Globals.win = (typeof window !== 'undefined' ?
+            Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '11.4.8', Globals.win = (typeof window !== 'undefined' ?
                 window :
                 {}), // eslint-disable-line node/no-unsupported-features/es-builtins
             Globals.doc = Globals.win.document, Globals.svg = (Globals.doc &&
@@ -6442,8 +6442,9 @@
                  * @apioption tooltip.positioner
                  */
                 /**
-                 * Split the tooltip into one label per series, with the header close
-                 * to the axis. This is recommended over [shared](#tooltip.shared)
+                 * Shows tooltip for all points with the same X value. Splits the
+                 * tooltip into one label per series, with the header close to the axis.
+                 * This is recommended over [shared](#tooltip.shared)
                  * tooltips for charts with multiple line series, generally making them
                  * easier to read. This option takes precedence over `tooltip.shared`.
                  *
@@ -6681,11 +6682,12 @@
                  */
                 shape: 'callout',
                 /**
-                 * When the tooltip is shared, the entire plot area will capture mouse
-                 * movement or touch events. Tooltip texts for series types with ordered
-                 * data (not pie, scatter, flags etc) will be shown in a single bubble.
-                 * This is recommended for single series charts and for tablet/mobile
-                 * optimized charts.
+                 * Shows information in the tooltip for all points with the same X
+                 * value. When the tooltip is shared, the entire plot area will capture
+                 * mouse movement or touch events. Tooltip texts for series types with
+                 * ordered data (not pie, scatter, flags etc) will be shown in a single
+                 * bubble. This is recommended for single series charts and for
+                 * tablet/mobile optimized charts.
                  *
                  * See also [tooltip.split](#tooltip.split), that is better suited for
                  * charts with many series, especially line-type series. The
@@ -7461,6 +7463,7 @@
         /**
          * Collection of parsers. This can be extended from the outside by pushing
          * parsers to `Color.parsers`.
+         * @private
          */
         Color.parsers = [{
                 // RGBA color
@@ -12524,7 +12527,7 @@
                 this.url = this.getReferenceURL();
                 // Add description
                 const desc = this.createElement('desc').add();
-                desc.element.appendChild(doc.createTextNode('Created with Highcharts 11.4.7'));
+                desc.element.appendChild(doc.createTextNode('Created with Highcharts 11.4.8'));
                 this.defs = this.createElement('defs').add();
                 this.allowHTML = allowHTML;
                 this.forExport = forExport;
@@ -13489,6 +13492,7 @@
                         });
                     }
                     img.isImg = true;
+                    img.symbolUrl = symbol;
                     if (defined(img.imgwidth) && defined(img.imgheight)) {
                         centerImage(img);
                     }
@@ -16587,9 +16591,10 @@
                  *         Logarithmic with extension to emulate negative values
                  *
                  * @type    {Highcharts.AxisTypeValue}
+                 * @default linear
                  * @product highcharts gantt
+                 * @apioption xAxis.type
                  */
-                type: 'linear',
                 /**
                  * If there are multiple axes on the same side of the chart, the pixel
                  * margin between the axes. Defaults to 0 on vertical axes, 15 on
@@ -16615,8 +16620,9 @@
                  *
                  * @since     4.2.7
                  * @product   highcharts gantt
+                 * @type      {boolean}
+                 * @default   true
                  */
-                uniqueNames: true,
                 /**
                  * Datetime axis only. An array determining what time intervals the
                  * ticks are allowed to fall on. Each array item is an array where the
@@ -18004,7 +18010,7 @@
                             axis.transB)
                 };
                 // Chrome workaround for #10516
-                pos.y = clamp(pos.y, -1e5, 1e5);
+                pos.y = clamp(pos.y, -1e9, 1e9);
                 fireEvent(this, 'afterGetPosition', { pos: pos });
                 return pos;
             }
@@ -18580,7 +18586,11 @@
                  * @type {Highcharts.AxisOptions}
                  */
                 axis.setOptions(userOptions);
-                const options = this.options, labelsOptions = options.labels, type = options.type;
+                const options = axis.options, labelsOptions = options.labels;
+                // Set the type and fire an event
+                axis.type ?? (axis.type = options.type || 'linear');
+                axis.uniqueNames ?? (axis.uniqueNames = options.uniqueNames ?? true);
+                fireEvent(axis, 'afterSetType');
                 /**
                  * User's options for this axis without defaults.
                  *
@@ -18600,7 +18610,7 @@
                 axis.visible = options.visible;
                 axis.zoomEnabled = options.zoomEnabled;
                 // Initial categories
-                axis.hasNames = type === 'category' || options.categories === true;
+                axis.hasNames = this.type === 'category' || options.categories === true;
                 /**
                  * If categories are present for the axis, names are used instead of
                  * numbers for that axis.
@@ -18973,7 +18983,7 @@
              * @param {number} value
              * A value in terms of axis units.
              *
-             * @param {boolean} paneCoordinates
+             * @param {boolean} [paneCoordinates=false]
              * Whether to return the pixel coordinate relative to the chart or just the
              * axis/pane itself.
              *
@@ -19048,7 +19058,7 @@
                     translatedValue = pick(translatedValue, axis.translate(value, void 0, void 0, old));
                     // Keep the translated value within sane bounds, and avoid Infinity
                     // to fail the isNumber test (#7709).
-                    translatedValue = clamp(translatedValue, -1e5, 1e5);
+                    translatedValue = clamp(translatedValue, -1e9, 1e9);
                     x1 = x2 = translatedValue + transB;
                     y1 = y2 = cHeight - translatedValue - transB;
                     if (!isNumber(translatedValue)) { // No min or max
@@ -19323,7 +19333,7 @@
                 let nameX = point.options.x, x;
                 point.series.requireSorting = false;
                 if (!defined(nameX)) {
-                    nameX = this.options.uniqueNames && names ?
+                    nameX = this.uniqueNames && names ?
                         (explicitCategories ?
                             names.indexOf(point.name) :
                             pick(names.keys[point.name], -1)) :
@@ -19509,7 +19519,7 @@
                     linkedParentExtremes = linkedParent.getExtremes();
                     axis.min = pick(linkedParentExtremes.min, linkedParentExtremes.dataMin);
                     axis.max = pick(linkedParentExtremes.max, linkedParentExtremes.dataMax);
-                    if (options.type !== linkedParent.options.type) {
+                    if (this.type !== linkedParent.type) {
                         // Can't link axes of different type
                         error(11, true, chart);
                     }
@@ -19716,12 +19726,6 @@
                 this.tickmarkOffset = (this.categories &&
                     options.tickmarkPlacement === 'between' &&
                     this.tickInterval === 1) ? 0.5 : 0; // #3202
-                // Get minorTickInterval
-                this.minorTickInterval =
-                    minorTickIntervalOption === 'auto' &&
-                        this.tickInterval ?
-                        this.tickInterval / options.minorTicksPerMajor :
-                        minorTickIntervalOption;
                 // When there is only one point, or all points have the same value on
                 // this axis, then min and max are equal and tickPositions.length is 0
                 // or 1. In this case, add some padding in order to center the point,
@@ -19809,6 +19813,11 @@
                     }
                 }
                 this.tickPositions = tickPositions;
+                // Get minorTickInterval
+                this.minorTickInterval =
+                    minorTickIntervalOption === 'auto' && this.tickInterval ?
+                        this.tickInterval / options.minorTicksPerMajor :
+                        minorTickIntervalOption;
                 // Reset min/max or remove extremes based on start/end on tick
                 this.paddedTicks = tickPositions.slice(0); // Used for logarithmic minor
                 this.trimTicks(tickPositions, startOnTick, endOnTick);
@@ -21743,7 +21752,7 @@
                     AxisClass.keepProps.push('dateTime');
                     const axisProto = AxisClass.prototype;
                     axisProto.getTimeTicks = getTimeTicks;
-                    addEvent(AxisClass, 'afterSetOptions', onAfterSetOptions);
+                    addEvent(AxisClass, 'afterSetType', onAfterSetType);
                 }
                 return AxisClass;
             }
@@ -21769,8 +21778,8 @@
             /**
              * @private
              */
-            function onAfterSetOptions() {
-                if (this.options.type !== 'datetime') {
+            function onAfterSetType() {
+                if (this.type !== 'datetime') {
                     this.dateTime = void 0;
                     return;
                 }
@@ -21932,7 +21941,7 @@
             function compose(AxisClass) {
                 if (!AxisClass.keepProps.includes('logarithmic')) {
                     AxisClass.keepProps.push('logarithmic');
-                    addEvent(AxisClass, 'init', onInit);
+                    addEvent(AxisClass, 'afterSetType', onAfterSetType);
                     addEvent(AxisClass, 'afterInit', onAfterInit);
                 }
                 return AxisClass;
@@ -21941,17 +21950,12 @@
             /**
              * @private
              */
-            function onInit(e) {
-                const axis = this;
-                const options = e.userOptions;
-                let logarithmic = axis.logarithmic;
-                if (options.type !== 'logarithmic') {
-                    axis.logarithmic = void 0;
+            function onAfterSetType() {
+                if (this.type !== 'logarithmic') {
+                    this.logarithmic = void 0;
                 }
                 else {
-                    if (!logarithmic) {
-                        logarithmic = axis.logarithmic = new Additions(axis);
-                    }
+                    this.logarithmic ?? (this.logarithmic = new Additions(this));
                 }
             }
             /**
@@ -22361,7 +22365,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { arrayMax, arrayMin, defined, destroyObjectProperties, erase, fireEvent, merge, objectEach, pick } = U;
+        const { addEvent, arrayMax, arrayMin, defined, destroyObjectProperties, erase, fireEvent, merge, objectEach, pick } = U;
         /* *
          *
          *  Class
@@ -22385,7 +22389,20 @@
              *  Static Functions
              *
              * */
-            static compose(AxisClass) {
+            static compose(ChartClass, AxisClass) {
+                addEvent(ChartClass, 'afterInit', function () {
+                    this.labelCollectors.push(() => {
+                        const labels = [];
+                        for (const axis of this.axes) {
+                            for (const { label, options } of axis.plotLinesAndBands) {
+                                if (label && !options?.label?.allowOverlap) {
+                                    labels.push(label);
+                                }
+                            }
+                        }
+                        return labels;
+                    });
+                });
                 return PlotLineOrBandAxis.compose(PlotLineOrBand, AxisClass);
             }
             /* *
@@ -22524,7 +22541,8 @@
                         x: horiz ? !isBand && 4 : 10,
                         verticalAlign: !horiz && isBand ? 'middle' : void 0,
                         y: horiz ? isBand ? 16 : 10 : isBand ? 6 : -4,
-                        rotation: horiz && !isBand ? 90 : 0
+                        rotation: horiz && !isBand ? 90 : 0,
+                        ...(isBand ? { inside: true } : {})
                     }, optionsLabel);
                     this.renderLabel(optionsLabel, path, isBand, zIndex);
                     // Move out of sight
@@ -22541,7 +22559,7 @@
              * @function Highcharts.PlotLineOrBand#renderLabel
              */
             renderLabel(optionsLabel, path, isBand, zIndex) {
-                const plotLine = this, axis = plotLine.axis, renderer = axis.chart.renderer;
+                const plotLine = this, axis = plotLine.axis, renderer = axis.chart.renderer, inside = optionsLabel.inside;
                 let label = plotLine.label;
                 // Add the SVG element
                 if (!label) {
@@ -22563,7 +22581,7 @@
                     if (!axis.chart.styledMode) {
                         label.css(merge({
                             fontSize: '0.8em',
-                            textOverflow: 'ellipsis'
+                            textOverflow: (isBand && !inside) ? '' : 'ellipsis'
                         }, optionsLabel.style));
                     }
                     label.add();
@@ -22572,20 +22590,24 @@
                 // #3000 changed to better handle choice between plotband or plotline
                 const xBounds = path.xBounds ||
                     [path[0][1], path[1][1], (isBand ? path[2][1] : path[0][1])], yBounds = path.yBounds ||
-                    [path[0][2], path[1][2], (isBand ? path[2][2] : path[0][2])], x = arrayMin(xBounds), y = arrayMin(yBounds);
+                    [path[0][2], path[1][2], (isBand ? path[2][2] : path[0][2])], x = arrayMin(xBounds), y = arrayMin(yBounds), bBoxWidth = arrayMax(xBounds) - x;
                 label.align(optionsLabel, false, {
                     x,
                     y,
-                    width: arrayMax(xBounds) - x,
+                    width: bBoxWidth,
                     height: arrayMax(yBounds) - y
                 });
-                if (!label.alignValue || label.alignValue === 'left') {
-                    const width = optionsLabel.clip ?
-                        axis.width : axis.chart.chartWidth;
+                if (!label.alignValue ||
+                    label.alignValue === 'left' ||
+                    defined(inside)) {
                     label.css({
-                        width: (label.rotation === 90 ?
-                            axis.height - (label.alignAttr.y - axis.top) :
-                            width - (label.alignAttr.x - axis.left)) + 'px'
+                        width: (optionsLabel.style?.width || ((!isBand ||
+                            !inside) ? (label.rotation === 90 ?
+                            axis.height - (label.alignAttr.y -
+                                axis.top) : (optionsLabel.clip ?
+                            axis.width :
+                            axis.chart.chartWidth) - (label.alignAttr.x - axis.left)) :
+                            bBoxWidth)) + 'px'
                     });
                 }
                 label.show(true);
@@ -22823,6 +22845,29 @@
          * @default   center
          * @since     2.1
          * @apioption xAxis.plotBands.label.align
+         */
+        /**
+         * Whether or not the label can be hidden if it overlaps with another label.
+         *
+         * @sample {highcharts} highcharts/xaxis/plotbands-label-allowoverlap/
+         *         A Plotband label overlapping another
+         *
+         * @type      {boolean}
+         * @default   undefined
+         * @since     11.4.8
+         * @apioption xAxis.plotBands.label.allowOverlap
+         */
+        /**
+         * Wether or not the text of the label can exceed the width of the label.
+         *
+         * @type      {boolean}
+         * @product   highcharts highstock gantt
+         * @sample {highcharts} highcharts/xaxis/plotbands-label-textwidth/
+         *         Displaying text with text-wrapping/ellipsis, or the full text.
+         *
+         * @default   true
+         * @since     11.4.6
+         * @apioption xAxis.plotBands.label.inside
          */
         /**
          * Rotation of the text label in degrees .
@@ -23971,6 +24016,15 @@
                                     text.join('') :
                                     text
                             });
+                            // When the length of the label has increased, immediately
+                            // update the x position to prevent tooltip from flowing
+                            // outside the viewport during animation (#21371)
+                            if (this.outside) {
+                                label.attr({
+                                    x: clamp(label.x || 0, 0, this.getPlayingField().width -
+                                        (label.width || 0))
+                                });
+                            }
                             if (!styledMode) {
                                 label.attr({
                                     stroke: (options.borderColor ||
@@ -27601,7 +27655,7 @@
              * The legend object.
              */
             function lineMarker(legend, item, hasArea) {
-                const legendItem = this.legendItem = this.legendItem || {}, { chart, options } = this, { baseline = 0, symbolWidth, symbolHeight } = legend, symbol = this.symbol || 'circle', generalRadius = symbolHeight / 2, renderer = chart.renderer, legendItemGroup = legendItem.group, verticalCenter = baseline - Math.round(symbolHeight *
+                const legendItem = this.legendItem = this.legendItem || {}, { chart, options } = this, { baseline = 0, symbolWidth, symbolHeight } = legend, symbol = this.symbol || 'circle', generalRadius = symbolHeight / 2, renderer = chart.renderer, legendItemGroup = legendItem.group, verticalCenter = baseline - Math.round((legend.fontMetrics?.b || symbolHeight) *
                     // Render line and marker slightly higher to make room for the
                     // area
                     (hasArea ? 0.4 : 0.3)), attr = {};
@@ -31587,7 +31641,7 @@
                  * @private
                  */
                 function limitedRange(val) {
-                    return clamp(val, -1e5, 1e5);
+                    return clamp(val, -1e9, 1e9);
                 }
                 // Translate each point
                 for (i = 0; i < dataLength; i++) {
@@ -36116,10 +36170,22 @@
              * @function Highcharts.Chart#getContainerBox
              */
             getContainerBox() {
-                return {
+                // Temporarily hide support divs from a11y and others, #21888
+                const nonContainers = [].map.call(this.renderTo.children, (child) => {
+                    if (child !== this.container) {
+                        const display = child.style.display;
+                        child.style.display = 'none';
+                        return [child, display];
+                    }
+                }), box = {
                     width: getStyle(this.renderTo, 'width', true) || 0,
-                    height: getStyle(this.renderTo, 'height', true) || 0
+                    height: (getStyle(this.renderTo, 'height', true) || 0)
                 };
+                // Restore the non-containers
+                nonContainers.filter(Boolean).forEach(([div, display]) => {
+                    div.style.display = display;
+                });
+                return box;
             }
             /**
              * Internal function to get the chart width and height according to options
@@ -36130,7 +36196,10 @@
              * @function Highcharts.Chart#getChartSize
              */
             getChartSize() {
-                const chart = this, optionsChart = chart.options.chart, widthOption = optionsChart.width, heightOption = optionsChart.height, containerBox = chart.getContainerBox();
+                const chart = this, optionsChart = chart.options.chart, widthOption = optionsChart.width, heightOption = optionsChart.height, containerBox = chart.getContainerBox(), enableDefaultHeight = containerBox.height > 1 &&
+                    !( // #21510, prevent infinite reflow
+                    !chart.renderTo.parentElement?.style.height &&
+                        chart.renderTo.style.height === '100%');
                 /**
                  * The current pixel width of the chart.
                  *
@@ -36147,7 +36216,7 @@
                  * @type {number}
                  */
                 chart.chartHeight = Math.max(0, relativeLength(heightOption, chart.chartWidth) ||
-                    (containerBox.height > 1 ? containerBox.height : 400));
+                    (enableDefaultHeight ? containerBox.height : 400));
                 chart.containerBox = containerBox;
             }
             /**
@@ -36295,7 +36364,8 @@
                         '-webkit-tap-highlight-color': 'rgba(0,0,0,0)',
                         userSelect: 'none', // #13503
                         'touch-action': 'manipulation',
-                        outline: 'none'
+                        outline: 'none',
+                        padding: '0px'
                     }, optionsChart.style || {});
                 }
                 /**
@@ -37863,8 +37933,11 @@
                     }
                     let newMin = axis.toValue(minPx, true) +
                         // Don't apply offset for selection (#20784)
-                        (selection ? 0 : minPointOffset * pointRangeDirection), newMax = axis.toValue(minPx + len / scale, true) -
-                        (selection ? // Don't apply offset for selection (#20784)
+                        (selection || axis.isOrdinal ?
+                            0 : minPointOffset * pointRangeDirection), newMax = axis.toValue(minPx + len / scale, true) -
+                        (
+                        // Don't apply offset for selection (#20784)
+                        selection || axis.isOrdinal ?
                             0 :
                             ((minPointOffset * pointRangeDirection) ||
                                 // Polar zoom tests failed when this was not
@@ -37909,7 +37982,10 @@
                     // It is not necessary to calculate extremes on ordinal axis,
                     // because they are already calculated, so we don't want to override
                     // them.
-                    if (!axis.isOrdinal || scale !== 1 || reset) {
+                    if (!axis.isOrdinal ||
+                        axis.options.overscroll || // #21316
+                        scale !== 1 ||
+                        reset) {
                         // If the new range spills over, either to the min or max,
                         // adjust it.
                         if (newMin < floor) {
@@ -42274,6 +42350,15 @@
                                         // read text bounding box
                                         dataLabel.css(style).shadow(labelOptions.shadow);
                                     }
+                                    else if (style.width) {
+                                        // In styled mode with a width property set,
+                                        // the width should be applied to the
+                                        // dataLabel. (#20499)
+                                        dataLabel.css({
+                                            width: style.width,
+                                            textOverflow: style.textOverflow
+                                        });
+                                    }
                                     fireEvent(dataLabel, 'beforeAddingDataLabel', { labelOptions, point });
                                     if (!dataLabel.added) {
                                         dataLabel.add(dataLabelsGroup);
@@ -45935,7 +46020,7 @@
         LogarithmicAxis.compose(G.Axis);
         OverlappingDataLabels.compose(G.Chart);
         PieDataLabel.compose(G.Series.types.pie);
-        PlotLineOrBand.compose(G.Axis);
+        PlotLineOrBand.compose(G.Chart, G.Axis);
         Pointer.compose(G.Chart);
         Responsive.compose(G.Chart);
         ScrollablePlotArea.compose(G.Axis, G.Chart, G.Series);
@@ -47119,12 +47204,22 @@
                         isNaN(scrollMax) ||
                         !defined(axis.min) ||
                         !defined(axis.max) ||
-                        axis.min === axis.max // #10733
+                        axis.dataMin === axis.dataMax // #10733
                     ) {
-                        // Default action: when extremes are the same or there is
+                        // Default action: when data extremes are the same or there is
                         // not extremes on the axis, but scrollbar exists, make it
                         // full size
                         scrollbar.setRange(0, 1);
+                    }
+                    else if (axis.min === axis.max) { // #20359
+                        // When the extremes are the same, set the scrollbar to a point
+                        // within the extremes range. Utilize pointRange to perform the
+                        // calculations. (#20359)
+                        const interval = axis.pointRange / (axis.dataMax +
+                            1);
+                        from = interval * axis.min;
+                        to = interval * (axis.max + 1);
+                        scrollbar.setRange(from, to);
                     }
                     else {
                         from = ((axis.min - scrollMin) /
@@ -48335,7 +48430,10 @@
                     const handlesOptions = navigatorOptions.handles, { height, width } = handlesOptions;
                     [0, 1].forEach((index) => {
                         const symbolName = handlesOptions.symbols[index];
-                        if (!navigator.handles[index]) {
+                        if (!navigator.handles[index] ||
+                            navigator.handles[index].symbolUrl !== symbolName) {
+                            // Generate symbol from scratch if we're dealing with an URL
+                            navigator.handles[index]?.destroy();
                             navigator.handles[index] = renderer.symbol(symbolName, -width / 2 - 1, 0, width, height, handlesOptions);
                             // Z index is 6 for right handle, 7 for left. Can't be 10,
                             // because of the tooltip in inverted chart (#2908).
@@ -48343,9 +48441,11 @@
                                 .addClass('highcharts-navigator-handle ' +
                                 'highcharts-navigator-handle-' +
                                 ['left', 'right'][index]).add(navigatorGroup);
+                            navigator.addMouseEvents();
                             // If the navigator symbol changed, update its path and name
                         }
-                        else if (symbolName !== navigator.handles[index].symbolName) {
+                        else if (!navigator.handles[index].isImg &&
+                            navigator.handles[index].symbolName !== symbolName) {
                             const symbolFn = symbols[symbolName], path = symbolFn.call(symbols, -width / 2 - 1, 0, width, height);
                             navigator.handles[index].attr({
                                 d: path

@@ -31,6 +31,7 @@ const { extend, merge, pick, relativeLength } = U;
 /**
  * The funnel3d series type.
  *
+ * @private
  * @class
  * @name Highcharts.seriesTypes.funnel3d
  * @augments seriesTypes.column

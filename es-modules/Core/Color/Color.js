@@ -252,6 +252,7 @@ Color.names = {
 /**
  * Collection of parsers. This can be extended from the outside by pushing
  * parsers to `Color.parsers`.
+ * @private
  */
 Color.parsers = [{
         // RGBA color

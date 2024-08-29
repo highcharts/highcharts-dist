@@ -852,10 +852,22 @@ class Chart {
      * @function Highcharts.Chart#getContainerBox
      */
     getContainerBox() {
-        return {
+        // Temporarily hide support divs from a11y and others, #21888
+        const nonContainers = [].map.call(this.renderTo.children, (child) => {
+            if (child !== this.container) {
+                const display = child.style.display;
+                child.style.display = 'none';
+                return [child, display];
+            }
+        }), box = {
             width: getStyle(this.renderTo, 'width', true) || 0,
-            height: getStyle(this.renderTo, 'height', true) || 0
+            height: (getStyle(this.renderTo, 'height', true) || 0)
         };
+        // Restore the non-containers
+        nonContainers.filter(Boolean).forEach(([div, display]) => {
+            div.style.display = display;
+        });
+        return box;
     }
     /**
      * Internal function to get the chart width and height according to options
@@ -866,7 +878,10 @@ class Chart {
      * @function Highcharts.Chart#getChartSize
      */
     getChartSize() {
-        const chart = this, optionsChart = chart.options.chart, widthOption = optionsChart.width, heightOption = optionsChart.height, containerBox = chart.getContainerBox();
+        const chart = this, optionsChart = chart.options.chart, widthOption = optionsChart.width, heightOption = optionsChart.height, containerBox = chart.getContainerBox(), enableDefaultHeight = containerBox.height > 1 &&
+            !( // #21510, prevent infinite reflow
+            !chart.renderTo.parentElement?.style.height &&
+                chart.renderTo.style.height === '100%');
         /**
          * The current pixel width of the chart.
          *
@@ -883,7 +898,7 @@ class Chart {
          * @type {number}
          */
         chart.chartHeight = Math.max(0, relativeLength(heightOption, chart.chartWidth) ||
-            (containerBox.height > 1 ? containerBox.height : 400));
+            (enableDefaultHeight ? containerBox.height : 400));
         chart.containerBox = containerBox;
     }
     /**
@@ -1031,7 +1046,8 @@ class Chart {
                 '-webkit-tap-highlight-color': 'rgba(0,0,0,0)',
                 userSelect: 'none', // #13503
                 'touch-action': 'manipulation',
-                outline: 'none'
+                outline: 'none',
+                padding: '0px'
             }, optionsChart.style || {});
         }
         /**
@@ -2599,8 +2615,11 @@ class Chart {
             }
             let newMin = axis.toValue(minPx, true) +
                 // Don't apply offset for selection (#20784)
-                (selection ? 0 : minPointOffset * pointRangeDirection), newMax = axis.toValue(minPx + len / scale, true) -
-                (selection ? // Don't apply offset for selection (#20784)
+                (selection || axis.isOrdinal ?
+                    0 : minPointOffset * pointRangeDirection), newMax = axis.toValue(minPx + len / scale, true) -
+                (
+                // Don't apply offset for selection (#20784)
+                selection || axis.isOrdinal ?
                     0 :
                     ((minPointOffset * pointRangeDirection) ||
                         // Polar zoom tests failed when this was not
@@ -2645,7 +2664,10 @@ class Chart {
             // It is not necessary to calculate extremes on ordinal axis,
             // because they are already calculated, so we don't want to override
             // them.
-            if (!axis.isOrdinal || scale !== 1 || reset) {
+            if (!axis.isOrdinal ||
+                axis.options.overscroll || // #21316
+                scale !== 1 ||
+                reset) {
                 // If the new range spills over, either to the min or max,
                 // adjust it.
                 if (newMin < floor) {

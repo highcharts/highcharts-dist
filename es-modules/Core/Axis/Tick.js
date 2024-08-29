@@ -291,7 +291,7 @@ class Tick {
                     axis.transB)
         };
         // Chrome workaround for #10516
-        pos.y = clamp(pos.y, -1e5, 1e5);
+        pos.y = clamp(pos.y, -1e9, 1e9);
         fireEvent(this, 'afterGetPosition', { pos: pos });
         return pos;
     }

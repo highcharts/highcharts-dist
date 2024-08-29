@@ -7132,16 +7132,6 @@ export interface ChartParallelAxesOptions {
      */
     type?: AxisTypeValue;
     /**
-     * (Highcharts, Gantt) Applies only when the axis `type` is `category`. When
-     * `uniqueNames` is true, points are placed on the X axis according to their
-     * names. If the same point name is repeated in the same or another series,
-     * the point is placed on the same X position as other points of the same
-     * name. When `uniqueNames` is false, the points are laid out in increasing
-     * X positions regardless of their names, and the X axis category will take
-     * the name of the last point in each position.
-     */
-    uniqueNames?: boolean;
-    /**
      * (Highcharts, Highstock, Gantt) Datetime axis only. An array determining
      * what time intervals the ticks are allowed to fall on. Each array item is
      * an array where the first value is the time unit and the second value
@@ -8224,16 +8214,6 @@ export interface ColorAxisOptions {
      * the color axis. Can be `linear` or `logarithmic`.
      */
     type?: ColorAxisTypeValue;
-    /**
-     * (Highcharts, Gantt) Applies only when the axis `type` is `category`. When
-     * `uniqueNames` is true, points are placed on the X axis according to their
-     * names. If the same point name is repeated in the same or another series,
-     * the point is placed on the same X position as other points of the same
-     * name. When `uniqueNames` is false, the points are laid out in increasing
-     * X positions regardless of their names, and the X axis category will take
-     * the name of the last point in each position.
-     */
-    uniqueNames?: boolean;
     /**
      * (Highcharts, Highstock, Gantt) Datetime axis only. An array determining
      * what time intervals the ticks are allowed to fall on. Each array item is
@@ -16145,16 +16125,6 @@ export interface NavigatorXAxisOptions {
      */
     type?: AxisTypeValue;
     /**
-     * (Highcharts, Gantt) Applies only when the axis `type` is `category`. When
-     * `uniqueNames` is true, points are placed on the X axis according to their
-     * names. If the same point name is repeated in the same or another series,
-     * the point is placed on the same X position as other points of the same
-     * name. When `uniqueNames` is false, the points are laid out in increasing
-     * X positions regardless of their names, and the X axis category will take
-     * the name of the last point in each position.
-     */
-    uniqueNames?: boolean;
-    /**
      * (Highcharts, Highstock, Gantt) Datetime axis only. An array determining
      * what time intervals the ticks are allowed to fall on. Each array item is
      * an array where the first value is the time unit and the second value
@@ -16218,6 +16188,16 @@ export interface NavigatorXAxisPlotBandsLabelOptions {
      * one of "left", "center" or "right".
      */
     align?: AlignValue;
+    /**
+     * (Highcharts, Highstock, Gantt) Whether or not the label can be hidden if
+     * it overlaps with another label.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highcharts, Highstock, Gantt) Wether or not the text of the label can
+     * exceed the width of the label.
+     */
+    inside?: boolean;
     /**
      * (Highcharts, Highstock, Gantt) Rotation of the text label in degrees .
      */
@@ -17368,16 +17348,6 @@ export interface NavigatorYAxisOptions {
      */
     type?: AxisTypeValue;
     /**
-     * (Highcharts, Gantt) Applies only when the axis `type` is `category`. When
-     * `uniqueNames` is true, points are placed on the X axis according to their
-     * names. If the same point name is repeated in the same or another series,
-     * the point is placed on the same X position as other points of the same
-     * name. When `uniqueNames` is false, the points are laid out in increasing
-     * X positions regardless of their names, and the X axis category will take
-     * the name of the last point in each position.
-     */
-    uniqueNames?: boolean;
-    /**
      * (Highcharts, Highstock, Gantt) Whether axis, including axis title, line,
      * ticks and labels, should be visible.
      */
@@ -17432,6 +17402,16 @@ export interface NavigatorYAxisPlotBandsLabelOptions {
      * one of "left", "center" or "right".
      */
     align?: AlignValue;
+    /**
+     * (Highcharts, Highstock, Gantt) Whether or not the label can be hidden if
+     * it overlaps with another label.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highcharts, Highstock, Gantt) Wether or not the text of the label can
+     * exceed the width of the label.
+     */
+    inside?: boolean;
     /**
      * (Highcharts, Highstock, Gantt) Rotation of the text label in degrees .
      */
@@ -88066,7 +88046,8 @@ export interface TooltipOptions {
      */
     shape?: TooltipShapeValue;
     /**
-     * (Highcharts, Highstock) When the tooltip is shared, the entire plot area
+     * (Highcharts, Highstock) Shows information in the tooltip for all points
+     * with the same X value. When the tooltip is shared, the entire plot area
      * will capture mouse movement or touch events. Tooltip texts for series
      * types with ordered data (not pie, scatter, flags etc) will be shown in a
      * single bubble. This is recommended for single series charts and for
@@ -88088,10 +88069,11 @@ export interface TooltipOptions {
      */
     snap?: number;
     /**
-     * (Highcharts, Highstock) Split the tooltip into one label per series, with
-     * the header close to the axis. This is recommended over shared tooltips
-     * for charts with multiple line series, generally making them easier to
-     * read. This option takes precedence over `tooltip.shared`.
+     * (Highcharts, Highstock) Shows tooltip for all points with the same X
+     * value. Splits the tooltip into one label per series, with the header
+     * close to the axis. This is recommended over shared tooltips for charts
+     * with multiple line series, generally making them easier to read. This
+     * option takes precedence over `tooltip.shared`.
      *
      * Not supported for polar and inverted charts.
      */
@@ -89179,16 +89161,6 @@ export interface XAxisOptions {
      */
     type?: AxisTypeValue;
     /**
-     * (Highcharts, Gantt) Applies only when the axis `type` is `category`. When
-     * `uniqueNames` is true, points are placed on the X axis according to their
-     * names. If the same point name is repeated in the same or another series,
-     * the point is placed on the same X position as other points of the same
-     * name. When `uniqueNames` is false, the points are laid out in increasing
-     * X positions regardless of their names, and the X axis category will take
-     * the name of the last point in each position.
-     */
-    uniqueNames?: boolean;
-    /**
      * (Highcharts, Highstock, Gantt) Datetime axis only. An array determining
      * what time intervals the ticks are allowed to fall on. Each array item is
      * an array where the first value is the time unit and the second value
@@ -89253,6 +89225,16 @@ export interface XAxisPlotBandsLabelOptions {
      * one of "left", "center" or "right".
      */
     align?: AlignValue;
+    /**
+     * (Highcharts, Highstock, Gantt) Whether or not the label can be hidden if
+     * it overlaps with another label.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highcharts, Highstock, Gantt) Wether or not the text of the label can
+     * exceed the width of the label.
+     */
+    inside?: boolean;
     /**
      * (Highcharts, Highstock, Gantt) Rotation of the text label in degrees .
      */
@@ -90993,16 +90975,6 @@ export interface YAxisOptions {
      */
     type?: AxisTypeValue;
     /**
-     * (Highcharts, Gantt) Applies only when the axis `type` is `category`. When
-     * `uniqueNames` is true, points are placed on the X axis according to their
-     * names. If the same point name is repeated in the same or another series,
-     * the point is placed on the same X position as other points of the same
-     * name. When `uniqueNames` is false, the points are laid out in increasing
-     * X positions regardless of their names, and the X axis category will take
-     * the name of the last point in each position.
-     */
-    uniqueNames?: boolean;
-    /**
      * (Highcharts, Highstock, Gantt) Datetime axis only. An array determining
      * what time intervals the ticks are allowed to fall on. Each array item is
      * an array where the first value is the time unit and the second value
@@ -91067,6 +91039,16 @@ export interface YAxisPlotBandsLabelOptions {
      * one of "left", "center" or "right".
      */
     align?: AlignValue;
+    /**
+     * (Highcharts, Highstock, Gantt) Whether or not the label can be hidden if
+     * it overlaps with another label.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highcharts, Highstock, Gantt) Wether or not the text of the label can
+     * exceed the width of the label.
+     */
+    inside?: boolean;
     /**
      * (Highcharts, Highstock, Gantt) Rotation of the text label in degrees .
      */
@@ -92508,16 +92490,6 @@ export interface ZAxisOptions {
      */
     type?: AxisTypeValue;
     /**
-     * (Highcharts, Gantt) Applies only when the axis `type` is `category`. When
-     * `uniqueNames` is true, points are placed on the X axis according to their
-     * names. If the same point name is repeated in the same or another series,
-     * the point is placed on the same X position as other points of the same
-     * name. When `uniqueNames` is false, the points are laid out in increasing
-     * X positions regardless of their names, and the X axis category will take
-     * the name of the last point in each position.
-     */
-    uniqueNames?: boolean;
-    /**
      * (Highcharts, Highstock, Gantt) Datetime axis only. An array determining
      * what time intervals the ticks are allowed to fall on. Each array item is
      * an array where the first value is the time unit and the second value
@@ -92573,6 +92545,16 @@ export interface ZAxisPlotBandsLabelOptions {
      * one of "left", "center" or "right".
      */
     align?: AlignValue;
+    /**
+     * (Highcharts, Highstock, Gantt) Whether or not the label can be hidden if
+     * it overlaps with another label.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highcharts, Highstock, Gantt) Wether or not the text of the label can
+     * exceed the width of the label.
+     */
+    inside?: boolean;
     /**
      * (Highcharts, Highstock, Gantt) Rotation of the text label in degrees .
      */
@@ -93552,7 +93534,7 @@ export class Axis {
      *
      * @return Pixel position of the value on the chart or axis.
      */
-    toPixels(value: number, paneCoordinates: boolean): number;
+    toPixels(value: number, paneCoordinates?: boolean): number;
     /**
      * Translate a pixel position along the axis to a value in terms of axis
      * units.

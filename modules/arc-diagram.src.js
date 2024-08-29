@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.7 (2024-08-14)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
  * Arc diagram module
  *
@@ -434,7 +434,7 @@
              * The legend object.
              */
             function lineMarker(legend, item, hasArea) {
-                const legendItem = this.legendItem = this.legendItem || {}, { chart, options } = this, { baseline = 0, symbolWidth, symbolHeight } = legend, symbol = this.symbol || 'circle', generalRadius = symbolHeight / 2, renderer = chart.renderer, legendItemGroup = legendItem.group, verticalCenter = baseline - Math.round(symbolHeight *
+                const legendItem = this.legendItem = this.legendItem || {}, { chart, options } = this, { baseline = 0, symbolWidth, symbolHeight } = legend, symbol = this.symbol || 'circle', generalRadius = symbolHeight / 2, renderer = chart.renderer, legendItemGroup = legendItem.group, verticalCenter = baseline - Math.round((legend.fontMetrics?.b || symbolHeight) *
                     // Render line and marker slightly higher to make room for the
                     // area
                     (hasArea ? 0.4 : 0.3)), attr = {};
@@ -4310,7 +4310,7 @@
                  * @private
                  */
                 function limitedRange(val) {
-                    return clamp(val, -1e5, 1e5);
+                    return clamp(val, -1e9, 1e9);
                 }
                 // Translate each point
                 for (i = 0; i < dataLength; i++) {
@@ -7970,7 +7970,7 @@
                 this.url = this.getReferenceURL();
                 // Add description
                 const desc = this.createElement('desc').add();
-                desc.element.appendChild(doc.createTextNode('Created with Highcharts 11.4.7'));
+                desc.element.appendChild(doc.createTextNode('Created with Highcharts 11.4.8'));
                 this.defs = this.createElement('defs').add();
                 this.allowHTML = allowHTML;
                 this.forExport = forExport;
@@ -8935,6 +8935,7 @@
                         });
                     }
                     img.isImg = true;
+                    img.symbolUrl = symbol;
                     if (defined(img.imgwidth) && defined(img.imgheight)) {
                         centerImage(img);
                     }

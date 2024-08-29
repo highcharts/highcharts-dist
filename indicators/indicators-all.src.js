@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.4.7 (2024-08-14)
+ * @license Highstock JS v11.4.8 (2024-08-29)
  *
  * All technical indicators for Highcharts Stock
  *

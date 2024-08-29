@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.7 (2024-08-14)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
  * Exporting module
  *
@@ -2343,7 +2343,11 @@
                             options[axis.coll] = [];
                         }
                         options[axis.coll].push(merge(axis.userOptions, {
-                            visible: axis.visible
+                            visible: axis.visible,
+                            // Force some options that could have be set directly on
+                            // the axis while missing in the userOptions or options.
+                            type: axis.type,
+                            uniqueNames: axis.uniqueNames
                         }));
                     }
                 });

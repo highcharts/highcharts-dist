@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.7 (2024-08-14)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
  * Boost module
  *
@@ -2696,6 +2696,8 @@
                     boost.clear();
                 }
             }
+            // #21106, clean up boost clipping on the series groups.
+            (chart.seriesGroup || series.group)?.clip();
         }
         /**
          * @private

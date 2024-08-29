@@ -10,7 +10,7 @@
 'use strict';
 import PlotLineOrBandAxis from './PlotLineOrBandAxis.js';
 import U from '../../Utilities.js';
-const { arrayMax, arrayMin, defined, destroyObjectProperties, erase, fireEvent, merge, objectEach, pick } = U;
+const { addEvent, arrayMax, arrayMin, defined, destroyObjectProperties, erase, fireEvent, merge, objectEach, pick } = U;
 /* *
  *
  *  Class
@@ -34,7 +34,20 @@ class PlotLineOrBand {
      *  Static Functions
      *
      * */
-    static compose(AxisClass) {
+    static compose(ChartClass, AxisClass) {
+        addEvent(ChartClass, 'afterInit', function () {
+            this.labelCollectors.push(() => {
+                const labels = [];
+                for (const axis of this.axes) {
+                    for (const { label, options } of axis.plotLinesAndBands) {
+                        if (label && !options?.label?.allowOverlap) {
+                            labels.push(label);
+                        }
+                    }
+                }
+                return labels;
+            });
+        });
         return PlotLineOrBandAxis.compose(PlotLineOrBand, AxisClass);
     }
     /* *
@@ -173,7 +186,8 @@ class PlotLineOrBand {
                 x: horiz ? !isBand && 4 : 10,
                 verticalAlign: !horiz && isBand ? 'middle' : void 0,
                 y: horiz ? isBand ? 16 : 10 : isBand ? 6 : -4,
-                rotation: horiz && !isBand ? 90 : 0
+                rotation: horiz && !isBand ? 90 : 0,
+                ...(isBand ? { inside: true } : {})
             }, optionsLabel);
             this.renderLabel(optionsLabel, path, isBand, zIndex);
             // Move out of sight
@@ -190,7 +204,7 @@ class PlotLineOrBand {
      * @function Highcharts.PlotLineOrBand#renderLabel
      */
     renderLabel(optionsLabel, path, isBand, zIndex) {
-        const plotLine = this, axis = plotLine.axis, renderer = axis.chart.renderer;
+        const plotLine = this, axis = plotLine.axis, renderer = axis.chart.renderer, inside = optionsLabel.inside;
         let label = plotLine.label;
         // Add the SVG element
         if (!label) {
@@ -212,7 +226,7 @@ class PlotLineOrBand {
             if (!axis.chart.styledMode) {
                 label.css(merge({
                     fontSize: '0.8em',
-                    textOverflow: 'ellipsis'
+                    textOverflow: (isBand && !inside) ? '' : 'ellipsis'
                 }, optionsLabel.style));
             }
             label.add();
@@ -221,20 +235,24 @@ class PlotLineOrBand {
         // #3000 changed to better handle choice between plotband or plotline
         const xBounds = path.xBounds ||
             [path[0][1], path[1][1], (isBand ? path[2][1] : path[0][1])], yBounds = path.yBounds ||
-            [path[0][2], path[1][2], (isBand ? path[2][2] : path[0][2])], x = arrayMin(xBounds), y = arrayMin(yBounds);
+            [path[0][2], path[1][2], (isBand ? path[2][2] : path[0][2])], x = arrayMin(xBounds), y = arrayMin(yBounds), bBoxWidth = arrayMax(xBounds) - x;
         label.align(optionsLabel, false, {
             x,
             y,
-            width: arrayMax(xBounds) - x,
+            width: bBoxWidth,
             height: arrayMax(yBounds) - y
         });
-        if (!label.alignValue || label.alignValue === 'left') {
-            const width = optionsLabel.clip ?
-                axis.width : axis.chart.chartWidth;
+        if (!label.alignValue ||
+            label.alignValue === 'left' ||
+            defined(inside)) {
             label.css({
-                width: (label.rotation === 90 ?
-                    axis.height - (label.alignAttr.y - axis.top) :
-                    width - (label.alignAttr.x - axis.left)) + 'px'
+                width: (optionsLabel.style?.width || ((!isBand ||
+                    !inside) ? (label.rotation === 90 ?
+                    axis.height - (label.alignAttr.y -
+                        axis.top) : (optionsLabel.clip ?
+                    axis.width :
+                    axis.chart.chartWidth) - (label.alignAttr.x - axis.left)) :
+                    bBoxWidth)) + 'px'
             });
         }
         label.show(true);
@@ -473,6 +491,29 @@ export default PlotLineOrBand;
  * @default   center
  * @since     2.1
  * @apioption xAxis.plotBands.label.align
+ */
+/**
+ * Whether or not the label can be hidden if it overlaps with another label.
+ *
+ * @sample {highcharts} highcharts/xaxis/plotbands-label-allowoverlap/
+ *         A Plotband label overlapping another
+ *
+ * @type      {boolean}
+ * @default   undefined
+ * @since     11.4.8
+ * @apioption xAxis.plotBands.label.allowOverlap
+ */
+/**
+ * Wether or not the text of the label can exceed the width of the label.
+ *
+ * @type      {boolean}
+ * @product   highcharts highstock gantt
+ * @sample {highcharts} highcharts/xaxis/plotbands-label-textwidth/
+ *         Displaying text with text-wrapping/ellipsis, or the full text.
+ *
+ * @default   true
+ * @since     11.4.6
+ * @apioption xAxis.plotBands.label.inside
  */
 /**
  * Rotation of the text label in degrees .

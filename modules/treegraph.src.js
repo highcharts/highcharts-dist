@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.7 (2024-08-14)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  * Treegraph chart series type
  *
  *  (c) 2010-2024 Pawel Lysy Grzegorz Blachlinski
@@ -1499,7 +1499,7 @@
                     const linkLabels = [];
                     // Check links for overlap
                     if (!splat(series.options.dataLabels)[0].allowOverlap) {
-                        for (const link of series.links) {
+                        for (const link of (series.links || [])) {
                             if (link.dataLabel) {
                                 linkLabels.push(link.dataLabel);
                             }

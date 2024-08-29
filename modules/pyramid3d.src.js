@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.7 (2024-08-14)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
  * Highcharts 3D funnel module
  *
@@ -180,6 +180,7 @@
         /**
          * The pyramid3d series type.
          *
+         * @private
          * @class
          * @name Highcharts.seriesTypes.pyramid3d
          * @augments seriesTypes.funnel3d

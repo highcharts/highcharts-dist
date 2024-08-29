@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.4.7 (2024-08-14)
+ * @license Highstock JS v11.4.8 (2024-08-29)
  *
  * Highcharts Stock as a plugin for Highcharts
  *
@@ -1757,12 +1757,22 @@
                         isNaN(scrollMax) ||
                         !defined(axis.min) ||
                         !defined(axis.max) ||
-                        axis.min === axis.max // #10733
+                        axis.dataMin === axis.dataMax // #10733
                     ) {
-                        // Default action: when extremes are the same or there is
+                        // Default action: when data extremes are the same or there is
                         // not extremes on the axis, but scrollbar exists, make it
                         // full size
                         scrollbar.setRange(0, 1);
+                    }
+                    else if (axis.min === axis.max) { // #20359
+                        // When the extremes are the same, set the scrollbar to a point
+                        // within the extremes range. Utilize pointRange to perform the
+                        // calculations. (#20359)
+                        const interval = axis.pointRange / (axis.dataMax +
+                            1);
+                        from = interval * axis.min;
+                        to = interval * (axis.max + 1);
+                        scrollbar.setRange(from, to);
                     }
                     else {
                         from = ((axis.min - scrollMin) /
@@ -2973,7 +2983,10 @@
                     const handlesOptions = navigatorOptions.handles, { height, width } = handlesOptions;
                     [0, 1].forEach((index) => {
                         const symbolName = handlesOptions.symbols[index];
-                        if (!navigator.handles[index]) {
+                        if (!navigator.handles[index] ||
+                            navigator.handles[index].symbolUrl !== symbolName) {
+                            // Generate symbol from scratch if we're dealing with an URL
+                            navigator.handles[index]?.destroy();
                             navigator.handles[index] = renderer.symbol(symbolName, -width / 2 - 1, 0, width, height, handlesOptions);
                             // Z index is 6 for right handle, 7 for left. Can't be 10,
                             // because of the tooltip in inverted chart (#2908).
@@ -2981,9 +2994,11 @@
                                 .addClass('highcharts-navigator-handle ' +
                                 'highcharts-navigator-handle-' +
                                 ['left', 'right'][index]).add(navigatorGroup);
+                            navigator.addMouseEvents();
                             // If the navigator symbol changed, update its path and name
                         }
-                        else if (symbolName !== navigator.handles[index].symbolName) {
+                        else if (!navigator.handles[index].isImg &&
+                            navigator.handles[index].symbolName !== symbolName) {
                             const symbolFn = symbols[symbolName], path = symbolFn.call(symbols, -width / 2 - 1, 0, width, height);
                             navigator.handles[index].attr({
                                 d: path

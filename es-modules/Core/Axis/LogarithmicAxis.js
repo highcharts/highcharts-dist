@@ -37,7 +37,7 @@ var LogarithmicAxis;
     function compose(AxisClass) {
         if (!AxisClass.keepProps.includes('logarithmic')) {
             AxisClass.keepProps.push('logarithmic');
-            addEvent(AxisClass, 'init', onInit);
+            addEvent(AxisClass, 'afterSetType', onAfterSetType);
             addEvent(AxisClass, 'afterInit', onAfterInit);
         }
         return AxisClass;
@@ -46,17 +46,12 @@ var LogarithmicAxis;
     /**
      * @private
      */
-    function onInit(e) {
-        const axis = this;
-        const options = e.userOptions;
-        let logarithmic = axis.logarithmic;
-        if (options.type !== 'logarithmic') {
-            axis.logarithmic = void 0;
+    function onAfterSetType() {
+        if (this.type !== 'logarithmic') {
+            this.logarithmic = void 0;
         }
         else {
-            if (!logarithmic) {
-                logarithmic = axis.logarithmic = new Additions(axis);
-            }
+            this.logarithmic ?? (this.logarithmic = new Additions(this));
         }
     }
     /**

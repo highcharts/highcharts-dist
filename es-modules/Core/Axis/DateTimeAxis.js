@@ -37,7 +37,7 @@ var DateTimeAxis;
             AxisClass.keepProps.push('dateTime');
             const axisProto = AxisClass.prototype;
             axisProto.getTimeTicks = getTimeTicks;
-            addEvent(AxisClass, 'afterSetOptions', onAfterSetOptions);
+            addEvent(AxisClass, 'afterSetType', onAfterSetType);
         }
         return AxisClass;
     }
@@ -63,8 +63,8 @@ var DateTimeAxis;
     /**
      * @private
      */
-    function onAfterSetOptions() {
-        if (this.options.type !== 'datetime') {
+    function onAfterSetType() {
+        if (this.type !== 'datetime') {
             this.dateTime = void 0;
             return;
         }

@@ -1383,7 +1383,7 @@ class Series {
          * @private
          */
         function limitedRange(val) {
-            return clamp(val, -1e5, 1e5);
+            return clamp(val, -1e9, 1e9);
         }
         // Translate each point
         for (i = 0; i < dataLength; i++) {

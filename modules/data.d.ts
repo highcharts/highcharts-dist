@@ -81,6 +81,9 @@ declare module "../highcharts" {
         /**
          * If a complete callback function is provided in the options, interpret
          * the columns into a Highcharts options object.
+         *
+         * The function requires that the context has the `valueCount` property
+         * set.
          */
         complete(): void;
         /**
@@ -102,7 +105,7 @@ declare module "../highcharts" {
          *
          * @return Data rows
          */
-        getData(): (Array<Array<(number|string)>>|undefined);
+        getData(): (Array<Array<DataValueType>>|undefined);
         /**
          * Parse a single column. Set properties like .isDatetime and
          * .isNumeric.
@@ -156,6 +159,12 @@ declare module "../highcharts" {
         trim(str: string, inside?: boolean): string;
         /**
          * Updates the chart with new data options.
+         *
+         * @param options
+         *        The new data options.
+         *
+         * @param redraw
+         *        Whether to redraw the chart after the new options are set.
          */
         update(options: DataOptions, redraw?: boolean): void;
     }

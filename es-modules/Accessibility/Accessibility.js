@@ -287,7 +287,7 @@ class Accessibility {
      */
     function chartUpdateA11yEnabled() {
         let a11y = this.accessibility;
-        const accessibilityOptions = this.options.accessibility;
+        const accessibilityOptions = this.options.accessibility, svg = this.renderer.boxWrapper.element, title = this.title;
         if (accessibilityOptions && accessibilityOptions.enabled) {
             if (a11y && !a11y.zombie) {
                 a11y.update();
@@ -296,6 +296,10 @@ class Accessibility {
                 this.accessibility = a11y = new Accessibility(this);
                 if (a11y && !a11y.zombie) {
                     a11y.update();
+                }
+                // If a11y has been disabled, and is now enabled
+                if (svg.getAttribute('role') === 'img') {
+                    svg.removeAttribute('role');
                 }
             }
         }
@@ -307,8 +311,16 @@ class Accessibility {
             delete this.accessibility;
         }
         else {
-            // Just hide container
-            this.renderTo.setAttribute('aria-hidden', true);
+            // If a11y has been disabled dynamically or is disabled
+            this.renderTo.setAttribute('role', 'img');
+            this.renderTo.setAttribute('aria-hidden', false);
+            this.renderTo.setAttribute('aria-label', ((title && title.element.textContent) || '').replace(/</g, '&lt;'));
+            svg.setAttribute('aria-hidden', true);
+            const description = document.getElementsByClassName('highcharts-description')[0];
+            if (description) {
+                description.setAttribute('aria-hidden', false);
+                description.classList.remove('highcharts-linked-description');
+            }
         }
     }
     /**

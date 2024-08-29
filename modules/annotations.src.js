@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.7 (2024-08-14)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
  * Annotations module
  *
@@ -4936,7 +4936,7 @@
                 this.popup = new Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
                     (this.chart.options.stockTools &&
                         this.chart.options.stockTools.gui.iconsURL) ||
-                    'https://code.highcharts.com/11.4.7/gfx/stock-icons/'), this.chart);
+                    'https://code.highcharts.com/11.4.8/gfx/stock-icons/'), this.chart);
             }
             this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
         }
@@ -5024,6 +5024,8 @@
          * An annotation class which serves as a container for items like labels or
          * shapes. Created items are positioned on the chart either by linking them to
          * existing points or created mock points
+         *
+         * @requires modules/annotations
          *
          * @class
          * @name Highcharts.Annotation
@@ -5510,6 +5512,8 @@
          * An object uses for mapping between a shape type and a constructor.
          * To add a new shape type extend this object with type name as a key
          * and a constructor as its value.
+         *
+         * @private
          */
         Annotation.shapesMap = {
             'rect': ControllableRect,
@@ -6098,7 +6102,7 @@
              * from a different server.
              *
              * @type      {string}
-             * @default   https://code.highcharts.com/11.4.7/gfx/stock-icons/
+             * @default   https://code.highcharts.com/11.4.8/gfx/stock-icons/
              * @since     7.1.3
              * @apioption navigation.iconsURL
              */

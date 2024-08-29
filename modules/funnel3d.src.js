@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.7 (2024-08-14)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
  * Highcharts funnel module
  *
@@ -681,6 +681,7 @@
         /**
          * The funnel3d series type.
          *
+         * @private
          * @class
          * @name Highcharts.seriesTypes.funnel3d
          * @augments seriesTypes.column
