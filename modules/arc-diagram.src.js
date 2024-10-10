@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.8 (2024-08-29)
+ * @license Highcharts JS v11.4.8 (2024-10-10)
  *
  * Arc diagram module
  *
@@ -3917,7 +3917,9 @@
              * Force getting extremes of a total series data range.
              */
             getProcessedData(forceExtremesFromAll) {
-                const series = this, xAxis = series.xAxis, options = series.options, cropThreshold = options.cropThreshold, logarithmic = xAxis?.logarithmic, isCartesian = series.isCartesian;
+                const series = this, xAxis = series.xAxis, options = series.options, cropThreshold = options.cropThreshold, getExtremesFromAll = forceExtremesFromAll ||
+                    // X-range series etc, #21003
+                    series.getExtremesFromAll, logarithmic = xAxis?.logarithmic, isCartesian = series.isCartesian;
                 let croppedData, cropped, cropStart = 0, xExtremes, min, max, 
                 // Copied during slice operation:
                 processedXData = series.xData, processedYData = series.yData, updatingNames = false;
@@ -3932,7 +3934,7 @@
                 // Optionally filter out points outside the plot area
                 if (isCartesian &&
                     series.sorted &&
-                    !forceExtremesFromAll &&
+                    !getExtremesFromAll &&
                     (!cropThreshold ||
                         dataLength > cropThreshold ||
                         series.forceCrop)) {

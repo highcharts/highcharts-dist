@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v@product.version@ (@product.date@)
+ * @license Highstock JS v11.4.8 (2024-10-10)
  * @module highcharts/indicators/keltner-channels
  * @requires highcharts
  * @requires highcharts/modules/stock

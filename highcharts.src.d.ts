@@ -6399,8 +6399,9 @@ export interface ChartPanningOptions {
      * (Highcharts, Highstock, Gantt) Decides in what dimensions the user can
      * pan the chart. Can be one of `x`, `y`, or `xy`.
      *
-     * When this option is set to `y` or `xy`, yAxis.startOnTick and
-     * yAxis.endOnTick are overwritten to `false`.
+     * During panning, all axes will behave as if `startOnTick` and `endOnTick`
+     * were set to `false`. After the panning action is finished, the axes will
+     * adjust to their actual settings.
      */
     type?: OptionsChartPanningTypeValue;
 }
@@ -9538,23 +9539,23 @@ export interface DrilldownBreadcrumbsButtonThemeStyleOptions {
 }
 export interface DrilldownBreadcrumbsEventsOptions {
     /**
-     * (Highcharts) Fires when clicking on the breadcrumbs button. Two arguments
-     * are passed to the function. First breadcrumb button as an SVG element.
-     * Second is the breadcrumbs class, containing reference to the chart,
-     * series etc. (see online documentation for example)
+     * (Highcharts, Highmaps) Fires when clicking on the breadcrumbs button. Two
+     * arguments are passed to the function. First breadcrumb button as an SVG
+     * element. Second is the breadcrumbs class, containing reference to the
+     * chart, series etc. (see online documentation for example)
      *
      * Return false to stop default buttons click action.
      */
     click?: BreadcrumbsClickCallbackFunction;
 }
 /**
- * (Highcharts) Options for the breadcrumbs, the navigation at the top leading
- * the way up through the drilldown levels.
+ * (Highcharts, Highmaps) Options for the breadcrumbs, the navigation at the top
+ * leading the way up through the drilldown levels.
  */
 export interface DrilldownBreadcrumbsOptions {
     /**
-     * (Highcharts) The default padding for each button and separator in each
-     * direction.
+     * (Highcharts, Highmaps) The default padding for each button and separator
+     * in each direction.
      */
     buttonSpacing?: number;
     /**
@@ -9568,20 +9569,21 @@ export interface DrilldownBreadcrumbsOptions {
     buttonTheme?: (DrilldownBreadcrumbsButtonThemeOptions|SVGAttributes);
     events?: DrilldownBreadcrumbsEventsOptions;
     /**
-     * (Highcharts) When the breadcrumbs are floating, the plot area will not
-     * move to make space for it. By default, the chart will not make space for
-     * the buttons. This property won't work when positioned in the middle.
+     * (Highcharts, Highmaps) When the breadcrumbs are floating, the plot area
+     * will not move to make space for it. By default, the chart will not make
+     * space for the buttons. This property won't work when positioned in the
+     * middle.
      */
     floating?: boolean;
     /**
-     * (Highcharts) A format string for the breadcrumbs button. Variables are
-     * enclosed by curly brackets. Available values are passed in the declared
-     * point options.
+     * (Highcharts, Highmaps) A format string for the breadcrumbs button.
+     * Variables are enclosed by curly brackets. Available values are passed in
+     * the declared point options.
      */
     format?: (string|undefined);
     /**
-     * (Highcharts) Callback function to format the breadcrumb text from
-     * scratch.
+     * (Highcharts, Highmaps) Callback function to format the breadcrumb text
+     * from scratch.
      */
     formatter?: BreadcrumbsFormatterCallbackFunction;
     /**
@@ -9597,20 +9599,20 @@ export interface DrilldownBreadcrumbsOptions {
      */
     relativeTo?: ButtonRelativeToValue;
     /**
-     * (Highcharts) Whether to reverse the order of buttons. This is common in
-     * Arabic and Hebrew.
+     * (Highcharts, Highmaps) Whether to reverse the order of buttons. This is
+     * common in Arabic and Hebrew.
      */
     rtl?: boolean;
     /**
-     * (Highcharts) Options object for Breadcrumbs separator.
+     * (Highcharts, Highmaps) Options object for Breadcrumbs separator.
      */
     separator?: DrilldownBreadcrumbsSeparatorOptions;
     /**
-     * (Highcharts) Show full path or only a single button.
+     * (Highcharts, Highmaps) Show full path or only a single button.
      */
     showFullPath?: boolean;
     /**
-     * (Highcharts) CSS styles for all breadcrumbs.
+     * (Highcharts, Highmaps) CSS styles for all breadcrumbs.
      *
      * In styled mode, the breadcrumbs buttons are styled by the
      * `.highcharts-breadcrumbs-buttons .highcharts-button` rule with its
@@ -9618,11 +9620,12 @@ export interface DrilldownBreadcrumbsOptions {
      */
     style?: SVGAttributes;
     /**
-     * (Highcharts) Whether to use HTML to render the breadcrumbs items texts.
+     * (Highcharts, Highmaps) Whether to use HTML to render the breadcrumbs
+     * items texts.
      */
     useHTML?: boolean;
     /**
-     * (Highcharts) The z index of the breadcrumbs group.
+     * (Highcharts, Highmaps) The z index of the breadcrumbs group.
      */
     zIndex?: number;
 }
@@ -9653,11 +9656,11 @@ export interface DrilldownBreadcrumbsPositionOptions {
     y?: (number|undefined);
 }
 /**
- * (Highcharts) Options object for Breadcrumbs separator.
+ * (Highcharts, Highmaps) Options object for Breadcrumbs separator.
  */
 export interface DrilldownBreadcrumbsSeparatorOptions {
     /**
-     * (Highcharts) CSS styles for the breadcrumbs separator.
+     * (Highcharts, Highmaps) CSS styles for the breadcrumbs separator.
      *
      * In styled mode, the breadcrumbs separators are styled by the
      * `.highcharts-separator` rule with its different states.
@@ -9666,7 +9669,7 @@ export interface DrilldownBreadcrumbsSeparatorOptions {
     text?: string;
 }
 /**
- * (Highcharts) CSS styles for the breadcrumbs separator.
+ * (Highcharts, Highmaps) CSS styles for the breadcrumbs separator.
  *
  * In styled mode, the breadcrumbs separators are styled by the
  * `.highcharts-separator` rule with its different states.
@@ -9767,8 +9770,8 @@ export interface DrilldownOptions {
      */
     animation?: (boolean|AnimationOptionsObject);
     /**
-     * (Highcharts) Options for the breadcrumbs, the navigation at the top
-     * leading the way up through the drilldown levels.
+     * (Highcharts, Highmaps) Options for the breadcrumbs, the navigation at the
+     * top leading the way up through the drilldown levels.
      */
     breadcrumbs?: DrilldownBreadcrumbsOptions;
     /**
@@ -10166,6 +10169,13 @@ export interface ExportingOptions {
      * data table by clicking on column headers.
      */
     allowTableSorting?: boolean;
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Allow exporting a chart
+     * retaining any user-applied CSS.
+     *
+     * Note that this is is default behavior in styledMode.
+     */
+    applyStyleSheets?: boolean;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Options for the export related
      * buttons, print and export. In addition to the default buttons listed
@@ -96878,41 +96888,21 @@ export function keys(obj: any): Array<string>;
 export function map(arr: Array<any>, fn: Function): Array<any>;
 /**
  * Utility function to deep merge two or more objects and return a third object.
- * The merge function can also be used with a single object argument to create a
- * deep copy of an object.
- *
- * @param a
- *        The first object to extend. When only this is given, the function
- *        returns a deep copy.
- *
- * @param n
- *        An object to merge into the previous one.
- *
- * @return The merged object. If the first argument is true, the return is the
- *         same as the second argument.
- */
-export function merge<T>(a: (T|undefined), ...n: Array<(object|undefined)>): T;
-/**
- * Utility function to deep merge two or more objects and return a third object.
  * If the first argument is true, the contents of the second object is copied
  * into the first object. The merge function can also be used with a single
  * object argument to create a deep copy of an object.
  *
- * @param extend
- *        Whether to extend the left-side object (a) or return a whole new
- *        object.
+ * @param extendOrSource
+ *        Whether to extend the left-side object, or the first object to merge
+ *        as a deep copy.
  *
- * @param a
- *        The first object to extend. When only this is given, the function
- *        returns a deep copy.
- *
- * @param n
- *        An object to merge into the previous one.
+ * @param sources
+ *        Object(s) to merge into the previous one.
  *
  * @return The merged object. If the first argument is true, the return is the
  *         same as the second argument.
  */
-export function merge<T>(extend: boolean, a: (T|undefined), ...n: Array<(object|undefined)>): T;
+export function merge<T>(extendOrSource: (true|T), ...sources: Array<(object|undefined)>): T;
 /**
  * Take an interval and normalize it to multiples of round numbers.
  *

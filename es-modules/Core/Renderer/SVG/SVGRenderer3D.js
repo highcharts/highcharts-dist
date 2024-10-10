@@ -450,24 +450,26 @@ var SVGRenderer3D;
     }
     /** @private */
     function arc3d(attribs) {
-        const renderer = this, wrapper = renderer.g(), elementProto = renderer.Element.prototype, customAttribs = ['x', 'y', 'r', 'innerR', 'start', 'end', 'depth'];
+        const renderer = this, wrapper = renderer.g(), elementProto = renderer.Element.prototype, customAttribs = [
+            'alpha', 'beta',
+            'x', 'y', 'r', 'innerR', 'start', 'end', 'depth'
+        ];
         /**
          * Get custom attributes. Don't mutate the original object and return an
          * object with only custom attr.
          * @private
          */
-        function suckOutCustom(params) {
+        function extractCustom(params) {
             const ca = {};
-            let hasCA = false, key;
             params = merge(params); // Don't mutate the original object
+            let key;
             for (key in params) {
                 if (customAttribs.indexOf(key) !== -1) {
                     ca[key] = params[key];
                     delete params[key];
-                    hasCA = true;
                 }
             }
-            return hasCA ? [ca, params] : false;
+            return Object.keys(ca).length ? [ca, params] : false;
         }
         attribs = merge(attribs);
         attribs.alpha = (attribs.alpha || 0) * deg2rad;
@@ -551,14 +553,22 @@ var SVGRenderer3D;
         // Override attr to remove shape attributes and use those to set child
         // paths
         wrapper.attr = function (params) {
-            let ca, paramArr;
             if (typeof params === 'object') {
-                paramArr = suckOutCustom(params);
+                const paramArr = extractCustom(params);
                 if (paramArr) {
-                    ca = paramArr[0];
+                    const ca = paramArr[0];
                     arguments[0] = paramArr[1];
+                    // Translate alpha and beta to rotation
+                    if (ca.alpha !== void 0) {
+                        ca.alpha *= deg2rad;
+                    }
+                    if (ca.beta !== void 0) {
+                        ca.beta *= deg2rad;
+                    }
                     extend(wrapper.attribs, ca);
-                    wrapper.setPaths(wrapper.attribs);
+                    if (wrapper.attribs) {
+                        wrapper.setPaths(wrapper.attribs);
+                    }
                 }
             }
             return elementProto.attr.apply(wrapper, arguments);
@@ -567,36 +577,34 @@ var SVGRenderer3D;
         // related to the shapes directly, and update the shapes from the
         // animation step.
         wrapper.animate = function (params, animation, complete) {
-            const from = this.attribs, randomProp = ('data-' + Math.random().toString(26).substring(2, 9));
-            let paramArr, to;
+            const from = this.attribs, randomProp = 'data-' +
+                Math.random().toString(26).substring(2, 9);
             // Attribute-line properties connected to 3D. These shouldn't have
             // been in the attribs collection in the first place.
             delete params.center;
             delete params.z;
-            delete params.alpha;
-            delete params.beta;
             const anim = animObject(pick(animation, this.renderer.globalAnimation));
             if (anim.duration) {
-                paramArr = suckOutCustom(params);
+                const paramArr = extractCustom(params);
                 // Params need to have a property in order for the step to run
                 // (#5765, #7097, #7437)
                 wrapper[randomProp] = 0;
                 params[randomProp] = 1;
                 wrapper[randomProp + 'Setter'] = H.noop;
                 if (paramArr) {
-                    to = paramArr[0]; // Custom attr
+                    const to = paramArr[0], // Custom attr
+                    interpolate = (key, pos) => (from[key] + (pick(to[key], from[key]) -
+                        from[key]) * pos);
                     anim.step = function (a, fx) {
-                        const interpolate = (key) => (from[key] + (pick(to[key], from[key]) -
-                            from[key]) * fx.pos);
                         if (fx.prop === randomProp) {
                             fx.elem.setPaths(merge(from, {
-                                x: interpolate('x'),
-                                y: interpolate('y'),
-                                r: interpolate('r'),
-                                innerR: interpolate('innerR'),
-                                start: interpolate('start'),
-                                end: interpolate('end'),
-                                depth: interpolate('depth')
+                                x: interpolate('x', fx.pos),
+                                y: interpolate('y', fx.pos),
+                                r: interpolate('r', fx.pos),
+                                innerR: interpolate('innerR', fx.pos),
+                                start: interpolate('start', fx.pos),
+                                end: interpolate('end', fx.pos),
+                                depth: interpolate('depth', fx.pos)
                             }));
                         }
                     };

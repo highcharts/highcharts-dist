@@ -72,6 +72,9 @@ class StandaloneNavigator {
         this.boundAxes = [];
         this.userOptions = userOptions;
         this.chartOptions = merge(G.getOptions(), standaloneNavigatorDefaults, { navigator: userOptions });
+        if (this.chartOptions.chart && userOptions.height) {
+            this.chartOptions.chart.height = userOptions.height;
+        }
         const chart = new Chart(element, this.chartOptions);
         chart.options = merge(chart.options, { navigator: { enabled: true }, scrollbar: { enabled: true } });
         if (this.chartOptions.navigator && this.chartOptions.scrollbar) {
@@ -211,7 +214,7 @@ class StandaloneNavigator {
      *         specified, the standalone navigator will be redrawn.
      */
     update(newOptions, redraw) {
-        this.chartOptions = merge(this.chartOptions, { navigator: newOptions });
+        this.chartOptions = merge(this.chartOptions, newOptions.height && { chart: { height: newOptions.height } }, { navigator: newOptions });
         this.navigator.chart.update(this.chartOptions, redraw);
     }
     /**

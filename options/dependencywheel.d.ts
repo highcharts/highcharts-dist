@@ -234,6 +234,13 @@ declare module "../highcharts" {
          */
         borderColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
         /**
+         * (Highcharts) The corner radius of the border surrounding each node. A
+         * number signifies pixels. A percentage string, like for example `50%`,
+         * signifies a relative size. For nodes this is relative to the node
+         * width.
+         */
+        borderRadius?: (number|string|Highcharts.BorderRadiusOptionsObject);
+        /**
          * (Highcharts, Highstock, Gantt) The width of the border surrounding
          * each column or bar. Defaults to `1` when there is room for a border,
          * but to `0` when the columns are so dense that a border would cover

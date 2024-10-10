@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.8 (2024-08-29)
+ * @license Highcharts JS v11.4.8 (2024-10-10)
  *
  * (c) 2016-2024 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -57,7 +57,7 @@
         const lang = {
             /**
              * @since   10.0.0
-             * @product highcharts
+             * @product highcharts highmaps
              *
              * @private
              */
@@ -1880,7 +1880,7 @@
              * @sample {highcharts} highcharts/plotoptions/treemap-traverse-to-leaf/
              *         Traverse to leaf enabled
              *
-             * @since   @next
+             * @since   11.4.4
              *
              * @product highcharts
              */

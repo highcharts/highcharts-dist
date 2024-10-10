@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v@product.version@ (@product.date@)
+ * @license Highcharts JS v11.4.8 (2024-10-10)
  * @module highcharts/modules/bullet
  * @requires highcharts
  *

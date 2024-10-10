@@ -151,7 +151,7 @@ function format(str = '', ctx, chart) {
     while ((match = regex.exec(str)) !== null) {
         // When a sub expression is found, it is evaluated first, and the
         // results recursively evaluated until no subexpression exists.
-        const subMatch = subRegex.exec(match[1]);
+        const mainMatch = match, subMatch = subRegex.exec(match[1]);
         if (subMatch) {
             match = subMatch;
             hasSub = true;
@@ -168,7 +168,7 @@ function format(str = '', ctx, chart) {
             };
         }
         // Identify helpers
-        const fn = match[1].split(' ')[0].replace('#', '');
+        const fn = (currentMatch.isBlock ? mainMatch : match)[1].split(' ')[0].replace('#', '');
         if (helpers[fn]) {
             // Block helper, only 0 level is handled
             if (currentMatch.isBlock && fn === currentMatch.fn) {

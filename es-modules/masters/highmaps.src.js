@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v@product.version@ (@product.date@)
+ * @license Highmaps JS v11.4.8 (2024-10-10)
  * @module highcharts/highmaps
  *
  * (c) 2011-2024 Torstein Honsi

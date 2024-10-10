@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.8 (2024-08-29)
+ * @license Highcharts JS v11.4.8 (2024-10-10)
  *
  * (c) 2009-2024 Torstein Honsi
  *
@@ -247,7 +247,6 @@
         (function (error) {
             error.messages = [];
         })(error || (error = {}));
-        /* eslint-disable valid-jsdoc */
         /**
          * Utility function to deep merge two or more objects and return a third object.
          * If the first argument is true, the contents of the second object is copied
@@ -256,41 +255,19 @@
          *
          * @function Highcharts.merge<T>
          *
-         * @param {boolean} extend
-         *        Whether to extend the left-side object (a) or return a whole new
-         *        object.
+         * @param {true | T} extendOrSource
+         *        Whether to extend the left-side object,
+         *        or the first object to merge as a deep copy.
          *
-         * @param {T|undefined} a
-         *        The first object to extend. When only this is given, the function
-         *        returns a deep copy.
-         *
-         * @param {...Array<object|undefined>} [n]
-         *        An object to merge into the previous one.
+         * @param {...Array<object|undefined>} [sources]
+         *        Object(s) to merge into the previous one.
          *
          * @return {T}
          *         The merged object. If the first argument is true, the return is the
          *         same as the second argument.
-         */ /**
-        * Utility function to deep merge two or more objects and return a third object.
-        * The merge function can also be used with a single object argument to create a
-        * deep copy of an object.
-        *
-        * @function Highcharts.merge<T>
-        *
-        * @param {T|undefined} a
-        *        The first object to extend. When only this is given, the function
-        *        returns a deep copy.
-        *
-        * @param {...Array<object|undefined>} [n]
-        *        An object to merge into the previous one.
-        *
-        * @return {T}
-        *         The merged object. If the first argument is true, the return is the
-        *         same as the second argument.
-        */
-        function merge() {
-            /* eslint-enable valid-jsdoc */
-            let i, args = arguments, ret = {};
+         */
+        function merge(extendOrSource, ...sources) {
+            let i, args = [extendOrSource, ...sources], ret = {};
             const doCopy = function (copy, original) {
                 // An object is replacing a primitive
                 if (typeof copy !== 'object') {
@@ -316,7 +293,7 @@
             };
             // If first argument is true, copy into the existing object. Used in
             // setOptions.
-            if (args[0] === true) {
+            if (extendOrSource === true) {
                 ret = args[1];
                 args = Array.prototype.slice.call(args, 2);
             }
@@ -2749,8 +2726,11 @@
                  * Decides in what dimensions the user can pan the chart. Can be
                  * one of `x`, `y`, or `xy`.
                  *
-                 * When this option is set to `y` or `xy`, [yAxis.startOnTick](#yAxis.startOnTick)
-                 * and [yAxis.endOnTick](#yAxis.endOnTick) are overwritten to `false`.
+                 * During panning, all axes will behave as if
+                 * [`startOnTick`](#yAxis.startOnTick) and
+                 * [`endOnTick`](#yAxis.endOnTick) were set to `false`. After the
+                 * panning action is finished, the axes will adjust to their actual
+                 * settings.
                  *
                  * @sample {highcharts} highcharts/chart/panning-type
                  *         Zooming and xy panning
@@ -2758,7 +2738,6 @@
                  * @declare    Highcharts.OptionsChartPanningTypeValue
                  * @type       {string}
                  * @validvalue ["x", "y", "xy"]
-                 * @default    {highcharts|highstock} x
                  * @product    highcharts highstock gantt
                  */
                 type: 'x'
@@ -8234,15 +8213,6 @@
         const emptyHTML = trustedTypesPolicy ?
             trustedTypesPolicy.createHTML('') :
             '';
-        // IE9 and PhantomJS are only able to parse XML.
-        const hasValidDOMParser = (function () {
-            try {
-                return Boolean(new DOMParser().parseFromString(emptyHTML, 'text/html'));
-            }
-            catch (e) {
-                return false;
-            }
-        }());
         /* *
          *
          *  Class
@@ -8453,12 +8423,20 @@
                     // Make all quotation marks parse correctly to DOM (#17627)
                     .replace(/ style=(["'])/g, ' data-style=$1');
                 let doc;
-                if (hasValidDOMParser) {
+                try {
                     doc = new DOMParser().parseFromString(trustedTypesPolicy ?
                         trustedTypesPolicy.createHTML(markup) :
                         markup, 'text/html');
                 }
-                else {
+                catch (e) {
+                    // There are two cases where this fails:
+                    // 1. IE9 and PhantomJS, where the DOMParser only supports parsing
+                    //    XML
+                    // 2. Due to a Chromium issue where chart redraws are triggered by
+                    //    a `beforeprint` event (#16931),
+                    //    https://issues.chromium.org/issues/40222135
+                }
+                if (!doc) {
                     const body = createElement('div');
                     body.innerHTML = markup;
                     doc = { body };
@@ -8921,7 +8899,7 @@
             while ((match = regex.exec(str)) !== null) {
                 // When a sub expression is found, it is evaluated first, and the
                 // results recursively evaluated until no subexpression exists.
-                const subMatch = subRegex.exec(match[1]);
+                const mainMatch = match, subMatch = subRegex.exec(match[1]);
                 if (subMatch) {
                     match = subMatch;
                     hasSub = true;
@@ -8938,7 +8916,7 @@
                     };
                 }
                 // Identify helpers
-                const fn = match[1].split(' ')[0].replace('#', '');
+                const fn = (currentMatch.isBlock ? mainMatch : match)[1].split(' ')[0].replace('#', '');
                 if (helpers[fn]) {
                     // Block helper, only 0 level is handled
                     if (currentMatch.isBlock && fn === currentMatch.fn) {
@@ -23370,10 +23348,10 @@
              * @function Highcharts.Tooltip#bodyFormatter
              */
             bodyFormatter(items) {
-                return items.map(function (item) {
-                    const tooltipOptions = item.series.tooltipOptions;
-                    return (tooltipOptions[(item.point.formatPrefix || 'point') + 'Formatter'] ||
-                        item.point.tooltipFormatter).call(item.point, tooltipOptions[(item.point.formatPrefix || 'point') + 'Format'] || '');
+                return items.map((item) => {
+                    const tooltipOptions = item.series.tooltipOptions, point = item.point, formatPrefix = point.formatPrefix || 'point';
+                    return (tooltipOptions[formatPrefix + 'Formatter'] ||
+                        point.tooltipFormatter).call(point, tooltipOptions[formatPrefix + 'Format'] || '');
                 });
             }
             /**
@@ -23633,7 +23611,7 @@
                 return {
                     width: outside ?
                         // Subtract distance to prevent scrollbars
-                        Math.max(body.scrollWidth, documentElement.scrollWidth, body.offsetWidth, documentElement.offsetWidth, documentElement.clientWidth) - 2 * distance :
+                        Math.max(body.scrollWidth, documentElement.scrollWidth, body.offsetWidth, documentElement.offsetWidth, documentElement.clientWidth) - (2 * distance) - 2 :
                         chart.chartWidth,
                     height: outside ?
                         Math.max(body.scrollHeight, documentElement.scrollHeight, body.offsetHeight, documentElement.offsetHeight, documentElement.clientHeight) :
@@ -24495,7 +24473,7 @@
             updatePosition(point) {
                 const { chart, container, distance, options, pointer, renderer } = this, { height = 0, width = 0 } = this.getLabel(), 
                 // Needed for outside: true (#11688)
-                { left, top, scaleX, scaleY } = pointer.getChartPosition(), pos = (options.positioner || this.getPosition).call(this, width, height, point);
+                { left, top, scaleX, scaleY } = pointer.getChartPosition(), pos = (options.positioner || this.getPosition).call(this, width, height, point), doc = H.doc;
                 let anchorX = (point.plotX || 0) + chart.plotLeft, anchorY = (point.plotY || 0) + chart.plotTop, pad;
                 // Set the renderer size dynamically to prevent document size to change.
                 // Renderer only exists when tooltip is outside.
@@ -24508,7 +24486,10 @@
                     // Pad it by the border width and distance. Add 2 to make room for
                     // the default shadow (#19314).
                     pad = (options.borderWidth || 0) + 2 * distance + 2;
-                    renderer.setSize(width + pad, height + pad, false);
+                    renderer.setSize(
+                    // Clamp width to keep tooltip in viewport (#21698)
+                    // and subtract one since tooltip container has 'left: 1px;'
+                    clamp(width + pad, 0, doc.documentElement.clientWidth) - 1, height + pad, false);
                     // Anchor and tooltip container need scaling if chart container has
                     // scale transform/css zoom. #11329.
                     if (scaleX !== 1 || scaleY !== 1) {
@@ -25602,10 +25583,14 @@
                     // removed
                     point.importedUserEvent?.();
                     point.importedUserEvent = addEvent(point, eventType, userEvent);
+                    if (point.hcEvents) {
+                        point.hcEvents[eventType].userEvent = true;
+                    }
                 }
                 else if (point.importedUserEvent &&
                     !userEvent &&
-                    point.hcEvents?.[eventType]) {
+                    point.hcEvents?.[eventType] &&
+                    point.hcEvents?.[eventType].userEvent) {
                     removeEvent(point, eventType);
                     delete point.hcEvents[eventType];
                     if (!Object.keys(point.hcEvents)) {
@@ -26096,9 +26081,8 @@
                 this.eventsToUnbind.forEach((unbind) => unbind());
                 this.eventsToUnbind = [];
                 if (!H.chartCount) {
-                    if (Pointer.unbindDocumentMouseUp) {
-                        Pointer.unbindDocumentMouseUp.forEach((e) => e());
-                    }
+                    Pointer.unbindDocumentMouseUp.forEach((el) => el.unbind());
+                    Pointer.unbindDocumentMouseUp.length = 0;
                     if (Pointer.unbindDocumentTouchEnd) {
                         Pointer.unbindDocumentTouchEnd = (Pointer.unbindDocumentTouchEnd());
                     }
@@ -27286,10 +27270,12 @@
                 container.onmousemove = this.onContainerMouseMove.bind(this);
                 container.onclick = this.onContainerClick.bind(this);
                 this.eventsToUnbind.push(addEvent(container, 'mouseenter', this.onContainerMouseEnter.bind(this)), addEvent(container, 'mouseleave', this.onContainerMouseLeave.bind(this)));
-                if (!Pointer.unbindDocumentMouseUp) {
-                    Pointer.unbindDocumentMouseUp = [];
+                if (!Pointer.unbindDocumentMouseUp.some((el) => el.doc === ownerDoc)) {
+                    Pointer.unbindDocumentMouseUp.push({
+                        doc: ownerDoc,
+                        unbind: addEvent(ownerDoc, 'mouseup', this.onDocumentMouseUp.bind(this))
+                    });
                 }
-                Pointer.unbindDocumentMouseUp.push(addEvent(ownerDoc, 'mouseup', this.onDocumentMouseUp.bind(this)));
                 // In case we are dealing with overflow, reset the chart position when
                 // scrolling parent elements
                 let parent = this.chart.renderTo.parentElement;
@@ -27449,6 +27435,7 @@
                 this.hasZoom = zoomX || zoomY;
             }
         }
+        Pointer.unbindDocumentMouseUp = [];
         /* *
          *
          *  Class Namespace
@@ -31254,7 +31241,9 @@
              * Force getting extremes of a total series data range.
              */
             getProcessedData(forceExtremesFromAll) {
-                const series = this, xAxis = series.xAxis, options = series.options, cropThreshold = options.cropThreshold, logarithmic = xAxis?.logarithmic, isCartesian = series.isCartesian;
+                const series = this, xAxis = series.xAxis, options = series.options, cropThreshold = options.cropThreshold, getExtremesFromAll = forceExtremesFromAll ||
+                    // X-range series etc, #21003
+                    series.getExtremesFromAll, logarithmic = xAxis?.logarithmic, isCartesian = series.isCartesian;
                 let croppedData, cropped, cropStart = 0, xExtremes, min, max, 
                 // Copied during slice operation:
                 processedXData = series.xData, processedYData = series.yData, updatingNames = false;
@@ -31269,7 +31258,7 @@
                 // Optionally filter out points outside the plot area
                 if (isCartesian &&
                     series.sorted &&
-                    !forceExtremesFromAll &&
+                    !getExtremesFromAll &&
                     (!cropThreshold ||
                         dataLength > cropThreshold ||
                         series.forceCrop)) {
@@ -41640,7 +41629,7 @@
                 // tightly, so we allow individual columns to have individual sizes.
                 // When pointPadding is greater, we strive for equal-width columns
                 // (#2694).
-                if (options.pointPadding) {
+                if (options.pointPadding && options.crisp) {
                     seriesBarW = Math.ceil(seriesBarW);
                 }
                 Series.prototype.translate.apply(series);
@@ -41861,11 +41850,18 @@
              */
             drawTracker(points = this.points) {
                 const series = this, chart = series.chart, pointer = chart.pointer, onMouseOver = function (e) {
-                    const point = pointer?.getPointFromEvent(e);
+                    pointer?.normalize(e);
+                    const point = pointer?.getPointFromEvent(e), 
+                    // Run point events only for points inside plot area, #21136
+                    isInsidePlot = chart.scrollablePlotArea ?
+                        chart.isInsidePlot(e.chartX - chart.plotLeft, e.chartY - chart.plotTop, {
+                            visiblePlotOnly: true
+                        }) : true;
                     // Undefined on graph in scatterchart
                     if (pointer &&
                         point &&
-                        series.options.enableMouseTracking) {
+                        series.options.enableMouseTracking &&
+                        isInsidePlot) {
                         pointer.isDirectTouch = true;
                         point.onMouseOver(e);
                     }
@@ -43170,8 +43166,8 @@
                     innerSize = parseFloat(innerSize);
                 }
                 const positions = [
-                    pick(centerOption[0], '50%'),
-                    pick(centerOption[1], '50%'),
+                    pick(centerOption?.[0], '50%'),
+                    pick(centerOption?.[1], '50%'),
                     // Prevent from negative values
                     pick(size && size < 0 ? void 0 : options.size, '100%'),
                     pick(innerSize && innerSize < 0 ? void 0 : options.innerSize || 0, '0%')

@@ -77,10 +77,10 @@ class Tooltip {
      * @function Highcharts.Tooltip#bodyFormatter
      */
     bodyFormatter(items) {
-        return items.map(function (item) {
-            const tooltipOptions = item.series.tooltipOptions;
-            return (tooltipOptions[(item.point.formatPrefix || 'point') + 'Formatter'] ||
-                item.point.tooltipFormatter).call(item.point, tooltipOptions[(item.point.formatPrefix || 'point') + 'Format'] || '');
+        return items.map((item) => {
+            const tooltipOptions = item.series.tooltipOptions, point = item.point, formatPrefix = point.formatPrefix || 'point';
+            return (tooltipOptions[formatPrefix + 'Formatter'] ||
+                point.tooltipFormatter).call(point, tooltipOptions[formatPrefix + 'Format'] || '');
         });
     }
     /**
@@ -340,7 +340,7 @@ class Tooltip {
         return {
             width: outside ?
                 // Subtract distance to prevent scrollbars
-                Math.max(body.scrollWidth, documentElement.scrollWidth, body.offsetWidth, documentElement.offsetWidth, documentElement.clientWidth) - 2 * distance :
+                Math.max(body.scrollWidth, documentElement.scrollWidth, body.offsetWidth, documentElement.offsetWidth, documentElement.clientWidth) - (2 * distance) - 2 :
                 chart.chartWidth,
             height: outside ?
                 Math.max(body.scrollHeight, documentElement.scrollHeight, body.offsetHeight, documentElement.offsetHeight, documentElement.clientHeight) :
@@ -1202,7 +1202,7 @@ class Tooltip {
     updatePosition(point) {
         const { chart, container, distance, options, pointer, renderer } = this, { height = 0, width = 0 } = this.getLabel(), 
         // Needed for outside: true (#11688)
-        { left, top, scaleX, scaleY } = pointer.getChartPosition(), pos = (options.positioner || this.getPosition).call(this, width, height, point);
+        { left, top, scaleX, scaleY } = pointer.getChartPosition(), pos = (options.positioner || this.getPosition).call(this, width, height, point), doc = H.doc;
         let anchorX = (point.plotX || 0) + chart.plotLeft, anchorY = (point.plotY || 0) + chart.plotTop, pad;
         // Set the renderer size dynamically to prevent document size to change.
         // Renderer only exists when tooltip is outside.
@@ -1215,7 +1215,10 @@ class Tooltip {
             // Pad it by the border width and distance. Add 2 to make room for
             // the default shadow (#19314).
             pad = (options.borderWidth || 0) + 2 * distance + 2;
-            renderer.setSize(width + pad, height + pad, false);
+            renderer.setSize(
+            // Clamp width to keep tooltip in viewport (#21698)
+            // and subtract one since tooltip container has 'left: 1px;'
+            clamp(width + pad, 0, doc.documentElement.clientWidth) - 1, height + pad, false);
             // Anchor and tooltip container need scaling if chart container has
             // scale transform/css zoom. #11329.
             if (scaleX !== 1 || scaleY !== 1) {

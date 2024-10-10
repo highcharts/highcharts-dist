@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.4.8 (2024-08-29)
+ * @license Highstock JS v11.4.8 (2024-10-10)
  *
  * Hollow Candlestick series type for Highcharts Stock
  *
@@ -150,14 +150,12 @@
                 // Processed and grouped data
                 processedYData = series.allGroupedData || series.yData, hollowCandlestickData = this.hollowCandlestickData;
                 hollowCandlestickData.length = 0;
-                // First point is always bullish (transparent).
-                hollowCandlestickData.push({
-                    isBullish: true,
-                    trendDirection: 'up'
-                });
-                for (let i = 1; i < processedYData.length; i++) {
+                for (let i = 0; i < processedYData.length; i++) {
                     const dataPoint = processedYData[i], previousDataPoint = processedYData[i - 1];
-                    hollowCandlestickData.push(series.isBullish(dataPoint, previousDataPoint));
+                    hollowCandlestickData.push(series.isBullish(dataPoint, 
+                    // Determine the first point is bullish based on
+                    // its open and close values.(#21683)
+                    i ? previousDataPoint : dataPoint));
                 }
             }
             /**

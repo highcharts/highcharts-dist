@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.8 (2024-08-29)
+ * @license Highcharts JS v11.4.8 (2024-10-10)
  *
  * (c) 2009-2024 Torstein Honsi
  *
@@ -3204,6 +3204,25 @@
                 });
             }
         }
+        /**
+         * If a user has defined categories, it is necessary to retroactively hide any
+         * ticks added by the 'onAxisFoundExtremes' function above (#21672).
+         *
+         * Otherwise they can show up on the axis, alongside user-defined categories.
+         */
+        function onAxisAfterRender() {
+            const { ticks, tickPositions, dataMin = 0, dataMax = 0, categories } = this, type = this.options.type;
+            if ((categories?.length || type === 'category') &&
+                this.series.find((s) => s.bubblePadding)) {
+                let tickCount = tickPositions.length;
+                while (tickCount--) {
+                    const tick = ticks[tickPositions[tickCount]], pos = tick.pos || 0;
+                    if (pos > dataMax || pos < dataMin) {
+                        tick.label?.hide();
+                    }
+                }
+            }
+        }
         /* *
          *
          *  Class
@@ -3219,6 +3238,7 @@
                 BubbleLegendComposition.compose(ChartClass, LegendClass);
                 if (pushUnique(composed, 'Series.Bubble')) {
                     addEvent(AxisClass, 'foundExtremes', onAxisFoundExtremes);
+                    addEvent(AxisClass, 'afterRender', onAxisAfterRender);
                 }
             }
             /* *
@@ -10090,7 +10110,7 @@
             if (!this.pane) {
                 this.pane = [];
             }
-            this.options.pane = splat(this.options.pane);
+            this.options.pane = splat(this.options.pane || {});
             this.options.pane.forEach((paneOptions) => {
                 new Pane(// eslint-disable-line no-new
                 paneOptions, this);

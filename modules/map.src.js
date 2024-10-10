@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v11.4.8 (2024-08-29)
+ * @license Highmaps JS v11.4.8 (2024-10-10)
  *
  * Highmaps as a plugin for Highcharts or Highcharts Stock.
  *
@@ -6920,9 +6920,11 @@
                 if (options.joinBy === null) {
                     joinBy = '_i';
                 }
-                joinBy = this.joinBy = splat(joinBy);
-                if (!joinBy[1]) {
-                    joinBy[1] = joinBy[0];
+                if (joinBy) {
+                    this.joinBy = splat(joinBy);
+                    if (!this.joinBy[1]) {
+                        this.joinBy[1] = this.joinBy[0];
+                    }
                 }
                 return options;
             }
@@ -8787,6 +8789,25 @@
                 });
             }
         }
+        /**
+         * If a user has defined categories, it is necessary to retroactively hide any
+         * ticks added by the 'onAxisFoundExtremes' function above (#21672).
+         *
+         * Otherwise they can show up on the axis, alongside user-defined categories.
+         */
+        function onAxisAfterRender() {
+            const { ticks, tickPositions, dataMin = 0, dataMax = 0, categories } = this, type = this.options.type;
+            if ((categories?.length || type === 'category') &&
+                this.series.find((s) => s.bubblePadding)) {
+                let tickCount = tickPositions.length;
+                while (tickCount--) {
+                    const tick = ticks[tickPositions[tickCount]], pos = tick.pos || 0;
+                    if (pos > dataMax || pos < dataMin) {
+                        tick.label?.hide();
+                    }
+                }
+            }
+        }
         /* *
          *
          *  Class
@@ -8802,6 +8823,7 @@
                 BubbleLegendComposition.compose(ChartClass, LegendClass);
                 if (pushUnique(composed, 'Series.Bubble')) {
                     addEvent(AxisClass, 'foundExtremes', onAxisFoundExtremes);
+                    addEvent(AxisClass, 'afterRender', onAxisAfterRender);
                 }
             }
             /* *

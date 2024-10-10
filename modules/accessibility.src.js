@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.8 (2024-08-29)
+ * @license Highcharts JS v11.4.8 (2024-10-10)
  *
  * Accessibility module
  *
@@ -7245,7 +7245,7 @@
                         if (baseSeries) {
                             erase(baseSeries, base); // #21043
                         }
-                        if (this.navigatorSeries) {
+                        if (this.navigatorSeries && navigator.series) {
                             erase(navigator.series, this.navigatorSeries);
                             if (defined(this.navigatorSeries.options)) {
                                 this.navigatorSeries.remove(false);

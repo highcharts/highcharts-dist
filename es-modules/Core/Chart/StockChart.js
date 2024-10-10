@@ -239,12 +239,10 @@ addEvent(Chart, 'update', function (e) {
     function onAxisAfterDrawCrosshair(event) {
         const axis = this;
         // Check if the label has to be drawn
-        if (!axis.crosshair ||
-            !axis.crosshair.label ||
-            !axis.crosshair.label.enabled ||
-            !axis.cross ||
-            !isNumber(axis.min) ||
-            !isNumber(axis.max)) {
+        if (!(axis.crosshair?.label?.enabled &&
+            axis.cross &&
+            isNumber(axis.min) &&
+            isNumber(axis.max))) {
             return;
         }
         const chart = axis.chart, log = axis.logarithmic, options = axis.crosshair.label, // The label's options
@@ -252,7 +250,7 @@ addEvent(Chart, 'update', function (e) {
         opposite = axis.opposite, // Axis position
         left = axis.left, // Left position
         top = axis.top, // Top position
-        width = axis.width, tickInside = axis.options.tickPosition === 'inside', snap = axis.crosshair.snap !== false, e = event.e || (axis.cross && axis.cross.e), point = event.point;
+        width = axis.width, tickInside = axis.options.tickPosition === 'inside', snap = axis.crosshair.snap !== false, e = event.e || (axis.cross?.e), point = event.point;
         let crossLabel = axis.crossLabel, // The svgElement
         posx, posy, formatOption = options.format, formatFormat = '', limit, offset = 0, 
         // Use last available event (#5287)
@@ -376,8 +374,8 @@ addEvent(Chart, 'update', function (e) {
         }
         // Show the crosslabel
         crossLabel.attr({
-            x: posx + offset,
-            y: posy,
+            x: Math.max(0, posx + offset),
+            y: Math.max(0, posy),
             // First set x and y, then anchorX and anchorY, when box is actually
             // calculated, #5702
             anchorX: horiz ?

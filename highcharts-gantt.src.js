@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v11.4.8 (2024-08-29)
+ * @license Highcharts Gantt JS v11.4.8 (2024-10-10)
  *
  * (c) 2017-2024 Lars Cabrera, Torstein Honsi, Jon Arild Nygard & Oystein Moseng
  *
@@ -247,7 +247,6 @@
         (function (error) {
             error.messages = [];
         })(error || (error = {}));
-        /* eslint-disable valid-jsdoc */
         /**
          * Utility function to deep merge two or more objects and return a third object.
          * If the first argument is true, the contents of the second object is copied
@@ -256,41 +255,19 @@
          *
          * @function Highcharts.merge<T>
          *
-         * @param {boolean} extend
-         *        Whether to extend the left-side object (a) or return a whole new
-         *        object.
+         * @param {true | T} extendOrSource
+         *        Whether to extend the left-side object,
+         *        or the first object to merge as a deep copy.
          *
-         * @param {T|undefined} a
-         *        The first object to extend. When only this is given, the function
-         *        returns a deep copy.
-         *
-         * @param {...Array<object|undefined>} [n]
-         *        An object to merge into the previous one.
+         * @param {...Array<object|undefined>} [sources]
+         *        Object(s) to merge into the previous one.
          *
          * @return {T}
          *         The merged object. If the first argument is true, the return is the
          *         same as the second argument.
-         */ /**
-        * Utility function to deep merge two or more objects and return a third object.
-        * The merge function can also be used with a single object argument to create a
-        * deep copy of an object.
-        *
-        * @function Highcharts.merge<T>
-        *
-        * @param {T|undefined} a
-        *        The first object to extend. When only this is given, the function
-        *        returns a deep copy.
-        *
-        * @param {...Array<object|undefined>} [n]
-        *        An object to merge into the previous one.
-        *
-        * @return {T}
-        *         The merged object. If the first argument is true, the return is the
-        *         same as the second argument.
-        */
-        function merge() {
-            /* eslint-enable valid-jsdoc */
-            let i, args = arguments, ret = {};
+         */
+        function merge(extendOrSource, ...sources) {
+            let i, args = [extendOrSource, ...sources], ret = {};
             const doCopy = function (copy, original) {
                 // An object is replacing a primitive
                 if (typeof copy !== 'object') {
@@ -316,7 +293,7 @@
             };
             // If first argument is true, copy into the existing object. Used in
             // setOptions.
-            if (args[0] === true) {
+            if (extendOrSource === true) {
                 ret = args[1];
                 args = Array.prototype.slice.call(args, 2);
             }
@@ -2749,8 +2726,11 @@
                  * Decides in what dimensions the user can pan the chart. Can be
                  * one of `x`, `y`, or `xy`.
                  *
-                 * When this option is set to `y` or `xy`, [yAxis.startOnTick](#yAxis.startOnTick)
-                 * and [yAxis.endOnTick](#yAxis.endOnTick) are overwritten to `false`.
+                 * During panning, all axes will behave as if
+                 * [`startOnTick`](#yAxis.startOnTick) and
+                 * [`endOnTick`](#yAxis.endOnTick) were set to `false`. After the
+                 * panning action is finished, the axes will adjust to their actual
+                 * settings.
                  *
                  * @sample {highcharts} highcharts/chart/panning-type
                  *         Zooming and xy panning
@@ -2758,7 +2738,6 @@
                  * @declare    Highcharts.OptionsChartPanningTypeValue
                  * @type       {string}
                  * @validvalue ["x", "y", "xy"]
-                 * @default    {highcharts|highstock} x
                  * @product    highcharts highstock gantt
                  */
                 type: 'x'
@@ -8234,15 +8213,6 @@
         const emptyHTML = trustedTypesPolicy ?
             trustedTypesPolicy.createHTML('') :
             '';
-        // IE9 and PhantomJS are only able to parse XML.
-        const hasValidDOMParser = (function () {
-            try {
-                return Boolean(new DOMParser().parseFromString(emptyHTML, 'text/html'));
-            }
-            catch (e) {
-                return false;
-            }
-        }());
         /* *
          *
          *  Class
@@ -8453,12 +8423,20 @@
                     // Make all quotation marks parse correctly to DOM (#17627)
                     .replace(/ style=(["'])/g, ' data-style=$1');
                 let doc;
-                if (hasValidDOMParser) {
+                try {
                     doc = new DOMParser().parseFromString(trustedTypesPolicy ?
                         trustedTypesPolicy.createHTML(markup) :
                         markup, 'text/html');
                 }
-                else {
+                catch (e) {
+                    // There are two cases where this fails:
+                    // 1. IE9 and PhantomJS, where the DOMParser only supports parsing
+                    //    XML
+                    // 2. Due to a Chromium issue where chart redraws are triggered by
+                    //    a `beforeprint` event (#16931),
+                    //    https://issues.chromium.org/issues/40222135
+                }
+                if (!doc) {
                     const body = createElement('div');
                     body.innerHTML = markup;
                     doc = { body };
@@ -8921,7 +8899,7 @@
             while ((match = regex.exec(str)) !== null) {
                 // When a sub expression is found, it is evaluated first, and the
                 // results recursively evaluated until no subexpression exists.
-                const subMatch = subRegex.exec(match[1]);
+                const mainMatch = match, subMatch = subRegex.exec(match[1]);
                 if (subMatch) {
                     match = subMatch;
                     hasSub = true;
@@ -8938,7 +8916,7 @@
                     };
                 }
                 // Identify helpers
-                const fn = match[1].split(' ')[0].replace('#', '');
+                const fn = (currentMatch.isBlock ? mainMatch : match)[1].split(' ')[0].replace('#', '');
                 if (helpers[fn]) {
                     // Block helper, only 0 level is handled
                     if (currentMatch.isBlock && fn === currentMatch.fn) {
@@ -23370,10 +23348,10 @@
              * @function Highcharts.Tooltip#bodyFormatter
              */
             bodyFormatter(items) {
-                return items.map(function (item) {
-                    const tooltipOptions = item.series.tooltipOptions;
-                    return (tooltipOptions[(item.point.formatPrefix || 'point') + 'Formatter'] ||
-                        item.point.tooltipFormatter).call(item.point, tooltipOptions[(item.point.formatPrefix || 'point') + 'Format'] || '');
+                return items.map((item) => {
+                    const tooltipOptions = item.series.tooltipOptions, point = item.point, formatPrefix = point.formatPrefix || 'point';
+                    return (tooltipOptions[formatPrefix + 'Formatter'] ||
+                        point.tooltipFormatter).call(point, tooltipOptions[formatPrefix + 'Format'] || '');
                 });
             }
             /**
@@ -23633,7 +23611,7 @@
                 return {
                     width: outside ?
                         // Subtract distance to prevent scrollbars
-                        Math.max(body.scrollWidth, documentElement.scrollWidth, body.offsetWidth, documentElement.offsetWidth, documentElement.clientWidth) - 2 * distance :
+                        Math.max(body.scrollWidth, documentElement.scrollWidth, body.offsetWidth, documentElement.offsetWidth, documentElement.clientWidth) - (2 * distance) - 2 :
                         chart.chartWidth,
                     height: outside ?
                         Math.max(body.scrollHeight, documentElement.scrollHeight, body.offsetHeight, documentElement.offsetHeight, documentElement.clientHeight) :
@@ -24495,7 +24473,7 @@
             updatePosition(point) {
                 const { chart, container, distance, options, pointer, renderer } = this, { height = 0, width = 0 } = this.getLabel(), 
                 // Needed for outside: true (#11688)
-                { left, top, scaleX, scaleY } = pointer.getChartPosition(), pos = (options.positioner || this.getPosition).call(this, width, height, point);
+                { left, top, scaleX, scaleY } = pointer.getChartPosition(), pos = (options.positioner || this.getPosition).call(this, width, height, point), doc = H.doc;
                 let anchorX = (point.plotX || 0) + chart.plotLeft, anchorY = (point.plotY || 0) + chart.plotTop, pad;
                 // Set the renderer size dynamically to prevent document size to change.
                 // Renderer only exists when tooltip is outside.
@@ -24508,7 +24486,10 @@
                     // Pad it by the border width and distance. Add 2 to make room for
                     // the default shadow (#19314).
                     pad = (options.borderWidth || 0) + 2 * distance + 2;
-                    renderer.setSize(width + pad, height + pad, false);
+                    renderer.setSize(
+                    // Clamp width to keep tooltip in viewport (#21698)
+                    // and subtract one since tooltip container has 'left: 1px;'
+                    clamp(width + pad, 0, doc.documentElement.clientWidth) - 1, height + pad, false);
                     // Anchor and tooltip container need scaling if chart container has
                     // scale transform/css zoom. #11329.
                     if (scaleX !== 1 || scaleY !== 1) {
@@ -25602,10 +25583,14 @@
                     // removed
                     point.importedUserEvent?.();
                     point.importedUserEvent = addEvent(point, eventType, userEvent);
+                    if (point.hcEvents) {
+                        point.hcEvents[eventType].userEvent = true;
+                    }
                 }
                 else if (point.importedUserEvent &&
                     !userEvent &&
-                    point.hcEvents?.[eventType]) {
+                    point.hcEvents?.[eventType] &&
+                    point.hcEvents?.[eventType].userEvent) {
                     removeEvent(point, eventType);
                     delete point.hcEvents[eventType];
                     if (!Object.keys(point.hcEvents)) {
@@ -26096,9 +26081,8 @@
                 this.eventsToUnbind.forEach((unbind) => unbind());
                 this.eventsToUnbind = [];
                 if (!H.chartCount) {
-                    if (Pointer.unbindDocumentMouseUp) {
-                        Pointer.unbindDocumentMouseUp.forEach((e) => e());
-                    }
+                    Pointer.unbindDocumentMouseUp.forEach((el) => el.unbind());
+                    Pointer.unbindDocumentMouseUp.length = 0;
                     if (Pointer.unbindDocumentTouchEnd) {
                         Pointer.unbindDocumentTouchEnd = (Pointer.unbindDocumentTouchEnd());
                     }
@@ -27286,10 +27270,12 @@
                 container.onmousemove = this.onContainerMouseMove.bind(this);
                 container.onclick = this.onContainerClick.bind(this);
                 this.eventsToUnbind.push(addEvent(container, 'mouseenter', this.onContainerMouseEnter.bind(this)), addEvent(container, 'mouseleave', this.onContainerMouseLeave.bind(this)));
-                if (!Pointer.unbindDocumentMouseUp) {
-                    Pointer.unbindDocumentMouseUp = [];
+                if (!Pointer.unbindDocumentMouseUp.some((el) => el.doc === ownerDoc)) {
+                    Pointer.unbindDocumentMouseUp.push({
+                        doc: ownerDoc,
+                        unbind: addEvent(ownerDoc, 'mouseup', this.onDocumentMouseUp.bind(this))
+                    });
                 }
-                Pointer.unbindDocumentMouseUp.push(addEvent(ownerDoc, 'mouseup', this.onDocumentMouseUp.bind(this)));
                 // In case we are dealing with overflow, reset the chart position when
                 // scrolling parent elements
                 let parent = this.chart.renderTo.parentElement;
@@ -27449,6 +27435,7 @@
                 this.hasZoom = zoomX || zoomY;
             }
         }
+        Pointer.unbindDocumentMouseUp = [];
         /* *
          *
          *  Class Namespace
@@ -31254,7 +31241,9 @@
              * Force getting extremes of a total series data range.
              */
             getProcessedData(forceExtremesFromAll) {
-                const series = this, xAxis = series.xAxis, options = series.options, cropThreshold = options.cropThreshold, logarithmic = xAxis?.logarithmic, isCartesian = series.isCartesian;
+                const series = this, xAxis = series.xAxis, options = series.options, cropThreshold = options.cropThreshold, getExtremesFromAll = forceExtremesFromAll ||
+                    // X-range series etc, #21003
+                    series.getExtremesFromAll, logarithmic = xAxis?.logarithmic, isCartesian = series.isCartesian;
                 let croppedData, cropped, cropStart = 0, xExtremes, min, max, 
                 // Copied during slice operation:
                 processedXData = series.xData, processedYData = series.yData, updatingNames = false;
@@ -31269,7 +31258,7 @@
                 // Optionally filter out points outside the plot area
                 if (isCartesian &&
                     series.sorted &&
-                    !forceExtremesFromAll &&
+                    !getExtremesFromAll &&
                     (!cropThreshold ||
                         dataLength > cropThreshold ||
                         series.forceCrop)) {
@@ -41640,7 +41629,7 @@
                 // tightly, so we allow individual columns to have individual sizes.
                 // When pointPadding is greater, we strive for equal-width columns
                 // (#2694).
-                if (options.pointPadding) {
+                if (options.pointPadding && options.crisp) {
                     seriesBarW = Math.ceil(seriesBarW);
                 }
                 Series.prototype.translate.apply(series);
@@ -41861,11 +41850,18 @@
              */
             drawTracker(points = this.points) {
                 const series = this, chart = series.chart, pointer = chart.pointer, onMouseOver = function (e) {
-                    const point = pointer?.getPointFromEvent(e);
+                    pointer?.normalize(e);
+                    const point = pointer?.getPointFromEvent(e), 
+                    // Run point events only for points inside plot area, #21136
+                    isInsidePlot = chart.scrollablePlotArea ?
+                        chart.isInsidePlot(e.chartX - chart.plotLeft, e.chartY - chart.plotTop, {
+                            visiblePlotOnly: true
+                        }) : true;
                     // Undefined on graph in scatterchart
                     if (pointer &&
                         point &&
-                        series.options.enableMouseTracking) {
+                        series.options.enableMouseTracking &&
+                        isInsidePlot) {
                         pointer.isDirectTouch = true;
                         point.onMouseOver(e);
                     }
@@ -43170,8 +43166,8 @@
                     innerSize = parseFloat(innerSize);
                 }
                 const positions = [
-                    pick(centerOption[0], '50%'),
-                    pick(centerOption[1], '50%'),
+                    pick(centerOption?.[0], '50%'),
+                    pick(centerOption?.[1], '50%'),
                     // Prevent from negative values
                     pick(size && size < 0 ? void 0 : options.size, '100%'),
                     pick(innerSize && innerSize < 0 ? void 0 : options.innerSize || 0, '0%')
@@ -50233,7 +50229,7 @@
                         if (baseSeries) {
                             erase(baseSeries, base); // #21043
                         }
-                        if (this.navigatorSeries) {
+                        if (this.navigatorSeries && navigator.series) {
                             erase(navigator.series, this.navigatorSeries);
                             if (defined(this.navigatorSeries.options)) {
                                 this.navigatorSeries.remove(false);
@@ -50583,7 +50579,35 @@
              *
              * @type      {Array<*>}
              */
-            buttons: void 0,
+            buttons: [{
+                    type: 'month',
+                    count: 1,
+                    text: '1m',
+                    title: 'View 1 month'
+                }, {
+                    type: 'month',
+                    count: 3,
+                    text: '3m',
+                    title: 'View 3 months'
+                }, {
+                    type: 'month',
+                    count: 6,
+                    text: '6m',
+                    title: 'View 6 months'
+                }, {
+                    type: 'ytd',
+                    text: 'YTD',
+                    title: 'View year to date'
+                }, {
+                    type: 'year',
+                    count: 1,
+                    text: '1y',
+                    title: 'View 1 year'
+                }, {
+                    type: 'all',
+                    text: 'All',
+                    title: 'View all'
+                }],
             /**
              * How many units of the defined type the button should span. If `type`
              * is "month" and `count` is 3, the button spans three months.
@@ -51080,6 +51104,12 @@
         /**
          * @private
          */
+        function updateRangeSelectorButtons() {
+            this.rangeSelector?.redrawElements();
+        }
+        /**
+         * @private
+         */
         function compose(AxisClass, ChartClass, RangeSelectorClass) {
             RangeSelectorConstructor = RangeSelectorClass;
             if (pushUnique(composed, 'RangeSelector')) {
@@ -51091,6 +51121,7 @@
                 addEvent(ChartClass, 'getMargins', onChartGetMargins);
                 addEvent(ChartClass, 'redraw', redrawRangeSelector);
                 addEvent(ChartClass, 'update', onChartUpdate);
+                addEvent(ChartClass, 'beforeRedraw', updateRangeSelectorButtons);
                 chartProto.callbacks.push(redrawRangeSelector);
                 extend(defaultOptions, { rangeSelector: RangeSelectorDefaults.rangeSelector });
                 extend(defaultOptions.lang, RangeSelectorDefaults.lang);
@@ -51121,7 +51152,7 @@
                     if (verticalAlign === 'bottom') {
                         this.extraBottomMargin = true;
                     }
-                    else if (verticalAlign !== 'middle') {
+                    else if (verticalAlign === 'top') {
                         this.extraTopMargin = true;
                     }
                 }
@@ -51176,13 +51207,16 @@
          */
         function onChartGetMargins() {
             const rangeSelector = this.rangeSelector;
-            if (rangeSelector) {
+            if (rangeSelector?.options?.enabled) {
                 const rangeSelectorHeight = rangeSelector.getHeight();
-                if (this.extraTopMargin) {
-                    this.plotTop += rangeSelectorHeight;
-                }
-                if (this.extraBottomMargin) {
-                    this.marginBottom += rangeSelectorHeight;
+                const verticalAlign = rangeSelector.options.verticalAlign;
+                if (!rangeSelector.options.floating) {
+                    if (verticalAlign === 'bottom') {
+                        this.marginBottom += rangeSelectorHeight;
+                    }
+                    else if (verticalAlign !== 'middle') {
+                        this.plotTop += rangeSelectorHeight;
+                    }
                 }
             }
         }
@@ -52282,7 +52316,7 @@
          *
          * */
         const { defaultOptions } = D;
-        const { addEvent, createElement, css, defined, destroyObjectProperties, discardElement, extend, fireEvent, isNumber, merge, objectEach, pad, pick, pInt, splat } = U;
+        const { addEvent, createElement, css, defined, destroyObjectProperties, diffObjects, discardElement, extend, fireEvent, isNumber, merge, objectEach, pad, pick, pInt, splat } = U;
         /* *
          *
          *  Functions
@@ -52345,6 +52379,7 @@
              *
              * */
             constructor(chart) {
+                this.isDirty = false;
                 this.buttonOptions = RangeSelector.prototype.defaultButtons;
                 this.initialButtonGroupWidth = 0;
                 this.init(chart);
@@ -52467,7 +52502,7 @@
                     // Axis not yet instantiated. Temporarily set min and range
                     // options and axes once defined and remove them on
                     // chart load (#4317 & #20529).
-                    baseXAxisOptions = splat(chart.options.xAxis)[0];
+                    baseXAxisOptions = splat(chart.options.xAxis || {})[0];
                     const axisRangeUpdateEvent = addEvent(chart, 'afterGetAxes', function () {
                         const xAxis = chart.xAxis[0];
                         xAxis.range = xAxis.options.range = range;
@@ -52511,7 +52546,7 @@
              * @param {Highcharts.Chart} chart
              */
             init(chart) {
-                const rangeSelector = this, options = chart.options.rangeSelector, buttonOptions = (options.buttons || rangeSelector.defaultButtons.slice()), selectedOption = options.selected, blurInputs = function () {
+                const rangeSelector = this, options = chart.options.rangeSelector, buttonOptions = options.buttons, selectedOption = options.selected, blurInputs = function () {
                     const minInput = rangeSelector.minInput, maxInput = rangeSelector.maxInput;
                     // #3274 in some case blur is not defined
                     if (minInput && !!minInput.blur) {
@@ -52731,6 +52766,7 @@
             setInputValue(name, inputTime) {
                 const options = this.options, time = this.chart.time, input = name === 'min' ? this.minInput : this.maxInput, dateBox = name === 'min' ? this.minDateBox : this.maxDateBox;
                 if (input) {
+                    input.setAttribute('type', preferredInputType(options.inputDateFormat || '%e %b %Y'));
                     const hcTimeAttr = input.getAttribute('data-hc-time');
                     let updatedTime = defined(hcTimeAttr) ? Number(hcTimeAttr) : void 0;
                     if (defined(inputTime)) {
@@ -53063,17 +53099,23 @@
                     container.parentNode.insertBefore(this.div, container);
                 }
                 if (inputEnabled) {
-                    // Create the group to keep the inputs
-                    this.inputGroup = renderer.g('input-group').add(this.group);
-                    const minElems = this.drawInput('min');
-                    this.minDateBox = minElems.dateBox;
-                    this.minLabel = minElems.label;
-                    this.minInput = minElems.input;
-                    const maxElems = this.drawInput('max');
-                    this.maxDateBox = maxElems.dateBox;
-                    this.maxLabel = maxElems.label;
-                    this.maxInput = maxElems.input;
+                    this.createInputs();
                 }
+            }
+            /**
+             * Create the input elements and its group.
+             *
+             */
+            createInputs() {
+                this.inputGroup = this.chart.renderer.g('input-group').add(this.group);
+                const minElems = this.drawInput('min');
+                this.minDateBox = minElems.dateBox;
+                this.minLabel = minElems.label;
+                this.minInput = minElems.input;
+                const maxElems = this.drawInput('max');
+                this.maxDateBox = maxElems.dateBox;
+                this.maxLabel = maxElems.label;
+                this.maxInput = maxElems.input;
             }
             /**
              * Render the range selector including the buttons and the inputs. The first
@@ -53088,16 +53130,23 @@
              *        X axis maximum
              */
             render(min, max) {
+                if (this.options.enabled === false) {
+                    return;
+                }
                 const chart = this.chart, chartOptions = chart.options, options = chartOptions.rangeSelector, 
                 // Place inputs above the container
                 inputEnabled = options.inputEnabled;
-                if (options.enabled === false) {
-                    return;
-                }
                 if (inputEnabled) {
+                    if (!this.inputGroup) {
+                        this.createInputs();
+                    }
                     // Set or reset the input values
                     this.setInputValue('min', min);
                     this.setInputValue('max', max);
+                    if (!this.chart.styledMode) {
+                        this.maxLabel?.css(options.labelStyle);
+                        this.minLabel?.css(options.labelStyle);
+                    }
                     const unionExtremes = (chart.scroller && chart.scroller.getUnionExtremes()) || chart.xAxis[0] || {};
                     if (defined(unionExtremes.dataMin) &&
                         defined(unionExtremes.dataMax)) {
@@ -53124,6 +53173,17 @@
                         });
                     }
                 }
+                else {
+                    if (this.inputGroup) {
+                        this.inputGroup.destroy();
+                        delete this.inputGroup;
+                    }
+                }
+                if (!this.chart.styledMode) {
+                    if (this.zoomText) {
+                        this.zoomText.css(options.labelStyle);
+                    }
+                }
                 this.alignElements();
                 this.updateButtonStates();
             }
@@ -53135,7 +53195,8 @@
              * @function Highcharts.RangeSelector#renderButtons
              */
             renderButtons() {
-                const { buttons, chart, options } = this;
+                var _a;
+                const { chart, options } = this;
                 const lang = defaultOptions.lang;
                 const renderer = chart.renderer;
                 const buttonTheme = merge(options.buttonTheme);
@@ -53143,7 +53204,6 @@
                 // Prevent the button from resetting the width when the button state
                 // changes since we need more control over the width when collapsing
                 // the buttons
-                const width = buttonTheme.width || 28;
                 delete buttonTheme.width;
                 delete buttonTheme.states;
                 this.buttonGroup = renderer.g('range-selector-buttons').add(this.group);
@@ -53191,39 +53251,57 @@
                     .add(this.buttonGroup);
                 if (!this.chart.styledMode) {
                     this.zoomText.css(options.labelStyle);
-                    buttonTheme['stroke-width'] = pick(buttonTheme['stroke-width'], 0);
+                    (_a = options.buttonTheme)['stroke-width'] ?? (_a['stroke-width'] = 0);
                 }
                 createElement('option', {
                     textContent: this.zoomText.textStr,
                     disabled: true
                 }, void 0, dropdown);
+                this.createButtons();
+            }
+            createButtons() {
+                const { options } = this;
+                const buttonTheme = merge(options.buttonTheme);
+                const states = buttonTheme && buttonTheme.states;
+                // Prevent the button from resetting the width when the button state
+                // changes since we need more control over the width when collapsing
+                // the buttons
+                const width = buttonTheme.width || 28;
+                delete buttonTheme.width;
+                delete buttonTheme.states;
                 this.buttonOptions.forEach((rangeOptions, i) => {
-                    createElement('option', {
-                        textContent: rangeOptions.title || rangeOptions.text
-                    }, void 0, dropdown);
-                    buttons[i] = renderer
-                        .button(rangeOptions.text, 0, 0, (e) => {
-                        // Extract events from button object and call
-                        const buttonEvents = (rangeOptions.events && rangeOptions.events.click);
-                        let callDefaultEvent;
-                        if (buttonEvents) {
-                            callDefaultEvent =
-                                buttonEvents.call(rangeOptions, e);
-                        }
-                        if (callDefaultEvent !== false) {
-                            this.clickButton(i);
-                        }
-                        this.isActive = true;
-                    }, buttonTheme, states && states.hover, states && states.select, states && states.disabled)
-                        .attr({
-                        'text-align': 'center',
-                        width
-                    })
-                        .add(this.buttonGroup);
-                    if (rangeOptions.title) {
-                        buttons[i].attr('title', rangeOptions.title);
-                    }
+                    this.createButton(rangeOptions, i, width, states);
                 });
+            }
+            createButton(rangeOptions, i, width, states) {
+                const { dropdown, buttons, chart, options } = this;
+                const renderer = chart.renderer;
+                const buttonTheme = merge(options.buttonTheme);
+                dropdown?.add(createElement('option', {
+                    textContent: rangeOptions.title || rangeOptions.text
+                }), i + 2);
+                buttons[i] = renderer
+                    .button(rangeOptions.text, 0, 0, (e) => {
+                    // Extract events from button object and call
+                    const buttonEvents = (rangeOptions.events && rangeOptions.events.click);
+                    let callDefaultEvent;
+                    if (buttonEvents) {
+                        callDefaultEvent =
+                            buttonEvents.call(rangeOptions, e);
+                    }
+                    if (callDefaultEvent !== false) {
+                        this.clickButton(i);
+                    }
+                    this.isActive = true;
+                }, buttonTheme, states && states.hover, states && states.select, states && states.disabled)
+                    .attr({
+                    'text-align': 'center',
+                    width
+                })
+                    .add(this.buttonGroup);
+                if (rangeOptions.title) {
+                    buttons[i].attr('title', rangeOptions.title);
+                }
             }
             /**
              * Align the elements horizontally and vertically.
@@ -53284,7 +53362,7 @@
                         group.placed = buttonGroup.placed = chart.hasLoaded;
                     }
                     let xOffsetForExportButton = 0;
-                    if (inputGroup) {
+                    if (options.inputEnabled && inputGroup) {
                         // Detect collision between the input group and exporting button
                         xOffsetForExportButton = getXOffsetForExportButton(inputGroup, inputPosition);
                         if (inputPosition.align === 'left') {
@@ -53303,8 +53381,8 @@
                         }, true, chart.spacingBox);
                         // Skip animation
                         inputGroup.placed = chart.hasLoaded;
+                        this.handleCollision(xOffsetForExportButton);
                     }
-                    this.handleCollision(xOffsetForExportButton);
                     // Vertical align
                     group.align({
                         verticalAlign
@@ -53363,6 +53441,70 @@
                     }
                     if (dropdown) {
                         dropdown.style.marginTop = group.translateY + 'px';
+                    }
+                }
+            }
+            /**
+             * @private
+             */
+            redrawElements() {
+                const chart = this.chart, { inputBoxHeight, inputBoxBorderColor } = this.options;
+                this.maxDateBox?.attr({
+                    height: inputBoxHeight
+                });
+                this.minDateBox?.attr({
+                    height: inputBoxHeight
+                });
+                if (!chart.styledMode) {
+                    this.maxDateBox?.attr({
+                        stroke: inputBoxBorderColor
+                    });
+                    this.minDateBox?.attr({
+                        stroke: inputBoxBorderColor
+                    });
+                }
+                if (this.isDirty) {
+                    this.isDirty = false;
+                    // Reset this prop to force redrawing collapse of buttons
+                    this.isCollapsed = void 0;
+                    const newButtonsOptions = this.options.buttons ?? [];
+                    const btnLength = Math.min(newButtonsOptions.length, this.buttonOptions.length);
+                    const { dropdown, options } = this;
+                    const buttonTheme = merge(options.buttonTheme);
+                    const states = buttonTheme && buttonTheme.states;
+                    // Prevent the button from resetting the width when the button state
+                    // changes since we need more control over the width when collapsing
+                    // the buttons
+                    const width = buttonTheme.width || 28;
+                    // Destroy additional buttons
+                    if (newButtonsOptions.length < this.buttonOptions.length) {
+                        for (let i = this.buttonOptions.length - 1; i >= newButtonsOptions.length; i--) {
+                            const btn = this.buttons.pop();
+                            btn?.destroy();
+                            this.dropdown?.options.remove(i + 1);
+                        }
+                    }
+                    // Update current buttons
+                    for (let i = btnLength - 1; i >= 0; i--) {
+                        const diff = diffObjects(newButtonsOptions[i], this.buttonOptions[i]);
+                        if (Object.keys(diff).length !== 0) {
+                            const rangeOptions = newButtonsOptions[i];
+                            this.buttons[i].destroy();
+                            dropdown?.options.remove(i + 1);
+                            this.createButton(rangeOptions, i, width, states);
+                            this.computeButtonRange(rangeOptions);
+                        }
+                    }
+                    // Create missing buttons
+                    if (newButtonsOptions.length > this.buttonOptions.length) {
+                        for (let i = this.buttonOptions.length; i < newButtonsOptions.length; i++) {
+                            this.createButton(newButtonsOptions[i], i, width, states);
+                            this.computeButtonRange(newButtonsOptions[i]);
+                        }
+                    }
+                    this.buttonOptions = this.options.buttons ?? [];
+                    if (defined(this.options.selected) && this.buttons.length) {
+                        this.clickButton(this.options.selected, false);
                     }
                 }
             }
@@ -53642,9 +53784,17 @@
              */
             update(options, redraw = true) {
                 const chart = this.chart;
-                merge(true, chart.options.rangeSelector, options);
-                this.destroy();
-                this.init(chart);
+                merge(true, this.options, options);
+                if (this.options.selected &&
+                    this.options.selected >= this.options.buttons.length) {
+                    this.options.selected = void 0;
+                    chart.options.rangeSelector.selected = void 0;
+                }
+                if (defined(options.enabled)) {
+                    this.destroy();
+                    return this.init(chart);
+                }
+                this.isDirty = !!options.buttons;
                 if (redraw) {
                     this.render();
                 }
@@ -53681,47 +53831,16 @@
                             // HTML element
                             discardElement(val);
                         }
+                        delete rSelector[key];
                     }
                     if (val !== RangeSelector.prototype[key]) {
                         rSelector[key] = null;
                     }
                 }, this);
+                this.buttons = [];
             }
         }
         extend(RangeSelector.prototype, {
-            /**
-             * The default buttons for pre-selecting time frames.
-             * @private
-             */
-            defaultButtons: [{
-                    type: 'month',
-                    count: 1,
-                    text: '1m',
-                    title: 'View 1 month'
-                }, {
-                    type: 'month',
-                    count: 3,
-                    text: '3m',
-                    title: 'View 3 months'
-                }, {
-                    type: 'month',
-                    count: 6,
-                    text: '6m',
-                    title: 'View 6 months'
-                }, {
-                    type: 'ytd',
-                    text: 'YTD',
-                    title: 'View year to date'
-                }, {
-                    type: 'year',
-                    count: 1,
-                    text: '1y',
-                    title: 'View 1 year'
-                }, {
-                    type: 'all',
-                    text: 'All',
-                    title: 'View all'
-                }],
             /**
              * The date formats to use when setting min, max and value on date inputs.
              * @private
@@ -55316,13 +55435,18 @@
                                 ganttPointOptions.connect = ganttPointOptions
                                     .dependency;
                             }
-                            const connects = (point.options?.connect &&
-                                splat(point.options.connect));
+                            const connects = point.options?.connect ?
+                                splat(point.options.connect) :
+                                [];
                             let to;
-                            if (point.visible && point.isInside !== false && connects) {
-                                connects.forEach(function (connect) {
-                                    to = chart.get(typeof connect === 'string' ?
-                                        connect : connect.to);
+                            if (point.visible && point.isInside !== false) {
+                                connects.forEach((connect) => {
+                                    const toId = typeof connect === 'string' ?
+                                        connect :
+                                        connect.to;
+                                    if (toId) {
+                                        to = chart.get(toId);
+                                    }
                                     if (to instanceof Point &&
                                         to.series.visible &&
                                         to.visible &&
@@ -59101,7 +59225,7 @@
          *
          * */
         const { getLevelOptions } = TU;
-        const { addEvent, find, fireEvent, isArray, isObject, isString, merge, pick, removeEvent, wrap } = U;
+        const { addEvent, isArray, splat, find, fireEvent, isObject, isString, merge, pick, removeEvent, wrap } = U;
         /* *
          *
          *  Variables
@@ -59298,13 +59422,22 @@
                     }));
                 let numberOfSeries = 0, data, treeGrid;
                 if (isDirty) {
+                    const seriesHasPrimitivePoints = [];
                     // Concatenate data from all series assigned to this axis.
                     data = axis.series.reduce(function (arr, s) {
+                        const seriesData = (s.options.data || []), firstPoint = seriesData[0], 
+                        // Check if the first point is a simple array of values.
+                        // If so we assume that this is the case for all points.
+                        foundPrimitivePoint = (Array.isArray(firstPoint) &&
+                            !firstPoint.find((value) => (typeof value === 'object')));
+                        seriesHasPrimitivePoints.push(foundPrimitivePoint);
                         if (s.visible) {
                             // Push all data to array
-                            (s.options.data || []).forEach(function (data) {
-                                // For using keys - rebuild the data structure
-                                if (s.options.keys && s.options.keys.length) {
+                            seriesData.forEach(function (data) {
+                                // For using keys, or when using primitive points,
+                                // rebuild the data structure
+                                if (foundPrimitivePoint ||
+                                    (s.options.keys && s.options.keys.length)) {
                                     data = s.pointClass.prototype
                                         .optionsToObject
                                         .call({ series: s }, data);
@@ -59344,16 +59477,18 @@
                     axis.hasNames = true;
                     axis.treeGrid.tree = treeGrid.tree;
                     // Update yData now that we have calculated the y values
-                    axis.series.forEach(function (series) {
+                    axis.series.forEach(function (series, index) {
                         const axisData = (series.options.data || []).map(function (d) {
-                            if (isArray(d) &&
-                                series.options.keys &&
-                                series.options.keys.length) {
+                            if (seriesHasPrimitivePoints[index] ||
+                                (isArray(d) &&
+                                    series.options.keys &&
+                                    series.options.keys.length)) {
                                 // Get the axisData from the data array used to
                                 // build the treeGrid where has been modified
                                 data.forEach(function (point) {
-                                    if (d.indexOf(point.x) >= 0 &&
-                                        d.indexOf(point.x2) >= 0) {
+                                    const toArray = splat(d);
+                                    if (toArray.indexOf(point.x || 0) >= 0 &&
+                                        toArray.indexOf(point.x2 || 0) >= 0) {
                                         d = point;
                                     }
                                 });

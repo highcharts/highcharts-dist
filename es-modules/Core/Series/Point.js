@@ -954,10 +954,14 @@ class Point {
             // removed
             point.importedUserEvent?.();
             point.importedUserEvent = addEvent(point, eventType, userEvent);
+            if (point.hcEvents) {
+                point.hcEvents[eventType].userEvent = true;
+            }
         }
         else if (point.importedUserEvent &&
             !userEvent &&
-            point.hcEvents?.[eventType]) {
+            point.hcEvents?.[eventType] &&
+            point.hcEvents?.[eventType].userEvent) {
             removeEvent(point, eventType);
             delete point.hcEvents[eventType];
             if (!Object.keys(point.hcEvents)) {
