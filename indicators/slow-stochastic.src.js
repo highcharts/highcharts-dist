@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.4.8 (2024-08-29)
  *
  * Slow Stochastic series type for Highcharts Stock
  *
- * (c) 2010-2021 Pawel Fus
+ * (c) 2010-2024 Pawel Fus
  *
  * License: www.highcharts.com/license
  */
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -60,22 +60,6 @@
          * @augments Highcharts.Series
          */
         class SlowStochasticIndicator extends StochasticIndicator {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Functions
@@ -118,6 +102,11 @@
                 return slowValues;
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         /**
          * Slow Stochastic oscillator. This series requires the `linkedTo` option
          * to be set and should be loaded after `stock/indicators/indicators.js`
@@ -131,7 +120,7 @@
          * @product      highstock
          * @requires     stock/indicators/indicators
          * @requires     stock/indicators/stochastic
-         * @requires     stock/indicators/slowstochastic
+         * @requires     stock/indicators/slow-stochastic
          * @optionparent plotOptions.slowstochastic
          */
         SlowStochasticIndicator.defaultOptions = merge(StochasticIndicator.defaultOptions, {
@@ -168,15 +157,16 @@
          * @product   highstock
          * @requires  stock/indicators/indicators
          * @requires  stock/indicators/stochastic
-         * @requires  stock/indicators/slowstochastic
+         * @requires  stock/indicators/slow-stochastic
          * @apioption series.slowstochastic
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return SlowStochasticIndicator;
     });
-    _registerModule(_modules, 'masters/indicators/slow-stochastic.src.js', [], function () {
+    _registerModule(_modules, 'masters/indicators/slow-stochastic.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

@@ -25,22 +25,6 @@ const { extend, merge } = U;
  * @augments Highcharts.Series
  */
 class SlowStochasticIndicator extends StochasticIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -83,6 +67,11 @@ class SlowStochasticIndicator extends StochasticIndicator {
         return slowValues;
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Slow Stochastic oscillator. This series requires the `linkedTo` option
  * to be set and should be loaded after `stock/indicators/indicators.js`
@@ -96,7 +85,7 @@ class SlowStochasticIndicator extends StochasticIndicator {
  * @product      highstock
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/stochastic
- * @requires     stock/indicators/slowstochastic
+ * @requires     stock/indicators/slow-stochastic
  * @optionparent plotOptions.slowstochastic
  */
 SlowStochasticIndicator.defaultOptions = merge(StochasticIndicator.defaultOptions, {
@@ -134,7 +123,7 @@ export default SlowStochasticIndicator;
  * @product   highstock
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/stochastic
- * @requires  stock/indicators/slowstochastic
+ * @requires  stock/indicators/slow-stochastic
  * @apioption series.slowstochastic
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

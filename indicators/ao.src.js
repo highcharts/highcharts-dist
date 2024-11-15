@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.4.8 (2024-08-29)
  *
  * Indicator series type for Highcharts Stock
  *
- * (c) 2010-2021 Wojciech Chmiel
+ * (c) 2010-2024 Wojciech Chmiel
  *
  * License: www.highcharts.com/license
  */
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -61,22 +61,6 @@
          * @augments Highcharts.Series
          */
         class AOIndicator extends SMAIndicator {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Functions
@@ -144,6 +128,11 @@
                 };
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         /**
          * Awesome Oscillator. This series requires the `linkedTo` option to
          * be set and should be loaded after the `stock/indicators/indicators.js`
@@ -205,7 +194,7 @@
         });
         extend(AOIndicator.prototype, {
             nameBase: 'AO',
-            nameComponents: false,
+            nameComponents: void 0,
             // Columns support:
             markerAttribs: noop,
             getColumnMetrics: columnProto.getColumnMetrics,
@@ -238,12 +227,13 @@
          * @requires  stock/indicators/ao
          * @apioption series.ao
          */
-        ''; // for including the above in the doclets
+        ''; // For including the above in the doclets
 
         return AOIndicator;
     });
-    _registerModule(_modules, 'masters/indicators/ao.src.js', [], function () {
+    _registerModule(_modules, 'masters/indicators/ao.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

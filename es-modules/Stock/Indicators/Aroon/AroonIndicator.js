@@ -47,22 +47,6 @@ function getExtremeIndexInArray(arr, extreme) {
  * @augments Highcharts.Series
  */
 class AroonIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -99,6 +83,11 @@ class AroonIndicator extends SMAIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Aroon. This series requires the `linkedTo` option to be
  * set and should be loaded after the `stock/indicators/indicators.js`.
@@ -119,12 +108,12 @@ class AroonIndicator extends SMAIndicator {
  */
 AroonIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     /**
-     * Paramters used in calculation of aroon series points.
+     * Parameters used in calculation of aroon series points.
      *
      * @excluding index
      */
     params: {
-        index: void 0,
+        index: void 0, // Unchangeable index, do not inherit (#15362)
         period: 25
     },
     marker: {
@@ -134,7 +123,7 @@ AroonIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
         pointFormat: '<span style="color:{point.color}">\u25CF</span><b> {series.name}</b><br/>Aroon Up: {point.y}<br/>Aroon Down: {point.aroonDown}<br/>'
     },
     /**
-     * aroonDown line options.
+     * AroonDown line options.
      */
     aroonDown: {
         /**
@@ -192,4 +181,4 @@ export default AroonIndicator;
  * @requires  stock/indicators/aroon
  * @apioption series.aroon
  */
-''; // to avoid removal of the above jsdoc
+''; // To avoid removal of the above jsdoc

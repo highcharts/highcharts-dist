@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -8,18 +8,14 @@
  *
  * */
 'use strict';
+import H from '../../Core/Globals.js';
+const { composed } = H;
 import OHLCPoint from './OHLCPoint.js';
 import OHLCSeriesDefaults from './OHLCSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { seriesTypes: { hlc: HLCSeries } } = SeriesRegistry;
+const { hlc: HLCSeries } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
-const { addEvent, extend, merge } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { addEvent, crisp, extend, merge, pushUnique } = U;
 /* *
  *
  *  Functions
@@ -47,7 +43,7 @@ function onSeriesInit(eventOptions) {
         options.id !== 'highcharts-navigator-series') {
         extend(series, {
             pointValKey: OHLCSeries.prototype.pointValKey,
-            // keys: ohlcProto.keys, // @todo potentially nonsense
+            // Keys: ohlcProto.keys, // @todo potentially nonsense
             pointArrayMap: OHLCSeries.prototype.pointArrayMap,
             toYData: OHLCSeries.prototype.toYData
         });
@@ -68,29 +64,13 @@ function onSeriesInit(eventOptions) {
  * @augments Highcharts.Series
  */
 class OHLCSeries extends HLCSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Static Functions
      *
      * */
     static compose(SeriesClass, ..._args) {
-        if (U.pushUnique(composedMembers, SeriesClass)) {
+        if (pushUnique(composed, 'OHLCSeries')) {
             addEvent(SeriesClass, 'afterSetOptions', onSeriesAfterSetOptions);
             addEvent(SeriesClass, 'init', onSeriesInit);
         }
@@ -101,11 +81,9 @@ class OHLCSeries extends HLCSeries {
      *
      * */
     getPointPath(point, graphic) {
-        const path = super.getPointPath(point, graphic), strokeWidth = graphic.strokeWidth(), crispCorr = (strokeWidth % 2) / 2, crispX = Math.round(point.plotX) - crispCorr, halfWidth = Math.round(point.shapeArgs.width / 2);
-        let plotOpen = point.plotOpen;
-        // crisp vector coordinates
+        const path = super.getPointPath(point, graphic), strokeWidth = graphic.strokeWidth(), crispX = crisp(point.plotX || 0, strokeWidth), halfWidth = Math.round(point.shapeArgs.width / 2);
         if (point.open !== null) {
-            plotOpen = Math.round(point.plotOpen) + crispCorr;
+            const plotOpen = crisp(point.plotOpen, strokeWidth);
             path.push(['M', crispX, plotOpen], ['L', crispX - halfWidth, plotOpen]);
             super.extendStem(path, strokeWidth / 2, plotOpen);
         }
@@ -126,10 +104,15 @@ class OHLCSeries extends HLCSeries {
         return attribs;
     }
     toYData(point) {
-        // return a plain array for speedy calculation
+        // Return a plain array for speedy calculation
         return [point.open, point.high, point.low, point.close];
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 OHLCSeries.defaultOptions = merge(HLCSeries.defaultOptions, OHLCSeriesDefaults);
 extend(OHLCSeries.prototype, {
     pointClass: OHLCPoint,

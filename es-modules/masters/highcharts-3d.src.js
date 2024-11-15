@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v@product.version@ (@product.date@)
  * @module highcharts/highcharts-3d
  * @requires highcharts
  *
@@ -30,3 +30,4 @@ Pie3DSeries.compose(G.Series);
 Series3D.compose(G.Series);
 SVGRenderer3D.compose(RendererRegistry.getRendererType());
 ZAxis.compose(G.Chart);
+export default G;

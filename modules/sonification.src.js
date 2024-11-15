@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
  * Sonification module
  *
- * (c) 2010-2022 Highsoft AS
+ * (c) 2010-2024 Highsoft AS
  * Author: Øystein Moseng
  *
  * License: www.highcharts.com/license
@@ -29,7 +29,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -39,7 +39,7 @@
     _registerModule(_modules, 'Extensions/Sonification/Options.js', [], function () {
         /* *
          *
-         *  (c) 2009-2022 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Default options for sonification.
          *
@@ -63,7 +63,7 @@
              * @sample  highcharts/demo/sonification-music
              *          Musical chart
              *
-             * @since 11.0.0
+             * @since        11.0.0
              * @requires     modules/sonification
              * @optionparent sonification
              */
@@ -74,19 +74,24 @@
                  * Defined as an array of either instrument or speech tracks,
                  * or a combination.
                  *
-                 * @type {Array<*>}
-                 * @extends sonification.defaultSpeechOptions
-                 * @extends sonification.defaultInstrumentOptions
+                 * @declare   Highcharts.SonificationTracksOptions
+                 * @extends   sonification.defaultSpeechOptions
+                 * @extends   sonification.defaultInstrumentOptions
+                 * @type      {Array<*>}
                  * @apioption sonification.globalTracks
                  */
                 /**
                  * Rate mapping for speech tracks.
-                 * @extends sonification.defaultSpeechOptions.mapping.rate
+                 *
+                 * @declare   Highcharts.SonificationTracksRateOptions
+                 * @extends   sonification.defaultSpeechOptions.mapping.rate
                  * @apioption sonification.globalTracks.mapping.rate
                  */
                 /**
                  * Text mapping for speech tracks.
-                 * @extends sonification.defaultSpeechOptions.mapping.text
+                 *
+                 * @declare   Highcharts.SonificationTracksTextOptions
+                 * @extends   sonification.defaultSpeechOptions.mapping.text
                  * @apioption sonification.globalTracks.mapping.text
                  */
                 /**
@@ -98,8 +103,10 @@
                  *
                  * @sample  highcharts/demo/plotline-context
                  *          Using contexts
-                 * @type {Array<*>}
-                 * @extends sonification.globalTracks
+                 *
+                 * @declare   Highcharts.SonificationContextTracksOptions
+                 * @extends   sonification.globalTracks
+                 * @type      {Array<*>}
                  * @apioption sonification.globalContextTracks
                  */
                 /**
@@ -108,7 +115,8 @@
                  *
                  * @sample  highcharts/demo/plotline-context
                  *          Using contexts
-                 * @type {number}
+                 *
+                 * @type      {number}
                  * @apioption sonification.globalContextTracks.timeInterval
                  */
                 /**
@@ -124,24 +132,28 @@
                  *
                  * @sample  highcharts/demo/plotline-context
                  *          Using contexts
-                 * @type {number}
+                 *
+                 * @type      {number}
                  * @apioption sonification.globalContextTracks.valueInterval
                  */
                 /**
                  * The point property to play context for when using `valueInterval`.
-                 * @type {string}
-                 * @default "x"
+                 *
+                 * @type      {string}
+                 * @default   "x"
                  * @apioption sonification.globalContextTracks.valueProp
                  */
                 /**
                  * How to map context events to time when using the `valueInterval`
                  * option.
-                 * @type {"linear"|"logarithmic"}
-                 * @default "linear"
+                 *
+                 * @type      {"linear"|"logarithmic"}
+                 * @default   "linear"
                  * @apioption sonification.globalContextTracks.valueMapFunction
                  */
                 /**
                  * Set up event handlers for the sonification
+                 *
                  * @apioption sonification.events
                  */
                 /**
@@ -150,7 +162,7 @@
                  * A context object is passed to the function, with properties `chart`
                  * and `timeline`.
                  *
-                 * @type {Function}
+                 * @type      {Function}
                  * @apioption sonification.events.onPlay
                  */
                 /**
@@ -161,7 +173,7 @@
                  * objects, referencing data points that were related to the audio
                  * events played.
                  *
-                 * @type {Function}
+                 * @type      {Function}
                  * @apioption sonification.events.onStop
                  */
                 /**
@@ -172,7 +184,7 @@
                  * objects, referencing data points that were related to the audio
                  * events played.
                  *
-                 * @type {Function}
+                 * @type      {Function}
                  * @apioption sonification.events.onEnd
                  */
                 /**
@@ -181,7 +193,7 @@
                  * A context object is passed to the function, with properties `chart`
                  * and `timeline`.
                  *
-                 * @type {Function}
+                 * @type      {Function}
                  * @apioption sonification.events.beforePlay
                  */
                 /**
@@ -190,7 +202,7 @@
                  * A context object is passed to the function, with properties `chart`
                  * and `timeline`.
                  *
-                 * @type {Function}
+                 * @type      {Function}
                  * @apioption sonification.events.beforeUpdate
                  */
                 /**
@@ -199,7 +211,7 @@
                  * A context object is passed to the function, with properties `chart`
                  * and `timeline`.
                  *
-                 * @type {Function}
+                 * @type      {Function}
                  * @apioption sonification.events.afterUpdate
                  */
                 /**
@@ -208,7 +220,7 @@
                  * A context object is passed to the function, with properties `series`
                  * and `timeline`.
                  *
-                 * @type {Function}
+                 * @type      {Function}
                  * @apioption sonification.events.onSeriesStart
                  */
                 /**
@@ -217,7 +229,7 @@
                  * A context object is passed to the function, with properties `series`
                  * and `timeline`.
                  *
-                 * @type {Function}
+                 * @type      {Function}
                  * @apioption sonification.events.onSeriesEnd
                  */
                 /**
@@ -232,7 +244,7 @@
                  * the next series/point, and `false` if it was from trying to play the
                  * previous.
                  *
-                 * @type {Function}
+                 * @type      {Function}
                  * @apioption sonification.events.onBoundaryHit
                  */
                 /**
@@ -246,9 +258,11 @@
                 /**
                  * The time to wait in milliseconds after each data series when playing
                  * the series one after the other.
+                 *
+                 * @sample highcharts/sonification/chart-earcon
+                 *         Notification after series
+                 *
                  * @see [order](#sonification.order)
-                 * @sample  highcharts/sonification/chart-earcon
-                 *          Notification after series
                  */
                 afterSeriesWait: 700,
                 /**
@@ -265,8 +279,10 @@
                  * What order to play the data series in, either `sequential` where
                  * the series play individually one after the other, or `simultaneous`
                  * where the series play all at once.
-                 * @sample  highcharts/sonification/chart-simultaneous
-                 *          Simultaneous sonification
+                 *
+                 * @sample highcharts/sonification/chart-simultaneous
+                 *         Simultaneous sonification
+                 *
                  * @type  {"sequential"|"simultaneous"}
                  */
                 order: 'sequential',
@@ -346,6 +362,8 @@
                  *
                  * @sample  highcharts/sonification/point-sonify
                  *          Sonify points on click
+                 *
+                 * @declare Highcharts.SonificationInstrumentOptions
                  */
                 defaultInstrumentOptions: {
                     /**
@@ -368,20 +386,24 @@
                      */
                     /**
                      * Show play marker (tooltip and/or crosshair) for a track.
-                     * @type {boolean}
-                     * @default true
+                     *
+                     * @type      {boolean}
+                     * @default   true
                      * @apioption sonification.defaultInstrumentOptions.showPlayMarker
                      */
                     /**
                      * Name to use for a track when exporting to MIDI.
                      * By default it uses the series name if the track is related to
                      * a series.
-                     * @type {string}
+                     *
+                     * @type      {string}
                      * @apioption sonification.defaultInstrumentOptions.midiName
                      */
                     /**
                      * Options for point grouping, specifically for instrument tracks.
-                     * @extends sonification.pointGrouping
+                     *
+                     * @declare   Highcharts.SonificationInstrumentPointGroupingOptions
+                     * @extends   sonification.pointGrouping
                      * @apioption sonification.defaultInstrumentOptions.pointGrouping
                      */
                     /**
@@ -397,19 +419,23 @@
                      * data point. `value` is available if the track is used as a
                      * context track, and `valueInterval` is used.
                      *
-                     * @sample  highcharts/sonification/mapping-zones
-                     *          Mapping zones
-                     * @type {Function|object}
+                     * @sample highcharts/sonification/mapping-zones
+                     *         Mapping zones
+                     *
+                     * @declare   Highcharts.SonificationInstrumentActiveWhenOptions
+                     * @type      {Function|*}
                      * @apioption sonification.defaultInstrumentOptions.activeWhen
                      */
                     /**
                      * Track is only active when `prop` is above or at this value.
-                     * @type {number}
+                     *
+                     * @type      {number}
                      * @apioption sonification.defaultInstrumentOptions.activeWhen.min
                      */
                     /**
                      * Track is only active when `prop` is below or at this value.
-                     * @type {number}
+                     *
+                     * @type      {number}
                      * @apioption sonification.defaultInstrumentOptions.activeWhen.max
                      */
                     /**
@@ -418,7 +444,8 @@
                      *
                      * If both `crossingUp` and `crossingDown` are defined, the track
                      * is active if either condition is met.
-                     * @type {number}
+                     *
+                     * @type      {number}
                      * @apioption sonification.defaultInstrumentOptions.activeWhen.crossingUp
                      */
                     /**
@@ -427,12 +454,14 @@
                      *
                      * If both `crossingUp` and `crossingDown` are defined, the track
                      * is active if either condition is met.
-                     * @type {number}
+                     *
+                     * @type      {number}
                      * @apioption sonification.defaultInstrumentOptions.activeWhen.crossingDown
                      */
                     /**
                      * The point property to compare, for example `y` or `x`.
-                     * @type {string}
+                     *
+                     * @type      {string}
                      * @apioption sonification.defaultInstrumentOptions.activeWhen.prop
                      */
                     /**
@@ -474,17 +503,23 @@
                      *          Inverted mapping to property
                      * @sample  highcharts/sonification/log-mapping
                      *          Logarithmic mapping to property
+                     *
+                     * @declare Highcharts.SonificationInstrumentMappingOptions
                      */
                     mapping: {
                         /**
                          * The volume of notes, from 0 to 1.
-                         * @default 1
-                         * @extends sonification.defaultInstrumentOptions.mapping.time
+                         *
+                         * @declare   Highcharts.SonificationInstrumentVolumeOptions
+                         * @extends   sonification.defaultInstrumentOptions.mapping.time
+                         * @default   1
                          * @apioption sonification.defaultInstrumentOptions.mapping.volume
                          */
                         /**
                          * Frequency in Hertz of notes. Overrides pitch mapping if set.
-                         * @extends sonification.defaultInstrumentOptions.mapping.time
+                         *
+                         * @declare   Highcharts.SonificationInstrumentFrequencyOptions
+                         * @extends   sonification.defaultInstrumentOptions.mapping.time
                          * @apioption sonification.defaultInstrumentOptions.mapping.frequency
                          */
                         /**
@@ -493,7 +528,8 @@
                          *
                          * Can also be negative to play before the mapped time.
                          *
-                         * @extends sonification.defaultInstrumentOptions.mapping.time
+                         * @declare   Highcharts.SonificationInstrumentPlayDelayOptions
+                         * @extends   sonification.defaultInstrumentOptions.mapping.time
                          * @apioption sonification.defaultInstrumentOptions.mapping.playDelay
                          */
                         /**
@@ -501,6 +537,7 @@
                          *
                          * Tremolo is repeated changes of volume over time.
                          *
+                         * @declare   Highcharts.SonificationInstrumentTremoloOptions
                          * @apioption sonification.defaultInstrumentOptions.mapping.tremolo
                          */
                         /**
@@ -509,7 +546,8 @@
                          * This determines the intensity of the tremolo effect, how
                          * much the volume changes.
                          *
-                         * @extends sonification.defaultInstrumentOptions.mapping.time
+                         * @declare   Highcharts.SonificationInstrumentTremoloDepthOptions
+                         * @extends   sonification.defaultInstrumentOptions.mapping.time
                          * @apioption sonification.defaultInstrumentOptions.mapping.tremolo.depth
                          */
                         /**
@@ -518,7 +556,8 @@
                          * This determines the speed of the tremolo effect, how fast
                          * the volume changes.
                          *
-                         * @extends sonification.defaultInstrumentOptions.mapping.time
+                         * @declare   Highcharts.SonificationInstrumentTremoloSpeedOptions
+                         * @extends   sonification.defaultInstrumentOptions.mapping.time
                          * @apioption sonification.defaultInstrumentOptions.mapping.tremolo.speed
                          */
                         /**
@@ -527,19 +566,22 @@
                          * A lowpass filter lets low frequencies through, but stops high
                          * frequencies, making the sound more dull.
                          *
+                         * @declare   Highcharts.SonificationInstrumentLowpassOptions
                          * @apioption sonification.defaultInstrumentOptions.mapping.lowpass
                          */
                         /**
                          * Map to filter frequency in Hertz from 1 to 20,000Hz.
                          *
-                         * @extends sonification.defaultInstrumentOptions.mapping.time
+                         * @declare   Highcharts.SonificationInstrumentLowpassFrequencyOptions
+                         * @extends   sonification.defaultInstrumentOptions.mapping.time
                          * @apioption sonification.defaultInstrumentOptions.mapping.lowpass.frequency
                          */
                         /**
                          * Map to filter resonance in dB. Can be negative to cause a
                          * dip, or positive to cause a bump.
                          *
-                         * @extends sonification.defaultInstrumentOptions.mapping.time
+                         * @declare   Highcharts.SonificationInstrumentLowpassResonanceOptions
+                         * @extends   sonification.defaultInstrumentOptions.mapping.time
                          * @apioption sonification.defaultInstrumentOptions.mapping.lowpass.resonance
                          */
                         /**
@@ -548,7 +590,8 @@
                          * A highpass filter lets high frequencies through, but stops
                          * low frequencies, making the sound thinner.
                          *
-                         * @extends sonification.defaultInstrumentOptions.mapping.lowpass
+                         * @declare   Highcharts.SonificationInstrumentHighpassOptions
+                         * @extends   sonification.defaultInstrumentOptions.mapping.lowpass
                          * @apioption sonification.defaultInstrumentOptions.mapping.highpass
                          */
                         /**
@@ -565,8 +608,10 @@
                          *
                          * @sample  highcharts/sonification/point-play-time
                          *          Play points in order of Y value
+                         *
+                         * @declare Highcharts.SonificationInstrumentTimeOptions
+                         * @type    {string|number|Function|*}
                          * @default "x"
-                         * @type {string|number|Function|object}
                          */
                         time: 'x',
                         /**
@@ -577,19 +622,22 @@
                          *
                          * @sample  highcharts/sonification/polarity-invert
                          *          Inverted mapping to property
-                         * @type {string}
+                         *
+                         * @type      {string}
                          * @apioption sonification.defaultInstrumentOptions.mapping.time.mapTo
                          */
                         /**
                          * The minimum value for the audio parameter. This is the
                          * lowest value the audio parameter will be mapped to.
-                         * @type {number}
+                         *
+                         * @type      {number}
                          * @apioption sonification.defaultInstrumentOptions.mapping.time.min
                          */
                         /**
                          * The maximum value for the audio parameter. This is the
                          * highest value the audio parameter will be mapped to.
-                         * @type {number}
+                         *
+                         * @type      {number}
                          * @apioption sonification.defaultInstrumentOptions.mapping.time.max
                          */
                         /**
@@ -606,16 +654,18 @@
                          *
                          * You can also map within the X or Y axis of each series.
                          *
-                         * @sample  highcharts/sonification/mapping-within
-                         *          Mapping within demonstrated
-                         * @type {"chart"|"series"|"xAxis"|"yAxis"}
+                         * @sample highcharts/sonification/mapping-within
+                         *         Mapping within demonstrated
+                         *
+                         * @type      {"chart"|"series"|"xAxis"|"yAxis"}
                          * @apioption sonification.defaultInstrumentOptions.mapping.time.within
                          */
                         /**
                          * How to perform the mapping.
-                         * @sample  highcharts/sonification/log-mapping
-                         *          Logarithmic mapping to property
-                         * @type {"linear"|"logarithmic"}
+                         * @sample highcharts/sonification/log-mapping
+                         *         Logarithmic mapping to property
+                         *
+                         * @type      {"linear"|"logarithmic"}
                          * @apioption sonification.defaultInstrumentOptions.mapping.time.mapFunction
                          */
                         /**
@@ -624,9 +674,10 @@
                          * For example, if mapping to `y`, setting value to `4` will
                          * map as if all points had a y value of 4.
                          *
-                         * @sample  highcharts/demo/plotline-context
-                         *          Map to fixed y value
-                         * @type {number}
+                         * @sample highcharts/demo/plotline-context
+                         *         Map to fixed y value
+                         *
+                         * @type      {number}
                          * @apioption sonification.defaultInstrumentOptions.mapping.time.value
                          */
                         /**
@@ -691,8 +742,10 @@
                          *          Inverted mapping to property
                          * @sample  highcharts/sonification/log-mapping
                          *          Logarithmic mapping to property
+                         *
+                         * @declare Highcharts.SonificationInstrumentPitchOptions
                          * @extends sonification.defaultInstrumentOptions.mapping.time
-                         * @type {string|number|Function|object|Array<string|number>}
+                         * @type    {string|number|Function|Array<string|number>|*}
                          */
                         pitch: {
                             mapTo: 'y',
@@ -706,7 +759,8 @@
                          *
                          * @sample  highcharts/sonification/all-scales
                          *          Predefined scale presets
-                         * @type {Array<number>}
+                         *
+                         * @type      {Array<number>}
                          * @apioption sonification.defaultInstrumentOptions.mapping.pitch.scale
                          */
                         /**
@@ -718,6 +772,7 @@
                          *
                          * @sample  maps/demo/audio-map
                          *          Mapping to gap between notes
+                         *
                          * @extends sonification.defaultInstrumentOptions.mapping.time
                          * @default 100
                          */
@@ -732,7 +787,9 @@
                  *
                  * @sample  highcharts/sonification/speak-values
                  *          Speak values
-                 * @extends sonification.defaultInstrumentOptions
+                 *
+                 * @declare   Highcharts.SonificationSpeechOptions
+                 * @extends   sonification.defaultInstrumentOptions
                  * @excluding roundToMusicalNotes, midiName, instrument
                  */
                 defaultSpeechOptions: {
@@ -755,7 +812,7 @@
                      * Different platforms provide different voices for web speech
                      * synthesis.
                      *
-                     * @type {string}
+                     * @type      {string}
                      * @apioption sonification.defaultSpeechOptions.preferredVoice
                      */
                     /**
@@ -783,9 +840,10 @@
                      * data point, and `value` is available if the track is used for a
                      * context track using `valueInterval`.
                      *
-                     * @extends sonification.defaultInstrumentOptions.mapping
-                     * @excluding frequency, gapBetweenNotes, highpass, lowpass, tremolo,
-                     *  noteDuration, pan
+                     * @declare   Highcharts.SonificationSpeechMappingOptions
+                     * @extends   sonification.defaultInstrumentOptions.mapping
+                     * @excluding frequency, gapBetweenNotes, highpass, lowpass,
+                     *            tremolo, noteDuration, pan
                      * @apioption sonification.defaultSpeechOptions.mapping
                      */
                     mapping: {
@@ -795,33 +853,36 @@
                          *
                          * Can also be negative to play before the mapped time.
                          *
-                         * @extends sonification.defaultInstrumentOptions.mapping.time
+                         * @declare   Highcharts.SonificationSpeechPlayDelayOptions
+                         * @extends   sonification.defaultInstrumentOptions.mapping.time
                          * @apioption sonification.defaultSpeechOptions.mapping.playDelay
                          */
                         /**
                          * Speech pitch (how high/low the voice is) multiplier.
                          * @sample  highcharts/sonification/speak-values
                          *          Speak values
-                         * @default 1
-                         * @type {string|number|Function|object}
-                         * @extends sonification.defaultInstrumentOptions.mapping.time
+                         *
+                         * @declare   Highcharts.SonificationSpeechPitchOptions
+                         * @extends   sonification.defaultInstrumentOptions.mapping.time
                          * @excluding scale
+                         * @type      {string|number|Function|*}
+                         * @default   1
                          * @apioption sonification.defaultSpeechOptions.mapping.pitch
                          */
                         /**
-                         * @default undefined
+                         * @default   undefined
                          * @apioption sonification.defaultSpeechOptions.mapping.pitch.mapTo
                          */
                         /**
-                         * @default undefined
+                         * @default   undefined
                          * @apioption sonification.defaultSpeechOptions.mapping.pitch.min
                          */
                         /**
-                         * @default undefined
+                         * @default   undefined
                          * @apioption sonification.defaultSpeechOptions.mapping.pitch.max
                          */
                         /**
-                         * @default undefined
+                         * @default   undefined
                          * @apioption sonification.defaultSpeechOptions.mapping.pitch.within
                          */
                         /**
@@ -845,9 +906,10 @@
                          * be accessed with dot notation, for example
                          * `"Density: {point.options.custom.density}"`
                          *
-                         * @sample  highcharts/sonification/speak-values
-                         *          Speak values
-                         * @type {string|Function}
+                         * @sample highcharts/sonification/speak-values
+                         *         Speak values
+                         *
+                         * @type      {string|Function}
                          * @apioption sonification.defaultSpeechOptions.mapping.text
                          */
                         /**
@@ -924,14 +986,16 @@
         /**
          * Sonification/audio chart options for a series.
          *
-         * @since 11.0.0
+         * @declare    Highcharts.SeriesSonificationOptions
+         * @since      11.0.0
          * @requires   modules/sonification
          * @apioption  plotOptions.series.sonification
          */
         /**
          * Whether or not sonification is enabled for this series.
-         * @type {boolean}
-         * @default true
+         *
+         * @type       {boolean}
+         * @default    true
          * @apioption  plotOptions.series.sonification.enabled
          */
         /**
@@ -940,8 +1004,9 @@
          *
          * Given as an array of instrument tracks, speech tracks, or a mix of both.
          *
-         * @type {Array<*>}
-         * @extends sonification.globalContextTracks
+         * @declare    Highcharts.SeriesSonificationContextTracksOptions
+         * @type       {Array<*>}
+         * @extends    sonification.globalContextTracks
          * @apioption  plotOptions.series.sonification.contextTracks
          */
         /**
@@ -949,31 +1014,35 @@
          *
          * Given as an array of instrument tracks, speech tracks, or a mix of both.
          *
-         * @type {Array<*>}
-         * @extends sonification.globalTracks
+         * @declare    Highcharts.SeriesSonificationTracksOptions
+         * @type       {Array<*>}
+         * @extends    sonification.globalTracks
          * @apioption  plotOptions.series.sonification.tracks
          */
         /**
          * Default options for all this series' instrument tracks.
          *
-         * @extends sonification.defaultInstrumentOptions
+         * @declare    Highcharts.SeriesSonificationInstrumentOptions
+         * @extends    sonification.defaultInstrumentOptions
          * @apioption  plotOptions.series.sonification.defaultInstrumentOptions
          */
         /**
          * Default options for all this series' speech tracks.
          *
-         * @extends sonification.defaultSpeechOptions
+         * @declare    Highcharts.SeriesSonificationSpeechOptions
+         * @extends    sonification.defaultSpeechOptions
          * @apioption  plotOptions.series.sonification.defaultSpeechOptions
          */
         /**
          * Sonification point grouping options for this series.
          *
-         * @extends sonification.pointGrouping
+         * @declare    Highcharts.SeriesSonificationPointGroupingOptions
+         * @extends    sonification.pointGrouping
          * @apioption  plotOptions.series.sonification.pointGrouping
          */
         /**
          * Event context object sent to sonification chart events.
-         * @requires modules/sonification
+         * @requires  modules/sonification
          * @interface Highcharts.SonificationChartEventCallbackContext
          */ /**
         * The relevant chart
@@ -990,7 +1059,7 @@
         */
         /**
          * Event context object sent to sonification series events.
-         * @requires modules/sonification
+         * @requires  modules/sonification
          * @interface Highcharts.SonificationSeriesEventCallbackContext
          */ /**
         * The relevant series
@@ -1018,7 +1087,7 @@
     _registerModule(_modules, 'Extensions/Sonification/SynthPatch.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
-         *  (c) 2009-2022 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Class representing a Synth Patch, used by Instruments in the
          *  sonification.js module.
@@ -1030,11 +1099,11 @@
          * */
         const { clamp, defined, pick } = U;
         /**
-         * Get the multipler value from a pitch tracked multiplier. The parameter
+         * Get the multiplier value from a pitch tracked multiplier. The parameter
          * specifies the multiplier at ca 3200Hz. It is 1 at ca 50Hz. In between
          * it is mapped logarithmically.
          * @private
-         * @param {number} multiplier The multipler to track.
+         * @param {number} multiplier The multiplier to track.
          * @param {number} freq The current frequency.
          */
         function getPitchTrackedMultiplierVal(multiplier, freq) {
@@ -1233,7 +1302,7 @@
             getVMTarget() {
                 return this.vmNode && this.vmNode.gain;
             }
-            // Schedule one of the osciallator envelopes at a specified time in
+            // Schedule one of the oscillator envelopes at a specified time in
             // seconds (in AudioContext timespace).
             runEnvelopeAtTime(type, time) {
                 if (!this.gainNode) {
@@ -1710,7 +1779,7 @@
     _registerModule(_modules, 'Extensions/Sonification/InstrumentPresets.js', [], function () {
         /* *
          *
-         *  (c) 2009-2022 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Presets for SynthPatch.
          *
@@ -2586,7 +2655,7 @@
     _registerModule(_modules, 'Extensions/Sonification/SonificationInstrument.js', [_modules['Extensions/Sonification/SynthPatch.js'], _modules['Extensions/Sonification/InstrumentPresets.js'], _modules['Core/Utilities.js']], function (SynthPatch, InstrumentPresets, U) {
         /* *
          *
-         *  (c) 2009-2022 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Class representing an Instrument with mappable parameters for sonification.
          *
@@ -2816,7 +2885,6 @@
              * @private
              */
             static noteStringToC0Distance(note) {
-                // eslint-disable-next-line require-unicode-regexp
                 const match = note.match(/^([a-g][#b]?)([0-8])$/i), semitone = match ? match[1] : 'a', wholetone = semitone[0].toLowerCase(), accidental = semitone[1], octave = match ? parseInt(match[2], 10) : 4, accidentalOffset = accidental === '#' ?
                     1 : accidental === 'b' ? -1 : 0;
                 return ({
@@ -2952,7 +3020,7 @@
     _registerModule(_modules, 'Extensions/Sonification/SonificationSpeaker.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
-         *  (c) 2009-2022 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Class representing a speech synthesis voice.
          *
@@ -2995,7 +3063,7 @@
              * @function Highcharts.SonificationSpeaker#say
              * @param {string} message The message to speak.
              * @param {SonificationSpeakerOptionsObject} [options]
-             * Optionally override spaker configuration.
+             * Optionally override speaker configuration.
              */
             say(message, options) {
                 if (this.synthesis) {
@@ -3019,7 +3087,7 @@
              * @param {string} message
              * The message to speak.
              * @param {SonificationSpeakerOptionsObject} [options]
-             * Optionally override spaker configuration.
+             * Optionally override speaker configuration.
              */
             sayAtTime(time, message, options) {
                 this.scheduled.push(setTimeout(this.say.bind(this, message, options), time));
@@ -3121,7 +3189,7 @@
     _registerModule(_modules, 'Extensions/Sonification/TimelineChannel.js', [], function () {
         /* *
          *
-         *  (c) 2009-2022 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Class representing a TimelineChannel with sonification events to play.
          *
@@ -3217,7 +3285,7 @@
     _registerModule(_modules, 'Extensions/Sonification/MIDI.js', [_modules['Extensions/Sonification/SonificationInstrument.js'], _modules['Core/Utilities.js']], function (SonificationInstrument, U) {
         /* *
          *
-         *  (c) 2009-2022 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Small MIDI file writer for sonification export.
          *
@@ -3229,10 +3297,10 @@
         /* eslint-disable no-multi-spaces */
         const { pick } = U;
         const freqToNote = (f) => Math.round(12 * Math.log(f) / Math.LN2 - 48.37632), b = (byte, n) => n >>> 8 * byte & 0xFF, getHeader = (nTracks) => [
-            0x4D, 0x54, 0x68, 0x64,
-            0, 0, 0, 6,
-            0, nTracks > 1 ? 1 : 0,
-            b(1, nTracks), b(0, nTracks),
+            0x4D, 0x54, 0x68, 0x64, // HD_TYPE
+            0, 0, 0, 6, // HD_SIZE
+            0, nTracks > 1 ? 1 : 0, // HD_FORMAT
+            b(1, nTracks), b(0, nTracks), // HD_NTRACKS
             // SMTPE: 0xE7 0x28
             // -25/40 time div gives us millisecond SMTPE, but not widely supported.
             1, 0xF4 // HD_TIMEDIV, 500 ticks per beat = millisecond at 120bpm
@@ -3265,7 +3333,7 @@
                 const o = e.instrumentEventOptions || {}, t = e.time, dur = cachedDur = pick(o.noteDuration, cachedDur), tNOF = dur && e.time + dur, ctrl = [{
                         valMap: (n) => 64 + 63 * n & 0x7F,
                         data: {
-                            0x0A: o.pan,
+                            0x0A: o.pan, // Use MSB only, no need for fine adjust
                             0x5C: o.tremoloDepth,
                             0x5D: o.tremoloSpeed
                         }
@@ -3293,8 +3361,10 @@
                         add({
                             timeMS: t,
                             type: 'CTRL_CHG',
-                            data: [0xB0, parseInt(ctrlSignal, 10),
-                                ctrlDef.valMap(val)]
+                            data: [
+                                0xB0, parseInt(ctrlSignal, 10),
+                                ctrlDef.valMap(val)
+                            ]
                         });
                     }
                 }));
@@ -3334,8 +3404,8 @@
                 metaEvents.length +
                 trackEvents.length + trackEnd.length;
             return [
-                0x4D, 0x54, 0x72, 0x6B,
-                b(3, size), b(2, size),
+                0x4D, 0x54, 0x72, 0x6B, // TRK_TYPE
+                b(3, size), b(2, size), // TRK_SIZE
                 b(1, size), b(0, size)
             ].concat(addTimeInfo ? timeInfo : [], metaEvents, trackEvents, trackEnd // SYSEX_TRACK_END
             );
@@ -3361,7 +3431,7 @@
     _registerModule(_modules, 'Extensions/DownloadURL.js', [_modules['Core/Globals.js']], function (H) {
         /* *
          *
-         *  (c) 2015-2023 Oystein Moseng
+         *  (c) 2015-2024 Oystein Moseng
          *
          *  License: www.highcharts.com/license
          *
@@ -3399,7 +3469,7 @@
         function dataURLtoBlob(dataURL) {
             const parts = dataURL
                 .replace(/filename=.*;/, '')
-                .match(/data:([^;]*)(;base64)?,([0-9A-Za-z+/]+)/);
+                .match(/data:([^;]*)(;base64)?,([A-Z+\d\/]+)/i);
             if (parts &&
                 parts.length > 3 &&
                 (win.atob) &&
@@ -3438,6 +3508,9 @@
                 return;
             }
             dataURL = '' + dataURL;
+            if (nav.userAgent.length > 1000 /* RegexLimits.shortLimit */) {
+                throw new Error('Input too long');
+            }
             const // Some browsers have limitations for data URL lengths. Try to convert
             // to Blob or fall back. Edge always needs that blob.
             isOldEdgeBrowser = /Edge\/\d+/.test(nav.userAgent), 
@@ -3487,7 +3560,7 @@
     _registerModule(_modules, 'Extensions/Sonification/SonificationTimeline.js', [_modules['Extensions/Sonification/TimelineChannel.js'], _modules['Extensions/Sonification/MIDI.js'], _modules['Extensions/DownloadURL.js'], _modules['Core/Utilities.js']], function (TimelineChannel, toMIDI, DU, U) {
         /* *
          *
-         *  (c) 2009-2022 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Class representing a Timeline with sonification events to play.
          *
@@ -3729,19 +3802,19 @@
                     let s = 0, e = events.length, lastValidTime = time;
                     while (s < e) {
                         const mid = (s + e) >> 1, t = events[mid].time, cmp = t - fromTime;
-                        if (cmp > 0) { // ahead
+                        if (cmp > 0) { // Ahead
                             if (next && t < lastValidTime) {
                                 lastValidTime = t;
                             }
                             e = mid;
                         }
-                        else if (cmp < 0) { // behind
+                        else if (cmp < 0) { // Behind
                             if (!next && t > lastValidTime) {
                                 lastValidTime = t;
                             }
                             s = mid + 1;
                         }
-                        else { // same as from time
+                        else { // Same as from time
                             if (next) {
                                 s = mid + 1;
                             }
@@ -3837,10 +3910,10 @@
                         let s = 0, e = events.length;
                         while (s < e) {
                             const mid = (s + e) >> 1, t = events[mid].time;
-                            if (t < fromTime) { // behind
+                            if (t < fromTime) { // Behind
                                 s = mid + 1;
                             }
-                            else if (t > toTime) { // ahead
+                            else if (t > toTime) { // Ahead
                                 e = mid;
                             }
                             else {
@@ -3961,7 +4034,7 @@
     _registerModule(_modules, 'Extensions/Sonification/TimelineFromChart.js', [_modules['Extensions/Sonification/SonificationTimeline.js'], _modules['Extensions/Sonification/SonificationInstrument.js'], _modules['Extensions/Sonification/SonificationSpeaker.js'], _modules['Core/Utilities.js'], _modules['Core/Templating.js']], function (SonificationTimeline, SonificationInstrument, SonificationSpeaker, U, T) {
         /* *
          *
-         *  (c) 2009-2022 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Build a timeline from a chart.
          *
@@ -3972,9 +4045,7 @@
          * */
         const { clamp, defined, extend, getNestedProperty, merge, pick } = U;
         const { format } = T;
-        const isNoteDefinition = (str) => 
-        // eslint-disable-next-line require-unicode-regexp
-        (/^([a-g][#b]?)[0-8]$/i).test(str);
+        const isNoteDefinition = (str) => (/^([a-g][#b]?)[0-8]$/i).test(str);
         /**
          * Get the value of a point property from string.
          * @private
@@ -4697,7 +4768,7 @@
     _registerModule(_modules, 'Extensions/Sonification/Sonification.js', [_modules['Core/Defaults.js'], _modules['Core/Utilities.js'], _modules['Core/Globals.js'], _modules['Extensions/Sonification/Options.js'], _modules['Extensions/Sonification/SonificationInstrument.js'], _modules['Extensions/Sonification/SonificationSpeaker.js'], _modules['Extensions/Sonification/SynthPatch.js'], _modules['Extensions/Sonification/InstrumentPresets.js'], _modules['Extensions/Sonification/TimelineFromChart.js']], function (D, U, H, defaultSonificationOptions, SonificationInstrument, SonificationSpeaker, SynthPatch, InstrumentPresets, timelineFromChart) {
         /* *
          *
-         *  (c) 2009-2022 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Sonification module.
          *
@@ -4748,7 +4819,7 @@
                     this.audioContext.suspend();
                     this.audioDestination = this.audioContext.destination;
                 }
-                catch (e) { /* ignore */ }
+                catch (e) { /* Ignore */ }
             }
             /**
              * Set the audio destination node to something other than the default
@@ -5345,7 +5416,7 @@
     _registerModule(_modules, 'Extensions/Sonification/Scales.js', [], function () {
         /* *
          *
-         *  (c) 2009-2022 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Musical scales for sonification.
          *
@@ -5435,5 +5506,6 @@
         };
         Sonification.compose(G.Chart, G.Series, G.Point);
 
+        return Highcharts;
     });
 }));

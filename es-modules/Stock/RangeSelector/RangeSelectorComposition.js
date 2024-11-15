@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -9,17 +9,18 @@
  * */
 'use strict';
 import D from '../../Core/Defaults.js';
-const { defaultOptions, setOptions } = D;
+const { defaultOptions } = D;
+import H from '../../Core/Globals.js';
+const { composed } = H;
 import RangeSelectorDefaults from './RangeSelectorDefaults.js';
 import U from '../../Core/Utilities.js';
-const { addEvent, defined, extend, find, isNumber, merge, pick } = U;
+const { addEvent, defined, extend, isNumber, merge, pick, pushUnique } = U;
 /* *
  *
  *  Constants
  *
  * */
 const chartDestroyEvents = [];
-const composedMembers = [];
 /* *
  *
  *  Variables
@@ -65,7 +66,7 @@ function axisMinFromRange() {
         min = max + getTrueRange(max, -(rangeOptions.count || 1));
         // Let the fixedRange reflect initial settings (#5930)
         if (this.chart) {
-            this.chart.fixedRange = max - min;
+            this.chart.setFixedRange(max - min);
         }
     }
     const dataMin = pick(this.dataMin, Number.MIN_VALUE);
@@ -94,20 +95,16 @@ function axisMinFromRange() {
  */
 function compose(AxisClass, ChartClass, RangeSelectorClass) {
     RangeSelectorConstructor = RangeSelectorClass;
-    if (U.pushUnique(composedMembers, AxisClass)) {
+    if (pushUnique(composed, 'RangeSelector')) {
+        const chartProto = ChartClass.prototype;
         AxisClass.prototype.minFromRange = axisMinFromRange;
-    }
-    if (U.pushUnique(composedMembers, ChartClass)) {
-        addEvent(ChartClass, 'afterGetContainer', onChartAfterGetContainer);
+        addEvent(ChartClass, 'afterGetContainer', createRangeSelector);
         addEvent(ChartClass, 'beforeRender', onChartBeforeRender);
         addEvent(ChartClass, 'destroy', onChartDestroy);
         addEvent(ChartClass, 'getMargins', onChartGetMargins);
-        addEvent(ChartClass, 'render', onChartRender);
+        addEvent(ChartClass, 'redraw', redrawRangeSelector);
         addEvent(ChartClass, 'update', onChartUpdate);
-        const chartProto = ChartClass.prototype;
-        chartProto.callbacks.push(onChartCallback);
-    }
-    if (U.pushUnique(composedMembers, setOptions)) {
+        chartProto.callbacks.push(redrawRangeSelector);
         extend(defaultOptions, { rangeSelector: RangeSelectorDefaults.rangeSelector });
         extend(defaultOptions.lang, RangeSelectorDefaults.lang);
     }
@@ -116,7 +113,7 @@ function compose(AxisClass, ChartClass, RangeSelectorClass) {
  * Initialize rangeselector for stock charts
  * @private
  */
-function onChartAfterGetContainer() {
+function createRangeSelector() {
     if (this.options.rangeSelector &&
         this.options.rangeSelector.enabled) {
         this.rangeSelector = new RangeSelectorConstructor(this);
@@ -126,18 +123,12 @@ function onChartAfterGetContainer() {
  * @private
  */
 function onChartBeforeRender() {
-    const chart = this, axes = chart.axes, rangeSelector = chart.rangeSelector;
+    const chart = this, rangeSelector = chart.rangeSelector;
     if (rangeSelector) {
         if (isNumber(rangeSelector.deferredYTDClick)) {
             rangeSelector.clickButton(rangeSelector.deferredYTDClick);
             delete rangeSelector.deferredYTDClick;
         }
-        axes.forEach((axis) => {
-            axis.updateNames();
-            axis.setScale();
-        });
-        chart.getAxisMargins();
-        rangeSelector.render();
         const verticalAlign = rangeSelector.options.verticalAlign;
         if (!rangeSelector.options.floating) {
             if (verticalAlign === 'bottom') {
@@ -149,53 +140,34 @@ function onChartBeforeRender() {
         }
     }
 }
-/**
- * @private
- */
-function onChartCallback(chart) {
-    let extremes, legend, alignTo, verticalAlign;
-    const rangeSelector = chart.rangeSelector, redraw = () => {
-        if (rangeSelector) {
-            extremes = chart.xAxis[0].getExtremes();
-            legend = chart.legend;
-            verticalAlign = (rangeSelector &&
-                rangeSelector.options.verticalAlign);
-            if (isNumber(extremes.min)) {
-                rangeSelector.render(extremes.min, extremes.max);
-            }
-            // Re-align the legend so that it's below the rangeselector
-            if (legend.display &&
-                verticalAlign === 'top' &&
-                verticalAlign === legend.options.verticalAlign) {
-                // Create a new alignment box for the legend.
-                alignTo = merge(chart.spacingBox);
-                if (legend.options.layout === 'vertical') {
-                    alignTo.y = chart.plotTop;
-                }
-                else {
-                    alignTo.y += rangeSelector.getHeight();
-                }
-                legend.group.placed = false; // Don't animate the alignment.
-                legend.align(alignTo);
-            }
+function redrawRangeSelector() {
+    const chart = this;
+    const rangeSelector = this.rangeSelector;
+    if (!rangeSelector) {
+        return;
+    }
+    let alignTo;
+    const extremes = chart.xAxis[0].getExtremes();
+    const legend = chart.legend;
+    const verticalAlign = (rangeSelector &&
+        rangeSelector.options.verticalAlign);
+    if (isNumber(extremes.min)) {
+        rangeSelector.render(extremes.min, extremes.max);
+    }
+    // Re-align the legend so that it's below the rangeselector
+    if (legend.display &&
+        verticalAlign === 'top' &&
+        verticalAlign === legend.options.verticalAlign) {
+        // Create a new alignment box for the legend.
+        alignTo = merge(chart.spacingBox);
+        if (legend.options.layout === 'vertical') {
+            alignTo.y = chart.plotTop;
         }
-    };
-    if (rangeSelector) {
-        const events = find(chartDestroyEvents, (e) => e[0] === chart);
-        if (!events) {
-            chartDestroyEvents.push([chart, [
-                    // redraw the scroller on setExtremes
-                    addEvent(chart.xAxis[0], 'afterSetExtremes', function (e) {
-                        if (rangeSelector) {
-                            rangeSelector.render(e.min, e.max);
-                        }
-                    }),
-                    // redraw the scroller chart resize
-                    addEvent(chart, 'redraw', redraw)
-                ]]);
+        else {
+            alignTo.y += rangeSelector.getHeight();
         }
-        // do it now
-        redraw();
+        legend.group.placed = false; // Don't animate the alignment.
+        legend.align(alignTo);
     }
 }
 /**
@@ -212,6 +184,9 @@ function onChartDestroy() {
         }
     }
 }
+/**
+ *
+ */
 function onChartGetMargins() {
     const rangeSelector = this.rangeSelector;
     if (rangeSelector) {
@@ -221,22 +196,6 @@ function onChartGetMargins() {
         }
         if (this.extraBottomMargin) {
             this.marginBottom += rangeSelectorHeight;
-        }
-    }
-}
-/**
- * @private
- */
-function onChartRender() {
-    const chart = this, rangeSelector = chart.rangeSelector;
-    if (rangeSelector && !rangeSelector.options.floating) {
-        rangeSelector.render();
-        const verticalAlign = rangeSelector.options.verticalAlign;
-        if (verticalAlign === 'bottom') {
-            this.extraBottomMargin = true;
-        }
-        else if (verticalAlign !== 'middle') {
-            this.extraTopMargin = true;
         }
     }
 }
@@ -256,7 +215,6 @@ function onChartUpdate(e) {
     this.extraBottomMargin = false;
     this.extraTopMargin = false;
     if (rangeSelector) {
-        onChartCallback(this);
         const verticalAlign = (optionsRangeSelector &&
             optionsRangeSelector.verticalAlign) || (rangeSelector.options && rangeSelector.options.verticalAlign);
         if (!rangeSelector.options.floating) {

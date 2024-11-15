@@ -2,7 +2,7 @@
  *
  *  Timeline Series.
  *
- *  (c) 2010-2021 Highsoft AS
+ *  (c) 2010-2024 Highsoft AS
  *
  *  Author: Daniel Studencki
  *
@@ -23,16 +23,6 @@ const { defined, isNumber, merge, objectEach, pick } = U;
  *
  * */
 class TimelinePoint extends LinePoint {
-    constructor() {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        super(...arguments);
-        this.options = void 0;
-        this.series = void 0;
-    }
     /* *
      *
      *  Functions
@@ -117,11 +107,10 @@ class TimelinePoint extends LinePoint {
         }
         return [];
     }
-    init() {
-        const point = super.init.apply(this, arguments);
-        point.name = pick(point.name, 'Event');
-        point.y = 1;
-        return point;
+    constructor(series, options) {
+        super(series, options);
+        this.name ?? (this.name = 'Event');
+        this.y = 1;
     }
     isValid() {
         return this.options.y !== null;

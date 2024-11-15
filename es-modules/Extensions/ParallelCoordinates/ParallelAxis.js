@@ -2,7 +2,7 @@
  *
  *  Parallel coordinates module
  *
- *  (c) 2010-2021 Pawel Fus
+ *  (c) 2010-2024 Pawel Fus
  *
  *  License: www.highcharts.com/license
  *
@@ -12,7 +12,7 @@
 'use strict';
 import ParallelCoordinatesDefaults from './ParallelCoordinatesDefaults.js';
 import U from '../../Core/Utilities.js';
-const { addEvent, arrayMax, arrayMin, isNumber, merge, pick, pushUnique, splat } = U;
+const { addEvent, arrayMax, arrayMin, isNumber, merge, pick, splat } = U;
 /* *
  *
  *  Class
@@ -79,12 +79,6 @@ var ParallelAxis;
      * */
     /* *
      *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
@@ -93,7 +87,7 @@ var ParallelAxis;
      * @private
      */
     function compose(AxisClass) {
-        if (pushUnique(composedMembers, AxisClass)) {
+        if (!AxisClass.keepProps.includes('parallel')) {
             const axisCompo = AxisClass;
             // On update, keep parallel additions.
             AxisClass.keepProps.push('parallel');

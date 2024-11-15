@@ -1,7 +1,7 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
- * (c) 2017-2021 Highsoft AS
+ * (c) 2017-2024 Highsoft AS
  * Authors: Jon Arild Nygard
  *
  * License: www.highcharts.com/license
@@ -27,102 +27,17 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
             }
         }
     }
-    _registerModule(_modules, 'Core/Geometry/GeometryUtilities.js', [], function () {
-        /* *
-         *
-         *  (c) 2010-2021 Highsoft AS
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        /* *
-         *
-         *  Namespace
-         *
-         * */
-        var GeometryUtilities;
-        (function (GeometryUtilities) {
-            /* *
-             *
-             *  Functions
-             *
-             * */
-            /**
-             * Calculates the center between a list of points.
-             *
-             * @private
-             *
-             * @param {Array<Highcharts.PositionObject>} points
-             * A list of points to calculate the center of.
-             *
-             * @return {Highcharts.PositionObject}
-             * Calculated center
-             */
-            function getCenterOfPoints(points) {
-                const sum = points.reduce((sum, point) => {
-                    sum.x += point.x;
-                    sum.y += point.y;
-                    return sum;
-                }, { x: 0, y: 0 });
-                return {
-                    x: sum.x / points.length,
-                    y: sum.y / points.length
-                };
-            }
-            GeometryUtilities.getCenterOfPoints = getCenterOfPoints;
-            /**
-             * Calculates the distance between two points based on their x and y
-             * coordinates.
-             *
-             * @private
-             *
-             * @param {Highcharts.PositionObject} p1
-             * The x and y coordinates of the first point.
-             *
-             * @param {Highcharts.PositionObject} p2
-             * The x and y coordinates of the second point.
-             *
-             * @return {number}
-             * Returns the distance between the points.
-             */
-            function getDistanceBetweenPoints(p1, p2) {
-                return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
-            }
-            GeometryUtilities.getDistanceBetweenPoints = getDistanceBetweenPoints;
-            /**
-             * Calculates the angle between two points.
-             * @todo add unit tests.
-             * @private
-             * @param {Highcharts.PositionObject} p1 The first point.
-             * @param {Highcharts.PositionObject} p2 The second point.
-             * @return {number} Returns the angle in radians.
-             */
-            function getAngleBetweenPoints(p1, p2) {
-                return Math.atan2(p2.x - p1.x, p2.y - p1.y);
-            }
-            GeometryUtilities.getAngleBetweenPoints = getAngleBetweenPoints;
-        })(GeometryUtilities || (GeometryUtilities = {}));
-        /* *
-         *
-         *  Default Export
-         *
-         * */
-
-        return GeometryUtilities;
-    });
     _registerModule(_modules, 'Core/Geometry/CircleUtilities.js', [_modules['Core/Geometry/GeometryUtilities.js']], function (Geometry) {
         /* *
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -254,7 +169,7 @@
              * The first circle.
              *
              * @param {Highcharts.CircleObject} c2
-             * The second sircle.
+             * The second circle.
              *
              * @return {Array<Highcharts.PositionObject>}
              * Returns the resulting intersection points.
@@ -266,9 +181,9 @@
                     // If the circles are overlapping, but not completely overlapping,
                     // then it exists intersecting points.
                     const r1Square = r1 * r1, r2Square = r2 * r2, 
-                    // d^2 - r^2 + R^2 / 2d
+                    // `d^2 - r^2 + R^2 / 2d`
                     x = (r1Square - r2Square + d * d) / (2 * d), 
-                    // y^2 = R^2 - x^2
+                    // `y^2 = R^2 - x^2`
                     y = Math.sqrt(r1Square - x * x), x1 = c1.x, x2 = c2.x, y1 = c1.y, y2 = c2.y, x0 = x1 + x * (x2 - x1) / d, y0 = y1 + x * (y2 - y1) / d, rx = -(y2 - y1) * (y / d), ry = -(x2 - x1) * (y / d);
                     points = [
                         { x: round(x0 + rx, 14), y: round(y0 - ry, 14) },
@@ -293,7 +208,7 @@
                 return circles.reduce((points, c1, i, arr) => {
                     const additional = arr
                         .slice(i + 1)
-                        .reduce((points, c2, j, arr) => {
+                        .reduce((points, c2, j) => {
                         const indexes = [i, j + i + 1];
                         return points.concat(getCircleCircleIntersection(c1, c2).map((p) => {
                             p.indexes = indexes;
@@ -314,7 +229,7 @@
              * The first circle.
              *
              * @param {Highcharts.CircleObject} circle2
-             * The The second circle.
+             * The second circle.
              *
              * @return {boolean}
              * Returns true if circle1 is completely overlapping circle2, false if not.
@@ -481,10 +396,10 @@
                         arcs: []
                     }).arcs;
                     if (arcs.length === 0) {
-                        // empty
+                        // Empty
                     }
                     else if (arcs.length === 1) {
-                        // empty
+                        // Empty
                     }
                     else {
                         arcs.unshift(['M', startPoint.x, startPoint.y]);
@@ -506,13 +421,12 @@
 
         return CircleUtilities;
     });
-    _registerModule(_modules, 'Series/DrawPointUtilities.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Series/DrawPointUtilities.js', [], function () {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { isNumber } = U;
         /* *
          *
          *  Functions
@@ -570,7 +484,7 @@
                         onComplete();
                     }
                 };
-                // animate only runs complete callback if something was animated.
+                // Animate only runs complete callback if something was animated.
                 if (Object.keys(animatableAttribs).length) {
                     graphic.animate(animatableAttribs, void 0, () => destroy());
                 }
@@ -596,7 +510,7 @@
          *  Experimental Highcharts module which enables visualization of a Venn
          *  diagram.
          *
-         *  (c) 2016-2021 Highsoft AS
+         *  (c) 2016-2024 Highsoft AS
          *  Authors: Jon Arild Nygard
          *
          *  Layout algorithm by Ben Frederickson:
@@ -615,16 +529,6 @@
          *
          * */
         class VennPoint extends ScatterPoint {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.options = void 0;
-                this.series = void 0;
-            }
             /* *
              *
              *  Functions
@@ -652,7 +556,7 @@
          *  Experimental Highcharts module which enables visualization of a Venn
          *  diagram.
          *
-         *  (c) 2016-2021 Highsoft AS
+         *  (c) 2016-2024 Highsoft AS
          *  Authors: Jon Arild Nygard
          *
          *  Layout algorithm by Ben Frederickson:
@@ -784,7 +688,7 @@
          * @sample {highcharts} highcharts/demo/euler-diagram/
          *         Euler diagram
          *
-         * @type      {number}
+         * @type      {string}
          * @since     7.0.0
          * @product   highcharts
          * @apioption series.venn.data.name
@@ -826,7 +730,7 @@
          * @excluding halo
          * @apioption series.venn.states.select
          */
-        ''; // detach doclets above
+        ''; // Detachs doclets above
         /* *
          *
          *  Default Export
@@ -841,7 +745,7 @@
          *  Experimental Highcharts module which enables visualization of a Venn
          *  diagram.
          *
-         *  (c) 2016-2021 Highsoft AS
+         *  (c) 2016-2024 Highsoft AS
          *  Authors: Jon Arild Nygard
          *
          *  Layout algorithm by Ben Frederickson:
@@ -931,7 +835,8 @@
          * Root number.
          */
         function bisect(f, a, b, tolerance, maxIterations) {
-            let fA = f(a), fB = f(b), nMax = maxIterations || 100, tol = tolerance || 1e-10, delta = b - a, n = 1, x, fX;
+            const fA = f(a), fB = f(b), nMax = maxIterations || 100, tol = tolerance || 1e-10;
+            let delta = b - a, x, fX, n = 1;
             if (a >= b) {
                 throw new Error('a must be smaller than b.');
             }
@@ -982,7 +887,7 @@
          * @param {number} r1
          * Radius of the first circle.
          * @param {number} r2
-         * Radiues of the second circle.
+         * Radius of the second circle.
          * @param {number} overlap
          * The wanted overlap between the two circles.
          * @return {number}
@@ -990,7 +895,8 @@
          * circles.
          */
         function getDistanceBetweenCirclesByOverlap(r1, r2, overlap) {
-            let maxDistance = r1 + r2, distance;
+            const maxDistance = r1 + r2;
+            let distance;
             if (overlap <= 0) {
                 // If overlap is below or equal to zero, then there is no overlap.
                 distance = maxDistance;
@@ -1003,7 +909,7 @@
             else {
                 distance = bisect((x) => {
                     const actualOverlap = getOverlapBetweenCirclesByDistance(r1, r2, x);
-                    // Return the differance between wanted and actual overlap.
+                    // Return the difference between wanted and actual overlap.
                     return overlap - actualOverlap;
                 }, 0, maxDistance);
             }
@@ -1036,8 +942,7 @@
                     }, isValid = (isPointInsideAllCircles(testPos, internal) &&
                         isPointOutsideAllCircles(testPos, filteredExternals));
                     // If the position is valid, then we want to move towards the
-                    // max distance. If not, then we want to  away from the max
-                    // distance.
+                    // max distance. If not, then we want to away from the max distance.
                     return -(maxDistance - x) + (isValid ? 0 : Number.MAX_VALUE);
                 }, 0, maxDistance);
             };
@@ -1045,7 +950,7 @@
             return Math.min(findDistance(radius, -1), findDistance(radius, 1)) * 2;
         }
         /**
-         * Calculates a margin for a point based on the iternal and external
+         * Calculates a margin for a point based on the internal and external
          * circles. The margin describes if the point is well placed within the
          * internal circles, and away from the external.
          * @private
@@ -1091,10 +996,16 @@
             return overlap;
         }
         // eslint-disable-next-line require-jsdoc
+        /**
+         *
+         */
         function isSet(x) {
             return isArray(x.sets) && x.sets.length === 1;
         }
         // eslint-disable-next-line require-jsdoc
+        /**
+         *
+         */
         function isValidRelation(x) {
             const map = {};
             return (isObject(x) &&
@@ -1112,6 +1023,9 @@
                 }));
         }
         // eslint-disable-next-line require-jsdoc
+        /**
+         *
+         */
         function isValidSet(x) {
             return (isValidRelation(x) && isSet(x) && x.value > 0);
         }
@@ -1270,7 +1184,7 @@
          * @param {Highcharts.NelderMeadPointArray} initial
          *        The initial point to optimize.
          * @return {Highcharts.NelderMeadPointArray}
-         *         Returns the opimized position of a point.
+         *         Returns the optimized position of a point.
          */
         function nelderMead(fn, initial) {
             const maxIterations = 100, sortByFx = function (a, b) {
@@ -1468,7 +1382,7 @@
          *  Experimental Highcharts module which enables visualization of a Venn
          *  diagram.
          *
-         *  (c) 2016-2021 Highsoft AS
+         *  (c) 2016-2024 Highsoft AS
          *  Authors: Jon Arild Nygard
          *
          *  Layout algorithm by Ben Frederickson:
@@ -1498,24 +1412,6 @@
          * @augments Highcharts.Series
          */
         class VennSeries extends ScatterSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.mapOfIdToRelation = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                /* eslint-enable valid-jsdoc */
-            }
             /* *
              *
              *  Static Functions
@@ -1523,7 +1419,7 @@
              * */
             /**
              * Finds the optimal label position by looking for a position that has a low
-             * distance from the internal circles, and as large possible distane to the
+             * distance from the internal circles, and as large possible distance to the
              * external circles.
              * @private
              * @todo Optimize the intial position.
@@ -1592,7 +1488,7 @@
                 return best;
             }
             /**
-             * Calulates data label values for a given relations object.
+             * Calculates data label values for a given relations object.
              *
              * @private
              * @todo add unit tests
@@ -1622,7 +1518,7 @@
                 // Filter out external circles that are completely overlapping all
                 // internal
                 data.external = data.external.filter((externalCircle) => data.internal.some((internalCircle) => !isCircle1CompletelyOverlappingCircle2(externalCircle, internalCircle)));
-                // Calulate the label position.
+                // Calculate the label position.
                 const position = VennSeries.getLabelPosition(data.internal, data.external);
                 // Calculate the label width
                 const width = VennUtils.getLabelWidth(position, data.internal, data.external);
@@ -1639,7 +1535,7 @@
              * @todo Add support for constrained MDS.
              * @param {Array<Highchats.VennRelationObject>} relations
              * List of the overlap between two or more sets, or the size of a single
-             * sset.
+             * set.
              * @return {Highcharts.Dictionary<*>}
              * List of circles and their calculated positions.
              */
@@ -1681,7 +1577,7 @@
              * area, and center of x and y.
              */
             static getScale(targetWidth, targetHeight, field) {
-                const height = field.bottom - field.top, // top is smaller than bottom
+                const height = field.bottom - field.top, // Top is smaller than bottom
                 width = field.right - field.left, scaleX = width > 0 ? 1 / width * targetWidth : 1, scaleY = height > 0 ? 1 / height * targetHeight : 1, adjustX = (field.right + field.left) / 2, adjustY = (field.top + field.bottom) / 2, scale = Math.min(scaleX, scaleY);
                 return {
                     scale: scale,
@@ -1841,7 +1737,8 @@
                 }), scaling = VennSeries.getScale(chart.plotWidth, chart.plotHeight, field), scale = scaling.scale, centerX = scaling.centerX, centerY = scaling.centerY;
                 // Iterate all points and calculate and draw their graphics.
                 for (const point of this.points) {
-                    let sets = isArray(point.sets) ? point.sets : [], id = sets.join(), shape = mapOfIdToShape[id], shapeArgs, dataLabelValues = mapOfIdToLabelValues[id] || {}, dataLabelWidth = dataLabelValues.width, dataLabelPosition = dataLabelValues.position, dlOptions = point.options && point.options.dataLabels;
+                    const sets = isArray(point.sets) ? point.sets : [], id = sets.join(), shape = mapOfIdToShape[id], dataLabelValues = mapOfIdToLabelValues[id] || {}, dlOptions = point.options && point.options.dataLabels;
+                    let shapeArgs, dataLabelWidth = dataLabelValues.width, dataLabelPosition = dataLabelValues.position;
                     if (shape) {
                         if (shape.r) {
                             shapeArgs = {
@@ -1897,6 +1794,11 @@
                 }
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         VennSeries.splitter = 'highcharts-split';
         VennSeries.defaultOptions = merge(ScatterSeries.defaultOptions, VennSeriesDefaults);
         extend(VennSeries.prototype, {
@@ -1926,8 +1828,9 @@
 
         return VennSeries;
     });
-    _registerModule(_modules, 'masters/modules/venn.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/venn.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

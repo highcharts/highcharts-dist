@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2023 Highsoft AS
+ *  (c) 2009-2024 Highsoft AS
  *
  *  License: www.highcharts.com/license
  *
@@ -8,6 +8,7 @@
  *
  *  Authors:
  *  - Sophie Bremer
+ *  - Dawid Dragula
  *
  * */
 'use strict';
@@ -22,7 +23,6 @@ const { merge } = U;
 /**
  * Modifies a table with the help of modifiers in an ordered chain.
  *
- * @private
  */
 class ChainModifier extends DataModifier {
     /* *
@@ -113,32 +113,30 @@ class ChainModifier extends DataModifier {
      * @return {Promise<Highcharts.DataTable>}
      * Table with `modified` property as a reference.
      */
-    modify(table, eventDetail) {
+    async modify(table, eventDetail) {
         const modifiers = (this.options.reverse ?
             this.chain.slice().reverse() :
             this.chain.slice());
         if (table.modified === table) {
             table.modified = table.clone(false, eventDetail);
         }
-        let promiseChain = Promise.resolve(table);
+        let modified = table;
         for (let i = 0, iEnd = modifiers.length; i < iEnd; ++i) {
-            const modifier = modifiers[i];
-            promiseChain = promiseChain.then((chainTable) => modifier.modify(chainTable.modified, eventDetail));
+            try {
+                await modifiers[i].modify(modified, eventDetail);
+            }
+            catch (error) {
+                this.emit({
+                    type: 'error',
+                    detail: eventDetail,
+                    table
+                });
+                throw error;
+            }
+            modified = modified.modified;
         }
-        promiseChain = promiseChain.then((chainTable) => {
-            table.modified.deleteColumns();
-            table.modified.setColumns(chainTable.modified.getColumns());
-            return table;
-        });
-        promiseChain = promiseChain['catch']((error) => {
-            this.emit({
-                type: 'error',
-                detail: eventDetail,
-                table
-            });
-            throw error;
-        });
-        return promiseChain;
+        table.modified = modified;
+        return table;
     }
     /**
      * Applies partial modifications of a cell change to the property `modified`

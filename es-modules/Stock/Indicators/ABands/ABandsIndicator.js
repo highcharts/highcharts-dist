@@ -50,22 +50,6 @@ function getPointLB(low, base) {
  * @augments Highcharts.Series
  */
 class ABandsIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -80,7 +64,7 @@ class ABandsIndicator extends SMAIndicator {
         // ABANDS array structure:
         // 0-date, 1-top line, 2-middle line, 3-bottom line
         ABANDS = [], low = 2, high = 1, xData = [], yData = [];
-        // middle line, top line and bottom line
+        // Middle line, top line and bottom line
         let ML, TL, BL, date, bandBase, pointSMA, ubSMA, lbSMA, slicedX, slicedY, i;
         if (yValLen < period) {
             return;
@@ -133,6 +117,11 @@ class ABandsIndicator extends SMAIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Acceleration bands (ABANDS). This series requires the `linkedTo` option
  * to be set and should be loaded after the
@@ -232,4 +221,4 @@ export default ABandsIndicator;
  * @requires  stock/indicators/acceleration-bands
  * @apioption series.abands
  */
-''; // to include the above in jsdoc
+''; // To include the above in jsdoc

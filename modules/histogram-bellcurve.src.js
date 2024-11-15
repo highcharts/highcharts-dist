@@ -1,7 +1,7 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
- * (c) 2010-2021 Highsoft AS
+ * (c) 2010-2024 Highsoft AS
  * Author: Sebastian Domas
  *
  * License: www.highcharts.com/license
@@ -27,7 +27,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -64,7 +64,6 @@
              *  Constants
              *
              * */
-            const composedMembers = [];
             DerivedComposition.hasDerivedData = true;
             /**
              * Method to be implemented - inside the method the series has already
@@ -84,14 +83,12 @@
              * @private
              */
             function compose(SeriesClass) {
-                if (U.pushUnique(composedMembers, SeriesClass)) {
-                    const seriesProto = SeriesClass.prototype;
-                    seriesProto.addBaseSeriesEvents = addBaseSeriesEvents;
-                    seriesProto.addEvents = addEvents;
-                    seriesProto.destroy = destroy;
-                    seriesProto.init = init;
-                    seriesProto.setBaseSeries = setBaseSeries;
-                }
+                const seriesProto = SeriesClass.prototype;
+                seriesProto.addBaseSeriesEvents = addBaseSeriesEvents;
+                seriesProto.addEvents = addEvents;
+                seriesProto.destroy = destroy;
+                seriesProto.init = init;
+                seriesProto.setBaseSeries = setBaseSeries;
                 return SeriesClass;
             }
             DerivedComposition.compose = compose;
@@ -170,7 +167,7 @@
     _registerModule(_modules, 'Series/Histogram/HistogramSeriesDefaults.js', [], function () {
         /* *
          *
-         *  Copyright (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *  Author: Sebastian Domas
          *
          *  License: www.highcharts.com/license
@@ -196,7 +193,7 @@
          *               stacking, boostBlending
          * @product      highcharts
          * @since        6.0.0
-         * @requires     modules/histogram
+         * @requires     modules/histogram-bellcurve
          * @optionparent plotOptions.histogram
          */
         const HistogramSeriesDefaults = {
@@ -239,7 +236,7 @@
          * @excluding data, dataParser, dataURL, boostThreshold, boostBlending
          * @product   highcharts
          * @since     6.0.0
-         * @requires  modules/histogram
+         * @requires  modules/histogram-bellcurve
          * @apioption series.histogram
          */
         /**
@@ -249,7 +246,7 @@
          * @type      {number|string}
          * @apioption series.histogram.baseSeries
          */
-        ''; // keeps doclets above separate
+        ''; // Keeps doclets above separate
         /* *
          *
          *  Default Export
@@ -261,7 +258,7 @@
     _registerModule(_modules, 'Series/Histogram/HistogramSeries.js', [_modules['Series/DerivedComposition.js'], _modules['Series/Histogram/HistogramSeriesDefaults.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (DerivedComposition, HistogramSeriesDefaults, SeriesRegistry, U) {
         /* *
          *
-         *  Copyright (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *  Author: Sebastian Domas
          *
          *  License: www.highcharts.com/license
@@ -270,7 +267,7 @@
          *
          * */
         const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
-        const { arrayMax, arrayMin, correctFloat, extend, isNumber, merge, objectEach } = U;
+        const { arrayMax, arrayMin, correctFloat, extend, isNumber, merge } = U;
         /* ************************************************************************** *
          *  HISTOGRAM
          * ************************************************************************** */
@@ -317,18 +314,6 @@
          * @augments Highcharts.Series
          */
         class HistogramSeries extends ColumnSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                this.userOptions = void 0;
-            }
             /* *
              *
              *  Functions
@@ -386,7 +371,7 @@
                     data.push({
                         x: Number(key),
                         y: bins[key],
-                        x2: correctFloat(Number(x) + binWidth)
+                        x2: correctFloat(Number(key) + binWidth)
                     });
                 }
                 data.sort((a, b) => (a.x - b.x));
@@ -403,6 +388,11 @@
                 this.setData(data, false);
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         HistogramSeries.defaultOptions = merge(ColumnSeries.defaultOptions, HistogramSeriesDefaults);
         extend(HistogramSeries.prototype, {
             hasDerivedData: DerivedComposition.hasDerivedData
@@ -420,7 +410,7 @@
     _registerModule(_modules, 'Series/Bellcurve/BellcurveSeriesDefaults.js', [], function () {
         /* *
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Author: Sebastian Domas
          *
@@ -448,7 +438,7 @@
          * @product      highcharts
          * @excluding    boostThreshold, connectNulls, dragDrop, stacking,
          *               pointInterval, pointIntervalUnit
-         * @requires     modules/bellcurve
+         * @requires     modules/histogram-bellcurve
          * @optionparent plotOptions.bellcurve
          */
         const BellcurveSeriesDefaults = {
@@ -505,7 +495,7 @@
          * @since     6.0.0
          * @product   highcharts
          * @excluding dataParser, dataURL, data, boostThreshold, boostBlending
-         * @requires  modules/bellcurve
+         * @requires  modules/histogram-bellcurve
          * @apioption series.bellcurve
          */
         /**
@@ -535,7 +525,7 @@
          * @default   {highstock} 0.75
          * @apioption series.bellcurve.fillOpacity
          */
-        ''; // keeps doclets above separate
+        ''; // Keeps doclets above separate
         /* *
          *
          *  Default Export
@@ -547,7 +537,7 @@
     _registerModule(_modules, 'Series/Bellcurve/BellcurveSeries.js', [_modules['Series/Bellcurve/BellcurveSeriesDefaults.js'], _modules['Series/DerivedComposition.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (BellcurveSeriesDefaults, DerivedComposition, SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Author: Sebastian Domas
          *
@@ -573,22 +563,6 @@
          * @augments Highcharts.Series
          */
         class BellcurveSeries extends AreaSplineSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Static Functions
@@ -637,7 +611,7 @@
                 if (series.baseSeries?.yData?.length || 0 > 1) {
                     series.setMean();
                     series.setStandardDeviation();
-                    series.setData(series.derivedData(series.mean || 0, series.standardDeviation || 0), false);
+                    series.setData(series.derivedData(series.mean || 0, series.standardDeviation || 0), false, void 0, false);
                 }
                 return (void 0);
             }
@@ -650,6 +624,11 @@
                 series.standardDeviation = correctFloat(BellcurveSeries.standardDeviation(series.baseSeries.yData, series.mean));
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         BellcurveSeries.defaultOptions = merge(AreaSplineSeries.defaultOptions, BellcurveSeriesDefaults);
         DerivedComposition.compose(BellcurveSeries);
         SeriesRegistry.registerSeriesType('bellcurve', BellcurveSeries);
@@ -661,8 +640,9 @@
 
         return BellcurveSeries;
     });
-    _registerModule(_modules, 'masters/modules/histogram-bellcurve.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/histogram-bellcurve.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

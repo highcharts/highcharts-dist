@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.4.8 (2024-08-29)
  *
  * Hollow Candlestick series type for Highcharts Stock
  *
- * (c) 2010-2021 Karol Kolodziej
+ * (c) 2010-2024 Karol Kolodziej
  *
  * License: www.highcharts.com/license
  */
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -38,7 +38,7 @@
     _registerModule(_modules, 'Series/HollowCandlestick/HollowCandlestickPoint.js', [_modules['Core/Series/SeriesRegistry.js']], function (SeriesRegistry) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -57,16 +57,6 @@
          *
          * */
         class HollowCandlestickPoint extends CandlestickSeries.prototype.pointClass {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.series = void 0;
-                /* eslint-enable valid-jsdoc */
-            }
             /* *
              *
              *  Functions
@@ -103,7 +93,7 @@
     _registerModule(_modules, 'Series/HollowCandlestick/HollowCandlestickSeries.js', [_modules['Series/HollowCandlestick/HollowCandlestickPoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js'], _modules['Core/Axis/Axis.js']], function (HollowCandlestickPoint, SeriesRegistry, U, Axis) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -139,15 +129,7 @@
                  *
                  * */
                 super(...arguments);
-                /* *
-                 *
-                 * Properties
-                 *
-                 * */
-                this.data = void 0;
                 this.hollowCandlestickData = [];
-                this.options = void 0;
-                this.points = void 0;
                 /* eslint-disable valid-jsdoc */
             }
             /* *
@@ -165,20 +147,17 @@
              */
             getPriceMovement() {
                 const series = this, 
-                // procesed and grouped data
+                // Processed and grouped data
                 processedYData = series.allGroupedData || series.yData, hollowCandlestickData = this.hollowCandlestickData;
-                if (!hollowCandlestickData.length &&
-                    processedYData &&
-                    processedYData.length) {
-                    // First point is allways bullish (transparent).
-                    hollowCandlestickData.push({
-                        isBullish: true,
-                        trendDirection: 'up'
-                    });
-                    for (let i = 1; i < processedYData.length; i++) {
-                        const dataPoint = processedYData[i], previousDataPoint = processedYData[i - 1];
-                        hollowCandlestickData.push(series.isBullish(dataPoint, previousDataPoint));
-                    }
+                hollowCandlestickData.length = 0;
+                // First point is always bullish (transparent).
+                hollowCandlestickData.push({
+                    isBullish: true,
+                    trendDirection: 'up'
+                });
+                for (let i = 1; i < processedYData.length; i++) {
+                    const dataPoint = processedYData[i], previousDataPoint = processedYData[i - 1];
+                    hollowCandlestickData.push(series.isBullish(dataPoint, previousDataPoint));
                 }
             }
             /**
@@ -224,7 +203,7 @@
             }
             /**
              * @private
-             * @function Highcarts.seriesTypes.hollowcandlestick#init
+             * @function Highcharts.seriesTypes.hollowcandlestick#init
              */
             init() {
                 super.init.apply(this, arguments);
@@ -264,7 +243,8 @@
              * Current point state.
              */
             pointAttribs(point, state) {
-                let attribs = super.pointAttribs.call(this, point, state), stateOptions;
+                const attribs = super.pointAttribs.call(this, point, state);
+                let stateOptions;
                 const index = point.index, hollowcandleInfo = this.hollowCandlestickData[index];
                 attribs.fill = this.getPointFill(hollowcandleInfo) || attribs.fill;
                 attribs.stroke = this.getLineColor(hollowcandleInfo.trendDirection) ||
@@ -446,12 +426,13 @@
          * @product   highstock
          * @apioption series.hollowcandlestick.data
          */
-        ''; // adds doclets above to transpilat
+        ''; // Adds doclets above to transpiled
 
         return HollowCandlestickSeries;
     });
-    _registerModule(_modules, 'masters/modules/hollowcandlestick.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/hollowcandlestick.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

@@ -1,7 +1,7 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
- * (c) 2009-2022
+ * (c) 2009-2024
  *
  * License: www.highcharts.com/license
  */
@@ -26,7 +26,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -36,7 +36,7 @@
     _registerModule(_modules, 'Series/GeoHeatmap/GeoHeatmapPoint.js', [_modules['Core/Utilities.js'], _modules['Core/Series/SeriesRegistry.js']], function (U, SeriesRegistry) {
         /* *
          *
-         *  (c) 2010-2023 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Authors: Magdalena Gut, Piotr Madej
          *
@@ -53,18 +53,6 @@
          *
          * */
         class GeoHeatmapPoint extends MapPoint {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.lat = void 0;
-                this.lon = void 0;
-                this.options = void 0;
-                this.series = void 0;
-            }
             /* *
              *
              *  Functions
@@ -107,7 +95,7 @@
     _registerModule(_modules, 'Series/InterpolationUtilities.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2010-2023 Hubert Kozik
+         *  (c) 2010-2024 Hubert Kozik
          *
          *  License: www.highcharts.com/license
          *
@@ -179,7 +167,7 @@
     _registerModule(_modules, 'Series/GeoHeatmap/GeoHeatmapSeries.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Series/GeoHeatmap/GeoHeatmapPoint.js'], _modules['Core/Globals.js'], _modules['Series/InterpolationUtilities.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (A, GeoHeatmapPoint, H, IU, SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2023 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Authors: Magdalena Gut, Piotr Madej
          *
@@ -230,16 +218,6 @@
                  *
                  * */
                 super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.options = void 0;
-                this.data = void 0;
-                this.points = void 0;
-                this.canvas = void 0;
-                this.context = void 0;
                 this.isDirtyCanvas = true;
             }
             /* *
@@ -464,7 +442,7 @@
                     chart.tooltip.options.enabled) {
                     if (
                     // If user drags map do not build k-d-tree
-                    chart.pointer.hasDragged === false &&
+                    !chart.pointer.hasDragged &&
                         // If user zooms in/out map do not build k-d-tree
                         (+series.image.attr('animator') <= 0.01 ||
                             +series.image.attr('animator') >= 0.99)) {
@@ -541,9 +519,6 @@
              * @sample maps/demo/geoheatmap-europe/
              *         1 by default, set to 5
              *
-             * @type      {number}
-             * @default   1
-             * @since 11.0.0
              * @product   highmaps
              * @apioption plotOptions.geoheatmap.colsize
              */
@@ -555,7 +530,6 @@
              * default value is pulled from the [options.colors](#colors) array.
              *
              * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-             * @since 11.0.0
              * @product   highmaps
              * @apioption plotOptions.geoheatmap.color
              */
@@ -566,9 +540,6 @@
              * @sample maps/demo/geoheatmap-europe/
              *         1 by default, set to 5
              *
-             * @type      {number}
-             * @default   1
-             * @since 11.0.0
              * @product   highmaps
              * @apioption plotOptions.geoheatmap.rowsize
              */
@@ -583,29 +554,29 @@
              *         datasets
              *
              * @type      {boolean|Highcharts.InterpolationOptionsObject}
-             * @since     @next
+             * @since     11.2.0
              * @product   highmaps
              */
             interpolation: {
                 /**
                  * Enable or disable the interpolation of the geoheatmap series.
                  *
-                 * @since     @next
+                 * @since 11.2.0
                  */
                 enabled: false,
                 /**
                  * Represents how much blur should be added to the interpolated
                  * image. Works best in the range of 0-1, all higher values
-                 * would need a lot more perfomance of the machine to calculate
+                 * would need a lot more performance of the machine to calculate
                  * more detailed interpolation.
                  *
                  *  * **Note:** Useful, if the data is spread into wide range of
-                 *  longitue and latitude values.
+                 *  longitude and latitude values.
                  *
                  * @sample maps/series-geoheatmap/turkey-fire-areas
                  *         Simple demo of GeoHeatmap interpolation
                  *
-                 * @since     @next
+                 * @since  11.2.0
                  */
                 blur: 1
             }
@@ -696,7 +667,7 @@
          * @apioption series.geoheatmap.data.color
          */
         /**
-         * The value of the point, resulting in a color controled by options
+         * The value of the point, resulting in a color controlled by options
          * as set in the [colorAxis](#colorAxis) configuration.
          *
          * @type      {number|null}
@@ -715,18 +686,19 @@
         */ /**
         * Represents how much blur should be added to the interpolated
         * image. Works best in the range of 0-1, all higher values
-        * would need a lot more perfomance of the machine to calculate
+        * would need a lot more performance of the machine to calculate
         * more detailed interpolation.
         *
         * @name Highcharts.InterpolationOptionsObject#blur
         * @type {number}
         */
-        ''; // adds doclets above to the transpiled file
+        ''; // Adds doclets above to the transpiled file
 
         return GeoHeatmapSeries;
     });
-    _registerModule(_modules, 'masters/modules/geoheatmap.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/geoheatmap.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

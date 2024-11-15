@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.4.8 (2024-08-29)
  *
  * Indicator series type for Highcharts Stock
  *
- * (c) 2010-2021 Rafał Sebestjański
+ * (c) 2010-2024 Rafał Sebestjański
  *
  * License: www.highcharts.com/license
  */
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -60,23 +60,6 @@
          * @augments Highcharts.Series
          */
         class DEMAIndicator extends EMAIndicator {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.EMApercent = void 0;
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Functions
@@ -106,7 +89,7 @@
                 // Accumulate first N-points
                 accumulatePeriodPoints =
                     super.accumulatePeriodPoints(period, index, yVal);
-                // first point
+                // First point
                 SMA = accumulatePeriodPoints / period;
                 accumulatePeriodPoints = 0;
                 // Calculate value one-by-one for each period in visible data
@@ -145,6 +128,11 @@
                 };
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         /**
          * Double exponential moving average (DEMA) indicator. This series requires
          * `linkedTo` option to be set and should be loaded after the
@@ -190,12 +178,13 @@
          * @requires  stock/indicators/dema
          * @apioption series.dema
          */
-        ''; // adds doclet above to the transpiled file
+        ''; // Adds doclet above to the transpiled file
 
         return DEMAIndicator;
     });
-    _registerModule(_modules, 'masters/indicators/dema.src.js', [], function () {
+    _registerModule(_modules, 'masters/indicators/dema.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

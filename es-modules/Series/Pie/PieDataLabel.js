@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -10,13 +10,13 @@
 'use strict';
 import DataLabel from '../../Core/Series/DataLabel.js';
 import H from '../../Core/Globals.js';
-const { noop } = H;
+const { composed, noop } = H;
 import R from '../../Core/Renderer/RendererUtilities.js';
 const { distribute } = R;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: Series } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-const { arrayMax, clamp, defined, pick, relativeLength } = U;
+const { arrayMax, clamp, defined, pick, pushUnique, relativeLength } = U;
 /* *
  *
  *  Composition
@@ -29,7 +29,6 @@ var ColumnDataLabel;
      *  Constants
      *
      * */
-    const composedMembers = [];
     const dataLabelPositioners = {
         // Based on the value computed in Highcharts' distribute algorithm.
         radialDistributionY: function (point, dataLabel) {
@@ -65,7 +64,7 @@ var ColumnDataLabel;
         // touches the right edge of the plot area.
         alignToConnectors: function (points, half, plotWidth, plotLeft) {
             let maxDataLabelWidth = 0, dataLabelWidth;
-            // find widest data label
+            // Find widest data label
             points.forEach(function (point) {
                 dataLabelWidth = point.dataLabel.getBBox().width;
                 if (dataLabelWidth > maxDataLabelWidth) {
@@ -81,11 +80,10 @@ var ColumnDataLabel;
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /** @private */
     function compose(PieSeriesClass) {
         DataLabel.compose(Series);
-        if (U.pushUnique(composedMembers, PieSeriesClass)) {
+        if (pushUnique(composed, 'PieDataLabel')) {
             const pieProto = PieSeriesClass.prototype;
             pieProto.dataLabelPositioners = dataLabelPositioners;
             pieProto.alignDataLabel = noop;
@@ -133,7 +131,7 @@ var ColumnDataLabel;
      */
     function drawDataLabels() {
         const series = this, points = series.points, chart = series.chart, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, plotLeft = chart.plotLeft, maxWidth = Math.round(chart.chartWidth / 3), seriesCenter = series.center, radius = seriesCenter[2] / 2, centerY = seriesCenter[1], halves = [
-            [],
+            [], // Right
             [] // Left
         ], overflow = [0, 0, 0, 0], // Top, right, bottom, left
         dataLabelPositioners = series.dataLabelPositioners;
@@ -199,7 +197,7 @@ var ColumnDataLabel;
                 bottom = Math.min(centerY + radius + maxLabelDistance, chart.plotHeight);
                 points.forEach((point) => {
                     // Check if specific points' label is outside the pie
-                    (point.dataLabels || []).forEach((dataLabel, i) => {
+                    (point.dataLabels || []).forEach((dataLabel) => {
                         const labelPosition = dataLabel.dataLabelPosition;
                         if (labelPosition &&
                             labelPosition.distance > 0) {
@@ -209,11 +207,12 @@ var ColumnDataLabel;
                             labelPosition.top = Math.max(0, centerY - radius - labelPosition.distance);
                             labelPosition.bottom = Math.min(centerY + radius + labelPosition.distance, chart.plotHeight);
                             size = dataLabel.getBBox().height || 21;
+                            dataLabel.lineHeight = chart.renderer.fontMetrics(dataLabel.text || dataLabel).h + 2 * dataLabel.padding;
                             point.distributeBox = {
                                 target: ((dataLabel.dataLabelPosition
                                     ?.natural.y || 0) -
                                     labelPosition.top +
-                                    size / 2),
+                                    dataLabel.lineHeight / 2),
                                 size,
                                 rank: point.y
                             };
@@ -228,7 +227,7 @@ var ColumnDataLabel;
             points.forEach((point) => {
                 (point.dataLabels || []).forEach((dataLabel) => {
                     const dataLabelOptions = (dataLabel.options || {}), distributeBox = point.distributeBox, labelPosition = dataLabel.dataLabelPosition, naturalY = labelPosition?.natural.y || 0, connectorPadding = dataLabelOptions
-                        .connectorPadding || 0;
+                        .connectorPadding || 0, lineHeight = dataLabel.lineHeight || 21, bBox = dataLabel.getBBox(), topOffset = (lineHeight - bBox.height) / 2;
                     let x = 0, y = naturalY, visibility = 'inherit';
                     if (labelPosition) {
                         if (positions &&
@@ -258,7 +257,7 @@ var ColumnDataLabel;
                                     x = dataLabelPositioners.alignToPlotEdges(dataLabel, halfIdx, plotWidth, plotLeft);
                                     break;
                                 default:
-                                    x = dataLabelPositioners.radialDistributionX(series, point, y, naturalY, dataLabel);
+                                    x = dataLabelPositioners.radialDistributionX(series, point, y - topOffset, naturalY, dataLabel);
                             }
                         }
                         // Record the placement and visibility
@@ -276,10 +275,10 @@ var ColumnDataLabel;
                             y: y +
                                 (dataLabelOptions.y || 0) - // (#12985)
                                 // Vertically center
-                                dataLabel.getBBox().height / 2
+                                lineHeight / 2
                         };
                         labelPosition.computed.x = x;
-                        labelPosition.computed.y = y;
+                        labelPosition.computed.y = y - topOffset;
                         // Detect overflowing data labels
                         if (pick(dataLabelOptions.crop, true)) {
                             dataLabelWidth = dataLabel.getBBox().width;
@@ -407,7 +406,8 @@ var ColumnDataLabel;
      * @private
      */
     function verifyDataLabelOverflow(overflow) {
-        let center = this.center, options = this.options, centerOption = options.center, minSize = options.minSize || 80, newSize = minSize, 
+        const center = this.center, options = this.options, centerOption = options.center, minSize = options.minSize || 80;
+        let newSize = minSize, 
         // If a size is set, return true and don't try to shrink the pie
         // to fit the labels.
         ret = options.size !== null;
@@ -419,9 +419,9 @@ var ColumnDataLabel;
             }
             else { // Auto center
                 newSize = Math.max(
-                // horizontal overflow
+                // Horizontal overflow
                 center[2] - overflow[1] - overflow[3], minSize);
-                // horizontal center
+                // Horizontal center
                 center[0] += (overflow[3] - overflow[1]) / 2;
             }
             // Handle vertical size and center
@@ -430,9 +430,9 @@ var ColumnDataLabel;
             }
             else { // Auto center
                 newSize = clamp(newSize, minSize, 
-                // vertical overflow
+                // Vertical overflow
                 center[2] - overflow[0] - overflow[2]);
-                // vertical center
+                // Vertical center
                 center[1] += (overflow[0] - overflow[2]) / 2;
             }
             // If the size must be decreased, we need to run translate and

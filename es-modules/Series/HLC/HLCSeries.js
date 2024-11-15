@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Pawel Lysy
+ *  (c) 2010-2024 Pawel Lysy
  *
  *  License: www.highcharts.com/license
  *
@@ -13,7 +13,7 @@ import HLCSeriesDefaults from './HLCSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
-const { extend, merge } = U;
+const { crisp, extend, merge } = U;
 /* *
  *
  *  Class
@@ -29,23 +29,6 @@ const { extend, merge } = U;
  * @augments Highcharts.Series
  */
 class HLCSeries extends ColumnSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        this.yData = void 0;
-    }
     /* *
      *
      *  Functions
@@ -76,19 +59,18 @@ class HLCSeries extends ColumnSeries {
      * @private
      */
     getPointPath(point, graphic) {
-        // crisp vector coordinates
-        const strokeWidth = graphic.strokeWidth(), series = point.series, crispCorr = (strokeWidth % 2) / 2, 
+        // Crisp vector coordinates
+        const strokeWidth = graphic.strokeWidth(), series = point.series, 
         // #2596:
-        crispX = Math.round(point.plotX) - crispCorr, halfWidth = Math.round(point.shapeArgs.width / 2);
-        let plotClose = point.plotClose;
-        // the vertical stem
+        crispX = crisp(point.plotX || 0, strokeWidth), halfWidth = Math.round(point.shapeArgs.width / 2);
+        // The vertical stem
         const path = [
             ['M', crispX, Math.round(point.yBottom)],
             ['L', crispX, Math.round(point.plotHigh)]
         ];
-        // close
+        // Close
         if (point.close !== null) {
-            plotClose = Math.round(point.plotClose) + crispCorr;
+            const plotClose = crisp(point.plotClose, strokeWidth);
             path.push(['M', crispX, plotClose], ['L', crispX + halfWidth, plotClose]);
             series.extendStem(path, strokeWidth / 2, plotClose);
         }
@@ -110,7 +92,7 @@ class HLCSeries extends ColumnSeries {
             if (!chart.styledMode) {
                 graphic.attr(series.pointAttribs(point, (point.selected && 'select'))); // #3897
             }
-            // crisp vector coordinates
+            // Crisp vector coordinates
             path = series.getPointPath(point, graphic);
             graphic[!graphic ? 'attr' : 'animate']({ d: path })
                 .addClass(point.getClassName(), true);
@@ -141,7 +123,7 @@ class HLCSeries extends ColumnSeries {
         return attribs;
     }
     toYData(point) {
-        // return a plain array for speedy calculation
+        // Return a plain array for speedy calculation
         return [point.high, point.low, point.close];
     }
     /**
@@ -174,10 +156,15 @@ class HLCSeries extends ColumnSeries {
         });
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 HLCSeries.defaultOptions = merge(ColumnSeries.defaultOptions, HLCSeriesDefaults);
 extend(HLCSeries.prototype, {
     pointClass: HLCPoint,
-    animate: null,
+    animate: null, // Disable animation
     directTouch: false,
     pointArrayMap: ['high', 'low', 'close'],
     pointAttrToOptions: {

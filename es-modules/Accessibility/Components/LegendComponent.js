@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2021 Øystein Moseng
+ *  (c) 2009-2024 Øystein Moseng
  *
  *  Accessibility component for chart legend.
  *
@@ -349,19 +349,18 @@ class LegendComponent extends AccessibilityComponent {
      * Arrow key navigation
      * @private
      */
-    onKbdArrowKey(keyboardNavigationHandler, keyCode) {
-        const keys = this.keyCodes, response = keyboardNavigationHandler.response, chart = this.chart, a11yOptions = chart.options.accessibility, numItems = chart.legend.allItems.length, direction = (keyCode === keys.left || keyCode === keys.up) ? -1 : 1;
-        const res = chart.highlightLegendItem(this.highlightedLegendItemIx + direction);
+    onKbdArrowKey(keyboardNavigationHandler, key) {
+        const { keyCodes: { left, up }, highlightedLegendItemIx, chart } = this, numItems = chart.legend.allItems.length, wrapAround = chart.options.accessibility
+            .keyboardNavigation.wrapAround, direction = (key === left || key === up) ? -1 : 1, res = chart.highlightLegendItem(highlightedLegendItemIx + direction);
         if (res) {
             this.highlightedLegendItemIx += direction;
-            return response.success;
         }
-        if (numItems > 1 &&
-            a11yOptions.keyboardNavigation.wrapAround) {
-            keyboardNavigationHandler.init(direction);
-            return response.success;
+        else if (wrapAround && numItems > 1) {
+            this.highlightedLegendItemIx = direction > 0 ?
+                0 : numItems - 1;
+            chart.highlightLegendItem(this.highlightedLegendItemIx);
         }
-        return response.success;
+        return keyboardNavigationHandler.response.success;
     }
     /**
      * @private
@@ -408,16 +407,9 @@ class LegendComponent extends AccessibilityComponent {
      * */
     /* *
      *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * Highlight legend item by index.
      * @private
@@ -426,7 +418,7 @@ class LegendComponent extends AccessibilityComponent {
         const items = this.legend.allItems;
         const oldIx = this.accessibility &&
             this.accessibility.components.legend.highlightedLegendItemIx;
-        const itemToHighlight = items[ix], legendItem = itemToHighlight.legendItem || {};
+        const itemToHighlight = items[ix], legendItem = itemToHighlight?.legendItem || {};
         if (itemToHighlight) {
             if (isNumber(oldIx) && items[oldIx]) {
                 setLegendItemHoverState(false, items[oldIx]);
@@ -447,11 +439,9 @@ class LegendComponent extends AccessibilityComponent {
      * @private
      */
     function compose(ChartClass, LegendClass) {
-        if (U.pushUnique(composedMembers, ChartClass)) {
-            const chartProto = ChartClass.prototype;
+        const chartProto = ChartClass.prototype;
+        if (!chartProto.highlightLegendItem) {
             chartProto.highlightLegendItem = chartHighlightLegendItem;
-        }
-        if (U.pushUnique(composedMembers, LegendClass)) {
             addEvent(LegendClass, 'afterColorizeItem', legendOnAfterColorizeItem);
         }
     }

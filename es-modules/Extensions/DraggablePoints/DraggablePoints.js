@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2021 Highsoft AS
+ *  (c) 2009-2024 Highsoft AS
  *
  *  Authors: Øystein Moseng, Torstein Hønsi, Jon A. Nygård
  *
@@ -17,13 +17,7 @@ const { initDragDrop } = DraggableChart;
 import DragDropDefaults from './DragDropDefaults.js';
 import DragDropProps from './DragDropProps.js';
 import U from '../../Core/Utilities.js';
-const { addEvent, clamp, isNumber, merge, pick, pushUnique } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { addEvent, clamp, isNumber, merge, pick } = U;
 /* *
  *
  *  Functions
@@ -33,7 +27,7 @@ const composedMembers = [];
 Add drag/drop support to specific data props for different series types.
 
 The dragDrop.draggableX/Y user options on series enable/disable all of these per
-irection unless they are specifically set in options using
+direction unless they are specifically set in options using
 dragDrop.{optionName}. If the prop does not specify an optionName here, it can
 only be enabled/disabled by the user with draggableX/Y.
 
@@ -73,61 +67,58 @@ Supported options for each prop:
 */
 /** @private */
 function compose(ChartClass, SeriesClass) {
-    const PointClass = SeriesClass.prototype.pointClass, seriesTypes = SeriesClass.types;
     DraggableChart.compose(ChartClass);
-    if (pushUnique(composedMembers, PointClass)) {
-        const pointProto = PointClass.prototype;
+    const seriesProto = SeriesClass.prototype;
+    if (!seriesProto.dragDropProps) {
+        const PointClass = SeriesClass.prototype.pointClass, seriesTypes = SeriesClass.types, pointProto = PointClass.prototype;
         pointProto.getDropValues = pointGetDropValues;
         pointProto.showDragHandles = pointShowDragHandles;
         addEvent(PointClass, 'mouseOut', onPointMouseOut);
         addEvent(PointClass, 'mouseOver', onPointMouseOver);
         addEvent(PointClass, 'remove', onPointRemove);
-    }
-    if (pushUnique(composedMembers, SeriesClass)) {
-        const seriesProto = SeriesClass.prototype;
         seriesProto.dragDropProps = DragDropProps.line;
         seriesProto.getGuideBox = seriesGetGuideBox;
-    }
-    // Custom props for certain series types
-    const seriesWithDragDropProps = [
-        'arearange',
-        'boxplot',
-        'bullet',
-        'column',
-        'columnrange',
-        'flags',
-        'gantt',
-        'ohlc',
-        'waterfall',
-        'xrange'
-    ];
-    for (const seriesType of seriesWithDragDropProps) {
-        if (seriesTypes[seriesType] &&
-            pushUnique(composedMembers, seriesTypes[seriesType])) {
-            seriesTypes[seriesType].prototype.dragDropProps =
-                DragDropProps[seriesType];
+        // Custom props for certain series types
+        const seriesWithDragDropProps = [
+            'arearange',
+            'boxplot',
+            'bullet',
+            'column',
+            'columnrange',
+            'errorbar',
+            'flags',
+            'gantt',
+            'ohlc',
+            'waterfall',
+            'xrange'
+        ];
+        for (const seriesType of seriesWithDragDropProps) {
+            if (seriesTypes[seriesType]) {
+                seriesTypes[seriesType].prototype.dragDropProps =
+                    DragDropProps[seriesType];
+            }
         }
-    }
-    // Don't support certain series types
-    const seriesWithoutDragDropProps = [
-        'bellcurve',
-        'gauge',
-        'histogram',
-        'map',
-        'mapline',
-        'pareto',
-        'pie',
-        'sankey',
-        'sma',
-        'sunburst',
-        'treemap',
-        'vector',
-        'windbarb',
-        'wordcloud'
-    ];
-    for (const seriesType of seriesWithoutDragDropProps) {
-        if (seriesTypes[seriesType]) {
-            seriesTypes[seriesType].prototype.dragDropProps = null;
+        // Don't support certain series types
+        const seriesWithoutDragDropProps = [
+            'bellcurve',
+            'gauge',
+            'histogram',
+            'map',
+            'mapline',
+            'pareto',
+            'pie',
+            'sankey',
+            'sma',
+            'sunburst',
+            'treemap',
+            'vector',
+            'windbarb',
+            'wordcloud'
+        ];
+        for (const seriesType of seriesWithoutDragDropProps) {
+            if (seriesTypes[seriesType]) {
+                seriesTypes[seriesType].prototype.dragDropProps = null;
+            }
         }
     }
 }
@@ -337,20 +328,20 @@ function pointGetDropValues(origin, newPos, updateProps) {
                 return res;
             }
             if (key === 'lat') {
-                // if map is bigger than possible projection range
+                // If map is bigger than possible projection range
                 if (isNaN(min) || min > mapView.projection.maxLatitude) {
                     min = mapView.projection.maxLatitude;
                 }
                 if (isNaN(max) || max < -1 * mapView.projection.maxLatitude) {
                     max = -1 * mapView.projection.maxLatitude;
                 }
-                // swap for latitude
+                // Swap for latitude
                 const temp = max;
                 max = min;
                 min = temp;
             }
             if (!mapView.projection.hasCoordinates) {
-                // establish y value
+                // Establish y value
                 const lonLatRes = mapView.pixelsToLonLat({
                     x: newPos.chartX - chart.plotLeft,
                     y: chart.plotHeight - newPos.chartY + chart.plotTop
@@ -560,7 +551,7 @@ export default DraggablePoints;
  * @callback Highcharts.PointDragCallbackFunction
  *
  * @param {Highcharts.Point} this
- *        Point where the event occured.
+ *        Point where the event occurred.
  *
  * @param {Highcharts.PointDragEventObject} event
  *        Event arguments.
@@ -617,7 +608,7 @@ export default DraggablePoints;
  * @callback Highcharts.PointDragStartCallbackFunction
  *
  * @param {Highcharts.Point} this
- *        Point where the event occured.
+ *        Point where the event occurred.
  *
  * @param {Highcharts.PointDragStartEventObject} event
  *        Event arguments.
@@ -638,7 +629,7 @@ export default DraggablePoints;
  * @callback Highcharts.PointDropCallbackFunction
  *
  * @param {Highcharts.Point} this
- *        Point where the event occured.
+ *        Point where the event occurred.
  *
  * @param {Highcharts.PointDropEventObject} event
  *        Event arguments.
@@ -680,4 +671,4 @@ export default DraggablePoints;
 * @name Highcharts.PointDropEventObject#type
 * @type {"drop"}
 */
-''; // detaches doclets above
+''; // Detaches doclets above

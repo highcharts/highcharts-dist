@@ -25,22 +25,6 @@ const { isNumber, merge } = U;
  * @augments Highcharts.Series
  */
 class CMOIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -73,7 +57,7 @@ class CMOIndicator extends SMAIndicator {
                 sumOfLowerValues += values[j - 1] - values[j];
             }
         }
-        // You might devide by 0 if all values are equal,
+        // You might divide by 0 if all values are equal,
         // so return 0 in this case.
         y =
             sumOfHigherValues + sumOfLowerValues > 0 ?
@@ -92,7 +76,7 @@ class CMOIndicator extends SMAIndicator {
                 sumOfLowerValues += values[i - 1] - values[i];
             }
             // Check, to which sum was the first value added to,
-            // and substract this value from given sum.
+            // and subtract this value from given sum.
             if (values[i - period] > values[i - period - 1]) {
                 sumOfHigherValues -= firstAddedSum;
             }
@@ -116,6 +100,11 @@ class CMOIndicator extends SMAIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Chande Momentum Oscilator (CMO) technical indicator. This series
  * requires the `linkedTo` option to be set and should be loaded after
@@ -161,4 +150,4 @@ export default CMOIndicator;
  * @requires  stock/indicators/cmo
  * @apioption series.cmo
  */
-(''); // to include the above in the js output
+(''); // To include the above in the js output

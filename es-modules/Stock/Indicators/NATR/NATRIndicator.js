@@ -25,25 +25,6 @@ const { merge } = U;
  * @augments Highcharts.Series
  */
 class NATRIndicator extends ATRIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /**
-         * @lends Highcharts.Series#
-         */
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.points = void 0;
-        this.options = void 0;
-    }
     /* *
      *
      *  Functions
@@ -63,6 +44,11 @@ class NATRIndicator extends ATRIndicator {
         return atrData;
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Normalized average true range indicator (NATR). This series requires
  * `linkedTo` option to be set and should be loaded after the
@@ -108,4 +94,4 @@ export default NATRIndicator;
  * @requires  stock/indicators/natr
  * @apioption series.natr
  */
-''; // to include the above in the js output'
+''; // To include the above in the js output'

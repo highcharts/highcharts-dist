@@ -24,7 +24,6 @@ class Controllable {
      *
      * */
     constructor(annotation, options, index, itemType) {
-        this.graphic = void 0;
         this.annotation = annotation;
         this.chart = annotation.chart;
         this.collection = (itemType === 'label' ? 'labels' : 'shapes');
@@ -44,7 +43,9 @@ class Controllable {
      * Redirect attr usage on the controllable graphic element.
      * @private
      */
-    attr(..._args) {
+    attr(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    ..._args) {
         this.graphic.attr.apply(this.graphic, arguments);
     }
     /**
@@ -107,7 +108,12 @@ class Controllable {
      * Render a controllable.
      * @private
      */
-    render(_parentGroup) {
+    render(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _parentGroup) {
+        if (this.options.className && this.graphic) {
+            this.graphic.addClass(this.options.className);
+        }
         this.renderControlPoints();
     }
     /**
@@ -211,7 +217,7 @@ export default Controllable;
  *
  * */
 /**
- * An object which denots a controllable's anchor positions - relative and
+ * An object which denotes a controllable's anchor positions - relative and
  * absolute.
  *
  * @private
@@ -244,4 +250,4 @@ export default Controllable;
 * @name Highcharts.AnnotationControllable#points
 * @type {Array<Highcharts.Point>}
 */
-(''); // keeps doclets above in JS file
+(''); // Keeps doclets above in JS file

@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  Scatter 3D series.
  *
@@ -108,7 +108,7 @@ const Scatter3DSeriesDefaults = {
  * @product   highcharts
  * @apioption series.scatter3d.data.z
  */
-''; // detachs doclets above
+''; // Detachs doclets above
 /* *
  *
  *  Default Export

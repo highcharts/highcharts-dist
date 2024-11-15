@@ -46,22 +46,6 @@ function getStandardDeviation(arr, index, isOHLC, mean) {
  * @augments Highcharts.Series
  */
 class BBIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -87,7 +71,7 @@ class BBIndicator extends SMAIndicator {
         const period = params.period, standardDeviation = params.standardDeviation, xData = [], yData = [], xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
         // 0- date, 1-middle line, 2-top line, 3-bottom line
         BB = [];
-        // middle line, top line and bottom line
+        // Middle line, top line and bottom line
         let ML, TL, BL, date, slicedX, slicedY, stdDev, point, i;
         if (xVal.length < period) {
             return;
@@ -116,6 +100,11 @@ class BBIndicator extends SMAIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Bollinger bands (BB). This series requires the `linkedTo` option to be
  * set and should be loaded after the `stock/indicators/indicators.js` file.
@@ -238,4 +227,4 @@ export default BBIndicator;
  * @requires  stock/indicators/bollinger-bands
  * @apioption series.bb
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

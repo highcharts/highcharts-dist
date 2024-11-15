@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2023 Highsoft AS
+ *  (c) 2009-2024 Highsoft AS
  *
  *  License: www.highcharts.com/license
  *
@@ -191,7 +191,7 @@ class CSVConverter extends DataConverter {
             }
             if (dataTypes.length &&
                 dataTypes[0].length &&
-                dataTypes[0][1] === 'date' && // format is a string date
+                dataTypes[0][1] === 'date' && // Format is a string date
                 !converter.options.dateFormat) {
                 converter.deduceDateFormat(converter.columns[0], null, true);
             }
@@ -226,11 +226,9 @@ class CSVConverter extends DataConverter {
         if (!decimalPoint || decimalPoint === itemDelimiter) {
             decimalPoint = converter.guessedDecimalPoint || '.';
         }
-        let i = 0, c = '', cl = '', cn = '', token = '', actualColumn = 0, column = 0;
+        let i = 0, c = '', token = '', actualColumn = 0, column = 0;
         const read = (j) => {
             c = columnStr[j];
-            cl = columnStr[j - 1];
-            cn = columnStr[j + 1];
         };
         const pushType = (type) => {
             if (dataTypes.length < column + 1) {
@@ -293,7 +291,7 @@ class CSVConverter extends DataConverter {
             read(i);
             if (c === '#') {
                 // If there are hexvalues remaining (#13283)
-                if (!/^#[0-F]{3,3}|[0-F]{6,6}/i.test(columnStr.substring(i))) {
+                if (!/^#[A-F\d]{3,3}|[A-F\d]{6,6}/i.test(columnStr.substring(i))) {
                     // The rest of the row is a comment
                     push();
                     return;

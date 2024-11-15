@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.4.8 (2024-08-29)
  *
  * Indicator series type for Highcharts Stock
  *
- * (c) 2010-2021 Sebastian Bochan
+ * (c) 2010-2024 Sebastian Bochan
  *
  * License: www.highcharts.com/license
  */
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -259,14 +259,14 @@
                     senkouSpanOptions.styles.fill, negativeColor = senkouSpanOptions.negativeColor, 
                 // Points to create color and negativeColor senkouSpan
                 points = [
-                    [],
+                    [], // Points color
                     [] // Points negative color
                 ], 
                 // For span, we need an access to the next points, used in
                 // getGraphPath()
                 nextPoints = [
-                    [],
-                    [] // NextPoints negative color
+                    [], // Next points color
+                    [] // Next points negative color
                 ];
                 let pointsLength = mainLinePoints.length, lineIndex = 0, position, point, i, startIntersect, endIntersect, sectionPoints, sectionNextPoints, pointsPlotYSum, nextPointsPlotYSum, senkouSpanTempColor, concatArrIndex, j, k;
                 indicator.ikhMap = ikhMap;
@@ -530,7 +530,7 @@
              * @excluding index
              */
             params: {
-                index: void 0,
+                index: void 0, // Unused index, do not inherit (#15362)
                 period: 26,
                 /**
                  * The base period for Tenkan calculations.
@@ -721,12 +721,13 @@
          * @requires  stock/indicators/ichimoku-kinko-hyo
          * @apioption series.ikh
          */
-        (''); // add doclet above to transpiled file
+        (''); // Add doclet above to transpiled file
 
         return IKHIndicator;
     });
-    _registerModule(_modules, 'masters/indicators/ichimoku-kinko-hyo.src.js', [], function () {
+    _registerModule(_modules, 'masters/indicators/ichimoku-kinko-hyo.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

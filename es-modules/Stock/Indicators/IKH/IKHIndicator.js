@@ -226,14 +226,14 @@ class IKHIndicator extends SMAIndicator {
             senkouSpanOptions.styles.fill, negativeColor = senkouSpanOptions.negativeColor, 
         // Points to create color and negativeColor senkouSpan
         points = [
-            [],
+            [], // Points color
             [] // Points negative color
         ], 
         // For span, we need an access to the next points, used in
         // getGraphPath()
         nextPoints = [
-            [],
-            [] // NextPoints negative color
+            [], // Next points color
+            [] // Next points negative color
         ];
         let pointsLength = mainLinePoints.length, lineIndex = 0, position, point, i, startIntersect, endIntersect, sectionPoints, sectionNextPoints, pointsPlotYSum, nextPointsPlotYSum, senkouSpanTempColor, concatArrIndex, j, k;
         indicator.ikhMap = ikhMap;
@@ -497,7 +497,7 @@ IKHIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
      * @excluding index
      */
     params: {
-        index: void 0,
+        index: void 0, // Unused index, do not inherit (#15362)
         period: 26,
         /**
          * The base period for Tenkan calculations.
@@ -689,4 +689,4 @@ export default IKHIndicator;
  * @requires  stock/indicators/ichimoku-kinko-hyo
  * @apioption series.ikh
  */
-(''); // add doclet above to transpiled file
+(''); // Add doclet above to transpiled file

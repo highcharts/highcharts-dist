@@ -13,6 +13,11 @@ import * as _Highcharts from "../highcharts";
  */
 export function factory(highcharts: typeof Highcharts): void;
 declare module "../highcharts" {
+    /**
+     * An array of GeoJSON or TopoJSON objects or strings used as map data for
+     * series.
+     */
+    type MapDataType = (string|GeoJSON|TopoJSON|Array<any>);
     interface Chart {
         /**
          * Deprecated. Use `MapView.lonLatToProjectedUnits` instead.
@@ -140,7 +145,7 @@ declare module "../highcharts" {
          *        Custom options.
          *
          * @param callback
-         *        Function to run when the chart has loaded and and all external
+         *        Function to run when the chart has loaded and all external
          *        images are loaded.
          *
          * @fires Highcharts.MapChart#init
@@ -255,6 +260,22 @@ declare module "../highcharts" {
          * @return The position in pixels
          */
         projectedUnitsToPixels(pos: PositionObject): PositionObject;
+        /**
+         * Calculate and set the recommended map view based on provided map data
+         * from series.
+         *
+         * @param chart
+         *        Chart object
+         *
+         * @param mapDataArray
+         *        Array of map data from all series.
+         *
+         * @param update
+         *        Whether to update the chart with recommended map view.
+         *
+         * @return Best suitable map view.
+         */
+        recommendMapView(chart: Chart, mapDataArray: Array<(MapDataType|undefined)>, update?: boolean): (MapViewOptions|undefined);
         /**
          * Set the view to given center and zoom values.
          *
@@ -383,11 +404,7 @@ declare module "../highcharts" {
      * @return Splitted SVG path
      */
     function splitPath(path: (string|Array<(string|number)>)): SVGPathArray;
-    /**
-     * Add logic to pad each axis with the amount of pixels necessary to avoid
-     * the bubbles to overflow.
-     */
-    function axisBeforePadding(): void;
+    function bottomButton(): void;
     /**
      * If ranges are not specified, determine ranges from rendered bubble series
      * and render legend again.
@@ -396,7 +413,8 @@ declare module "../highcharts" {
     /**
      * Toggle bubble legend depending on the visible status of bubble series.
      */
-    function onSeriesLegendItemClick(): void;
+    function onLegendItemClick(): void;
+    function topButton(): void;
     /**
      * Convert a TopoJSON topology to GeoJSON. By default the first object is
      * handled. Based on https://github.com/topojson/topojson-specification

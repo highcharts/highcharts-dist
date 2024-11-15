@@ -2,7 +2,7 @@
  *
  *  Solid angular gauge module
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -32,26 +32,6 @@ const { clamp, extend, isNumber, merge, pick, pInt } = U;
  * @augments Highcarts.Series
  */
 class SolidGaugeSeries extends GaugeSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.points = void 0;
-        this.options = void 0;
-        this.axis = void 0;
-        this.yAxis = void 0;
-        this.startAngleRad = void 0;
-        this.thresholdAngleRad = void 0;
-    }
     /* *
      *
      *  Functions
@@ -83,7 +63,7 @@ class SolidGaugeSeries extends GaugeSeries {
         this.thresholdAngleRad = pick(thresholdAngleRad, yAxis.startAngleRad);
         for (const point of series.points) {
             // #10630 null point should not be draw
-            if (!point.isNull) { // condition like in pie chart
+            if (!point.isNull) { // Condition like in pie chart
                 const radius = ((pInt(pick(point.options.radius, options.radius, 100 // %
                 )) * center[2]) / 200), innerRadius = ((pInt(pick(point.options.innerRadius, options.innerRadius, 60 // %
                 )) * center[2]) / 200), axisMinAngle = Math.min(yAxis.startAngleRad, yAxis.endAngleRad), axisMaxAngle = Math.max(yAxis.startAngleRad, yAxis.endAngleRad);
@@ -128,7 +108,7 @@ class SolidGaugeSeries extends GaugeSeries {
                     d = shapeArgs.d;
                     graphic.animate(extend({ fill: toColor }, shapeArgs));
                     if (d) {
-                        shapeArgs.d = d; // animate alters it
+                        shapeArgs.d = d; // Animate alters it
                     }
                 }
                 else {
@@ -165,6 +145,11 @@ class SolidGaugeSeries extends GaugeSeries {
         }
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 SolidGaugeSeries.defaultOptions = merge(GaugeSeries.defaultOptions, SolidGaugeSeriesDefaults);
 SeriesRegistry.registerSeriesType('solidgauge', SolidGaugeSeries);
 /* *

@@ -2,7 +2,7 @@
  *
  *  GUI generator for Stock tools
  *
- *  (c) 2009-2021 Sebastian Bochan
+ *  (c) 2009-2024 Sebastian Bochan
  *
  *  License: www.highcharts.com/license
  *
@@ -615,6 +615,7 @@ const stockTools = {
          */
         definitions: {
             separator: {
+                elementType: 'span',
                 /**
                  * A predefined background symbol for the button.
                  */
@@ -974,7 +975,7 @@ const stockTools = {
                 },
                 timeCycles: {
                     /**
-                     * A predefined backgroud symbol for the button.
+                     * A predefined background symbol for the button.
                      *
                      * @type {string}
                      */
@@ -1175,7 +1176,13 @@ const stockTools = {
                  */
                 symbol: 'save-chart.svg'
             }
-        }
+        },
+        /**
+         * Whether the stock tools toolbar is visible.
+         *
+         * @since 11.4.4
+         */
+        visible: true
     }
 };
 /* *

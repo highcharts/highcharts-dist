@@ -1,7 +1,7 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
- * (c) 2009-2021 Sebastian Bochan, Rafal Sebestjanski
+ * (c) 2009-2024 Sebastian Bochan, Rafal Sebestjanski
  *
  * License: www.highcharts.com/license
  */
@@ -26,7 +26,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -36,7 +36,7 @@
     _registerModule(_modules, 'Series/AreaRange/AreaRangePoint.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -44,36 +44,23 @@
          *
          * */
         const { area: { prototype: { pointClass: AreaPoint, pointClass: { prototype: areaProto } } } } = SeriesRegistry.seriesTypes;
-        const { defined, isNumber, merge } = U;
+        const { defined, isNumber } = U;
         /* *
          *
          *  Class
          *
          * */
         class AreaRangePoint extends AreaPoint {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                /**
-                 * Range series only. The high or maximum value for each data point.
-                 * @name Highcharts.Point#high
-                 * @type {number|undefined}
-                 */
-                this.high = void 0;
-                /**
-                 * Range series only. The low or minimum value for each data point.
-                 * @name Highcharts.Point#low
-                 * @type {number|undefined}
-                 */
-                this.low = void 0;
-                this.options = void 0;
-                this.plotX = void 0;
-                this.series = void 0;
-            }
+            /**
+             * Range series only. The high or maximum value for each data point.
+             * @name Highcharts.Point#high
+             * @type {number|undefined}
+             */
+            /**
+             * Range series only. The low or minimum value for each data point.
+             * @name Highcharts.Point#low
+             * @type {number|undefined}
+             */
             /* *
              *
              *  Functions
@@ -83,7 +70,7 @@
              * @private
              */
             setState() {
-                const prevState = this.state, series = this.series, isPolar = series.chart.polar, seriesOptionsMarker = series.options.marker, seriesDefaultSymbol = series.symbol;
+                const prevState = this.state, series = this.series, isPolar = series.chart.polar;
                 if (!defined(this.plotHigh)) {
                     // Boost doesn't calculate plotHigh
                     this.plotHigh = series.yAxis.toPixels(this.high, true);
@@ -156,7 +143,7 @@
     _registerModule(_modules, 'Series/Dumbbell/DumbbellPoint.js', [_modules['Series/AreaRange/AreaRangePoint.js'], _modules['Core/Utilities.js']], function (AreaRangePoint, U) {
         /* *
          *
-         *  (c) 2010-2021 Sebastian Bochan, Rafal Sebestjanski
+         *  (c) 2010-2024 Sebastian Bochan, Rafal Sebestjanski
          *
          *  License: www.highcharts.com/license
          *
@@ -170,17 +157,6 @@
          *
          * */
         class DumbbellPoint extends AreaRangePoint {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.series = void 0;
-                this.options = void 0;
-                this.pointWidth = void 0;
-            }
             /* *
              *
              *  Functions
@@ -191,8 +167,6 @@
              * (between low and high value).
              *
              * @private
-             * @param {Highcharts.Point} this The point to inspect.
-             *
              */
             setState() {
                 const point = this, series = point.series, chart = series.chart, seriesLowColor = series.options.lowColor, seriesMarker = series.options.marker, seriesLowMarker = series.options.lowMarker, pointOptions = point.options, pointLowColor = pointOptions.lowColor, zoneColor = point.zone && point.zone.color, lowerGraphicColor = pick(pointLowColor, seriesLowMarker?.fillColor, seriesLowColor, pointOptions.color, zoneColor, point.color, series.color);
@@ -246,7 +220,7 @@
     _registerModule(_modules, 'Series/Dumbbell/DumbbellSeriesDefaults.js', [], function () {
         /* *
          *
-         *  (c) 2010-2021 Sebastian Bochan, Rafal Sebestjanski
+         *  (c) 2010-2024 Sebastian Bochan, Rafal Sebestjanski
          *
          *  License: www.highcharts.com/license
          *
@@ -258,6 +232,25 @@
          *  API Options
          *
          * */
+        /**
+         * The dumbbell series is a cartesian series with higher and lower values
+         * for each point along an X axis, connected with a line between the
+         * values.
+         *
+         * Requires `highcharts-more.js` and `modules/dumbbell.js`.
+         *
+         * @sample {highcharts} highcharts/demo/dumbbell/
+         *         Dumbbell chart
+         * @sample {highcharts} highcharts/series-dumbbell/styled-mode-dumbbell/
+         *         Styled mode
+         *
+         * @extends      plotOptions.arearange
+         * @product      highcharts highstock
+         * @excluding    fillColor, fillOpacity, lineWidth, stack, stacking,
+         *               stickyTracking, trackByArea, boostThreshold, boostBlending
+         * @since 8.0.0
+         * @optionparent plotOptions.dumbbell
+         */
         const DumbbellSeriesDefaults = {
             /** @ignore-option */
             trackByArea: false,
@@ -279,6 +272,7 @@
             groupPadding: 0.2,
             crisp: false,
             pointPadding: 0.1,
+            legendSymbol: 'rectangle',
             /**
              * Color of the start markers in a dumbbell graph. This option takes
              * priority over the series color. To avoid this, set `lowColor` to
@@ -387,6 +381,16 @@
          * @apioption series.dumbbell.data
          */
         /**
+         * Color of the start markers in a dumbbell graph. This option takes
+         * priority over the series color. To avoid this, set `lowColor` to
+         * `undefined`.
+         *
+         * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+         * @since     8.0.0
+         * @product   highcharts highstock
+         * @apioption  series.dumbbell.lowColor
+         */
+        /**
          * Options for the lower markers of the dumbbell-like series. When `lowMarker`
          * is not defined, options inherit form the marker.
          *
@@ -437,7 +441,7 @@
          * @product     highcharts highstock
          * @apioption   series.dumbbell.data.lowColor
          */
-        ''; // keeps doclets above separate
+        ''; // Keeps doclets above separate
         /* *
          *
          *  Default Export
@@ -449,7 +453,7 @@
     _registerModule(_modules, 'Series/Dumbbell/DumbbellSeries.js', [_modules['Series/Dumbbell/DumbbellPoint.js'], _modules['Series/Dumbbell/DumbbellSeriesDefaults.js'], _modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (DumbbellPoint, DumbbellSeriesDefaults, H, SeriesRegistry, SVGRenderer, U) {
         /* *
          *
-         *  (c) 2010-2021 Sebastian Bochan, Rafal Sebestjanski
+         *  (c) 2010-2024 Sebastian Bochan, Rafal Sebestjanski
          *
          *  License: www.highcharts.com/license
          *
@@ -474,23 +478,6 @@
          * @augments Highcharts.Series
          */
         class DumbbellSeries extends AreaRangeSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                this.columnMetrics = void 0;
-            }
             /* *
              *
              *  Functions
@@ -552,7 +539,7 @@
                             'L',
                             point.plotX,
                             pointBottom
-                        ]], connectorWidth, 'ceil')
+                        ]], connectorWidth)
                 };
                 if (!chart.styledMode) {
                     attribs.stroke = connectorColor;
@@ -653,25 +640,6 @@
                 }
             }
             /**
-             * Get non-presentational attributes for a point. Used internally for
-             * both styled mode and classic. Set correct position in link with connector
-             * line.
-             *
-             * @see Series#pointAttribs
-             *
-             * @function Highcharts.Series#markerAttribs
-             *
-             * @return {Highcharts.SVGAttributes}
-             *         A hash containing those attributes that are not settable from
-             *         CSS.
-             */
-            markerAttribs() {
-                const ret = super.markerAttribs.apply(this, arguments);
-                ret.x = Math.floor(ret.x || 0);
-                ret.y = Math.floor(ret.y || 0);
-                return ret;
-            }
-            /**
              * Get presentational attributes.
              *
              * @private
@@ -702,25 +670,11 @@
                 ColumnRangeSeries.prototype.afterColumnTranslate.apply(this);
             }
         }
-        /**
-         * The dumbbell series is a cartesian series with higher and lower values
-         * for each point along an X axis, connected with a line between the
-         * values.
+        /* *
          *
-         * Requires `highcharts-more.js` and `modules/dumbbell.js`.
+         *  Static Properties
          *
-         * @sample {highcharts} highcharts/demo/dumbbell/
-         *         Dumbbell chart
-         * @sample {highcharts} highcharts/series-dumbbell/styled-mode-dumbbell/
-         *         Styled mode
-         *
-         * @extends      plotOptions.arearange
-         * @product      highcharts highstock
-         * @excluding    fillColor, fillOpacity, lineWidth, stack, stacking,
-         *               stickyTracking, trackByArea, boostThreshold, boostBlending
-         * @since 8.0.0
-         * @optionparent plotOptions.dumbbell
-         */
+         * */
         DumbbellSeries.defaultOptions = merge(AreaRangeSeries.defaultOptions, DumbbellSeriesDefaults);
         extend(DumbbellSeries.prototype, {
             crispCol: ColumnSeries.prototype.crispCol,
@@ -740,8 +694,9 @@
 
         return DumbbellSeries;
     });
-    _registerModule(_modules, 'masters/modules/dumbbell.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/dumbbell.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

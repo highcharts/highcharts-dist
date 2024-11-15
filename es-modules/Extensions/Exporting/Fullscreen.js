@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2021 Rafal Sebestjanski
+ *  (c) 2009-2024 Rafal Sebestjanski
  *
  *  Full screen for Highcharts
  *
@@ -15,20 +15,11 @@
  * Based on default solutions in browsers.
  */
 'use strict';
-/* *
- *
- *  Imports
- *
- * */
 import AST from '../../Core/Renderer/HTML/AST.js';
+import H from '../../Core/Globals.js';
+const { composed } = H;
 import U from '../../Core/Utilities.js';
-const { addEvent, fireEvent } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { addEvent, fireEvent, pushUnique } = U;
 /* *
  *
  *  Functions
@@ -73,7 +64,7 @@ class Fullscreen {
      * The chart class to decorate with fullscreen support.
      */
     static compose(ChartClass) {
-        if (U.pushUnique(composedMembers, ChartClass)) {
+        if (pushUnique(composed, 'Fullscreen')) {
             // Initialize fullscreen
             addEvent(ChartClass, 'beforeRender', onChartBeforeRender);
         }
@@ -197,7 +188,7 @@ class Fullscreen {
             fullscreen.origHeight = chart.chartHeight;
             // Handle exitFullscreen() method when user clicks 'Escape' button.
             if (fullscreen.browserProps) {
-                const unbindChange = addEvent(chart.container.ownerDocument, // chart's document
+                const unbindChange = addEvent(chart.container.ownerDocument, // Chart's document
                 fullscreen.browserProps.fullscreenChange, function () {
                     // Handle lack of async of browser's
                     // fullScreenChange event.
@@ -297,10 +288,10 @@ export default Fullscreen;
  * @callback Highcharts.FullScreenfullscreenCloseCallbackFunction
  *
  * @param {Highcharts.Chart} chart
- *        The chart on which the event occured.
+ *        The chart on which the event occurred.
  *
  * @param {global.Event} event
- *        The event that occured.
+ *        The event that occurred.
  */
 /**
  * Gets fired when opening the fullscreen
@@ -308,12 +299,12 @@ export default Fullscreen;
  * @callback Highcharts.FullScreenfullscreenOpenCallbackFunction
  *
  * @param {Highcharts.Chart} chart
- *        The chart on which the event occured.
+ *        The chart on which the event occurred.
  *
  * @param {global.Event} event
- *        The event that occured.
+ *        The event that occurred.
  */
-(''); // keeps doclets above separated from following code
+(''); // Keeps doclets above separated from following code
 /* *
  *
  *  API Options
@@ -346,4 +337,4 @@ export default Fullscreen;
  * @requires  modules/full-screen
  * @apioption chart.events.fullscreenOpen
  */
-(''); // keeps doclets above in transpiled file
+(''); // Keeps doclets above in transpiled file

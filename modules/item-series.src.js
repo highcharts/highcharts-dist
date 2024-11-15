@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
  * Item series type for Highcharts
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -38,7 +38,7 @@
     _registerModule(_modules, 'Series/Item/ItemPoint.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2019-2021 Torstein Honsi
+         *  (c) 2019-2024 Torstein Honsi
          *
          *  Item series type for Highcharts
          *
@@ -55,16 +55,6 @@
          *
          * */
         class ItemPoint extends PiePoint {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.options = void 0;
-                this.series = void 0;
-            }
         }
         extend(ItemPoint.prototype, {
             haloPath: Point.prototype.haloPath
@@ -80,7 +70,7 @@
     _registerModule(_modules, 'Series/Item/ItemSeriesDefaults.js', [_modules['Core/Series/SeriesDefaults.js'], _modules['Core/Utilities.js']], function (SeriesDefaults, U) {
         /* *
          *
-         *  (c) 2019-2021 Torstein Honsi
+         *  (c) 2019-2024 Torstein Honsi
          *
          *  Item series type for Highcharts
          *
@@ -249,7 +239,7 @@
          * @excluding legendItemClick
          * @apioption series.item.events
          */
-        ''; // keeps the doclets above separate
+        ''; // Keeps the doclets above separate
         /* *
          *
          *  Default Export
@@ -261,7 +251,7 @@
     _registerModule(_modules, 'Series/Item/ItemSeries.js', [_modules['Series/Item/ItemPoint.js'], _modules['Series/Item/ItemSeriesDefaults.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (ItemPoint, ItemSeriesDefaults, SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2019-2021 Torstein Honsi
+         *  (c) 2019-2024 Torstein Honsi
          *
          *  Item series type for Highcharts
          *
@@ -282,7 +272,7 @@
         /**
          * The item series type.
          *
-         * @requires module:modules/item-series
+         * @requires modules/item-series
          *
          * @private
          * @class
@@ -291,17 +281,6 @@
          * @augments Highcharts.seriesTypes.pie
          */
         class ItemSeries extends PieSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Functions
@@ -329,7 +308,7 @@
             drawDataLabels() {
                 if (this.center && this.slots) {
                     super.drawDataLabels();
-                    // or it's just a dot chart with no natural place to put the data labels
+                    // Or it's just a dot chart with no natural place to put the data labels
                 }
                 else {
                     for (const point of this.points) {
@@ -424,7 +403,7 @@
                         if (!graphic.isActive) {
                             graphic.destroy();
                             graphics.splice(j, 1);
-                            j--; // Need to substract 1 after splice, #19053
+                            j--; // Need to subtract 1 after splice, #19053
                         }
                         else {
                             graphic.isActive = false;
@@ -566,7 +545,7 @@
             }
             translate(positions) {
                 // Initialize chart without setting data, #13379.
-                if (this.total === 0 && // check if that is a (semi-)circle
+                if (this.total === 0 && // Check if that is a (semi-)circle
                     isNumber(this.options.startAngle) &&
                     isNumber(this.options.endAngle)) {
                     this.center = this.getCenter();
@@ -585,6 +564,11 @@
                 }
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         ItemSeries.defaultOptions = merge(PieSeries.defaultOptions, ItemSeriesDefaults);
         extend(ItemSeries.prototype, {
             markerAttribs: void 0,
@@ -599,8 +583,9 @@
 
         return ItemSeries;
     });
-    _registerModule(_modules, 'masters/modules/item-series.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/item-series.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

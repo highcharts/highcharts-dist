@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
  * Sankey diagram module
  *
- * (c) 2010-2021 Torstein Honsi
+ * (c) 2010-2024 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -57,12 +57,6 @@
              * */
             /* *
              *
-             *  Constants
-             *
-             * */
-            const composedMembers = [];
-            /* *
-             *
              *  Functions
              *
              * */
@@ -70,17 +64,12 @@
              * @private
              */
             function compose(PointClass, SeriesClass) {
-                if (U.pushUnique(composedMembers, PointClass)) {
-                    const pointProto = PointClass.prototype;
-                    pointProto.setNodeState = setNodeState;
-                    pointProto.setState = setNodeState;
-                    pointProto.update = updateNode;
-                }
-                if (U.pushUnique(composedMembers, SeriesClass)) {
-                    const seriesProto = SeriesClass.prototype;
-                    seriesProto.destroy = destroy;
-                    seriesProto.setData = setData;
-                }
+                const pointProto = PointClass.prototype, seriesProto = SeriesClass.prototype;
+                pointProto.setNodeState = setNodeState;
+                pointProto.setState = setNodeState;
+                pointProto.update = updateNode;
+                seriesProto.destroy = destroy;
+                seriesProto.setData = setData;
                 return SeriesClass;
             }
             NodesComposition.compose = compose;
@@ -94,7 +83,7 @@
                 let node = findById(this.nodes, id), options;
                 if (!node) {
                     options = this.options.nodes && findById(this.options.nodes, id);
-                    const newNode = (new PointClass()).init(this, extend({
+                    const newNode = new PointClass(this, extend({
                         className: 'highcharts-node',
                         isNode: true,
                         id: id,
@@ -145,7 +134,7 @@
                     node = newNode;
                 }
                 node.formatPrefix = 'node';
-                // for use in formats
+                // For use in formats
                 node.name = node.name || node.options.id || '';
                 // Mass is used in networkgraph:
                 node.mass = pick(
@@ -159,7 +148,7 @@
             }
             NodesComposition.createNode = createNode;
             /**
-             * Destroy alll nodes and links.
+             * Destroy all nodes and links.
              * @private
              */
             function destroy() {
@@ -211,7 +200,7 @@
                         nodeLookup[point.to].linksTo.push(point);
                         point.toNode = nodeLookup[point.to];
                     }
-                    point.name = point.name || point.id; // for use in formats
+                    point.name = point.name || point.id; // For use in formats
                 }, this);
                 // Store lookup table for later use
                 this.nodeLookup = nodeLookup;
@@ -266,7 +255,7 @@
                 pointProto.update.call(this, options, this.isNode ? false : redraw, // Hold the redraw for nodes
                 animation, runEvent);
                 if (this.isNode) {
-                    // this.index refers to `series.nodes`, not `options.nodes` array
+                    // `this.index` refers to `series.nodes`, not `options.nodes` array
                     const nodeIndex = (nodes || [])
                         .reduce(// Array.findIndex needs a polyfill
                     (prevIndex, n, index) => (this.id === n.id ? index : prevIndex), -1), 
@@ -315,7 +304,7 @@
          *
          *  Sankey diagram module
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -330,27 +319,6 @@
          *
          * */
         class SankeyPoint extends ColumnSeries.prototype.pointClass {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.className = void 0;
-                this.fromNode = void 0;
-                this.level = void 0;
-                this.linkBase = void 0;
-                this.linkColorMode = void 0;
-                this.linksFrom = void 0;
-                this.linksTo = void 0;
-                this.mass = void 0;
-                this.nodeX = void 0;
-                this.nodeY = void 0;
-                this.options = void 0;
-                this.series = void 0;
-                this.toNode = void 0;
-            }
             /* *
              *
              *  Functions
@@ -430,7 +398,7 @@
          *
          *  Sankey diagram module
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -493,7 +461,7 @@
              */
             dataLabels: {
                 enabled: true,
-                backgroundColor: 'none',
+                backgroundColor: 'none', // Enable padding
                 crop: false,
                 /**
                  * The
@@ -611,7 +579,7 @@
              *         Sankey diagram with gradients and explanation
              *
              * @type      {('from'|'gradient'|'to')}
-             * @since     @next
+             * @since     11.2.0
              */
             linkColorMode: 'from',
             /**
@@ -654,23 +622,57 @@
              */
             nodeAlignment: 'center',
             /**
-             * The pixel width of each node in a sankey diagram or dependency wheel,
-             * or the height in case the chart is inverted.
+             * The pixel width of each node in a sankey diagram or dependency wheel, or
+             * the height in case the chart is inverted.
              *
-             * @private
+             * Can be a number or a percentage string.
+             *
+             * Sankey series also support setting it to `auto`. With this setting, the
+             * nodes are sized to fill up the plot area in the longitudinal direction,
+             * regardless of the number of levels.
+             *
+             * @see    [sankey.nodeDistance](#nodeDistance)
+             * @sample highcharts/series-sankey/node-distance
+             *         Sankey with auto node width combined with node distance
+             * @sample highcharts/series-organization/node-distance
+             *         Organization chart with node distance of 50%
+             *
+             * @type {number|string}
              */
             nodeWidth: 20,
             /**
              * The padding between nodes in a sankey diagram or dependency wheel, in
-             * pixels.
+             * pixels. For sankey charts, this applies to the nodes of the same column,
+             * so vertical distance by default, or horizontal distance in an inverted
+             * (vertical) sankey.
              *
-             * If the number of nodes is so great that it is possible to lay them
-             * out within the plot area with the given `nodePadding`, they will be
-             * rendered with a smaller padding as a strategy to avoid overflow.
-             *
-             * @private
+             * If the number of nodes is so great that it is impossible to lay them out
+             * within the plot area with the given `nodePadding`, they will be rendered
+             * with a smaller padding as a strategy to avoid overflow.
              */
             nodePadding: 10,
+            /**
+             * The distance between nodes in a sankey diagram in the longitudinal
+             * direction. The longitudinal direction means the direction that the chart
+             * flows - in a horizontal chart the distance is horizontal, in an inverted
+             * chart (vertical), the distance is vertical.
+             *
+             * If a number is given, it denotes pixels. If a percentage string is given,
+             * the distance is a percentage of the rendered node width. A `nodeDistance`
+             * of `100%` will render equal widths for the nodes and the gaps between
+             * them.
+             *
+             * This option applies only when the `nodeWidth` option is `auto`, making
+             * the node width respond to the number of columns.
+             *
+             * @since 11.4.0
+             * @sample highcharts/series-sankey/node-distance
+             *         Sankey with dnode distance of 100% means equal to node width
+             * @sample highcharts/series-organization/node-distance
+             *         Organization chart with node distance of 50%
+             * @type   {number|string}
+             */
+            nodeDistance: 30,
             showInLegend: false,
             states: {
                 hover: {
@@ -767,7 +769,7 @@
          * @apioption series.sankey.nodes
          */
         /**
-         * The id of the auto-generated node, refering to the `from` or `to` setting of
+         * The id of the auto-generated node, referring to the `from` or `to` setting of
          * the link.
          *
          * @type      {string}
@@ -811,6 +813,16 @@
          * @apioption series.sankey.nodes.dataLabels
          */
         /**
+         * The height of the node.
+         *
+         * @sample highcharts/series-sankey/height/
+         *         Sankey diagram with height options
+         *
+         * @type      {number}
+         * @since     11.3.0
+         * @apioption series.sankey.nodes.height
+         */
+        /**
          * An optional level index of where to place the node. The default behaviour is
          * to place it next to the preceding node. Alias of `nodes.column`, but in
          * inverted sankeys and org charts, the levels are laid out as rows.
@@ -841,7 +853,7 @@
          * Positive values shift the node downwards, negative shift it upwards. In a
          * vertical layout, like organization chart, the offset is horizontal.
          *
-         * If a percantage string is given, the node is offset by the percentage of the
+         * If a percentage string is given, the node is offset by the percentage of the
          * node size plus `nodePadding`.
          *
          * @deprecated
@@ -855,7 +867,7 @@
          * The horizontal offset of a node. Positive values shift the node right,
          * negative shift it left.
          *
-         * If a percantage string is given, the node is offset by the percentage of the
+         * If a percentage string is given, the node is offset by the percentage of the
          * node size.
          *
          * @sample highcharts/plotoptions/sankey-node-column/
@@ -870,7 +882,7 @@
          * The vertical offset of a node. Positive values shift the node down,
          * negative shift it up.
          *
-         * If a percantage string is given, the node is offset by the percentage of the
+         * If a percentage string is given, the node is offset by the percentage of the
          * node size.
          *
          * @sample highcharts/plotoptions/sankey-node-column/
@@ -969,7 +981,7 @@
          * @product   highcharts
          * @apioption series.sankey.data.weight
          */
-        ''; // adds doclets above to transpiled file
+        ''; // Adds doclets above to transpiled file
         /* *
          *
          *  Default Export
@@ -983,14 +995,14 @@
          *
          *  Sankey diagram module
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { defined, pushUnique, relativeLength } = U;
+        const { defined, relativeLength } = U;
         /* *
          *
          *  Composition
@@ -1188,8 +1200,8 @@
                         if (column[i] === node) {
                             return {
                                 relativeTop: offset + (defined(directionOffset) ?
-                                    // directionOffset is a percent
-                                    // of the node height
+                                    // `directionOffset` is a percent of the node
+                                    // height
                                     relativeLength(directionOffset, height) :
                                     relativeLength(optionOffset, totalNodeOffset))
                             };
@@ -1211,7 +1223,7 @@
     _registerModule(_modules, 'Series/TreeUtilities.js', [_modules['Core/Color/Color.js'], _modules['Core/Utilities.js']], function (Color, U) {
         /* *
          *
-         *  (c) 2014-2021 Highsoft AS
+         *  (c) 2014-2024 Highsoft AS
          *
          *  Authors: Jon Arild Nygard / Oystein Moseng
          *
@@ -1220,7 +1232,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { extend, isArray, isNumber, isObject, merge, pick } = U;
+        const { extend, isArray, isNumber, isObject, merge, pick, relativeLength } = U;
         /* *
          *
          *  Functions
@@ -1285,7 +1297,8 @@
          * Returns a map from level number to its given options.
          */
         function getLevelOptions(params) {
-            let result = {}, defaults, converted, i, from, to, levels;
+            const result = {};
+            let defaults, converted, i, from, to, levels;
             if (isObject(params)) {
                 from = isNumber(params.from) ? params.from : 1;
                 levels = params.levels;
@@ -1385,6 +1398,27 @@
             }
             return rootId;
         }
+        /**
+         * Get the node width, which relies on the plot width and the nodeDistance
+         * option.
+         *
+         * @private
+         */
+        function getNodeWidth(series, columnCount) {
+            const { chart, options } = series, { nodeDistance = 0, nodeWidth = 0 } = options, { plotSizeX = 1 } = chart;
+            // Node width auto means they are evenly distributed along the width of
+            // the plot area
+            if (nodeWidth === 'auto') {
+                if (typeof nodeDistance === 'string' && /%$/.test(nodeDistance)) {
+                    const fraction = parseFloat(nodeDistance) / 100, total = columnCount + fraction * (columnCount - 1);
+                    return plotSizeX / total;
+                }
+                const nDistance = Number(nodeDistance);
+                return ((plotSizeX + nDistance) /
+                    (columnCount || 1)) - nDistance;
+            }
+            return relativeLength(nodeWidth, plotSizeX);
+        }
         /* *
          *
          *  Default Export
@@ -1393,18 +1427,246 @@
         const TreeUtilities = {
             getColor,
             getLevelOptions,
+            getNodeWidth,
             setTreeValues,
             updateRootId
         };
 
         return TreeUtilities;
     });
-    _registerModule(_modules, 'Series/Sankey/SankeySeries.js', [_modules['Core/Globals.js'], _modules['Series/NodesComposition.js'], _modules['Series/Sankey/SankeyPoint.js'], _modules['Series/Sankey/SankeySeriesDefaults.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/Sankey/SankeyColumnComposition.js'], _modules['Core/Color/Color.js'], _modules['Series/TreeUtilities.js'], _modules['Core/Utilities.js']], function (H, NodesComposition, SankeyPoint, SankeySeriesDefaults, SeriesRegistry, SankeyColumnComposition, Color, TU, U) {
+    _registerModule(_modules, 'Extensions/TextPath.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+        /* *
+         *
+         *  Highcharts module with textPath functionality.
+         *
+         *  (c) 2009-2024 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { deg2rad } = H;
+        const { addEvent, merge, uniqueKey, defined, extend } = U;
+        /**
+         * Set a text path for a `text` or `label` element, allowing the text to
+         * flow along a path.
+         *
+         * In order to unset the path for an existing element, call `setTextPath`
+         * with `{ enabled: false }` as the second argument.
+         *
+         * Text path support is not bundled into `highcharts.js`, and requires the
+         * `modules/textpath.js` file. However, it is included in the script files of
+         * those series types that use it by default
+         *
+         * @sample highcharts/members/renderer-textpath/ Text path demonstrated
+         *
+         * @function Highcharts.SVGElement#setTextPath
+         *
+         * @param {Highcharts.SVGElement|undefined} path
+         *        Path to follow. If undefined, it allows changing options for the
+         *        existing path.
+         *
+         * @param {Highcharts.DataLabelsTextPathOptionsObject} textPathOptions
+         *        Options.
+         *
+         * @return {Highcharts.SVGElement} Returns the SVGElement for chaining.
+         */
+        function setTextPath(path, textPathOptions) {
+            // Defaults
+            textPathOptions = merge(true, {
+                enabled: true,
+                attributes: {
+                    dy: -5,
+                    startOffset: '50%',
+                    textAnchor: 'middle'
+                }
+            }, textPathOptions);
+            const url = this.renderer.url, textWrapper = this.text || this, textPath = textWrapper.textPath, { attributes, enabled } = textPathOptions;
+            path = path || (textPath && textPath.path);
+            // Remove previously added event
+            if (textPath) {
+                textPath.undo();
+            }
+            if (path && enabled) {
+                const undo = addEvent(textWrapper, 'afterModifyTree', (e) => {
+                    if (path && enabled) {
+                        // Set ID for the path
+                        let textPathId = path.attr('id');
+                        if (!textPathId) {
+                            path.attr('id', textPathId = uniqueKey());
+                        }
+                        // Set attributes for the <text>
+                        const textAttribs = {
+                            // `dx`/`dy` options must by set on <text> (parent), the
+                            // rest should be set on <textPath>
+                            x: 0,
+                            y: 0
+                        };
+                        if (defined(attributes.dx)) {
+                            textAttribs.dx = attributes.dx;
+                            delete attributes.dx;
+                        }
+                        if (defined(attributes.dy)) {
+                            textAttribs.dy = attributes.dy;
+                            delete attributes.dy;
+                        }
+                        textWrapper.attr(textAttribs);
+                        // Handle label properties
+                        this.attr({ transform: '' });
+                        if (this.box) {
+                            this.box = this.box.destroy();
+                        }
+                        // Wrap the nodes in a textPath
+                        const children = e.nodes.slice(0);
+                        e.nodes.length = 0;
+                        e.nodes[0] = {
+                            tagName: 'textPath',
+                            attributes: extend(attributes, {
+                                'text-anchor': attributes.textAnchor,
+                                href: `${url}#${textPathId}`
+                            }),
+                            children
+                        };
+                    }
+                });
+                // Set the reference
+                textWrapper.textPath = { path, undo };
+            }
+            else {
+                textWrapper.attr({ dx: 0, dy: 0 });
+                delete textWrapper.textPath;
+            }
+            if (this.added) {
+                // Rebuild text after added
+                textWrapper.textCache = '';
+                this.renderer.buildText(textWrapper);
+            }
+            return this;
+        }
+        /**
+         * Attach a polygon to a bounding box if the element contains a textPath.
+         *
+         * @function Highcharts.SVGElement#setPolygon
+         *
+         * @param {any} event
+         *        An event containing a bounding box object
+         *
+         * @return {Highcharts.BBoxObject} Returns the bounding box object.
+         */
+        function setPolygon(event) {
+            const bBox = event.bBox, tp = this.element?.querySelector('textPath');
+            if (tp) {
+                const polygon = [], { b, h } = this.renderer.fontMetrics(this.element), descender = h - b, lineCleanerRegex = new RegExp('(<tspan>|' +
+                    '<tspan(?!\\sclass="highcharts-br")[^>]*>|' +
+                    '<\\/tspan>)', 'g'), lines = tp
+                    .innerHTML
+                    .replace(lineCleanerRegex, '')
+                    .split(/<tspan class="highcharts-br"[^>]*>/), numOfLines = lines.length;
+                // Calculate top and bottom coordinates for
+                // either the start or the end of a single
+                // character, and append it to the polygon.
+                const appendTopAndBottom = (charIndex, positionOfChar) => {
+                    const { x, y } = positionOfChar, rotation = (tp.getRotationOfChar(charIndex) - 90) * deg2rad, cosRot = Math.cos(rotation), sinRot = Math.sin(rotation);
+                    return [
+                        [
+                            x - descender * cosRot,
+                            y - descender * sinRot
+                        ],
+                        [
+                            x + b * cosRot,
+                            y + b * sinRot
+                        ]
+                    ];
+                };
+                for (let i = 0, lineIndex = 0; lineIndex < numOfLines; lineIndex++) {
+                    const line = lines[lineIndex], lineLen = line.length;
+                    for (let lineCharIndex = 0; lineCharIndex < lineLen; lineCharIndex += 5) {
+                        try {
+                            const srcCharIndex = (i +
+                                lineCharIndex +
+                                lineIndex), [lower, upper] = appendTopAndBottom(srcCharIndex, tp.getStartPositionOfChar(srcCharIndex));
+                            if (lineCharIndex === 0) {
+                                polygon.push(upper);
+                                polygon.push(lower);
+                            }
+                            else {
+                                if (lineIndex === 0) {
+                                    polygon.unshift(upper);
+                                }
+                                if (lineIndex === numOfLines - 1) {
+                                    polygon.push(lower);
+                                }
+                            }
+                        }
+                        catch (e) {
+                            // Safari fails on getStartPositionOfChar even if the
+                            // character is within the `textContent.length`
+                            break;
+                        }
+                    }
+                    i += lineLen - 1;
+                    try {
+                        const srcCharIndex = i + lineIndex, charPos = tp.getEndPositionOfChar(srcCharIndex), [lower, upper] = appendTopAndBottom(srcCharIndex, charPos);
+                        polygon.unshift(upper);
+                        polygon.unshift(lower);
+                    }
+                    catch (e) {
+                        // Safari fails on getStartPositionOfChar even if the character
+                        // is within the `textContent.length`
+                        break;
+                    }
+                }
+                // Close it
+                if (polygon.length) {
+                    polygon.push(polygon[0].slice());
+                }
+                bBox.polygon = polygon;
+            }
+            return bBox;
+        }
+        /**
+         * Draw text along a textPath for a dataLabel.
+         *
+         * @function Highcharts.SVGElement#setTextPath
+         *
+         * @param {any} event
+         *        An event containing label options
+         *
+         * @return {void}
+         */
+        function drawTextPath(event) {
+            const labelOptions = event.labelOptions, point = event.point, textPathOptions = (labelOptions[point.formatPrefix + 'TextPath'] ||
+                labelOptions.textPath);
+            if (textPathOptions && !labelOptions.useHTML) {
+                this.setTextPath(point.getDataLabelPath?.(this) || point.graphic, textPathOptions);
+                if (point.dataLabelPath &&
+                    !textPathOptions.enabled) {
+                    // Clean the DOM
+                    point.dataLabelPath = (point.dataLabelPath.destroy());
+                }
+            }
+        }
+        function compose(SVGElementClass) {
+            addEvent(SVGElementClass, 'afterGetBBox', setPolygon);
+            addEvent(SVGElementClass, 'beforeAddingDataLabel', drawTextPath);
+            const svgElementProto = SVGElementClass.prototype;
+            if (!svgElementProto.setTextPath) {
+                svgElementProto.setTextPath = setTextPath;
+            }
+        }
+        const TextPath = {
+            compose
+        };
+
+        return TextPath;
+    });
+    _registerModule(_modules, 'Series/Sankey/SankeySeries.js', [_modules['Core/Globals.js'], _modules['Series/NodesComposition.js'], _modules['Series/Sankey/SankeyPoint.js'], _modules['Series/Sankey/SankeySeriesDefaults.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/Sankey/SankeyColumnComposition.js'], _modules['Core/Color/Color.js'], _modules['Series/TreeUtilities.js'], _modules['Core/Utilities.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Extensions/TextPath.js']], function (H, NodesComposition, SankeyPoint, SankeySeriesDefaults, SeriesRegistry, SankeyColumnComposition, Color, TU, U, SVGElement, TextPath) {
         /* *
          *
          *  Sankey diagram module
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -1413,8 +1675,9 @@
          * */
         const { column: ColumnSeries, line: LineSeries } = SeriesRegistry.seriesTypes;
         const { parse: color } = Color;
-        const { getLevelOptions } = TU;
-        const { clamp, extend, isObject, merge, pick, relativeLength, stableSort } = U;
+        const { getLevelOptions, getNodeWidth } = TU;
+        const { clamp, crisp, extend, isObject, merge, pick, relativeLength, stableSort } = U;
+        TextPath.compose(SVGElement);
         /* *
          *
          *  Class
@@ -1428,29 +1691,6 @@
          * @augments Highcharts.Series
          */
         class SankeySeries extends ColumnSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.colDistance = void 0;
-                this.data = void 0;
-                this.group = void 0;
-                this.nodeLookup = void 0;
-                this.nodePadding = void 0;
-                this.nodes = void 0;
-                this.nodeWidth = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                this.translationFactor = void 0;
-            }
             /* *
              *
              *  Static Functions
@@ -1614,14 +1854,14 @@
                 }
                 this.generatePoints();
                 this.nodeColumns = this.createNodeColumns();
-                this.nodeWidth = relativeLength(this.options.nodeWidth, this.chart.plotSizeX);
-                const series = this, chart = this.chart, options = this.options, nodeWidth = this.nodeWidth, nodeColumns = this.nodeColumns;
+                const series = this, chart = this.chart, options = this.options, nodeColumns = this.nodeColumns, columnCount = nodeColumns.length;
+                this.nodeWidth = getNodeWidth(this, columnCount);
                 this.nodePadding = this.getNodePadding();
                 // Find out how much space is needed. Base it on the translation
-                // factor of the most spaceous column.
+                // factor of the most spacious column.
                 this.translationFactor = nodeColumns.reduce((translationFactor, column) => Math.min(translationFactor, column.sankeyColumn.getTranslationFactor(series)), Infinity);
                 this.colDistance =
-                    (chart.plotSizeX - nodeWidth -
+                    (chart.plotSizeX - this.nodeWidth -
                         options.borderWidth) / Math.max(1, nodeColumns.length - 1);
                 // Calculate level options used in sankey and organization
                 series.mapOptionsToLevel = getLevelOptions({
@@ -1629,18 +1869,18 @@
                     // should be the level of the root node.
                     from: 1,
                     levels: options.levels,
-                    to: nodeColumns.length - 1,
+                    to: nodeColumns.length - 1, // Height of the tree
                     defaults: {
                         borderColor: options.borderColor,
-                        borderRadius: options.borderRadius,
+                        borderRadius: options.borderRadius, // Organization series
                         borderWidth: options.borderWidth,
                         color: series.color,
                         colorByPoint: options.colorByPoint,
                         // NOTE: if support for allowTraversingTree is added, then
                         // levelIsConstant should be optional.
                         levelIsConstant: true,
-                        linkColor: options.linkColor,
-                        linkLineWidth: options.linkLineWidth,
+                        linkColor: options.linkColor, // Organization series
+                        linkLineWidth: options.linkLineWidth, // Organization series
                         linkOpacity: options.linkOpacity,
                         states: options.states
                     }
@@ -1801,12 +2041,11 @@
              * @private
              */
             translateNode(node, column) {
-                const translationFactor = this.translationFactor, chart = this.chart, options = this.options, { borderRadius, borderWidth = 0 } = options, sum = node.getSum(), nodeHeight = Math.max(Math.round(sum * translationFactor), this.options.minLinkWidth), nodeWidth = Math.round(this.nodeWidth), crisp = Math.round(borderWidth) % 2 / 2, nodeOffset = column.sankeyColumn.offset(node, translationFactor), fromNodeTop = Math.floor(pick(nodeOffset.absoluteTop, (column.sankeyColumn.top(translationFactor) +
-                    nodeOffset.relativeTop))) + crisp, left = Math.floor(this.colDistance * node.column +
-                    borderWidth / 2) + relativeLength(node.options[chart.inverted ?
+                const translationFactor = this.translationFactor, chart = this.chart, options = this.options, { borderRadius, borderWidth = 0 } = options, sum = node.getSum(), nodeHeight = Math.max(Math.round(sum * translationFactor), this.options.minLinkWidth), nodeWidth = Math.round(this.nodeWidth), nodeOffset = column.sankeyColumn.offset(node, translationFactor), fromNodeTop = crisp(pick(nodeOffset.absoluteTop, (column.sankeyColumn.top(translationFactor) +
+                    nodeOffset.relativeTop)), borderWidth), left = crisp(this.colDistance * node.column +
+                    borderWidth / 2, borderWidth) + relativeLength(node.options[chart.inverted ?
                     'offsetVertical' :
-                    'offsetHorizontal'] || 0, nodeWidth) +
-                    crisp, nodeLeft = chart.inverted ?
+                    'offsetHorizontal'] || 0, nodeWidth), nodeLeft = chart.inverted ?
                     chart.plotSizeX - left :
                     left;
                 node.sum = sum;
@@ -1860,6 +2099,11 @@
                 }
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         SankeySeries.defaultOptions = merge(ColumnSeries.defaultOptions, SankeySeriesDefaults);
         NodesComposition.compose(SankeyPoint, SankeySeries);
         extend(SankeySeries.prototype, {
@@ -1939,7 +2183,7 @@
         * The vertical offset of a node in terms of weight. Positive values shift the
         * node downwards, negative shift it upwards.
         *
-        * If a percantage string is given, the node is offset by the percentage of the
+        * If a percentage string is given, the node is offset by the percentage of the
         * node size plus `nodePadding`.
         *
         * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/sankey-node-column/|Highcharts-Demo:}
@@ -1954,7 +2198,7 @@
         * The horizontal offset of a node. Positive values shift the node right,
         * negative shift it left.
         *
-        * If a percantage string is given, the node is offset by the percentage of the
+        * If a percentage string is given, the node is offset by the percentage of the
         * node size.
         *
         * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/sankey-node-column/|Highcharts-Demo:}
@@ -1967,7 +2211,7 @@
         * The vertical offset of a node. Positive values shift the node down,
         * negative shift it up.
         *
-        * If a percantage string is given, the node is offset by the percentage of the
+        * If a percentage string is given, the node is offset by the percentage of the
         * node size.
         *
         * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/sankey-node-column/|Highcharts-Demo:}
@@ -1999,12 +2243,13 @@
         * @name Highcharts.SeriesSankeyDataLabelsFormatterContextObject#point
         * @type {Highcharts.SankeyNodeObject}
         */
-        ''; // detach doclets above
+        ''; // Detach doclets above
 
         return SankeySeries;
     });
-    _registerModule(_modules, 'masters/modules/sankey.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/sankey.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

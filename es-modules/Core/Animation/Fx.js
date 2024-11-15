@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -111,7 +111,7 @@ class Fx {
      *
      */
     update() {
-        const elem = this.elem, prop = this.prop, // if destroyed, it is null
+        const elem = this.elem, prop = this.prop, // If destroyed, it is null
         now = this.now, step = this.options.step;
         // Animation setter defined from outside
         if (this[prop + 'Setter']) {
@@ -244,10 +244,12 @@ class Fx {
      *         they can be animated in parallel.
      */
     initPath(elem, fromD, toD) {
-        const startX = elem.startX, endX = elem.endX, end = toD.slice(), // copy
-        isArea = elem.isArea, positionFactor = isArea ? 2 : 1;
-        let shift, fullLength, i, reverse, start = fromD && fromD.slice(); // copy
-        if (!start) {
+        const startX = elem.startX, endX = elem.endX, end = toD.slice(), // Copy
+        isArea = elem.isArea, positionFactor = isArea ? 2 : 1, disableAnimation = fromD &&
+            toD.length > fromD.length &&
+            toD.hasStackedCliffs; // #16925
+        let shift, fullLength, i, reverse, start = fromD && fromD.slice(); // Copy
+        if (!start || disableAnimation) {
             return [end, end];
         }
         /**
@@ -280,7 +282,7 @@ class Fx {
                 // need to append a copy of the last point.
                 if (isArea) {
                     const z = arr.pop();
-                    arr.push(arr[arr.length - 1], z); // append point and the Z
+                    arr.push(arr[arr.length - 1], z); // Append point and the Z
                 }
             }
         }
@@ -288,7 +290,7 @@ class Fx {
          * Copy and append last point until the length matches the end length.
          * @private
          */
-        function append(arr, other) {
+        function append(arr) {
             while (arr.length < fullLength) {
                 // Pull out the slice that is going to be appended or inserted.
                 // In a line graph, the positionFactor is 1, and the last point
@@ -344,11 +346,11 @@ class Fx {
             fullLength = end.length + shift * positionFactor;
             if (!reverse) {
                 prepend(end, start);
-                append(start, end);
+                append(start);
             }
             else {
                 prepend(start, end);
-                append(end, start);
+                append(end);
             }
         }
         return [start, end];

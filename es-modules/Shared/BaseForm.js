@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009 - 2023 Highsoft AS
+ *  (c) 2009-2024 Highsoft AS
  *
  *  License: www.highcharts.com/license
  *
@@ -64,14 +64,14 @@ class BaseForm {
     addCloseButton(className = 'highcharts-popup-close') {
         const popup = this, iconsURL = this.iconsURL;
         // Create close popup button.
-        const closeButton = createElement('div', { className }, void 0, this.container);
+        const closeButton = createElement('button', { className }, void 0, this.container);
         closeButton.style['background-image'] = 'url(' +
             (iconsURL.match(/png|svg|jpeg|jpg|gif/ig) ?
                 iconsURL : iconsURL + 'close.svg') + ')';
         ['click', 'touchstart'].forEach((eventName) => {
             addEvent(closeButton, eventName, popup.closeButtonEvents.bind(popup));
         });
-        // close popup when press ESC
+        // Close popup when press ESC
         addEvent(document, 'keydown', function (event) {
             if (event.code === 'Escape') {
                 popup.closeButtonEvents();
@@ -100,7 +100,7 @@ class BaseForm {
         // Reset toolbar styles if exists.
         if (popupDiv.className.indexOf(toolbarClass) >= 0) {
             popupDiv.classList.remove(toolbarClass);
-            // reset toolbar inline styles
+            // Reset toolbar inline styles
             popupDiv.removeAttribute('style');
         }
         // Add close button.

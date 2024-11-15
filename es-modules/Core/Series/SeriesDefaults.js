@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -19,7 +19,7 @@
  * @optionparent plotOptions.series
  */
 const seriesDefaults = {
-    // base series options
+    // Base series options
     /**
      * The SVG value used for the `stroke-linecap` and `stroke-linejoin`
      * of a line graph. Round means that lines are rounded in the ends and
@@ -897,12 +897,13 @@ const seriesDefaults = {
      * is to toggle the visibility of the series. This can be prevented
      * by returning `false` or calling `event.preventDefault()`.
      *
-     * @sample {highcharts} highcharts/plotoptions/series-events-legenditemclick/
-     *         Confirm hiding and showing
+     * **Note:** This option is deprecated in favor of
+     * [legend.events.itemClick](#legend.events.itemClick).
      *
-     * @type      {Highcharts.SeriesLegendItemClickCallbackFunction}
-     * @context   Highcharts.Series
-     * @apioption plotOptions.series.events.legendItemClick
+     * @type       {Highcharts.SeriesLegendItemClickCallbackFunction}
+     * @deprecated 11.4.4
+     * @context    Highcharts.Series
+     * @apioption  plotOptions.series.events.legendItemClick
      */
     /**
      * Fires when the mouse leaves the graph. One parameter, `event`, is
@@ -1448,6 +1449,21 @@ const seriesDefaults = {
          */
         align: 'center',
         /**
+         * Alignment method for data labels. If set to `plotEdges`, the labels
+         * are aligned within the plot area in the direction of the y-axis. So
+         * in a regular column chart, the labels are aligned vertically
+         * according to the `verticalAlign` setting. In a bar chart, which is
+         * inverted, the labels are aligned horizontally according to the
+         * `align` setting. Applies to cartesian series only.
+         *
+         * @sample {highcharts} highcharts/series-bar/datalabels-alignto/
+         *         Align to plot edges
+         *
+         * @type      {string}
+         * @since 11.4.2
+         * @apioption plotOptions.series.dataLabels.alignTo
+         */
+        /**
          * Whether to allow data labels to overlap. To make the labels less
          * sensitive for overlapping, the
          * [dataLabels.padding](#plotOptions.series.dataLabels.padding)
@@ -1610,10 +1626,10 @@ const seriesDefaults = {
          */
         /**
          * The operator to compare by. Can be one of `>`, `<`, `>=`, `<=`,
-         * `==`, and `===`.
+         * `==`, `===`, `!=` and `!==`.
          *
          * @type       {string}
-         * @validvalue [">", "<", ">=", "<=", "==", "==="]
+         * @validvalue [">", "<", ">=", "<=", "==", "===", "!=", "!=="]
          * @apioption  plotOptions.series.dataLabels.filter.operator
          */
         /**
@@ -2046,8 +2062,8 @@ const seriesDefaults = {
              * @product   highcharts highstock
              */
             marker: {
-            // lineWidth: base + 1,
-            // radius: base + 1
+            // `lineWidth: base + 1`,
+            // `radius: base + 1`
             },
             /**
              * Options for the halo appearing around the hovered point in
@@ -2200,15 +2216,20 @@ const seriesDefaults = {
      * @apioption plotOptions.series.tooltip
      */
     /**
-     * When a series contains a data array that is longer than this, only
-     * one dimensional arrays of numbers, or two dimensional arrays with
-     * x and y values are allowed. Also, only the first point is tested,
-     * and the rest are assumed to be the same format. This saves expensive
-     * data checking and indexing in long series. Set it to `0` disable.
+     * When a series contains a `data` array that is longer than this, the
+     * Series class looks for data configurations of plain numbers or arrays of
+     * numbers. The first and last valid points are checked. If found, the rest
+     * of the data is assumed to be the same. This saves expensive data checking
+     * and indexing in long series, and makes data-heavy charts render faster.
+     *
+     * Set it to `0` disable.
      *
      * Note:
-     * In boost mode turbo threshold is forced. Only array of numbers or
-     * two dimensional arrays are allowed.
+     * - In boost mode turbo threshold is forced. Only array of numbers or two
+     *   dimensional arrays are allowed.
+     * - In version 11.4.3 and earlier, if object configurations were passed
+     *   beyond the turbo threshold, a warning was logged in the console and the
+     *   data series didn't render.
      *
      * @since   2.2
      * @product highcharts highstock gantt
@@ -2335,9 +2356,9 @@ const seriesDefaults = {
      */
     /**
      * What type of legend symbol to render for this series. Can be one of
-     * `lineMarker` or `rectangle`.
+     * `areaMarker`, `lineMarker` or `rectangle`.
      *
-     * @validvalue ["lineMarker", "rectangle"]
+     * @validvalue ["areaMarker", "lineMarker", "rectangle"]
      *
      * @sample {highcharts} highcharts/series/legend-symbol/
      *         Change the legend symbol

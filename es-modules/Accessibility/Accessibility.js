@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2021 Øystein Moseng
+ *  (c) 2009-2024 Øystein Moseng
  *
  *  Accessibility module for Highcharts
  *
@@ -20,7 +20,7 @@ import HU from './Utils/HTMLUtilities.js';
 const { removeElement } = HU;
 import A11yI18n from './A11yI18n.js';
 import ContainerComponent from './Components/ContainerComponent.js';
-import FocusBorder from './FocusBorder.js';
+import FocusBorderComposition from './FocusBorder.js';
 import InfoRegionsComponent from './Components/InfoRegionsComponent.js';
 import KeyboardNavigation from './KeyboardNavigation.js';
 import LegendComponent from './Components/LegendComponent.js';
@@ -45,7 +45,7 @@ import copyDeprecatedOptions from './Options/DeprecatedOptions.js';
  * The Accessibility class
  *
  * @private
- * @requires module:modules/accessibility
+ * @requires modules/accessibility
  *
  * @class
  * @name Highcharts.Accessibility
@@ -60,15 +60,6 @@ class Accessibility {
      *
      * */
     constructor(chart) {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.chart = void 0;
-        this.components = void 0;
-        this.keyboardNavigation = void 0;
-        this.proxyProvider = void 0;
         this.init(chart);
     }
     /* *
@@ -76,7 +67,6 @@ class Accessibility {
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * Initialize the accessibility class
      * @private
@@ -165,8 +155,10 @@ class Accessibility {
         // Update keyboard navigation
         this.keyboardNavigation.update(kbdNavOrder);
         // Handle high contrast mode
-        if (!chart.highContrastModeActive && // Only do this once
-            whcm.isHighContrastModeActive()) {
+        // Should only be applied once, and not if explicitly disabled
+        if (!chart.highContrastModeActive &&
+            a11yOptions.highContrastMode !== false && (whcm.isHighContrastModeActive() ||
+            a11yOptions.highContrastMode === true)) {
             whcm.setHighContrastTheme(chart);
         }
         fireEvent(chart, 'afterA11yUpdate', {
@@ -233,14 +225,12 @@ class Accessibility {
      *  Constants
      *
      * */
-    const composedMembers = [];
     Accessibility.i18nFormat = A11yI18n.i18nFormat;
     /* *
      *
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * Destroy with chart.
      * @private
@@ -297,7 +287,7 @@ class Accessibility {
      */
     function chartUpdateA11yEnabled() {
         let a11y = this.accessibility;
-        const accessibilityOptions = this.options.accessibility;
+        const accessibilityOptions = this.options.accessibility, svg = this.renderer.boxWrapper.element, title = this.title;
         if (accessibilityOptions && accessibilityOptions.enabled) {
             if (a11y && !a11y.zombie) {
                 a11y.update();
@@ -306,6 +296,10 @@ class Accessibility {
                 this.accessibility = a11y = new Accessibility(this);
                 if (a11y && !a11y.zombie) {
                     a11y.update();
+                }
+                // If a11y has been disabled, and is now enabled
+                if (svg.getAttribute('role') === 'img') {
+                    svg.removeAttribute('role');
                 }
             }
         }
@@ -317,8 +311,16 @@ class Accessibility {
             delete this.accessibility;
         }
         else {
-            // Just hide container
-            this.renderTo.setAttribute('aria-hidden', true);
+            // If a11y has been disabled dynamically or is disabled
+            this.renderTo.setAttribute('role', 'img');
+            this.renderTo.setAttribute('aria-hidden', false);
+            this.renderTo.setAttribute('aria-label', ((title && title.element.textContent) || '').replace(/</g, '&lt;'));
+            svg.setAttribute('aria-hidden', true);
+            const description = document.getElementsByClassName('highcharts-description')[0];
+            if (description) {
+                description.setAttribute('aria-hidden', false);
+                description.classList.remove('highcharts-linked-description');
+            }
         }
     }
     /**
@@ -332,13 +334,13 @@ class Accessibility {
         MenuComponent.compose(ChartClass);
         SeriesComponent.compose(ChartClass, PointClass, SeriesClass);
         A11yI18n.compose(ChartClass);
-        FocusBorder.compose(ChartClass, SVGElementClass);
+        FocusBorderComposition.compose(ChartClass, SVGElementClass);
         // RangeSelector
         if (RangeSelectorClass) {
             RangeSelectorComponent.compose(ChartClass, RangeSelectorClass);
         }
-        if (U.pushUnique(composedMembers, ChartClass)) {
-            const chartProto = ChartClass.prototype;
+        const chartProto = ChartClass.prototype;
+        if (!chartProto.updateA11yEnabled) {
             chartProto.updateA11yEnabled = chartUpdateA11yEnabled;
             addEvent(ChartClass, 'destroy', chartOnDestroy);
             addEvent(ChartClass, 'render', chartOnRender);
@@ -358,11 +360,7 @@ class Accessibility {
                     }
                 });
             });
-        }
-        if (U.pushUnique(composedMembers, PointClass)) {
             addEvent(PointClass, 'update', pointOnUpdate);
-        }
-        if (U.pushUnique(composedMembers, SeriesClass)) {
             // Mark dirty for update
             ['update', 'updatedData', 'remove'].forEach((event) => {
                 addEvent(SeriesClass, event, function () {

@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -25,12 +25,6 @@ var DateTimeAxis;
      * */
     /* *
      *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
@@ -39,11 +33,11 @@ var DateTimeAxis;
      * @private
      */
     function compose(AxisClass) {
-        if (U.pushUnique(composedMembers, AxisClass)) {
+        if (!AxisClass.keepProps.includes('dateTime')) {
             AxisClass.keepProps.push('dateTime');
             const axisProto = AxisClass.prototype;
             axisProto.getTimeTicks = getTimeTicks;
-            addEvent(AxisClass, 'init', onInit);
+            addEvent(AxisClass, 'afterSetType', onAfterSetType);
         }
         return AxisClass;
     }
@@ -57,7 +51,7 @@ var DateTimeAxis;
      * @private
      * @function Highcharts.Axis#getTimeTicks
      * @param {Highcharts.TimeNormalizeObject} normalizedInterval
-     * The interval in axis values (ms) and thecount.
+     * The interval in axis values (ms) and the count.
      * @param {number} min
      * The minimum in axis values.
      * @param {number} max
@@ -69,15 +63,13 @@ var DateTimeAxis;
     /**
      * @private
      */
-    function onInit(e) {
-        const axis = this;
-        const options = e.userOptions;
-        if (options.type !== 'datetime') {
-            axis.dateTime = void 0;
+    function onAfterSetType() {
+        if (this.type !== 'datetime') {
+            this.dateTime = void 0;
             return;
         }
-        if (!axis.dateTime) {
-            axis.dateTime = new Additions(axis);
+        if (!this.dateTime) {
+            this.dateTime = new Additions(this);
         }
     }
     /* *
@@ -111,9 +103,9 @@ var DateTimeAxis;
          */
         normalizeTimeTickInterval(tickInterval, unitsOption) {
             const units = (unitsOption || [[
-                    // unit name
+                    // Unit name
                     'millisecond',
-                    // allowed multiples
+                    // Allowed multiples
                     [1, 2, 5, 10, 20, 25, 50, 100, 200, 500]
                 ], [
                     'second',
@@ -137,31 +129,31 @@ var DateTimeAxis;
                     'year',
                     null
                 ]]);
-            let unit = units[units.length - 1], // default unit is years
+            let unit = units[units.length - 1], // Default unit is years
             interval = timeUnits[unit[0]], multiples = unit[1], i;
-            // loop through the units to find the one that best fits the
+            // Loop through the units to find the one that best fits the
             // tickInterval
             for (i = 0; i < units.length; i++) {
                 unit = units[i];
                 interval = timeUnits[unit[0]];
                 multiples = unit[1];
                 if (units[i + 1]) {
-                    // lessThan is in the middle between the highest multiple
+                    // `lessThan` is in the middle between the highest multiple
                     // and the next unit.
                     const lessThan = (interval *
                         multiples[multiples.length - 1] +
                         timeUnits[units[i + 1][0]]) / 2;
-                    // break and keep the current unit
+                    // Break and keep the current unit
                     if (tickInterval <= lessThan) {
                         break;
                     }
                 }
             }
-            // prevent 2.5 years intervals, though 25, 250 etc. are allowed
+            // Prevent 2.5 years intervals, though 25, 250 etc. are allowed
             if (interval === timeUnits.year && tickInterval < 5 * interval) {
                 multiples = [1, 2, 5];
             }
-            // get the count
+            // Get the count
             const count = normalizeTickInterval(tickInterval / interval, multiples, unit[0] === 'year' ? // #1913, #2360
                 Math.max(getMagnitude(tickInterval / interval), 1) :
                 1);

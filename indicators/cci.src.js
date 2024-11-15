@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.4.8 (2024-08-29)
  *
  * Indicator series type for Highcharts Stock
  *
- * (c) 2010-2021 Sebastian Bochan
+ * (c) 2010-2024 Sebastian Bochan
  *
  * License: www.highcharts.com/license
  */
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -84,22 +84,6 @@
          * @augments Highcharts.Series
          */
         class CCIIndicator extends SMAIndicator {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.points = void 0;
-                this.options = void 0;
-            }
             /* *
              *
              *  Functions
@@ -114,7 +98,7 @@
                     yVal[0].length !== 4) {
                     return;
                 }
-                // accumulate first N-points
+                // Accumulate first N-points
                 while (range < period) {
                     p = yVal[range - 1];
                     TP.push((p[1] + p[2] + p[3]) / 3);
@@ -139,6 +123,11 @@
                 };
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         /**
          * Commodity Channel Index (CCI). This series requires `linkedTo` option to
          * be set.
@@ -158,7 +147,7 @@
              * @excluding index
              */
             params: {
-                index: void 0 // unused index, do not inherit (#15362)
+                index: void 0 // Unused index, do not inherit (#15362)
             }
         });
         SeriesRegistry.registerSeriesType('cci', CCIIndicator);
@@ -184,12 +173,13 @@
          * @requires  stock/indicators/cci
          * @apioption series.cci
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return CCIIndicator;
     });
-    _registerModule(_modules, 'masters/indicators/cci.src.js', [], function () {
+    _registerModule(_modules, 'masters/indicators/cci.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

@@ -25,22 +25,6 @@ const { correctFloat, isArray, merge } = U;
  * @augments Highcharts.Series
  */
 class EMAIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -76,7 +60,7 @@ class EMAIndicator extends SMAIndicator {
         }
         // Accumulate first N-points
         sum = this.accumulatePeriodPoints(period, index, yVal);
-        // first point
+        // First point
         SMA = sum / period;
         // Calculate value one-by-one for each period in visible data
         for (i = period; i < yValLen + 1; i++) {
@@ -93,6 +77,11 @@ class EMAIndicator extends SMAIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Exponential moving average indicator (EMA). This series requires the
  * `linkedTo` option to be set.
@@ -145,4 +134,4 @@ export default EMAIndicator;
  * @requires  stock/indicators/indicators
  * @apioption series.ema
  */
-''; // adds doclet above to the transpiled file
+''; // Adds doclet above to the transpiled file

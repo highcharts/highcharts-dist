@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2020 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -8,20 +8,23 @@
  *
  * */
 'use strict';
+import H from '../Core/Globals.js';
+const { composed } = H;
 import MapViewDefaults from './MapViewDefaults.js';
 import GeoJSONComposition from './GeoJSONComposition.js';
+import GeometryUtilities from '../Core/Geometry/GeometryUtilities.js';
+const { pointInPolygon } = GeometryUtilities;
 const { topo2geo } = GeoJSONComposition;
 import MU from './MapUtilities.js';
-const { boundsFromPath, pointInPolygon } = MU;
+const { boundsFromPath } = MU;
 import Projection from './Projection.js';
 import U from '../Core/Utilities.js';
-const { addEvent, clamp, fireEvent, isArray, isNumber, isObject, isString, merge, pick, pushUnique, relativeLength } = U;
+const { addEvent, clamp, crisp, fireEvent, isArray, isNumber, isObject, isString, merge, pick, pushUnique, relativeLength } = U;
 /* *
  *
  *  Constants
  *
  * */
-const composedMembers = [];
 const tileSize = 256;
 /**
  * The world size in terms of 10k meters in the Web Mercator projection, to
@@ -49,8 +52,21 @@ function zoomFromBounds(b, playingField) {
     const { width, height } = playingField, scaleToField = Math.max((b.x2 - b.x1) / (width / tileSize), (b.y2 - b.y1) / (height / tileSize));
     return Math.log(worldSize / scaleToField) / Math.log(2);
 }
+/**
+ * Calculate and set the recommended map view drilldown or drillup if mapData
+ * is set for the series.
+ * @private
+ */
+function recommendedMapViewAfterDrill(e) {
+    if (e.seriesOptions.mapData) {
+        this.mapView?.recommendMapView(this, [
+            this.options.chart.map,
+            e.seriesOptions.mapData
+        ], this.options.drilldown?.mapZooming);
+    }
+}
 /*
-const mergeCollections = <
+Const mergeCollections = <
     T extends Array<AnyRecord|undefined>
 >(a: T, b: T): T => {
     b.forEach((newer, i): void => {
@@ -98,7 +114,7 @@ class MapView {
      *
      * */
     static compose(MapChartClass) {
-        if (pushUnique(composedMembers, MapChartClass)) {
+        if (pushUnique(composed, 'MapView')) {
             maps = MapChartClass.maps;
             // Initialize MapView after initialization, but before firstRender
             addEvent(MapChartClass, 'afterInit', function () {
@@ -111,6 +127,8 @@ class MapView {
                  */
                 this.mapView = new MapView(this, this.options.mapView);
             }, { order: 0 });
+            addEvent(MapChartClass, 'addSeriesAsDrilldown', recommendedMapViewAfterDrill);
+            addEvent(MapChartClass, 'afterDrillUp', recommendedMapViewAfterDrill);
         }
     }
     /**
@@ -163,66 +181,17 @@ class MapView {
         this.eventsToUnbind = [];
         this.insets = [];
         this.padding = [0, 0, 0, 0];
-        let recommendedMapView;
-        let recommendedProjection;
+        this.recommendedMapView = {};
         if (!(this instanceof MapViewInset)) {
-            // Handle the global map and series-level mapData
-            const geoMaps = [
+            this.recommendMapView(chart, [
                 chart.options.chart.map,
                 ...(chart.options.series || []).map((s) => s.mapData)
-            ]
-                .map((mapData) => this.getGeoMap(mapData));
-            const allGeoBounds = [];
-            geoMaps.forEach((geoMap) => {
-                if (geoMap) {
-                    // Use the first geo map as main
-                    if (!recommendedMapView) {
-                        recommendedMapView =
-                            geoMap['hc-recommended-mapview'];
-                    }
-                    // Combine the bounding boxes of all loaded maps
-                    if (geoMap.bbox) {
-                        const [x1, y1, x2, y2] = geoMap.bbox;
-                        allGeoBounds.push({ x1, y1, x2, y2 });
-                    }
-                }
-            });
-            // Get the composite bounds
-            const geoBounds = (allGeoBounds.length &&
-                MapView.compositeBounds(allGeoBounds));
-            // Provide a best-guess recommended projection if not set in
-            // the map or in user options
-            fireEvent(chart, 'beforeMapViewInit', {
-                geoBounds
-            }, function () {
-                if (geoBounds) {
-                    const { x1, y1, x2, y2 } = geoBounds;
-                    recommendedProjection =
-                        (x2 - x1 > 180 && y2 - y1 > 90) ?
-                            // Wide angle, go for the world view
-                            {
-                                name: 'EqualEarth'
-                            } :
-                            // Narrower angle, use a projection better
-                            // suited for local view
-                            {
-                                name: 'LambertConformalConic',
-                                parallels: [y1, y2],
-                                rotation: [-(x1 + x2) / 2]
-                            };
-                }
-            });
-            // Register the main geo map (from options.chart.map) if set
-            this.geoMap = geoMaps[0];
+            ]);
         }
         this.userOptions = options || {};
-        if (chart.options.mapView &&
-            chart.options.mapView.recommendedMapView) {
-            recommendedMapView = chart.options.mapView.recommendedMapView;
-        }
-        const o = merge(MapViewDefaults, { projection: recommendedProjection }, recommendedMapView, options);
+        const o = merge(MapViewDefaults, this.recommendedMapView, options);
         // Merge the inset collections by id, or index if id missing
-        const recInsets = recommendedMapView && recommendedMapView.insets, optInsets = options && options.insets;
+        const recInsets = this.recommendedMapView?.insets, optInsets = options && options.insets;
         if (recInsets && optInsets) {
             o.insets = MapView.mergeInsets(recInsets, optInsets);
         }
@@ -519,6 +488,90 @@ class MapView {
         const coordinates = this.projection.inverse([point.x, point.y]);
         return { lon: coordinates[0], lat: coordinates[1] };
     }
+    /**
+     * Calculate and set the recommended map view based on provided map data
+     * from series.
+     *
+     * @requires modules/map
+     *
+     * @function Highcharts.MapView#recommendMapView
+     *
+     * @since 11.4.0
+     *
+     * @param {Highcharts.Chart} chart
+     *        Chart object
+     *
+     * @param {Array<MapDataType | undefined>} mapDataArray
+     *        Array of map data from all series.
+     *
+     * @param {boolean} [update=false]
+     *        Whether to update the chart with recommended map view.
+     *
+     * @return {Highcharts.MapViewOptions|undefined} Best suitable map view.
+     */
+    recommendMapView(chart, mapDataArray, update = false) {
+        // Reset recommended map view
+        this.recommendedMapView = {};
+        // Handle the global map and series-level mapData
+        const geoMaps = mapDataArray.map((mapData) => this.getGeoMap(mapData));
+        const allGeoBounds = [];
+        geoMaps.forEach((geoMap) => {
+            if (geoMap) {
+                // Use the first geo map as main
+                if (!Object.keys(this.recommendedMapView).length) {
+                    this.recommendedMapView =
+                        geoMap['hc-recommended-mapview'] || {};
+                }
+                // Combine the bounding boxes of all loaded maps
+                if (geoMap.bbox) {
+                    const [x1, y1, x2, y2] = geoMap.bbox;
+                    allGeoBounds.push({ x1, y1, x2, y2 });
+                }
+            }
+        });
+        // Get the composite bounds
+        const geoBounds = (allGeoBounds.length &&
+            MapView.compositeBounds(allGeoBounds));
+        // Provide a best-guess recommended projection if not set in
+        // the map or in user options
+        fireEvent(this, 'onRecommendMapView', {
+            geoBounds,
+            chart
+        }, function () {
+            if (geoBounds &&
+                this.recommendedMapView) {
+                if (!this.recommendedMapView.projection) {
+                    const { x1, y1, x2, y2 } = geoBounds;
+                    this.recommendedMapView.projection =
+                        (x2 - x1 > 180 && y2 - y1 > 90) ?
+                            // Wide angle, go for the world view
+                            {
+                                name: 'EqualEarth',
+                                parallels: [0, 0],
+                                rotation: [0]
+                            } :
+                            // Narrower angle, use a projection better
+                            // suited for local view
+                            {
+                                name: 'LambertConformalConic',
+                                parallels: [y1, y2],
+                                rotation: [-(x1 + x2) / 2]
+                            };
+                }
+                if (!this.recommendedMapView.insets) {
+                    this.recommendedMapView.insets = void 0; // Reset insets
+                }
+            }
+        });
+        // Register the main geo map (from options.chart.map) if set
+        this.geoMap = geoMaps[0];
+        if (update &&
+            chart.hasRendered &&
+            !chart.userOptions.mapView?.projection &&
+            this.recommendedMapView) {
+            this.update(this.recommendedMapView);
+        }
+    }
     redraw(animation) {
         this.chart.series.forEach((s) => {
             if (s.useMapGeometry) {
@@ -664,21 +717,34 @@ class MapView {
     }
     setUpEvents() {
         const { chart } = this;
-        // Set up panning for maps. In orthographic projections the globe will
-        // rotate, otherwise adjust the map center.
-        let mouseDownCenterProjected;
-        let mouseDownKey;
-        let mouseDownRotation;
+        // Set up panning and touch zoom for maps. In orthographic projections
+        // the globe will rotate, otherwise adjust the map center and zoom.
+        let mouseDownCenterProjected, mouseDownKey, mouseDownRotation;
         const onPan = (e) => {
-            const pinchDown = chart.pointer.pinchDown, projection = this.projection;
-            let { mouseDownX, mouseDownY } = chart;
-            if (pinchDown.length === 1) {
+            const { lastTouches, pinchDown } = chart.pointer, projection = this.projection, touches = e.touches;
+            let { mouseDownX, mouseDownY } = chart, howMuch = 0;
+            if (pinchDown?.length === 1) {
                 mouseDownX = pinchDown[0].chartX;
                 mouseDownY = pinchDown[0].chartY;
             }
-            if (typeof mouseDownX === 'number' &&
-                typeof mouseDownY === 'number') {
-                const key = `${mouseDownX},${mouseDownY}`, { chartX, chartY } = e.originalEvent;
+            else if (pinchDown?.length === 2) {
+                mouseDownX = (pinchDown[0].chartX + pinchDown[1].chartX) / 2;
+                mouseDownY = (pinchDown[0].chartY + pinchDown[1].chartY) / 2;
+            }
+            // How much has the distance between the fingers changed?
+            if (touches?.length === 2 && lastTouches) {
+                const startDistance = Math.sqrt(Math.pow(lastTouches[0].chartX - lastTouches[1].chartX, 2) +
+                    Math.pow(lastTouches[0].chartY - lastTouches[1].chartY, 2)), endDistance = Math.sqrt(Math.pow(touches[0].chartX - touches[1].chartX, 2) +
+                    Math.pow(touches[0].chartY - touches[1].chartY, 2));
+                howMuch = Math.log(startDistance / endDistance) / Math.log(0.5);
+            }
+            if (isNumber(mouseDownX) && isNumber(mouseDownY)) {
+                const key = `${mouseDownX},${mouseDownY}`;
+                let { chartX, chartY } = e.originalEvent;
+                if (touches?.length === 2) {
+                    chartX = (touches[0].chartX + touches[1].chartX) / 2;
+                    chartY = (touches[0].chartY + touches[1].chartY) / 2;
+                }
                 // Reset starting position
                 if (key !== mouseDownKey) {
                     mouseDownKey = key;
@@ -692,6 +758,7 @@ class MapView {
                     zoomFromBounds(worldBounds, this.playingField)) || -Infinity;
                 // Panning rotates the globe
                 if (projection.options.name === 'Orthographic' &&
+                    (touches?.length || 0) < 2 &&
                     // ... but don't rotate if we're loading only a part of the
                     // world
                     (this.minZoom || Infinity) < worldZoom * 1.3) {
@@ -725,7 +792,7 @@ class MapView {
                     ]);
                     // #19190 Skip NaN coords
                     if (!isNaN(newCenter[0] + newCenter[1])) {
-                        this.setView(newCenter, void 0, true, false);
+                        this.zoomBy(howMuch, newCenter, void 0, false);
                     }
                 }
                 e.preventDefault();
@@ -780,9 +847,9 @@ class MapView {
      *        The animation to apply to a the redraw
      */
     update(options, redraw = true, animation) {
-        const newProjection = options.projection;
-        let isDirtyProjection = newProjection && ((Projection.toString(newProjection) !==
-            Projection.toString(this.options.projection))), isDirtyInsets = false;
+        const newProjection = options.projection, isDirtyProjection = newProjection && ((Projection.toString(newProjection) !==
+            Projection.toString(this.options.projection)));
+        let isDirtyInsets = false;
         merge(true, this.userOptions, options);
         merge(true, this.options, options);
         // If anything changed with the insets, destroy them all and create
@@ -822,7 +889,7 @@ class MapView {
             }
             // Fit to natural bounds if center/zoom are not explicitly given
             if (!options.center &&
-                // do not fire fitToBounds if user don't want to set zoom
+                // Do not fire fitToBounds if user don't want to set zoom
                 Object.hasOwnProperty.call(options, 'zoom') &&
                 !isNumber(options.zoom)) {
                 this.fitToBounds(void 0, void 0, false);
@@ -855,13 +922,10 @@ class MapView {
      *        The animation to apply to a the redraw
      */
     zoomBy(howMuch, coords, chartCoords, animation) {
-        const chart = this.chart;
-        const projectedCenter = this.projection.forward(this.center);
-        // let { x, y } = coords || {};
-        let [x, y] = coords ? this.projection.forward(coords) : [];
+        const chart = this.chart, projectedCenter = this.projection.forward(this.center);
         if (typeof howMuch === 'number') {
             const zoom = this.zoom + howMuch;
-            let center;
+            let center, x, y;
             // Keep chartX and chartY stationary - convert to lat and lng
             if (chartCoords) {
                 const [chartX, chartY] = chartCoords;
@@ -874,14 +938,13 @@ class MapView {
             // Keep lon and lat stationary by adjusting the center
             if (typeof x === 'number' && typeof y === 'number') {
                 const scale = 1 - Math.pow(2, this.zoom) / Math.pow(2, zoom);
-                // const projectedCenter = this.projection.forward(this.center);
                 const offsetX = projectedCenter[0] - x;
                 const offsetY = projectedCenter[1] - y;
                 projectedCenter[0] -= offsetX * scale;
                 projectedCenter[1] += offsetY * scale;
                 center = this.projection.inverse(projectedCenter);
             }
-            this.setView(center, zoom, void 0, animation);
+            this.setView(coords || center, zoom, void 0, animation);
             // Undefined howMuch => reset zoom
         }
         else {
@@ -1006,7 +1069,7 @@ class MapViewInset extends MapView {
                     'stroke-width': options.borderWidth
                 });
             }
-            const crisp = Math.round(this.border.strokeWidth()) % 2 / 2, field = (options.relativeTo === 'mapBoundingBox' &&
+            const strokeWidth = this.border.strokeWidth(), field = (options.relativeTo === 'mapBoundingBox' &&
                 mapView.getMapBBox()) || mapView.playingField;
             const d = (borderPath.coordinates || []).reduce((d, lineString) => lineString.reduce((d, point, i) => {
                 let [x, y] = point;
@@ -1014,8 +1077,8 @@ class MapViewInset extends MapView {
                     x = chart.plotLeft + relativeLength(`${x}%`, field.width, field.x);
                     y = chart.plotTop + relativeLength(`${y}%`, field.height, field.y);
                 }
-                x = Math.floor(x) + crisp;
-                y = Math.floor(y) + crisp;
+                x = crisp(x, strokeWidth);
+                y = crisp(y, strokeWidth);
                 d.push(i === 0 ? ['M', x, y] : ['L', x, y]);
                 return d;
             }, d), []);

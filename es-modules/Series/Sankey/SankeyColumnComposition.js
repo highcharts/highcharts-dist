@@ -2,7 +2,7 @@
  *
  *  Sankey diagram module
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -11,7 +11,7 @@
  * */
 'use strict';
 import U from '../../Core/Utilities.js';
-const { defined, pushUnique, relativeLength } = U;
+const { defined, relativeLength } = U;
 /* *
  *
  *  Composition
@@ -209,8 +209,8 @@ var SankeyColumnComposition;
                 if (column[i] === node) {
                     return {
                         relativeTop: offset + (defined(directionOffset) ?
-                            // directionOffset is a percent
-                            // of the node height
+                            // `directionOffset` is a percent of the node
+                            // height
                             relativeLength(directionOffset, height) :
                             relativeLength(optionOffset, totalNodeOffset))
                     };

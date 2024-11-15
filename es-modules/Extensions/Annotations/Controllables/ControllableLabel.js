@@ -12,12 +12,6 @@ import U from '../../../Core/Utilities.js';
 const { extend, isNumber, pick } = U;
 /* *
  *
- *  Constants
- *
- * */
-const composedMembers = [];
-/* *
- *
  *  Functions
  *
  * */
@@ -123,10 +117,8 @@ class ControllableLabel extends Controllable {
         };
     }
     static compose(SVGRendererClass) {
-        if (U.pushUnique(composedMembers, SVGRendererClass)) {
-            const svgRendererProto = SVGRendererClass.prototype;
-            svgRendererProto.symbols.connector = symbolConnector;
-        }
+        const symbols = SVGRendererClass.prototype.symbols;
+        symbols.connector = symbolConnector;
     }
     /**
      * Returns new alignment options for a label if the label is outside the
@@ -254,9 +246,6 @@ class ControllableLabel extends Controllable {
                 .css(options.style)
                 .shadow(options.shadow);
         }
-        if (options.className) {
-            this.graphic.addClass(options.className);
-        }
         this.graphic.labelrank = options.labelrank;
         super.render();
     }
@@ -293,7 +282,9 @@ class ControllableLabel extends Controllable {
      * For a controllable label, we need to subtract translation from
      * options.
      */
-    anchor(_point) {
+    anchor(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _point) {
         const anchor = super.anchor.apply(this, arguments), x = this.options.x || 0, y = this.options.y || 0;
         anchor.absolutePosition.x -= x;
         anchor.absolutePosition.y -= y;
@@ -314,7 +305,8 @@ class ControllableLabel extends Controllable {
                 itemPosition = tooltip.getPosition.call({
                     chart,
                     distance: pick(itemOptions.distance, 16),
-                    getPlayingField: tooltip.getPlayingField
+                    getPlayingField: tooltip.getPlayingField,
+                    pointer: tooltip.pointer
                 }, width, height, {
                     plotX: anchorRelativePosition.x,
                     plotY: anchorRelativePosition.y,

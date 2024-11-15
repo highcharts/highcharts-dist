@@ -2,7 +2,7 @@
  *
  *  This module implements sunburst charts in Highcharts.
  *
- *  (c) 2016-2021 Highsoft AS
+ *  (c) 2016-2024 Highsoft AS
  *
  *  Authors: Jon Arild Nygard
  *
@@ -22,19 +22,6 @@ const { correctFloat, extend, pInt } = U;
  *
  * */
 class SunburstPoint extends TreemapPoint {
-    constructor() {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        super(...arguments);
-        this.node = void 0;
-        this.options = void 0;
-        this.series = void 0;
-        this.shapeExisting = void 0;
-        this.shapeType = void 0;
-    }
     /* *
      *
      *  Functions
@@ -43,7 +30,7 @@ class SunburstPoint extends TreemapPoint {
     getDataLabelPath(label) {
         const renderer = this.series.chart.renderer, shapeArgs = this.shapeExisting, r = shapeArgs.r + pInt(label.options?.distance || 0);
         let start = shapeArgs.start, end = shapeArgs.end;
-        const angle = start + (end - start) / 2; // arc middle value
+        const angle = start + (end - start) / 2; // Arc middle value
         let upperHalf = angle < 0 &&
             angle > -Math.PI ||
             angle > Math.PI, moreThanHalf;
@@ -96,7 +83,7 @@ extend(SunburstPoint.prototype, {
 });
 /* *
  *
- *  Defaul Export
+ *  Default Export
  *
  * */
 export default SunburstPoint;

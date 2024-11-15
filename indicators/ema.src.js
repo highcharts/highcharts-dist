@@ -20,14 +20,14 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
             }
         }
     }
-    _registerModule(_modules, 'masters/indicators/ema.src.js', [], function () {
+    _registerModule(_modules, 'masters/indicators/ema.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
         /**
          * @requires highcharts
          */
@@ -36,5 +36,6 @@
          * It's no longer necessary to load this file.
          */
 
+        return Highcharts;
     });
 }));

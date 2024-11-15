@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2022 Pawel Lysy Grzegorz Blachlinski
+ *  (c) 2010-2024 Pawel Lysy Grzegorz Blachlinski
  *
  *  License: www.highcharts.com/license
  *
@@ -23,35 +23,36 @@ const { seriesTypes: { column: { prototype: { pointClass: ColumnPoint } } } } = 
  * @class
  */
 class LinkPoint extends ColumnPoint {
-    constructor() {
-        super(...arguments);
+    /* *
+     *
+     *  Constructor
+     *
+     * */
+    constructor(series, options, x, point) {
+        super(series, options, x);
         /* *
-        *
-        *  Class properties
-        *
-        * */
+         *
+         *  Properties
+         *
+         * */
+        this.dataLabelOnNull = true;
+        this.formatPrefix = 'link';
         this.isLink = true;
         this.node = {};
         this.formatPrefix = 'link';
         this.dataLabelOnNull = true;
+        if (point) {
+            this.fromNode = point.node.parentNode.point;
+            this.visible = point.visible;
+            this.toNode = point;
+            this.id = this.toNode.id + '-' + this.fromNode.id;
+        }
     }
     /* *
      *
      *  Functions
      *
      * */
-    init(series, options, x, point) {
-        const link = super.init.apply(this, arguments);
-        this.formatPrefix = 'link';
-        this.dataLabelOnNull = true;
-        if (point) {
-            link.fromNode = point.node.parentNode.point;
-            link.visible = point.visible;
-            link.toNode = point;
-            this.id = link.toNode.id + '-' + link.fromNode.id;
-        }
-        return link;
-    }
     update(options, redraw, animation, runEvent) {
         const oldOptions = {
             id: this.id,

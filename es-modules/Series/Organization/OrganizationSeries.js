@@ -2,7 +2,7 @@
  *
  *  Organization chart module
  *
- *  (c) 2018-2021 Torstein Honsi
+ *  (c) 2018-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -16,7 +16,10 @@ import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import PathUtilities from '../PathUtilities.js';
 const { sankey: SankeySeries } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
-const { css, extend, isNumber, merge, pick } = U;
+const { css, crisp, extend, isNumber, merge, pick } = U;
+import SVGElement from '../../Core/Renderer/SVG/SVGElement.js';
+import TextPath from '../../Extensions/TextPath.js';
+TextPath.compose(SVGElement);
 /* *
  *
  *  Class
@@ -30,22 +33,6 @@ const { css, extend, isNumber, merge, pick } = U;
  * @augments Highcharts.seriesTypes.sankey
  */
 class OrganizationSeries extends SankeySeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -113,29 +100,29 @@ class OrganizationSeries extends SankeySeries {
         return attribs;
     }
     translateLink(point) {
-        const chart = this.chart, options = this.options, fromNode = point.fromNode, toNode = point.toNode, linkWidth = pick(options.linkLineWidth, options.link.lineWidth), crisp = (Math.round(linkWidth) % 2) / 2, factor = pick(options.link.offset, 0.5), type = pick(point.options.link && point.options.link.type, options.link.type);
+        const chart = this.chart, options = this.options, fromNode = point.fromNode, toNode = point.toNode, linkWidth = pick(options.linkLineWidth, options.link.lineWidth, 0), factor = pick(options.link.offset, 0.5), type = pick(point.options.link && point.options.link.type, options.link.type);
         if (fromNode.shapeArgs && toNode.shapeArgs) {
-            const hangingIndent = options.hangingIndent, toOffset = toNode.options.offset, percentOffset = /%$/.test(toOffset) && parseInt(toOffset, 10), inverted = chart.inverted;
-            let x1 = Math.floor((fromNode.shapeArgs.x || 0) +
-                (fromNode.shapeArgs.width || 0)) + crisp, y1 = Math.floor((fromNode.shapeArgs.y || 0) +
-                (fromNode.shapeArgs.height || 0) / 2) + crisp, x2 = Math.floor(toNode.shapeArgs.x || 0) + crisp, y2 = Math.floor((toNode.shapeArgs.y || 0) +
-                (toNode.shapeArgs.height || 0) / 2) + crisp, xMiddle;
+            const hangingIndent = options.hangingIndent, hangingRight = options.hangingSide === 'right', toOffset = toNode.options.offset, percentOffset = /%$/.test(toOffset) && parseInt(toOffset, 10), inverted = chart.inverted;
+            let x1 = crisp((fromNode.shapeArgs.x || 0) +
+                (fromNode.shapeArgs.width || 0), linkWidth), y1 = crisp((fromNode.shapeArgs.y || 0) +
+                (fromNode.shapeArgs.height || 0) / 2, linkWidth), x2 = crisp(toNode.shapeArgs.x || 0, linkWidth), y2 = crisp((toNode.shapeArgs.y || 0) +
+                (toNode.shapeArgs.height || 0) / 2, linkWidth), xMiddle;
             if (inverted) {
                 x1 -= (fromNode.shapeArgs.width || 0);
                 x2 += (toNode.shapeArgs.width || 0);
             }
             xMiddle = this.colDistance ?
-                Math.floor(x2 +
+                crisp(x2 +
                     ((inverted ? 1 : -1) *
                         (this.colDistance - this.nodeWidth)) /
-                        2) + crisp :
-                Math.floor((x2 + x1) / 2) + crisp;
+                        2, linkWidth) :
+                crisp((x2 + x1) / 2, linkWidth);
             // Put the link on the side of the node when an offset is given. HR
             // node in the main demo.
             if (percentOffset &&
                 (percentOffset >= 50 || percentOffset <= -50)) {
-                xMiddle = x2 = Math.floor(x2 + (inverted ? -0.5 : 0.5) *
-                    (toNode.shapeArgs.width || 0)) + crisp;
+                xMiddle = x2 = crisp(x2 + (inverted ? -0.5 : 0.5) *
+                    (toNode.shapeArgs.width || 0), linkWidth);
                 y2 = toNode.shapeArgs.y || 0;
                 if (percentOffset > 0) {
                     y2 += toNode.shapeArgs.height || 0;
@@ -143,18 +130,19 @@ class OrganizationSeries extends SankeySeries {
             }
             if (toNode.hangsFrom === fromNode) {
                 if (chart.inverted) {
-                    y1 = Math.floor((fromNode.shapeArgs.y || 0) +
-                        (fromNode.shapeArgs.height || 0) -
-                        hangingIndent / 2) + crisp;
-                    y2 = ((toNode.shapeArgs.y || 0) +
-                        (toNode.shapeArgs.height || 0));
+                    y1 = !hangingRight ?
+                        crisp((fromNode.shapeArgs.y || 0) +
+                            (fromNode.shapeArgs.height || 0) -
+                            hangingIndent / 2, linkWidth) :
+                        crisp((fromNode.shapeArgs.y || 0) + hangingIndent / 2, linkWidth);
+                    y2 = !hangingRight ? ((toNode.shapeArgs.y || 0) +
+                        (toNode.shapeArgs.height || 0)) : (toNode.shapeArgs.y || 0) + hangingIndent / 2;
                 }
                 else {
-                    y1 = Math.floor((fromNode.shapeArgs.y || 0) +
-                        hangingIndent / 2) + crisp;
+                    y1 = crisp((fromNode.shapeArgs.y || 0) + hangingIndent / 2, linkWidth);
                 }
-                xMiddle = x2 = Math.floor((toNode.shapeArgs.x || 0) +
-                    (toNode.shapeArgs.width || 0) / 2) + crisp;
+                xMiddle = x2 = crisp((toNode.shapeArgs.x || 0) +
+                    (toNode.shapeArgs.width || 0) / 2, linkWidth);
             }
             point.plotX = xMiddle;
             point.plotY = (y1 + y2) / 2;
@@ -196,15 +184,19 @@ class OrganizationSeries extends SankeySeries {
     }
     translateNode(node, column) {
         super.translateNode(node, column);
-        const chart = this.chart, options = this.options, indent = options.hangingIndent || 0, sign = chart.inverted ? -1 : 1, shapeArgs = node.shapeArgs, indentLogic = options.hangingIndentTranslation, minLength = options.minNodeLength || 10;
+        const chart = this.chart, options = this.options, sum = node.getSum(), translationFactor = this.translationFactor, nodeHeight = Math.max(Math.round(sum * translationFactor), options.minLinkWidth || 0), hangingRight = options.hangingSide === 'right', indent = options.hangingIndent || 0, indentLogic = options.hangingIndentTranslation, minLength = options.minNodeLength || 10, nodeWidth = Math.round(this.nodeWidth), shapeArgs = node.shapeArgs, sign = chart.inverted ? -1 : 1;
         let parentNode = node.hangsFrom;
         if (parentNode) {
             if (indentLogic === 'cumulative') {
                 // Move to the right:
                 shapeArgs.height -= indent;
-                shapeArgs.y -= sign * indent;
+                // If hanging right, first indent is handled by shrinking.
+                if (chart.inverted && !hangingRight) {
+                    shapeArgs.y -= sign * indent;
+                }
                 while (parentNode) {
-                    shapeArgs.y += sign * indent;
+                    // Hanging right is the same direction as non-inverted.
+                    shapeArgs.y += (hangingRight ? 1 : sign) * indent;
                     parentNode = parentNode.hangsFrom;
                 }
             }
@@ -213,14 +205,19 @@ class OrganizationSeries extends SankeySeries {
                 while (parentNode &&
                     shapeArgs.height > indent + minLength) {
                     shapeArgs.height -= indent;
+                    // Fixes nodes not dropping in non-inverted charts.
+                    // Hanging right is the same as non-inverted.
+                    if (!chart.inverted || hangingRight) {
+                        shapeArgs.y += indent;
+                    }
                     parentNode = parentNode.hangsFrom;
                 }
             }
             else {
-                // indentLogic === "inherit"
+                // Option indentLogic === "inherit"
                 // Do nothing (v9.3.2 and prev versions):
                 shapeArgs.height -= indent;
-                if (!chart.inverted) {
+                if (!chart.inverted || hangingRight) {
                     shapeArgs.y += indent;
                 }
             }
@@ -228,6 +225,15 @@ class OrganizationSeries extends SankeySeries {
         node.nodeHeight = chart.inverted ?
             shapeArgs.width :
             shapeArgs.height;
+        // Calculate shape args correctly to align nodes to center (#19946)
+        if (node.shapeArgs && !node.hangsFrom) {
+            node.shapeArgs = merge(node.shapeArgs, {
+                x: (node.shapeArgs.x || 0) + (nodeWidth / 2) -
+                    ((node.shapeArgs.width || 0) / 2),
+                y: (node.shapeArgs.y || 0) + (nodeHeight / 2) -
+                    ((node.shapeArgs.height || 0) / 2)
+            });
+        }
     }
     drawDataLabels() {
         const dlOptions = this.options.dataLabels;
@@ -239,6 +245,11 @@ class OrganizationSeries extends SankeySeries {
         super.drawDataLabels();
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 OrganizationSeries.defaultOptions = merge(SankeySeries.defaultOptions, OrganizationSeriesDefaults);
 extend(OrganizationSeries.prototype, {
     pointClass: OrganizationPoint
@@ -269,4 +280,4 @@ export default OrganizationSeries;
  *
  * @typedef {"inherit"|"cumulative"|"shrink"} Highcharts.OrganizationHangingIndentTranslationValue
  */
-''; // detach doclets above
+''; // Detach doclets above

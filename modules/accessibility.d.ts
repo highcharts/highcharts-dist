@@ -72,26 +72,32 @@ declare module "../highcharts" {
      *
      * Components should take care to destroy added elements and unregister
      * event handlers on destroy. This is handled automatically if using
-     * this.addEvent and this.createElement.
+     * `this.addEvent` and `this.createElement`.
      */
     class AccessibilityComponent {
         /**
          * Called when accessibility is disabled or chart is destroyed.
          */
-        static destroy(): void;
+        destroy(): void;
+        /**
+         * Get keyboard navigation handler for this component.
+         *
+         * @return The keyboard navigation handler(s) for this component.
+         */
+        getKeyboardNavigation(): (KeyboardNavigationHandler|Array<KeyboardNavigationHandler>);
         /**
          * Called on component initialization.
          */
-        static init(): void;
+        init(): void;
         /**
          * Called on every chart render.
          */
-        static onChartRender(): void;
+        onChartRender(): void;
         /**
          * Called on updates to the chart, including options changes. Note that
          * this is also called on first render of chart.
          */
-        static onChartUpdate(): void;
+        onChartUpdate(): void;
     }
     /**
      * Define a keyboard navigation handler for use with a

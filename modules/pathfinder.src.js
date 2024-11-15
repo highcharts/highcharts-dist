@@ -1,9 +1,9 @@
 /**
- * @license Highcharts Gantt JS v11.2.0 (2023-10-30)
+ * @license Highcharts Gantt JS v11.4.8 (2024-08-29)
  *
  * Pathfinder
  *
- * (c) 2016-2021 Øystein Moseng
+ * (c) 2016-2024 Øystein Moseng
  *
  * License: www.highcharts.com/license
  */
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -77,16 +77,6 @@
          */
         class Connection {
             constructor(from, to, options) {
-                /* *
-                *
-                * Properties
-                *
-                * */
-                this.chart = void 0;
-                this.fromPoint = void 0;
-                this.graphics = void 0;
-                this.pathfinder = void 0;
-                this.toPoint = void 0;
                 this.init(from, to, options);
             }
             /**
@@ -125,8 +115,8 @@
              * @param {Partial<Highcharts.AnimationOptionsObject>} [animation]
              *        Animation options for the rendering.
              */
-            renderPath(path, attribs, animation) {
-                const connection = this, chart = this.chart, styledMode = chart.styledMode, pathfinder = chart.pathfinder, animate = !chart.options.chart.forExport && animation !== false, anim = {};
+            renderPath(path, attribs) {
+                const connection = this, chart = this.chart, styledMode = chart.styledMode, pathfinder = this.pathfinder, anim = {};
                 let pathGraphic = connection.graphics && connection.graphics.path;
                 // Add the SVG element of the pathfinder group if it doesn't exist
                 if (!pathfinder.group) {
@@ -155,7 +145,7 @@
                 if (!styledMode) {
                     anim.opacity = 1;
                 }
-                pathGraphic[animate ? 'animate' : 'attr'](anim, animation);
+                pathGraphic.animate(anim);
                 // Store reference on connection
                 this.graphics = this.graphics || {};
                 this.graphics.path = pathGraphic;
@@ -342,7 +332,7 @@
                         pathfinder.lineObstacles.concat(pathResult.obstacles);
                 }
                 // Add the calculated path to the pathfinder group
-                connection.renderPath(path, attribs, series.options.animation);
+                connection.renderPath(path, attribs);
                 // Render the markers
                 connection.addMarker('start', merge(options.marker, options.startMarker), path);
                 connection.addMarker('end', merge(options.marker, options.endMarker), path);
@@ -400,7 +390,7 @@
     _registerModule(_modules, 'Series/PathUtilities.js', [], function () {
         /* *
          *
-         *  (c) 2010-2022 Pawel Lysy
+         *  (c) 2010-2024 Pawel Lysy
          *
          *  License: www.highcharts.com/license
          *
@@ -412,6 +402,9 @@
             straight: getStraightPath,
             curved: getCurvedPath
         };
+        /**
+         *
+         */
         function getDefaultPath(pathParams) {
             const { x1, y1, x2, y2, width = 0, inverted = false, radius, parentVisible } = pathParams;
             const path = [
@@ -431,6 +424,9 @@
                 ], radius) :
                 path;
         }
+        /**
+         *
+         */
         function getStraightPath(pathParams) {
             const { x1, y1, x2, y2, width = 0, inverted = false, parentVisible } = pathParams;
             return parentVisible ? [
@@ -443,6 +439,9 @@
                 ['L', x1, y2]
             ];
         }
+        /**
+         *
+         */
         function getCurvedPath(pathParams) {
             const { x1, y1, x2, y2, offset = 0, width = 0, inverted = false, parentVisible } = pathParams;
             return parentVisible ?
@@ -475,13 +474,13 @@
                 const x = path[i][1];
                 const y = path[i][2];
                 if (typeof x === 'number' && typeof y === 'number') {
-                    // moveTo
+                    // MoveTo
                     if (i === 0) {
                         d.push(['M', x, y]);
                     }
                     else if (i === path.length - 1) {
                         d.push(['L', x, y]);
-                        // curveTo
+                        // CurveTo
                     }
                     else if (r) {
                         const prevSeg = path[i - 1];
@@ -511,7 +510,7 @@
                                 ]);
                             }
                         }
-                        // lineTo
+                        // LineTo
                     }
                     else {
                         d.push(['L', x, y]);
@@ -1503,7 +1502,7 @@
          *
          * */
         const { setOptions } = D;
-        const { defined, error, merge, pushUnique } = U;
+        const { defined, error, merge } = U;
         /* *
          *
          *  Functions
@@ -1570,18 +1569,13 @@
         (function (ConnectionComposition) {
             /* *
              *
-             *  Constants
-             *
-             * */
-            const composedMembers = [];
-            /* *
-             *
              *  Functions
              *
              * */
             /** @private */
             function compose(ChartClass, PathfinderClass, PointClass) {
-                if (pushUnique(composedMembers, ChartClass)) {
+                const pointProto = PointClass.prototype;
+                if (!pointProto.getPathfinderAnchorPoint) {
                     // Initialize Pathfinder for charts
                     ChartClass.prototype.callbacks.push(function (chart) {
                         const options = chart.options;
@@ -1591,14 +1585,9 @@
                             this.pathfinder.update(true); // First draw, defer render
                         }
                     });
-                }
-                if (pushUnique(composedMembers, PointClass)) {
-                    const pointProto = PointClass.prototype;
                     pointProto.getMarkerVector = pointGetMarkerVector;
                     pointProto.getPathfinderAnchorPoint = pointGetPathfinderAnchorPoint;
                     pointProto.getRadiansToVector = pointGetRadiansToVector;
-                }
-                if (pushUnique(composedMembers, setOptions)) {
                     // Set default Pathfinder options
                     setOptions(ConnectorsDefaults);
                 }
@@ -1851,7 +1840,7 @@
                     }
                 }
             }
-            // Ensure we always have at least one value, even in very spaceous charts
+            // Ensure we always have at least one value, even in very spacious charts
             distances.push(80);
             return max(Math.floor(distances.sort(function (a, b) {
                 return (a - b);
@@ -1892,17 +1881,6 @@
              *
              * */
             constructor(chart) {
-                /* *
-                 *
-                 * Properties
-                 *
-                 * */
-                this.chart = void 0;
-                this.chartObstacles = void 0;
-                this.chartObstacleMetrics = void 0;
-                this.connections = void 0;
-                this.group = void 0;
-                this.lineObstacles = void 0;
                 this.init(chart);
             }
             /* *
@@ -2051,10 +2029,13 @@
              * @function Highcharts.Pathfinder#getChartObstacles
              *
              * @param {Object} options
-             *        Options for the calculation. Currenlty only
-             *        options.algorithmMargin.
+             *        Options for the calculation. Currently only
+             *        `options.algorithmMargin`.
              *
-             * @return {Array<object>}
+             * @param {number} options.algorithmMargin
+             *        The algorithm margin to use for the obstacles.
+
+            * @return {Array<object>}
              *         An array of calculated obstacles. Each obstacle is defined as an
              *         object with xMin, xMax, yMin and yMax properties.
              */
@@ -2190,7 +2171,7 @@
 
         return Pathfinder;
     });
-    _registerModule(_modules, 'Extensions/ArrowSymbols.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Extensions/ArrowSymbols.js', [], function () {
         /* *
          *
          *  (c) 2017 Highsoft AS
@@ -2201,12 +2182,6 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
         /* *
          *
          *  Functions
@@ -2285,15 +2260,13 @@
          * @private
          */
         function compose(SVGRendererClass) {
-            if (U.pushUnique(composedMembers, SVGRendererClass)) {
-                const symbols = SVGRendererClass.prototype.symbols;
-                symbols.arrow = arrow;
-                symbols['arrow-filled'] = triangleLeft;
-                symbols['arrow-filled-half'] = triangleLeftHalf;
-                symbols['arrow-half'] = arrowHalf;
-                symbols['triangle-left'] = triangleLeft;
-                symbols['triangle-left-half'] = triangleLeftHalf;
-            }
+            const symbols = SVGRendererClass.prototype.symbols;
+            symbols.arrow = arrow;
+            symbols['arrow-filled'] = triangleLeft;
+            symbols['arrow-filled-half'] = triangleLeftHalf;
+            symbols['arrow-half'] = arrowHalf;
+            symbols['triangle-left'] = triangleLeft;
+            symbols['triangle-left-half'] = triangleLeftHalf;
         }
         /**
          * Creates a left-oriented triangle.
@@ -2376,9 +2349,10 @@
     _registerModule(_modules, 'masters/modules/pathfinder.src.js', [_modules['Core/Globals.js'], _modules['Gantt/Pathfinder.js'], _modules['Extensions/ArrowSymbols.js']], function (Highcharts, Pathfinder, ArrowSymbols) {
 
         const G = Highcharts;
-        G.Pathfinder = Pathfinder;
+        G.Pathfinder = G.Pathfinder || Pathfinder;
         ArrowSymbols.compose(G.SVGRenderer);
-        Pathfinder.compose(G.Chart, G.Point);
+        G.Pathfinder.compose(G.Chart, G.Point);
 
+        return Highcharts;
     });
 }));

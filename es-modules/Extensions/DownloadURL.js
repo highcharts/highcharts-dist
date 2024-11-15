@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2015-2023 Oystein Moseng
+ *  (c) 2015-2024 Oystein Moseng
  *
  *  License: www.highcharts.com/license
  *
@@ -40,7 +40,7 @@ const domurl = win.URL || win.webkitURL || win;
 function dataURLtoBlob(dataURL) {
     const parts = dataURL
         .replace(/filename=.*;/, '')
-        .match(/data:([^;]*)(;base64)?,([0-9A-Za-z+/]+)/);
+        .match(/data:([^;]*)(;base64)?,([A-Z+\d\/]+)/i);
     if (parts &&
         parts.length > 3 &&
         (win.atob) &&
@@ -79,6 +79,9 @@ function downloadURL(dataURL, filename) {
         return;
     }
     dataURL = '' + dataURL;
+    if (nav.userAgent.length > 1000 /* RegexLimits.shortLimit */) {
+        throw new Error('Input too long');
+    }
     const // Some browsers have limitations for data URL lengths. Try to convert
     // to Blob or fall back. Edge always needs that blob.
     isOldEdgeBrowser = /Edge\/\d+/.test(nav.userAgent), 

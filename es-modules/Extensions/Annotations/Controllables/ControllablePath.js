@@ -15,7 +15,6 @@ const { addEvent, defined, extend, merge, uniqueKey } = U;
  *  Constants
  *
  * */
-const composedMembers = [];
 const markerEndSetter = createMarkerSetter('marker-end');
 const markerStartSetter = createMarkerSetter('marker-start');
 // See TRACKER_FILL in highcharts.src.js
@@ -38,7 +37,7 @@ function createMarkerSetter(markerType) {
  */
 function onChartAfterGetContainer() {
     this.options.defs = merge(defaultMarkers, this.options.defs || {});
-    // objectEach(this.options.defs, function (def): void {
+    ///  objectEach(this.options.defs, function (def): void {
     //     const attributes = def.attributes;
     //     if (
     //         def.tagName === 'marker' &&
@@ -106,11 +105,9 @@ class ControllablePath extends Controllable {
      *
      * */
     static compose(ChartClass, SVGRendererClass) {
-        if (U.pushUnique(composedMembers, ChartClass)) {
+        const svgRendererProto = SVGRendererClass.prototype;
+        if (!svgRendererProto.addMarker) {
             addEvent(ChartClass, 'afterGetContainer', onChartAfterGetContainer);
-        }
-        if (U.pushUnique(composedMembers, SVGRendererClass)) {
-            const svgRendererProto = SVGRendererClass.prototype;
             svgRendererProto.addMarker = svgRendererAddMarker;
         }
     }
@@ -179,9 +176,6 @@ class ControllablePath extends Controllable {
             .path([['M', 0, 0]])
             .attr(attrs)
             .add(parent);
-        if (options.className) {
-            this.graphic.addClass(options.className);
-        }
         this.tracker = this.annotation.chart.renderer
             .path([['M', 0, 0]])
             .addClass('highcharts-tracker-line')
@@ -191,7 +185,7 @@ class ControllablePath extends Controllable {
             .add(parent);
         if (!this.annotation.chart.styledMode) {
             this.tracker.attr({
-                'stroke-linejoin': 'round',
+                'stroke-linejoin': 'round', // #1225
                 stroke: TRACKER_FILL,
                 fill: TRACKER_FILL,
                 'stroke-width': this.graphic.strokeWidth() +
@@ -227,7 +221,8 @@ class ControllablePath extends Controllable {
             fill :
             itemOptions.stroke;
         const setMarker = function (markerType) {
-            let markerId = itemOptions[markerType], def, predefinedMarker, key, marker;
+            const markerId = itemOptions[markerType];
+            let def, predefinedMarker, key, marker;
             if (markerId) {
                 for (key in defs) { // eslint-disable-line guard-for-in
                     def = defs[key];

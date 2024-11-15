@@ -2,7 +2,7 @@
  *
  *  Parallel coordinates module
  *
- *  (c) 2010-2021 Pawel Fus
+ *  (c) 2010-2024 Pawel Fus
  *
  *  License: www.highcharts.com/license
  *
@@ -14,7 +14,7 @@ import ParallelAxis from './ParallelAxis.js';
 import ParallelCoordinatesDefaults from './ParallelCoordinatesDefaults.js';
 import ParallelSeries from './ParallelSeries.js';
 import U from '../../Core/Utilities.js';
-const { addEvent, defined, merge, pushUnique, splat } = U;
+const { addEvent, defined, merge, splat } = U;
 /* *
  *
  *  Class
@@ -78,12 +78,6 @@ var ParallelCoordinates;
      * */
     /* *
      *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
@@ -91,15 +85,11 @@ var ParallelCoordinates;
     function compose(AxisClass, ChartClass, highchartsDefaultOptions, SeriesClass) {
         ParallelAxis.compose(AxisClass);
         ParallelSeries.compose(SeriesClass);
-        if (pushUnique(composedMembers, ChartClass)) {
-            const ChartCompo = ChartClass;
-            const addsProto = ChartAdditions.prototype;
-            const chartProto = ChartCompo.prototype;
+        const ChartCompo = ChartClass, addsProto = ChartAdditions.prototype, chartProto = ChartCompo.prototype;
+        if (!chartProto.setParallelInfo) {
             chartProto.setParallelInfo = addsProto.setParallelInfo;
             addEvent(ChartCompo, 'init', onChartInit);
             addEvent(ChartCompo, 'update', onChartUpdate);
-        }
-        if (pushUnique(composedMembers, highchartsDefaultOptions)) {
             merge(true, highchartsDefaultOptions.chart, ParallelCoordinatesDefaults.chart);
         }
     }
@@ -115,7 +105,7 @@ var ParallelCoordinates;
          * Flag used in parallel coordinates plot to check if chart has
          * ||-coords (parallel coords).
          *
-         * @requires module:modules/parallel-coordinates
+         * @requires modules/parallel-coordinates
          *
          * @name Highcharts.Chart#hasParallelCoordinates
          * @type {boolean}
@@ -131,7 +121,8 @@ var ParallelCoordinates;
             if (!options.legend) {
                 options.legend = {};
             }
-            if (typeof options.legend.enabled === 'undefined') {
+            if (options.legend &&
+                typeof options.legend.enabled === 'undefined') {
                 options.legend.enabled = false;
             }
             merge(true, options, 
@@ -147,7 +138,7 @@ var ParallelCoordinates;
                 }
             });
             options.yAxis = defaultYAxis.concat(newYAxes);
-            options.xAxis = merge(ParallelCoordinatesDefaults.xAxis, // docs
+            options.xAxis = merge(ParallelCoordinatesDefaults.xAxis, // Docs
             splat(options.xAxis || {})[0]);
         }
     }

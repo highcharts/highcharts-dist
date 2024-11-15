@@ -2,7 +2,7 @@
  *
  *  Vector plot series module
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -145,7 +145,7 @@ const VectorSeriesDefaults = {
  * @product   highcharts highstock
  * @apioption series.vector.data.direction
  */
-''; // adds doclets above to the transpiled file
+''; // Adds doclets above to the transpiled file
 /* *
  *
  *  Default Export

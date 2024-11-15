@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
  * Highcharts variwide module
  *
- * (c) 2010-2021 Torstein Honsi
+ * (c) 2010-2024 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -28,32 +28,27 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
             }
         }
     }
-    _registerModule(_modules, 'Series/Variwide/VariwideComposition.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Series/Variwide/VariwideComposition.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  Highcharts variwide module
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { addEvent, wrap } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { composed } = H;
+        const { addEvent, pushUnique, wrap } = U;
         /* *
          *
          *  Functions
@@ -63,13 +58,11 @@
          * @private
          */
         function compose(AxisClass, TickClass) {
-            if (U.pushUnique(composedMembers, AxisClass)) {
+            if (pushUnique(composed, 'Variwide')) {
+                const tickProto = TickClass.prototype;
                 addEvent(AxisClass, 'afterDrawCrosshair', onAxisAfterDrawCrosshair);
                 addEvent(AxisClass, 'afterRender', onAxisAfterRender);
-            }
-            if (U.pushUnique(composedMembers, TickClass)) {
                 addEvent(TickClass, 'afterGetPosition', onTickAfterGetPosition);
-                const tickProto = TickClass.prototype;
                 tickProto.postTranslate = tickPostTranslate;
                 wrap(tickProto, 'getLabelPosition', wrapTickGetLabelPosition);
             }
@@ -89,7 +82,7 @@
          */
         function onAxisAfterRender() {
             const axis = this;
-            if (!this.horiz && this.variwide) {
+            if (this.variwide) {
                 this.chart.labelCollectors.push(function () {
                     return axis.tickPositions
                         .filter((pos) => !!axis.ticks[pos].label)
@@ -129,7 +122,11 @@
         /**
          * @private
          */
-        function wrapTickGetLabelPosition(proceed, _x, _y, _label, horiz, _labelOptions, _tickmarkOffset, _index) {
+        function wrapTickGetLabelPosition(proceed, _x, _y, _label, horiz, 
+        /* eslint-disable @typescript-eslint/no-unused-vars */
+        _labelOptions, _tickmarkOffset, _index
+        /* eslint-enable @typescript-eslint/no-unused-vars */
+        ) {
             const args = Array.prototype.slice.call(arguments, 1), xOrY = horiz ? 'x' : 'y';
             // Replace the x with the original x
             if (this.axis.variwide &&
@@ -159,7 +156,7 @@
          *
          *  Highcharts variwide module
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -174,17 +171,6 @@
          *
          * */
         class VariwidePoint extends ColumnPoint {
-            constructor() {
-                /* *
-                 *
-                 *  Properites
-                 *
-                 * */
-                super(...arguments);
-                this.crosshairWidth = void 0;
-                this.options = void 0;
-                this.series = void 0;
-            }
             /* *
              *
              *  Functions
@@ -207,7 +193,7 @@
          *
          *  Highcharts variwide module
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -324,7 +310,7 @@
          * @product   highcharts
          * @apioption series.variwide.data.z
          */
-        ''; // adds doclets above to transpiled file
+        ''; // Adds doclets above to transpiled file
         /* *
          *
          *  Default Export
@@ -338,7 +324,7 @@
          *
          *  Highcharts variwide module
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -346,7 +332,7 @@
          *
          * */
         const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
-        const { addEvent, extend, merge, pick } = U;
+        const { addEvent, crisp, extend, merge, pick } = U;
         /* *
          *
          *  Class
@@ -360,20 +346,6 @@
          * @augments Highcharts.Series
          */
         class VariwideSeries extends ColumnSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                this.relZ = void 0;
-                this.totalZ = void 0;
-                this.zData = void 0;
-            }
             /* *
              *
              * Functions
@@ -464,12 +436,17 @@
                 }
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         VariwideSeries.compose = VariwideComposition.compose;
         VariwideSeries.defaultOptions = merge(ColumnSeries.defaultOptions, VariwideSeriesDefaults);
-        // Extend translation by distoring X position based on Z.
+        // Extend translation by distorting X position based on Z.
         addEvent(VariwideSeries, 'afterColumnTranslate', function () {
             // Temporarily disable crisping when computing original shapeArgs
-            const xAxis = this.xAxis, inverted = this.chart.inverted, crisp = this.borderWidth % 2 / 2;
+            const xAxis = this.xAxis, inverted = this.chart.inverted;
             let i = -1;
             // Distort the points to reflect z dimension
             for (const point of this.points) {
@@ -487,8 +464,8 @@
                     right = xAxis.translate(point.x + z, false, false, false, true);
                 }
                 if (this.crispOption) {
-                    left = Math.round(left) - crisp;
-                    right = Math.round(right) - crisp;
+                    left = crisp(left, this.borderWidth);
+                    right = crisp(right, this.borderWidth);
                 }
                 shapeArgs.x = left;
                 shapeArgs.width = Math.max(right - left, 1);
@@ -528,5 +505,6 @@
         const G = Highcharts;
         VariwideSeries.compose(G.Axis, G.Tick);
 
+        return Highcharts;
     });
 }));

@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -10,8 +10,8 @@
 'use strict';
 import Axis from '../Core/Axis/Axis.js';
 import Point from '../Core/Series/Point.js';
+const { tooltipFormatter: pointTooltipFormatter } = Point.prototype;
 import Series from '../Core/Series/Series.js';
-const { prototype: { tooltipFormatter: pointTooltipFormatter } } = Point;
 import U from '../Core/Utilities.js';
 const { addEvent, arrayMax, arrayMin, correctFloat, defined, isArray, isNumber, isString, pick } = U;
 /* *
@@ -28,16 +28,9 @@ var DataModifyComposition;
      * */
     /* *
      *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * Extends the series, axis and point classes with
      * compare and cumulative support.
@@ -54,22 +47,18 @@ var DataModifyComposition;
      * Point class to use.
      */
     function compose(SeriesClass, AxisClass, PointClass) {
-        if (U.pushUnique(composedMembers, SeriesClass)) {
-            const seriesProto = SeriesClass.prototype;
+        const axisProto = AxisClass.prototype, pointProto = PointClass.prototype, seriesProto = SeriesClass.prototype;
+        if (!seriesProto.setCompare) {
             seriesProto.setCompare = seriesSetCompare;
             seriesProto.setCumulative = seriesSetCumulative;
             addEvent(SeriesClass, 'afterInit', afterInit);
             addEvent(SeriesClass, 'afterGetExtremes', afterGetExtremes);
             addEvent(SeriesClass, 'afterProcessData', afterProcessData);
         }
-        if (U.pushUnique(composedMembers, AxisClass)) {
-            const axisProto = AxisClass.prototype;
+        if (!axisProto.setCompare) {
             axisProto.setCompare = axisSetCompare;
             axisProto.setModifier = setModifier;
             axisProto.setCumulative = axisSetCumulative;
-        }
-        if (U.pushUnique(composedMembers, PointClass)) {
-            const pointProto = PointClass.prototype;
             pointProto.tooltipFormatter = tooltipFormatter;
         }
         return SeriesClass;
@@ -223,7 +212,7 @@ var DataModifyComposition;
      */
     function afterProcessData() {
         const series = this;
-        if (series.xAxis && // not pies
+        if (series.xAxis && // Not pies
             series.processedYData &&
             series.dataModify) {
             const processedXData = series.processedXData, processedYData = series.processedYData, length = processedYData.length, compareStart = series.options.compareStart === true ? 0 : 1;
@@ -233,7 +222,7 @@ var DataModifyComposition;
             if (series.pointArrayMap) {
                 keyIndex = series.pointArrayMap.indexOf(series.options.pointValKey || series.pointValKey || 'y');
             }
-            // find the first value for comparison
+            // Find the first value for comparison
             for (i = 0; i < length - compareStart; i++) {
                 const compareValue = processedYData[i] && keyIndex > -1 ?
                     processedYData[i][keyIndex] : processedYData[i];
@@ -407,7 +396,7 @@ var DataModifyComposition;
                         value = 100 * (value / compareValue) -
                             (compareBase === 100 ? 0 : 100);
                     }
-                    // record for tooltip etc.
+                    // Record for tooltip etc.
                     if (typeof index !== 'undefined') {
                         const point = this.series.points[index];
                         if (point) {
@@ -438,8 +427,15 @@ var DataModifyComposition;
                     }
                     // Record for tooltip etc.
                     const point = this.series.points[index];
+                    const cumulativeStart = point.series.options.cumulativeStart, withinRange = point.x <= this.series.xAxis.max &&
+                        point.x >= this.series.xAxis.min;
                     if (point) {
-                        point.cumulativeSum = value;
+                        if (!cumulativeStart || withinRange) {
+                            point.cumulativeSum = value;
+                        }
+                        else {
+                            point.cumulativeSum = void 0;
+                        }
                     }
                     return value;
                 }
@@ -485,7 +481,7 @@ export default DataModifyComposition;
  */
 /**
  * Defines if comparison should start from the first point within the visible
- * range or should start from the first point **before** the range.
+ * range or should start from the last point **before** the range.
  *
  * In other words, this flag determines if first point within the visible range
  * will have 0% (`compareStart=true`) or should have been already calculated
@@ -535,4 +531,21 @@ export default DataModifyComposition;
  * @product   highstock
  * @apioption plotOptions.series.cumulative
  */
-''; // keeps doclets above in transpiled file
+/**
+ * Defines if cumulation should start from the first point within the visible
+ * range or should start from the last point **before** the range.
+ *
+ * In other words, this flag determines if first point within the visible range
+ * will start at 0 (`cumulativeStart=true`) or should have been already calculated
+ * according to the previous point (`cumulativeStart=false`).
+ *
+ * @sample {highstock} stock/plotoptions/series-cumulativestart/
+ *         Cumulative Start
+ *
+ * @type      {boolean}
+ * @default   false
+ * @since 11.4.2
+ * @product   highstock
+ * @apioption plotOptions.series.cumulativeStart
+ */
+''; // Keeps doclets above in transpiled file

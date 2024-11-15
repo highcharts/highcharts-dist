@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2021 Øystein Moseng
+ *  (c) 2009-2024 Øystein Moseng
  *
  *  Accessibility component for chart info region and table.
  *
@@ -25,7 +25,7 @@ const { doc } = H;
 import HU from '../Utils/HTMLUtilities.js';
 const { addClass, getElement, getHeadingTagNameForElement, stripHTMLTagsFromString, visuallyHideElement } = HU;
 import U from '../../Core/Utilities.js';
-const { attr, pick } = U;
+const { attr, pick, replaceNested } = U;
 /* *
  *
  *  Functions
@@ -62,13 +62,13 @@ function getTypeDescForEmptyChart(chart, formatContext) {
  * @private
  */
 function buildTypeDescriptionFromSeries(chart, types, context) {
-    const firstType = types[0], typeExplaination = chart.langFormat('accessibility.seriesTypeDescriptions.' + firstType, context), multi = chart.series && chart.series.length < 2 ? 'Single' : 'Multiple';
+    const firstType = types[0], typeExplanation = chart.langFormat('accessibility.seriesTypeDescriptions.' + firstType, context), multi = chart.series && chart.series.length < 2 ? 'Single' : 'Multiple';
     return (chart.langFormat('accessibility.chartTypes.' + firstType + multi, context) ||
-        chart.langFormat('accessibility.chartTypes.default' + multi, context)) + (typeExplaination ? ' ' + typeExplaination : '');
+        chart.langFormat('accessibility.chartTypes.default' + multi, context)) + (typeExplanation ? ' ' + typeExplanation : '');
 }
 /**
- * Return simplified explaination of chart type. Some types will not be
- * familiar to most users, but in those cases we try to add an explaination
+ * Return simplified explanation of chart type. Some types will not be
+ * familiar to most users, but in those cases we try to add an explanation
  * of the type.
  *
  * @private
@@ -99,7 +99,8 @@ function getTypeDescription(chart, types) {
  * @private
  */
 function stripEmptyHTMLTags(str) {
-    return str.replace(/<(\w+)[^>]*?>\s*<\/\1>/g, '');
+    // Scan alert #[71]: Loop for nested patterns
+    return replaceNested(str, [/<([\w\-.:!]+)\b[^<>]*>\s*<\/\1>/g, '']);
 }
 /* *
  *
@@ -121,7 +122,6 @@ class InfoRegionsComponent extends AccessibilityComponent {
          *
          * */
         super(...arguments);
-        this.announcer = void 0;
         this.screenReaderSections = {};
     }
     /* *
@@ -157,6 +157,14 @@ class InfoRegionsComponent extends AccessibilityComponent {
                     .setAttribute('aria-expanded', 'false');
             }
         });
+        if (chart.exporting) {
+            // Needed when print logic in exporting does not trigger
+            // rerendering thus repositioning of screen reader DOM elements
+            // (#21554)
+            this.addEvent(chart, 'afterPrint', function () {
+                component.updateAllScreenReaderSections();
+            });
+        }
         this.announcer = new Announcer(chart, 'assertive');
     }
     /**
@@ -211,9 +219,12 @@ class InfoRegionsComponent extends AccessibilityComponent {
      * to get a11y info from series.
      */
     onChartRender() {
-        const component = this;
         this.linkedDescriptionElement = this.getLinkedDescriptionElement();
         this.setLinkedDescriptionAttrs();
+        this.updateAllScreenReaderSections();
+    }
+    updateAllScreenReaderSections() {
+        const component = this;
         Object.keys(this.screenReaderSections).forEach(function (regionKey) {
             component.updateScreenReaderSection(regionKey);
         });
@@ -401,6 +412,10 @@ class InfoRegionsComponent extends AccessibilityComponent {
      * @private
      */
     getEndOfChartMarkerText() {
+        const endMarkerId = `highcharts-end-of-chart-marker-${this.chart.index}`, endMarker = getElement(endMarkerId);
+        if (endMarker) {
+            return endMarker.outerHTML;
+        }
         const chart = this.chart, markerText = chart.langFormat('accessibility.screenReaderSection.endOfChartMarker', { chart: chart }), id = 'highcharts-end-of-chart-marker-' + chart.index;
         return '<div id="' + id + '">' + markerText + '</div>';
     }

@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -9,11 +9,13 @@
  * */
 'use strict';
 import ColumnSeries from './Column/ColumnSeries.js';
+import H from '../Core/Globals.js';
+const { composed } = H;
 const { prototype: columnProto } = ColumnSeries;
 import Series from '../Core/Series/Series.js';
 const { prototype: seriesProto } = Series;
 import U from '../Core/Utilities.js';
-const { defined, stableSort } = U;
+const { defined, pushUnique, stableSort } = U;
 /* *
  *
  *  Composition
@@ -28,21 +30,14 @@ var OnSeriesComposition;
      * */
     /* *
      *
-     *  Properties
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * @private
      */
     function compose(SeriesClass) {
-        if (U.pushUnique(composedMembers, SeriesClass)) {
+        if (pushUnique(composed, 'OnSeries')) {
             const seriesProto = SeriesClass.prototype;
             seriesProto.getPlotBox = getPlotBox;
             seriesProto.translate = translate;
@@ -71,7 +66,7 @@ var OnSeriesComposition;
         const series = this, options = series.options, chart = series.chart, points = series.points, optionsOnSeries = options.onSeries, onSeries = (optionsOnSeries &&
             chart.get(optionsOnSeries)), step = onSeries && onSeries.options.step, onData = (onSeries && onSeries.points), inverted = chart.inverted, xAxis = series.xAxis, yAxis = series.yAxis;
         let cursor = points.length - 1, point, lastPoint, onKey = options.onKey || 'y', i = onData && onData.length, xOffset = 0, leftPoint, lastX, rightPoint, currentDataGrouping, distanceRatio;
-        // relate to a master series
+        // Relate to a master series
         if (onSeries && onSeries.visible && i) {
             xOffset = (onSeries.pointXOffset || 0) + (onSeries.barW || 0) / 2;
             currentDataGrouping = onSeries.currentDataGrouping;
@@ -88,7 +83,7 @@ var OnSeriesComposition;
                     typeof leftPoint[onKey] !== 'undefined') {
                     if (point.x <= lastX) { // #803
                         point.plotY = leftPoint[onKey];
-                        // interpolate between points, #666
+                        // Interpolate between points, #666
                         if (leftPoint.x < point.x &&
                             !step) {
                             rightPoint = onData[i + 1];
@@ -143,13 +138,13 @@ var OnSeriesComposition;
                                     }
                                 }
                                 else {
-                                    // the distance ratio, between 0 and 1
+                                    // The distance ratio, between 0 and 1
                                     distanceRatio =
                                         (point.x - leftPoint.x) /
                                             (rightPoint.x - leftPoint.x);
                                     point.plotY +=
                                         distanceRatio *
-                                            // the plotY distance
+                                            // The plotY distance
                                             (rightPoint[onKey] - leftPoint[onKey]);
                                     point.y +=
                                         distanceRatio *
@@ -159,7 +154,7 @@ var OnSeriesComposition;
                         }
                     }
                     cursor--;
-                    i++; // check again for points in the same x position
+                    i++; // Check again for points in the same x position
                     if (cursor < 0) {
                         break;
                     }
@@ -195,7 +190,7 @@ var OnSeriesComposition;
                     point.shapeArgs = {}; // 847
                 }
             }
-            // if multiple flags appear at the same x, order them into a stack
+            // If multiple flags appear at the same x, order them into a stack
             lastPoint = points[i - 1];
             if (lastPoint && lastPoint.plotX === point.plotX) {
                 if (typeof lastPoint.stackIndex === 'undefined') {

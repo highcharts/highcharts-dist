@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2023 Highsoft AS
+ *  (c) 2009-2024 Highsoft AS
  *
  *  License: www.highcharts.com/license
  *
@@ -22,7 +22,6 @@ import FormulaProcessor from '../Formula/FormulaProcessor.js';
 /**
  * Replaces formula strings in a table with calculated values.
  *
- * @private
  * @class
  * @name Highcharts.DataModifier.types.MathModifier
  * @augments Highcharts.DataModifier
@@ -73,8 +72,8 @@ class MathModifier extends DataModifier {
      * @param {Highcharts.DataTable} table
      * Table to extract column from and use as reference.
      *
-     * @param {string} columnNameOrAlias
-     * Name or alias of column to process.
+     * @param {string} columnName
+     * Name of column to process.
      *
      * @param {number} rowIndex
      * Row index to start the replacing process from.
@@ -82,19 +81,19 @@ class MathModifier extends DataModifier {
      * @return {Highcharts.DataTableColumn}
      * Returns the processed table column.
      */
-    processColumn(table, columnNameOrAlias, rowIndex = 0) {
-        const alternativeSeparators = this.options.alternativeSeparators, column = (table.getColumn(columnNameOrAlias, true) || [])
+    processColumn(table, columnName, rowIndex = 0) {
+        const alternativeSeparators = this.options.alternativeSeparators, column = (table.getColumn(columnName, true) || [])
             .slice(rowIndex > 0 ? rowIndex : 0);
         for (let i = 0, iEnd = column.length, cacheFormula = [], cacheString = '', cell; i < iEnd; ++i) {
             cell = column[i];
             if (typeof cell === 'string' &&
                 cell[0] === '=') {
                 try {
-                    // use cache while formula string is repetitive
+                    // Use cache while formula string is repetitive
                     cacheFormula = (cacheString === cell ?
                         cacheFormula :
                         FormulaParser.parseFormula(cell.substring(1), alternativeSeparators));
-                    // process parsed formula string
+                    // Process parsed formula string
                     column[i] =
                         FormulaProcessor.processFormula(cacheFormula, table);
                 }

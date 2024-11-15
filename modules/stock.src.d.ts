@@ -136,7 +136,7 @@ approximation?: (string|Function)): DataGroupingResultObject;
          *        Custom options.
          *
          * @param callback
-         *        Function to run when the chart has loaded and and all external
+         *        Function to run when the chart has loaded and all external
          *        images are loaded.
          *
          * @fires Highcharts.StockChart#init

@@ -1,8 +1,8 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  * Treegraph chart series type
  *
- *  (c) 2010-2022 Pawel Lysy Grzegorz Blachlinski
+ *  (c) 2010-2024 Pawel Lysy Grzegorz Blachlinski
  *
  * License: www.highcharts.com/license
  */
@@ -27,7 +27,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -37,7 +37,7 @@
     _registerModule(_modules, 'Series/PathUtilities.js', [], function () {
         /* *
          *
-         *  (c) 2010-2022 Pawel Lysy
+         *  (c) 2010-2024 Pawel Lysy
          *
          *  License: www.highcharts.com/license
          *
@@ -49,6 +49,9 @@
             straight: getStraightPath,
             curved: getCurvedPath
         };
+        /**
+         *
+         */
         function getDefaultPath(pathParams) {
             const { x1, y1, x2, y2, width = 0, inverted = false, radius, parentVisible } = pathParams;
             const path = [
@@ -68,6 +71,9 @@
                 ], radius) :
                 path;
         }
+        /**
+         *
+         */
         function getStraightPath(pathParams) {
             const { x1, y1, x2, y2, width = 0, inverted = false, parentVisible } = pathParams;
             return parentVisible ? [
@@ -80,6 +86,9 @@
                 ['L', x1, y2]
             ];
         }
+        /**
+         *
+         */
         function getCurvedPath(pathParams) {
             const { x1, y1, x2, y2, offset = 0, width = 0, inverted = false, parentVisible } = pathParams;
             return parentVisible ?
@@ -112,13 +121,13 @@
                 const x = path[i][1];
                 const y = path[i][2];
                 if (typeof x === 'number' && typeof y === 'number') {
-                    // moveTo
+                    // MoveTo
                     if (i === 0) {
                         d.push(['M', x, y]);
                     }
                     else if (i === path.length - 1) {
                         d.push(['L', x, y]);
-                        // curveTo
+                        // CurveTo
                     }
                     else if (r) {
                         const prevSeg = path[i - 1];
@@ -148,7 +157,7 @@
                                 ]);
                             }
                         }
-                        // lineTo
+                        // LineTo
                     }
                     else {
                         d.push(['L', x, y]);
@@ -167,7 +176,7 @@
     _registerModule(_modules, 'Series/Treegraph/TreegraphNode.js', [_modules['Core/Series/SeriesRegistry.js']], function (SeriesRegistry) {
         /* *
          *
-         *  (c) 2010-2022 Pawel Lysy Grzegorz Blachlinski
+         *  (c) 2010-2024 Pawel Lysy Grzegorz Blachlinski
          *
          *  License: www.highcharts.com/license
          *
@@ -355,7 +364,7 @@
     _registerModule(_modules, 'Series/Treegraph/TreegraphPoint.js', [_modules['Core/Series/Point.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Point, SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2022 Pawel Lysy Grzegorz Blachlinski
+         *  (c) 2010-2024 Pawel Lysy Grzegorz Blachlinski
          *
          *  License: www.highcharts.com/license
          *
@@ -363,7 +372,7 @@
          *
          * */
         const { seriesTypes: { treemap: { prototype: { pointClass: TreemapPoint } } } } = SeriesRegistry;
-        const { addEvent, fireEvent, merge, pick } = U;
+        const { addEvent, fireEvent, merge } = U;
         /* *
          *
          *  Class
@@ -381,10 +390,8 @@
                  *
                  * */
                 super(...arguments);
-                this.options = void 0;
+                this.dataLabelOnHidden = true;
                 this.isLink = false;
-                this.series = void 0;
-                this.node = void 0;
                 this.setState = Point.prototype.setState;
             }
             /* *
@@ -394,8 +401,8 @@
              * */
             draw() {
                 super.draw.apply(this, arguments);
-                // run animation of hiding/showing of the point.
-                let graphic = this.graphic;
+                // Run animation of hiding/showing of the point.
+                const graphic = this.graphic;
                 if (graphic) {
                     graphic.animate({
                         visibility: this.visible ? 'inherit' : 'hidden'
@@ -472,9 +479,12 @@
                 }
             }
             toggleCollapse(state) {
-                this.collapsed = pick(state, !this.collapsed);
-                fireEvent(this.series, 'toggleCollapse');
-                this.series.redraw();
+                const series = this.series;
+                this.update({
+                    collapsed: state ?? !this.collapsed
+                }, false, void 0, false);
+                fireEvent(series, 'toggleCollapse');
+                series.redraw();
             }
             destroy() {
                 if (this.collapseButton) {
@@ -500,15 +510,13 @@
         }
         addEvent(TreegraphPoint, 'mouseOut', function () {
             const btn = this.collapseButton, btnOptions = this.collapseButtonOptions;
-            if (btn && btnOptions && btnOptions.onlyOnHover && !this.collapsed) {
+            if (btn && btnOptions?.onlyOnHover && !this.collapsed) {
                 btn.animate({ opacity: 0 });
             }
         });
         addEvent(TreegraphPoint, 'mouseOver', function () {
             if (this.collapseButton && this.visible) {
-                this.collapseButton.animate({ opacity: 1 }, this.series.options.states &&
-                    this.series.options.states.hover &&
-                    this.series.options.states.hover.animation);
+                this.collapseButton.animate({ opacity: 1 }, this.series.options.states?.hover?.animation);
             }
         });
         // Handle showing and hiding of the points
@@ -526,7 +534,7 @@
     _registerModule(_modules, 'Series/Treegraph/TreegraphLink.js', [_modules['Core/Series/Point.js'], _modules['Core/Utilities.js'], _modules['Core/Series/SeriesRegistry.js']], function (Point, U, SeriesRegistry) {
         /* *
          *
-         *  (c) 2010-2022 Pawel Lysy Grzegorz Blachlinski
+         *  (c) 2010-2024 Pawel Lysy Grzegorz Blachlinski
          *
          *  License: www.highcharts.com/license
          *
@@ -545,35 +553,36 @@
          * @class
          */
         class LinkPoint extends ColumnPoint {
-            constructor() {
-                super(...arguments);
+            /* *
+             *
+             *  Constructor
+             *
+             * */
+            constructor(series, options, x, point) {
+                super(series, options, x);
                 /* *
-                *
-                *  Class properties
-                *
-                * */
+                 *
+                 *  Properties
+                 *
+                 * */
+                this.dataLabelOnNull = true;
+                this.formatPrefix = 'link';
                 this.isLink = true;
                 this.node = {};
                 this.formatPrefix = 'link';
                 this.dataLabelOnNull = true;
+                if (point) {
+                    this.fromNode = point.node.parentNode.point;
+                    this.visible = point.visible;
+                    this.toNode = point;
+                    this.id = this.toNode.id + '-' + this.fromNode.id;
+                }
             }
             /* *
              *
              *  Functions
              *
              * */
-            init(series, options, x, point) {
-                const link = super.init.apply(this, arguments);
-                this.formatPrefix = 'link';
-                this.dataLabelOnNull = true;
-                if (point) {
-                    link.fromNode = point.node.parentNode.point;
-                    link.visible = point.visible;
-                    link.toNode = point;
-                    this.id = link.toNode.id + '-' + link.fromNode.id;
-                }
-                return link;
-            }
             update(options, redraw, animation, runEvent) {
                 const oldOptions = {
                     id: this.id,
@@ -599,7 +608,7 @@
     _registerModule(_modules, 'Series/Treegraph/TreegraphLayout.js', [_modules['Series/Treegraph/TreegraphNode.js']], function (TreegraphNode) {
         /* *
          *
-         *  (c) 2010-2022 Pawel Lysy Grzegorz Blachlinski
+         *  (c) 2010-2024 Pawel Lysy Grzegorz Blachlinski
          *
          *  License: www.highcharts.com/license
          *
@@ -629,14 +638,12 @@
              * @param {TreegraphNode} child
              *        Child node, which should be connected to dummyNode.
              * @param {number} gapSize
-             *        Remainig gap size.
-             * @param {number} index
-             *        The index of the link.
+             *        Remaining gap size.
              *
              * @return {TreegraphNode}
              *         DummyNode as a parent of nodes, which column changes.
              */
-            static createDummyNode(parent, child, gapSize, index) {
+            static createDummyNode(parent, child, gapSize) {
                 // Initialise dummy node.
                 const dummyNode = new TreegraphNode();
                 dummyNode.id = parent.id + '-' + gapSize;
@@ -690,25 +697,23 @@
              */
             beforeLayout(nodes) {
                 for (const node of nodes) {
-                    let index = 0;
                     for (let child of node.children) {
                         // Support for children placed in distant columns.
                         if (child && child.level - node.level > 1) {
                             // For further columns treat the nodes as a
                             // single parent-child pairs till the column is achieved.
                             let gapSize = child.level - node.level - 1;
-                            // parent -> dummyNode -> child
+                            // Parent -> dummyNode -> child
                             while (gapSize > 0) {
-                                child = TreegraphLayout.createDummyNode(node, child, gapSize, index);
+                                child = TreegraphLayout.createDummyNode(node, child, gapSize);
                                 gapSize--;
                             }
                         }
-                        ++index;
                     }
                 }
             }
             /**
-             * Reset the caluclated values from the previous run.
+             * Reset the calculated values from the previous run.
              * @param {TreegraphNode[]} nodes all of the nodes.
              */
             resetValues(nodes) {
@@ -763,7 +768,7 @@
                 else {
                     // If the node has children, perform the recursive first walk for
                     // its children, and then calculate its shift in the apportion
-                    // function (most crucial part part of the algorythm).
+                    // function (most crucial part of the algorithm).
                     let defaultAncestor = node.getLeftMostChild();
                     for (const child of node.children) {
                         treeLayout.firstWalk(child);
@@ -828,9 +833,9 @@
              * are left(right)Int(Out)node where Int means internal and Out means
              * outernal. For summing up the modifiers along the contour we use the
              * `left(right)Int(Out)mod` variable. Whenever two nodes of the inside
-             * contours are in conflict we comute the left one of the greatest uncommon
+             * contours are in conflict we commute the left one of the greatest uncommon
              * ancestors using the getAncestor function and we call the moveSubtree
-             * method to shift the subtree and prepare the shifts of smaller subrtees.
+             * method to shift the subtree and prepare the shifts of smaller subtrees.
              * Finally we add a new thread (if necessary) and we adjust ancestor of
              * right outernal node or defaultAncestor.
              *
@@ -929,7 +934,7 @@
     _registerModule(_modules, 'Series/Treegraph/TreegraphSeriesDefaults.js', [], function () {
         /* *
          *
-         *  (c) 2010-2022 Pawel Lysy Grzegorz Blachlinski
+         *  (c) 2010-2024 Pawel Lysy Grzegorz Blachlinski
          *
          *  License: www.highcharts.com/license
          *
@@ -954,7 +959,7 @@
          * @extends      plotOptions.treemap
          * @excluding    layoutAlgorithm, dashStyle, linecap, lineWidth,
          *               negativeColor, threshold, zones, zoneAxis, colorAxis,
-         *               colorKey, compare, dataGrouping, endAgle, gapSize, gapUnit,
+         *               colorKey, compare, dataGrouping, endAngle, gapSize, gapUnit,
          *               ignoreHiddenPoint, innerSize, joinBy, legendType, linecap,
          *               minSize, navigatorOptions, pointRange, allowTraversingTree,
          *               alternateStartingDirection, borderRadius, breadcrumbs,
@@ -964,8 +969,8 @@
          *
          * @product      highcharts
          * @since 10.3.0
-         * @requires     modules/treemap.js
-         * @requires     modules/treegraph.js
+         * @requires     modules/treemap
+         * @requires     modules/treegraph
          * @optionparent plotOptions.treegraph
          */
         const TreegraphSeriesDefaults = {
@@ -1165,7 +1170,44 @@
                 style: {
                     textOverflow: 'none'
                 }
-            }
+            },
+            /**
+             * The distance between nodes in a tree graph in the longitudinal direction.
+             * The longitudinal direction means the direction that the chart flows - in
+             * a horizontal chart the distance is horizontal, in an inverted chart
+             * (vertical), the distance is vertical.
+             *
+             * If a number is given, it denotes pixels. If a percentage string is given,
+             * the distance is a percentage of the rendered node width. A `nodeDistance`
+             * of `100%` will render equal widths for the nodes and the gaps between
+             * them.
+             *
+             * This option applies only when the `nodeWidth` option is `auto`, making
+             * the node width respond to the number of columns.
+             *
+             * @since 11.4.0
+             * @sample highcharts/series-treegraph/node-distance
+             *         Node distance of 100% means equal to node width
+             * @type   {number|string}
+             */
+            nodeDistance: 30,
+            /**
+             * The pixel width of each node in a, or the height in case the chart is
+             * inverted. For tree graphs, the node width is only applied if the marker
+             * symbol is `rect`, otherwise the `marker` sizing options apply.
+             *
+             * Can be a number or a percentage string, or `auto`. If `auto`, the nodes
+             * are sized to fill up the plot area in the longitudinal direction,
+             * regardless of the number of levels.
+             *
+             * @since 11.4.0
+             * @see    [treegraph.nodeDistance](#nodeDistance)
+             * @sample highcharts/series-treegraph/node-distance
+             *         Node width is auto and combined with node distance
+             *
+             * @type {number|string}
+             */
+            nodeWidth: void 0
         };
         /* *
          *
@@ -1175,10 +1217,237 @@
 
         return TreegraphSeriesDefaults;
     });
-    _registerModule(_modules, 'Series/Treegraph/TreegraphSeries.js', [_modules['Series/PathUtilities.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Series/Treegraph/TreegraphNode.js'], _modules['Series/Treegraph/TreegraphPoint.js'], _modules['Series/TreeUtilities.js'], _modules['Core/Utilities.js'], _modules['Series/Treegraph/TreegraphLink.js'], _modules['Series/Treegraph/TreegraphLayout.js'], _modules['Series/Treegraph/TreegraphSeriesDefaults.js']], function (PU, SeriesRegistry, SVGRenderer, TreegraphNode, TreegraphPoint, TU, U, TreegraphLink, TreegraphLayout, TreegraphSeriesDefaults) {
+    _registerModule(_modules, 'Extensions/TextPath.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2010-2022 Pawel Lysy Grzegorz Blachlinski
+         *  Highcharts module with textPath functionality.
+         *
+         *  (c) 2009-2024 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { deg2rad } = H;
+        const { addEvent, merge, uniqueKey, defined, extend } = U;
+        /**
+         * Set a text path for a `text` or `label` element, allowing the text to
+         * flow along a path.
+         *
+         * In order to unset the path for an existing element, call `setTextPath`
+         * with `{ enabled: false }` as the second argument.
+         *
+         * Text path support is not bundled into `highcharts.js`, and requires the
+         * `modules/textpath.js` file. However, it is included in the script files of
+         * those series types that use it by default
+         *
+         * @sample highcharts/members/renderer-textpath/ Text path demonstrated
+         *
+         * @function Highcharts.SVGElement#setTextPath
+         *
+         * @param {Highcharts.SVGElement|undefined} path
+         *        Path to follow. If undefined, it allows changing options for the
+         *        existing path.
+         *
+         * @param {Highcharts.DataLabelsTextPathOptionsObject} textPathOptions
+         *        Options.
+         *
+         * @return {Highcharts.SVGElement} Returns the SVGElement for chaining.
+         */
+        function setTextPath(path, textPathOptions) {
+            // Defaults
+            textPathOptions = merge(true, {
+                enabled: true,
+                attributes: {
+                    dy: -5,
+                    startOffset: '50%',
+                    textAnchor: 'middle'
+                }
+            }, textPathOptions);
+            const url = this.renderer.url, textWrapper = this.text || this, textPath = textWrapper.textPath, { attributes, enabled } = textPathOptions;
+            path = path || (textPath && textPath.path);
+            // Remove previously added event
+            if (textPath) {
+                textPath.undo();
+            }
+            if (path && enabled) {
+                const undo = addEvent(textWrapper, 'afterModifyTree', (e) => {
+                    if (path && enabled) {
+                        // Set ID for the path
+                        let textPathId = path.attr('id');
+                        if (!textPathId) {
+                            path.attr('id', textPathId = uniqueKey());
+                        }
+                        // Set attributes for the <text>
+                        const textAttribs = {
+                            // `dx`/`dy` options must by set on <text> (parent), the
+                            // rest should be set on <textPath>
+                            x: 0,
+                            y: 0
+                        };
+                        if (defined(attributes.dx)) {
+                            textAttribs.dx = attributes.dx;
+                            delete attributes.dx;
+                        }
+                        if (defined(attributes.dy)) {
+                            textAttribs.dy = attributes.dy;
+                            delete attributes.dy;
+                        }
+                        textWrapper.attr(textAttribs);
+                        // Handle label properties
+                        this.attr({ transform: '' });
+                        if (this.box) {
+                            this.box = this.box.destroy();
+                        }
+                        // Wrap the nodes in a textPath
+                        const children = e.nodes.slice(0);
+                        e.nodes.length = 0;
+                        e.nodes[0] = {
+                            tagName: 'textPath',
+                            attributes: extend(attributes, {
+                                'text-anchor': attributes.textAnchor,
+                                href: `${url}#${textPathId}`
+                            }),
+                            children
+                        };
+                    }
+                });
+                // Set the reference
+                textWrapper.textPath = { path, undo };
+            }
+            else {
+                textWrapper.attr({ dx: 0, dy: 0 });
+                delete textWrapper.textPath;
+            }
+            if (this.added) {
+                // Rebuild text after added
+                textWrapper.textCache = '';
+                this.renderer.buildText(textWrapper);
+            }
+            return this;
+        }
+        /**
+         * Attach a polygon to a bounding box if the element contains a textPath.
+         *
+         * @function Highcharts.SVGElement#setPolygon
+         *
+         * @param {any} event
+         *        An event containing a bounding box object
+         *
+         * @return {Highcharts.BBoxObject} Returns the bounding box object.
+         */
+        function setPolygon(event) {
+            const bBox = event.bBox, tp = this.element?.querySelector('textPath');
+            if (tp) {
+                const polygon = [], { b, h } = this.renderer.fontMetrics(this.element), descender = h - b, lineCleanerRegex = new RegExp('(<tspan>|' +
+                    '<tspan(?!\\sclass="highcharts-br")[^>]*>|' +
+                    '<\\/tspan>)', 'g'), lines = tp
+                    .innerHTML
+                    .replace(lineCleanerRegex, '')
+                    .split(/<tspan class="highcharts-br"[^>]*>/), numOfLines = lines.length;
+                // Calculate top and bottom coordinates for
+                // either the start or the end of a single
+                // character, and append it to the polygon.
+                const appendTopAndBottom = (charIndex, positionOfChar) => {
+                    const { x, y } = positionOfChar, rotation = (tp.getRotationOfChar(charIndex) - 90) * deg2rad, cosRot = Math.cos(rotation), sinRot = Math.sin(rotation);
+                    return [
+                        [
+                            x - descender * cosRot,
+                            y - descender * sinRot
+                        ],
+                        [
+                            x + b * cosRot,
+                            y + b * sinRot
+                        ]
+                    ];
+                };
+                for (let i = 0, lineIndex = 0; lineIndex < numOfLines; lineIndex++) {
+                    const line = lines[lineIndex], lineLen = line.length;
+                    for (let lineCharIndex = 0; lineCharIndex < lineLen; lineCharIndex += 5) {
+                        try {
+                            const srcCharIndex = (i +
+                                lineCharIndex +
+                                lineIndex), [lower, upper] = appendTopAndBottom(srcCharIndex, tp.getStartPositionOfChar(srcCharIndex));
+                            if (lineCharIndex === 0) {
+                                polygon.push(upper);
+                                polygon.push(lower);
+                            }
+                            else {
+                                if (lineIndex === 0) {
+                                    polygon.unshift(upper);
+                                }
+                                if (lineIndex === numOfLines - 1) {
+                                    polygon.push(lower);
+                                }
+                            }
+                        }
+                        catch (e) {
+                            // Safari fails on getStartPositionOfChar even if the
+                            // character is within the `textContent.length`
+                            break;
+                        }
+                    }
+                    i += lineLen - 1;
+                    try {
+                        const srcCharIndex = i + lineIndex, charPos = tp.getEndPositionOfChar(srcCharIndex), [lower, upper] = appendTopAndBottom(srcCharIndex, charPos);
+                        polygon.unshift(upper);
+                        polygon.unshift(lower);
+                    }
+                    catch (e) {
+                        // Safari fails on getStartPositionOfChar even if the character
+                        // is within the `textContent.length`
+                        break;
+                    }
+                }
+                // Close it
+                if (polygon.length) {
+                    polygon.push(polygon[0].slice());
+                }
+                bBox.polygon = polygon;
+            }
+            return bBox;
+        }
+        /**
+         * Draw text along a textPath for a dataLabel.
+         *
+         * @function Highcharts.SVGElement#setTextPath
+         *
+         * @param {any} event
+         *        An event containing label options
+         *
+         * @return {void}
+         */
+        function drawTextPath(event) {
+            const labelOptions = event.labelOptions, point = event.point, textPathOptions = (labelOptions[point.formatPrefix + 'TextPath'] ||
+                labelOptions.textPath);
+            if (textPathOptions && !labelOptions.useHTML) {
+                this.setTextPath(point.getDataLabelPath?.(this) || point.graphic, textPathOptions);
+                if (point.dataLabelPath &&
+                    !textPathOptions.enabled) {
+                    // Clean the DOM
+                    point.dataLabelPath = (point.dataLabelPath.destroy());
+                }
+            }
+        }
+        function compose(SVGElementClass) {
+            addEvent(SVGElementClass, 'afterGetBBox', setPolygon);
+            addEvent(SVGElementClass, 'beforeAddingDataLabel', drawTextPath);
+            const svgElementProto = SVGElementClass.prototype;
+            if (!svgElementProto.setTextPath) {
+                svgElementProto.setTextPath = setTextPath;
+            }
+        }
+        const TextPath = {
+            compose
+        };
+
+        return TextPath;
+    });
+    _registerModule(_modules, 'Series/Treegraph/TreegraphSeries.js', [_modules['Series/PathUtilities.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Series/Treegraph/TreegraphNode.js'], _modules['Series/Treegraph/TreegraphPoint.js'], _modules['Series/TreeUtilities.js'], _modules['Core/Utilities.js'], _modules['Series/Treegraph/TreegraphLink.js'], _modules['Series/Treegraph/TreegraphLayout.js'], _modules['Series/Treegraph/TreegraphSeriesDefaults.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Extensions/TextPath.js']], function (PU, SeriesRegistry, SVGRenderer, TreegraphNode, TreegraphPoint, TU, U, TreegraphLink, TreegraphLayout, TreegraphSeriesDefaults, SVGElement, TextPath) {
+        /* *
+         *
+         *  (c) 2010-2024 Pawel Lysy Grzegorz Blachlinski
          *
          *  License: www.highcharts.com/license
          *
@@ -1188,8 +1457,9 @@
         const { getLinkPath } = PU;
         const { series: { prototype: seriesProto }, seriesTypes: { treemap: TreemapSeries, column: ColumnSeries } } = SeriesRegistry;
         const { prototype: { symbols } } = SVGRenderer;
-        const { getLevelOptions } = TU;
-        const { extend, merge, pick, relativeLength, splat } = U;
+        const { getLevelOptions, getNodeWidth } = TU;
+        const { arrayMax, crisp, extend, merge, pick, relativeLength, splat } = U;
+        TextPath.compose(SVGElement);
         /* *
          *
          *  Class
@@ -1212,21 +1482,8 @@
                  *
                  * */
                 super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                this.layoutModifier = void 0;
-                this.nodeMap = void 0;
-                this.tree = void 0;
                 this.nodeList = [];
-                this.layoutAlgorythm = void 0;
                 this.links = [];
-                this.mapOptionsToLevel = void 0;
             }
             /* *
              *
@@ -1236,6 +1493,24 @@
             init() {
                 super.init.apply(this, arguments);
                 this.layoutAlgorythm = new TreegraphLayout();
+                // Register the link data labels in the label collector for overlap
+                // detection.
+                const series = this, collectors = this.chart.labelCollectors, collectorFunc = function () {
+                    const linkLabels = [];
+                    // Check links for overlap
+                    if (!splat(series.options.dataLabels)[0].allowOverlap) {
+                        for (const link of (series.links || [])) {
+                            if (link.dataLabel) {
+                                linkLabels.push(link.dataLabel);
+                            }
+                        }
+                    }
+                    return linkLabels;
+                };
+                // Only add the collector function if it is not present
+                if (!collectors.some((f) => f.name === 'collectorFunc')) {
+                    collectors.push(collectorFunc);
+                }
             }
             /**
              * Calculate `a` and `b` parameters of linear transformation, where
@@ -1244,7 +1519,7 @@
              * @return {LayoutModifiers} `a` and `b` parameter for x and y direction.
              */
             getLayoutModifiers() {
-                const chart = this.chart, series = this, plotSizeX = chart.plotSizeX, plotSizeY = chart.plotSizeY;
+                const chart = this.chart, series = this, plotSizeX = chart.plotSizeX, plotSizeY = chart.plotSizeY, columnCount = arrayMax(this.points.map((p) => p.node.xPosition));
                 let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity, maxXSize = 0, minXSize = 0, maxYSize = 0, minYSize = 0;
                 this.points.forEach((point) => {
                     // When fillSpace is on, stop the layout calculation when the hidden
@@ -1252,11 +1527,11 @@
                     if (this.options.fillSpace && !point.visible) {
                         return;
                     }
-                    const node = point.node, level = series.mapOptionsToLevel[point.node.level] || {}, markerOptions = merge(this.options.marker, level.marker, point.options.marker), radius = relativeLength(markerOptions.radius || 0, Math.min(plotSizeX, plotSizeY)), symbol = markerOptions.symbol, nodeSizeY = (symbol === 'circle' || !markerOptions.height) ?
+                    const node = point.node, level = series.mapOptionsToLevel[point.node.level] || {}, markerOptions = merge(this.options.marker, level.marker, point.options.marker), nodeWidth = markerOptions.width ?? getNodeWidth(this, columnCount), radius = relativeLength(markerOptions.radius || 0, Math.min(plotSizeX, plotSizeY)), symbol = markerOptions.symbol, nodeSizeY = (symbol === 'circle' || !markerOptions.height) ?
                         radius * 2 :
-                        relativeLength(markerOptions.height, plotSizeY), nodeSizeX = symbol === 'circle' || !markerOptions.width ?
+                        relativeLength(markerOptions.height, plotSizeY), nodeSizeX = symbol === 'circle' || !nodeWidth ?
                         radius * 2 :
-                        relativeLength(markerOptions.width, plotSizeX);
+                        relativeLength(nodeWidth, plotSizeX);
                     node.nodeSizeX = nodeSizeX;
                     node.nodeSizeY = nodeSizeY;
                     let lineWidth;
@@ -1293,12 +1568,12 @@
             getLinks() {
                 const series = this;
                 const links = [];
-                this.data.forEach((point, index) => {
+                this.data.forEach((point) => {
                     const levelOptions = series.mapOptionsToLevel[point.node.level || 0] || {};
                     if (point.node.parent) {
                         const pointOptions = merge(levelOptions, point.options);
                         if (!point.linkToParent || point.linkToParent.destroyed) {
-                            const link = new series.LinkClass().init(series, pointOptions, void 0, point);
+                            const link = new series.LinkClass(series, pointOptions, void 0, point);
                             point.linkToParent = link;
                         }
                         else {
@@ -1389,13 +1664,12 @@
                 }
             }
             translateLink(link) {
-                const fromNode = link.fromNode, toNode = link.toNode, linkWidth = this.options.link.lineWidth, crisp = (Math.round(linkWidth) % 2) / 2, factor = pick(this.options.link.curveFactor, 0.5), type = pick(link.options.link && link.options.link.type, this.options.link.type);
+                const fromNode = link.fromNode, toNode = link.toNode, linkWidth = this.options.link?.lineWidth || 0, factor = pick(this.options.link?.curveFactor, 0.5), type = pick(link.options.link?.type, this.options.link?.type, 'default');
                 if (fromNode.shapeArgs && toNode.shapeArgs) {
-                    const fromNodeWidth = (fromNode.shapeArgs.width || 0), inverted = this.chart.inverted, y1 = Math.floor((fromNode.shapeArgs.y || 0) +
-                        (fromNode.shapeArgs.height || 0) / 2) + crisp, y2 = Math.floor((toNode.shapeArgs.y || 0) +
-                        (toNode.shapeArgs.height || 0) / 2) + crisp;
-                    let x1 = Math.floor((fromNode.shapeArgs.x || 0) + fromNodeWidth) +
-                        crisp, x2 = Math.floor(toNode.shapeArgs.x || 0) + crisp;
+                    const fromNodeWidth = (fromNode.shapeArgs.width || 0), inverted = this.chart.inverted, y1 = crisp((fromNode.shapeArgs.y || 0) +
+                        (fromNode.shapeArgs.height || 0) / 2, linkWidth), y2 = crisp((toNode.shapeArgs.y || 0) +
+                        (toNode.shapeArgs.height || 0) / 2, linkWidth);
+                    let x1 = crisp((fromNode.shapeArgs.x || 0) + fromNodeWidth, linkWidth), x2 = crisp(toNode.shapeArgs.x || 0, linkWidth);
                     if (inverted) {
                         x1 -= fromNodeWidth;
                         x2 += (toNode.shapeArgs.width || 0);
@@ -1403,7 +1677,7 @@
                     const diff = toNode.node.xPosition - fromNode.node.xPosition;
                     link.shapeType = 'path';
                     const fullWidth = Math.abs(x2 - x1) + fromNodeWidth, width = (fullWidth / diff) - fromNodeWidth, offset = width * factor * (inverted ? -1 : 1);
-                    const xMiddle = Math.floor((x2 + x1) / 2) + crisp;
+                    const xMiddle = crisp((x2 + x1) / 2, linkWidth);
                     link.plotX = xMiddle;
                     link.plotY = y2;
                     link.shapeArgs = {
@@ -1416,7 +1690,7 @@
                             offset,
                             inverted,
                             parentVisible: toNode.visible,
-                            radius: this.options.link.radius
+                            radius: this.options.link?.radius
                         })
                     };
                     link.dlBox = {
@@ -1625,8 +1899,8 @@
          * relativeXValue, softThreshold, stack, stacking, step,
          * traverseUpButton, xAxis, yAxis, zoneAxis, zones
          * @product   highcharts
-         * @requires  modules/treemap.js
-         * @requires  modules/treegraph.js
+         * @requires  modules/treemap
+         * @requires  modules/treegraph
          * @apioption series.treegraph
          */
         /**
@@ -1662,7 +1936,7 @@
          * points can be given in the following ways:
          *
          * 1. The array of arrays, with `keys` property, which defines how the fields in
-         *     array should be interpretated
+         *     array should be interpreted
          *    ```js
          *       keys: ['id', 'parent'],
          *       data: [
@@ -1708,12 +1982,13 @@
          * @type {boolean}
          * @apioption series.treegraph.data.collapsed
          */
-        ''; // gets doclets above into transpiled version
+        ''; // Gets doclets above into transpiled version
 
         return TreegraphSeries;
     });
-    _registerModule(_modules, 'masters/modules/treegraph.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/treegraph.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

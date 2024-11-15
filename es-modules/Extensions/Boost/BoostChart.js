@@ -1,6 +1,6 @@
 /* *
  *
- *  Copyright (c) 2019-2021 Highsoft AS
+ *  (c) 2019-2024 Highsoft AS
  *
  *  Boost module: stripped-down renderer for higher performance
  *
@@ -11,14 +11,10 @@
  * */
 'use strict';
 import BoostableMap from './BoostableMap.js';
+import H from '../../Core/Globals.js';
+const { composed } = H;
 import U from '../../Core/Utilities.js';
-const { addEvent, pick } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedClasses = [];
+const { addEvent, pick, pushUnique } = U;
 /* *
  *
  *  Functions
@@ -28,7 +24,7 @@ const composedClasses = [];
  * @private
  */
 function compose(ChartClass, wglMode) {
-    if (wglMode && U.pushUnique(composedClasses, ChartClass)) {
+    if (wglMode && pushUnique(composed, 'Boost.Chart')) {
         ChartClass.prototype.callbacks.push(onChartCallback);
     }
     return ChartClass;
@@ -42,15 +38,23 @@ function compose(ChartClass, wglMode) {
  * @function Highcharts.Chart#getBoostClipRect
  */
 function getBoostClipRect(chart, target) {
+    const navigator = chart.navigator;
     let clipBox = {
         x: chart.plotLeft,
         y: chart.plotTop,
         width: chart.plotWidth,
-        height: chart.navigator ? // #17820
-            chart.navigator.top + chart.navigator.height - chart.plotTop :
-            chart.plotHeight
+        height: chart.plotHeight
     };
-    // Clipping of individal series (#11906, #19039).
+    if (navigator && chart.inverted) { // #17820, #20936
+        clipBox.width += navigator.top + navigator.height;
+        if (!navigator.opposite) {
+            clipBox.x = navigator.left;
+        }
+    }
+    else if (navigator && !chart.inverted) {
+        clipBox.height = navigator.top + navigator.height - chart.plotTop;
+    }
+    // Clipping of individual series (#11906, #19039).
     if (target.getClipBox) {
         const { xAxis, yAxis } = target;
         clipBox = target.getClipBox();
@@ -133,7 +137,7 @@ function isChartSeriesBoosting(chart) {
             ++canBoostCount;
         }
         if (patientMax(series.processedXData, seriesOptions.data, 
-        // series.xData,
+        /// series.xData,
         series.points) >= (seriesOptions.boostThreshold || Number.MAX_VALUE)) {
             ++needBoostCount;
         }
@@ -173,8 +177,8 @@ function onChartCallback(chart) {
         chart.boost.forceChartBoost = void 0;
         chart.boosted = false;
         // Clear the canvas
-        if (chart.boost.clear) {
-            chart.boost.clear();
+        if (!chart.axes.some((axis) => axis.isPanning)) {
+            chart.boost.clear?.();
         }
         if (chart.boost.canvas &&
             chart.boost.wgl &&
@@ -182,7 +186,7 @@ function onChartCallback(chart) {
             // Allocate
             chart.boost.wgl.allocateBuffer(chart);
         }
-        // see #6518 + #6739
+        // See #6518 + #6739
         if (chart.boost.markerGroup &&
             chart.xAxis &&
             chart.xAxis.length > 0 &&
@@ -192,21 +196,26 @@ function onChartCallback(chart) {
         }
     }
     addEvent(chart, 'predraw', preRender);
-    addEvent(chart, 'render', canvasToSVG);
-    // addEvent(chart, 'zoom', function () {
-    //     chart.boostForceChartBoost =
-    //         shouldForceChartSeriesBoosting(chart);
-    // });
+    // Use the load event rather than redraw, otherwise user load events will
+    // fire too early (#18755)
+    addEvent(chart, 'load', canvasToSVG, { order: -1 });
+    addEvent(chart, 'redraw', canvasToSVG);
     let prevX = -1;
     let prevY = -1;
-    addEvent(chart.pointer, 'afterGetHoverData', () => {
-        const series = chart.hoverSeries;
+    addEvent(chart.pointer, 'afterGetHoverData', (e) => {
+        const series = e.hoverPoint?.series;
         chart.boost = chart.boost || {};
         if (chart.boost.markerGroup && series) {
             const xAxis = chart.inverted ? series.yAxis : series.xAxis;
             const yAxis = chart.inverted ? series.xAxis : series.yAxis;
             if ((xAxis && xAxis.pos !== prevX) ||
                 (yAxis && yAxis.pos !== prevY)) {
+                // #21176: If the axis is changed, hide teh halo without
+                // animation  to prevent flickering of halos sharing the
+                // same marker group
+                chart.series.forEach((s) => {
+                    s.halo?.hide();
+                });
                 // #10464: Keep the marker group position in sync with the
                 // position of the hovered series axes since there is only
                 // one shared marker group when boosting.
@@ -232,7 +241,7 @@ function patientMax(...args) {
         if (typeof t !== 'undefined' &&
             t !== null &&
             typeof t.length !== 'undefined') {
-            // r = r < t.length ? t.length : r;
+            /// r = r < t.length ? t.length : r;
             if (t.length > 0) {
                 r = t.length;
                 return true;

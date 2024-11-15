@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -11,7 +11,7 @@
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries, line: LineSeries } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
-const { addEvent, arrayMax, arrayMin, correctFloat, extend, isNumber, merge, objectEach, pick } = U;
+const { addEvent, arrayMax, arrayMin, correctFloat, crisp, extend, isNumber, merge, objectEach, pick } = U;
 import WaterfallAxis from '../../Core/Axis/WaterfallAxis.js';
 import WaterfallPoint from './WaterfallPoint.js';
 import WaterfallSeriesDefaults from './WaterfallSeriesDefaults.js';
@@ -44,29 +44,6 @@ function ownProp(obj, key) {
  * @private
  */
 class WaterfallSeries extends ColumnSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.chart = void 0;
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        this.stackedYNeg = void 0;
-        this.stackedYPos = void 0;
-        this.stackKey = void 0;
-        this.xData = void 0;
-        this.yAxis = void 0;
-        this.yData = void 0;
-    }
     /* *
      *
      *  Functions
@@ -157,7 +134,7 @@ class WaterfallSeries extends ColumnSeries {
     // Draw columns' connector lines
     getCrispPath() {
         const // Skip points where Y is not a number (#18636)
-        data = this.data.filter((d) => isNumber(d.y)), yAxis = this.yAxis, length = data.length, graphNormalizer = Math.round(this.graph.strokeWidth()) % 2 / 2, borderNormalizer = Math.round(this.borderWidth) % 2 / 2, reversedXAxis = this.xAxis.reversed, reversedYAxis = this.yAxis.reversed, stacking = this.options.stacking, path = [];
+        data = this.data.filter((d) => isNumber(d.y)), yAxis = this.yAxis, length = data.length, graphLineWidth = this.graph?.strokeWidth() || 0, reversedXAxis = this.xAxis.reversed, reversedYAxis = this.yAxis.reversed, stacking = this.options.stacking, path = [];
         for (let i = 1; i < length; i++) {
             if (!( // Skip lines that would pass over the null point (#18636)
             this.options.connectNulls ||
@@ -171,19 +148,17 @@ class WaterfallSeries extends ColumnSeries {
             const prevStack = yAxis.waterfall.stacks[this.stackKey], isPos = prevY > 0 ? -prevBox.height : 0;
             if (prevStack && prevBox && box) {
                 const prevStackX = prevStack[i - 1];
-                // y position of the connector is different when series are
+                // Y position of the connector is different when series are
                 // stacked, yAxis is reversed and it also depends on point's
                 // value
                 let yPos;
                 if (stacking) {
                     const connectorThreshold = prevStackX.connectorThreshold;
-                    yPos = Math.round((yAxis.translate(connectorThreshold, false, true, false, true) +
-                        (reversedYAxis ? isPos : 0))) - graphNormalizer;
+                    yPos = crisp(yAxis.translate(connectorThreshold, false, true, false, true) +
+                        (reversedYAxis ? isPos : 0), graphLineWidth);
                 }
                 else {
-                    yPos =
-                        prevBox.y + prevPoint.minPointLengthOffset +
-                            borderNormalizer - graphNormalizer;
+                    yPos = crisp(prevBox.y + (prevPoint.minPointLengthOffset || 0), graphLineWidth);
                 }
                 path.push([
                     'M',
@@ -342,7 +317,7 @@ class WaterfallSeries extends ColumnSeries {
             waterfallStacks = yAxis.waterfall.stacks;
             stackedYNeg = this.stackedYNeg = [];
             stackedYPos = this.stackedYPos = [];
-            // the visible y range can be different when stacking is set to
+            // The visible y range can be different when stacking is set to
             // overlap and different when it's set to normal
             if (stacking === 'overlap') {
                 objectEach(waterfallStacks[this.stackKey], function (stackX) {
@@ -369,10 +344,14 @@ class WaterfallSeries extends ColumnSeries {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 WaterfallSeries.defaultOptions = merge(ColumnSeries.defaultOptions, WaterfallSeriesDefaults);
 WaterfallSeries.compose = WaterfallAxis.compose;
 extend(WaterfallSeries.prototype, {
-    getZonesGraphs: LineSeries.prototype.getZonesGraphs,
     pointValKey: 'y',
     // Property needed to prevent lines between the columns from disappearing
     // when negativeColor is used.
@@ -392,7 +371,7 @@ addEvent(WaterfallSeries, 'afterColumnTranslate', function () {
         }, shapeArgs || {});
         point.box = box;
         const range = [0, yValue], pointY = point.y || 0;
-        // code responsible for correct positions of stacked points
+        // Code responsible for correct positions of stacked points
         // starts here
         if (stacking) {
             if (actualStack) {
@@ -439,7 +418,7 @@ addEvent(WaterfallSeries, 'afterColumnTranslate', function () {
                     }
                 }
                 if (!point.isSum) {
-                    // the connectorThreshold property is later used in
+                    // The connectorThreshold property is later used in
                     // getCrispPath function to draw a connector line in a
                     // correct place
                     actualStackX.connectorThreshold =
@@ -466,10 +445,10 @@ addEvent(WaterfallSeries, 'afterColumnTranslate', function () {
             }
         }
         else {
-            // up points
+            // Up points
             y = Math.max(previousY, previousY + pointY) + range[0];
             box.y = yAxis.translate(y, false, true, false, true);
-            // sum points
+            // Sum points
             if (point.isSum) {
                 box.y = yAxis.translate(range[1], false, true, false, true);
                 box.height = Math.min(yAxis.translate(range[0], false, true, false, true), yAxis.len) - box.y; // #4256
@@ -485,7 +464,7 @@ addEvent(WaterfallSeries, 'afterColumnTranslate', function () {
                     hPos = range[1] + previousIntermediate;
                 }
                 if (yAxis.reversed) {
-                    // swapping values
+                    // Swapping values
                     yPos ^= hPos;
                     hPos ^= yPos;
                     yPos ^= hPos;
@@ -511,15 +490,12 @@ addEvent(WaterfallSeries, 'afterColumnTranslate', function () {
                 box.height *= -1;
             }
         }
-        point.plotY = box.y =
-            Math.round(box.y || 0) - (series.borderWidth % 2) / 2;
-        // #3151
-        box.height =
-            Math.max(Math.round(box.height || 0), 0.001);
+        point.plotY = box.y;
         point.yBottom = box.y + box.height;
         if (box.height <= minPointLength && !point.isNull) {
             box.height = minPointLength;
             box.y -= halfMinPointLength;
+            point.yBottom = box.y + box.height;
             point.plotY = box.y;
             if (pointY < 0) {
                 point.minPointLengthOffset = -halfMinPointLength;
@@ -550,6 +526,10 @@ addEvent(WaterfallSeries, 'afterColumnTranslate', function () {
         }
         // Check point position after recalculation (#16788)
         point.isInside = this.isPointInside(point);
+        // Crisp vector coordinates
+        const crispBottom = crisp(point.yBottom, series.borderWidth);
+        box.y = crisp(box.y, series.borderWidth);
+        box.height = crispBottom - box.y;
         merge(true, point.shapeArgs, box);
     }
 }, { order: 2 });

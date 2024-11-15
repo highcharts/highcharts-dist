@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
  * Variable Pie module for Highcharts
  *
- * (c) 2010-2021 Grzegorz Blachliński
+ * (c) 2010-2024 Grzegorz Blachliński
  *
  * License: www.highcharts.com/license
  */
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -40,7 +40,7 @@
          *
          *  Variable Pie module for Highcharts
          *
-         *  (c) 2010-2021 Grzegorz Blachliński
+         *  (c) 2010-2024 Grzegorz Blachliński
          *
          *  License: www.highcharts.com/license
          *
@@ -65,7 +65,7 @@
          * @excluding    dragDrop
          * @since        6.0.0
          * @product      highcharts
-         * @requires     modules/variable-pie.js
+         * @requires     modules/variable-pie
          * @optionparent plotOptions.variablepie
          */
         const VariablePieSeriesDefaults = {
@@ -144,7 +144,7 @@
          * @excluding dataParser, dataURL, stack, xAxis, yAxis, dataSorting,
          *            boostThreshold, boostBlending
          * @product   highcharts
-         * @requires  modules/variable-pie.js
+         * @requires  modules/variable-pie
          * @apioption series.variablepie
          */
         /**
@@ -195,7 +195,7 @@
          * @product   highcharts
          * @apioption series.variablepie.data
          */
-        ''; // keeps doclets above separate
+        ''; // Keeps doclets above separate
         /* *
          *
          *  Default Export
@@ -209,7 +209,7 @@
          *
          *  Variable Pie module for Highcharts
          *
-         *  (c) 2010-2021 Grzegorz Blachliński
+         *  (c) 2010-2024 Grzegorz Blachliński
          *
          *  License: www.highcharts.com/license
          *
@@ -233,23 +233,6 @@
          * @augments Highcharts.Series
          */
         class VariablePieSeries extends PieSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                this.radii = void 0;
-            }
             /* *
              *
              *  Functions
@@ -310,7 +293,7 @@
                 let pos, value, radius;
                 // Calculate radius for all pie slice's based on their Z values
                 for (let i = 0; i < zData.length; i++) {
-                    // if zData[i] is null/undefined/string we need to take zMin for
+                    // If zData[i] is null/undefined/string we need to take zMin for
                     // smallest radius.
                     value = this.zValEval(zData[i]) ? zData[i] : zMin;
                     if (value <= zMin) {
@@ -382,11 +365,11 @@
              */
             translate(positions) {
                 this.generatePoints();
-                const series = this, precision = 1000, // issue #172
+                const series = this, precision = 1000, // Issue #172
                 options = series.options, slicedOffset = options.slicedOffset, startAngle = options.startAngle || 0, startAngleRad = Math.PI / 180 * (startAngle - 90), endAngleRad = Math.PI / 180 * (pick(options.endAngle, startAngle + 360) - 90), circ = endAngleRad - startAngleRad, // 2 * Math.PI,
                 points = series.points, ignoreHiddenPoint = options.ignoreHiddenPoint;
                 let cumulative = 0, start, end, angle, 
-                // the x component of the radius vector for a given point
+                // The x component of the radius vector for a given point
                 radiusX, radiusY, point, pointRadii;
                 series.startAngleRad = startAngleRad;
                 series.endAngleRad = endAngleRad;
@@ -458,6 +441,11 @@
                 return null;
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         VariablePieSeries.defaultOptions = merge(PieSeries.defaultOptions, VariablePieSeriesDefaults);
         extend(VariablePieSeries.prototype, {
             pointArrayMap: ['y', 'z'],
@@ -477,12 +465,13 @@
         /**
          * @typedef {"area"|"radius"} Highcharts.VariablePieSizeByValue
          */
-        ''; // adds doclets above to transpiled file
+        ''; // Adds doclets above to transpiled file
 
         return VariablePieSeries;
     });
-    _registerModule(_modules, 'masters/modules/variable-pie.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/variable-pie.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

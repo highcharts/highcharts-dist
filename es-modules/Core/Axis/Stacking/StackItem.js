@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -89,7 +89,7 @@ class StackItem {
             format(formatOption, this, chart) :
             options.formatter.call(this);
         // Change the text to reflect the new total and set visibility to hidden
-        // in case the serie is hidden
+        // in case the series is hidden
         if (this.label) {
             this.label.attr({ text: str, visibility: 'hidden' });
         }
@@ -99,9 +99,9 @@ class StackItem {
             const attr = {
                 r: options.borderRadius || 0,
                 text: str,
-                // set default padding to 5 as it is in datalabels #12308
+                // Set default padding to 5 as it is in datalabels #12308
                 padding: pick(options.padding, 5),
-                visibility: 'hidden' // hidden until setOffset is called
+                visibility: 'hidden' // Hidden until setOffset is called
             };
             if (!chart.styledMode) {
                 attr.fill = options.backgroundColor;
@@ -111,7 +111,7 @@ class StackItem {
             }
             this.label.attr(attr);
             if (!this.label.added) {
-                this.label.add(group); // add to the labels-group
+                this.label.add(group); // Add to the labels-group
             }
         }
         // Rank it higher than data labels (#8742)
@@ -133,7 +133,7 @@ class StackItem {
             xAxis
         }), { verticalAlign } = alignOptions;
         if (label && stackBox) {
-            const labelBox = label.getBBox(), padding = label.padding;
+            const labelBox = label.getBBox(void 0, 0), padding = label.padding;
             let isJustify = pick(options.overflow, 'justify') === 'justify', visible;
             // Reset alignOptions property after justify #12337
             alignOptions.x = options.x || 0;
@@ -160,13 +160,17 @@ class StackItem {
                 // Justify stackLabel into the alignBox
                 Series.prototype.justifyDataLabel.call(axis, label, alignOptions, label.alignAttr, labelBox, stackBox);
             }
-            // Add attr to aviod the default animation of justifyDataLabel.
+            // Add attr to avoid the default animation of justifyDataLabel.
             // Also add correct rotation with its rotation origin. #15129
             label.attr({
                 x: label.alignAttr.x,
                 y: label.alignAttr.y,
                 rotation: options.rotation,
-                rotationOriginX: labelBox.width / 2,
+                rotationOriginX: labelBox.width * {
+                    left: 0,
+                    center: 0.5,
+                    right: 1
+                }[options.textAlign || 'center'],
                 rotationOriginY: labelBox.height / 2
             });
             // Check if the dataLabel should be visible.
@@ -219,7 +223,7 @@ class StackItem {
         return inverted ?
             {
                 x: (neg ? y : y - height) - chart.plotLeft,
-                y: xAxis.height - x - width,
+                y: xAxis.height - x - width + xAxis.top - chart.plotTop,
                 width: height,
                 height: width
             } : {
@@ -280,4 +284,4 @@ export default StackItem;
 * @name Highcharts.StackItemObject#x
 * @type {number}
 */
-''; // keeps doclets above in JS file
+''; // Keeps doclets above in JS file

@@ -1,6 +1,6 @@
 /**
  *
- *  (c) 2010-2021 Kamil Kulig
+ *  (c) 2010-2024 Kamil Kulig
  *
  *  License: www.highcharts.com/license
  *
@@ -27,22 +27,6 @@ const { extend, merge } = U;
  * @augments Highcharts.Series
  */
 class LinearRegressionAngleIndicator extends LinearRegressionIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -56,12 +40,17 @@ class LinearRegressionAngleIndicator extends LinearRegressionIndicator {
      * @return {number} angle in degrees
      */
     slopeToAngle(slope) {
-        return Math.atan(slope) * (180 / Math.PI); // rad to deg
+        return Math.atan(slope) * (180 / Math.PI); // Rad to deg
     }
     getEndPointY(lineParameters) {
         return this.slopeToAngle(lineParameters.slope);
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Linear regression angle indicator. This series requires `linkedTo`
  * option to be set.
@@ -105,4 +94,4 @@ export default LinearRegressionAngleIndicator;
  * @requires  stock/indicators/regressions
  * @apioption series.linearregressionangle
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

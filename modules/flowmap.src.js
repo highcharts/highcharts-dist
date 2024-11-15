@@ -1,7 +1,7 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
- * (c) 2009-2022
+ * (c) 2009-2024
  *
  * License: www.highcharts.com/license
  */
@@ -26,7 +26,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -36,7 +36,7 @@
     _registerModule(_modules, 'Series/FlowMap/FlowMapPoint.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2023 Askel Eirik Johansson, Piotr Madej
+         *  (c) 2010-2024 Askel Eirik Johansson, Piotr Madej
          *
          *  License: www.highcharts.com/license
          *
@@ -51,16 +51,6 @@
          *
          * */
         class FlowMapPoint extends MapLinePoint {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.options = void 0;
-                this.series = void 0;
-            }
             /* *
              *
              *  Functions
@@ -73,7 +63,7 @@
                 let valid = !!(this.options.to && this.options.from);
                 [this.options.to, this.options.from]
                     .forEach(function (toOrFrom) {
-                    valid = !!(valid && (toOrFrom && (isString(toOrFrom) || ( // point id or has lat/lon coords
+                    valid = !!(valid && (toOrFrom && (isString(toOrFrom) || ( // Point id or has lat/lon coords
                     isNumber(pick(toOrFrom[0], toOrFrom.lat)) &&
                         isNumber(pick(toOrFrom[1], toOrFrom.lon))))));
                 });
@@ -91,7 +81,7 @@
     _registerModule(_modules, 'Series/FlowMap/FlowMapSeries.js', [_modules['Series/FlowMap/FlowMapPoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (FlowMapPoint, SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2022 Askel Eirik Johansson, Piotr Madej
+         *  (c) 2010-2024 Askel Eirik Johansson, Piotr Madej
          *
          *  License: www.highcharts.com/license
          *
@@ -110,25 +100,6 @@
          * @augments Highcharts.Series
          */
         class FlowMapSeries extends MapLineSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 * Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                this.smallestWeight = void 0;
-                this.greatestWeight = void 0;
-                this.centerOfPoints = void 0;
-            }
             /* *
              *
              *  Static Function
@@ -206,13 +177,13 @@
              */
             animate(init) {
                 const series = this, points = series.points;
-                if (!init) { // run the animation
+                if (!init) { // Run the animation
                     points.forEach((point) => {
                         if (point.shapeArgs &&
                             isArray(point.shapeArgs.d) &&
                             point.shapeArgs.d.length) {
                             const path = point.shapeArgs.d, x = path[0][1], y = path[0][2];
-                            // to animate SVG path the initial path array needs to be
+                            // To animate SVG path the initial path array needs to be
                             // same as target, but element should be visible, so we
                             // insert array elements with start (M) values
                             if (x && y) {
@@ -319,7 +290,7 @@
                         if ((foundPoint instanceof Point) &&
                             foundPoint.plotX &&
                             foundPoint.plotY) {
-                            // after linked point update flowmap point should
+                            // After linked point update flowmap point should
                             // be also updated
                             addEvent(foundPoint, 'update', dirtySeries);
                             return {
@@ -503,6 +474,11 @@
                 return shapeArgs;
             }
         }
+        /* *
+         *
+         *  Static properties
+         *
+         * */
         /**
          * A flowmap series is a series laid out on top of a map series allowing to
          * display route paths (e.g. flight or ship routes) or flows on a map. It
@@ -851,12 +827,13 @@
          * @type  {number}
          * @apioption series.flowmap.data.lineWidth
          */
-        ''; // adds doclets above to transpiled file
+        ''; // Adds doclets above to transpiled file
 
         return FlowMapSeries;
     });
-    _registerModule(_modules, 'masters/modules/flowmap.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/flowmap.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

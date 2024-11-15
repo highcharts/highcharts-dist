@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -40,17 +40,6 @@ class HeatmapSeries extends ScatterSeries {
          *
          * */
         super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.canvas = void 0;
-        this.colorAxis = void 0;
-        this.context = void 0;
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
         this.valueMax = NaN;
         this.valueMin = NaN;
         this.isDirtyCanvas = true;
@@ -149,7 +138,7 @@ class HeatmapSeries extends ScatterSeries {
      * @private
      */
     hasData() {
-        return !!this.processedXData.length; // != 0
+        return !!this.xData; // != 0
     }
     /**
      * Override the init method to add point ranges on both axes.
@@ -160,7 +149,7 @@ class HeatmapSeries extends ScatterSeries {
         const options = this.options;
         // #3758, prevent resetting in setData
         options.pointRange = pick(options.pointRange, options.colsize || 1);
-        // general point range
+        // General point range
         this.yAxis.axisPointRange = options.rowsize || 1;
         // Bind new symbol names
         symbols.ellipse = symbols.circle;
@@ -253,6 +242,11 @@ class HeatmapSeries extends ScatterSeries {
      */
     translate() {
         const series = this, options = series.options, { borderRadius, marker } = options, symbol = marker && marker.symbol || 'rect', shape = symbols[symbol] ? symbol : 'rect', hasRegularShape = ['circle', 'square'].indexOf(shape) !== -1;
+        if (!series.processedXData) {
+            const { xData, yData } = series.getProcessedData();
+            series.processedXData = xData;
+            series.processedYData = yData;
+        }
         series.generatePoints();
         for (const point of series.points) {
             const cellAttr = point.getCellAttributes();
@@ -323,7 +317,7 @@ export default HeatmapSeries;
  */
 /**
  * Heatmap series only. The value of the point, resulting in a color
- * controled by options as set in the colorAxis configuration.
+ * controlled by options as set in the colorAxis configuration.
  * @name Highcharts.Point#value
  * @type {number|null|undefined}
  */
@@ -334,9 +328,9 @@ export default HeatmapSeries;
 * @name Highcharts.PointOptionsObject#pointPadding
 * @type {number|undefined}
 */ /**
-* Heatmap series only. The value of the point, resulting in a color controled
+* Heatmap series only. The value of the point, resulting in a color controlled
 * by options as set in the colorAxis configuration.
 * @name Highcharts.PointOptionsObject#value
 * @type {number|null|undefined}
 */
-''; // detach doclets above
+''; // Detach doclets above

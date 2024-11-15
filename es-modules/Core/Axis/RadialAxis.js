@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -8,13 +8,13 @@
  *
  * */
 'use strict';
-import AxisDefaults from './AxisDefaults.js';
+import RadialAxisDefaults from './RadialAxisDefaults.js';
 import D from '../Defaults.js';
 const { defaultOptions } = D;
 import H from '../Globals.js';
-const { noop } = H;
+const { composed, noop } = H;
 import U from '../Utilities.js';
-const { addEvent, correctFloat, defined, extend, fireEvent, merge, pick, relativeLength, wrap } = U;
+const { addEvent, correctFloat, defined, extend, fireEvent, isObject, merge, pick, pushUnique, relativeLength, wrap } = U;
 /* *
  *
  *  Composition
@@ -27,110 +27,7 @@ var RadialAxis;
      *  Declarations
      *
      * */
-    /* *
-     *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /**
-     * Circular axis around the perimeter of a polar chart.
-     * @private
-     */
-    const defaultCircularOptions = {
-        gridLineWidth: 1,
-        labels: {
-            align: void 0,
-            x: 0,
-            y: void 0,
-            style: {
-                textOverflow: 'none' // wrap lines by default (#7248)
-            }
-        },
-        maxPadding: 0,
-        minPadding: 0,
-        showLastLabel: false,
-        tickLength: 0
-    };
-    /**
-     * The default options extend defaultYAxisOptions.
-     * @private
-     */
-    const defaultRadialGaugeOptions = {
-        labels: {
-            align: 'center',
-            distance: -25,
-            x: 0,
-            y: void 0 // auto
-        },
-        minorGridLineWidth: 0,
-        minorTickInterval: 'auto',
-        minorTickLength: 10,
-        minorTickPosition: 'inside',
-        minorTickWidth: 1,
-        tickLength: 10,
-        tickPosition: 'inside',
-        tickWidth: 2,
-        title: {
-            rotation: 0
-        },
-        zIndex: 2 // behind dials, points in the series group
-    };
-    /**
-     * Radial axis, like a spoke in a polar chart.
-     * @private
-     */
-    const defaultRadialOptions = {
-        /**
-         * In a polar chart, this is the angle of the Y axis in degrees, where
-         * 0 is up and 90 is right. The angle determines the position of the
-         * axis line and the labels, though the coordinate system is unaffected.
-         * Since v8.0.0 this option is also applicable for X axis (inverted
-         * polar).
-         *
-         * @sample {highcharts} highcharts/xaxis/angle/
-         *         Custom X axis' angle on inverted polar chart
-         * @sample {highcharts} highcharts/yaxis/angle/
-         *         Dual axis polar chart
-         *
-         * @type      {number}
-         * @default   0
-         * @since     4.2.7
-         * @product   highcharts
-         * @apioption xAxis.angle
-         */
-        /**
-         * Polar charts only. Whether the grid lines should draw as a polygon
-         * with straight lines between categories, or as circles. Can be either
-         * `circle` or `polygon`. Since v8.0.0 this option is also applicable
-         * for X axis (inverted polar).
-         *
-         * @sample {highcharts} highcharts/demo/polar-spider/
-         *         Polygon grid lines
-         * @sample {highcharts} highcharts/xaxis/gridlineinterpolation/
-         *         Circle and polygon on inverted polar
-         * @sample {highcharts} highcharts/yaxis/gridlineinterpolation/
-         *         Circle and polygon
-         *
-         * @type       {string}
-         * @product    highcharts
-         * @validvalue ["circle", "polygon"]
-         * @apioption  xAxis.gridLineInterpolation
-         */
-        gridLineInterpolation: 'circle',
-        gridLineWidth: 1,
-        labels: {
-            align: 'right',
-            x: -3,
-            y: -2
-        },
-        showLastLabel: false,
-        title: {
-            x: 4,
-            text: null,
-            rotation: 90
-        }
-    };
+    RadialAxis.radialDefaultOptions = merge(RadialAxisDefaults);
     /* *
      *
      *  Functions
@@ -178,16 +75,15 @@ var RadialAxis;
      * Axis composition.
      */
     function compose(AxisClass, TickClass) {
-        if (U.pushUnique(composedMembers, AxisClass)) {
+        if (pushUnique(composed, 'Axis.Radial')) {
             addEvent(AxisClass, 'afterInit', onAxisAfterInit);
             addEvent(AxisClass, 'autoLabelAlign', onAxisAutoLabelAlign);
             addEvent(AxisClass, 'destroy', onAxisDestroy);
             addEvent(AxisClass, 'init', onAxisInit);
             addEvent(AxisClass, 'initialAxisTranslation', onAxisInitialAxisTranslation);
-        }
-        if (U.pushUnique(composedMembers, TickClass)) {
             addEvent(TickClass, 'afterGetLabelPosition', onTickAfterGetLabelPosition);
             addEvent(TickClass, 'afterGetPosition', onTickAfterGetPosition);
+            addEvent(H, 'setOptions', onGlobalSetOptions);
             wrap(TickClass.prototype, 'getMarkPath', wrapTickGetMarkPath);
         }
         return AxisClass;
@@ -203,7 +99,7 @@ var RadialAxis;
         return () => {
             if (this.isRadial &&
                 this.tickPositions &&
-                // undocumented option for now, but working
+                // Undocumented option for now, but working
                 this.options.labels &&
                 this.options.labels.allowOverlap !== true) {
                 return this.tickPositions
@@ -370,7 +266,8 @@ var RadialAxis;
                 start: Math.min(start, end),
                 end: Math.max(start, end),
                 innerR: pick(innerRadius, outerRadius - thickness),
-                open
+                open,
+                borderRadius: options.borderRadius
             });
             // Provide positioning boxes for the label (#6406)
             if (isCircular) {
@@ -629,7 +526,7 @@ var RadialAxis;
      * Modify axis instance with radial logic before common axis init.
      */
     function onAxisInit(e) {
-        const chart = this.chart, inverted = chart.inverted, angular = chart.angular, polar = chart.polar, isX = this.isXAxis, coll = this.coll, isHidden = angular && isX, paneIndex = e.userOptions.pane || 0, pane = this.pane = chart.pane && chart.pane[paneIndex];
+        const chart = this.chart, angular = chart.angular, polar = chart.polar, isX = this.isXAxis, coll = this.coll, isHidden = angular && isX, paneIndex = e.userOptions.pane || 0, pane = this.pane = chart.pane && chart.pane[paneIndex];
         let isCircular;
         // Prevent changes for colorAxis
         if (coll === 'colorAxis') {
@@ -645,25 +542,11 @@ var RadialAxis;
                 modify(this);
             }
             isCircular = !isX;
-            if (isCircular) {
-                this.defaultPolarOptions = defaultRadialGaugeOptions;
-            }
         }
         else if (polar) {
             modify(this);
             // Check which axis is circular
             isCircular = this.horiz;
-            this.defaultPolarOptions = isCircular ?
-                defaultCircularOptions :
-                merge(coll === 'xAxis' ?
-                    AxisDefaults.defaultXAxisOptions :
-                    AxisDefaults.defaultYAxisOptions, defaultRadialOptions);
-            // Apply the stack labels for yAxis in case of inverted chart
-            if (inverted && coll === 'yAxis') {
-                this.defaultPolarOptions.stackLabels = AxisDefaults
-                    .defaultYAxisOptions.stackLabels;
-                this.defaultPolarOptions.reversedStacks = true;
-            }
         }
         // Disable certain features on angular and polar axes
         if (angular || polar) {
@@ -729,14 +612,14 @@ var RadialAxis;
                         centerSlot = 0;
                     }
                     if (angle > centerSlot && angle < 180 - centerSlot) {
-                        align = 'left'; // right hemisphere
+                        align = 'left'; // Right hemisphere
                     }
                     else if (angle > 180 + centerSlot &&
                         angle < 360 - centerSlot) {
-                        align = 'right'; // left hemisphere
+                        align = 'right'; // Left hemisphere
                     }
                     else {
-                        align = 'center'; // top or bottom
+                        align = 'center'; // Top or bottom
                     }
                 }
                 else {
@@ -774,11 +657,11 @@ var RadialAxis;
                 else {
                     align = (labelDir === 'start') ? 'left' : 'right';
                 }
-                // For angles beetwen (90 + n * 180) +- 20
+                // For angles between (90 + n * 180) +- 20
                 if (reducedAngle2 > 70 && reducedAngle2 < 110) {
                     align = 'center';
                 }
-                // auto Y translation
+                // Auto Y translation
                 if (reducedAngle1 < 15 ||
                     (reducedAngle1 >= 180 && reducedAngle1 < 195)) {
                     translateY = labelBBox.height * 0.3;
@@ -799,7 +682,7 @@ var RadialAxis;
                     translateY = labelDir === 'start' ?
                         labelBBox.height : -labelBBox.height * 0.25;
                 }
-                // auto X translation
+                // Auto X translation
                 if (reducedAngle2 < 15) {
                     translateX = labelDir === 'start' ?
                         -labelBBox.height * 0.15 : labelBBox.height * 0.15;
@@ -821,6 +704,17 @@ var RadialAxis;
     function onTickAfterGetPosition(e) {
         if (this.axis.getPosition) {
             extend(e.pos, this.axis.getPosition(this.pos));
+        }
+    }
+    /**
+     * Update default options for radial axes from setOptions method.
+     */
+    function onGlobalSetOptions({ options }) {
+        if (options.xAxis) {
+            merge(true, RadialAxis.radialDefaultOptions.circular, options.xAxis);
+        }
+        if (options.yAxis) {
+            merge(true, RadialAxis.radialDefaultOptions.radialGauge, options.yAxis);
         }
     }
     /**
@@ -871,7 +765,7 @@ var RadialAxis;
             else {
                 // When the pane's startAngle or the axis' angle is set then
                 // new x and y values for vertical axis' center must be
-                // calulated
+                // calculated
                 start = this.postTranslate(this.angleRad, center[3] / 2);
                 center[0] = start.x - this.chart.plotLeft;
                 center[1] = start.y - this.chart.plotTop;
@@ -893,7 +787,7 @@ var RadialAxis;
         // Call uber method
         axisProto.setAxisTranslation.call(this);
         // Set transA and minPixelPadding
-        if (this.center) { // it's not defined the first time
+        if (this.center) { // It's not defined the first time
             if (this.isCircular) {
                 this.transA = (this.endAngleRad - this.startAngleRad) /
                     ((this.max - this.min) || 1);
@@ -918,9 +812,27 @@ var RadialAxis;
      * Merge and set options.
      */
     function setOptions(userOptions) {
-        const options = this.options = merge(this.constructor.defaultOptions, this.defaultPolarOptions, defaultOptions[this.coll], // #16112
-        userOptions);
-        // Make sure the plotBands array is instanciated for each Axis
+        const { coll } = this;
+        const { angular, inverted, polar } = this.chart;
+        let defaultPolarOptions = {};
+        if (angular) {
+            if (!this.isXAxis) {
+                defaultPolarOptions = merge(defaultOptions.yAxis, RadialAxis.radialDefaultOptions.radialGauge);
+            }
+        }
+        else if (polar) {
+            defaultPolarOptions = this.horiz ?
+                merge(defaultOptions.xAxis, RadialAxis.radialDefaultOptions.circular) :
+                merge(coll === 'xAxis' ?
+                    defaultOptions.xAxis :
+                    defaultOptions.yAxis, RadialAxis.radialDefaultOptions.radial);
+        }
+        if (inverted && coll === 'yAxis') {
+            defaultPolarOptions.stackLabels = isObject(defaultOptions.yAxis, true) ? defaultOptions.yAxis.stackLabels : {};
+            defaultPolarOptions.reversedStacks = true;
+        }
+        const options = this.options = merge(defaultPolarOptions, userOptions);
+        // Make sure the plotBands array is instantiated for each Axis
         // (#2649)
         if (!options.plotBands) {
             options.plotBands = [];

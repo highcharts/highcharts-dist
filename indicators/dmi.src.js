@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.4.8 (2024-08-29)
  *
  * Indicator series type for Highcharts Stock
  *
- * (c) 2010-2021 Rafal Sebestjanski
+ * (c) 2010-2024 Rafal Sebestjanski
  *
  * License: www.highcharts.com/license
  */
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -38,7 +38,7 @@
     _registerModule(_modules, 'Stock/Indicators/MultipleLinesComposition.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /**
          *
-         *  (c) 2010-2021 Wojciech Chmiel
+         *  (c) 2010-2024 Wojciech Chmiel
          *
          *  License: www.highcharts.com/license
          *
@@ -60,11 +60,10 @@
              *
              * */
             /* *
-            *
-            *  Constants
-            *
-            * */
-            const composedMembers = [];
+             *
+             *  Constants
+             *
+             * */
             /**
              * Additional lines DOCS names. Elements of linesApiNames array should
              * be consistent with DOCS line names defined in your implementation.
@@ -87,7 +86,7 @@
              */
             const pointArrayMap = ['top', 'bottom'];
             /**
-             * Names of the lines, bewteen which the area should be plotted.
+             * Names of the lines, between which the area should be plotted.
              * If the drawing of the area should
              * be disabled for some indicators, leave this option as an empty array.
              * Names should be the same as the names in the pointArrayMap.
@@ -104,10 +103,10 @@
              */
             const pointValKey = 'top';
             /* *
-            *
-            *  Functions
-            *
-            * */
+             *
+             *  Functions
+             *
+             * */
             /**
              * Composition useful for all indicators that have more than one line.
              * Compose it with your implementation where you will provide the
@@ -119,21 +118,19 @@
              * @private
              */
             function compose(IndicatorClass) {
-                if (U.pushUnique(composedMembers, IndicatorClass)) {
-                    const proto = IndicatorClass.prototype;
-                    proto.linesApiNames = (proto.linesApiNames ||
-                        linesApiNames.slice());
-                    proto.pointArrayMap = (proto.pointArrayMap ||
-                        pointArrayMap.slice());
-                    proto.pointValKey = (proto.pointValKey ||
-                        pointValKey);
-                    proto.areaLinesNames = (proto.areaLinesNames ||
-                        areaLinesNames.slice());
-                    proto.drawGraph = indicatorDrawGraph;
-                    proto.getGraphPath = indicatorGetGraphPath;
-                    proto.toYData = indicatorToYData;
-                    proto.translate = indicatorTranslate;
-                }
+                const proto = IndicatorClass.prototype;
+                proto.linesApiNames = (proto.linesApiNames ||
+                    linesApiNames.slice());
+                proto.pointArrayMap = (proto.pointArrayMap ||
+                    pointArrayMap.slice());
+                proto.pointValKey = (proto.pointValKey ||
+                    pointValKey);
+                proto.areaLinesNames = (proto.areaLinesNames ||
+                    areaLinesNames.slice());
+                proto.drawGraph = indicatorDrawGraph;
+                proto.getGraphPath = indicatorGetGraphPath;
+                proto.toYData = indicatorToYData;
+                proto.translate = indicatorTranslate;
                 return IndicatorClass;
             }
             MultipleLinesComposition.compose = compose;
@@ -177,12 +174,12 @@
                         gapSize: mainLineOptions.gapSize
                     }
                 }, 
-                // additional lines point place holders:
+                // Additional lines point place holders:
                 secondaryLines = [], secondaryLinesNames = getTranslatedLinesNames(indicator, pointValKey);
                 let pointsLength = mainLinePoints.length, point;
                 // Generate points for additional lines:
                 secondaryLinesNames.forEach((plotLine, index) => {
-                    // create additional lines point place holders
+                    // Create additional lines point place holders
                     secondaryLines[index] = [];
                     while (pointsLength--) {
                         point = mainLinePoints[pointsLength];
@@ -319,7 +316,7 @@
     });
     _registerModule(_modules, 'Stock/Indicators/DMI/DMIIndicator.js', [_modules['Stock/Indicators/MultipleLinesComposition.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (MultipleLinesComposition, SeriesRegistry, U) {
         /* *
-         *  (c) 2010-2021 Rafal Sebestjanski
+         *  (c) 2010-2024 Rafal Sebestjanski
          *
          *  Directional Movement Index (DMI) indicator for Highcharts Stock
          *
@@ -345,20 +342,6 @@
          * @augments Highcharts.Series
          */
         class DMIIndicator extends SMAIndicator {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.options = void 0;
-            }
             /* *
              *
              *  Functions
@@ -368,11 +351,11 @@
                 const currentHigh = yVal[i][1], currentLow = yVal[i][2], previousHigh = yVal[i - 1][1], previousLow = yVal[i - 1][2];
                 let DM;
                 if (currentHigh - previousHigh > previousLow - currentLow) {
-                    // for +DM
+                    // For +DM
                     DM = isPositiveDM ? Math.max(currentHigh - previousHigh, 0) : 0;
                 }
                 else {
-                    // for -DM
+                    // For -DM
                     DM = !isPositiveDM ? Math.max(previousLow - currentLow, 0) : 0;
                 }
                 return correctFloat(DM);
@@ -388,11 +371,11 @@
             }
             getTR(currentPoint, prevPoint) {
                 return correctFloat(Math.max(
-                // currentHigh - currentLow
+                // `currentHigh - currentLow`
                 currentPoint[1] - currentPoint[2], 
-                // currentHigh - previousClose
+                // `currentHigh - previousClose`
                 !prevPoint ? 0 : Math.abs(currentPoint[1] - prevPoint[3]), 
-                // currentLow - previousClose
+                // `currentLow - previousClose`
                 !prevPoint ? 0 : Math.abs(currentPoint[2] - prevPoint[3])));
             }
             getValues(series, params) {
@@ -459,6 +442,11 @@
                 };
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         /**
          * Directional Movement Index (DMI).
          * This series requires the `linkedTo` option to be set and should
@@ -482,7 +470,7 @@
              * @excluding index
              */
             params: {
-                index: void 0 // unused index, do not inherit (#15362)
+                index: void 0 // Unused index, do not inherit (#15362)
             },
             marker: {
                 enabled: false
@@ -515,7 +503,7 @@
                      *
                      * @type {Highcharts.ColorString}
                      */
-                    lineColor: "#06b535" /* Palette.positiveColor */ // green-ish
+                    lineColor: "#06b535" /* Palette.positiveColor */ // Green-ish
                 }
             },
             /**
@@ -535,7 +523,7 @@
                      *
                      * @type {Highcharts.ColorString}
                      */
-                    lineColor: "#f21313" /* Palette.negativeColor */ // red-ish
+                    lineColor: "#f21313" /* Palette.negativeColor */ // Red-ish
                 }
             },
             dataGrouping: {
@@ -577,12 +565,13 @@
          * @requires  stock/indicators/dmi
          * @apioption series.dmi
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return DMIIndicator;
     });
-    _registerModule(_modules, 'masters/indicators/dmi.src.js', [], function () {
+    _registerModule(_modules, 'masters/indicators/dmi.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

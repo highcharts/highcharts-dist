@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -8,6 +8,8 @@
  *
  * */
 'use strict';
+import H from '../Globals.js';
+const { composed } = H;
 import StackItem from './Stacking/StackItem.js';
 import U from '../Utilities.js';
 const { addEvent, objectEach, pushUnique } = U;
@@ -25,12 +27,6 @@ var WaterfallAxis;
      * */
     /* *
      *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
@@ -38,12 +34,10 @@ var WaterfallAxis;
      * @private
      */
     function compose(AxisClass, ChartClass) {
-        if (pushUnique(composedMembers, AxisClass)) {
+        if (pushUnique(composed, 'Axis.Waterfall')) {
             addEvent(AxisClass, 'init', onAxisInit);
             addEvent(AxisClass, 'afterBuildStacks', onAxisAfterBuildStacks);
             addEvent(AxisClass, 'afterRender', onAxisAfterRender);
-        }
-        if (pushUnique(composedMembers, ChartClass)) {
             addEvent(ChartClass, 'beforeRedraw', onChartBeforeRedraw);
         }
     }
@@ -82,8 +76,8 @@ var WaterfallAxis;
      */
     function onChartBeforeRedraw() {
         const axes = this.axes, series = this.series;
-        for (const seri of series) {
-            if (seri.options.stacking) {
+        for (const serie of series) {
+            if (serie.options.stacking) {
                 for (const axis of axes) {
                     if (!axis.isXAxis) {
                         axis.waterfall.stacks.changed = true;

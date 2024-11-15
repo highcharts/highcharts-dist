@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
  * Marker clusters module for Highcharts
  *
- * (c) 2010-2021 Wojciech Chmiel
+ * (c) 2010-2024 Wojciech Chmiel
  *
  * License: www.highcharts.com/license
  */
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -40,7 +40,7 @@
          *
          *  Marker clusters module.
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  Author: Wojciech Chmiel
          *
@@ -379,7 +379,7 @@
          *
          *  Marker clusters module.
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  Author: Wojciech Chmiel
          *
@@ -390,18 +390,16 @@
          * */
         const { animObject } = A;
         const { cluster: clusterDefaults } = MarkerClusterDefaults;
-        const { addEvent, defined, error, isArray, isFunction, isObject, isNumber, merge, objectEach, pushUnique, relativeLength, syncTimeout } = U;
+        const { addEvent, defined, error, isArray, isFunction, isObject, isNumber, merge, objectEach, relativeLength, syncTimeout } = U;
         /* *
          *
          *  Constants
          *
          * */
-        const composedMembers = [];
         const markerClusterAlgorithms = {
             grid: function (dataX, dataY, dataIndexes, options) {
                 const series = this, grid = {}, gridOffset = this.getGridOffset();
                 let x, y, gridX, gridY, key, i;
-                // drawGridLines(series, options);
                 const scaledGridSize = series.getScaledGridSize(options);
                 for (i = 0; i < dataX.length; i++) {
                     const p = valuesToPixels(series, { x: dataX[i], y: dataY[i] });
@@ -607,8 +605,8 @@
          * */
         /** @private */
         function compose(highchartsDefaultOptions, ScatterSeriesClass) {
-            if (pushUnique(composedMembers, ScatterSeriesClass)) {
-                const scatterProto = ScatterSeriesClass.prototype;
+            const scatterProto = ScatterSeriesClass.prototype;
+            if (!scatterProto.markerClusterAlgorithms) {
                 baseGeneratePoints = scatterProto.generatePoints;
                 scatterProto.markerClusterAlgorithms = markerClusterAlgorithms;
                 scatterProto.animateClusterPoint = seriesAnimateClusterPoint;
@@ -626,8 +624,6 @@
                 scatterProto.preventClusterCollisions = seriesPreventClusterCollisions;
                 // Destroy grouped data on series destroy.
                 addEvent(ScatterSeriesClass, 'destroy', scatterProto.destroyClusteredData);
-            }
-            if (pushUnique(composedMembers, highchartsDefaultOptions)) {
                 (highchartsDefaultOptions.plotOptions || {}).series = merge((highchartsDefaultOptions.plotOptions || {}).series, MarkerClusterDefaults);
             }
         }
@@ -748,7 +744,7 @@
         function onPointDrillToCluster(event) {
             const point = event.point || event.target;
             point.firePointEvent('drillToCluster', event, function (e) {
-                const point = e.point || e.target, series = point.series, xAxis = point.series.xAxis, yAxis = point.series.yAxis, chart = point.series.chart, mapView = chart.mapView, clusterOptions = series.options.cluster, drillToCluster = (clusterOptions || {}).drillToCluster;
+                const point = e.point || e.target, series = point.series, xAxis = point.series.xAxis, yAxis = point.series.yAxis, chart = point.series.chart, { inverted, mapView, pointer } = chart, clusterOptions = series.options.cluster, drillToCluster = (clusterOptions || {}).drillToCluster;
                 if (drillToCluster && point.clusteredData) {
                     const sortedDataX = point.clusteredData
                         .map((data) => data.x)
@@ -759,20 +755,27 @@
                         mapView.fitToBounds({ x1, x2, y1, y2 });
                     }
                     else if (xAxis && yAxis) {
-                        chart.pointer.zoomX = true;
-                        chart.pointer.zoomY = true;
-                        chart.zoom({
-                            originalEvent: e,
-                            xAxis: [{
-                                    axis: xAxis,
-                                    min: x1,
-                                    max: x2
-                                }],
-                            yAxis: [{
-                                    axis: yAxis,
-                                    min: y1,
-                                    max: y2
-                                }]
+                        let x1Px = xAxis.toPixels(x1), x2Px = xAxis.toPixels(x2), y1Px = yAxis.toPixels(y1), y2Px = yAxis.toPixels(y2);
+                        if (inverted) {
+                            [x1Px, x2Px, y1Px, y2Px] = [y1Px, y2Px, x1Px, x2Px];
+                        }
+                        if (x1Px > x2Px) {
+                            [x1Px, x2Px] = [x2Px, x1Px];
+                        }
+                        if (y1Px > y2Px) {
+                            [y1Px, y2Px] = [y2Px, y1Px];
+                        }
+                        if (pointer) {
+                            pointer.zoomX = true;
+                            pointer.zoomY = true;
+                        }
+                        chart.transform({
+                            from: {
+                                x: x1Px,
+                                y: y1Px,
+                                width: x2Px - x1Px,
+                                height: y2Px - y1Px
+                            }
                         });
                     }
                 }
@@ -805,7 +808,7 @@
                 if (newPointObj.parentsId.length === 1) {
                     parentId = (newState || {})[clusterObj.stateId].parentsId[0];
                     oldPointObj = oldState[parentId];
-                    // If old and new poistions are the same do not animate.
+                    // If old and new positions are the same do not animate.
                     if (newPointObj.point &&
                         newPointObj.point.graphic &&
                         oldPointObj &&
@@ -1512,12 +1515,12 @@
 
         return MarkerClusterScatter;
     });
-    _registerModule(_modules, 'Extensions/MarkerClusters/MarkerClusters.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Defaults.js'], _modules['Extensions/MarkerClusters/MarkerClusterDefaults.js'], _modules['Extensions/MarkerClusters/MarkerClusterScatter.js'], _modules['Core/Utilities.js']], function (A, D, MarkerClusterDefaults, MarkerClusterScatter, U) {
+    _registerModule(_modules, 'Extensions/MarkerClusters/MarkerClusters.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Extensions/MarkerClusters/MarkerClusterDefaults.js'], _modules['Extensions/MarkerClusters/MarkerClusterScatter.js'], _modules['Core/Utilities.js']], function (A, D, H, MarkerClusterDefaults, MarkerClusterScatter, U) {
         /* *
          *
          *  Marker clusters module.
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  Author: Wojciech Chmiel
          *
@@ -1528,13 +1531,13 @@
          * */
         const { animObject } = A;
         const { defaultOptions } = D;
+        const { composed } = H;
         const { addEvent, defined, error, isFunction, merge, pushUnique, syncTimeout } = U;
         /* *
          *
          *  Constants
          *
          * */
-        const composedMembers = [];
         (defaultOptions.plotOptions || {}).series = merge((defaultOptions.plotOptions || {}).series, MarkerClusterDefaults);
         /* *
          *
@@ -1543,23 +1546,17 @@
          * */
         /** @private */
         function compose(AxisClass, ChartClass, highchartsDefaultOptions, SeriesClass) {
-            const PointClass = SeriesClass.prototype.pointClass;
-            if (pushUnique(composedMembers, AxisClass)) {
+            if (pushUnique(composed, 'MarkerClusters')) {
+                const PointClass = SeriesClass.prototype.pointClass, { scatter: ScatterSeries } = SeriesClass.types;
                 addEvent(AxisClass, 'setExtremes', onAxisSetExtremes);
-            }
-            if (pushUnique(composedMembers, ChartClass)) {
                 addEvent(ChartClass, 'render', onChartRender);
-            }
-            if (pushUnique(composedMembers, PointClass)) {
                 addEvent(PointClass, 'drillToCluster', onPointDrillToCluster);
                 addEvent(PointClass, 'update', onPointUpdate);
-            }
-            if (pushUnique(composedMembers, SeriesClass)) {
                 addEvent(SeriesClass, 'afterRender', onSeriesAfterRender);
-            }
-            const { scatter: ScatterSeries } = SeriesClass.types;
-            if (ScatterSeries) {
-                MarkerClusterScatter.compose(highchartsDefaultOptions, ScatterSeries);
+                if (ScatterSeries) {
+                    MarkerClusterScatter
+                        .compose(highchartsDefaultOptions, ScatterSeries);
+                }
             }
         }
         /**
@@ -1592,7 +1589,7 @@
                     const options = series.options.cluster, pointsState = (series.markerClusterInfo || {}).pointsState, oldState = (pointsState || {}).oldState;
                     if ((options || {}).animation &&
                         series.markerClusterInfo &&
-                        series.chart.pointer.pinchDown.length === 0 &&
+                        (series.chart.pointer?.pinchDown || []).length === 0 &&
                         ((series.xAxis || {}).eventArgs || {}).trigger !== 'pan' &&
                         oldState &&
                         Object.keys(oldState).length) {
@@ -1676,21 +1673,21 @@
          * @callback Highcharts.MarkerClusterDrillCallbackFunction
          *
          * @param {Highcharts.Point} this
-         *        The point where the event occured.
+         *        The point where the event occurred.
          *
          * @param {Highcharts.PointClickEventObject} event
          *        Event arguments.
          */
-        ''; // keeps doclets above in JS file
+        ''; // Keeps doclets above in JS file
 
         return MarkerClusters;
     });
-    _registerModule(_modules, 'Extensions/MarkerClusters/MarkerClusterSymbols.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Extensions/MarkerClusters/MarkerClusterSymbols.js', [], function () {
         /* *
          *
          *  Marker clusters module.
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  Author: Wojciech Chmiel
          *
@@ -1699,13 +1696,6 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { pushUnique } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const modifiedMembers = [];
         /* *
          *
          *  Variables
@@ -1743,10 +1733,8 @@
          * @private
          */
         function compose(SVGRendererClass) {
-            if (pushUnique(modifiedMembers, SVGRendererClass)) {
-                symbols = SVGRendererClass.prototype.symbols;
-                symbols.cluster = cluster;
-            }
+            symbols = SVGRendererClass.prototype.symbols;
+            symbols.cluster = cluster;
         }
         /* *
          *
@@ -1765,5 +1753,6 @@
         MarkerClusters.compose(G.Axis, G.Chart, G.defaultOptions, G.Series);
         MarkerClusterSymbols.compose(G.SVGRenderer);
 
+        return Highcharts;
     });
 }));

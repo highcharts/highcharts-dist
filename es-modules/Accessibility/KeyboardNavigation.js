@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2021 Øystein Moseng
+ *  (c) 2009-2024 Øystein Moseng
  *
  *  Main keyboard navigation handling.
  *
@@ -14,7 +14,7 @@ import H from '../Core/Globals.js';
 const { doc, win } = H;
 import MenuComponent from './Components/MenuComponent.js';
 import U from '../Core/Utilities.js';
-const { addEvent, fireEvent } = U;
+const { addEvent, defined, fireEvent } = U;
 import EventProvider from './Utils/EventProvider.js';
 import HTMLUtilities from './Utils/HTMLUtilities.js';
 const { getElement, simulatedEventTarget } = HTMLUtilities;
@@ -27,7 +27,7 @@ const { getElement, simulatedEventTarget } = HTMLUtilities;
  * The KeyboardNavigation class, containing the overall keyboard navigation
  * logic for the chart.
  *
- * @requires module:modules/accessibility
+ * @requires modules/accessibility
  *
  * @private
  * @class
@@ -44,18 +44,8 @@ class KeyboardNavigation {
      *
      * */
     constructor(chart, components) {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.chart = void 0;
-        this.components = void 0;
         this.currentModuleIx = NaN;
-        this.eventProvider = void 0;
-        this.exitAnchor = void 0;
         this.modules = [];
-        this.tabindexContainer = void 0;
         this.init(chart, components);
     }
     /* *
@@ -63,7 +53,6 @@ class KeyboardNavigation {
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * Initialize the class
      * @private
@@ -190,6 +179,7 @@ class KeyboardNavigation {
                 this.modules[ix].init(1);
             }
         }
+        this.keyboardReset = false;
         this.exiting = false;
     }
     /**
@@ -308,8 +298,16 @@ class KeyboardNavigation {
      * @private
      */
     removeExitAnchor() {
-        if (this.exitAnchor && this.exitAnchor.parentNode) {
-            this.exitAnchor.parentNode.removeChild(this.exitAnchor);
+        // Remove event from element and from eventRemovers array to prevent
+        // memory leak (#20329).
+        if (this.exitAnchor) {
+            const el = this.eventProvider.eventRemovers.find((el) => el.element === this.exitAnchor);
+            if (el && defined(el.remover)) {
+                this.eventProvider.removeEvent(el.remover);
+            }
+            if (this.exitAnchor.parentNode) {
+                this.exitAnchor.parentNode.removeChild(this.exitAnchor);
+            }
             delete this.exitAnchor;
         }
     }
@@ -341,7 +339,8 @@ class KeyboardNavigation {
                     // Validate the module
                     if (curModule &&
                         curModule.validate && !curModule.validate()) {
-                        // Invalid. Try moving backwards to find next valid.
+                        // Invalid.
+                        // Try moving backwards to find next valid.
                         keyboardNavigation.move(-1);
                     }
                     else if (curModule) {
@@ -394,27 +393,18 @@ class KeyboardNavigation {
      * */
     /* *
      *
-     *  Construction
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * Composition function.
      * @private
      */
     function compose(ChartClass) {
         MenuComponent.compose(ChartClass);
-        if (U.pushUnique(composedMembers, ChartClass)) {
-            const chartProto = ChartClass.prototype;
+        const chartProto = ChartClass.prototype;
+        if (!chartProto.dismissPopupContent) {
             chartProto.dismissPopupContent = chartDismissPopupContent;
-        }
-        if (U.pushUnique(composedMembers, doc)) {
             addEvent(doc, 'keydown', documentOnKeydown);
         }
         return ChartClass;

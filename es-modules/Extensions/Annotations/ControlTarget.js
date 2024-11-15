@@ -21,12 +21,6 @@ var ControlTarget;
      * */
     /* *
      *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
@@ -80,8 +74,9 @@ var ControlTarget;
      * @private
      */
     function compose(ControlTargetClass) {
-        if (U.pushUnique(composedMembers, ControlTargetClass)) {
-            U.merge(true, ControlTargetClass.prototype, {
+        const controlProto = ControlTargetClass.prototype;
+        if (!controlProto.addControlPoints) {
+            U.merge(true, controlProto, {
                 addControlPoints,
                 anchor,
                 destroyControlTarget,
@@ -183,7 +178,7 @@ var ControlTarget;
         this.controlPoints.forEach((controlPoint) => controlPoint.redraw(animation));
     }
     /**
-     * Render controll points.
+     * Render control points.
      * @private
      */
     function renderControlPoints() {

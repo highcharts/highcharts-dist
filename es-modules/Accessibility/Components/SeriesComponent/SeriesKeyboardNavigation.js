@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2021 Øystein Moseng
+ *  (c) 2009-2024 Øystein Moseng
  *
  *  Handle keyboard navigation for series.
  *
@@ -250,39 +250,58 @@ class SeriesKeyboardNavigation {
         const keyboardNavigation = this, keys = this.keyCodes, chart = this.chart, inverted = chart.inverted;
         return new KeyboardNavigationHandler(chart, {
             keyCodeMap: [
-                [inverted ? [keys.up, keys.down] : [keys.left, keys.right],
+                [
+                    inverted ? [keys.up, keys.down] : [keys.left, keys.right],
                     function (keyCode) {
                         return keyboardNavigation.onKbdSideways(this, keyCode);
-                    }],
-                [inverted ? [keys.left, keys.right] : [keys.up, keys.down],
+                    }
+                ],
+                [
+                    inverted ? [keys.left, keys.right] : [keys.up, keys.down],
                     function (keyCode) {
                         return keyboardNavigation.onKbdVertical(this, keyCode);
-                    }],
-                [[keys.enter, keys.space],
+                    }
+                ],
+                [
+                    [keys.enter, keys.space],
                     function (keyCode, event) {
                         const point = chart.highlightedPoint;
                         if (point) {
-                            event.point = point;
+                            const { plotLeft, plotTop } = this.chart, { plotX = 0, plotY = 0 } = point;
+                            event = {
+                                ...event,
+                                chartX: plotLeft + plotX,
+                                chartY: plotTop + plotY,
+                                point: point,
+                                target: point.graphic?.element || event.target
+                            };
                             fireEvent(point.series, 'click', event);
-                            point.firePointEvent('click');
+                            point.firePointEvent('click', event);
                         }
                         return this.response.success;
-                    }],
-                [[keys.home],
+                    }
+                ],
+                [
+                    [keys.home],
                     function () {
                         highlightFirstValidPointInChart(chart);
                         return this.response.success;
-                    }],
-                [[keys.end],
+                    }
+                ],
+                [
+                    [keys.end],
                     function () {
                         highlightLastValidPointInChart(chart);
                         return this.response.success;
-                    }],
-                [[keys.pageDown, keys.pageUp],
+                    }
+                ],
+                [
+                    [keys.pageDown, keys.pageUp],
                     function (keyCode) {
                         chart.highlightAdjacentSeries(keyCode === keys.pageDown);
                         return this.response.success;
-                    }]
+                    }
+                ]
             ],
             init: function () {
                 return keyboardNavigation.onHandlerInit(this);
@@ -413,12 +432,6 @@ class SeriesKeyboardNavigation {
      *  Declarations
      *
      * */
-    /* *
-     *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
     /* *
      *
      *  Functions
@@ -573,18 +586,12 @@ class SeriesKeyboardNavigation {
      * @private
      */
     function compose(ChartClass, PointClass, SeriesClass) {
-        if (U.pushUnique(composedMembers, ChartClass)) {
-            const chartProto = ChartClass.prototype;
+        const chartProto = ChartClass.prototype, pointProto = PointClass.prototype, seriesProto = SeriesClass.prototype;
+        if (!chartProto.highlightAdjacentPoint) {
             chartProto.highlightAdjacentPoint = chartHighlightAdjacentPoint;
             chartProto.highlightAdjacentPointVertical = (chartHighlightAdjacentPointVertical);
             chartProto.highlightAdjacentSeries = chartHighlightAdjacentSeries;
-        }
-        if (U.pushUnique(composedMembers, PointClass)) {
-            const pointProto = PointClass.prototype;
             pointProto.highlight = pointHighlight;
-        }
-        if (U.pushUnique(composedMembers, SeriesClass)) {
-            const seriesProto = SeriesClass.prototype;
             /**
              * Set for which series types it makes sense to move to the closest
              * point with up/down arrows, and which series types should just

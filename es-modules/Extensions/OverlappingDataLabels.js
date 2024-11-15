@@ -3,7 +3,7 @@
  *  Highcharts module to hide overlapping data labels.
  *  This module is included in Highcharts.
  *
- *  (c) 2009-2021 Torstein Honsi
+ *  (c) 2009-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -11,14 +11,10 @@
  *
  * */
 'use strict';
+import GeometryUtilities from '../Core/Geometry/GeometryUtilities.js';
+const { pointInPolygon } = GeometryUtilities;
 import U from '../Core/Utilities.js';
-const { addEvent, fireEvent, isNumber, objectEach, pick, pushUnique } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { addEvent, fireEvent, objectEach, pick } = U;
 /* *
  *
  *  Functions
@@ -26,7 +22,7 @@ const composedMembers = [];
  * */
 /**
  * Hide overlapping labels. Labels are moved and faded in and out on zoom to
- * provide a smooth visual imression.
+ * provide a smooth visual impression.
  *
  * @requires modules/overlapping-datalabels
  *
@@ -36,56 +32,38 @@ const composedMembers = [];
  *        Rendered data labels
  */
 function chartHideOverlappingLabels(labels) {
-    const chart = this, len = labels.length, ren = chart.renderer, isIntersectRect = (box1, box2) => !(box2.x >= box1.x + box1.width ||
+    const chart = this, len = labels.length, isIntersectRect = (box1, box2) => !(box2.x >= box1.x + box1.width ||
         box2.x + box2.width <= box1.x ||
         box2.y >= box1.y + box1.height ||
-        box2.y + box2.height <= box1.y), 
-    // Get the box with its position inside the chart, as opposed to getBBox
-    // that only reports the position relative to the parent.
-    getAbsoluteBox = (label) => {
-        const padding = label.box ? 0 : (label.padding || 0);
-        let pos, parent, bBox, 
-        // Substract the padding if no background or border (#4333)
-        lineHeightCorrection = 0, xOffset = 0, boxWidth, alignValue;
-        if (label &&
-            (!label.alignAttr || label.placed)) {
-            pos = label.alignAttr || {
+        box2.y + box2.height <= box1.y), isPolygonOverlap = (box1Poly, box2Poly) => {
+        for (const p of box1Poly) {
+            if (pointInPolygon({ x: p[0], y: p[1] }, box2Poly)) {
+                return true;
+            }
+        }
+        return false;
+    };
+    /**
+     * Get the box with its position inside the chart, as opposed to getBBox
+     * that only reports the position relative to the parent.
+     */
+    function getAbsoluteBox(label) {
+        if (label && (!label.alignAttr || label.placed)) {
+            const padding = label.box ? 0 : (label.padding || 0), pos = label.alignAttr || {
                 x: label.attr('x'),
                 y: label.attr('y')
-            };
-            parent = label.parentGroup;
-            // Get width and height if pure text nodes (stack labels)
-            if (!label.width) {
-                bBox = label.getBBox();
-                label.width = bBox.width;
-                label.height = bBox.height;
-                // Labels positions are computed from top left corner, so we
-                // need to substract the text height from text nodes too.
-                lineHeightCorrection = ren.fontMetrics(label.element).h;
-            }
-            boxWidth = label.width - 2 * padding;
-            alignValue = {
-                left: '0',
-                center: '0.5',
-                right: '1'
-            }[label.alignValue];
-            if (alignValue) {
-                xOffset = +alignValue * boxWidth;
-            }
-            else if (isNumber(label.x) &&
-                Math.round(label.x) !== label.translateX) {
-                xOffset = label.x - (label.translateX || 0);
-            }
+            }, bBox = label.getBBox();
+            label.width = bBox.width;
+            label.height = bBox.height;
             return {
-                x: pos.x + (parent.translateX || 0) + padding -
-                    (xOffset || 0),
-                y: pos.y + (parent.translateY || 0) + padding -
-                    lineHeightCorrection,
-                width: label.width - 2 * padding,
-                height: (label.height || 0) - 2 * padding
+                x: pos.x + (label.parentGroup?.translateX || 0) + padding,
+                y: pos.y + (label.parentGroup?.translateY || 0) + padding,
+                width: (label.width || 0) - 2 * padding,
+                height: (label.height || 0) - 2 * padding,
+                polygon: bBox?.polygon
             };
         }
-    };
+    }
     let label, label1, label2, box1, box2, isLabelAffected = false;
     for (let i = 0; i < len; i++) {
         label = labels[i];
@@ -103,9 +81,11 @@ function chartHideOverlappingLabels(labels) {
     for (let i = 0; i < len; ++i) {
         label1 = labels[i];
         box1 = label1 && label1.absoluteBox;
+        const box1Poly = box1?.polygon;
         for (let j = i + 1; j < len; ++j) {
             label2 = labels[j];
             box2 = label2 && label2.absoluteBox;
+            let toHide = false;
             if (box1 &&
                 box2 &&
                 label1 !== label2 && // #6465, polar chart with connectEnds
@@ -114,9 +94,28 @@ function chartHideOverlappingLabels(labels) {
                 // #15863 dataLabels are no longer hidden by translation
                 label1.visibility !== 'hidden' &&
                 label2.visibility !== 'hidden') {
-                if (isIntersectRect(box1, box2)) {
-                    (label1.labelrank < label2.labelrank ? label1 : label2)
-                        .newOpacity = 0;
+                const box2Poly = box2.polygon;
+                // If labels have polygons, only evaluate
+                // based on polygons
+                if (box1Poly &&
+                    box2Poly &&
+                    box1Poly !== box2Poly) {
+                    if (isPolygonOverlap(box1Poly, box2Poly)) {
+                        toHide = true;
+                    }
+                    // If there are no polygons, evaluate rectangles coliding
+                }
+                else if (isIntersectRect(box1, box2)) {
+                    toHide = true;
+                }
+                if (toHide) {
+                    const overlappingLabel = (label1.labelrank < label2.labelrank ?
+                        label1 :
+                        label2), labelText = overlappingLabel.text;
+                    overlappingLabel.newOpacity = 0;
+                    if (labelText?.element.querySelector('textPath')) {
+                        labelText.hide();
+                    }
                 }
             }
         }
@@ -133,8 +132,8 @@ function chartHideOverlappingLabels(labels) {
 }
 /** @private */
 function compose(ChartClass) {
-    if (pushUnique(composedMembers, ChartClass)) {
-        const chartProto = ChartClass.prototype;
+    const chartProto = ChartClass.prototype;
+    if (!chartProto.hideOverlappingLabels) {
         chartProto.hideOverlappingLabels = chartHideOverlappingLabels;
         addEvent(ChartClass, 'render', onChartRender);
     }
@@ -156,9 +155,10 @@ function hideOrShow(label, chart) {
     if (label) {
         newOpacity = label.newOpacity;
         if (label.oldOpacity !== newOpacity) {
-            // Make sure the label is completely hidden to avoid catching clicks
-            // (#4362)
-            if (label.alignAttr && label.placed) { // data labels
+            // Toggle data labels
+            if (label.hasClass('highcharts-data-label')) {
+                // Make sure the label is completely hidden to avoid catching
+                // clicks (#4362)
                 label[newOpacity ? 'removeClass' : 'addClass']('highcharts-data-label-hidden');
                 complete = function () {
                     if (!chart.styledMode) {
@@ -169,11 +169,11 @@ function hideOrShow(label, chart) {
                 };
                 isLabelAffected = true;
                 // Animate or set the opacity
-                label.alignAttr.opacity = newOpacity;
-                label[label.isOld ? 'animate' : 'attr'](label.alignAttr, null, complete);
+                label[label.isOld ? 'animate' : 'attr']({ opacity: newOpacity }, void 0, complete);
                 fireEvent(chart, 'afterHideOverlappingLabel');
+                // Toggle other labels, tick labels
             }
-            else { // other labels, tick labels
+            else {
                 label.attr({
                     opacity: newOpacity
                 });
@@ -184,7 +184,7 @@ function hideOrShow(label, chart) {
     return isLabelAffected;
 }
 /**
- * Collect potensial overlapping data labels. Stack labels probably don't need
+ * Collect potential overlapping data labels. Stack labels probably don't need
  * to be considered because they are usually accompanied by data labels that lie
  * inside the columns.
  * @private

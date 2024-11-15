@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -11,7 +11,7 @@
 import D from './Defaults.js';
 const { defaultOptions, defaultTime } = D;
 import U from './Utilities.js';
-const { extend, getNestedProperty, isArray, isNumber, isObject, isString, pick, pInt } = U;
+const { extend, getNestedProperty, isArray, isNumber, isObject, pick, pInt } = U;
 const helpers = {
     // Built-in helpers
     add: (a, b) => a + b,
@@ -121,11 +121,11 @@ function dateFormat(format, timestamp, capitalize) {
  *         The formatted string.
  */
 function format(str = '', ctx, chart) {
-    const regex = /\{([a-zA-Z0-9\:\.\,;\-\/<>%_@"'= #\(\)]+)\}/g, 
+    const regex = /\{([\w\:\.\,;\-\/<>%@"'’= #\(\)]+)\}/g, 
     // The sub expression regex is the same as the top expression regex,
     // but except parens and block helpers (#), and surrounded by parens
     // instead of curly brackets.
-    subRegex = /\(([a-zA-Z0-9\:\.\,;\-\/<>%_@"'= ]+)\)/g, matches = [], floatRegex = /f$/, decRegex = /\.([0-9])/, lang = defaultOptions.lang, time = chart && chart.time || defaultTime, numberFormatter = chart && chart.numberFormatter || numberFormat;
+    subRegex = /\(([\w\:\.\,;\-\/<>%@"'= ]+)\)/g, matches = [], floatRegex = /f$/, decRegex = /\.(\d)/, lang = defaultOptions.lang, time = chart && chart.time || defaultTime, numberFormatter = chart && chart.numberFormatter || numberFormat;
     /*
      * Get a literal or variable value inside a template expression. May be
      * extended with other types like string or null if needed, but keep it
@@ -231,7 +231,7 @@ function format(str = '', ctx, chart) {
             // Block helpers may return true or false. They may also return a
             // string, like the `each` helper.
             if (match.isBlock && typeof replacement === 'boolean') {
-                replacement = format(replacement ? body : elseBody, ctx);
+                replacement = format(replacement ? body : elseBody, ctx, chart);
             }
             // Simple variable replacement
         }
@@ -241,7 +241,7 @@ function format(str = '', ctx, chart) {
             // Format the replacement
             if (valueAndFormat.length && typeof replacement === 'number') {
                 const segment = valueAndFormat.join(':');
-                if (floatRegex.test(segment)) { // float
+                if (floatRegex.test(segment)) { // Float
                     const decimals = parseInt((segment.match(decRegex) || ['', '-1'])[1], 10);
                     if (replacement !== null) {
                         replacement = numberFormatter(replacement, decimals, lang.decimalPoint, segment.indexOf(',') > -1 ? lang.thousandsSep : '');
@@ -298,21 +298,21 @@ function numberFormat(number, decimals, decimalPoint, thousandsSep) {
         // Expose decimals from exponential notation (#7042)
         fractionDigits = decimals + +exponent[1];
         if (fractionDigits >= 0) {
-            // remove too small part of the number while keeping the notation
+            // Remove too small part of the number while keeping the notation
             exponent[0] = (+exponent[0]).toExponential(fractionDigits)
                 .split('e')[0];
             decimals = fractionDigits;
         }
         else {
-            // fractionDigits < 0
+            // `fractionDigits < 0`
             exponent[0] = exponent[0].split('.')[0] || 0;
             if (decimals < 20) {
-                // use number instead of exponential notation (#7405)
+                // Use number instead of exponential notation (#7405)
                 number = (exponent[0] * Math.pow(10, exponent[1]))
                     .toFixed(decimals);
             }
             else {
-                // or zero
+                // Or zero
                 number = 0;
             }
             exponent[1] = 0;
@@ -347,6 +347,9 @@ function numberFormat(number, decimals, decimalPoint, thousandsSep) {
     if (decimals) {
         // Get the decimal component
         ret += decimalPoint + roundedNumber.slice(-decimals);
+    }
+    else if (+ret === 0) { // Remove signed minus #20564
+        ret = '0';
     }
     if (exponent[1] && +ret !== 0) {
         ret += 'e' + exponent[1];

@@ -2,7 +2,7 @@
  *
  *  Highcharts funnel3d series module
  *
- *  (c) 2010-2021 Highsoft AS
+ *  (c) 2010-2024 Highsoft AS
  *
  *  Author: Kacper Madej
  *
@@ -22,18 +22,6 @@ const { extend } = U;
  *
  * */
 class Funnel3DPoint extends ColumnSeries.prototype.pointClass {
-    constructor() {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        super(...arguments);
-        this.dlBoxRaw = void 0;
-        this.options = void 0;
-        this.series = void 0;
-        this.y = void 0;
-    }
 }
 extend(Funnel3DPoint.prototype, {
     shapeType: 'funnel3d'

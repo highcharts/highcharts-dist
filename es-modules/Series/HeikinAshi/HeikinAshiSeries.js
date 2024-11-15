@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -8,18 +8,14 @@
  *
  * */
 'use strict';
+import H from '../../Core/Globals.js';
+const { composed } = H;
 import HeikinAshiPoint from './HeikinAshiPoint.js';
 import HeikinAshiSeriesDefaults from './HeikinAshiSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { candlestick: CandlestickSeries } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
-const { addEvent, merge } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { addEvent, merge, pushUnique } = U;
 /* *
  *
  *  Functions
@@ -47,7 +43,7 @@ function onAxisPostProcessData() {
  */
 function onHeikinAshiSeriesAfterTranslate() {
     const series = this, points = series.points, heikiashiData = series.heikiashiData, cropStart = series.cropStart || 0;
-    // Reset the proccesed data.
+    // Reset the processed data.
     series.processedYData.length = 0;
     // Modify points.
     for (let i = 0; i < points.length; i++) {
@@ -90,29 +86,17 @@ class HeikinAshiSeries extends CandlestickSeries {
          *
          * */
         super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
         this.heikiashiData = [];
-        this.options = void 0;
-        this.points = void 0;
-        this.yData = void 0;
-        this.processedYData = void 0;
     }
     /* *
      *
      *  Static Functions
      *
      * */
-    static compose(SeriesClass, AxisClass, ..._args) {
+    static compose(SeriesClass, AxisClass) {
         CandlestickSeries.compose(SeriesClass);
-        if (U.pushUnique(composedMembers, AxisClass)) {
+        if (pushUnique(composed, 'HeikinAshi')) {
             addEvent(AxisClass, 'postProcessData', onAxisPostProcessData);
-        }
-        if (U.pushUnique(composedMembers, HeikinAshiSeries)) {
             addEvent(HeikinAshiSeries, 'afterTranslate', onHeikinAshiSeriesAfterTranslate);
             addEvent(HeikinAshiSeries, 'updatedData', onHeikinAshiSeriesUpdatedData);
         }

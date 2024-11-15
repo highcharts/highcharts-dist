@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
  * Series on point module
  *
- * (c) 2010-2022 Highsoft AS
+ * (c) 2010-2024 Highsoft AS
  * Author: Rafal Sebestjanski and Piotr Madej
  *
  * License: www.highcharts.com/license
@@ -29,25 +29,26 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
             }
         }
     }
-    _registerModule(_modules, 'Series/SeriesOnPointComposition.js', [_modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Point, Series, SeriesRegistry, SVGRenderer, U) {
+    _registerModule(_modules, 'Series/SeriesOnPointComposition.js', [_modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (H, Point, Series, SeriesRegistry, SVGRenderer, U) {
         /* *
          *
-         *  (c) 2010-2022 Rafal Sebestjanski, Piotr Madej
+         *  (c) 2010-2024 Rafal Sebestjanski, Piotr Madej
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { bubble, pie, sunburst } = SeriesRegistry.seriesTypes;
-        const { addEvent, defined, find, isNumber } = U;
+        const { composed } = H;
+        const { bubble } = SeriesRegistry.seriesTypes;
+        const { addEvent, defined, find, isNumber, pushUnique } = U;
         /* *
          *
          *  Composition
@@ -62,16 +63,9 @@
              * */
             /* *
              *
-             *  Constants
-             *
-             * */
-            const composedMembers = [];
-            /* *
-             *
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * Extends the series with a small addition.
              *
@@ -84,24 +78,22 @@
              * Chart class to use.
              */
             function compose(SeriesClass, ChartClass) {
-                const { chartGetZData, seriesAfterInit, seriesAfterRender, seriesGetCenter, seriesShowOrHide, seriesTranslate } = Additions.prototype;
-                // We can mark support for pie series here because it's in the core.
-                // But all other series outside the core should be marked in its module.
-                // This is crucial when loading series-on-point before loading a
-                // module, e.g. sunburst.
-                // Supported series types:
-                // - pie
-                // - sunburst
-                pie.prototype.onPointSupported = true;
-                if (U.pushUnique(composedMembers, SeriesClass)) {
-                    addEvent(Series, 'afterInit', seriesAfterInit);
-                    addEvent(Series, 'afterRender', seriesAfterRender);
-                    addEvent(Series, 'afterGetCenter', seriesGetCenter);
-                    addEvent(Series, 'hide', seriesShowOrHide);
-                    addEvent(Series, 'show', seriesShowOrHide);
-                    addEvent(Series, 'translate', seriesTranslate);
-                }
-                if (U.pushUnique(composedMembers, ChartClass)) {
+                if (pushUnique(composed, 'SeriesOnPoint')) {
+                    const { chartGetZData, seriesAfterInit, seriesAfterRender, seriesGetCenter, seriesShowOrHide, seriesTranslate } = Additions.prototype;
+                    // We can mark support for pie series here because it's in the core.
+                    // But all other series outside the core should be marked in its
+                    // module. This is crucial when loading series-on-point before
+                    // loading a module, e.g. sunburst.
+                    // Supported series types:
+                    // - pie
+                    // - sunburst
+                    SeriesClass.types.pie.prototype.onPointSupported = true;
+                    addEvent(SeriesClass, 'afterInit', seriesAfterInit);
+                    addEvent(SeriesClass, 'afterRender', seriesAfterRender);
+                    addEvent(SeriesClass, 'afterGetCenter', seriesGetCenter);
+                    addEvent(SeriesClass, 'hide', seriesShowOrHide);
+                    addEvent(SeriesClass, 'show', seriesShowOrHide);
+                    addEvent(SeriesClass, 'translate', seriesTranslate);
                     addEvent(ChartClass, 'beforeRender', chartGetZData);
                     addEvent(ChartClass, 'beforeRedraw', chartGetZData);
                 }
@@ -190,7 +182,7 @@
                         d: SVGRenderer.prototype.crispLine([
                             ['M', xFrom, yFrom],
                             ['L', xTo, yTo]
-                        ], width, 'ceil'),
+                        ], width),
                         'stroke-width': width
                     };
                     if (!chart.styledMode) {
@@ -263,7 +255,7 @@
                 seriesShowOrHide() {
                     const allSeries = this.chart.series;
                     // When toggling a series visibility, loop through all points
-                    this.points.forEach((point) => {
+                    this.points?.forEach((point) => {
                         // Find all series that are on toggled points
                         const series = find(allSeries, (series) => {
                             const id = ((series.onPoint || {}).options || {}).id;
@@ -273,7 +265,7 @@
                             return id === point.id;
                         });
                         // And also toggle series that are on toggled points. Redraw is
-                        // not needed because it's fired later after showOrhide event
+                        // not needed because it's fired later after showOrHide event
                         series && series.setVisible(!series.visible, false);
                     });
                 }
@@ -421,14 +413,15 @@
          * @type       {number}
          * @apioption  plotOptions.series.onPoint.position.y
          */
-        ''; // keeps doclets above in transpiled file
+        ''; // Keeps doclets above in transpiled file
 
         return SeriesOnPointComposition;
     });
-    _registerModule(_modules, 'masters/modules/series-on-point.src.js', [_modules['Series/SeriesOnPointComposition.js']], function (SeriesOnPointComposition) {
+    _registerModule(_modules, 'masters/modules/series-on-point.src.js', [_modules['Core/Globals.js'], _modules['Series/SeriesOnPointComposition.js']], function (Highcharts, SeriesOnPointComposition) {
 
         const G = Highcharts;
         SeriesOnPointComposition.compose(G.Series, G.Chart);
 
+        return Highcharts;
     });
 }));

@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -9,14 +9,10 @@
  * */
 'use strict';
 import Axis from './Axis.js';
+import D from '../Defaults.js';
+const { defaultOptions } = D;
 import U from '../Utilities.js';
 const { addEvent, merge, pick, splat } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
 /* *
  *
  *  Functions
@@ -38,7 +34,7 @@ function onChartAfterGetAxes() {
         return;
     }
     this.zAxis = [];
-    zAxisOptions.forEach((axisOptions, i) => {
+    zAxisOptions.forEach((axisOptions) => {
         this.addZAxis(axisOptions).setScale();
     });
 }
@@ -49,6 +45,7 @@ function onChartAfterGetAxes() {
  * */
 /**
  * 3D axis for z coordinates.
+ * @private
  */
 class ZAxis extends Axis {
     constructor() {
@@ -61,12 +58,16 @@ class ZAxis extends Axis {
         this.isZAxis = true;
     }
     static compose(ChartClass) {
-        if (U.pushUnique(composedMembers, ChartClass)) {
-            addEvent(ChartClass, 'afterGetAxes', onChartAfterGetAxes);
-            const chartProto = ChartClass.prototype;
+        const chartProto = ChartClass.prototype;
+        if (!chartProto.addZAxis) {
+            defaultOptions.zAxis = merge(defaultOptions.xAxis, {
+                offset: 0,
+                lineWidth: 0
+            });
             chartProto.addZAxis = chartAddZAxis;
             chartProto.collectionsWithInit.zAxis = [chartProto.addZAxis];
             chartProto.collectionsWithUpdate.push('zAxis');
+            addEvent(ChartClass, 'afterGetAxes', onChartAfterGetAxes);
         }
     }
     /* *
@@ -85,14 +86,13 @@ class ZAxis extends Axis {
      *
      * */
     getSeriesExtremes() {
-        const chart = this.chart;
         this.hasVisibleSeries = false;
         // Reset properties in case we're redrawing (#3353)
         this.dataMin = this.dataMax = this.ignoreMinPadding = (this.ignoreMaxPadding = void 0);
         if (this.stacking) {
             this.stacking.buildStacks();
         }
-        // loop through this axis' series
+        // Loop through this axis' series
         this.series.forEach((series) => {
             if (series.reserveSpace()) {
                 let threshold = series.options.threshold;
@@ -118,16 +118,6 @@ class ZAxis extends Axis {
         this.width = this.len = (chart.options.chart.options3d &&
             chart.options.chart.options3d.depth) || 0;
         this.right = chart.chartWidth - this.width - this.left;
-    }
-    /**
-     * @private
-     */
-    setOptions(userOptions) {
-        userOptions = merge({
-            offset: 0,
-            lineWidth: 0
-        }, userOptions);
-        super.setOptions(userOptions);
     }
 }
 /* *

@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.4.8 (2024-08-29)
  *
  * Indicator series type for Highcharts Stock
  *
- * (c) 2010-2021 Wojciech Chmiel
+ * (c) 2010-2024 Wojciech Chmiel
  *
  * License: www.highcharts.com/license
  */
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -60,22 +60,6 @@
          * @augments Highcharts.Series
          */
         class PPOIndicator extends EMAIndicator {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *   Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Functions
@@ -123,6 +107,11 @@
                 };
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         /**
          * Percentage Price Oscillator. This series requires the
          * `linkedTo` option to be set and should be loaded after the
@@ -143,13 +132,13 @@
          */
         PPOIndicator.defaultOptions = merge(EMAIndicator.defaultOptions, {
             /**
-             * Paramters used in calculation of Percentage Price Oscillator series
+             * Parameters used in calculation of Percentage Price Oscillator series
              * points.
              *
              * @excluding period
              */
             params: {
-                period: void 0,
+                period: void 0, // Unchangeable period, do not inherit (#15362)
                 /**
                  * Periods for Percentage Price Oscillator calculations.
                  *
@@ -188,12 +177,13 @@
          * @requires  stock/indicators/ppo
          * @apioption series.ppo
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return PPOIndicator;
     });
-    _registerModule(_modules, 'masters/indicators/ppo.src.js', [], function () {
+    _registerModule(_modules, 'masters/indicators/ppo.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

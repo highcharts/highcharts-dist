@@ -1,6 +1,6 @@
 /**
  *
- *  (c) 2010-2021 Kamil Kulig
+ *  (c) 2010-2024 Kamil Kulig
  *
  *  License: www.highcharts.com/license
  *
@@ -27,22 +27,6 @@ const { isArray, extend, merge } = U;
  * @augments Highcharts.Series
  */
 class LinearRegressionIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -64,7 +48,7 @@ class LinearRegressionIndicator extends SMAIndicator {
      * function.
      */
     getRegressionLineParameters(xData, yData) {
-        // least squares method
+        // Least squares method
         const yIndex = this.options.params.index, getSingleYValue = function (yValue, yIndex) {
             return isArray(yValue) ? yValue[yIndex] : yValue;
         }, xSum = xData.reduce(function (accX, val) {
@@ -80,7 +64,7 @@ class LinearRegressionIndicator extends SMAIndicator {
             formulaDenominator += Math.pow(xError, 2);
         }
         const slope = formulaDenominator ?
-            formulaNumerator / formulaDenominator : 0; // don't divide by 0
+            formulaNumerator / formulaDenominator : 0; // Don't divide by 0
         return {
             slope: slope,
             intercept: yMean - slope * xMean
@@ -146,9 +130,9 @@ class LinearRegressionIndicator extends SMAIndicator {
     // Required to be implemented - starting point for indicator's logic
     getValues(baseSeries, regressionSeriesParams) {
         const xData = baseSeries.xData, yData = baseSeries.yData, period = regressionSeriesParams.period, 
-        // format required to be returned
+        // Format required to be returned
         indicatorData = {
-            xData: [],
+            xData: [], // By getValues() method
             yData: [],
             values: []
         }, xAxisUnit = this.options.params.xAxisUnit ||
@@ -158,7 +142,7 @@ class LinearRegressionIndicator extends SMAIndicator {
         // (end point) is used to represent the y value (regression)
         // of the entire period.
         for (i = period - 1; i <= xData.length - 1; i++) {
-            periodStart = i - period + 1; // adjusted for slice() function
+            periodStart = i - period + 1; // Adjusted for slice() function
             periodEnd = i + 1; // (as above)
             endPointX = xData[i];
             periodXData = xData.slice(periodStart, periodEnd);
@@ -178,6 +162,11 @@ class LinearRegressionIndicator extends SMAIndicator {
         return indicatorData;
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Linear regression indicator. This series requires `linkedTo` option to be
  * set.
@@ -196,10 +185,10 @@ LinearRegressionIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     params: {
         /**
          * Unit (in milliseconds) for the x axis distances used to
-         * compute the regression line paramters (slope & intercept) for
-         * every range. In Highcharts Stock the x axis values are always
-         * represented in milliseconds which may cause that distances
-         * between points are "big" integer numbers.
+         * compute the regression line parameters (slope & intercept)
+         * for every range. In Highcharts Stock the x axis values are
+         * always represented in milliseconds which may cause that
+         * distances between points are "big" integer numbers.
          *
          * Highcharts Stock's linear regression algorithm (least squares
          * method) will utilize these "big" integers for finding the
@@ -207,10 +196,10 @@ LinearRegressionIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
          * period. In consequence, this value may be a very "small"
          * decimal number that's hard to interpret by a human.
          *
-         * For instance: `xAxisUnit` equealed to `86400000` ms (1 day)
+         * For instance: `xAxisUnit` equaled to `86400000` ms (1 day)
          * forces the algorithm to treat `86400000` as `1` while
-         * computing the slope and the intercept. This may enchance the
-         * legiblitity of the indicator's values.
+         * computing the slope and the intercept. This may enhance the
+         * legibility of the indicator's values.
          *
          * Default value is the closest distance between two data
          * points.
@@ -275,4 +264,4 @@ export default LinearRegressionIndicator;
  * @requires  stock/indicators/regressions
  * @apioption series.linearregression
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

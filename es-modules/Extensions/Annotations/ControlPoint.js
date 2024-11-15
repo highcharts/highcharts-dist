@@ -43,9 +43,8 @@ class ControlPoint extends EventEmitter {
      * */
     constructor(chart, target, options, index) {
         super();
-        this.graphic = void 0;
         /**
-         * List of events for `anntation.options.events` that should not be
+         * List of events for `annotation.options.events` that should not be
          * added to `annotation.graphic` but to the `annotation`.
          * @private
          * @name Highcharts.AnnotationControlPoint#nonDOMEvents
@@ -94,7 +93,7 @@ class ControlPoint extends EventEmitter {
             .add(chart.controlPointsGroup)
             .css(options.style);
         this.setVisibility(options.visible);
-        // npm test -- --tests "highcharts/annotations-advanced/*"
+        // `npm test -- --tests "highcharts/annotations-advanced/*"`
         this.addEvents();
     }
     /**
@@ -138,11 +137,11 @@ export default ControlPoint;
  *
  * */
 /**
- * Callback to modify annotation's possitioner controls.
+ * Callback to modify annotation's positioner controls.
  *
  * @callback Highcharts.AnnotationControlPointPositionerFunction
  * @param {Highcharts.AnnotationControlPoint} this
  * @param {Highcharts.AnnotationControllable} target
  * @return {Highcharts.PositionObject}
  */
-(''); // keeps doclets above in JS file
+(''); // Keeps doclets above in JS file

@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
  * X-range series
  *
- * (c) 2010-2021 Torstein Honsi, Lars A. V. Cabrera
+ * (c) 2010-2024 Torstein Honsi, Lars A. V. Cabrera
  *
  * License: www.highcharts.com/license
  */
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -40,7 +40,7 @@
          *
          *  X-range series module
          *
-         *  (c) 2010-2021 Torstein Honsi, Lars A. V. Cabrera
+         *  (c) 2010-2024 Torstein Honsi, Lars A. V. Cabrera
          *
          *  License: www.highcharts.com/license
          *
@@ -112,7 +112,7 @@
             colorByPoint: true,
             dataLabels: {
                 formatter: function () {
-                    let point = this.point, amount = point.partialFill;
+                    let amount = this.point.partialFill;
                     if (isObject(amount)) {
                         amount = amount.amount;
                     }
@@ -121,7 +121,10 @@
                     }
                 },
                 inside: true,
-                verticalAlign: 'middle'
+                verticalAlign: 'middle',
+                style: {
+                    whiteSpace: 'nowrap'
+                }
             },
             tooltip: {
                 headerFormat: '<span style="font-size: 0.8em">{point.x} - {point.x2}</span><br/>',
@@ -243,7 +246,7 @@
          * @product   highcharts highstock gantt
          * @apioption series.xrange.data.partialFill.fill
          */
-        (''); // adds doclets above to transpiled file
+        (''); // Adds doclets above to transpiled file
 
         return XRangeSeriesDefaults;
     });
@@ -252,7 +255,7 @@
          *
          *  X-range series module
          *
-         *  (c) 2010-2021 Torstein Honsi, Lars A. V. Cabrera
+         *  (c) 2010-2024 Torstein Honsi, Lars A. V. Cabrera
          *
          *  License: www.highcharts.com/license
          *
@@ -267,21 +270,11 @@
          *
          * */
         class XRangePoint extends ColumnPoint {
-            constructor() {
-                /* *
-                 *
-                 *  Static Functions
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.options = void 0;
-                this.series = void 0;
-            }
+            /* *
+             *
+             *  Static Functions
+             *
+             * */
             /**
              * Return color of a point based on its category.
              *
@@ -325,8 +318,8 @@
                         this.colorIndex = colorByPoint.colorIndex;
                     }
                 }
-                else if (!this.color) {
-                    this.color = series.color;
+                else {
+                    this.color = this.options.color || series.color;
                 }
             }
             /**
@@ -334,12 +327,11 @@
              *
              * @private
              */
-            init() {
-                super.init.apply(this, arguments);
+            constructor(series, options) {
+                super(series, options);
                 if (!this.y) {
                     this.y = 0;
                 }
-                return this;
             }
             /**
              * @private
@@ -407,7 +399,7 @@
         * @type {number|undefined}
         * @requires modules/xrange
         */
-        (''); // keeps doclets above in JS file
+        (''); // Keeps doclets above in JS file
 
         return XRangePoint;
     });
@@ -416,23 +408,17 @@
          *
          *  X-range series module
          *
-         *  (c) 2010-2021 Torstein Honsi, Lars A. V. Cabrera
+         *  (c) 2010-2024 Torstein Honsi, Lars A. V. Cabrera
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { noop } = H;
+        const { composed, noop } = H;
         const { parse: color } = Color;
         const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
-        const { addEvent, clamp, defined, extend, find, isNumber, isObject, merge, pick, relativeLength } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { addEvent, clamp, crisp, defined, extend, find, isNumber, isObject, merge, pick, pushUnique, relativeLength } = U;
         /* *
          *
          *  Functions
@@ -474,40 +460,13 @@
          * @augments Highcharts.Series
          */
         class XRangeSeries extends ColumnSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                /*
-                // Override to remove stroke from points. For partial fill.
-                pointAttribs: function () {
-                    let series = this,
-                        retVal = columnType.prototype.pointAttribs
-                            .apply(series, arguments);
-    
-                    //retVal['stroke-width'] = 0;
-                    return retVal;
-                }
-                //*/
-            }
             /* *
              *
              *  Static Functions
              *
              * */
             static compose(AxisClass) {
-                if (U.pushUnique(composedMembers, AxisClass)) {
+                if (pushUnique(composed, 'Series.XRange')) {
                     addEvent(AxisClass, 'afterGetSeriesExtremes', onAxisAfterGetSeriesExtremes);
                 }
             }
@@ -592,6 +551,11 @@
             alignDataLabel(point) {
                 const oldPlotX = point.plotX;
                 point.plotX = pick(point.dlBox && point.dlBox.centerX, point.plotX);
+                if (point.dataLabel && point.shapeArgs?.width) {
+                    point.dataLabel.css({
+                        width: `${point.shapeArgs.width}px`
+                    });
+                }
                 super.alignDataLabel.apply(this, arguments);
                 point.plotX = oldPlotX;
             }
@@ -601,7 +565,7 @@
             translatePoint(point) {
                 const xAxis = this.xAxis, yAxis = this.yAxis, metrics = this.columnMetrics, options = this.options, minPointLength = options.minPointLength || 0, oldColWidth = (point.shapeArgs && point.shapeArgs.width || 0) / 2, seriesXOffset = this.pointXOffset = metrics.offset, posX = pick(point.x2, point.x + (point.len || 0)), borderRadius = options.borderRadius, plotTop = this.chart.plotTop, plotLeft = this.chart.plotLeft;
                 let plotX = point.plotX, plotX2 = xAxis.translate(posX, 0, 0, 0, 1);
-                const length = Math.abs(plotX2 - plotX), inverted = this.chart.inverted, borderWidth = pick(options.borderWidth, 1), crisper = borderWidth % 2 / 2;
+                const length = Math.abs(plotX2 - plotX), inverted = this.chart.inverted, borderWidth = pick(options.borderWidth, 1);
                 let widthDifference, partialFill, yOffset = metrics.offset, pointHeight = Math.round(metrics.width), dlLeft, dlRight, dlWidth, clipRectWidth;
                 if (minPointLength) {
                     widthDifference = minPointLength - length;
@@ -624,13 +588,13 @@
                     yAxis.categories) {
                     point.plotY = yAxis.translate(point.y, 0, 1, 0, 1, options.pointPlacement);
                 }
-                const x = Math.floor(Math.min(plotX, plotX2)) + crisper, x2 = Math.floor(Math.max(plotX, plotX2)) + crisper, width = x2 - x;
+                const x = crisp(Math.min(plotX, plotX2), borderWidth), x2 = crisp(Math.max(plotX, plotX2), borderWidth), width = x2 - x;
                 const r = Math.min(relativeLength((typeof borderRadius === 'object' ?
                     borderRadius.radius :
                     borderRadius || 0), pointHeight), Math.min(width, pointHeight) / 2);
                 const shapeArgs = {
                     x,
-                    y: Math.floor(point.plotY + yOffset) + crisper,
+                    y: crisp((point.plotY || 0) + yOffset, borderWidth),
                     width,
                     height: pointHeight,
                     r
@@ -732,7 +696,7 @@
                 let graphic = point.graphic, pfOptions = point.partialFill;
                 if (!point.isNull && point.visible !== false) {
                     // Original graphic
-                    if (graphic) { // update
+                    if (graphic) { // Update
                         graphic.rect[verb](shapeArgs);
                     }
                     else {
@@ -825,6 +789,11 @@
                 return isInside;
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         XRangeSeries.defaultOptions = merge(ColumnSeries.defaultOptions, XRangeSeriesDefaults);
         extend(XRangeSeries.prototype, {
             pointClass: XRangePoint,
@@ -851,5 +820,6 @@
         const G = Highcharts;
         XRangeSeries.compose(G.Axis);
 
+        return Highcharts;
     });
 }));

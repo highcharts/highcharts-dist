@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
  * Timeline series
  *
- * (c) 2010-2021 Highsoft AS
+ * (c) 2010-2024 Highsoft AS
  * Author: Daniel Studencki
  *
  * License: www.highcharts.com/license
@@ -29,7 +29,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -41,7 +41,7 @@
          *
          *  Timeline Series.
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Author: Daniel Studencki
          *
@@ -58,16 +58,6 @@
          *
          * */
         class TimelinePoint extends LinePoint {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.options = void 0;
-                this.series = void 0;
-            }
             /* *
              *
              *  Functions
@@ -152,11 +142,10 @@
                 }
                 return [];
             }
-            init() {
-                const point = super.init.apply(this, arguments);
-                point.name = pick(point.name, 'Event');
-                point.y = 1;
-                return point;
+            constructor(series, options) {
+                super(series, options);
+                this.name ?? (this.name = 'Event');
+                this.y = 1;
             }
             isValid() {
                 return this.options.y !== null;
@@ -197,7 +186,7 @@
          *
          *  Timeline Series.
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Author: Daniel Studencki
          *
@@ -438,7 +427,7 @@
          * @product   highcharts
          * @apioption series.timeline.data.description
          */
-        ''; // adds doclets above to transpiled file
+        ''; // Adds doclets above to transpiled file
         /* *
          *
          *  Default Export
@@ -452,7 +441,7 @@
          *
          *  Timeline Series.
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Author: Daniel Studencki
          *
@@ -478,24 +467,6 @@
          * @augments Highcharts.Series
          */
         class TimelineSeries extends LineSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                this.userOptions = void 0;
-                this.visibilityMap = void 0;
-            }
             /* *
              *
              *  Functions
@@ -639,8 +610,8 @@
                             // Initialize the targetPosition field within data label
                             // object. It's necessary because there is need to know
                             // expected position of specific data label, when
-                            // aligning connectors. This field is overrided inside
-                            // of SVGElement.animate() wrapped  method.
+                            // aligning connectors. This field is overridden inside
+                            // of SVGElement.animate() wrapped method.
                             if (!dataLabel.targetPosition) {
                                 dataLabel.targetPosition = {};
                             }
@@ -707,6 +678,11 @@
                 return;
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         TimelineSeries.defaultOptions = merge(LineSeries.defaultOptions, TimelineSeriesDefaults);
         extend(TimelineSeries.prototype, {
             // Use a group of trackers from TrackerMixin
@@ -751,12 +727,13 @@
         * @name Highcharts.TimelineDataLabelsFormatterContextObject#series
         * @type {Highcharts.Series}
         */
-        ''; // dettach doclets above
+        ''; // Dettach doclets above
 
         return TimelineSeries;
     });
-    _registerModule(_modules, 'masters/modules/timeline.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/timeline.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

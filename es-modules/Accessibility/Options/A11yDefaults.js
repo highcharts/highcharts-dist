@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2021 Øystein Moseng
+ *  (c) 2009-2024 Øystein Moseng
  *
  *  Default options for accessibility.
  *
@@ -453,7 +453,7 @@ const Options = {
          * @type  {string|Highcharts.HTMLDOMElement}
          * @since 8.0.0
          */
-        linkedDescription: '*[data-highcharts-chart="{index}"] + .highcharts-description',
+        linkedDescription: '*[data-highcharts-chart="{index}"] + .highcharts-description', // eslint-disable-line
         /**
          * A hook for adding custom components to the accessibility module.
          * Should be an object mapping component names to instances of classes
@@ -472,12 +472,22 @@ const Options = {
         /**
          * Theme to apply to the chart when Windows High Contrast Mode is
          * detected. By default, a high contrast theme matching the high
-         * contrast system system colors is used.
+         * contrast system colors is used.
          *
          * @type      {*}
          * @since     7.1.3
          * @apioption accessibility.highContrastTheme
          */
+        /**
+         * Controls how [highContrastTheme](#accessibility.highContrastTheme)
+         * is applied.
+         *
+         * The default option is `auto`, which applies the high contrast theme
+         * the user's system has a high contrast theme active.
+         *
+         * @since 11.4.0
+         */
+        highContrastMode: 'auto',
         /**
          * A text description of the chart.
          *

@@ -4,8 +4,6 @@
  *
  * */
 'use strict';
-import U from '../Core/Utilities.js';
-const { isNumber } = U;
 /* *
  *
  *  Functions
@@ -63,7 +61,7 @@ function draw(point, params) {
                 onComplete();
             }
         };
-        // animate only runs complete callback if something was animated.
+        // Animate only runs complete callback if something was animated.
         if (Object.keys(animatableAttribs).length) {
             graphic.animate(animatableAttribs, void 0, () => destroy());
         }

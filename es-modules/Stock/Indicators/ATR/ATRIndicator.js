@@ -52,22 +52,6 @@ function populateAverage(points, xVal, yVal, i, period, prevATR) {
  * @augments Highcharts.Series
  */
 class ATRIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.points = void 0;
-        this.options = void 0;
-    }
     /* *
      *
      *  Functions
@@ -109,6 +93,11 @@ class ATRIndicator extends SMAIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Average true range indicator (ATR). This series requires `linkedTo`
  * option to be set.
@@ -128,7 +117,7 @@ ATRIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
      * @excluding index
      */
     params: {
-        index: void 0 // unused index, do not inherit (#15362)
+        index: void 0 // Unused index, do not inherit (#15362)
     }
 });
 SeriesRegistry.registerSeriesType('atr', ATRIndicator);
@@ -155,4 +144,4 @@ export default ATRIndicator;
  * @requires  stock/indicators/atr
  * @apioption series.atr
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

@@ -27,22 +27,6 @@ const { extend, isArray, merge } = U;
  * @augments Highcharts.Series
  */
 class StochasticIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -126,6 +110,11 @@ class StochasticIndicator extends SMAIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Stochastic oscillator. This series requires the `linkedTo` option to be
  * set and should be loaded after the `stock/indicators/indicators.js` file.
@@ -227,4 +216,4 @@ export default StochasticIndicator;
  * @requires  stock/indicators/stochastic
  * @apioption series.stochastic
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

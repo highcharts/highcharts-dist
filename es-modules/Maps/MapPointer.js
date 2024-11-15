@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -9,7 +9,7 @@
  * */
 'use strict';
 import U from '../Core/Utilities.js';
-const { defined, extend, pick, pushUnique, wrap } = U;
+const { defined, extend, pick, wrap } = U;
 /* *
  *
  *  Composition
@@ -17,12 +17,6 @@ const { defined, extend, pick, pushUnique, wrap } = U;
  * */
 var MapPointer;
 (function (MapPointer) {
-    /* *
-     *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
     /* *
      *
      *  Variables
@@ -40,14 +34,13 @@ var MapPointer;
      * @private
      */
     function compose(PointerClass) {
-        if (pushUnique(composedMembers, PointerClass)) {
-            const pointerProto = PointerClass.prototype;
+        const pointerProto = PointerClass.prototype;
+        if (!pointerProto.onContainerDblClick) {
             extend(pointerProto, {
                 onContainerDblClick,
                 onContainerMouseWheel
             });
             wrap(pointerProto, 'normalize', wrapNormalize);
-            wrap(pointerProto, 'pinchTranslate', wrapPinchTranslate);
             wrap(pointerProto, 'zoomOption', wrapZoomOption);
         }
     }
@@ -120,19 +113,6 @@ var MapPointer;
             }
         }
         return e;
-    }
-    /**
-     * Extend the pinchTranslate method to preserve fixed ratio when zooming.
-     * @private
-     */
-    function wrapPinchTranslate(proceed, pinchDown, touches, transform, selectionMarker, clip, lastValidTouch) {
-        let xBigger;
-        proceed.call(this, pinchDown, touches, transform, selectionMarker, clip, lastValidTouch);
-        // Keep ratio
-        if (this.chart.options.chart.type === 'map' && this.hasZoom) {
-            xBigger = transform.scaleX > transform.scaleY;
-            this.pinchTranslateDirection(!xBigger, pinchDown, touches, transform, selectionMarker, clip, lastValidTouch, xBigger ? transform.scaleX : transform.scaleY);
-        }
     }
     /**
      * The pinchType is inferred from mapNavigation options.

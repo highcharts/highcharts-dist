@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
  * Highcharts 3D funnel module
  *
- * (c) 2010-2021 Kacper Madej
+ * (c) 2010-2024 Kacper Madej
  *
  * License: www.highcharts.com/license
  */
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -40,7 +40,7 @@
          *
          *  Highcharts pyramid3d series module
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *  Author: Kacper Madej
          *
          *  License: www.highcharts.com/license
@@ -148,7 +148,7 @@
          * @product   highcharts
          * @apioption series.pyramid3d.data
          */
-        ''; // detachs doclets above
+        ''; // Detachs doclets above
         /* *
          *
          *  Default Export
@@ -162,7 +162,7 @@
          *
          *  Highcharts pyramid3d series module
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *  Author: Kacper Madej
          *
          *  License: www.highcharts.com/license
@@ -180,6 +180,7 @@
         /**
          * The pyramid3d series type.
          *
+         * @private
          * @class
          * @name Highcharts.seriesTypes.pyramid3d
          * @augments seriesTypes.funnel3d
@@ -189,23 +190,12 @@
          * @requires modules/pyramid3d
          */
         class Pyramid3DSeries extends Funnel3DSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         Pyramid3DSeries.defaultOptions = merge(Funnel3DSeries.defaultOptions, Pyramid3DSeriesDefaults);
         SeriesRegistry.registerSeriesType('pyramid3d', Pyramid3DSeries);
         /* *
@@ -216,8 +206,9 @@
 
         return Pyramid3DSeries;
     });
-    _registerModule(_modules, 'masters/modules/pyramid3d.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/pyramid3d.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

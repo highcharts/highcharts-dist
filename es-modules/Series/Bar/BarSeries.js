@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -27,28 +27,17 @@ const { extend, merge } = U;
  * @augments Highcharts.Series
  */
 class BarSeries extends ColumnSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * A bar series is a special type of column series where the columns are
  * horizontal.
  *
- * @sample highcharts/demo/bar-basic/
+ * @sample highcharts/demo/bar-chart/
  *         Bar chart
  *
  * @extends      plotOptions.column
@@ -56,7 +45,7 @@ class BarSeries extends ColumnSeries {
  * @optionparent plotOptions.bar
  */
 BarSeries.defaultOptions = merge(ColumnSeries.defaultOptions, {
-// nothing here yet
+// Nothing here yet
 });
 extend(BarSeries.prototype, {
     inverted: true
@@ -152,4 +141,4 @@ export default BarSeries;
  * @product   highcharts highstock
  * @apioption series.bar.states.select
  */
-''; // gets doclets above into transpilat
+''; // Gets doclets above into transpiled

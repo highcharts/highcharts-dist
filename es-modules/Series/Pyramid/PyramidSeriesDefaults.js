@@ -2,7 +2,7 @@
  *
  *  Highcharts funnel module
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -17,19 +17,19 @@
  * */
 const PyramidSeriesDefaults = {
     /**
-     * The pyramid neck width is zero by default, as opposed to the funnel,
+     * The pyramid neck height is zero by default, as opposed to the funnel,
      * which shares the same layout logic.
      *
      * @since 3.0.10
      */
-    neckWidth: '0%',
+    neckHeight: '0%',
     /**
      * The pyramid neck width is zero by default, as opposed to the funnel,
      * which shares the same layout logic.
      *
      * @since 3.0.10
      */
-    neckHeight: '0%',
+    neckWidth: '0%',
     /**
      * The pyramid is reversed by default, as opposed to the funnel, which
      * shares the layout engine, and is not reversed.
@@ -87,7 +87,7 @@ const PyramidSeriesDefaults = {
  * @product   highcharts
  * @apioption series.pyramid.data
  */
-''; // keeps doclets above separate
+''; // Keeps doclets above separate
 /* *
  *
  *  Default Export

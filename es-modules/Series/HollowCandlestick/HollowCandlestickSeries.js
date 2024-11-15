@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -41,15 +41,7 @@ class HollowCandlestickSeries extends CandlestickSeries {
          *
          * */
         super(...arguments);
-        /* *
-         *
-         * Properties
-         *
-         * */
-        this.data = void 0;
         this.hollowCandlestickData = [];
-        this.options = void 0;
-        this.points = void 0;
         /* eslint-disable valid-jsdoc */
     }
     /* *
@@ -67,20 +59,17 @@ class HollowCandlestickSeries extends CandlestickSeries {
      */
     getPriceMovement() {
         const series = this, 
-        // procesed and grouped data
+        // Processed and grouped data
         processedYData = series.allGroupedData || series.yData, hollowCandlestickData = this.hollowCandlestickData;
-        if (!hollowCandlestickData.length &&
-            processedYData &&
-            processedYData.length) {
-            // First point is allways bullish (transparent).
-            hollowCandlestickData.push({
-                isBullish: true,
-                trendDirection: 'up'
-            });
-            for (let i = 1; i < processedYData.length; i++) {
-                const dataPoint = processedYData[i], previousDataPoint = processedYData[i - 1];
-                hollowCandlestickData.push(series.isBullish(dataPoint, previousDataPoint));
-            }
+        hollowCandlestickData.length = 0;
+        // First point is always bullish (transparent).
+        hollowCandlestickData.push({
+            isBullish: true,
+            trendDirection: 'up'
+        });
+        for (let i = 1; i < processedYData.length; i++) {
+            const dataPoint = processedYData[i], previousDataPoint = processedYData[i - 1];
+            hollowCandlestickData.push(series.isBullish(dataPoint, previousDataPoint));
         }
     }
     /**
@@ -126,7 +115,7 @@ class HollowCandlestickSeries extends CandlestickSeries {
     }
     /**
      * @private
-     * @function Highcarts.seriesTypes.hollowcandlestick#init
+     * @function Highcharts.seriesTypes.hollowcandlestick#init
      */
     init() {
         super.init.apply(this, arguments);
@@ -166,7 +155,8 @@ class HollowCandlestickSeries extends CandlestickSeries {
      * Current point state.
      */
     pointAttribs(point, state) {
-        let attribs = super.pointAttribs.call(this, point, state), stateOptions;
+        const attribs = super.pointAttribs.call(this, point, state);
+        let stateOptions;
         const index = point.index, hollowcandleInfo = this.hollowCandlestickData[index];
         attribs.fill = this.getPointFill(hollowcandleInfo) || attribs.fill;
         attribs.stroke = this.getLineColor(hollowcandleInfo.trendDirection) ||
@@ -349,4 +339,4 @@ export default HollowCandlestickSeries;
  * @product   highstock
  * @apioption series.hollowcandlestick.data
  */
-''; // adds doclets above to transpilat
+''; // Adds doclets above to transpiled

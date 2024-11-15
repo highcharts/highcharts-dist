@@ -2,7 +2,7 @@
  *
  *  Money Flow Index indicator for Highcharts Stock
  *
- *  (c) 2010-2021 Grzegorz Blachliński
+ *  (c) 2010-2024 Grzegorz Blachliński
  *
  *  License: www.highcharts.com/license
  *
@@ -20,17 +20,29 @@ const { extend, merge, error, isArray } = U;
  *
  * */
 // Utils:
+/**
+ *
+ */
 function sumArray(array) {
     return array.reduce(function (prev, cur) {
         return prev + cur;
     });
 }
+/**
+ *
+ */
 function toFixed(a, n) {
     return parseFloat(a.toFixed(n));
 }
+/**
+ *
+ */
 function calculateTypicalPrice(point) {
     return (point[1] + point[2] + point[3]) / 3;
 }
+/**
+ *
+ */
 function calculateRawMoneyFlow(typicalPrice, volume) {
     return typicalPrice * volume;
 }
@@ -49,22 +61,6 @@ function calculateRawMoneyFlow(typicalPrice, volume) {
  * @augments Highcharts.Series
  */
 class MFIIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -134,6 +130,11 @@ class MFIIndicator extends SMAIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Money Flow Index. This series requires `linkedTo` option to be set and
  * should be loaded after the `stock/indicators/indicators.js` file.
@@ -153,7 +154,7 @@ MFIIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
      * @excluding index
      */
     params: {
-        index: void 0,
+        index: void 0, // Unchangeable index, do not inherit (#15362)
         /**
          * The id of volume series which is mandatory.
          * For example using OHLC data, volumeSeriesID='volume' means
@@ -193,4 +194,4 @@ export default MFIIndicator;
  * @requires  stock/indicators/mfi
  * @apioption series.mfi
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

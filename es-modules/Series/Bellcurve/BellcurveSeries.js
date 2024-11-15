@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Highsoft AS
+ *  (c) 2010-2024 Highsoft AS
  *
  *  Author: Sebastian Domas
  *
@@ -31,22 +31,6 @@ const { correctFloat, isNumber, merge } = U;
  * @augments Highcharts.Series
  */
 class BellcurveSeries extends AreaSplineSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Static Functions
@@ -95,7 +79,7 @@ class BellcurveSeries extends AreaSplineSeries {
         if (series.baseSeries?.yData?.length || 0 > 1) {
             series.setMean();
             series.setStandardDeviation();
-            series.setData(series.derivedData(series.mean || 0, series.standardDeviation || 0), false);
+            series.setData(series.derivedData(series.mean || 0, series.standardDeviation || 0), false, void 0, false);
         }
         return (void 0);
     }
@@ -108,6 +92,11 @@ class BellcurveSeries extends AreaSplineSeries {
         series.standardDeviation = correctFloat(BellcurveSeries.standardDeviation(series.baseSeries.yData, series.mean));
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 BellcurveSeries.defaultOptions = merge(AreaSplineSeries.defaultOptions, BellcurveSeriesDefaults);
 DerivedComposition.compose(BellcurveSeries);
 SeriesRegistry.registerSeriesType('bellcurve', BellcurveSeries);

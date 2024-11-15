@@ -2,7 +2,7 @@
  *
  *  X-range series module
  *
- *  (c) 2010-2021 Torstein Honsi, Lars A. V. Cabrera
+ *  (c) 2010-2024 Torstein Honsi, Lars A. V. Cabrera
  *
  *  License: www.highcharts.com/license
  *
@@ -76,7 +76,7 @@ const XRangeSeriesDefaults = {
     colorByPoint: true,
     dataLabels: {
         formatter: function () {
-            let point = this.point, amount = point.partialFill;
+            let amount = this.point.partialFill;
             if (isObject(amount)) {
                 amount = amount.amount;
             }
@@ -85,7 +85,10 @@ const XRangeSeriesDefaults = {
             }
         },
         inside: true,
-        verticalAlign: 'middle'
+        verticalAlign: 'middle',
+        style: {
+            whiteSpace: 'nowrap'
+        }
     },
     tooltip: {
         headerFormat: '<span style="font-size: 0.8em">{point.x} - {point.x2}</span><br/>',
@@ -208,4 +211,4 @@ export default XRangeSeriesDefaults;
  * @product   highcharts highstock gantt
  * @apioption series.xrange.data.partialFill.fill
  */
-(''); // adds doclets above to transpiled file
+(''); // Adds doclets above to transpiled file

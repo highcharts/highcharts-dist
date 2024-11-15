@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Sebastian Bochan, Rafal Sebestjanski
+ *  (c) 2010-2024 Sebastian Bochan, Rafal Sebestjanski
  *
  *  License: www.highcharts.com/license
  *
@@ -13,6 +13,25 @@
  *  API Options
  *
  * */
+/**
+ * The dumbbell series is a cartesian series with higher and lower values
+ * for each point along an X axis, connected with a line between the
+ * values.
+ *
+ * Requires `highcharts-more.js` and `modules/dumbbell.js`.
+ *
+ * @sample {highcharts} highcharts/demo/dumbbell/
+ *         Dumbbell chart
+ * @sample {highcharts} highcharts/series-dumbbell/styled-mode-dumbbell/
+ *         Styled mode
+ *
+ * @extends      plotOptions.arearange
+ * @product      highcharts highstock
+ * @excluding    fillColor, fillOpacity, lineWidth, stack, stacking,
+ *               stickyTracking, trackByArea, boostThreshold, boostBlending
+ * @since 8.0.0
+ * @optionparent plotOptions.dumbbell
+ */
 const DumbbellSeriesDefaults = {
     /** @ignore-option */
     trackByArea: false,
@@ -34,6 +53,7 @@ const DumbbellSeriesDefaults = {
     groupPadding: 0.2,
     crisp: false,
     pointPadding: 0.1,
+    legendSymbol: 'rectangle',
     /**
      * Color of the start markers in a dumbbell graph. This option takes
      * priority over the series color. To avoid this, set `lowColor` to
@@ -142,6 +162,16 @@ const DumbbellSeriesDefaults = {
  * @apioption series.dumbbell.data
  */
 /**
+ * Color of the start markers in a dumbbell graph. This option takes
+ * priority over the series color. To avoid this, set `lowColor` to
+ * `undefined`.
+ *
+ * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+ * @since     8.0.0
+ * @product   highcharts highstock
+ * @apioption  series.dumbbell.lowColor
+ */
+/**
  * Options for the lower markers of the dumbbell-like series. When `lowMarker`
  * is not defined, options inherit form the marker.
  *
@@ -188,11 +218,11 @@ const DumbbellSeriesDefaults = {
  *
  * @type        {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
  * @since       8.0.0
- * @default     #333333
+ * @default     ${palette.neutralColor80}
  * @product     highcharts highstock
  * @apioption   series.dumbbell.data.lowColor
  */
-''; // keeps doclets above separate
+''; // Keeps doclets above separate
 /* *
  *
  *  Default Export

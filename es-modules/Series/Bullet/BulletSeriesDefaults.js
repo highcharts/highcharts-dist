@@ -27,7 +27,7 @@
  */
 const BulletSeriesDefaults = {
     /**
-     * All options related with look and positiong of targets.
+     * All options related with look and positioning of targets.
      *
      * @since 6.0.0
      */
@@ -48,7 +48,7 @@ const BulletSeriesDefaults = {
         height: 3,
         /**
          * The border color of the rectangle representing the target. When
-         * not set, the  point's border color is used.
+         * not set, the point's border color is used.
          *
          * In styled mode, use class `highcharts-bullet-target` instead.
          *
@@ -98,7 +98,7 @@ const BulletSeriesDefaults = {
  * @extends   series,plotOptions.bullet
  * @since     6.0.0
  * @product   highcharts
- * @excluding dataParser, dataURL, marker, dataSorting, boostThreshold,
+ * @excluding dataParser, dataURL, marker, boostThreshold,
  *            boostBlending
  * @requires  modules/bullet
  * @apioption series.bullet
@@ -174,7 +174,7 @@ const BulletSeriesDefaults = {
  * @excluding halo, lineWidth, lineWidthPlus, marker
  * @apioption series.bullet.states.select
  */
-''; // keeps doclets above separate
+''; // Keeps doclets above separate
 /* *
  *
  *  Default Export

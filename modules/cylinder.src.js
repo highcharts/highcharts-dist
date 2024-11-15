@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
  * Highcharts cylinder module
  *
- * (c) 2010-2021 Kacper Madej
+ * (c) 2010-2024 Kacper Madej
  *
  * License: www.highcharts.com/license
  */
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -40,7 +40,7 @@
          *
          *  Highcharts cylinder - a 3D series
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Author: Kacper Madej
          *
@@ -79,7 +79,7 @@
                     top: color(fill).brighten(0.1).get(),
                     bottom: color(fill).brighten(-0.1).get()
                 });
-                // fill for animation getter (#6776)
+                // Fill for animation getter (#6776)
                 this.color = this.fill = fill;
                 return this;
             }
@@ -97,7 +97,7 @@
          *
          *  Highcharts cylinder - a 3D series
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Author: Kacper Madej
          *
@@ -108,21 +108,18 @@
          * */
         const { charts, deg2rad } = H;
         const { perspective } = Math3D;
-        const { extend, pick, pushUnique } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { extend, pick } = U;
         /* *
          *
          *  Functions
          *
          * */
+        /**
+         *
+         */
         function compose(SVGRendererClass) {
-            if (pushUnique(composedMembers, SVGRendererClass)) {
-                const rendererProto = SVGRendererClass.prototype;
+            const rendererProto = SVGRendererClass.prototype;
+            if (!rendererProto.cylinder) {
                 rendererProto.Element3D.types.cylinder = SVGElement3DCylinder;
                 extend(rendererProto, {
                     cylinder: rendererCylinder,
@@ -152,7 +149,7 @@
          */
         function rendererCylinderPath(shapeArgs) {
             const renderer = this, chart = charts[renderer.chartIndex], 
-            // decide zIndexes of parts based on cubiod logic, for consistency.
+            // Decide zIndexes of parts based on cuboid logic, for consistency.
             cuboidData = this.cuboidPath(shapeArgs), isTopFirst = !cuboidData.isTop, isFronFirst = !cuboidData.isFront, top = renderer.getCylinderEnd(chart, shapeArgs), bottom = renderer.getCylinderEnd(chart, shapeArgs, true);
             return {
                 front: renderer.getCylinderFront(top, bottom),
@@ -243,7 +240,7 @@
             return path;
         }
         /**
-         * Retruns cylinder path for top or bottom.
+         * Returns cylinder path for top or bottom.
          * @private
          */
         function rendererGetCylinderEnd(chart, shapeArgs, isBottom) {
@@ -256,10 +253,10 @@
                 alphaCorrection), 
             // Could be top or bottom of the cylinder
             y = (shapeArgs.y || 0) + (isBottom ? height : 0), 
-            // Use cubic Bezier curve to draw a cricle in x,z (y is constant).
+            // Use cubic Bezier curve to draw a circle in x,z (y is constant).
             // More math. at spencermortensen.com/articles/bezier-circle/
             c = 0.5519 * radius, centerX = width / 2 + (shapeArgs.x || 0), centerZ = depth / 2 + (shapeArgs.z || 0), 
-            // points could be generated in a loop, but readability will plummet
+            // Points could be generated in a loop, but readability will plummet
             points = [{
                     x: 0,
                     y: y,
@@ -314,20 +311,18 @@
                     z: radius
                 }], cosTheta = Math.cos(angleOffset), sinTheta = Math.sin(angleOffset);
             let path, x, z;
-            // rotete to match chart's beta and translate to the shape center
+            // Rotate to match chart's beta and translate to the shape center
             for (const point of points) {
                 x = point.x;
                 z = point.z;
-                // x′ = (x * cosθ − z * sinθ) + centerX
-                // z′ = (z * cosθ + x * sinθ) + centerZ
                 point.x = (x * cosTheta - z * sinTheta) + centerX;
                 point.z = (z * cosTheta + x * sinTheta) + centerZ;
             }
             const perspectivePoints = perspective(points, chart, true);
-            // check for sub-pixel curve issue, compare front and back edges
+            // Check for sub-pixel curve issue, compare front and back edges
             if (Math.abs(perspectivePoints[3].y - perspectivePoints[9].y) < 2.5 &&
                 Math.abs(perspectivePoints[0].y - perspectivePoints[6].y) < 2.5) {
-                // use simplied shape
+                // Use simplified shape
                 path = this.toLinePath([
                     perspectivePoints[0],
                     perspectivePoints[3],
@@ -336,7 +331,7 @@
                 ], true);
             }
             else {
-                // or default curved path to imitate ellipse (2D circle)
+                // Or default curved path to imitate ellipse (2D circle)
                 path = this.getCurvedPath(perspectivePoints);
             }
             return path;
@@ -398,7 +393,7 @@
          *
          *  Highcharts cylinder - a 3D series
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Author: Kacper Madej
          *
@@ -415,16 +410,6 @@
          *
          * */
         class CylinderPoint extends ColumnPoint {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.options = void 0;
-                this.series = void 0;
-            }
         }
         extend(CylinderPoint.prototype, {
             shapeType: 'cylinder'
@@ -442,7 +427,7 @@
          *
          *  Highcharts cylinder - a 3D series
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Author: Kacper Madej
          *
@@ -544,7 +529,7 @@
          * @product   highcharts highstock
          * @apioption series.cylinder.data
          */
-        ''; // detaches doclets above
+        ''; // Detaches doclets above
         /* *
          *
          *  Default Export
@@ -558,7 +543,7 @@
          *
          *  Highcharts cylinder - a 3D series
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Author: Kacper Madej
          *
@@ -577,8 +562,8 @@
         /**
          * The cylinder series type.
          *
-         * @requires module:highcharts-3d
-         * @requires module:modules/cylinder
+         * @requires highcharts-3d
+         * @requires modules/cylinder
          *
          * @private
          * @class
@@ -587,23 +572,12 @@
          * @augments Highcharts.Series
          */
         class CylinderSeries extends ColumnSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         CylinderSeries.compose = CylinderComposition.compose;
         CylinderSeries.defaultOptions = merge(ColumnSeries.defaultOptions, CylinderSeriesDefaults);
         extend(CylinderSeries.prototype, {
@@ -618,9 +592,10 @@
 
         return CylinderSeries;
     });
-    _registerModule(_modules, 'masters/modules/cylinder.src.js', [_modules['Series/Cylinder/CylinderSeries.js'], _modules['Core/Renderer/RendererRegistry.js']], function (CylinderSeries, RendererRegistry) {
+    _registerModule(_modules, 'masters/modules/cylinder.src.js', [_modules['Core/Globals.js'], _modules['Series/Cylinder/CylinderSeries.js'], _modules['Core/Renderer/RendererRegistry.js']], function (Highcharts, CylinderSeries, RendererRegistry) {
 
         CylinderSeries.compose(RendererRegistry.getRendererType());
 
+        return Highcharts;
     });
 }));

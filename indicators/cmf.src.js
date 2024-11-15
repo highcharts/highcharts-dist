@@ -1,7 +1,7 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.4.8 (2024-08-29)
  *
- * (c) 2010-2021 Highsoft AS
+ * (c) 2010-2024 Highsoft AS
  * Author: Sebastian Domas
  *
  * License: www.highcharts.com/license
@@ -27,7 +27,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -37,7 +37,7 @@
     _registerModule(_modules, 'Stock/Indicators/CMF/CMFIndicator.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Author: Sebastian Domas
          *
@@ -72,17 +72,6 @@
                  *
                  * */
                 super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                this.volumeSeries = void 0;
-                this.linkedParent = void 0;
-                this.yData = void 0;
                 this.nameBase = 'Chaikin Money Flow';
             }
             /* *
@@ -247,10 +236,10 @@
              * @excluding index
              */
             params: {
-                index: void 0,
+                index: void 0, // Unused index, do not inherit (#15362)
                 /**
                  * The id of another series to use its data as volume data for the
-                 * indiator calculation.
+                 * indicator calculation.
                  */
                 volumeSeriesID: 'volume'
             }
@@ -278,12 +267,13 @@
          * @requires  stock/indicators/cmf
          * @apioption series.cmf
          */
-        ''; // adds doclet above to the transpiled file
+        ''; // Adds doclet above to the transpiled file
 
         return CMFIndicator;
     });
-    _registerModule(_modules, 'masters/indicators/cmf.src.js', [], function () {
+    _registerModule(_modules, 'masters/indicators/cmf.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

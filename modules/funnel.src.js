@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
  * Highcharts funnel module
  *
- * (c) 2010-2021 Torstein Honsi
+ * (c) 2010-2024 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -40,7 +40,7 @@
          *
          *  Highcharts funnel module
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -230,7 +230,7 @@
          * @product   highcharts
          * @apioption series.funnel.data
          */
-        ''; // keeps doclets above separate
+        ''; // Keeps doclets above separate
         /* *
          *
          *  Default Export
@@ -244,16 +244,16 @@
          *
          *  Highcharts funnel module
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { noop } = H;
+        const { composed, noop } = H;
         const { column: ColumnSeries, pie: PieSeries } = SeriesRegistry.seriesTypes;
-        const { addEvent, extend, fireEvent, isArray, merge, pick, pushUnique, relativeLength, splat } = U;
+        const { addEvent, correctFloat, extend, fireEvent, isArray, merge, pick, pushUnique, relativeLength, splat } = U;
         /* *
          *
          *  Constants
@@ -294,18 +294,6 @@
          * @augments Highcharts.Series
          */
         class FunnelSeries extends PieSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                /* eslint-enable valid-jsdoc */
-            }
             /* *
              *
              *  Functions
@@ -316,30 +304,29 @@
              * @private
              */
             alignDataLabel(point, dataLabel, options, alignTo, isNew) {
-                const series = point.series, reversed = series.options.reversed, dlBox = point.dlBox || point.shapeArgs, align = options.align, verticalAlign = options.verticalAlign, inside = ((series.options || {}).dataLabels || {}).inside, centerY = series.center[1], pointPlotY = (reversed ?
-                    2 * centerY - point.plotY :
-                    point.plotY), widthAtLabel = series.getWidthAt(pointPlotY - dlBox.height / 2 +
-                    dataLabel.height), offset = verticalAlign === 'middle' ?
+                const series = point.series, reversed = series.options.reversed, dlBox = point.dlBox || point.shapeArgs, { align, padding = 0, verticalAlign } = options, inside = ((series.options || {}).dataLabels || {}).inside, centerY = series.center[1], plotY = point.plotY || 0, pointPlotY = (reversed ?
+                    2 * centerY - plotY :
+                    plotY), 
+                // #16176: Only SVGLabel has height set
+                dataLabelHeight = dataLabel.height ?? dataLabel.getBBox().height, widthAtLabel = series.getWidthAt(pointPlotY - dlBox.height / 2 +
+                    dataLabelHeight), offset = verticalAlign === 'middle' ?
                     (dlBox.topWidth - dlBox.bottomWidth) / 4 :
                     (widthAtLabel - dlBox.bottomWidth) / 2;
                 let y = dlBox.y, x = dlBox.x;
-                // #16176: Only SVGLabel has height set
-                const dataLabelHeight = pick(dataLabel.height, dataLabel.getBBox().height);
                 if (verticalAlign === 'middle') {
                     y = dlBox.y - dlBox.height / 2 + dataLabelHeight / 2;
                 }
                 else if (verticalAlign === 'top') {
-                    y = dlBox.y - dlBox.height + dataLabelHeight +
-                        (options.padding || 0);
+                    y = dlBox.y - dlBox.height + dataLabelHeight + padding;
                 }
                 if (verticalAlign === 'top' && !reversed ||
                     verticalAlign === 'bottom' && reversed ||
                     verticalAlign === 'middle') {
                     if (align === 'right') {
-                        x = dlBox.x - options.padding + offset;
+                        x = dlBox.x - padding + offset;
                     }
                     else if (align === 'left') {
-                        x = dlBox.x + options.padding - offset;
+                        x = dlBox.x + padding - offset;
                     }
                 }
                 alignTo = {
@@ -349,8 +336,14 @@
                     height: dlBox.height
                 };
                 options.verticalAlign = 'bottom';
+                if (inside) {
+                    // If the distance were positive (as default), the overlapping
+                    // labels logic would skip these labels and they would be allowed
+                    // to overlap.
+                    options.distance = void 0;
+                }
                 // Call the parent method
-                if (!inside || point.visible) {
+                if (inside && point.visible) {
                     baseAlignDataLabel.call(series, point, dataLabel, options, alignTo, isNew);
                 }
                 if (inside) {
@@ -410,7 +403,7 @@
              * @private
              */
             translate() {
-                const series = this, chart = series.chart, options = series.options, reversed = options.reversed, ignoreHiddenPoint = options.ignoreHiddenPoint, borderRadiusObject = BorderRadius.optionsToObject(options.borderRadius), plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, center = options.center, centerX = getLength(center[0], plotWidth), centerY = getLength(center[1], plotHeight), width = getLength(options.width, plotWidth), height = getLength(options.height, plotHeight), neckWidth = getLength(options.neckWidth, plotWidth), neckHeight = getLength(options.neckHeight, plotHeight), neckY = (centerY - height / 2) + height - neckHeight, data = series.data, borderRadius = relativeLength(borderRadiusObject.radius, width), radiusScope = borderRadiusObject.scope, half = (options.dataLabels.position === 'left' ?
+                const series = this, chart = series.chart, options = series.options, reversed = options.reversed, ignoreHiddenPoint = options.ignoreHiddenPoint, borderRadiusObject = BorderRadius.optionsToObject(options.borderRadius), plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, center = options.center, centerX = getLength(center[0], plotWidth), centerY = getLength(center[1], plotHeight), width = getLength(options.width, plotWidth), height = getLength(options.height, plotHeight), neckWidth = getLength(options.neckWidth, plotWidth), neckHeight = getLength(options.neckHeight, plotHeight), neckY = (centerY - height / 2) + height - neckHeight, points = series.points, borderRadius = relativeLength(borderRadiusObject.radius, width), radiusScope = borderRadiusObject.scope, half = (options.dataLabels.position === 'left' ?
                     1 :
                     0), roundingFactors = (angle) => {
                     const tan = Math.tan(angle / 2), cosA = Math.cos(alpha), sinA = Math.sin(alpha);
@@ -426,8 +419,8 @@
                             .map((i) => (reversed ? -i : i))
                     };
                 };
-                let sum = 0, cumulative = 0, // start at top
-                tempWidth, path, fraction, alpha, // the angle between top and left point's edges
+                let sum = 0, cumulative = 0, // Start at top
+                tempWidth, path, fraction, alpha, // The angle between top and left point's edges
                 maxT, x1, y1, x2, x3, y3, x4, y5;
                 series.getWidthAt = function (y) {
                     const top = (centerY - height / 2);
@@ -449,30 +442,30 @@
                 Individual point coordinate naming:
 
                 x1,y1 _________________ x2,y1
-                    \                         /
-                    \                       /
-                    \                     /
-                    \                   /
-                        \                 /
-                    x3,y3 _________ x4,y3
+                \                         /
+                 \                       /
+                  \                     /
+                   \                   /
+                    \                 /
+                   x3,y3 _________ x4,y3
 
                 Additional for the base of the neck:
 
-                        |               |
-                        |               |
-                        |               |
-                    x3,y5 _________ x4,y5
+                     |               |
+                     |               |
+                     |               |
+                   x3,y5 _________ x4,y5
 
                 */
                 // get the total sum
-                for (const point of data) {
+                for (const point of points) {
                     if (point.y && point.isValid() &&
                         (!ignoreHiddenPoint || point.visible !== false)) {
                         sum += point.y;
                     }
                 }
-                for (const point of data) {
-                    // set start and end positions
+                for (const point of points) {
+                    // Set start and end positions
                     y5 = null;
                     fraction = sum ? point.y / sum : 0;
                     y1 = centerY - height / 2 + cumulative * height;
@@ -483,11 +476,11 @@
                     tempWidth = series.getWidthAt(y3);
                     x3 = centerX - tempWidth / 2;
                     x4 = x3 + tempWidth;
-                    // the entire point is within the neck
-                    if (y1 > neckY) {
+                    // The entire point is within the neck
+                    if (correctFloat(y1) >= neckY) {
                         x1 = x3 = centerX - neckWidth / 2;
                         x2 = x4 = centerX + neckWidth / 2;
-                        // the base of the neck
+                        // The base of the neck
                     }
                     else if (y3 > neckY) {
                         y5 = y3;
@@ -505,12 +498,14 @@
                     }
                     if (borderRadius && (radiusScope === 'point' ||
                         point.index === 0 ||
-                        point.index === data.length - 1 ||
+                        point.index === points.length - 1 ||
                         y5 !== null)) {
                         // Creating the path of funnel points with rounded corners
                         // (#18839)
                         const h = Math.abs(y3 - y1), xSide = x2 - x4, lBase = x4 - x3, lSide = Math.sqrt(xSide * xSide + h * h);
-                        alpha = Math.atan(h / xSide);
+                        // If xSide equals zero, return Infinity to avoid dividing
+                        // by zero (#20319)
+                        alpha = Math.atan(xSide !== 0 ? h / xSide : Infinity);
                         maxT = lSide / 2;
                         if (y5 !== null) {
                             maxT = Math.min(maxT, Math.abs(y5 - y3) / 2);
@@ -529,13 +524,15 @@
                         else {
                             path = [
                                 ['M', x1 + f.dx[0], y1 + f.dy[0]],
-                                ['C',
+                                [
+                                    'C',
                                     x1 + f.dx[1], y1 + f.dy[1],
                                     x1 + f.dx[2], y1,
                                     x1 + f.dx[3], y1
                                 ],
                                 ['L', x2 - f.dx[3], y1],
-                                ['C',
+                                [
+                                    'C',
                                     x2 - f.dx[2], y1,
                                     x2 - f.dx[1], y1 + f.dy[1],
                                     x2 - f.dx[0], y1 + f.dy[0]
@@ -546,27 +543,31 @@
                             // Closure of point with extension
                             const fr = roundingFactors(Math.PI / 2);
                             f = roundingFactors(Math.PI / 2 + alpha);
-                            path.push(['L', x4 + f.dx[0], y3 - f.dy[0]], ['C',
+                            path.push(['L', x4 + f.dx[0], y3 - f.dy[0]], [
+                                'C',
                                 x4 + f.dx[1], y3 - f.dy[1],
                                 x4, y3 + f.dy[2],
                                 x4, y3 + f.dy[3]
                             ]);
                             if (radiusScope === 'stack' &&
-                                point.index !== data.length - 1) {
+                                point.index !== points.length - 1) {
                                 path.push(['L', x4, y5], ['L', x3, y5]);
                             }
                             else {
-                                path.push(['L', x4, y5 - fr.dy[3]], ['C',
+                                path.push(['L', x4, y5 - fr.dy[3]], [
+                                    'C',
                                     x4, y5 - fr.dy[2],
                                     x4 - fr.dx[2], y5,
                                     x4 - fr.dx[3], y5
-                                ], ['L', x3 + fr.dx[3], y5], ['C',
+                                ], ['L', x3 + fr.dx[3], y5], [
+                                    'C',
                                     x3 + fr.dx[2], y5,
                                     x3, y5 - fr.dy[2],
                                     x3, y5 - fr.dy[3]
                                 ]);
                             }
-                            path.push(['L', x3, y3 + f.dy[3]], ['C',
+                            path.push(['L', x3, y3 + f.dy[3]], [
+                                'C',
                                 x3, y3 + f.dy[2],
                                 x3 - f.dx[1], y3 - f.dy[1],
                                 x3 - f.dx[0], y3 - f.dy[0]
@@ -579,11 +580,13 @@
                                 path.push(['L', x4, y3], ['L', x3, y3]);
                             }
                             else {
-                                path.push(['L', x4 + f.dx[0], y3 - f.dy[0]], ['C',
+                                path.push(['L', x4 + f.dx[0], y3 - f.dy[0]], [
+                                    'C',
                                     x4 + f.dx[1], y3 - f.dy[1],
                                     x4 - f.dx[2], y3,
                                     x4 - f.dx[3], y3
-                                ], ['L', x3 + f.dx[3], y3], ['C',
+                                ], ['L', x3 + f.dx[3], y3], [
+                                    'C',
                                     x3 + f.dx[2], y3,
                                     x3 - f.dx[1], y3 - f.dy[1],
                                     x3 - f.dx[0], y3 - f.dy[0]
@@ -593,7 +596,8 @@
                         else {
                             // Creating a rounded tip of the "pyramid"
                             f = roundingFactors(Math.PI - alpha * 2);
-                            path.push(['L', x3 + f.dx[0], y3 - f.dy[0]], ['C',
+                            path.push(['L', x3 + f.dx[0], y3 - f.dy[0]], [
+                                'C',
                                 x3 + f.dx[1], y3 - f.dy[1],
                                 x3 - f.dx[1], y3 - f.dy[1],
                                 x3 - f.dx[0], y3 - f.dy[0]
@@ -613,10 +617,10 @@
                         path.push(['L', x3, y3]);
                     }
                     path.push(['Z']);
-                    // prepare for using shared dr
+                    // Prepare for using shared dr
                     point.shapeType = 'path';
                     point.shapeArgs = { d: path };
-                    // for tooltips and data labels
+                    // For tooltips and data labels
                     point.percentage = fraction * 100;
                     point.plotX = centerX;
                     point.plotY = (y1 + (y5 || y3)) / 2;
@@ -652,6 +656,11 @@
                 points.sort((a, b) => (a.plotY - b.plotY));
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         FunnelSeries.defaultOptions = merge(PieSeries.defaultOptions, FunnelSeriesDefaults);
         extend(FunnelSeries.prototype, {
             animate: noop
@@ -664,18 +673,12 @@
         (function (FunnelSeries) {
             /* *
              *
-             *  Constants
-             *
-             * */
-            const composedMembers = [];
-            /* *
-             *
              *  Functions
              *
              * */
             /** @private */
             function compose(ChartClass) {
-                if (pushUnique(composedMembers, ChartClass)) {
+                if (pushUnique(composed, 'FunnelSeries')) {
                     addEvent(ChartClass, 'afterHideAllOverlappingLabels', onChartAfterHideAllOverlappingLabels);
                 }
             }
@@ -710,7 +713,7 @@
          *
          *  Highcharts funnel module
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -724,19 +727,19 @@
          * */
         const PyramidSeriesDefaults = {
             /**
-             * The pyramid neck width is zero by default, as opposed to the funnel,
+             * The pyramid neck height is zero by default, as opposed to the funnel,
              * which shares the same layout logic.
              *
              * @since 3.0.10
              */
-            neckWidth: '0%',
+            neckHeight: '0%',
             /**
              * The pyramid neck width is zero by default, as opposed to the funnel,
              * which shares the same layout logic.
              *
              * @since 3.0.10
              */
-            neckHeight: '0%',
+            neckWidth: '0%',
             /**
              * The pyramid is reversed by default, as opposed to the funnel, which
              * shares the layout engine, and is not reversed.
@@ -794,7 +797,7 @@
          * @product   highcharts
          * @apioption series.pyramid.data
          */
-        ''; // keeps doclets above separate
+        ''; // Keeps doclets above separate
         /* *
          *
          *  Default Export
@@ -808,7 +811,7 @@
          *
          *  Highcharts funnel module
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -831,23 +834,12 @@
          * @augments Highcharts.Series
          */
         class PyramidSeries extends FunnelSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         /**
          * A pyramid series is a special type of funnel, without neck and reversed
          * by default.
@@ -875,5 +867,6 @@
         const G = Highcharts;
         FunnelSeries.compose(G.Chart);
 
+        return Highcharts;
     });
 }));

@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
  * Bullet graph series type for Highcharts
  *
- * (c) 2010-2021 Kacper Madej
+ * (c) 2010-2024 Kacper Madej
  *
  * License: www.highcharts.com/license
  */
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -38,7 +38,7 @@
     _registerModule(_modules, 'Series/Bullet/BulletPoint.js', [_modules['Series/Column/ColumnSeries.js']], function (ColumnSeries) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -51,16 +51,6 @@
          *
          * */
         class BulletPoint extends ColumnSeries.prototype.pointClass {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.options = void 0;
-                this.series = void 0;
-            }
             /* *
              *
              *  Functions
@@ -117,7 +107,7 @@
          */
         const BulletSeriesDefaults = {
             /**
-             * All options related with look and positiong of targets.
+             * All options related with look and positioning of targets.
              *
              * @since 6.0.0
              */
@@ -138,7 +128,7 @@
                 height: 3,
                 /**
                  * The border color of the rectangle representing the target. When
-                 * not set, the  point's border color is used.
+                 * not set, the point's border color is used.
                  *
                  * In styled mode, use class `highcharts-bullet-target` instead.
                  *
@@ -188,7 +178,7 @@
          * @extends   series,plotOptions.bullet
          * @since     6.0.0
          * @product   highcharts
-         * @excluding dataParser, dataURL, marker, dataSorting, boostThreshold,
+         * @excluding dataParser, dataURL, marker, boostThreshold,
          *            boostBlending
          * @requires  modules/bullet
          * @apioption series.bullet
@@ -264,7 +254,7 @@
          * @excluding halo, lineWidth, lineWidthPlus, marker
          * @apioption series.bullet.states.select
          */
-        ''; // keeps doclets above separate
+        ''; // Keeps doclets above separate
         /* *
          *
          *  Default Export
@@ -276,7 +266,7 @@
     _registerModule(_modules, 'Series/Bullet/BulletSeries.js', [_modules['Series/Bullet/BulletPoint.js'], _modules['Series/Bullet/BulletSeriesDefaults.js'], _modules['Series/Column/ColumnSeries.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (BulletPoint, BulletSeriesDefaults, ColumnSeries, SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2021 Kacper Madej
+         *  (c) 2010-2024 Kacper Madej
          *
          *  License: www.highcharts.com/license
          *
@@ -299,24 +289,6 @@
          * @augments Highcharts.Series
          */
         class BulletSeries extends ColumnSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                this.targetData = void 0;
-                /* eslint-enable valid-jsdoc */
-            }
             /* *
              *
              *  Functions
@@ -426,6 +398,11 @@
                 return dataExtremes;
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         BulletSeries.defaultOptions = merge(ColumnSeries.defaultOptions, BulletSeriesDefaults);
         extend(BulletSeries.prototype, {
             parallelArrays: ['x', 'y', 'target'],
@@ -441,8 +418,9 @@
 
         return BulletSeries;
     });
-    _registerModule(_modules, 'masters/modules/bullet.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/bullet.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

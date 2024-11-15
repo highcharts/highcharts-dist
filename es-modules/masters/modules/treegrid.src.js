@@ -1,11 +1,11 @@
 /**
- * @license Highcharts Gantt JS v11.2.0 (2023-10-30)
+ * @license Highcharts Gantt JS v@product.version@ (@product.date@)
  * @module highcharts/modules/treegrid
  * @requires highcharts
  *
  * Tree Grid
  *
- * (c) 2016-2021 Jon Arild Nygard
+ * (c) 2016-2024 Jon Arild Nygard
  *
  * License: www.highcharts.com/license
  */
@@ -13,5 +13,5 @@
 import Highcharts from '../../Core/Globals.js';
 import TreeGridAxis from '../../Core/Axis/TreeGrid/TreeGridAxis.js';
 const G = Highcharts;
-// Compositions
 TreeGridAxis.compose(G.Axis, G.Chart, G.Series, G.Tick);
+export default Highcharts;

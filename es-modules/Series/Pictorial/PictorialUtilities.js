@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2022 Torstein Honsi, Magdalena Gut
+ *  (c) 2010-2024 Torstein Honsi, Magdalena Gut
  *
  *  License: www.highcharts.com/license
  *
@@ -9,6 +9,9 @@
  * */
 import U from '../../Core/Utilities.js';
 const { defined } = U;
+/**
+ *
+ */
 function rescalePatternFill(element, stackHeight, width, height, borderWidth = 1) {
     const fill = element && element.attr('fill'), match = fill && fill.match(/url\(([^)]+)\)/);
     if (match) {
@@ -36,6 +39,9 @@ function rescalePatternFill(element, stackHeight, width, height, borderWidth = 1
         }
     }
 }
+/**
+ *
+ */
 function getStackMetrics(yAxis, shape) {
     let height = yAxis.len, y = 0;
     if (shape && defined(shape.max)) {
@@ -47,8 +53,11 @@ function getStackMetrics(yAxis, shape) {
         y
     };
 }
+/**
+ *
+ */
 function invertShadowGroup(shadowGroup, yAxis) {
-    let inverted = yAxis.chart.inverted;
+    const inverted = yAxis.chart.inverted;
     if (inverted) {
         shadowGroup.attr({
             rotation: inverted ? 90 : 0,

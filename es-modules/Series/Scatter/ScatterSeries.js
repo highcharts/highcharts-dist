@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -24,23 +24,6 @@ const { addEvent, extend, merge } = U;
  * @private
  */
 class ScatterSeries extends LineSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        /* eslint-enable valid-jsdoc */
-    }
     /* *
      *
      *  Functions
@@ -65,15 +48,12 @@ class ScatterSeries extends LineSeries {
         if (jitter) {
             this.points.forEach(function (point, i) {
                 ['x', 'y'].forEach(function (dim, j) {
-                    let axis, plotProp = 'plot' + dim.toUpperCase(), min, max, translatedJitter;
                     if (jitter[dim] && !point.isNull) {
-                        axis = series[dim + 'Axis'];
-                        translatedJitter =
-                            jitter[dim] * axis.transA;
-                        if (axis && !axis.isLog) {
+                        const plotProp = `plot${dim.toUpperCase()}`, axis = series[`${dim}Axis`], translatedJitter = jitter[dim] *
+                            axis.transA;
+                        if (axis && !axis.logarithmic) {
                             // Identify the outer bounds of the jitter range
-                            min = Math.max(0, point[plotProp] - translatedJitter);
-                            max = Math.min(axis.len, point[plotProp] + translatedJitter);
+                            const min = Math.max(0, (point[plotProp] || 0) - translatedJitter), max = Math.min(axis.len, (point[plotProp] || 0) + translatedJitter);
                             // Find a random position within this range
                             point[plotProp] = min +
                                 (max - min) * unrandom(i + j * len);
@@ -99,14 +79,18 @@ class ScatterSeries extends LineSeries {
         }
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 ScatterSeries.defaultOptions = merge(LineSeries.defaultOptions, ScatterSeriesDefaults);
 extend(ScatterSeries.prototype, {
     drawTracker: ColumnSeries.prototype.drawTracker,
     sorted: false,
     requireSorting: false,
     noSharedTooltip: true,
-    trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup'],
-    takeOrdinalPosition: false // #2342
+    trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup']
 });
 /* *
  *

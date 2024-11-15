@@ -2,7 +2,7 @@
  *
  *  Networkgraph series
  *
- *  (c) 2010-2021 Paweł Fus
+ *  (c) 2010-2024 Paweł Fus
  *
  *  License: www.highcharts.com/license
  *
@@ -35,16 +35,11 @@ class ReingoldFruchtermanLayout {
          *  Static Functions
          *
          * */
-        this.attractiveForce = void 0;
         this.box = {};
         this.currentStep = 0;
         this.initialRendering = true;
-        this.integration = void 0;
         this.links = [];
         this.nodes = [];
-        this.options = void 0;
-        this.quadTree = void 0;
-        this.repulsiveForce = void 0;
         this.series = [];
         this.simulation = false;
     }
@@ -403,7 +398,7 @@ class ReingoldFruchtermanLayout {
         const nodes = this.nodes;
         for (const node of nodes) {
             if (node.fixedPosition) {
-                return;
+                continue;
             }
             this.integration.integrate(this, node);
             this.applyLimitBox(node, this.box);

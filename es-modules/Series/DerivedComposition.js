@@ -31,7 +31,6 @@ var DerivedComposition;
      *  Constants
      *
      * */
-    const composedMembers = [];
     DerivedComposition.hasDerivedData = true;
     /**
      * Method to be implemented - inside the method the series has already
@@ -51,14 +50,12 @@ var DerivedComposition;
      * @private
      */
     function compose(SeriesClass) {
-        if (U.pushUnique(composedMembers, SeriesClass)) {
-            const seriesProto = SeriesClass.prototype;
-            seriesProto.addBaseSeriesEvents = addBaseSeriesEvents;
-            seriesProto.addEvents = addEvents;
-            seriesProto.destroy = destroy;
-            seriesProto.init = init;
-            seriesProto.setBaseSeries = setBaseSeries;
-        }
+        const seriesProto = SeriesClass.prototype;
+        seriesProto.addBaseSeriesEvents = addBaseSeriesEvents;
+        seriesProto.addEvents = addEvents;
+        seriesProto.destroy = destroy;
+        seriesProto.init = init;
+        seriesProto.setBaseSeries = setBaseSeries;
         return SeriesClass;
     }
     DerivedComposition.compose = compose;

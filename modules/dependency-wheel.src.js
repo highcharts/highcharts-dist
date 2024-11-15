@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
  * Dependency wheel module
  *
- * (c) 2010-2021 Torstein Honsi
+ * (c) 2010-2024 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -40,7 +40,7 @@
          *
          *  Dependency wheel module
          *
-         *  (c) 2018-2021 Torstein Honsi
+         *  (c) 2018-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -55,23 +55,6 @@
          *
          * */
         class DependencyWheelPoint extends SankeyPoint {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.angle = void 0;
-                this.fromNode = void 0;
-                this.index = void 0;
-                this.linksFrom = void 0;
-                this.linksTo = void 0;
-                this.options = void 0;
-                this.series = void 0;
-                this.shapeArgs = void 0;
-                this.toNode = void 0;
-            }
             /* *
              *
              *  Functions
@@ -133,7 +116,7 @@
          *
          *  Dependency wheel module
          *
-         *  (c) 2018-2021 Torstein Honsi
+         *  (c) 2018-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -153,7 +136,7 @@
          *         Dependency wheel
          *
          * @extends      plotOptions.sankey
-         * @exclude      dataSorting, nodeAlignment
+         * @exclude      dataSorting, nodeAlignment, nodeDistance
          * @since        7.1.0
          * @product      highcharts
          * @requires     modules/dependency-wheel
@@ -299,7 +282,7 @@
          *
          * @apioption series.dependencywheel.nodes.dataLabels
          */
-        ''; // keeps doclets above separate
+        ''; // Keeps doclets above separate
         /* *
          *
          *  Default Export
@@ -308,12 +291,12 @@
 
         return DependencyWheelSeriesDefaults;
     });
-    _registerModule(_modules, 'Series/DependencyWheel/DependencyWheelSeries.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Series/DependencyWheel/DependencyWheelPoint.js'], _modules['Series/DependencyWheel/DependencyWheelSeriesDefaults.js'], _modules['Core/Globals.js'], _modules['Series/Sankey/SankeyColumnComposition.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (A, DependencyWheelPoint, DependencyWheelSeriesDefaults, H, SankeyColumnComposition, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/DependencyWheel/DependencyWheelSeries.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Series/DependencyWheel/DependencyWheelPoint.js'], _modules['Series/DependencyWheel/DependencyWheelSeriesDefaults.js'], _modules['Core/Globals.js'], _modules['Series/Sankey/SankeyColumnComposition.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Extensions/TextPath.js']], function (A, DependencyWheelPoint, DependencyWheelSeriesDefaults, H, SankeyColumnComposition, SeriesRegistry, U, SVGElement, TextPath) {
         /* *
          *
          *  Dependency wheel module
          *
-         *  (c) 2018-2021 Torstein Honsi
+         *  (c) 2018-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -323,7 +306,8 @@
         const { animObject } = A;
         const { deg2rad } = H;
         const { pie: PieSeries, sankey: SankeySeries } = SeriesRegistry.seriesTypes;
-        const { extend, merge } = U;
+        const { extend, merge, relativeLength } = U;
+        TextPath.compose(SVGElement);
         /* *
          *
          *  Class
@@ -337,24 +321,6 @@
          * @augments Highcharts.seriesTypes.sankey
          */
         class DependencyWheelSeries extends SankeySeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.nodeColumns = void 0;
-                this.nodes = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Functions
@@ -459,7 +425,8 @@
                 for (const node of this.nodeColumns[0]) {
                     // Don't render the nodes if sum is 0 #12453
                     if (node.sum) {
-                        const shapeArgs = node.shapeArgs, centerX = center[0], centerY = center[1], r = center[2] / 2, innerR = r - options.nodeWidth, start = startAngle + factor * (shapeArgs.y || 0), end = startAngle +
+                        const shapeArgs = node.shapeArgs, centerX = center[0], centerY = center[1], r = center[2] / 2, nodeWidth = options.nodeWidth === 'auto' ?
+                            20 : options.nodeWidth, innerR = r - relativeLength(nodeWidth || 0, r), start = startAngle + factor * (shapeArgs.y || 0), end = startAngle +
                             factor * ((shapeArgs.y || 0) + (shapeArgs.height || 0));
                         // Middle angle
                         node.angle = start + (end - start) / 2;
@@ -513,8 +480,8 @@
                                             'A',
                                             innerR, innerR,
                                             0,
-                                            0,
-                                            1,
+                                            0, // Long arc
+                                            1, // Clockwise
                                             corners[1].x, corners[1].y
                                         ], [
                                             'C',
@@ -541,6 +508,11 @@
                 }
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         DependencyWheelSeries.defaultOptions = merge(SankeySeries.defaultOptions, DependencyWheelSeriesDefaults);
         extend(DependencyWheelSeries.prototype, {
             orderNodes: false,
@@ -556,8 +528,9 @@
 
         return DependencyWheelSeries;
     });
-    _registerModule(_modules, 'masters/modules/dependency-wheel.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/dependency-wheel.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

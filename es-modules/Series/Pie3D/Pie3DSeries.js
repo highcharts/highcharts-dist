@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  3D pie series
  *
@@ -11,18 +11,12 @@
  * */
 'use strict';
 import H from '../../Core/Globals.js';
-const { deg2rad } = H;
+const { composed, deg2rad } = H;
 import Pie3DPoint from './Pie3DPoint.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { pie: PieSeries } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
 const { extend, pick, pushUnique } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
 /* *
  *
  *  Class
@@ -35,7 +29,7 @@ class Pie3DSeries extends PieSeries {
      *
      * */
     static compose(SeriesClass) {
-        if (pushUnique(composedMembers, SeriesClass)) {
+        if (pushUnique(composed, 'Pie3D')) {
             SeriesClass.types.pie = Pie3DSeries;
         }
     }
@@ -50,7 +44,7 @@ class Pie3DSeries extends PieSeries {
     addPoint() {
         super.addPoint.apply(this, arguments);
         if (this.chart.is3d()) {
-            // destroy (and rebuild) everything!!!
+            // Destroy (and rebuild) everything!!!
             this.update(this.userOptions, true); // #3845 pass the old options
         }
     }
@@ -75,7 +69,7 @@ class Pie3DSeries extends PieSeries {
                 attribs = {
                     translateX: center[0],
                     translateY: center[1],
-                    scaleX: 0.001,
+                    scaleX: 0.001, // #1499
                     scaleY: 0.001
                 };
                 group.attr(attribs);
@@ -150,7 +144,7 @@ class Pie3DSeries extends PieSeries {
         if (seriesOptions.grouping !== false) {
             z = 0;
         }
-        for (const point of series.data) {
+        for (const point of series.points) {
             const shapeArgs = point.shapeArgs;
             point.shapeType = 'arc3d';
             shapeArgs.z = z;
@@ -213,4 +207,4 @@ export default Pie3DSeries;
  * @requires  highcharts-3d
  * @apioption plotOptions.pie.depth
  */
-''; // keeps doclets above after transpilation
+''; // Keeps doclets above after transpiledion

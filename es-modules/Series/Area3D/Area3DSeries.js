@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Grzegorz Blachliński
+ *  (c) 2010-2024 Grzegorz Blachliński
  *
  *  License: www.highcharts.com/license
  *
@@ -8,28 +8,30 @@
  *
  * */
 'use strict';
+import H from '../../Core/Globals.js';
+const { composed } = H;
 import Math3D from '../../Core/Math3D.js';
 const { perspective } = Math3D;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { seriesTypes: { line: { prototype: lineProto } } } = SeriesRegistry;
+const { line: { prototype: lineProto } } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
-const { wrap } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { pushUnique, wrap } = U;
 /* *
  *
  *  Functions
  *
  * */
+/**
+ *
+ */
 function compose(AreaSeriesClass) {
-    if (U.pushUnique(composedMembers, AreaSeriesClass)) {
+    if (pushUnique(composed, 'Area3DSeries')) {
         wrap(AreaSeriesClass.prototype, 'getGraphPath', wrapAreaSeriesGetGraphPath);
     }
 }
+/**
+ *
+ */
 function wrapAreaSeriesGetGraphPath(proceed) {
     const series = this, svgPath = proceed.apply(series, [].slice.call(arguments, 1));
     // Do not do this if the chart is not 3D
@@ -78,6 +80,7 @@ function wrapAreaSeriesGetGraphPath(proceed) {
         areaPath.xMap = series.areaPath.xMap;
         series.areaPath = areaPath;
     }
+    series.graphPath = svgPath;
     return svgPath;
 }
 /* *

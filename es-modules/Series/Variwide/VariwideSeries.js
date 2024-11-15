@@ -2,7 +2,7 @@
  *
  *  Highcharts variwide module
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -16,7 +16,7 @@ import VariwideComposition from './VariwideComposition.js';
 import VariwidePoint from './VariwidePoint.js';
 import VariwideSeriesDefaults from './VariwideSeriesDefaults.js';
 import U from '../../Core/Utilities.js';
-const { addEvent, extend, merge, pick } = U;
+const { addEvent, crisp, extend, merge, pick } = U;
 /* *
  *
  *  Class
@@ -30,20 +30,6 @@ const { addEvent, extend, merge, pick } = U;
  * @augments Highcharts.Series
  */
 class VariwideSeries extends ColumnSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        this.relZ = void 0;
-        this.totalZ = void 0;
-        this.zData = void 0;
-    }
     /* *
      *
      * Functions
@@ -134,12 +120,17 @@ class VariwideSeries extends ColumnSeries {
         }
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 VariwideSeries.compose = VariwideComposition.compose;
 VariwideSeries.defaultOptions = merge(ColumnSeries.defaultOptions, VariwideSeriesDefaults);
-// Extend translation by distoring X position based on Z.
+// Extend translation by distorting X position based on Z.
 addEvent(VariwideSeries, 'afterColumnTranslate', function () {
     // Temporarily disable crisping when computing original shapeArgs
-    const xAxis = this.xAxis, inverted = this.chart.inverted, crisp = this.borderWidth % 2 / 2;
+    const xAxis = this.xAxis, inverted = this.chart.inverted;
     let i = -1;
     // Distort the points to reflect z dimension
     for (const point of this.points) {
@@ -157,8 +148,8 @@ addEvent(VariwideSeries, 'afterColumnTranslate', function () {
             right = xAxis.translate(point.x + z, false, false, false, true);
         }
         if (this.crispOption) {
-            left = Math.round(left) - crisp;
-            right = Math.round(right) - crisp;
+            left = crisp(left, this.borderWidth);
+            right = crisp(right, this.borderWidth);
         }
         shapeArgs.x = left;
         shapeArgs.width = Math.max(right - left, 1);

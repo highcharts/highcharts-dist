@@ -2,7 +2,7 @@
  *
  *  Networkgraph series
  *
- *  (c) 2010-2021 Paweł Fus
+ *  (c) 2010-2024 Paweł Fus
  *
  *  License: www.highcharts.com/license
  *
@@ -119,8 +119,8 @@ class NetworkgraphPoint extends Point {
      * `series.draggable` is enabled.
      * @private
      */
-    init(series, options, x) {
-        super.init(series, options, x);
+    constructor(series, options, x) {
+        super(series, options, x);
         if (this.series.options.draggable &&
             !this.series.chart.styledMode) {
             addEvent(this, 'mouseOver', function () {
@@ -130,7 +130,6 @@ class NetworkgraphPoint extends Point {
                 css(this.series.chart.container, { cursor: 'default' });
             });
         }
-        return this;
     }
     /**
      * @private
@@ -143,7 +142,8 @@ class NetworkgraphPoint extends Point {
      * @private
      */
     redrawLink() {
-        let path = this.getLinkPath(), attribs;
+        const path = this.getLinkPath();
+        let attribs;
         if (this.graphic) {
             this.shapeArgs = {
                 d: path
@@ -184,7 +184,8 @@ class NetworkgraphPoint extends Point {
      *        configuration.
      */
     remove(redraw, animation) {
-        let point = this, series = point.series, nodesOptions = series.options.nodes || [], index, i = nodesOptions.length;
+        const point = this, series = point.series, nodesOptions = series.options.nodes || [];
+        let index, i = nodesOptions.length;
         // For nodes, remove all connected links:
         if (point.isNode) {
             // Temporary disable series.points array, because

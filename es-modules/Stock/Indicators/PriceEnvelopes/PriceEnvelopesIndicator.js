@@ -26,22 +26,6 @@ const { extend, isArray, merge } = U;
  * @augments Highcharts.Series
  */
 class PriceEnvelopesIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -67,7 +51,7 @@ class PriceEnvelopesIndicator extends SMAIndicator {
         const period = params.period, topPercent = params.topBand, botPercent = params.bottomBand, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
         // 0- date, 1-top line, 2-middle line, 3-bottom line
         PE = [], 
-        // middle line, top line and bottom line
+        // Middle line, top line and bottom line
         xData = [], yData = [];
         let ML, TL, BL, date, slicedX, slicedY, point, i;
         // Price envelopes requires close value
@@ -98,6 +82,11 @@ class PriceEnvelopesIndicator extends SMAIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Price envelopes indicator based on [SMA](#plotOptions.sma) calculations.
  * This series requires the `linkedTo` option to be set and should be loaded
@@ -211,4 +200,4 @@ export default PriceEnvelopesIndicator;
  * @requires  stock/indicators/price-envelopes
  * @apioption series.priceenvelopes
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

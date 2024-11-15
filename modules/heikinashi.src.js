@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.4.8 (2024-08-29)
  *
  * HeikinAshi series type for Highcharts Stock
  *
- * (c) 2010-2021 Karol Kolodziej
+ * (c) 2010-2024 Karol Kolodziej
  *
  * License: www.highcharts.com/license
  */
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -38,25 +38,22 @@
     _registerModule(_modules, 'Series/HeikinAshi/HeikinAshiPoint.js', [_modules['Core/Series/SeriesRegistry.js']], function (SeriesRegistry) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { candlestick: { prototype: { pointClass: CandlestickPoint } }, hlc: { prototype: { pointClass: HLCPoint } } } = SeriesRegistry.seriesTypes;
+        const { candlestick: { prototype: { pointClass: CandlestickPoint } }, hlc: { prototype: { 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        pointClass: HLCPoint } } } = SeriesRegistry.seriesTypes;
         /* *
          *
          *  Class
          *
          * */
         class HeikinAshiPoint extends CandlestickPoint {
-            constructor() {
-                super(...arguments);
-                // clone inheritence
-                this.resolveColor = HLCPoint.prototype.resolveColor;
-            }
         }
         /* *
          *
@@ -69,7 +66,7 @@
     _registerModule(_modules, 'Series/HeikinAshi/HeikinAshiSeriesDefaults.js', [], function () {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -161,7 +158,7 @@
          * @product   highstock
          * @apioption series.heikinashi.data
          */
-        ''; // adds doclets above to transpilat
+        ''; // Adds doclets above to transpiled
         /* *
          *
          *  Default Export
@@ -170,24 +167,19 @@
 
         return HeikinAshiDefaults;
     });
-    _registerModule(_modules, 'Series/HeikinAshi/HeikinAshiSeries.js', [_modules['Series/HeikinAshi/HeikinAshiPoint.js'], _modules['Series/HeikinAshi/HeikinAshiSeriesDefaults.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (HeikinAshiPoint, HeikinAshiSeriesDefaults, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/HeikinAshi/HeikinAshiSeries.js', [_modules['Core/Globals.js'], _modules['Series/HeikinAshi/HeikinAshiPoint.js'], _modules['Series/HeikinAshi/HeikinAshiSeriesDefaults.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (H, HeikinAshiPoint, HeikinAshiSeriesDefaults, SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        const { composed } = H;
         const { candlestick: CandlestickSeries } = SeriesRegistry.seriesTypes;
-        const { addEvent, merge } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { addEvent, merge, pushUnique } = U;
         /* *
          *
          *  Functions
@@ -215,7 +207,7 @@
          */
         function onHeikinAshiSeriesAfterTranslate() {
             const series = this, points = series.points, heikiashiData = series.heikiashiData, cropStart = series.cropStart || 0;
-            // Reset the proccesed data.
+            // Reset the processed data.
             series.processedYData.length = 0;
             // Modify points.
             for (let i = 0; i < points.length; i++) {
@@ -258,29 +250,17 @@
                  *
                  * */
                 super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
                 this.heikiashiData = [];
-                this.options = void 0;
-                this.points = void 0;
-                this.yData = void 0;
-                this.processedYData = void 0;
             }
             /* *
              *
              *  Static Functions
              *
              * */
-            static compose(SeriesClass, AxisClass, ..._args) {
+            static compose(SeriesClass, AxisClass) {
                 CandlestickSeries.compose(SeriesClass);
-                if (U.pushUnique(composedMembers, AxisClass)) {
+                if (pushUnique(composed, 'HeikinAshi')) {
                     addEvent(AxisClass, 'postProcessData', onAxisPostProcessData);
-                }
-                if (U.pushUnique(composedMembers, HeikinAshiSeries)) {
                     addEvent(HeikinAshiSeries, 'afterTranslate', onHeikinAshiSeriesAfterTranslate);
                     addEvent(HeikinAshiSeries, 'updatedData', onHeikinAshiSeriesUpdatedData);
                 }
@@ -368,5 +348,6 @@
         const G = Highcharts;
         HeikinAshiSeries.compose(G.Series, G.Axis);
 
+        return Highcharts;
     });
 }));

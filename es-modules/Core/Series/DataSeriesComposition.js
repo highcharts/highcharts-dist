@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2020-2022 Highsoft AS
+ *  (c) 2020-2024 Highsoft AS
  *
  *  License: www.highcharts.com/license
  *
@@ -12,14 +12,10 @@
  * */
 'use strict';
 import DataTable from '../../Data/DataTable.js';
+import H from '../Globals.js';
+const { composed } = H;
 import U from '../Utilities.js';
-const { addEvent, fireEvent, isNumber, merge, wrap } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { addEvent, fireEvent, isNumber, merge, pushUnique, wrap } = U;
 /* *
  *
  *  Functions
@@ -38,7 +34,7 @@ function wrapSeriesGeneratePoints(proceed) {
         cursor = cropStart + i;
         point = data[cursor];
         if (!point) {
-            point = data[cursor] = (new PointClass()).init(this, processedYData[cursor], processedXData[i]);
+            point = data[cursor] = new PointClass(this, processedYData[cursor], processedXData[i]);
         }
         point.index = cursor;
         points[i] = point;
@@ -60,7 +56,7 @@ function wrapSeriesSetData(proceed, data = [], redraw = true, animation) {
         merge(true, data));
     const columns = {}, keys = (this.options.keys || this.parallelArrays).slice();
     if (isNumber(data[0]) || keys.length === 1) {
-        // first column is implicit index
+        // First column is implicit index
         const xData = columns.x = [];
         for (let i = 0, iEnd = data.length; i < iEnd; ++i) {
             xData.push(this.autoIncrement());
@@ -69,7 +65,7 @@ function wrapSeriesSetData(proceed, data = [], redraw = true, animation) {
     }
     else {
         if (keys.indexOf('x') === -1 && keys.length > data.length) {
-            // first column is implicit index
+            // First column is implicit index
             const xData = columns.x = [];
             for (let i = 0, iEnd = data.length; i < iEnd; ++i) {
                 xData.push(this.autoIncrement());
@@ -98,11 +94,11 @@ class DataSeriesAdditions {
      * @private
      */
     static compose(SeriesClass) {
-        if (U.pushUnique(composedMembers, SeriesClass)) {
+        if (pushUnique(composed, 'Core.DataSeries')) {
+            const seriesProto = SeriesClass.prototype;
             addEvent(SeriesClass, 'init', function () {
                 this.datas = new DataSeriesAdditions(this);
             });
-            const seriesProto = SeriesClass.prototype;
             wrap(seriesProto, 'generatePoints', wrapSeriesGeneratePoints);
             wrap(seriesProto, 'setData', wrapSeriesSetData);
         }
@@ -188,12 +184,12 @@ class DataSeriesAdditions {
             anySeries[`${key}Data`] = column;
         }
         if (failure) {
-            // fallback to index
+            // Fallback to index
             const columnNames = table.getColumnNames(), emptyColumn = [];
             emptyColumn.length = rowCount;
             let columnOffset = 0;
             if (columnNames.length === keys.length - 1) {
-                // table index becomes x
+                // Table index becomes x
                 columnOffset = 1;
                 indexAsX = true;
             }
@@ -239,14 +235,14 @@ class DataSeriesAdditions {
         }
         const series = this.series, table = this.table, anySeries = series, onChange = (e) => {
             if (e.type === 'afterDeleteColumns') {
-                // deletion affects all points
+                // Deletion affects all points
                 this.setTable(table, true);
                 return;
             }
             if (e.type === 'afterDeleteRows') {
                 if (e.rowIndex > 0 &&
                     e.rowIndex + e.rowCount < series.points.length) {
-                    // deletion affects trailing points
+                    // Deletion affects trailing points
                     this.setTable(table, true);
                     return;
                 }
@@ -283,10 +279,8 @@ export default DataSeriesAdditions;
 /* *
  * Indicates data is structured as columns instead of rows.
  *
- * @requires  es-modules/Data/DataSeriesComposition.js
- *
  * @type      {boolean}
  * @since     Future
  * @apioption plotOptions.series.dataAsColumns
  */
-(''); // keeps doclets above in JS file
+(''); // Keeps doclets above in JS file

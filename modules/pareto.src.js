@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
  * Pareto series type for Highcharts
  *
- * (c) 2010-2021 Sebastian Bochan
+ * (c) 2010-2024 Sebastian Bochan
  *
  * License: www.highcharts.com/license
  */
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -65,7 +65,6 @@
              *  Constants
              *
              * */
-            const composedMembers = [];
             DerivedComposition.hasDerivedData = true;
             /**
              * Method to be implemented - inside the method the series has already
@@ -85,14 +84,12 @@
              * @private
              */
             function compose(SeriesClass) {
-                if (U.pushUnique(composedMembers, SeriesClass)) {
-                    const seriesProto = SeriesClass.prototype;
-                    seriesProto.addBaseSeriesEvents = addBaseSeriesEvents;
-                    seriesProto.addEvents = addEvents;
-                    seriesProto.destroy = destroy;
-                    seriesProto.init = init;
-                    seriesProto.setBaseSeries = setBaseSeries;
-                }
+                const seriesProto = SeriesClass.prototype;
+                seriesProto.addBaseSeriesEvents = addBaseSeriesEvents;
+                seriesProto.addEvents = addEvents;
+                seriesProto.destroy = destroy;
+                seriesProto.init = init;
+                seriesProto.setBaseSeries = setBaseSeries;
                 return SeriesClass;
             }
             DerivedComposition.compose = compose;
@@ -171,7 +168,7 @@
     _registerModule(_modules, 'Series/ParetoSeries/ParetoSeriesDefaults.js', [], function () {
         /* *
          *
-         *  (c) 2010-2021 Sebastian Bochan
+         *  (c) 2010-2024 Sebastian Bochan
          *
          *  License: www.highcharts.com/license
          *
@@ -240,7 +237,7 @@
          * @product   highcharts
          * @apioption series.pareto.data
          */
-        ''; // keeps doclets above separate
+        ''; // Keeps doclets above separate
         /* *
          *
          *  Default Export
@@ -252,7 +249,7 @@
     _registerModule(_modules, 'Series/ParetoSeries/ParetoSeries.js', [_modules['Series/DerivedComposition.js'], _modules['Series/ParetoSeries/ParetoSeriesDefaults.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (DerivedComposition, ParetoSeriesDefaults, SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2021 Sebastian Bochan
+         *  (c) 2010-2024 Sebastian Bochan
          *
          *  License: www.highcharts.com/license
          *
@@ -276,22 +273,6 @@
          * @augments Highcharts.Series
          */
         class ParetoSeries extends LineSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.points = void 0;
-                this.options = void 0;
-            }
             /* *
              *
              *  Functions
@@ -353,6 +334,11 @@
                 this.setData(this.sumPointsPercents(yValues, xValues, sum, false), false);
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         ParetoSeries.defaultOptions = merge(LineSeries.defaultOptions, ParetoSeriesDefaults);
         extend(ParetoSeries.prototype, {
             hasDerivedData: DerivedComposition.hasDerivedData
@@ -367,8 +353,9 @@
 
         return ParetoSeries;
     });
-    _registerModule(_modules, 'masters/modules/pareto.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/pareto.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

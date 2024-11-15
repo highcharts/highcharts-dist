@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
  * Solid angular gauge module
  *
- * (c) 2010-2021 Torstein Honsi
+ * (c) 2010-2024 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -38,7 +38,7 @@
     _registerModule(_modules, 'Core/Axis/Color/ColorAxisLike.js', [_modules['Core/Color/Color.js'], _modules['Core/Utilities.js']], function (Color, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -182,7 +182,7 @@
     _registerModule(_modules, 'Core/Axis/SolidGaugeAxis.js', [_modules['Core/Axis/Color/ColorAxisLike.js'], _modules['Core/Utilities.js']], function (ColorAxisLike, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -217,7 +217,7 @@
          *
          *  Solid angular gauge module
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -408,7 +408,7 @@
          * @product   highcharts
          * @apioption series.solidgauge.data.radius
          */
-        ''; // keeps doclets above separate
+        ''; // Keeps doclets above separate
         /* *
          *
          *  Default Export
@@ -422,7 +422,7 @@
          *
          *  Solid angular gauge module
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -446,26 +446,6 @@
          * @augments Highcarts.Series
          */
         class SolidGaugeSeries extends GaugeSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.points = void 0;
-                this.options = void 0;
-                this.axis = void 0;
-                this.yAxis = void 0;
-                this.startAngleRad = void 0;
-                this.thresholdAngleRad = void 0;
-            }
             /* *
              *
              *  Functions
@@ -497,7 +477,7 @@
                 this.thresholdAngleRad = pick(thresholdAngleRad, yAxis.startAngleRad);
                 for (const point of series.points) {
                     // #10630 null point should not be draw
-                    if (!point.isNull) { // condition like in pie chart
+                    if (!point.isNull) { // Condition like in pie chart
                         const radius = ((pInt(pick(point.options.radius, options.radius, 100 // %
                         )) * center[2]) / 200), innerRadius = ((pInt(pick(point.options.innerRadius, options.innerRadius, 60 // %
                         )) * center[2]) / 200), axisMinAngle = Math.min(yAxis.startAngleRad, yAxis.endAngleRad), axisMaxAngle = Math.max(yAxis.startAngleRad, yAxis.endAngleRad);
@@ -542,7 +522,7 @@
                             d = shapeArgs.d;
                             graphic.animate(extend({ fill: toColor }, shapeArgs));
                             if (d) {
-                                shapeArgs.d = d; // animate alters it
+                                shapeArgs.d = d; // Animate alters it
                             }
                         }
                         else {
@@ -579,6 +559,11 @@
                 }
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         SolidGaugeSeries.defaultOptions = merge(GaugeSeries.defaultOptions, SolidGaugeSeriesDefaults);
         SeriesRegistry.registerSeriesType('solidgauge', SolidGaugeSeries);
         /* *
@@ -589,8 +574,9 @@
 
         return SolidGaugeSeries;
     });
-    _registerModule(_modules, 'masters/modules/solid-gauge.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/solid-gauge.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

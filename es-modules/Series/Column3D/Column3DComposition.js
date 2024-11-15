@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -8,16 +8,12 @@
  *
  * */
 'use strict';
+import H from '../../Core/Globals.js';
+const { composed } = H;
 import Math3D from '../../Core/Math3D.js';
 const { perspective } = Math3D;
 import U from '../../Core/Utilities.js';
 const { addEvent, extend, pick, pushUnique, wrap } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
 /* *
  *
  *  Functions
@@ -36,7 +32,7 @@ function columnSeriesTranslate3dShapes() {
         z = 0;
     }
     z += (seriesOptions.groupZPadding || 1);
-    for (const point of series.data) {
+    for (const point of series.points) {
         // #7103 Reset outside3dPlot flag
         point.outside3dPlot = null;
         if (point.y !== null) {
@@ -99,6 +95,10 @@ function columnSeriesTranslate3dShapes() {
                 point2dPos.x = shapeArgs.height;
                 point2dPos.y = point.clientX || 0;
             }
+            // Crosshair positions
+            point.axisXpos = point2dPos.x;
+            point.axisYpos = point2dPos.y;
+            point.axisZpos = point2dPos.z;
             // Calculate and store point's position in 3D,
             // using perspective method.
             point.plot3d = perspective([point2dPos], chart, true, false)[0];
@@ -113,43 +113,37 @@ function columnSeriesTranslate3dShapes() {
             }
         }
     }
-    // store for later use #4067
+    // Store for later use #4067
     series.z = z;
 }
 /** @private */
 function compose(SeriesClass, StackItemClass) {
-    if (pushUnique(composedMembers, SeriesClass)) {
-        const seriesProto = SeriesClass.prototype;
+    if (pushUnique(composed, 'Column3D')) {
+        const seriesProto = SeriesClass.prototype, stackItemProto = StackItemClass.prototype, { column: ColumnSeriesClass, columnRange: ColumnRangeSeriesClass } = SeriesClass.types;
         wrap(seriesProto, 'alignDataLabel', wrapSeriesAlignDataLabel);
         wrap(seriesProto, 'justifyDataLabel', wrapSeriesJustifyDataLabel);
-    }
-    if (pushUnique(composedMembers, StackItemClass)) {
-        const stackItemProto = StackItemClass.prototype;
         wrap(stackItemProto, 'getStackBox', wrapStackItemGetStackBox);
-    }
-    const { column: ColumnSeriesClass, columnRange: ColumnRangeSeriesClass } = SeriesClass.types;
-    if (ColumnSeriesClass &&
-        pushUnique(composedMembers, ColumnSeriesClass)) {
-        const columnSeriesProto = ColumnSeriesClass.prototype, columnPointProto = columnSeriesProto.pointClass.prototype;
-        columnSeriesProto.translate3dPoints = () => void 0;
-        columnSeriesProto.translate3dShapes = columnSeriesTranslate3dShapes;
-        addEvent(columnSeriesProto, 'afterInit', onColumnSeriesAfterInit);
-        wrap(columnPointProto, 'hasNewShapeType', wrapColumnPointHasNewShapeType);
-        wrap(columnSeriesProto, 'animate', wrapColumnSeriesAnimate);
-        wrap(columnSeriesProto, 'plotGroup', wrapColumnSeriesPlotGroup);
-        wrap(columnSeriesProto, 'pointAttribs', wrapColumnSeriesPointAttribs);
-        wrap(columnSeriesProto, 'setState', wrapColumnSeriesSetState);
-        wrap(columnSeriesProto, 'setVisible', wrapColumnSeriesSetVisible);
-        wrap(columnSeriesProto, 'translate', wrapColumnSeriesTranslate);
-    }
-    if (ColumnRangeSeriesClass &&
-        pushUnique(composedMembers, ColumnRangeSeriesClass)) {
-        const columnRangeSeriesProto = ColumnRangeSeriesClass.prototype, columnRangePointProto = columnRangeSeriesProto.pointClass.prototype;
-        wrap(columnRangePointProto, 'hasNewShapeType', wrapColumnPointHasNewShapeType);
-        wrap(columnRangeSeriesProto, 'plotGroup', wrapColumnSeriesPlotGroup);
-        wrap(columnRangeSeriesProto, 'pointAttribs', wrapColumnSeriesPointAttribs);
-        wrap(columnRangeSeriesProto, 'setState', wrapColumnSeriesSetState);
-        wrap(columnRangeSeriesProto, 'setVisible', wrapColumnSeriesSetVisible);
+        if (ColumnSeriesClass) {
+            const columnSeriesProto = ColumnSeriesClass.prototype, columnPointProto = columnSeriesProto.pointClass.prototype;
+            columnSeriesProto.translate3dPoints = () => void 0;
+            columnSeriesProto.translate3dShapes = columnSeriesTranslate3dShapes;
+            addEvent(columnSeriesProto, 'afterInit', onColumnSeriesAfterInit);
+            wrap(columnPointProto, 'hasNewShapeType', wrapColumnPointHasNewShapeType);
+            wrap(columnSeriesProto, 'animate', wrapColumnSeriesAnimate);
+            wrap(columnSeriesProto, 'plotGroup', wrapColumnSeriesPlotGroup);
+            wrap(columnSeriesProto, 'pointAttribs', wrapColumnSeriesPointAttribs);
+            wrap(columnSeriesProto, 'setState', wrapColumnSeriesSetState);
+            wrap(columnSeriesProto, 'setVisible', wrapColumnSeriesSetVisible);
+            wrap(columnSeriesProto, 'translate', wrapColumnSeriesTranslate);
+        }
+        if (ColumnRangeSeriesClass) {
+            const columnRangeSeriesProto = ColumnRangeSeriesClass.prototype, columnRangePointProto = columnRangeSeriesProto.pointClass.prototype;
+            wrap(columnRangePointProto, 'hasNewShapeType', wrapColumnPointHasNewShapeType);
+            wrap(columnRangeSeriesProto, 'plotGroup', wrapColumnSeriesPlotGroup);
+            wrap(columnRangeSeriesProto, 'pointAttribs', wrapColumnSeriesPointAttribs);
+            wrap(columnRangeSeriesProto, 'setState', wrapColumnSeriesSetState);
+            wrap(columnRangeSeriesProto, 'setVisible', wrapColumnSeriesSetVisible);
+        }
     }
 }
 /**
@@ -183,7 +177,7 @@ function onColumnSeriesAfterInit() {
         // @todo grouping === true ?
         if (!(typeof grouping !== 'undefined' && !grouping)) {
             const stacks = retrieveStacks(this.chart, stacking), stack = seriesOptions.stack || 0;
-            let i; // position within the stack
+            let i; // Position within the stack
             for (i = 0; i < stacks[stack].series.length; i++) {
                 if (stacks[stack].series[i] === this) {
                     break;
@@ -220,7 +214,7 @@ function wrapColumnSeriesAnimate(proceed) {
     else {
         const args = arguments, init = args[1], yAxis = this.yAxis, series = this, reversed = this.yAxis.reversed;
         if (init) {
-            for (const point of series.data) {
+            for (const point of series.points) {
                 if (point.y !== null) {
                     point.height = point.shapeArgs.height;
                     point.shapey = point.shapeArgs.y; // #2968
@@ -242,8 +236,8 @@ function wrapColumnSeriesAnimate(proceed) {
                 }
             }
         }
-        else { // run the animation
-            for (const point of series.data) {
+        else { // Run the animation
+            for (const point of series.points) {
                 if (point.y !== null) {
                     point.shapeArgs.height = point.height;
                     point.shapeArgs.y = point.shapey; // #2968
@@ -255,7 +249,7 @@ function wrapColumnSeriesAnimate(proceed) {
                     }
                 }
             }
-            // redraw datalabels to the correct position
+            // Redraw datalabels to the correct position
             this.drawDataLabels();
         }
     }
@@ -322,7 +316,7 @@ function wrapColumnSeriesSetState(proceed, state, inherit) {
 function wrapColumnSeriesSetVisible(proceed, vis) {
     const series = this;
     if (series.chart.is3d()) {
-        for (const point of series.data) {
+        for (const point of series.points) {
             point.visible = point.options.visible = vis =
                 typeof vis === 'undefined' ?
                     !pick(series.visible, point.visible) : vis;
@@ -375,7 +369,7 @@ function wrapSeriesAlignDataLabel(proceed, point, _dataLabel, options, alignTo) 
                 dLPosition.y += point.shapeArgs.width;
             }
         }
-        // dLPosition is recalculated for 3D graphs
+        // `dLPosition` is recalculated for 3D graphs
         dLPosition = perspective([dLPosition], chart, true, false)[0];
         alignTo.x = dLPosition.x - xOffset;
         // #7103 If point is outside of plotArea, hide data label.
@@ -485,4 +479,4 @@ export default Column3DComposition;
  * @requires  highcharts-3d
  * @apioption plotOptions.column.groupZPadding
  */
-''; // keeps doclets above in transpiled file
+''; // Keeps doclets above in transpiled file

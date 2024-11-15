@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -23,22 +23,6 @@ const { defined, merge, isObject } = U;
  * @private
  */
 class LineSeries extends Series {
-    constructor() {
-        /* *
-         *
-         *  Static Functions
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -54,67 +38,49 @@ class LineSeries extends Series {
      * @function Highcharts.Series#drawGraph
      */
     drawGraph() {
-        const series = this, options = this.options, graphPath = (this.gappedPath || this.getGraphPath).call(this), styledMode = this.chart.styledMode;
-        let props = [[
-                'graph',
-                'highcharts-graph'
-            ]];
-        // Presentational properties
-        if (!styledMode) {
-            props[0].push((options.lineColor ||
-                this.color ||
-                "#cccccc" /* Palette.neutralColor20 */ // when colorByPoint = true
-            ), options.dashStyle);
-        }
-        props = series.getZonesGraphs(props);
+        const options = this.options, graphPath = (this.gappedPath || this.getGraphPath).call(this), styledMode = this.chart.styledMode;
         // Draw the graph
-        props.forEach(function (prop, i) {
-            const graphKey = prop[0];
-            let attribs, graph = series[graphKey];
-            const verb = graph ? 'animate' : 'attr';
+        [this, ...this.zones].forEach((owner, i) => {
+            let attribs, graph = owner.graph;
+            const verb = graph ? 'animate' : 'attr', dashStyle = owner.dashStyle ||
+                options.dashStyle;
             if (graph) {
-                graph.endX = series.preventGraphAnimation ?
+                graph.endX = this.preventGraphAnimation ?
                     null :
                     graphPath.xMap;
                 graph.animate({ d: graphPath });
             }
             else if (graphPath.length) { // #1487
                 /**
-                 * SVG element of area-based charts. Can be used for styling
-                 * purposes. If zones are configured, this element will be
-                 * hidden and replaced by multiple zone areas, accessible
-                 * via `series['zone-area-x']` (where x is a number,
-                 * starting with 0).
-                 *
-                 * @name Highcharts.Series#area
-                 * @type {Highcharts.SVGElement|undefined}
-                 */
-                /**
                  * SVG element of line-based charts. Can be used for styling
                  * purposes. If zones are configured, this element will be
                  * hidden and replaced by multiple zone lines, accessible
-                 * via `series['zone-graph-x']` (where x is a number,
-                 * starting with 0).
+                 * via `series.zones[i].graph`.
                  *
                  * @name Highcharts.Series#graph
                  * @type {Highcharts.SVGElement|undefined}
                  */
-                series[graphKey] = graph = series.chart.renderer
+                owner.graph = graph = this.chart.renderer
                     .path(graphPath)
-                    .addClass(prop[1])
+                    .addClass('highcharts-graph' +
+                    (i ? ` highcharts-zone-graph-${i - 1} ` : ' ') +
+                    ((i && owner.className) || ''))
                     .attr({ zIndex: 1 }) // #1069
-                    .add(series.group);
+                    .add(this.group);
             }
             if (graph && !styledMode) {
                 attribs = {
-                    'stroke': prop[2],
+                    'stroke': ((!i && options.lineColor) || // Series only
+                        owner.color ||
+                        this.color ||
+                        "#cccccc" /* Palette.neutralColor20 */),
                     'stroke-width': options.lineWidth || 0,
                     // Polygon series use filled graph
-                    'fill': (series.fillGraph && series.color) || 'none'
+                    'fill': (this.fillGraph && this.color) || 'none'
                 };
                 // Apply dash style
-                if (prop[3]) {
-                    attribs.dashstyle = prop[3];
+                if (dashStyle) {
+                    attribs.dashstyle = dashStyle;
                     // The reason for the `else if` is that linecaps don't mix well
                     // with dashstyle. The gaps get partially filled by the
                     // linecap.
@@ -168,7 +134,7 @@ class LineSeries extends Series {
         // Build the line
         points.forEach(function (point, i) {
             const plotX = point.plotX, plotY = point.plotY, lastPoint = points[i - 1], isNull = point.isNull || typeof plotY !== 'number';
-            // the path to this point from the previous
+            // The path to this point from the previous
             let pathToPoint;
             if ((point.leftCliff || (lastPoint && lastPoint.rightCliff)) &&
                 !connectCliffs) {
@@ -195,14 +161,14 @@ class LineSeries extends Series {
                     pathToPoint = [series.getPointSpline(points, point, i)];
                 }
                 else if (step) {
-                    if (step === 1) { // right
+                    if (step === 1) { // Right
                         pathToPoint = [[
                                 'L',
                                 lastPoint.plotX,
                                 plotY
                             ]];
                     }
-                    else if (step === 2) { // center
+                    else if (step === 2) { // Center
                         pathToPoint = [[
                                 'L',
                                 (lastPoint.plotX + plotX) / 2,
@@ -227,7 +193,7 @@ class LineSeries extends Series {
                     ]);
                 }
                 else {
-                    // normal line to next point
+                    // Normal line to next point
                     pathToPoint = [[
                             'L',
                             plotX,
@@ -239,7 +205,7 @@ class LineSeries extends Series {
                 xMap.push(point.x);
                 if (step) {
                     xMap.push(point.x);
-                    if (step === 2) { // step = center (#8073)
+                    if (step === 2) { // Step = center (#8073)
                         xMap.push(point.x);
                     }
                 }
@@ -251,29 +217,12 @@ class LineSeries extends Series {
         series.graphPath = graphPath;
         return graphPath;
     }
-    // eslint-disable-next-line valid-jsdoc
-    /**
-     * Get zones properties for building graphs. Extendable by series with
-     * multiple lines within one series.
-     *
-     * @private
-     */
-    getZonesGraphs(props) {
-        // Add the zone properties if any
-        this.zones.forEach(function (zone, i) {
-            const propset = [
-                'zone-graph-' + i,
-                'highcharts-graph highcharts-zone-graph-' + i + ' ' +
-                    (zone.className || '')
-            ];
-            if (!this.chart.styledMode) {
-                propset.push((zone.color || this.color), (zone.dashStyle || this.options.dashStyle));
-            }
-            props.push(propset);
-        }, this);
-        return props;
-    }
 }
+/* *
+ *
+ *  Static Functions
+ *
+ * */
 LineSeries.defaultOptions = merge(Series.defaultOptions, 
 /**
  * General options for all series types.
@@ -543,4 +492,4 @@ export default LineSeries;
  * @product   highcharts highstock
  * @apioption series.line.data.marker
  */
-''; // include precedent doclets in transpilat
+''; // Include precedent doclets in transpiled

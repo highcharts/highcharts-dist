@@ -51,7 +51,7 @@ function calculateObstacleMargin(obstacles) {
             }
         }
     }
-    // Ensure we always have at least one value, even in very spaceous charts
+    // Ensure we always have at least one value, even in very spacious charts
     distances.push(80);
     return max(Math.floor(distances.sort((a, b) => (a - b))[
     // Discard first 10% of the relevant distances, and then grab

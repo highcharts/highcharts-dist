@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2023 Highsoft AS
+ *  (c) 2009-2024 Highsoft AS
  *
  *  License: www.highcharts.com/license
  *
@@ -164,7 +164,7 @@ function basicOperation(operator, x, y) {
         default:
             return NaN;
     }
-    // limit decimal to 9 digits
+    // Limit decimal to 9 digits
     return (result % 1 ?
         Math.round(result * 1000000000) / 1000000000 :
         result);
@@ -318,7 +318,7 @@ function processFormula(formula, table) {
         }
         else if (isFunction(item)) {
             result = processFunction(item, table);
-            y = (isValue(result) ? result : NaN); // arrays are not allowed here
+            y = (isValue(result) ? result : NaN); // Arrays are not allowed here
             // Next item is a reference and needs to get resolved
         }
         else if (isReference(item)) {
@@ -356,7 +356,7 @@ function processFormula(formula, table) {
     return isValue(x) ? x : NaN;
 }
 /**
- * Process a function  on the give table. If the arguments do not contain
+ * Process a function on the given table. If the arguments do not contain
  * references or ranges, then no table has to be provided.
  *
  * @private
@@ -373,7 +373,9 @@ function processFormula(formula, table) {
  * @return {Highcharts.FormulaValue|Array<Highcharts.FormulaValue>}
  * Result value (or values) of the process. `NaN` indicates an error.
  */
-function processFunction(formulaFunction, table, reference // @todo
+function processFunction(formulaFunction, table, 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+reference // @todo
 ) {
     const processor = processorFunctions[formulaFunction.name];
     if (processor) {

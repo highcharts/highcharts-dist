@@ -8,7 +8,3 @@
  * in the Highcharts namespace.
  */
 export type GlobalSVGElement = SVGElement;
-/**
- * 3D axis for z coordinates.
- */
-export class ZAxis {}

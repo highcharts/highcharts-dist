@@ -2,7 +2,7 @@
  *
  *  Timeline Series.
  *
- *  (c) 2010-2021 Highsoft AS
+ *  (c) 2010-2024 Highsoft AS
  *
  *  Author: Daniel Studencki
  *
@@ -33,24 +33,6 @@ const { addEvent, arrayMax, arrayMin, defined, extend, merge, pick } = U;
  * @augments Highcharts.Series
  */
 class TimelineSeries extends LineSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        this.userOptions = void 0;
-        this.visibilityMap = void 0;
-    }
     /* *
      *
      *  Functions
@@ -194,8 +176,8 @@ class TimelineSeries extends LineSeries {
                     // Initialize the targetPosition field within data label
                     // object. It's necessary because there is need to know
                     // expected position of specific data label, when
-                    // aligning connectors. This field is overrided inside
-                    // of SVGElement.animate() wrapped  method.
+                    // aligning connectors. This field is overridden inside
+                    // of SVGElement.animate() wrapped method.
                     if (!dataLabel.targetPosition) {
                         dataLabel.targetPosition = {};
                     }
@@ -262,6 +244,11 @@ class TimelineSeries extends LineSeries {
         return;
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 TimelineSeries.defaultOptions = merge(LineSeries.defaultOptions, TimelineSeriesDefaults);
 extend(TimelineSeries.prototype, {
     // Use a group of trackers from TrackerMixin
@@ -307,4 +294,4 @@ export default TimelineSeries;
 * @name Highcharts.TimelineDataLabelsFormatterContextObject#series
 * @type {Highcharts.Series}
 */
-''; // dettach doclets above
+''; // Dettach doclets above

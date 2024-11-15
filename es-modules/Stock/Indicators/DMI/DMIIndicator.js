@@ -1,5 +1,5 @@
 /* *
- *  (c) 2010-2021 Rafal Sebestjanski
+ *  (c) 2010-2024 Rafal Sebestjanski
  *
  *  Directional Movement Index (DMI) indicator for Highcharts Stock
  *
@@ -29,20 +29,6 @@ const { correctFloat, extend, isArray, merge } = U;
  * @augments Highcharts.Series
  */
 class DMIIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.options = void 0;
-    }
     /* *
      *
      *  Functions
@@ -52,11 +38,11 @@ class DMIIndicator extends SMAIndicator {
         const currentHigh = yVal[i][1], currentLow = yVal[i][2], previousHigh = yVal[i - 1][1], previousLow = yVal[i - 1][2];
         let DM;
         if (currentHigh - previousHigh > previousLow - currentLow) {
-            // for +DM
+            // For +DM
             DM = isPositiveDM ? Math.max(currentHigh - previousHigh, 0) : 0;
         }
         else {
-            // for -DM
+            // For -DM
             DM = !isPositiveDM ? Math.max(previousLow - currentLow, 0) : 0;
         }
         return correctFloat(DM);
@@ -72,11 +58,11 @@ class DMIIndicator extends SMAIndicator {
     }
     getTR(currentPoint, prevPoint) {
         return correctFloat(Math.max(
-        // currentHigh - currentLow
+        // `currentHigh - currentLow`
         currentPoint[1] - currentPoint[2], 
-        // currentHigh - previousClose
+        // `currentHigh - previousClose`
         !prevPoint ? 0 : Math.abs(currentPoint[1] - prevPoint[3]), 
-        // currentLow - previousClose
+        // `currentLow - previousClose`
         !prevPoint ? 0 : Math.abs(currentPoint[2] - prevPoint[3])));
     }
     getValues(series, params) {
@@ -143,6 +129,11 @@ class DMIIndicator extends SMAIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Directional Movement Index (DMI).
  * This series requires the `linkedTo` option to be set and should
@@ -166,7 +157,7 @@ DMIIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
      * @excluding index
      */
     params: {
-        index: void 0 // unused index, do not inherit (#15362)
+        index: void 0 // Unused index, do not inherit (#15362)
     },
     marker: {
         enabled: false
@@ -199,7 +190,7 @@ DMIIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
              *
              * @type {Highcharts.ColorString}
              */
-            lineColor: "#06b535" /* Palette.positiveColor */ // green-ish
+            lineColor: "#06b535" /* Palette.positiveColor */ // Green-ish
         }
     },
     /**
@@ -219,7 +210,7 @@ DMIIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
              *
              * @type {Highcharts.ColorString}
              */
-            lineColor: "#f21313" /* Palette.negativeColor */ // red-ish
+            lineColor: "#f21313" /* Palette.negativeColor */ // Red-ish
         }
     },
     dataGrouping: {
@@ -262,4 +253,4 @@ export default DMIIndicator;
  * @requires  stock/indicators/dmi
  * @apioption series.dmi
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

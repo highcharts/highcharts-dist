@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Highsoft AS
+ *  (c) 2010-2024 Highsoft AS
  *
  *  Author: Paweł Potaczek
  *
@@ -14,14 +14,10 @@ import BubbleLegendDefaults from './BubbleLegendDefaults.js';
 import BubbleLegendItem from './BubbleLegendItem.js';
 import D from '../../Core/Defaults.js';
 const { setOptions } = D;
+import H from '../../Core/Globals.js';
+const { composed } = H;
 import U from '../../Core/Utilities.js';
-const { addEvent, objectEach, wrap } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { addEvent, objectEach, pushUnique, wrap } = U;
 /* *
  *
  *  Functions
@@ -51,24 +47,26 @@ function chartDrawChartBox(proceed, options, callback) {
         }
         // Create legend with bubbleLegend
         legend.render();
-        chart.getMargins();
-        chart.axes.forEach(function (axis) {
-            if (axis.visible) { // #11448
-                axis.render();
-            }
-            if (!bubbleLegendOptions.placed) {
-                axis.setScale();
-                axis.updateNames();
-                // Disable axis animation on init
-                objectEach(axis.ticks, function (tick) {
-                    tick.isNew = true;
-                    tick.isNewLabel = true;
-                });
-            }
-        });
+        // Calculate margins after first rendering the bubble legend
+        if (!bubbleLegendOptions.placed) {
+            chart.getMargins();
+            chart.axes.forEach(function (axis) {
+                if (axis.visible) { // #11448
+                    axis.render();
+                }
+                if (!bubbleLegendOptions.placed) {
+                    axis.setScale();
+                    axis.updateNames();
+                    // Disable axis animation on init
+                    objectEach(axis.ticks, function (tick) {
+                        tick.isNew = true;
+                        tick.isNewLabel = true;
+                    });
+                }
+            });
+            chart.getMargins();
+        }
         bubbleLegendOptions.placed = true;
-        // After recalculate axes, calculate margins again.
-        chart.getMargins();
         // Call default 'drawChartBox' method.
         proceed.call(chart, options, callback);
         // Check bubble legend sizes and correct them if necessary.
@@ -94,12 +92,9 @@ function chartDrawChartBox(proceed, options, callback) {
  *
  * @param {Highcharts.Legend} LegendClass
  * Core legend class to use with Bubble series.
- *
- * @param {Highcharts.Series} SeriesClass
- * Core series class to use with Bubble series.
  */
-function compose(ChartClass, LegendClass, SeriesClass) {
-    if (U.pushUnique(composedMembers, ChartClass)) {
+function compose(ChartClass, LegendClass) {
+    if (pushUnique(composed, 'Series.BubbleLegend')) {
         setOptions({
             // Set default bubble legend options
             legend: {
@@ -107,12 +102,8 @@ function compose(ChartClass, LegendClass, SeriesClass) {
             }
         });
         wrap(ChartClass.prototype, 'drawChartBox', chartDrawChartBox);
-    }
-    if (U.pushUnique(composedMembers, LegendClass)) {
         addEvent(LegendClass, 'afterGetAllItems', onLegendAfterGetAllItems);
-    }
-    if (U.pushUnique(composedMembers, SeriesClass)) {
-        addEvent(SeriesClass, 'legendItemClick', onSeriesLegendItemClick);
+        addEvent(LegendClass, 'itemClick', onLegendItemClick);
     }
 }
 /**
@@ -158,7 +149,7 @@ function getLinesHeights(legend) {
         legendItem = items[i].legendItem || {};
         legendItem2 = (items[i + 1] || {}).legendItem || {};
         if (legendItem.labelHeight) {
-            // for bubbleLegend
+            // For bubbleLegend
             items[i].itemHeight = legendItem.labelHeight;
         }
         if ( // Line break
@@ -204,12 +195,12 @@ function onLegendAfterGetAllItems(e) {
 /**
  * Toggle bubble legend depending on the visible status of bubble series.
  */
-function onSeriesLegendItemClick(e) {
+function onLegendItemClick(e) {
     // #14080 don't fire this code if click function is prevented
     if (e.defaultPrevented) {
         return false;
     }
-    const series = this, chart = series.chart, visible = series.visible, legend = series.chart.legend;
+    const legend = this, series = e.legendItem, chart = legend.chart, visible = series.visible;
     let status;
     if (legend && legend.bubbleLegend) {
         // Temporary correct 'visible' property

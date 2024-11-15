@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2021 Øystein Moseng
+ *  (c) 2009-2024 Øystein Moseng
  *
  *  Class that can keep track of elements added to DOM and clean them up on
  *  destroy.
@@ -41,6 +41,14 @@ class DOMElementProvider {
         const el = doc.createElement.apply(doc, arguments);
         this.elements.push(el);
         return el;
+    }
+    /**
+     * Destroy created element, removing it from the DOM.
+     * @private
+     */
+    removeElement(element) {
+        removeElement(element);
+        this.elements.splice(this.elements.indexOf(element), 1);
     }
     /**
      * Destroy all created elements, removing them from the DOM.

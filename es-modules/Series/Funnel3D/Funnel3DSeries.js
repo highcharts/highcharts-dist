@@ -2,7 +2,7 @@
  *
  *  Highcharts funnel3d series module
  *
- *  (c) 2010-2021 Highsoft AS
+ *  (c) 2010-2024 Highsoft AS
  *
  *  Author: Kacper Madej
  *
@@ -31,6 +31,7 @@ const { extend, merge, pick, relativeLength } = U;
 /**
  * The funnel3d series type.
  *
+ * @private
  * @class
  * @name Highcharts.seriesTypes.funnel3d
  * @augments seriesTypes.column
@@ -39,23 +40,6 @@ const { extend, merge, pick, relativeLength } = U;
  * @requires modules/funnel3d
  */
 class Funnel3DSeries extends ColumnSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.center = void 0;
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -84,7 +68,7 @@ class Funnel3DSeries extends ColumnSeries {
             dlBox.x -= dlBox.width / 2;
         }
         else {
-            // swap for inside
+            // Swap for inside
             if (options.align === 'left') {
                 options.align = 'right';
                 dlBox.x -= dlBox.width * 1.5;
@@ -125,8 +109,8 @@ class Funnel3DSeries extends ColumnSeries {
      */
     translate() {
         Series.prototype.translate.apply(this, arguments);
-        const series = this, chart = series.chart, options = series.options, reversed = options.reversed, ignoreHiddenPoint = options.ignoreHiddenPoint, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, center = options.center, centerX = relativeLength(center[0], plotWidth), centerY = relativeLength(center[1], plotHeight), width = relativeLength(options.width, plotWidth), height = relativeLength(options.height, plotHeight), neckWidth = relativeLength(options.neckWidth, plotWidth), neckHeight = relativeLength(options.neckHeight, plotHeight), neckY = (centerY - height / 2) + height - neckHeight, data = series.data;
-        let sum = 0, cumulative = 0, // start at top
+        const series = this, chart = series.chart, options = series.options, reversed = options.reversed, ignoreHiddenPoint = options.ignoreHiddenPoint, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, center = options.center, centerX = relativeLength(center[0], plotWidth), centerY = relativeLength(center[1], plotHeight), width = relativeLength(options.width, plotWidth), height = relativeLength(options.height, plotHeight), neckWidth = relativeLength(options.neckWidth, plotWidth), neckHeight = relativeLength(options.neckHeight, plotHeight), neckY = (centerY - height / 2) + height - neckHeight, points = series.points;
+        let sum = 0, cumulative = 0, // Start at top
         tempWidth, getWidthAt, fraction, tooltipPos, 
         //
         y1, y3, y5, 
@@ -162,13 +146,13 @@ class Funnel3DSeries extends ColumnSeries {
             *        ___centerX,y5___
             */
         // get the total sum
-        for (const point of data) {
+        for (const point of points) {
             if (!ignoreHiddenPoint || point.visible !== false) {
                 sum += point.y;
             }
         }
-        for (const point of data) {
-            // set start and end positions
+        for (const point of points) {
+            // Set start and end positions
             y5 = null;
             fraction = sum ? point.y / sum : 0;
             y1 = centerY - height / 2 + cumulative * height;
@@ -176,7 +160,7 @@ class Funnel3DSeries extends ColumnSeries {
             tempWidth = getWidthAt(y1);
             h = y3 - y1;
             shapeArgs = {
-                // for fill setter
+                // For fill setter
                 gradientForSides: pick(point.options.gradientForSides, options.gradientForSides),
                 x: centerX,
                 y: y1,
@@ -192,12 +176,12 @@ class Funnel3DSeries extends ColumnSeries {
                 fraction: fraction,
                 width: tempWidth
             };
-            // the entire point is within the neck
+            // The entire point is within the neck
             if (y1 >= neckY) {
                 shapeArgs.isCylinder = true;
             }
             else if (y3 > neckY) {
-                // the base of the neck
+                // The base of the neck
                 y5 = y3;
                 tempWidth = getWidthAt(neckY);
                 y3 = neckY;
@@ -219,7 +203,7 @@ class Funnel3DSeries extends ColumnSeries {
                 shapeArgs.bottom.width = tempWidth;
             }
             point.shapeArgs = extend(point.shapeArgs, shapeArgs);
-            // for tooltips and data labels context
+            // For tooltips and data labels context
             point.percentage = fraction * 100;
             point.plotX = centerX;
             if (reversed) {
@@ -238,7 +222,7 @@ class Funnel3DSeries extends ColumnSeries {
                         -(getWidthAt(point.plotY)) / 2
                 }], chart, true)[0];
             point.tooltipPos = [tooltipPos.x, tooltipPos.y];
-            // base to be used when alignment options are known
+            // Base to be used when alignment options are known
             point.dlBoxRaw = {
                 x: centerX,
                 width: getWidthAt(point.plotY),
@@ -252,6 +236,11 @@ class Funnel3DSeries extends ColumnSeries {
         }
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 Funnel3DSeries.compose = Funnel3DComposition.compose;
 Funnel3DSeries.defaultOptions = merge(ColumnSeries.defaultOptions, Funnel3DSeriesDefaults);
 extend(Funnel3DSeries.prototype, {

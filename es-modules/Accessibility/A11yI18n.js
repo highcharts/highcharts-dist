@@ -2,7 +2,7 @@
  *
  *  Accessibility module - internationalization support
  *
- *  (c) 2010-2021 Highsoft AS
+ *  (c) 2010-2024 Highsoft AS
  *  Author: Øystein Moseng
  *
  *  License: www.highcharts.com/license
@@ -29,29 +29,21 @@ var A11yI18nComposition;
      * */
     /* *
      *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * @private
      */
     function compose(ChartClass) {
-        if (U.pushUnique(composedMembers, ChartClass)) {
-            const chartProto = ChartClass.prototype;
+        const chartProto = ChartClass.prototype;
+        if (!chartProto.langFormat) {
             chartProto.langFormat = langFormat;
         }
-        return ChartClass;
     }
     A11yI18nComposition.compose = compose;
     /**
-     * i18n utility function.  Format a single array or plural statement in a
+     * I18n utility function.  Format a single array or plural statement in a
      * format string.  If the statement is not an array or plural statement,
      * returns the statement within brackets.  Invalid array statements return
      * an empty string.
@@ -155,7 +147,7 @@ var A11yI18nComposition;
      * If negative, the function will subtract the number from the length of the
      * array.  Use this to stop iterating before the array ends.  Example:
      *
-     * - Format: 'List contains: {#each(myArray, -1) }and {myArray[-1]}.'
+     * - Format: 'List contains: {#each(myArray, -1), }and {myArray[-1]}.'
      *
      * - Context: { myArray: [0, 1, 2, 3] }
      *

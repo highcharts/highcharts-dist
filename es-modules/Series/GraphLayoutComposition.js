@@ -2,7 +2,7 @@
  *
  *  Networkgraph series
  *
- *  (c) 2010-2021 Paweł Fus
+ *  (c) 2010-2024 Paweł Fus
  *
  *  License: www.highcharts.com/license
  *
@@ -12,14 +12,15 @@
 'use strict';
 import A from '../Core/Animation/AnimationUtilities.js';
 const { setAnimation } = A;
+import H from '../Core/Globals.js';
+const { composed } = H;
 import U from '../Core/Utilities.js';
-const { addEvent } = U;
+const { addEvent, pushUnique } = U;
 /* *
  *
  *  Constants
  *
  * */
-const composedMembers = [];
 const integrations = {};
 const layouts = {};
 /* *
@@ -31,7 +32,7 @@ const layouts = {};
  * @private
  */
 function compose(ChartClass) {
-    if (U.pushUnique(composedMembers, ChartClass)) {
+    if (pushUnique(composed, 'GraphLayout')) {
         addEvent(ChartClass, 'afterPrint', onChartAfterPrint);
         addEvent(ChartClass, 'beforePrint', onChartBeforePrint);
         addEvent(ChartClass, 'predraw', onChartPredraw);
@@ -45,7 +46,7 @@ function compose(ChartClass) {
 function onChartAfterPrint() {
     if (this.graphLayoutsLookup) {
         this.graphLayoutsLookup.forEach((layout) => {
-            // return to default simulation
+            // Return to default simulation
             layout.updateSimulation();
         });
         this.redraw();

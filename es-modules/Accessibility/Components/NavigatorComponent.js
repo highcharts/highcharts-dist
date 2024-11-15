@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2023 Highsoft AS
+ *  (c) 2009-2024 Highsoft AS
  *
  *  Accessibility component for the navigator.
  *
@@ -38,10 +38,6 @@ const { getAxisRangeDescription, fireEventOnWrappedOrUnwrappedElement } = CU;
  * @name Highcharts.NavigatorComponent
  */
 class NavigatorComponent extends AccessibilityComponent {
-    constructor() {
-        super(...arguments);
-        this.announcer = void 0;
-    }
     /**
      * Init the component
      * @private
@@ -66,8 +62,8 @@ class NavigatorComponent extends AccessibilityComponent {
      * @private
      */
     onChartUpdate() {
-        const chart = this.chart, options = chart.options;
-        if (options.navigator.accessibility?.enabled) {
+        const chart = this.chart, options = chart.options, navigator = options.navigator;
+        if (navigator.enabled && navigator.accessibility?.enabled) {
             const verbosity = options.accessibility.landmarkVerbosity, groupFormatStr = options.lang
                 .accessibility?.navigator.groupLabel;
             // We just recreate the group for simplicity. Could consider
@@ -185,9 +181,12 @@ class NavigatorComponent extends AccessibilityComponent {
      */
     updateNavigator(beforeAnnounce) {
         const performUpdate = (beforeAnnounce) => {
-            const chart = this.chart, navigator = chart.navigator;
-            if (navigator && this.minHandleProxy && this.maxHandleProxy) {
-                const chartPos = chart.pointer.getChartPosition(), minNewX = parseFloat(this.minHandleProxy.value) /
+            const chart = this.chart, { navigator, pointer } = chart;
+            if (navigator &&
+                pointer &&
+                this.minHandleProxy &&
+                this.maxHandleProxy) {
+                const chartPos = pointer.getChartPosition(), minNewX = parseFloat(this.minHandleProxy.value) /
                     100 * navigator.size, maxNewX = parseFloat(this.maxHandleProxy.value) /
                     100 * navigator.size;
                 // Fire fake events in order for each handle.

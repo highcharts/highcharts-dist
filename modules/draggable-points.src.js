@@ -1,7 +1,7 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
- * (c) 2009-2021 Torstein Honsi
+ * (c) 2009-2024 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -26,7 +26,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -36,7 +36,7 @@
     _registerModule(_modules, 'Extensions/DraggablePoints/DragDropUtilities.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
-         *  (c) 2009-2021 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  Authors: Øystein Moseng, Torstein Hønsi, Jon A. Nygård
          *
@@ -128,7 +128,7 @@
         function getNormalizedEvent(e, chart) {
             return (typeof e.chartX === 'undefined' ||
                 typeof e.chartY === 'undefined' ?
-                chart.pointer.normalize(e) :
+                chart.pointer?.normalize(e) || e :
                 e);
         }
         /* *
@@ -148,7 +148,7 @@
     _registerModule(_modules, 'Extensions/DraggablePoints/DragDropDefaults.js', [], function () {
         /* *
          *
-         *  (c) 2009-2021 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  Authors: Øystein Moseng, Torstein Hønsi, Jon A. Nygård
          *
@@ -451,8 +451,9 @@
              * Style options for the guide box. The guide box has one state by default,
              * the `default` state.
              *
-             * @type  {Highcharts.Dictionary<Highcharts.DragDropGuideBoxOptionsObject>}
+             * @declare Highcharts.PlotOptionsSeriesDragDropGuideBoxOptions
              * @since 6.2.0
+             * @type  {Highcharts.Dictionary<Highcharts.DragDropGuideBoxOptionsObject>}
              */
             guideBox: {
                 /**
@@ -515,7 +516,7 @@
     _registerModule(_modules, 'Extensions/DraggablePoints/DraggableChart.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Extensions/DraggablePoints/DragDropUtilities.js'], _modules['Extensions/DraggablePoints/DragDropDefaults.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (A, DDU, DragDropDefaults, H, U) {
         /* *
          *
-         *  (c) 2009-2021 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  Authors: Øystein Moseng, Torstein Hønsi, Jon A. Nygård
          *
@@ -527,13 +528,7 @@
         const { animObject } = A;
         const { addEvents, countProps, getFirstProp, getNormalizedEvent } = DDU;
         const { doc } = H;
-        const { addEvent, merge, pick, pushUnique } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { addEvent, merge, pick } = U;
         /* *
          *
          *  Functions
@@ -647,8 +642,8 @@
          *        Class constructor of chart.
          */
         function compose(ChartClass) {
-            if (pushUnique(composedMembers, ChartClass)) {
-                const chartProto = ChartClass.prototype;
+            const chartProto = ChartClass.prototype;
+            if (!chartProto.hideDragHandles) {
                 chartProto.hideDragHandles = chartHideDragHandles;
                 chartProto.setGuideBoxState = chartSetGuideBoxState;
                 chartProto.zoomOrPanKeyPressed = chartZoomOrPanKeyPressed;
@@ -734,7 +729,7 @@
             let points = [];
             if (series.boosted) { // #11156
                 for (let i = 0, iEnd = data.length; i < iEnd; ++i) {
-                    points.push((new series.pointClass()).init(// eslint-disable-line new-cap
+                    points.push(new series.pointClass(// eslint-disable-line new-cap
                     series, data[i]));
                     points[points.length - 1].index = i;
                 }
@@ -857,7 +852,7 @@
                     }
                     else {
                         pointProps[key + 'Offset'] =
-                            // e.g. yAxis.toPixels(point.high), xAxis.toPixels
+                            // E.g. yAxis.toPixels(point.high), xAxis.toPixels
                             // (point.end)
                             axis.toPixels(point[key]) -
                                 (axis.horiz ? e.chartX : e.chartY);
@@ -1174,7 +1169,7 @@
          */
         function resizeGuideBox(point, dX, dY) {
             const series = point.series, chart = series.chart, dragDropData = chart.dragDropData, resizeProp = series.dragDropProps[dragDropData.updateProp], 
-            // dragDropProp.resizeSide holds info on which side to resize.
+            // `dragDropProp.resizeSide` holds info on which side to resize.
             newPoint = dragDropData.newPoints[point.id].newValues, resizeSide = typeof resizeProp.resizeSide === 'function' ?
                 resizeProp.resizeSide(newPoint, point) : resizeProp.resizeSide;
             // Call resize hook if it is defined
@@ -1281,7 +1276,7 @@
     _registerModule(_modules, 'Extensions/DraggablePoints/DragDropProps.js', [_modules['Extensions/DraggablePoints/DraggableChart.js'], _modules['Core/Utilities.js']], function (DraggableChart, U) {
         /* *
          *
-         *  (c) 2009-2021 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  Authors: Øystein Moseng, Torstein Hønsi, Jon A. Nygård
          *
@@ -1480,6 +1475,22 @@
                 propValidate: (val, point) => (val >= point.q3)
             }
         };
+        // Errorbar series - move x, resize or move low/high
+        const errorbar = {
+            x: column.x,
+            low: {
+                ...boxplot.low,
+                propValidate: (val, point) => (val <= point.high)
+            },
+            high: {
+                ...boxplot.high,
+                propValidate: (val, point) => (val >= point.low)
+            }
+        };
+        /**
+         * @exclude      draggableQ1, draggableQ3
+         * @optionparent plotOptions.errorbar.dragDrop
+         */
         // Bullet graph, x/y same as column, but also allow target to be dragged.
         const bullet = {
             x: column.x,
@@ -1861,6 +1872,7 @@
             bullet,
             column,
             columnrange,
+            errorbar,
             flags,
             gantt,
             line,
@@ -1874,7 +1886,7 @@
     _registerModule(_modules, 'Extensions/DraggablePoints/DraggablePoints.js', [_modules['Extensions/DraggablePoints/DragDropUtilities.js'], _modules['Extensions/DraggablePoints/DraggableChart.js'], _modules['Extensions/DraggablePoints/DragDropDefaults.js'], _modules['Extensions/DraggablePoints/DragDropProps.js'], _modules['Core/Utilities.js']], function (DDU, DraggableChart, DragDropDefaults, DragDropProps, U) {
         /* *
          *
-         *  (c) 2009-2021 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  Authors: Øystein Moseng, Torstein Hønsi, Jon A. Nygård
          *
@@ -1885,13 +1897,7 @@
          * */
         const { addEvents, getNormalizedEvent } = DDU;
         const { initDragDrop } = DraggableChart;
-        const { addEvent, clamp, isNumber, merge, pick, pushUnique } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { addEvent, clamp, isNumber, merge, pick } = U;
         /* *
          *
          *  Functions
@@ -1901,7 +1907,7 @@
         Add drag/drop support to specific data props for different series types.
 
         The dragDrop.draggableX/Y user options on series enable/disable all of these per
-        irection unless they are specifically set in options using
+        direction unless they are specifically set in options using
         dragDrop.{optionName}. If the prop does not specify an optionName here, it can
         only be enabled/disabled by the user with draggableX/Y.
 
@@ -1941,61 +1947,58 @@
         */
         /** @private */
         function compose(ChartClass, SeriesClass) {
-            const PointClass = SeriesClass.prototype.pointClass, seriesTypes = SeriesClass.types;
             DraggableChart.compose(ChartClass);
-            if (pushUnique(composedMembers, PointClass)) {
-                const pointProto = PointClass.prototype;
+            const seriesProto = SeriesClass.prototype;
+            if (!seriesProto.dragDropProps) {
+                const PointClass = SeriesClass.prototype.pointClass, seriesTypes = SeriesClass.types, pointProto = PointClass.prototype;
                 pointProto.getDropValues = pointGetDropValues;
                 pointProto.showDragHandles = pointShowDragHandles;
                 addEvent(PointClass, 'mouseOut', onPointMouseOut);
                 addEvent(PointClass, 'mouseOver', onPointMouseOver);
                 addEvent(PointClass, 'remove', onPointRemove);
-            }
-            if (pushUnique(composedMembers, SeriesClass)) {
-                const seriesProto = SeriesClass.prototype;
                 seriesProto.dragDropProps = DragDropProps.line;
                 seriesProto.getGuideBox = seriesGetGuideBox;
-            }
-            // Custom props for certain series types
-            const seriesWithDragDropProps = [
-                'arearange',
-                'boxplot',
-                'bullet',
-                'column',
-                'columnrange',
-                'flags',
-                'gantt',
-                'ohlc',
-                'waterfall',
-                'xrange'
-            ];
-            for (const seriesType of seriesWithDragDropProps) {
-                if (seriesTypes[seriesType] &&
-                    pushUnique(composedMembers, seriesTypes[seriesType])) {
-                    seriesTypes[seriesType].prototype.dragDropProps =
-                        DragDropProps[seriesType];
+                // Custom props for certain series types
+                const seriesWithDragDropProps = [
+                    'arearange',
+                    'boxplot',
+                    'bullet',
+                    'column',
+                    'columnrange',
+                    'errorbar',
+                    'flags',
+                    'gantt',
+                    'ohlc',
+                    'waterfall',
+                    'xrange'
+                ];
+                for (const seriesType of seriesWithDragDropProps) {
+                    if (seriesTypes[seriesType]) {
+                        seriesTypes[seriesType].prototype.dragDropProps =
+                            DragDropProps[seriesType];
+                    }
                 }
-            }
-            // Don't support certain series types
-            const seriesWithoutDragDropProps = [
-                'bellcurve',
-                'gauge',
-                'histogram',
-                'map',
-                'mapline',
-                'pareto',
-                'pie',
-                'sankey',
-                'sma',
-                'sunburst',
-                'treemap',
-                'vector',
-                'windbarb',
-                'wordcloud'
-            ];
-            for (const seriesType of seriesWithoutDragDropProps) {
-                if (seriesTypes[seriesType]) {
-                    seriesTypes[seriesType].prototype.dragDropProps = null;
+                // Don't support certain series types
+                const seriesWithoutDragDropProps = [
+                    'bellcurve',
+                    'gauge',
+                    'histogram',
+                    'map',
+                    'mapline',
+                    'pareto',
+                    'pie',
+                    'sankey',
+                    'sma',
+                    'sunburst',
+                    'treemap',
+                    'vector',
+                    'windbarb',
+                    'wordcloud'
+                ];
+                for (const seriesType of seriesWithoutDragDropProps) {
+                    if (seriesTypes[seriesType]) {
+                        seriesTypes[seriesType].prototype.dragDropProps = null;
+                    }
                 }
             }
         }
@@ -2205,20 +2208,20 @@
                         return res;
                     }
                     if (key === 'lat') {
-                        // if map is bigger than possible projection range
+                        // If map is bigger than possible projection range
                         if (isNaN(min) || min > mapView.projection.maxLatitude) {
                             min = mapView.projection.maxLatitude;
                         }
                         if (isNaN(max) || max < -1 * mapView.projection.maxLatitude) {
                             max = -1 * mapView.projection.maxLatitude;
                         }
-                        // swap for latitude
+                        // Swap for latitude
                         const temp = max;
                         max = min;
                         min = temp;
                     }
                     if (!mapView.projection.hasCoordinates) {
-                        // establish y value
+                        // Establish y value
                         const lonLatRes = mapView.pixelsToLonLat({
                             x: newPos.chartX - chart.plotLeft,
                             y: chart.plotHeight - newPos.chartY + chart.plotTop
@@ -2427,7 +2430,7 @@
          * @callback Highcharts.PointDragCallbackFunction
          *
          * @param {Highcharts.Point} this
-         *        Point where the event occured.
+         *        Point where the event occurred.
          *
          * @param {Highcharts.PointDragEventObject} event
          *        Event arguments.
@@ -2484,7 +2487,7 @@
          * @callback Highcharts.PointDragStartCallbackFunction
          *
          * @param {Highcharts.Point} this
-         *        Point where the event occured.
+         *        Point where the event occurred.
          *
          * @param {Highcharts.PointDragStartEventObject} event
          *        Event arguments.
@@ -2505,7 +2508,7 @@
          * @callback Highcharts.PointDropCallbackFunction
          *
          * @param {Highcharts.Point} this
-         *        Point where the event occured.
+         *        Point where the event occurred.
          *
          * @param {Highcharts.PointDropEventObject} event
          *        Event arguments.
@@ -2547,7 +2550,7 @@
         * @name Highcharts.PointDropEventObject#type
         * @type {"drop"}
         */
-        ''; // detaches doclets above
+        ''; // Detaches doclets above
 
         return DraggablePoints;
     });
@@ -2556,5 +2559,6 @@
         const G = Highcharts;
         DraggablePoints.compose(G.Chart, G.Series);
 
+        return Highcharts;
     });
 }));

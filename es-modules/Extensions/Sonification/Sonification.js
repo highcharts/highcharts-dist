@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2022 Øystein Moseng
+ *  (c) 2009-2024 Øystein Moseng
  *
  *  Sonification module.
  *
@@ -61,7 +61,7 @@ class Sonification {
             this.audioContext.suspend();
             this.audioDestination = this.audioContext.destination;
         }
-        catch (e) { /* ignore */ }
+        catch (e) { /* Ignore */ }
     }
     /**
      * Set the audio destination node to something other than the default

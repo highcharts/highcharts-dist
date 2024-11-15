@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2021 Highsoft AS
+ *  (c) 2009-2024 Highsoft AS
  *
  *  Authors: Øystein Moseng, Torstein Hønsi, Jon A. Nygård
  *
@@ -18,13 +18,7 @@ import DragDropDefaults from './DragDropDefaults.js';
 import H from '../../Core/Globals.js';
 const { doc } = H;
 import U from '../../Core/Utilities.js';
-const { addEvent, merge, pick, pushUnique } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { addEvent, merge, pick } = U;
 /* *
  *
  *  Functions
@@ -138,8 +132,8 @@ function chartZoomOrPanKeyPressed(e) {
  *        Class constructor of chart.
  */
 function compose(ChartClass) {
-    if (pushUnique(composedMembers, ChartClass)) {
-        const chartProto = ChartClass.prototype;
+    const chartProto = ChartClass.prototype;
+    if (!chartProto.hideDragHandles) {
         chartProto.hideDragHandles = chartHideDragHandles;
         chartProto.setGuideBoxState = chartSetGuideBoxState;
         chartProto.zoomOrPanKeyPressed = chartZoomOrPanKeyPressed;
@@ -225,7 +219,7 @@ function getGroupedPoints(point) {
     let points = [];
     if (series.boosted) { // #11156
         for (let i = 0, iEnd = data.length; i < iEnd; ++i) {
-            points.push((new series.pointClass()).init(// eslint-disable-line new-cap
+            points.push(new series.pointClass(// eslint-disable-line new-cap
             series, data[i]));
             points[points.length - 1].index = i;
         }
@@ -348,7 +342,7 @@ function getPositionSnapshot(e, points, guideBox) {
             }
             else {
                 pointProps[key + 'Offset'] =
-                    // e.g. yAxis.toPixels(point.high), xAxis.toPixels
+                    // E.g. yAxis.toPixels(point.high), xAxis.toPixels
                     // (point.end)
                     axis.toPixels(point[key]) -
                         (axis.horiz ? e.chartX : e.chartY);
@@ -665,7 +659,7 @@ function onChartRender() {
  */
 function resizeGuideBox(point, dX, dY) {
     const series = point.series, chart = series.chart, dragDropData = chart.dragDropData, resizeProp = series.dragDropProps[dragDropData.updateProp], 
-    // dragDropProp.resizeSide holds info on which side to resize.
+    // `dragDropProp.resizeSide` holds info on which side to resize.
     newPoint = dragDropData.newPoints[point.id].newValues, resizeSide = typeof resizeProp.resizeSide === 'function' ?
         resizeProp.resizeSide(newPoint, point) : resizeProp.resizeSide;
     // Call resize hook if it is defined

@@ -32,8 +32,10 @@ class BasicAnnotation extends Annotation {
         if (options.shapes) {
             delete options.labelOptions;
             const type = options.shapes[0].type;
+            options.shapes[0].className =
+                (options.shapes[0].className || '') + ' highcharts-basic-shape';
             // The rectangle is rendered as a path, whereas other basic shapes
-            // are rendered as their respecitve SVG shapes.
+            // are rendered as their respective SVG shapes.
             if (type && type !== 'path') {
                 this.basicType = type;
             }
@@ -119,16 +121,19 @@ BasicAnnotation.basicControlPoints = {
             },
             events: {
                 drag: function (e, target) {
-                    const annotation = target.annotation, coords = this.chart.pointer.getCoordinates(e), points = target.options.points, shapes = annotation.userOptions.shapes, xAxisIndex = annotation.clipXAxis?.index || 0, yAxisIndex = annotation.clipYAxis?.index || 0, x = coords.xAxis[xAxisIndex].value, y = coords.yAxis[yAxisIndex].value;
-                    // Top right point
-                    points[1].x = x;
-                    // Bottom right point (cursor position)
-                    points[2].x = x;
-                    points[2].y = y;
-                    // Bottom left
-                    points[3].y = y;
-                    if (shapes && shapes[0]) {
-                        shapes[0].points = target.options.points;
+                    const annotation = target.annotation, coords = this.chart.pointer?.getCoordinates(e), points = target.options.points, shapes = annotation.userOptions.shapes, xAxisIndex = annotation.clipXAxis?.index || 0, yAxisIndex = annotation.clipYAxis?.index || 0;
+                    if (coords) {
+                        const x = coords.xAxis[xAxisIndex].value, y = coords.yAxis[yAxisIndex].value;
+                        // Top right point
+                        points[1].x = x;
+                        // Bottom right point (cursor position)
+                        points[2].x = x;
+                        points[2].y = y;
+                        // Bottom left
+                        points[3].y = y;
+                        if (shapes && shapes[0]) {
+                            shapes[0].points = target.options.points;
+                        }
                     }
                     annotation.redraw(false);
                 }

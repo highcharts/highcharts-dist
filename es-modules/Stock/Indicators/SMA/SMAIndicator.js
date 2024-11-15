@@ -22,24 +22,6 @@ const { addEvent, fireEvent, error, extend, isArray, merge, pick, splat } = U;
  * @private
  */
 class SMAIndicator extends LineSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.dataEventsToUnbind = void 0;
-        this.linkedParent = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -180,7 +162,7 @@ class SMAIndicator extends LineSeries {
         // for example when using Axis.setDataGrouping(). See #16670
         const processedData = indicator.linkedParent.options &&
             indicator.linkedParent.yData && // #18176, #18177 indicators should
-            indicator.linkedParent.yData.length ? // work with empty dataset
+            indicator.linkedParent.yData.length ? // Work with empty dataset
             (indicator.getValues(indicator.linkedParent, indicator.options.params) || emptySet) : emptySet;
         // We need to update points to reflect changes in all,
         // x and y's, values. However, do it only for non-grouped
@@ -253,6 +235,11 @@ class SMAIndicator extends LineSeries {
         return;
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * The parameter allows setting line series type and use OHLC indicators.
  * Data in OHLC format is required.
@@ -315,7 +302,7 @@ SMAIndicator.defaultOptions = merge(LineSeries.defaultOptions, {
      */
     compareToMain: false,
     /**
-     * Paramters used in calculation of regression series' points.
+     * Parameters used in calculation of regression series' points.
      */
     params: {
         /**
@@ -338,7 +325,7 @@ extend(SMAIndicator.prototype, {
     },
     hasDerivedData: true,
     nameComponents: ['period'],
-    nameSuffixes: [],
+    nameSuffixes: [], // E.g. Zig Zag uses extra '%'' in the legend name
     useCommonDataGrouping: true
 });
 SeriesRegistry.registerSeriesType('sma', SMAIndicator);
@@ -364,4 +351,4 @@ export default SMAIndicator;
  * @requires  stock/indicators/indicators
  * @apioption series.sma
  */
-(''); // adds doclet above to the transpiled file
+(''); // Adds doclet above to the transpiled file

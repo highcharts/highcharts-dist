@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2021 Øystein Moseng
+ *  (c) 2009-2024 Øystein Moseng
  *
  *  Default lang/i18n options for accessibility.
  *
@@ -309,7 +309,7 @@ const langOptions = {
             bubbleSingle: 'Bubble chart with {numPoints} ' +
                 '{#eq numPoints 1}bubbles{else}bubble{/eq}.',
             bubbleMultiple: 'Bubble chart with {numSeries} data series.'
-        },
+        }, /* eslint-enable max-len */
         /**
          * Axis description format strings.
          *
@@ -327,7 +327,7 @@ const langOptions = {
             timeRangeSeconds: 'Data range: {range} seconds.',
             rangeFromTo: 'Data ranges from {rangeFrom} to {rangeTo}.',
             rangeCategories: 'Data range: {numCategories} categories.'
-        },
+        }, /* eslint-enable max-len */
         /**
          * Exporting menu format strings for accessibility module.
          *
@@ -390,7 +390,7 @@ const langOptions = {
                 maplineCombination: '{series.name}, series {seriesNumber} of {chart.series.length}. Line with {series.points.length} data {#eq series.points.length 1}point{else}points{/eq}.',
                 mapbubble: '{series.name}, bubble series {seriesNumber} of {chart.series.length} with {series.points.length} {#eq series.points.length 1}bubble{else}bubbles{/eq}.',
                 mapbubbleCombination: '{series.name}, series {seriesNumber} of {chart.series.length}. Bubble series with {series.points.length} {#eq series.points.length 1}bubble{else}bubbles{/eq}.'
-            },
+            }, /* eslint-enable max-len */
             /**
              * User supplied description text. This is added in the point
              * comment description by default if present.
@@ -402,14 +402,14 @@ const langOptions = {
              */
             description: '{description}',
             /**
-             * xAxis description for series if there are multiple xAxes in
+             * X-axis description for series if there are multiple xAxes in
              * the chart.
              *
              * @since 6.0.6
              */
             xAxisDescription: 'X axis, {name}',
             /**
-             * yAxis description for series if there are multiple yAxes in
+             * Y-axis description for series if there are multiple yAxes in
              * the chart.
              *
              * @since 6.0.6

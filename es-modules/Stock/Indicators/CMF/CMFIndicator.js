@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Highsoft AS
+ *  (c) 2010-2024 Highsoft AS
  *
  *  Author: Sebastian Domas
  *
@@ -38,17 +38,6 @@ class CMFIndicator extends SMAIndicator {
          *
          * */
         super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        this.volumeSeries = void 0;
-        this.linkedParent = void 0;
-        this.yData = void 0;
         this.nameBase = 'Chaikin Money Flow';
     }
     /* *
@@ -213,10 +202,10 @@ CMFIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
      * @excluding index
      */
     params: {
-        index: void 0,
+        index: void 0, // Unused index, do not inherit (#15362)
         /**
          * The id of another series to use its data as volume data for the
-         * indiator calculation.
+         * indicator calculation.
          */
         volumeSeriesID: 'volume'
     }
@@ -245,4 +234,4 @@ export default CMFIndicator;
  * @requires  stock/indicators/cmf
  * @apioption series.cmf
  */
-''; // adds doclet above to the transpiled file
+''; // Adds doclet above to the transpiled file

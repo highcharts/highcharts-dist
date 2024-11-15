@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -282,14 +282,14 @@ const HeatmapSeriesDefaults = {
     },
     clip: true,
     /** @ignore-option */
-    pointRange: null,
+    pointRange: null, // Dynamically set to colsize by default
     tooltip: {
         pointFormat: '{point.x}, {point.y}: {point.value}<br/>'
     },
     states: {
         hover: {
             /** @ignore-option */
-            halo: false,
+            halo: false, // #3406, halo is disabled on heatmaps by default
             /**
              * How much to brighten the point on interaction. Requires the
              * main color to be defined in hex or rgb(a) format.
@@ -382,7 +382,7 @@ const HeatmapSeriesDefaults = {
  * @apioption series.heatmap.data.color
  */
 /**
- * The value of the point, resulting in a color controled by options
+ * The value of the point, resulting in a color controlled by options
  * as set in the [colorAxis](#colorAxis) configuration.
  *
  * @type      {number}
@@ -630,7 +630,7 @@ const HeatmapSeriesDefaults = {
  * @product   highcharts highstock
  * @apioption series.heatmap.data.marker.states.select.heightPlus
  */
-''; // keeps doclets above separate
+''; // Keeps doclets above separate
 /* *
  *
  *  Default Export

@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -9,10 +9,10 @@
  * */
 'use strict';
 import H from './Globals.js';
-const { charts, doc, noop, win } = H;
+const { charts, composed, doc, noop, win } = H;
 import Pointer from './Pointer.js';
 import U from './Utilities.js';
-const { addEvent, css, objectEach, pick, removeEvent } = U;
+const { addEvent, attr, css, defined, objectEach, pick, pushUnique, removeEvent } = U;
 /* *
  *
  *  Constants
@@ -44,12 +44,12 @@ function getWebkitTouches() {
 }
 /** @private */
 function translateMSPointer(e, method, wktype, func) {
-    const chart = charts[Pointer.hoverChartIndex || NaN];
-    if ((e.pointerType === 'touch' ||
-        e.pointerType === e.MSPOINTER_TYPE_TOUCH) && chart) {
-        const p = chart.pointer;
+    const pointer = charts[Pointer.hoverChartIndex ?? -1]?.pointer;
+    if (pointer &&
+        (e.pointerType === 'touch' ||
+            e.pointerType === e.MSPOINTER_TYPE_TOUCH)) {
         func(e);
-        p[method]({
+        pointer[method]({
             type: wktype,
             target: e.currentTarget,
             preventDefault: noop,
@@ -70,7 +70,7 @@ class MSPointer extends Pointer {
      *
      * */
     static isRequired() {
-        return !!(!H.hasTouch && (win.PointerEvent || win.MSPointerEvent));
+        return !!(!win.TouchEvent && (win.PointerEvent || win.MSPointerEvent));
     }
     /* *
      *
@@ -93,13 +93,54 @@ class MSPointer extends Pointer {
         super.destroy();
     }
     // Disable default IE actions for pinch and such on chart element
-    init(chart, options) {
-        super.init(chart, options);
+    constructor(chart, options) {
+        super(chart, options);
         if (this.hasZoom) { // #4014
             css(chart.container, {
                 '-ms-touch-action': 'none',
                 'touch-action': 'none'
             });
+        }
+    }
+    /**
+     * Utility to detect whether an element has, or has a parent with, a
+     * specific class name. Used on detection of tracker objects and on deciding
+     * whether hovering the tooltip should cause the active series to mouse out.
+     *
+     * @function Highcharts.Pointer#inClass
+     *
+     * @param {Highcharts.SVGDOMElement|Highcharts.HTMLDOMElement} element
+     * The element to investigate.
+     *
+     * @param {string} className
+     * The class name to look for.
+     *
+     * @return {boolean|undefined}
+     * True if either the element or one of its parents has the given class
+     * name.
+     */
+    inClass(element, className) {
+        let elem = element, elemClassName;
+        while (elem) {
+            elemClassName = attr(elem, 'class');
+            if (elemClassName) {
+                if (elemClassName.indexOf(className) !== -1) {
+                    return true;
+                }
+                if (elemClassName.indexOf('highcharts-container') !== -1) {
+                    return false;
+                }
+            }
+            // #21098 IE11 compatibility
+            elem = elem.parentNode;
+            if (elem && (
+            // HTMLElement
+            elem === document.documentElement ||
+                // Document
+                defined(elem.nodeType) &&
+                    elem.nodeType === document.nodeType)) {
+                elem = null;
+            }
         }
     }
     /**
@@ -154,12 +195,6 @@ class MSPointer extends Pointer {
 (function (MSPointer) {
     /* *
      *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
@@ -167,7 +202,7 @@ class MSPointer extends Pointer {
      * @private
      */
     function compose(ChartClass) {
-        if (U.pushUnique(composedMembers, ChartClass)) {
+        if (pushUnique(composed, 'Core.MSPointer')) {
             addEvent(ChartClass, 'beforeRender', function () {
                 this.pointer = new MSPointer(this, this.options);
             });

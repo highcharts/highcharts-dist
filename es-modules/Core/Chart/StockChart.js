@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -16,9 +16,10 @@ const { getOptions } = D;
 import NavigatorDefaults from '../../Stock/Navigator/NavigatorDefaults.js';
 import RangeSelectorDefaults from '../../Stock/RangeSelector/RangeSelectorDefaults.js';
 import ScrollbarDefaults from '../../Stock/Scrollbar/ScrollbarDefaults.js';
+import StockUtilities from '../../Stock/Utilities/StockUtilities.js';
+const { setFixedRange } = StockUtilities;
 import U from '../Utilities.js';
-const { addEvent, clamp, defined, extend, find, isNumber, isString, merge, pick, pushUnique, splat } = U;
-import '../Pointer.js';
+const { addEvent, clamp, crisp, defined, extend, find, isNumber, isString, merge, pick, splat } = U;
 /* *
  *
  *  Functions
@@ -30,34 +31,29 @@ import '../Pointer.js';
  * @private
  * @function getDefaultAxisOptions
  */
-function getDefaultAxisOptions(type, options) {
-    if (type === 'xAxis') {
+function getDefaultAxisOptions(coll, options, defaultOptions) {
+    if (coll === 'xAxis') {
         return {
             minPadding: 0,
             maxPadding: 0,
             overscroll: 0,
-            ordinal: true,
-            title: {
-                text: null
-            },
-            labels: {
-                overflow: 'justify'
-            },
-            showLastLabel: true
+            ordinal: true
         };
     }
-    if (type === 'yAxis') {
+    if (coll === 'yAxis') {
         return {
             labels: {
                 y: -2
             },
-            opposite: pick(options.opposite, true),
+            opposite: defaultOptions.opposite ?? options.opposite ?? true,
             showLastLabel: !!(
             // #6104, show last label by default for category axes
             options.categories ||
                 options.type === 'category'),
             title: {
-                text: null
+                text: defaultOptions.title?.text !== 'Values' ?
+                    defaultOptions.title?.text :
+                    null
             }
         };
     }
@@ -116,7 +112,7 @@ class StockChart extends Chart {
      *        Custom options.
      *
      * @param {Function} [callback]
-     *        Function to run when the chart has loaded and and all external
+     *        Function to run when the chart has loaded and all external
      *        images are loaded.
      *
      *
@@ -164,23 +160,21 @@ class StockChart extends Chart {
             legend: {
                 enabled: false
             }
-        }, userOptions, // user's options
+        }, userOptions, // User's options
         {
-            isStock: true // internal flag
+            isStock: true // Internal flag
         });
         userOptions.xAxis = xAxisOptions;
         userOptions.yAxis = yAxisOptions;
-        // apply X axis options to both single and multi y axes
-        options.xAxis = splat(userOptions.xAxis || {}).map((xAxisOptions, i) => merge(getDefaultAxisOptions('xAxis', xAxisOptions), defaultOptions.xAxis, // #3802
+        // Apply X axis options to both single and multi y axes
+        options.xAxis = splat(userOptions.xAxis || {}).map((xAxisOptions) => merge(getDefaultAxisOptions('xAxis', xAxisOptions, defaultOptions.xAxis), 
         // #7690
-        // @todo remove, default axis options are not arrays
-        defaultOptions.xAxis && defaultOptions.xAxis[i], xAxisOptions, // user options
+        xAxisOptions, // User options
         getForcedAxisOptions('xAxis', userOptions)));
-        // apply Y axis options to both single and multi y axes
-        options.yAxis = splat(userOptions.yAxis || {}).map((yAxisOptions, i) => merge(getDefaultAxisOptions('yAxis', yAxisOptions), defaultOptions.yAxis, // #3802
+        // Apply Y axis options to both single and multi y axes
+        options.yAxis = splat(userOptions.yAxis || {}).map((yAxisOptions) => merge(getDefaultAxisOptions('yAxis', yAxisOptions, defaultOptions.yAxis), 
         // #7690
-        // @todo remove, default axis options are not arrays
-        defaultOptions.yAxis && defaultOptions.yAxis[i], yAxisOptions // user options
+        yAxisOptions // User options
         ));
         super.init(options, callback);
     }
@@ -196,7 +190,7 @@ class StockChart extends Chart {
      * The axis creation options.
      */
     createAxis(coll, options) {
-        options.axis = merge(getDefaultAxisOptions(coll, options.axis), options.axis, getForcedAxisOptions(coll, this.userOptions));
+        options.axis = merge(getDefaultAxisOptions(coll, options.axis, getOptions()[coll]), options.axis, getForcedAxisOptions(coll, this.userOptions));
         return super.createAxis(coll, options);
     }
 }
@@ -207,7 +201,7 @@ addEvent(Chart, 'update', function (e) {
     // case (#6615)
     if ('scrollbar' in options && chart.navigator) {
         merge(true, chart.options.scrollbar, options.scrollbar);
-        chart.navigator.update({});
+        chart.navigator.update({ enabled: !!chart.navigator.navigatorEnabled });
         delete options.scrollbar;
     }
 });
@@ -219,29 +213,21 @@ addEvent(Chart, 'update', function (e) {
 (function (StockChart) {
     /* *
      *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
     /** @private */
-    function compose(AxisClass, SeriesClass, SVGRendererClass) {
-        if (pushUnique(composedMembers, AxisClass)) {
+    function compose(ChartClass, AxisClass, SeriesClass, SVGRendererClass) {
+        const seriesProto = SeriesClass.prototype;
+        if (!seriesProto.forceCropping) {
             addEvent(AxisClass, 'afterDrawCrosshair', onAxisAfterDrawCrosshair);
             addEvent(AxisClass, 'afterHideCrosshair', onAxisAfterHideCrosshair);
             addEvent(AxisClass, 'autoLabelAlign', onAxisAutoLabelAlign);
             addEvent(AxisClass, 'destroy', onAxisDestroy);
             addEvent(AxisClass, 'getPlotLinePath', onAxisGetPlotLinePath);
-        }
-        if (pushUnique(composedMembers, SeriesClass)) {
-            SeriesClass.prototype.forceCropping = seriesForceCropping;
+            ChartClass.prototype.setFixedRange = setFixedRange;
+            seriesProto.forceCropping = seriesForceCropping;
             addEvent(SeriesClass, 'setOptions', onSeriesSetOptions);
-        }
-        if (pushUnique(composedMembers, SVGRendererClass)) {
             SVGRendererClass.prototype.crispPolyLine = svgRendererCrispPolyLine;
         }
     }
@@ -261,13 +247,13 @@ addEvent(Chart, 'update', function (e) {
             !isNumber(axis.max)) {
             return;
         }
-        const chart = axis.chart, log = axis.logarithmic, options = axis.crosshair.label, // the label's options
-        horiz = axis.horiz, // axis orientation
-        opposite = axis.opposite, // axis position
-        left = axis.left, // left position
-        top = axis.top, // top position
+        const chart = axis.chart, log = axis.logarithmic, options = axis.crosshair.label, // The label's options
+        horiz = axis.horiz, // Axis orientation
+        opposite = axis.opposite, // Axis position
+        left = axis.left, // Left position
+        top = axis.top, // Top position
         width = axis.width, tickInside = axis.options.tickPosition === 'inside', snap = axis.crosshair.snap !== false, e = event.e || (axis.cross && axis.cross.e), point = event.point;
-        let crossLabel = axis.crossLabel, // the svgElement
+        let crossLabel = axis.crossLabel, // The svgElement
         posx, posy, formatOption = options.format, formatFormat = '', limit, offset = 0, 
         // Use last available event (#5287)
         min = axis.min, max = axis.max;
@@ -367,8 +353,8 @@ addEvent(Chart, 'update', function (e) {
         // Check the edges
         if (horiz) {
             limit = {
-                left: left - crossBox.x,
-                right: left + axis.width - crossBox.x
+                left,
+                right: left + axis.width
             };
         }
         else {
@@ -423,7 +409,7 @@ addEvent(Chart, 'update', function (e) {
             const key = options.top + ',' + options.height;
             // Do it only for the first Y axis of each pane
             if (!panes[key] && labelOptions.enabled) {
-                if (labelOptions.distance === 15 && // default
+                if (labelOptions.distance === 15 && // Default
                     axis.side === 1) {
                     labelOptions.distance = 0;
                 }
@@ -486,13 +472,11 @@ addEvent(Chart, 'update', function (e) {
             // Get the related axes based options.*Axis setting #2810
             axes2 = (axis.isXAxis ? chart.yAxis : chart.xAxis);
             for (const A of axes2) {
-                if (defined(A.options.id) ?
-                    A.options.id.indexOf('navigator') === -1 :
-                    true) {
-                    const a = (A.isXAxis ? 'yAxis' : 'xAxis'), rax = (defined(A.options[a]) ?
+                if (!A.options.isInternal) {
+                    const a = (A.isXAxis ? 'yAxis' : 'xAxis'), relatedAxis = (defined(A.options[a]) ?
                         chart[a][A.options[a]] :
                         chart[a][0]);
-                    if (axis === rax) {
+                    if (axis === relatedAxis) {
                         axes.push(A);
                     }
                 }
@@ -519,7 +503,7 @@ addEvent(Chart, 'update', function (e) {
                         y1 = axis2.pos;
                         y2 = y1 + axis2.len;
                         x1 = x2 = Math.round(transVal + axis.transB);
-                        // outside plot area
+                        // Outside plot area
                         if (force !== 'pass' &&
                             (x1 < axisLeft || x1 > axisLeft + axis.width)) {
                             if (force) {
@@ -540,7 +524,7 @@ addEvent(Chart, 'update', function (e) {
                         x1 = axis2.pos;
                         x2 = x1 + axis2.len;
                         y1 = y2 = Math.round(axisTop + axis.height - transVal);
-                        // outside plot area
+                        // Outside plot area
                         if (force !== 'pass' &&
                             (y1 < axisTop || y1 > axisTop + axis.height)) {
                             if (force) {
@@ -648,19 +632,15 @@ addEvent(Chart, 'update', function (e) {
      * @function Highcharts.SVGRenderer#crispPolyLine
      */
     function svgRendererCrispPolyLine(points, width) {
-        // points format: [['M', 0, 0], ['L', 100, 0]]
+        // Points format: [['M', 0, 0], ['L', 100, 0]]
         // normalize to a crisp line
         for (let i = 0; i < points.length; i = i + 2) {
             const start = points[i], end = points[i + 1];
-            if (start[1] === end[1]) {
-                // Substract due to #1129. Now bottom and left axis gridlines
-                // behave the same.
-                start[1] = end[1] =
-                    Math.round(start[1]) - (width % 2 / 2);
+            if (defined(start[1]) && start[1] === end[1]) {
+                start[1] = end[1] = crisp(start[1], width);
             }
-            if (start[2] === end[2]) {
-                start[2] = end[2] =
-                    Math.round(start[2]) + (width % 2 / 2);
+            if (defined(start[2]) && start[2] === end[2]) {
+                start[2] = end[2] = crisp(start[2], width);
             }
         }
         return points;

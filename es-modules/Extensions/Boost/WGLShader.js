@@ -1,6 +1,6 @@
 /* *
  *
- *  Copyright (c) 2019-2021 Highsoft AS
+ *  (c) 2019-2024 Highsoft AS
  *
  *  Boost module: stripped-down renderer for higher performance
  *
@@ -143,7 +143,7 @@ const vertexShader = [
     'cvsOffset -= sign * len;',
     '}',
     'return sign * (val - localMin) * localA + cvsOffset + ',
-    '(sign * minPixelPadding);',
+    '(sign * minPixelPadding);', // ' + localA * pointPlacement * pointRange;',
     '}',
     'float xToPixels(float value) {',
     'if (skipTranslation){',

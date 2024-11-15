@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -10,6 +10,7 @@
 'use strict';
 import SeriesRegistry from '../Core/Series/SeriesRegistry.js';
 const { column: { prototype: columnProto } } = SeriesRegistry.seriesTypes;
+import SVGElement from '../Core/Renderer/SVG/SVGElement.js';
 import U from '../Core/Utilities.js';
 const { addEvent, defined } = U;
 /* *
@@ -24,7 +25,6 @@ var ColorMapComposition;
      *  Constants
      *
      * */
-    const composedMembers = [];
     ColorMapComposition.pointMembers = {
         dataLabelOnNull: true,
         moveToTopOnHover: true,
@@ -49,9 +49,7 @@ var ColorMapComposition;
      */
     function compose(SeriesClass) {
         const PointClass = SeriesClass.prototype.pointClass;
-        if (U.pushUnique(composedMembers, PointClass)) {
-            addEvent(PointClass, 'afterSetState', onPointAfterSetState);
-        }
+        addEvent(PointClass, 'afterSetState', onPointAfterSetState);
         return SeriesClass;
     }
     ColorMapComposition.compose = compose;
@@ -60,11 +58,34 @@ var ColorMapComposition;
      * @private
      */
     function onPointAfterSetState(e) {
-        const point = this;
+        const point = this, series = point.series, renderer = series.chart.renderer;
         if (point.moveToTopOnHover && point.graphic) {
-            point.graphic.attr({
-                zIndex: e && e.state === 'hover' ? 1 : 0
-            });
+            if (!series.stateMarkerGraphic) {
+                // Create a `use` element and add it to the end of the group,
+                // which would make it appear on top of the other elements. This
+                // deals with z-index without reordering DOM elements (#13049).
+                series.stateMarkerGraphic = new SVGElement(renderer, 'use')
+                    .css({
+                    pointerEvents: 'none'
+                })
+                    .add(point.graphic.parentGroup);
+            }
+            if (e?.state === 'hover') {
+                // Give the graphic DOM element the same id as the Point
+                // instance
+                point.graphic.attr({
+                    id: this.id
+                });
+                series.stateMarkerGraphic.attr({
+                    href: `${renderer.url}#${this.id}`,
+                    visibility: 'visible'
+                });
+            }
+            else {
+                series.stateMarkerGraphic.attr({
+                    href: ''
+                });
+            }
         }
     }
     /**
@@ -76,11 +97,11 @@ var ColorMapComposition;
         return (this.value !== null &&
             this.value !== Infinity &&
             this.value !== -Infinity &&
-            // undefined is allowed, but NaN is not (#17279)
+            // Undefined is allowed, but NaN is not (#17279)
             (this.value === void 0 || !isNaN(this.value)));
     }
     /**
-     * Get the color attibutes to apply on the graphic
+     * Get the color attributes to apply on the graphic
      * @private
      * @function Highcharts.colorMapSeriesMixin.colorAttribs
      * @param {Highcharts.Point} point

@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Highsoft AS
+ *  (c) 2010-2024 Highsoft AS
  *
  *  Author: Paweł Potaczek
  *
@@ -41,20 +41,6 @@ class BubbleLegendItem {
      *
      * */
     constructor(options, legend) {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.chart = void 0;
-        this.legend = void 0;
-        this.maxLabel = void 0;
-        this.movementX = void 0;
-        this.ranges = void 0;
-        this.selected = void 0;
-        this.visible = void 0;
-        this.symbols = void 0;
-        this.options = void 0;
         this.setState = noop;
         this.init(options, legend);
     }
@@ -95,9 +81,9 @@ class BubbleLegendItem {
      *        Legend instance
      */
     drawLegendSymbol(legend) {
-        const chart = this.chart, itemDistance = pick(legend.options.itemDistance, 20), legendItem = this.legendItem || {}, options = this.options, ranges = options.ranges, connectorDistance = options.connectorDistance;
+        const itemDistance = pick(legend.options.itemDistance, 20), legendItem = this.legendItem || {}, options = this.options, ranges = options.ranges, connectorDistance = options.connectorDistance;
         let connectorSpace;
-        // Do not create bubbleLegend now if ranges or ranges valeus are not
+        // Do not create bubbleLegend now if ranges or ranges values are not
         // specified or if are empty array.
         if (!ranges || !ranges.length || !isNumber(ranges[0].value)) {
             legend.options.bubbleLegend.autoRanges = true;
@@ -225,7 +211,7 @@ class BubbleLegendItem {
             -connectorDistance : connectorDistance;
         // Set options for centered labels
         if (labelsAlign === 'center') {
-            connectorLength = 0; // do not use connector
+            connectorLength = 0; // Do not use connector
             options.connectorDistance = 0;
             range.labelAttribs.align = 'center';
         }
@@ -385,7 +371,7 @@ class BubbleLegendItem {
     predictBubbleSizes() {
         const chart = this.chart, legendOptions = chart.legend.options, floating = legendOptions.floating, horizontal = legendOptions.layout === 'horizontal', lastLineHeight = horizontal ? chart.legend.lastLineHeight : 0, plotSizeX = chart.plotSizeX, plotSizeY = chart.plotSizeY, bubbleSeries = chart.series[this.options.seriesIndex], pxSizes = bubbleSeries.getPxExtremes(), minSize = Math.ceil(pxSizes.minPxSize), maxPxSize = Math.ceil(pxSizes.maxPxSize), plotSize = Math.min(plotSizeY, plotSizeX);
         let calculatedSize, maxSize = bubbleSeries.options.maxSize;
-        // Calculate prediceted max size of bubble
+        // Calculate predicted max size of bubble
         if (floating || !(/%$/.test(maxSize))) {
             calculatedSize = maxPxSize;
         }
@@ -454,4 +440,4 @@ export default BubbleLegendItem;
 * @name Highcharts.BubbleLegendFormatterContextObject#value
 * @type {number}
 */
-''; // detach doclets above
+''; // Detach doclets above

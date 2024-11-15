@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2022 Øystein Moseng
+ *  (c) 2009-2024 Øystein Moseng
  *
  *  Class representing a Synth Patch, used by Instruments in the
  *  sonification.js module.
@@ -14,11 +14,11 @@
 import U from '../../Core/Utilities.js';
 const { clamp, defined, pick } = U;
 /**
- * Get the multipler value from a pitch tracked multiplier. The parameter
+ * Get the multiplier value from a pitch tracked multiplier. The parameter
  * specifies the multiplier at ca 3200Hz. It is 1 at ca 50Hz. In between
  * it is mapped logarithmically.
  * @private
- * @param {number} multiplier The multipler to track.
+ * @param {number} multiplier The multiplier to track.
  * @param {number} freq The current frequency.
  */
 function getPitchTrackedMultiplierVal(multiplier, freq) {
@@ -217,7 +217,7 @@ class Oscillator {
     getVMTarget() {
         return this.vmNode && this.vmNode.gain;
     }
-    // Schedule one of the osciallator envelopes at a specified time in
+    // Schedule one of the oscillator envelopes at a specified time in
     // seconds (in AudioContext timespace).
     runEnvelopeAtTime(type, time) {
         if (!this.gainNode) {

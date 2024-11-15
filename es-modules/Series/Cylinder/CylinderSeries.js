@@ -2,7 +2,7 @@
  *
  *  Highcharts cylinder - a 3D series
  *
- *  (c) 2010-2021 Highsoft AS
+ *  (c) 2010-2024 Highsoft AS
  *
  *  Author: Kacper Madej
  *
@@ -27,8 +27,8 @@ const { extend, merge } = U;
 /**
  * The cylinder series type.
  *
- * @requires module:highcharts-3d
- * @requires module:modules/cylinder
+ * @requires highcharts-3d
+ * @requires modules/cylinder
  *
  * @private
  * @class
@@ -37,23 +37,12 @@ const { extend, merge } = U;
  * @augments Highcharts.Series
  */
 class CylinderSeries extends ColumnSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 CylinderSeries.compose = CylinderComposition.compose;
 CylinderSeries.defaultOptions = merge(ColumnSeries.defaultOptions, CylinderSeriesDefaults);
 extend(CylinderSeries.prototype, {

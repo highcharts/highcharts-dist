@@ -1,6 +1,6 @@
 /* *
  *
- *  Copyright (c) 2019-2021 Highsoft AS
+ *  (c) 2019-2024 Highsoft AS
  *
  *  Boost module: stripped-down renderer for higher performance
  *
@@ -74,11 +74,11 @@ class WGLVertexBuffer {
         if (!this.buffer) {
             return false;
         }
-        // gl.bindAttribLocation(shader.program(), 0, 'aVertexPosition');
+        /// gl.bindAttribLocation(shader.program(), 0, 'aVertexPosition');
         // gl.enableVertexAttribArray(vertAttribute);
         // gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
         this.gl.vertexAttribPointer(this.vertAttribute, this.components, this.gl.FLOAT, false, 0, 0);
-        // gl.enableVertexAttribArray(vertAttribute);
+        /// gl.enableVertexAttribArray(vertAttribute);
     }
     /**
      * Build the buffer
@@ -88,13 +88,13 @@ class WGLVertexBuffer {
      * @param {string} attrib
      * Name of the Attribute to bind the buffer to
      * @param {number} dataComponents
-     * Mumber of components per. indice
+     * Number of components per. indice
      */
     build(dataIn, attrib, dataComponents) {
         let farray;
         this.data = dataIn || [];
         if ((!this.data || this.data.length === 0) && !this.preAllocated) {
-            // console.error('trying to render empty vbuffer');
+            /// console.error('trying to render empty vbuffer');
             this.destroy();
             return false;
         }
@@ -108,7 +108,7 @@ class WGLVertexBuffer {
         this.buffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, this.preAllocated || farray, this.gl.STATIC_DRAW);
-        // gl.bindAttribLocation(shader.program(), 0, 'aVertexPosition');
+        /// gl.bindAttribLocation(shader.program(), 0, 'aVertexPosition');
         this.vertAttribute = this.gl
             .getAttribLocation(this.shader.getProgram(), attrib);
         this.gl.enableVertexAttribArray(this.vertAttribute);

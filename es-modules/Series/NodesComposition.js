@@ -22,12 +22,6 @@ var NodesComposition;
      * */
     /* *
      *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
@@ -35,17 +29,12 @@ var NodesComposition;
      * @private
      */
     function compose(PointClass, SeriesClass) {
-        if (U.pushUnique(composedMembers, PointClass)) {
-            const pointProto = PointClass.prototype;
-            pointProto.setNodeState = setNodeState;
-            pointProto.setState = setNodeState;
-            pointProto.update = updateNode;
-        }
-        if (U.pushUnique(composedMembers, SeriesClass)) {
-            const seriesProto = SeriesClass.prototype;
-            seriesProto.destroy = destroy;
-            seriesProto.setData = setData;
-        }
+        const pointProto = PointClass.prototype, seriesProto = SeriesClass.prototype;
+        pointProto.setNodeState = setNodeState;
+        pointProto.setState = setNodeState;
+        pointProto.update = updateNode;
+        seriesProto.destroy = destroy;
+        seriesProto.setData = setData;
         return SeriesClass;
     }
     NodesComposition.compose = compose;
@@ -59,7 +48,7 @@ var NodesComposition;
         let node = findById(this.nodes, id), options;
         if (!node) {
             options = this.options.nodes && findById(this.options.nodes, id);
-            const newNode = (new PointClass()).init(this, extend({
+            const newNode = new PointClass(this, extend({
                 className: 'highcharts-node',
                 isNode: true,
                 id: id,
@@ -110,7 +99,7 @@ var NodesComposition;
             node = newNode;
         }
         node.formatPrefix = 'node';
-        // for use in formats
+        // For use in formats
         node.name = node.name || node.options.id || '';
         // Mass is used in networkgraph:
         node.mass = pick(
@@ -124,7 +113,7 @@ var NodesComposition;
     }
     NodesComposition.createNode = createNode;
     /**
-     * Destroy alll nodes and links.
+     * Destroy all nodes and links.
      * @private
      */
     function destroy() {
@@ -176,7 +165,7 @@ var NodesComposition;
                 nodeLookup[point.to].linksTo.push(point);
                 point.toNode = nodeLookup[point.to];
             }
-            point.name = point.name || point.id; // for use in formats
+            point.name = point.name || point.id; // For use in formats
         }, this);
         // Store lookup table for later use
         this.nodeLookup = nodeLookup;
@@ -231,7 +220,7 @@ var NodesComposition;
         pointProto.update.call(this, options, this.isNode ? false : redraw, // Hold the redraw for nodes
         animation, runEvent);
         if (this.isNode) {
-            // this.index refers to `series.nodes`, not `options.nodes` array
+            // `this.index` refers to `series.nodes`, not `options.nodes` array
             const nodeIndex = (nodes || [])
                 .reduce(// Array.findIndex needs a polyfill
             (prevIndex, n, index) => (this.id === n.id ? index : prevIndex), -1), 

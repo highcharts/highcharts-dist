@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2020 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -347,16 +347,19 @@ AST.allowedAttributes = [
     'href',
     'id',
     'in',
+    'in2',
     'markerHeight',
     'markerWidth',
     'offset',
     'opacity',
+    'operator',
     'orient',
     'padding',
     'paddingLeft',
     'paddingRight',
     'patternUnits',
     'r',
+    'radius',
     'refX',
     'refY',
     'role',
@@ -447,12 +450,15 @@ AST.allowedTags = [
     'dt',
     'em',
     'feComponentTransfer',
+    'feComposite',
     'feDropShadow',
+    'feFlood',
     'feFuncA',
     'feFuncB',
     'feFuncG',
     'feFuncR',
     'feGaussianBlur',
+    'feMorphology',
     'feOffset',
     'feMerge',
     'feMergeNode',
@@ -501,7 +507,7 @@ AST.emptyHTML = emptyHTML;
 /**
  * Allow all custom SVG and HTML attributes, references and tags (together
  * with potentially harmful ones) to be added to the DOM from the chart
- * configuration. In other words, disable the the allow-listing which is the
+ * configuration. In other words, disable the allow-listing which is the
  * primary functionality of the AST.
  *
  * WARNING: Setting this property to `true` while allowing untrusted user
@@ -554,4 +560,4 @@ export default AST;
 * @name Highcharts.ASTNode#textContent
 * @type {string|undefined}
 */
-(''); // keeps doclets above in file
+(''); // Keeps doclets above in file

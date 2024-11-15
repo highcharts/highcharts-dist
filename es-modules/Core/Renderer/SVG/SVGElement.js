@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -12,9 +12,9 @@ import A from '../../Animation/AnimationUtilities.js';
 const { animate, animObject, stop } = A;
 import Color from '../../Color/Color.js';
 import H from '../../Globals.js';
-const { deg2rad, doc, noop, svg, SVG_NS, win } = H;
+const { deg2rad, doc, svg, SVG_NS, win } = H;
 import U from '../../Utilities.js';
-const { addEvent, attr, createElement, css, defined, erase, extend, fireEvent, isArray, isFunction, isObject, isString, merge, objectEach, pick, pInt, syncTimeout, uniqueKey } = U;
+const { addEvent, attr, createElement, crisp, css, defined, erase, extend, fireEvent, isArray, isFunction, isObject, isString, merge, objectEach, pick, pInt, pushUnique, replaceNested, syncTimeout, uniqueKey } = U;
 /* *
  *
  *  Class
@@ -40,22 +40,14 @@ const { addEvent, attr, createElement, css, defined, erase, extend, fireEvent, i
  * {@link Highcharts.SVGRenderer#g|g}
  * and more.
  *
+ * See [How to use the SVG Renderer](
+ * https://www.highcharts.com/docs/advanced-chart-features/renderer) for a
+ * comprehensive tutorial on how to draw SVG elements on a chart.
+ *
  * @class
  * @name Highcharts.SVGElement
  */
 class SVGElement {
-    constructor() {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.element = void 0;
-        this.onEvents = {};
-        this.opacity = 1; // Default base for animation
-        this.renderer = void 0;
-        this.SVG_NS = SVG_NS;
-    }
     // @todo public zIndex?: number;
     /* *
      *
@@ -77,9 +69,9 @@ class SVGElement {
      *         Property value.
      */
     _defaultGetter(key) {
-        let ret = pick(this[key + 'Value'], // align getter
+        let ret = pick(this[key + 'Value'], // Align getter
         this[key], this.element ? this.element.getAttribute(key) : null, 0);
-        if (/^[\-0-9\.]+$/.test(ret)) { // is numerical
+        if (/^-?[\d\.]+$/.test(ret)) { // Is numerical
             ret = parseFloat(ret);
         }
         return ret;
@@ -138,7 +130,7 @@ class SVGElement {
                 parent.element :
                 renderer.box).appendChild(element);
         }
-        // fire an event for internal hooks
+        // Fire an event for internal hooks
         if (this.onAdd) {
             this.onAdd();
         }
@@ -208,43 +200,51 @@ class SVGElement {
      * @param {boolean} [alignByTranslate]
      *        Align element by translation.
      *
-     * @param {string|Highcharts.BBoxObject} [box]
+     * @param {string|Highcharts.BBoxObject} [alignTo]
      *        The box to align to, needs a width and height. When the box is a
      *        string, it refers to an object in the Renderer. For example, when
      *        box is `spacingBox`, it refers to `Renderer.spacingBox` which
      *        holds `width`, `height`, `x` and `y` properties.
      *
+     * @param {boolean} [redraw]
+     *        Decide if SVGElement should be redrawn with new alignment or
+     *        just change its attributes.
+     *
      * @return {Highcharts.SVGElement} Returns the SVGElement for chaining.
      */
-    align(alignOptions, alignByTranslate, box) {
-        const attribs = {}, renderer = this.renderer, alignedObjects = renderer.alignedObjects;
-        let x, y, alignTo, alignFactor, vAlignFactor;
+    align(alignOptions, alignByTranslate, alignTo, redraw = true) {
+        const attribs = {}, renderer = this.renderer, alignedObjects = renderer.alignedObjects, initialAlignment = Boolean(alignOptions);
+        let x, y, alignFactor, vAlignFactor;
         // First call on instanciate
         if (alignOptions) {
             this.alignOptions = alignOptions;
             this.alignByTranslate = alignByTranslate;
-            if (!box || isString(box)) {
-                this.alignTo = alignTo = box || 'renderer';
-                // prevent duplicates, like legendGroup after resize
-                erase(alignedObjects, this);
-                alignedObjects.push(this);
-                box = void 0; // reassign it below
-            }
+            this.alignTo = alignTo;
             // When called on resize, no arguments are supplied
         }
         else {
-            alignOptions = this.alignOptions;
+            alignOptions = this.alignOptions || {};
             alignByTranslate = this.alignByTranslate;
             alignTo = this.alignTo;
         }
-        box = pick(box, renderer[alignTo], alignTo === 'scrollablePlotBox' ?
-            renderer.plotBox : void 0, renderer);
+        const alignToKey = !alignTo || isString(alignTo) ?
+            alignTo || 'renderer' :
+            void 0;
+        // When aligned to a key, automatically re-align on redraws
+        if (alignToKey) {
+            // Prevent duplicates, like legendGroup after resize
+            if (initialAlignment) {
+                pushUnique(alignedObjects, this);
+            }
+            alignTo = void 0; // Do not use the box
+        }
+        const alignToBox = pick(alignTo, renderer[alignToKey], renderer);
         // Assign variables
         const align = alignOptions.align, vAlign = alignOptions.verticalAlign;
-        // default: left align
-        x = (box.x || 0) + (alignOptions.x || 0);
-        // default: top align
-        y = (box.y || 0) + (alignOptions.y || 0);
+        // Default: left align
+        x = (alignToBox.x || 0) + (alignOptions.x || 0);
+        // Default: top align
+        y = (alignToBox.y || 0) + (alignOptions.y || 0);
         // Align
         if (align === 'right') {
             alignFactor = 1;
@@ -253,7 +253,7 @@ class SVGElement {
             alignFactor = 2;
         }
         if (alignFactor) {
-            x += (box.width - (alignOptions.width || 0)) /
+            x += ((alignToBox.width || 0) - (alignOptions.width || 0)) /
                 alignFactor;
         }
         attribs[alignByTranslate ? 'translateX' : 'x'] = Math.round(x);
@@ -265,13 +265,15 @@ class SVGElement {
             vAlignFactor = 2;
         }
         if (vAlignFactor) {
-            y += (box.height - (alignOptions.height || 0)) /
+            y += ((alignToBox.height || 0) - (alignOptions.height || 0)) /
                 vAlignFactor;
         }
         attribs[alignByTranslate ? 'translateY' : 'y'] = Math.round(y);
         // Animate only if already placed
-        this[this.placed ? 'animate' : 'attr'](attribs);
-        this.placed = true;
+        if (redraw) {
+            this[this.placed ? 'animate' : 'attr'](attribs);
+            this.placed = true;
+        }
         this.alignAttr = attribs;
         return this;
     }
@@ -319,7 +321,7 @@ class SVGElement {
             animOptions.duration = 0;
         }
         if (animOptions.duration !== 0) {
-            // allows using a callback with the global animation without
+            // Allows using a callback with the global animation without
             // overwriting it
             if (complete) {
                 animOptions.complete = complete;
@@ -483,19 +485,19 @@ class SVGElement {
     *         used as a getter, the current value of the attribute is returned.
     */
     attr(hash, val, complete, continueAnimation) {
-        const element = this.element, symbolCustomAttribs = SVGElement.symbolCustomAttribs;
+        const { element } = this, symbolCustomAttribs = SVGElement.symbolCustomAttribs;
         let key, hasSetSymbolSize, ret = this, skipAttr, setter;
-        // single key-value pair
+        // Single key-value pair
         if (typeof hash === 'string' && typeof val !== 'undefined') {
             key = hash;
             hash = {};
             hash[key] = val;
         }
-        // used as a getter: first argument is a string, second is undefined
+        // Used as a getter: first argument is a string, second is undefined
         if (typeof hash === 'string') {
             ret = (this[hash + 'Getter'] ||
                 this._defaultGetter).call(this, hash, element);
-            // setter
+            // Setter
         }
         else {
             objectEach(hash, function eachAttribute(val, key) {
@@ -532,19 +534,28 @@ class SVGElement {
         return ret;
     }
     /**
-     * Apply a clipping rectangle to this element.
+     * Apply a clipping shape to this element.
      *
      * @function Highcharts.SVGElement#clip
      *
-     * @param {Highcharts.ClipRectElement} [clipRect]
-     *        The clipping rectangle. If skipped, the current clip is removed.
+     * @param {SVGElement} [clipElem]
+     *        The clipping shape. If skipped, the current clip is removed.
      *
      * @return {Highcharts.SVGElement}
      *         Returns the SVG element to allow chaining.
      */
-    clip(clipRect) {
-        return this.attr('clip-path', clipRect ?
-            'url(' + this.renderer.url + '#' + clipRect.id + ')' :
+    clip(clipElem) {
+        if (clipElem && !clipElem.clipPath) {
+            // Add a hyphen at the end to avoid confusion in testing indexes
+            // -1 and -10, -11 etc (#6550)
+            const id = uniqueKey() + '-', clipPath = this.renderer.createElement('clipPath')
+                .attr({ id })
+                .add(this.renderer.defs);
+            extend(clipElem, { clipPath, id, count: 0 });
+            clipElem.add(clipPath);
+        }
+        return this.attr('clip-path', clipElem ?
+            `url(${this.renderer.url}#${clipElem.id})` :
             'none');
     }
     /**
@@ -564,15 +575,17 @@ class SVGElement {
      * The modified rectangle arguments.
      */
     crisp(rect, strokeWidth) {
-        const wrapper = this;
-        strokeWidth = strokeWidth || rect.strokeWidth || 0;
         // Math.round because strokeWidth can sometimes have roundoff errors
-        const normalizer = Math.round(strokeWidth) % 2 / 2;
-        // normalize for crisp edges
-        rect.x = Math.floor(rect.x || wrapper.x || 0) + normalizer;
-        rect.y = Math.floor(rect.y || wrapper.y || 0) + normalizer;
-        rect.width = Math.floor((rect.width || wrapper.width || 0) - 2 * normalizer);
-        rect.height = Math.floor((rect.height || wrapper.height || 0) - 2 * normalizer);
+        strokeWidth = Math.round(strokeWidth || rect.strokeWidth || 0);
+        const x1 = rect.x || this.x || 0, y1 = rect.y || this.y || 0, x2 = (rect.width || this.width || 0) + x1, y2 = (rect.height || this.height || 0) + y1, 
+        // Find all the rounded coordinates for corners
+        x = crisp(x1, strokeWidth), y = crisp(y1, strokeWidth), x2Crisp = crisp(x2, strokeWidth), y2Crisp = crisp(y2, strokeWidth);
+        extend(rect, {
+            x,
+            y,
+            width: x2Crisp - x,
+            height: y2Crisp - y
+        });
         if (defined(rect.strokeWidth)) {
             rect.strokeWidth = strokeWidth;
         }
@@ -613,7 +626,7 @@ class SVGElement {
                 gradients = renderer.gradients;
                 stops = colorOptions.stops;
                 radialReference = elem.radialReference;
-                // Keep < 2.2 kompatibility
+                // Keep < 2.2 compatibility
                 if (isArray(gradAttr)) {
                     colorOptions[gradName] = gradAttr = {
                         x1: gradAttr[0],
@@ -733,8 +746,8 @@ class SVGElement {
                 styles.width) {
                 textWidth = this.textWidth = pInt(styles.width);
             }
-            // store object
-            this.styles = styles;
+            // Store object
+            extend(this.styles, styles);
             if (textWidth && (!svg && this.renderer.forExport)) {
                 delete styles.width;
             }
@@ -789,7 +802,7 @@ class SVGElement {
                 .replace(/dot/g, '1,3,')
                 .replace('dash', '4,3,')
                 .replace(/,$/, '')
-                .split(','); // ending comma
+                .split(','); // Ending comma
             i = v.length;
             while (i--) {
                 v[i] = '' + (pInt(v[i]) * pick(strokeWidth, NaN));
@@ -809,10 +822,10 @@ class SVGElement {
         let parentToClean = (element.nodeName === 'SPAN' &&
             wrapper.parentGroup ||
             void 0), grandParent, i;
-        // remove events
+        // Remove events
         element.onclick = element.onmouseout = element.onmouseover =
             element.onmousemove = element.point = null;
-        stop(wrapper); // stop running animations
+        stop(wrapper); // Stop running animations
         if (wrapper.clipPath && ownerSVGElement) {
             const clipPath = wrapper.clipPath;
             // Look for existing references to this clipPath and remove them
@@ -834,7 +847,7 @@ class SVGElement {
             wrapper.stops.length = 0;
             wrapper.stops = void 0;
         }
-        // remove element
+        // Remove element
         wrapper.safeRemoveChild(element);
         // In case of useHTML, clean up empty containers emulating SVG groups
         // (#1960, #2393, #2697).
@@ -846,8 +859,8 @@ class SVGElement {
             delete parentToClean.div;
             parentToClean = grandParent;
         }
-        // remove from alignObjects
-        if (wrapper.alignTo) {
+        // Remove from alignObjects
+        if (wrapper.alignOptions) {
             erase(renderer.alignedObjects, wrapper);
         }
         objectEach(wrapper, function (val, key) {
@@ -935,7 +948,7 @@ class SVGElement {
      * @function Highcharts.SVGElement#getBBox
      *
      * @param {boolean} [reload]
-     *        Skip the cache and get the updated DOM bouding box.
+     *        Skip the cache and get the updated DOM bounding box.
      *
      * @param {number} [rot]
      *        Override the element's rotation. This is internally used on axis
@@ -947,8 +960,8 @@ class SVGElement {
      */
     getBBox(reload, rot) {
         const wrapper = this, { alignValue, element, renderer, styles, textStr } = wrapper, { cache, cacheKeys } = renderer, isSVG = element.namespaceURI === wrapper.SVG_NS, rotation = pick(rot, wrapper.rotation, 0), fontSize = renderer.styledMode ? (element &&
-            SVGElement.prototype.getStyle.call(element, 'font-size')) : (styles && styles.fontSize);
-        let bBox, width, height, toggleTextShadowShim, cacheKey;
+            SVGElement.prototype.getStyle.call(element, 'font-size')) : (styles.fontSize);
+        let bBox, height, toggleTextShadowShim, cacheKey;
         // Avoid undefined and null (#7316)
         if (defined(textStr)) {
             cacheKey = textStr.toString();
@@ -957,7 +970,7 @@ class SVGElement {
             // bounding box as others of the same length. Unless there is inner
             // HTML in the label. In that case, leave the numbers as is (#5899).
             if (cacheKey.indexOf('<') === -1) {
-                cacheKey = cacheKey.replace(/[0-9]/g, '0');
+                cacheKey = cacheKey.replace(/\d/g, '0');
             }
             // Properties that affect bounding box
             cacheKey += [
@@ -965,17 +978,17 @@ class SVGElement {
                 renderer.rootFontSize,
                 fontSize,
                 rotation,
-                wrapper.textWidth,
+                wrapper.textWidth, // #7874, also useHTML
                 alignValue,
-                styles && styles.textOverflow,
-                styles && styles.fontWeight // #12163
+                styles.textOverflow, // #5968
+                styles.fontWeight // #12163
             ].join(',');
         }
         if (cacheKey && !reload) {
             bBox = cache[cacheKey];
         }
         // No cache found
-        if (!bBox) {
+        if (!bBox || bBox.polygon) {
             // SVG elements
             if (isSVG || renderer.forExport) {
                 try { // Fails in Firefox if the container has display: none.
@@ -1017,14 +1030,13 @@ class SVGElement {
                 if (!bBox || bBox.width < 0) {
                     bBox = { x: 0, y: 0, width: 0, height: 0 };
                 }
-                // useHTML within SVG
+                // Use HTML within SVG
             }
             else {
                 bBox = wrapper.htmlGetBBox();
             }
             // True SVG elements as well as HTML elements in modern browsers
             // using the .useHTML option need to compensated for rotation
-            width = bBox.width;
             height = bBox.height;
             // Workaround for wrong bounding box in IE, Edge and Chrome on
             // Windows. With Highcharts' default font, IE and Edge report
@@ -1043,21 +1055,13 @@ class SVGElement {
             }
             // Adjust for rotated text
             if (rotation) {
-                const baseline = Number(element.getAttribute('y') || 0) - bBox.y, alignFactor = {
-                    'right': 1,
-                    'center': 0.5
-                }[alignValue || 0] || 0, rad = rotation * deg2rad, rad90 = (rotation - 90) * deg2rad, wCosRad = width * Math.cos(rad), wSinRad = width * Math.sin(rad), cosRad90 = Math.cos(rad90), sinRad90 = Math.sin(rad90), 
-                // Find the starting point on the left side baseline of
-                // the text
-                pX = bBox.x + alignFactor * (width - wCosRad), pY = bBox.y + baseline - alignFactor * wSinRad, 
-                // Find all corners
-                aX = pX + baseline * cosRad90, bX = aX + wCosRad, cX = bX - height * cosRad90, dX = cX - wCosRad, aY = pY + baseline * sinRad90, bY = aY + wSinRad, cY = bY - height * sinRad90, dY = cY - wSinRad;
-                // Deduct the bounding box from the corners
-                bBox.x = Math.min(aX, bX, cX, dX);
-                bBox.y = Math.min(aY, bY, cY, dY);
-                bBox.width = Math.max(aX, bX, cX, dX) - bBox.x;
-                bBox.height = Math.max(aY, bY, cY, dY) - bBox.y;
+                bBox = this.getRotatedBox(bBox, rotation);
             }
+            // Create a reference to catch changes to bBox
+            const e = { bBox };
+            fireEvent(this, 'afterGetBBox', e);
+            // Pick up any changes after the fired event
+            bBox = e.bBox;
         }
         // Cache it. When loading a chart in a hidden iframe in Firefox and
         // IE/Edge, the bounding box height is 0, so don't cache it (#5620).
@@ -1072,6 +1076,58 @@ class SVGElement {
             cache[cacheKey] = bBox;
         }
         return bBox;
+    }
+    /**
+     * Get the rotated box.
+     * @private
+     */
+    getRotatedBox(box, rotation) {
+        const { x: boxX, y: boxY, width, height } = box, { alignValue, translateY, rotationOriginX = 0, rotationOriginY = 0 } = this, alignFactor = {
+            'right': 1,
+            'center': 0.5
+        }[alignValue || 0] || 0, baseline = Number(this.element.getAttribute('y') || 0) -
+            (translateY ? 0 : boxY), rad = rotation * deg2rad, rad90 = (rotation - 90) * deg2rad, cosRad = Math.cos(rad), sinRad = Math.sin(rad), wCosRad = width * cosRad, wSinRad = width * sinRad, cosRad90 = Math.cos(rad90), sinRad90 = Math.sin(rad90), [[xOriginCosRad, xOriginSinRad], [yOriginCosRad, yOriginSinRad]] = [
+            rotationOriginX,
+            rotationOriginY
+        ].map((rotOrigin) => [
+            rotOrigin - (rotOrigin * cosRad),
+            rotOrigin * sinRad
+        ]), 
+        // Find the starting point on the left side baseline of
+        // the text
+        pX = ((boxX + alignFactor * (width - wCosRad)) +
+            xOriginCosRad + yOriginSinRad), pY = ((boxY + baseline - alignFactor * wSinRad) -
+            xOriginSinRad + yOriginCosRad), 
+        // Find all corners
+        aX = pX + baseline * cosRad90, bX = aX + wCosRad, cX = bX - height * cosRad90, dX = cX - wCosRad, aY = pY + baseline * sinRad90, bY = aY + wSinRad, cY = bY - height * sinRad90, dY = cY - wSinRad;
+        // Deduct the bounding box from the corners
+        const x = Math.min(aX, bX, cX, dX), y = Math.min(aY, bY, cY, dY), boxWidth = Math.max(aX, bX, cX, dX) - x, boxHeight = Math.max(aY, bY, cY, dY) - y;
+        /* Uncomment to debug boxes
+        this.renderer.path([
+            ['M', aX, aY],
+            ['L', bX, bY],
+            ['L', cX, cY],
+            ['L', dX, dY],
+            ['Z']
+        ])
+            .attr({
+                stroke: 'red',
+                'stroke-width': 1
+            })
+            .add();
+        // */
+        return {
+            x,
+            y,
+            width: boxWidth,
+            height: boxHeight,
+            polygon: [
+                [aX, aY],
+                [bX, bY],
+                [cX, cY],
+                [dX, dY]
+            ]
+        };
     }
     /**
      * Get the computed style. Only in styled mode.
@@ -1138,7 +1194,10 @@ class SVGElement {
      * @param {string} nodeName
      * The SVG node name.
      */
-    init(renderer, nodeName) {
+    constructor(renderer, nodeName) {
+        this.onEvents = {};
+        this.opacity = 1; // Default base for animation
+        this.SVG_NS = SVG_NS;
         /**
          * The primary DOM node. Each `SVGElement` instance wraps a main DOM
          * node, but may also represent more nodes.
@@ -1146,7 +1205,7 @@ class SVGElement {
          * @name Highcharts.SVGElement#element
          * @type {Highcharts.SVGDOMElement|Highcharts.HTMLDOMElement}
          */
-        this.element = nodeName === 'span' ?
+        this.element = nodeName === 'span' || nodeName === 'body' ?
             createElement(nodeName) :
             doc.createElementNS(this.SVG_NS, nodeName);
         /**
@@ -1156,6 +1215,7 @@ class SVGElement {
          * @type {Highcharts.SVGRenderer}
          */
         this.renderer = renderer;
+        this.styles = {};
         fireEvent(this, 'afterInit');
     }
     /**
@@ -1199,6 +1259,20 @@ class SVGElement {
         const opacity = Number(Number(value).toFixed(3));
         this.opacity = opacity;
         element.setAttribute(key, opacity);
+    }
+    /**
+     * Re-align an aligned text or label after setting the text.
+     *
+     * @private
+     * @function Highcharts.SVGElement#reAlign
+     *
+     */
+    reAlign() {
+        if (this.alignOptions?.width && this.alignOptions.align !== 'left') {
+            this.alignOptions.width = this.getBBox().width;
+            this.placed = false; // Block animation
+            this.align();
+        }
     }
     /**
      * Remove a class name from the element.
@@ -1266,98 +1340,6 @@ class SVGElement {
         // to be repositioned (#3801)
         if (existingGradient && existingGradient.radAttr) {
             existingGradient.animate(this.renderer.getRadialAttr(coordinates, existingGradient.radAttr));
-        }
-        return this;
-    }
-    /**
-     * Set a text path for a `text` or `label` element, allowing the text to
-     * flow along a path.
-     *
-     * In order to unset the path for an existing element, call `setTextPath`
-     * with `{ enabled: false }` as the second argument.
-     *
-     * @sample highcharts/members/renderer-textpath/ Text path demonstrated
-     *
-     * @function Highcharts.SVGElement#setTextPath
-     *
-     * @param {Highcharts.SVGElement|undefined} path
-     *        Path to follow. If undefined, it allows changing options for the
-     *        existing path.
-     *
-     * @param {Highcharts.DataLabelsTextPathOptionsObject} textPathOptions
-     *        Options.
-     *
-     * @return {Highcharts.SVGElement} Returns the SVGElement for chaining.
-     */
-    setTextPath(path, textPathOptions) {
-        // Defaults
-        textPathOptions = merge(true, {
-            enabled: true,
-            attributes: {
-                dy: -5,
-                startOffset: '50%',
-                textAnchor: 'middle'
-            }
-        }, textPathOptions);
-        const url = this.renderer.url, textWrapper = this.text || this, textPath = textWrapper.textPath, { attributes, enabled } = textPathOptions;
-        path = path || (textPath && textPath.path);
-        // Remove previously added event
-        if (textPath) {
-            textPath.undo();
-        }
-        if (path && enabled) {
-            const undo = addEvent(textWrapper, 'afterModifyTree', (e) => {
-                if (path && enabled) {
-                    // Set ID for the path
-                    let textPathId = path.attr('id');
-                    if (!textPathId) {
-                        path.attr('id', textPathId = uniqueKey());
-                    }
-                    // Set attributes for the <text>
-                    const textAttribs = {
-                        // dx/dy options must by set on <text> (parent), the
-                        // rest should be set on <textPath>
-                        x: 0,
-                        y: 0
-                    };
-                    if (defined(attributes.dx)) {
-                        textAttribs.dx = attributes.dx;
-                        delete attributes.dx;
-                    }
-                    if (defined(attributes.dy)) {
-                        textAttribs.dy = attributes.dy;
-                        delete attributes.dy;
-                    }
-                    textWrapper.attr(textAttribs);
-                    // Handle label properties
-                    this.attr({ transform: '' });
-                    if (this.box) {
-                        this.box = this.box.destroy();
-                    }
-                    // Wrap the nodes in a textPath
-                    const children = e.nodes.slice(0);
-                    e.nodes.length = 0;
-                    e.nodes[0] = {
-                        tagName: 'textPath',
-                        attributes: extend(attributes, {
-                            'text-anchor': attributes.textAnchor,
-                            href: `${url}#${textPathId}`
-                        }),
-                        children
-                    };
-                }
-            });
-            // Set the reference
-            textWrapper.textPath = { path, undo };
-        }
-        else {
-            textWrapper.attr({ dx: 0, dy: 0 });
-            delete textWrapper.textPath;
-        }
-        if (this.added) {
-            // Rebuild text after added
-            textWrapper.textCache = '';
-            this.renderer.buildText(textWrapper);
         }
         return this;
     }
@@ -1437,7 +1419,7 @@ class SVGElement {
      * @function Highcharts.SVGElement#strokeWidth
      *
      * @return {number}
-     * The stroke width in pixels. Even if the given stroke widtch (in CSS or by
+     * The stroke width in pixels. Even if the given stroke width (in CSS or by
      * attributes) is based on `em` or other units, the pixel size is returned.
      */
     strokeWidth() {
@@ -1447,21 +1429,21 @@ class SVGElement {
         }
         // In styled mode, read computed stroke width
         const val = this.getStyle('stroke-width');
-        let ret = 0, dummy;
+        let ret = 0, tempElement;
         // Read pixel values directly
-        if (val.indexOf('px') === val.length - 2) {
+        if (/px$/.test(val)) {
             ret = pInt(val);
             // Other values like em, pt etc need to be measured
         }
         else if (val !== '') {
-            dummy = doc.createElementNS(SVG_NS, 'rect');
-            attr(dummy, {
+            tempElement = doc.createElementNS(SVG_NS, 'rect');
+            attr(tempElement, {
                 width: val,
                 'stroke-width': 0
             });
-            this.element.parentNode.appendChild(dummy);
-            ret = dummy.getBBox().width;
-            dummy.parentNode.removeChild(dummy);
+            this.element.parentNode.appendChild(tempElement);
+            ret = tempElement.getBBox().width;
+            tempElement.parentNode.removeChild(tempElement);
         }
         return ret;
     }
@@ -1499,6 +1481,7 @@ class SVGElement {
             if (this.added) {
                 this.renderer.buildText(this);
             }
+            this.reAlign();
         }
     }
     /**
@@ -1518,12 +1501,9 @@ class SVGElement {
             el.appendChild(titleNode);
         }
         // Replace text content and escape markup
-        titleNode.textContent =
-            // #3276, #3895
-            String(pick(value, ''))
-                .replace(/<[^>]*>/g, '')
-                .replace(/&lt;/g, '<')
-                .replace(/&gt;/g, '>');
+        titleNode.textContent = replaceNested(// Scan #[73]
+        pick(value, ''), // #3276, #3895
+        [/<[^>]*>/g, '']).replace(/&lt;/g, '<').replace(/&gt;/g, '>');
     }
     /**
      * Bring the element to the front. Alternatively, a new zIndex can be set.
@@ -1569,29 +1549,37 @@ class SVGElement {
      * @private
      * @function Highcharts.SVGElement#updateTransform
      */
-    updateTransform() {
-        const { element, matrix, rotation = 0, scaleX, scaleY, translateX = 0, translateY = 0 } = this;
+    updateTransform(attrib = 'transform') {
+        const { element, matrix, rotation = 0, rotationOriginX, rotationOriginY, scaleX, scaleY, translateX = 0, translateY = 0 } = this;
         // Apply translate. Nearly all transformed elements have translation,
         // so instead of checking for translate = 0, do it always (#1767,
         // #1846).
         const transform = ['translate(' + translateX + ',' + translateY + ')'];
-        // apply matrix
+        // Apply matrix
         if (defined(matrix)) {
             transform.push('matrix(' + matrix.join(',') + ')');
         }
         // Apply rotation
-        if (rotation) { // text rotation or inverted chart
+        if (rotation) {
             transform.push('rotate(' + rotation + ' ' +
-                pick(this.rotationOriginX, element.getAttribute('x'), 0) +
+                pick(rotationOriginX, element.getAttribute('x'), 0) +
                 ' ' +
-                pick(this.rotationOriginY, element.getAttribute('y') || 0) + ')');
+                pick(rotationOriginY, element.getAttribute('y') || 0) + ')');
+            // HTML labels rotation (#20685)
+            if (this.text?.element.tagName === 'SPAN') {
+                this.text.attr({
+                    rotation,
+                    rotationOriginX: (rotationOriginX || 0) - this.padding,
+                    rotationOriginY: (rotationOriginY || 0) - this.padding
+                });
+            }
         }
-        // apply scale
+        // Apply scale
         if (defined(scaleX) || defined(scaleY)) {
             transform.push('scale(' + pick(scaleX, 1) + ' ' + pick(scaleY, 1) + ')');
         }
         if (transform.length && !(this.text || this).textPath) {
-            element.setAttribute('transform', transform.join(' '));
+            element.setAttribute(attrib, transform.join(' '));
         }
     }
     /**
@@ -1606,7 +1594,7 @@ class SVGElement {
      *
      */
     visibilitySetter(value, key, element) {
-        // IE9-11 doesn't handle visibilty:inherit well, so we remove the
+        // IE9-11 doesn't handle visibility:inherit well, so we remove the
         // attribute instead (#2881, #3909)
         if (value === 'inherit') {
             element.removeAttribute(key);
@@ -1697,6 +1685,11 @@ class SVGElement {
         return inserted;
     }
 }
+/* *
+ *
+ *  Properties
+ *
+ * */
 // Custom attributes used for symbols, these should be filtered out when
 // setting SVGElement attributes (#9375).
 SVGElement.symbolCustomAttribs = [
@@ -1901,4 +1894,4 @@ export default SVGElement;
  *
  * @typedef {"bottom"|"middle"|"top"} Highcharts.VerticalAlignValue
  */
-''; // keeps doclets above in JS file
+''; // Keeps doclets above in JS file

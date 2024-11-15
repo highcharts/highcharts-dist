@@ -41,22 +41,6 @@ function accumulatePoints(sum, yVal, i, index, subtract) {
  * @augments Highcharts.Series
  */
 class DPOIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *   Properties
-         *
-         * */
-        this.options = void 0;
-        this.data = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -79,11 +63,11 @@ class DPOIndicator extends SMAIndicator {
         for (j = 0; j <= yValLen - range; j++) {
             periodIndex = j + period - 1;
             rangeIndex = j + range - 1;
-            // adding the last period point
+            // Adding the last period point
             sum = accumulatePoints(sum, yVal, periodIndex, index);
             price = pick(yVal[rangeIndex][index], yVal[rangeIndex]);
             oscillator = price - sum / period;
-            // substracting the first period point
+            // Subtracting the first period point
             sum = accumulatePoints(sum, yVal, j, index, true);
             DPO.push([xVal[rangeIndex], oscillator]);
             xData.push(xVal[rangeIndex]);
@@ -96,6 +80,11 @@ class DPOIndicator extends SMAIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Detrended Price Oscillator. This series requires the `linkedTo` option to
  * be set and should be loaded after the `stock/indicators/indicators.js`.
@@ -156,4 +145,4 @@ export default DPOIndicator;
  * @requires  stock/indicators/dpo
  * @apioption series.dpo
  */
-''; // to include the above in the js output'
+''; // To include the above in the js output'

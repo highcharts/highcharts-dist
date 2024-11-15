@@ -2,7 +2,7 @@
  *
  *  Tilemaps module
  *
- *  (c) 2010-2021 Highsoft AS
+ *  (c) 2010-2024 Highsoft AS
  *  Author: Øystein Moseng
  *
  *  License: www.highcharts.com/license
@@ -12,7 +12,7 @@
  * */
 'use strict';
 import H from '../../Core/Globals.js';
-const { noop } = H;
+const { composed, noop } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries, heatmap: HeatmapSeries, scatter: ScatterSeries } = SeriesRegistry.seriesTypes;
 import TilemapPoint from './TilemapPoint.js';
@@ -20,12 +20,6 @@ import TilemapSeriesDefaults from './TilemapSeriesDefaults.js';
 import TilemapShapes from './TilemapShapes.js';
 import U from '../../Core/Utilities.js';
 const { addEvent, extend, merge, pushUnique } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
 /* *
  *
  *  Functions
@@ -81,30 +75,13 @@ function onAxisAfterSetAxisTranslation() {
  * @augments Highcharts.Series
  */
 class TilemapSeries extends HeatmapSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        this.tileShape = void 0;
-    }
     /* *
      *
      *  Static Functions
      *
      * */
     static compose(AxisClass) {
-        if (pushUnique(composedMembers, AxisClass)) {
+        if (pushUnique(composed, 'TilemapSeries')) {
             addEvent(AxisClass, 'afterSetAxisTranslation', onAxisAfterSetAxisTranslation);
         }
     }
@@ -150,7 +127,7 @@ class TilemapSeries extends HeatmapSeries {
             padding.yPad, 0, 1, 0, 1));
         const coord2 = Math.round(axis.translate(isX ? padding.xPad : 0, 0, 1, 0, 1));
         return {
-            padding: (axis.single ? // if there is only one tick adjust padding #18647
+            padding: (axis.single ? // If there is only one tick adjust padding #18647
                 Math.abs(coord1 - coord2) / 2 :
                 Math.abs(coord1 - coord2)) || 0,
             // Offset the yAxis length to compensate for shift. Setting the
@@ -180,13 +157,18 @@ class TilemapSeries extends HeatmapSeries {
         return this.tileShape.translate.apply(this, arguments);
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 TilemapSeries.defaultOptions = merge(HeatmapSeries.defaultOptions, TilemapSeriesDefaults);
 extend(TilemapSeries.prototype, {
     // Revert the noop on getSymbol.
     getSymbol: noop,
     // Use drawPoints, markerAttribs, pointAttribs methods from the old
     // heatmap implementation.
-    // TODO: Consider standarizing heatmap and tilemap into more
+    // TODO: Consider standardizing heatmap and tilemap into more
     // consistent form.
     markerAttribs: ScatterSeries.prototype.markerAttribs,
     pointAttribs: ColumnSeries.prototype.pointAttribs,
@@ -207,4 +189,4 @@ export default TilemapSeries;
 /**
  * @typedef {"circle"|"diamond"|"hexagon"|"square"} Highcharts.TilemapShapeValue
  */
-''; // keeps doclets above in JS file
+''; // Keeps doclets above in JS file

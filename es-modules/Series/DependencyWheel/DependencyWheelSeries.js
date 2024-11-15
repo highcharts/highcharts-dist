@@ -2,7 +2,7 @@
  *
  *  Dependency wheel module
  *
- *  (c) 2018-2021 Torstein Honsi
+ *  (c) 2018-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -20,7 +20,10 @@ import SankeyColumnComposition from '../Sankey/SankeyColumnComposition.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { pie: PieSeries, sankey: SankeySeries } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
-const { extend, merge } = U;
+const { extend, merge, relativeLength } = U;
+import SVGElement from '../../Core/Renderer/SVG/SVGElement.js';
+import TextPath from '../../Extensions/TextPath.js';
+TextPath.compose(SVGElement);
 /* *
  *
  *  Class
@@ -34,24 +37,6 @@ const { extend, merge } = U;
  * @augments Highcharts.seriesTypes.sankey
  */
 class DependencyWheelSeries extends SankeySeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.nodeColumns = void 0;
-        this.nodes = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -156,7 +141,8 @@ class DependencyWheelSeries extends SankeySeries {
         for (const node of this.nodeColumns[0]) {
             // Don't render the nodes if sum is 0 #12453
             if (node.sum) {
-                const shapeArgs = node.shapeArgs, centerX = center[0], centerY = center[1], r = center[2] / 2, innerR = r - options.nodeWidth, start = startAngle + factor * (shapeArgs.y || 0), end = startAngle +
+                const shapeArgs = node.shapeArgs, centerX = center[0], centerY = center[1], r = center[2] / 2, nodeWidth = options.nodeWidth === 'auto' ?
+                    20 : options.nodeWidth, innerR = r - relativeLength(nodeWidth || 0, r), start = startAngle + factor * (shapeArgs.y || 0), end = startAngle +
                     factor * ((shapeArgs.y || 0) + (shapeArgs.height || 0));
                 // Middle angle
                 node.angle = start + (end - start) / 2;
@@ -210,8 +196,8 @@ class DependencyWheelSeries extends SankeySeries {
                                     'A',
                                     innerR, innerR,
                                     0,
-                                    0,
-                                    1,
+                                    0, // Long arc
+                                    1, // Clockwise
                                     corners[1].x, corners[1].y
                                 ], [
                                     'C',
@@ -238,6 +224,11 @@ class DependencyWheelSeries extends SankeySeries {
         }
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 DependencyWheelSeries.defaultOptions = merge(SankeySeries.defaultOptions, DependencyWheelSeriesDefaults);
 extend(DependencyWheelSeries.prototype, {
     orderNodes: false,

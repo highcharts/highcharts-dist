@@ -1,9 +1,9 @@
 /**
- * @license Highcharts Gantt JS v11.2.0 (2023-10-30)
+ * @license Highcharts Gantt JS v11.4.8 (2024-08-29)
  *
  * StaticScale
  *
- * (c) 2016-2021 Torstein Honsi, Lars A. V. Cabrera
+ * (c) 2016-2024 Torstein Honsi, Lars A. V. Cabrera
  *
  * License: www.highcharts.com/license
  */
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -38,20 +38,14 @@
     _registerModule(_modules, 'Extensions/StaticScale.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
-         *  (c) 2016-2021 Torstein Honsi, Lars Cabrera
+         *  (c) 2016-2024 Torstein Honsi, Lars Cabrera
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { addEvent, defined, isNumber, pick, pushUnique } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { addEvent, defined, isNumber, pick } = U;
         /* *
          *
          *  Composition
@@ -59,11 +53,9 @@
          * */
         /** @private */
         function compose(AxisClass, ChartClass) {
-            if (pushUnique(composedMembers, AxisClass)) {
+            const chartProto = ChartClass.prototype;
+            if (!chartProto.adjustHeight) {
                 addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
-            }
-            if (pushUnique(composedMembers, ChartClass)) {
-                const chartProto = ChartClass.prototype;
                 chartProto.adjustHeight = chartAdjustHeight;
                 addEvent(ChartClass, 'render', chartProto.adjustHeight);
             }
@@ -90,7 +82,7 @@
                         let height = pick(axis.brokenAxis && axis.brokenAxis.unitLength, axis.max + axis.tickInterval - axis.min) * staticScale;
                         // Minimum height is 1 x staticScale.
                         height = Math.max(height, staticScale);
-                        let diff = height - chart.plotHeight;
+                        const diff = height - chart.plotHeight;
                         if (!chart.scrollablePixelsY && Math.abs(diff) >= 1) {
                             chart.plotHeight = height;
                             chart.redrawTrigger = 'adjustHeight';
@@ -144,7 +136,7 @@
          * @product   gantt
          * @apioption yAxis.staticScale
          */
-        ''; // keeps doclets above in JS file
+        ''; // Keeps doclets above in JS file
 
         return StaticScale;
     });
@@ -153,5 +145,6 @@
         const G = Highcharts;
         StaticScale.compose(G.Axis, G.Chart);
 
+        return Highcharts;
     });
 }));

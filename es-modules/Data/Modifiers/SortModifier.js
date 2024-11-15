@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2023 Highsoft AS
+ *  (c) 2009-2024 Highsoft AS
  *
  *  License: www.highcharts.com/license
  *
@@ -8,6 +8,7 @@
  *
  *  Authors:
  *  - Sophie Bremer
+ *  - Dawid Dragula
  *
  * */
 'use strict';
@@ -23,7 +24,6 @@ const { merge } = U;
 /**
  * Sort table rows according to values of a column.
  *
- * @private
  */
 class SortModifier extends DataModifier {
     /* *
@@ -228,11 +228,16 @@ class SortModifier extends DataModifier {
             modified.setColumns({ [orderInColumn]: column });
         }
         else {
+            const originalIndexes = [];
             const rows = [];
+            let rowReference;
             for (let i = 0; i < rowCount; ++i) {
-                rows.push(rowReferences[i].row);
+                rowReference = rowReferences[i];
+                originalIndexes.push(modified.getOriginalRowIndex(rowReference.index));
+                rows.push(rowReference.row);
             }
             modified.setRows(rows, 0);
+            modified.setOriginalRowIndexes(originalIndexes);
         }
         modifier.emit({ type: 'afterModify', detail: eventDetail, table });
         return table;

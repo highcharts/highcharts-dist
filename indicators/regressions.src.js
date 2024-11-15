@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.4.8 (2024-08-29)
  *
  * Indicator series type for Highcharts Stock
  *
- * (c) 2010-2021 Kamil Kulig
+ * (c) 2010-2024 Kamil Kulig
  *
  * License: www.highcharts.com/license
  */
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -38,7 +38,7 @@
     _registerModule(_modules, 'Stock/Indicators/LinearRegression/LinearRegressionIndicator.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /**
          *
-         *  (c) 2010-2021 Kamil Kulig
+         *  (c) 2010-2024 Kamil Kulig
          *
          *  License: www.highcharts.com/license
          *
@@ -62,22 +62,6 @@
          * @augments Highcharts.Series
          */
         class LinearRegressionIndicator extends SMAIndicator {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Functions
@@ -99,7 +83,7 @@
              * function.
              */
             getRegressionLineParameters(xData, yData) {
-                // least squares method
+                // Least squares method
                 const yIndex = this.options.params.index, getSingleYValue = function (yValue, yIndex) {
                     return isArray(yValue) ? yValue[yIndex] : yValue;
                 }, xSum = xData.reduce(function (accX, val) {
@@ -115,7 +99,7 @@
                     formulaDenominator += Math.pow(xError, 2);
                 }
                 const slope = formulaDenominator ?
-                    formulaNumerator / formulaDenominator : 0; // don't divide by 0
+                    formulaNumerator / formulaDenominator : 0; // Don't divide by 0
                 return {
                     slope: slope,
                     intercept: yMean - slope * xMean
@@ -181,9 +165,9 @@
             // Required to be implemented - starting point for indicator's logic
             getValues(baseSeries, regressionSeriesParams) {
                 const xData = baseSeries.xData, yData = baseSeries.yData, period = regressionSeriesParams.period, 
-                // format required to be returned
+                // Format required to be returned
                 indicatorData = {
-                    xData: [],
+                    xData: [], // By getValues() method
                     yData: [],
                     values: []
                 }, xAxisUnit = this.options.params.xAxisUnit ||
@@ -193,7 +177,7 @@
                 // (end point) is used to represent the y value (regression)
                 // of the entire period.
                 for (i = period - 1; i <= xData.length - 1; i++) {
-                    periodStart = i - period + 1; // adjusted for slice() function
+                    periodStart = i - period + 1; // Adjusted for slice() function
                     periodEnd = i + 1; // (as above)
                     endPointX = xData[i];
                     periodXData = xData.slice(periodStart, periodEnd);
@@ -213,6 +197,11 @@
                 return indicatorData;
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         /**
          * Linear regression indicator. This series requires `linkedTo` option to be
          * set.
@@ -231,10 +220,10 @@
             params: {
                 /**
                  * Unit (in milliseconds) for the x axis distances used to
-                 * compute the regression line paramters (slope & intercept) for
-                 * every range. In Highcharts Stock the x axis values are always
-                 * represented in milliseconds which may cause that distances
-                 * between points are "big" integer numbers.
+                 * compute the regression line parameters (slope & intercept)
+                 * for every range. In Highcharts Stock the x axis values are
+                 * always represented in milliseconds which may cause that
+                 * distances between points are "big" integer numbers.
                  *
                  * Highcharts Stock's linear regression algorithm (least squares
                  * method) will utilize these "big" integers for finding the
@@ -242,10 +231,10 @@
                  * period. In consequence, this value may be a very "small"
                  * decimal number that's hard to interpret by a human.
                  *
-                 * For instance: `xAxisUnit` equealed to `86400000` ms (1 day)
+                 * For instance: `xAxisUnit` equaled to `86400000` ms (1 day)
                  * forces the algorithm to treat `86400000` as `1` while
-                 * computing the slope and the intercept. This may enchance the
-                 * legiblitity of the indicator's values.
+                 * computing the slope and the intercept. This may enhance the
+                 * legibility of the indicator's values.
                  *
                  * Default value is the closest distance between two data
                  * points.
@@ -309,14 +298,14 @@
          * @requires  stock/indicators/regressions
          * @apioption series.linearregression
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return LinearRegressionIndicator;
     });
     _registerModule(_modules, 'Stock/Indicators/LinearRegressionSlopes/LinearRegressionSlopesIndicator.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /**
          *
-         *  (c) 2010-2021 Kamil Kulig
+         *  (c) 2010-2024 Kamil Kulig
          *
          *  License: www.highcharts.com/license
          *
@@ -340,22 +329,6 @@
          * @augments Highcharts.Series
          */
         class LinearRegressionSlopesIndicator extends LinearRegressionIndicator {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Functions
@@ -365,6 +338,11 @@
                 return lineParameters.slope;
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         /**
          * Linear regression slope indicator. This series requires `linkedTo`
          * option to be set.
@@ -407,14 +385,14 @@
          * @requires  stock/indicators/regressions
          * @apioption series.linearregressionslope
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return LinearRegressionSlopesIndicator;
     });
     _registerModule(_modules, 'Stock/Indicators/LinearRegressionIntercept/LinearRegressionInterceptIndicator.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /**
          *
-         *  (c) 2010-2021 Kamil Kulig
+         *  (c) 2010-2024 Kamil Kulig
          *
          *  License: www.highcharts.com/license
          *
@@ -438,22 +416,6 @@
          * @augments Highcharts.Series
          */
         class LinearRegressionInterceptIndicator extends LinearRegressionIndicator {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Functions
@@ -463,6 +425,11 @@
                 return lineParameters.intercept;
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         /**
          * Linear regression intercept indicator. This series requires `linkedTo`
          * option to be set.
@@ -505,14 +472,14 @@
          * @requires  stock/indicators/regressions
          * @apioption series.linearregressionintercept
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return LinearRegressionInterceptIndicator;
     });
     _registerModule(_modules, 'Stock/Indicators/LinearRegressionAngle/LinearRegressionAngleIndicator.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /**
          *
-         *  (c) 2010-2021 Kamil Kulig
+         *  (c) 2010-2024 Kamil Kulig
          *
          *  License: www.highcharts.com/license
          *
@@ -536,22 +503,6 @@
          * @augments Highcharts.Series
          */
         class LinearRegressionAngleIndicator extends LinearRegressionIndicator {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Functions
@@ -565,12 +516,17 @@
              * @return {number} angle in degrees
              */
             slopeToAngle(slope) {
-                return Math.atan(slope) * (180 / Math.PI); // rad to deg
+                return Math.atan(slope) * (180 / Math.PI); // Rad to deg
             }
             getEndPointY(lineParameters) {
                 return this.slopeToAngle(lineParameters.slope);
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         /**
          * Linear regression angle indicator. This series requires `linkedTo`
          * option to be set.
@@ -613,14 +569,15 @@
          * @requires  stock/indicators/regressions
          * @apioption series.linearregressionangle
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return LinearRegressionAngleIndicator;
     });
-    _registerModule(_modules, 'masters/indicators/regressions.src.js', [], function () {
+    _registerModule(_modules, 'masters/indicators/regressions.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
         // eslint-disable-next-line max-len
         // eslint-disable-next-line max-len
 
+        return Highcharts;
     });
 }));

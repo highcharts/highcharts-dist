@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
  * Annotations module
  *
- * (c) 2009-2021 Torstein Honsi
+ * (c) 2009-2024 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -38,7 +38,7 @@
     _registerModule(_modules, 'Extensions/Annotations/AnnotationChart.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
-         *  (c) 2009-2021 Highsoft, Black Label
+         *  (c) 2009-2024 Highsoft, Black Label
          *
          *  License: www.highcharts.com/license
          *
@@ -46,12 +46,6 @@
          *
          * */
         const { addEvent, erase, find, fireEvent, pick, wrap } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
         /* *
          *
          *  Functions
@@ -292,9 +286,10 @@
              * @private
              */
             function compose(AnnotationClass, ChartClass, PointerClass) {
-                if (U.pushUnique(composedMembers, ChartClass)) {
+                const chartProto = ChartClass.prototype;
+                if (!chartProto.addAnnotation) {
+                    const pointerProto = PointerClass.prototype;
                     addEvent(ChartClass, 'afterInit', onChartAfterInit);
-                    const chartProto = ChartClass.prototype;
                     chartProto.addAnnotation = chartAddAnnotation;
                     chartProto.callbacks.push(chartCallback);
                     chartProto.collectionsWithInit.annotations = [chartAddAnnotation];
@@ -307,9 +302,6 @@
                         this.annotations.push(annotation);
                         return annotation;
                     };
-                }
-                if (U.pushUnique(composedMembers, PointerClass)) {
-                    const pointerProto = PointerClass.prototype;
                     wrap(pointerProto, 'onContainerMouseDown', wrapPointerOnContainerMouseDown);
                 }
             }
@@ -337,7 +329,7 @@
          * */
         /**
          * A basic type of an annotation. It allows to add custom labels
-         * or shapes. The items  can be tied to points, axis coordinates
+         * or shapes. The items can be tied to points, axis coordinates
          * or chart pixel coordinates.
          *
          * @sample highcharts/annotations/basic/
@@ -465,7 +457,7 @@
                  */
                 borderColor: "#000000" /* Palette.neutralColor100 */,
                 /**
-                 * The border radius in pixels for the annotaiton's label.
+                 * The border radius in pixels for the annotation's label.
                  *
                  * @sample highcharts/annotations/label-presentation/
                  *         Set labels graphic options
@@ -804,7 +796,7 @@
                  */
                 /**
                  * The type of the shape.
-                 * Avaliable options are circle, rect and ellipse.
+                 * Available options are circle, rect and ellipse.
                  *
                  * @sample highcharts/annotations/shape/
                  *         Basic shape annotation
@@ -915,7 +907,7 @@
              */
             /**
              * Event callback when annotation is updated (e.g. drag and
-             * droppped or resized by control points).
+             * dropped or resized by control points).
              *
              * @type      {Highcharts.EventCallbackFunction<Highcharts.Annotation>}
              * @since     7.1.0
@@ -951,7 +943,7 @@
              * The Z index of the annotation.
              */
             zIndex: 6
-        }; // typeOptions are expected but not set
+        }; // Type options are expected but not set
         /* *
          *
          *  Default Export
@@ -963,7 +955,7 @@
     _registerModule(_modules, 'Extensions/Annotations/EventEmitter.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2009-2021 Highsoft, Black Label
+         *  (c) 2009-2024 Highsoft, Black Label
          *
          *  License: www.highcharts.com/license
          *
@@ -1006,11 +998,14 @@
                 objectEach(emitter.options.events, (event, type) => {
                     const eventHandler = function (e) {
                         if (type !== 'click' || !emitter.cancelClick) {
-                            event.call(emitter, emitter.chart.pointer.normalize(e), emitter.target);
+                            event.call(emitter, emitter.chart.pointer?.normalize(e), emitter.target);
                         }
                     };
                     if ((emitter.nonDOMEvents || []).indexOf(type) === -1) {
-                        emitter.graphic.on(type, eventHandler);
+                        addEvent(emitter.graphic.element, type, eventHandler, { passive: false });
+                        if (emitter.graphic.div) {
+                            addEvent(emitter.graphic.div, type, eventHandler, { passive: false });
+                        }
                     }
                     else {
                         addEvent(emitter, type, eventHandler, { passive: false });
@@ -1138,20 +1133,20 @@
                 // Using experimental property on event object to check if event was
                 // created by touch on screen on hybrid device (#18122)
                 firesTouchEvents = (e?.sourceCapabilities?.firesTouchEvents) || false;
-                e = pointer.normalize(e);
+                e = pointer?.normalize(e) || e;
                 let prevChartX = e.chartX, prevChartY = e.chartY;
                 emitter.cancelClick = false;
                 emitter.chart.hasDraggedAnnotation = true;
                 emitter.removeDrag = addEvent(doc, isTouchDevice || firesTouchEvents ? 'touchmove' : 'mousemove', function (e) {
                     emitter.hasDragged = true;
-                    e = pointer.normalize(e);
+                    e = pointer?.normalize(e) || e;
                     e.prevChartX = prevChartX;
                     e.prevChartY = prevChartY;
                     fireEvent(emitter, 'drag', e);
                     prevChartX = e.chartX;
                     prevChartY = e.chartY;
                 }, isTouchDevice || firesTouchEvents ? { passive: false } : void 0);
-                emitter.removeMouseUp = addEvent(doc, isTouchDevice || firesTouchEvents ? 'touchend' : 'mouseup', function (e) {
+                emitter.removeMouseUp = addEvent(doc, isTouchDevice || firesTouchEvents ? 'touchend' : 'mouseup', function () {
                     // Sometimes the target is the annotation and sometimes its the
                     // controllable
                     const annotation = pick(emitter.target && emitter.target.annotation, emitter.target);
@@ -1160,21 +1155,21 @@
                         annotation.cancelClick = emitter.hasDragged;
                     }
                     emitter.cancelClick = emitter.hasDragged;
-                    emitter.hasDragged = false;
                     emitter.chart.hasDraggedAnnotation = false;
-                    // ControlPoints vs Annotation:
-                    fireEvent(pick(annotation, // #15952
-                    emitter), 'afterUpdate');
-                    emitter.onMouseUp(e);
+                    if (emitter.hasDragged) {
+                        // ControlPoints vs Annotation:
+                        fireEvent(pick(annotation, // #15952
+                        emitter), 'afterUpdate');
+                    }
+                    emitter.hasDragged = false;
+                    emitter.onMouseUp();
                 }, isTouchDevice || firesTouchEvents ? { passive: false } : void 0);
             }
             /**
              * Mouse up handler.
              */
-            onMouseUp(_e) {
-                const chart = this.chart, annotation = this.target || this, annotationsOptions = chart.options.annotations, index = chart.annotations.indexOf(annotation);
+            onMouseUp() {
                 this.removeDocEvents();
-                annotationsOptions[index] = annotation.options;
             }
             /**
              * Remove emitter document events.
@@ -1240,9 +1235,8 @@
              * */
             constructor(chart, target, options, index) {
                 super();
-                this.graphic = void 0;
                 /**
-                 * List of events for `anntation.options.events` that should not be
+                 * List of events for `annotation.options.events` that should not be
                  * added to `annotation.graphic` but to the `annotation`.
                  * @private
                  * @name Highcharts.AnnotationControlPoint#nonDOMEvents
@@ -1291,7 +1285,7 @@
                     .add(chart.controlPointsGroup)
                     .css(options.style);
                 this.setVisibility(options.visible);
-                // npm test -- --tests "highcharts/annotations-advanced/*"
+                // `npm test -- --tests "highcharts/annotations-advanced/*"`
                 this.addEvents();
             }
             /**
@@ -1334,14 +1328,14 @@
          *
          * */
         /**
-         * Callback to modify annotation's possitioner controls.
+         * Callback to modify annotation's positioner controls.
          *
          * @callback Highcharts.AnnotationControlPointPositionerFunction
          * @param {Highcharts.AnnotationControlPoint} this
          * @param {Highcharts.AnnotationControllable} target
          * @return {Highcharts.PositionObject}
          */
-        (''); // keeps doclets above in JS file
+        (''); // Keeps doclets above in JS file
 
         return ControlPoint;
     });
@@ -1466,8 +1460,6 @@
              *
              * */
             constructor(chart, target, options) {
-                this.plotX = void 0;
-                this.plotY = void 0;
                 /* *
                  *
                  * Functions
@@ -1834,7 +1826,7 @@
          * @name Highcharts.Point#mock
          * @type {boolean|undefined}
          */
-        (''); // keeps doclets above in JS file
+        (''); // Keeps doclets above in JS file
 
         return MockPoint;
     });
@@ -1856,12 +1848,6 @@
              *  Declarations
              *
              * */
-            /* *
-             *
-             *  Constants
-             *
-             * */
-            const composedMembers = [];
             /* *
              *
              *  Functions
@@ -1917,8 +1903,9 @@
              * @private
              */
             function compose(ControlTargetClass) {
-                if (U.pushUnique(composedMembers, ControlTargetClass)) {
-                    U.merge(true, ControlTargetClass.prototype, {
+                const controlProto = ControlTargetClass.prototype;
+                if (!controlProto.addControlPoints) {
+                    U.merge(true, controlProto, {
                         addControlPoints,
                         anchor,
                         destroyControlTarget,
@@ -2020,7 +2007,7 @@
                 this.controlPoints.forEach((controlPoint) => controlPoint.redraw(animation));
             }
             /**
-             * Render controll points.
+             * Render control points.
              * @private
              */
             function renderControlPoints() {
@@ -2130,7 +2117,6 @@
              *
              * */
             constructor(annotation, options, index, itemType) {
-                this.graphic = void 0;
                 this.annotation = annotation;
                 this.chart = annotation.chart;
                 this.collection = (itemType === 'label' ? 'labels' : 'shapes');
@@ -2150,7 +2136,9 @@
              * Redirect attr usage on the controllable graphic element.
              * @private
              */
-            attr(..._args) {
+            attr(
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            ..._args) {
                 this.graphic.attr.apply(this.graphic, arguments);
             }
             /**
@@ -2213,7 +2201,12 @@
              * Render a controllable.
              * @private
              */
-            render(_parentGroup) {
+            render(
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            _parentGroup) {
+                if (this.options.className && this.graphic) {
+                    this.graphic.addClass(this.options.className);
+                }
                 this.renderControlPoints();
             }
             /**
@@ -2316,7 +2309,7 @@
          *
          * */
         /**
-         * An object which denots a controllable's anchor positions - relative and
+         * An object which denotes a controllable's anchor positions - relative and
          * absolute.
          *
          * @private
@@ -2349,7 +2342,7 @@
         * @name Highcharts.AnnotationControllable#points
         * @type {Array<Highcharts.Point>}
         */
-        (''); // keeps doclets above in JS file
+        (''); // Keeps doclets above in JS file
 
         return Controllable;
     });
@@ -2412,7 +2405,7 @@
                 children: [{
                         tagName: 'path',
                         attributes: {
-                            d: 'M 0 0 L 10 5 L 0 10 Z',
+                            d: 'M 0 0 L 10 5 L 0 10 Z', // Triangle (used as an arrow)
                             'stroke-width': 0
                         }
                     }]
@@ -2432,7 +2425,7 @@
                 children: [{
                         tagName: 'path',
                         attributes: {
-                            // reverse triangle (used as an arrow)
+                            // Reverse triangle (used as an arrow)
                             d: 'M 0 5 L 10 0 L 10 10 Z',
                             'stroke-width': 0
                         }
@@ -2463,7 +2456,6 @@
          *  Constants
          *
          * */
-        const composedMembers = [];
         const markerEndSetter = createMarkerSetter('marker-end');
         const markerStartSetter = createMarkerSetter('marker-start');
         // See TRACKER_FILL in highcharts.src.js
@@ -2486,7 +2478,7 @@
          */
         function onChartAfterGetContainer() {
             this.options.defs = merge(defaultMarkers, this.options.defs || {});
-            // objectEach(this.options.defs, function (def): void {
+            ///  objectEach(this.options.defs, function (def): void {
             //     const attributes = def.attributes;
             //     if (
             //         def.tagName === 'marker' &&
@@ -2554,11 +2546,9 @@
              *
              * */
             static compose(ChartClass, SVGRendererClass) {
-                if (U.pushUnique(composedMembers, ChartClass)) {
+                const svgRendererProto = SVGRendererClass.prototype;
+                if (!svgRendererProto.addMarker) {
                     addEvent(ChartClass, 'afterGetContainer', onChartAfterGetContainer);
-                }
-                if (U.pushUnique(composedMembers, SVGRendererClass)) {
-                    const svgRendererProto = SVGRendererClass.prototype;
                     svgRendererProto.addMarker = svgRendererAddMarker;
                 }
             }
@@ -2627,9 +2617,6 @@
                     .path([['M', 0, 0]])
                     .attr(attrs)
                     .add(parent);
-                if (options.className) {
-                    this.graphic.addClass(options.className);
-                }
                 this.tracker = this.annotation.chart.renderer
                     .path([['M', 0, 0]])
                     .addClass('highcharts-tracker-line')
@@ -2639,7 +2626,7 @@
                     .add(parent);
                 if (!this.annotation.chart.styledMode) {
                     this.tracker.attr({
-                        'stroke-linejoin': 'round',
+                        'stroke-linejoin': 'round', // #1225
                         stroke: TRACKER_FILL,
                         fill: TRACKER_FILL,
                         'stroke-width': this.graphic.strokeWidth() +
@@ -2675,7 +2662,8 @@
                     fill :
                     itemOptions.stroke;
                 const setMarker = function (markerType) {
-                    let markerId = itemOptions[markerType], def, predefinedMarker, key, marker;
+                    const markerId = itemOptions[markerType];
+                    let def, predefinedMarker, key, marker;
                     if (markerId) {
                         for (key in defs) { // eslint-disable-line guard-for-in
                             def = defs[key];
@@ -3039,8 +3027,8 @@
                     (point2.x - point1.x) * (point2.x - point1.x));
             }
             /**
-             * The fuction calculates the svg attributes of the ellipse, and returns all
-             * parameters neccessary to draw the ellipse.
+             * The function calculates the svg attributes of the ellipse, and returns
+             * all parameters necessary to draw the ellipse.
              * @private
              * @param position
              *        Absolute position of the first point in points array
@@ -3087,7 +3075,7 @@
              * Redraw the element
              * @private
              * @param animation
-             *        Display an annimation
+             *        Display an animation
              */
             redraw(animation) {
                 if (this.graphic) {
@@ -3159,12 +3147,6 @@
          * */
         const { format } = F;
         const { extend, isNumber, pick } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
         /* *
          *
          *  Functions
@@ -3272,10 +3254,8 @@
                 };
             }
             static compose(SVGRendererClass) {
-                if (U.pushUnique(composedMembers, SVGRendererClass)) {
-                    const svgRendererProto = SVGRendererClass.prototype;
-                    svgRendererProto.symbols.connector = symbolConnector;
-                }
+                const symbols = SVGRendererClass.prototype.symbols;
+                symbols.connector = symbolConnector;
             }
             /**
              * Returns new alignment options for a label if the label is outside the
@@ -3403,9 +3383,6 @@
                         .css(options.style)
                         .shadow(options.shadow);
                 }
-                if (options.className) {
-                    this.graphic.addClass(options.className);
-                }
                 this.graphic.labelrank = options.labelrank;
                 super.render();
             }
@@ -3442,7 +3419,9 @@
              * For a controllable label, we need to subtract translation from
              * options.
              */
-            anchor(_point) {
+            anchor(
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            _point) {
                 const anchor = super.anchor.apply(this, arguments), x = this.options.x || 0, y = this.options.y || 0;
                 anchor.absolutePosition.x -= x;
                 anchor.absolutePosition.y -= y;
@@ -3463,7 +3442,8 @@
                         itemPosition = tooltip.getPosition.call({
                             chart,
                             distance: pick(itemOptions.distance, 16),
-                            getPlayingField: tooltip.getPlayingField
+                            getPlayingField: tooltip.getPlayingField,
+                            pointer: tooltip.pointer
                         }, width, height, {
                             plotX: anchorRelativePosition.x,
                             plotY: anchorRelativePosition.y,
@@ -3634,10 +3614,1988 @@
 
         return ControllableImage;
     });
+    _registerModule(_modules, 'Shared/BaseForm.js', [_modules['Core/Renderer/HTML/AST.js'], _modules['Core/Utilities.js']], function (AST, U) {
+        /* *
+         *
+         *  (c) 2009-2024 Highsoft AS
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        /* *
+         *
+         *  Imports
+         *
+         * */
+        const { addEvent, createElement } = U;
+        /* *
+         *
+         *  Class
+         *
+         * */
+        class BaseForm {
+            /* *
+             *
+             *  Constructor
+             *
+             * */
+            constructor(parentDiv, iconsURL) {
+                this.iconsURL = iconsURL;
+                this.container = this.createPopupContainer(parentDiv);
+                this.closeButton = this.addCloseButton();
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /**
+             * Create popup div container.
+             *
+             * @param {HTMLElement} parentDiv
+             * Parent div to attach popup.
+             *
+             * @param  {string} className
+             * Class name of the popup.
+             *
+             * @return {HTMLElement}
+             * Popup div.
+             */
+            createPopupContainer(parentDiv, className = 'highcharts-popup highcharts-no-tooltip') {
+                return createElement('div', { className }, void 0, parentDiv);
+            }
+            /**
+             * Create HTML element and attach click event to close popup.
+             *
+             * @param {string} className
+             * Class name of the close button.
+             *
+             * @return {HTMLElement}
+             * Close button.
+             */
+            addCloseButton(className = 'highcharts-popup-close') {
+                const popup = this, iconsURL = this.iconsURL;
+                // Create close popup button.
+                const closeButton = createElement('button', { className }, void 0, this.container);
+                closeButton.style['background-image'] = 'url(' +
+                    (iconsURL.match(/png|svg|jpeg|jpg|gif/ig) ?
+                        iconsURL : iconsURL + 'close.svg') + ')';
+                ['click', 'touchstart'].forEach((eventName) => {
+                    addEvent(closeButton, eventName, popup.closeButtonEvents.bind(popup));
+                });
+                // Close popup when press ESC
+                addEvent(document, 'keydown', function (event) {
+                    if (event.code === 'Escape') {
+                        popup.closeButtonEvents();
+                    }
+                });
+                return closeButton;
+            }
+            /**
+             * Close button events.
+             * @return {void}
+             */
+            closeButtonEvents() {
+                this.closePopup();
+            }
+            /**
+             * Reset content of the current popup and show.
+             *
+             * @param {string} toolbarClass
+             * Class name of the toolbar which styles should be reset.
+             */
+            showPopup(toolbarClass = 'highcharts-annotation-toolbar') {
+                const popupDiv = this.container, popupCloseButton = this.closeButton;
+                this.type = void 0;
+                // Reset content.
+                popupDiv.innerHTML = AST.emptyHTML;
+                // Reset toolbar styles if exists.
+                if (popupDiv.className.indexOf(toolbarClass) >= 0) {
+                    popupDiv.classList.remove(toolbarClass);
+                    // Reset toolbar inline styles
+                    popupDiv.removeAttribute('style');
+                }
+                // Add close button.
+                popupDiv.appendChild(popupCloseButton);
+                popupDiv.style.display = 'block';
+                popupDiv.style.height = '';
+            }
+            /**
+             * Hide popup.
+             */
+            closePopup() {
+                this.container.style.display = 'none';
+            }
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return BaseForm;
+    });
+    _registerModule(_modules, 'Extensions/Annotations/Popup/PopupAnnotations.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+        /* *
+         *
+         *  Popup generator for Stock tools
+         *
+         *  (c) 2009-2024 Sebastian Bochan
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { doc, isFirefox } = H;
+        const { createElement, isArray, isObject, objectEach, pick, stableSort } = U;
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * Create annotation simple form.
+         * It contains fields with param names.
+         * @private
+         * @param {Highcharts.Chart} chart
+         * Chart
+         * @param {Object} options
+         * Options
+         * @param {Function} callback
+         * On click callback
+         * @param {boolean} [isInit]
+         * If it is a form declared for init annotation
+         */
+        function addForm(chart, options, callback, isInit) {
+            if (!chart) {
+                return;
+            }
+            const popupDiv = this.container, lang = this.lang;
+            // Create title of annotations
+            let lhsCol = createElement('h2', {
+                className: 'highcharts-popup-main-title'
+            }, void 0, popupDiv);
+            lhsCol.appendChild(doc.createTextNode(lang[options.langKey] || options.langKey || ''));
+            // Left column
+            lhsCol = createElement('div', {
+                className: ('highcharts-popup-lhs-col highcharts-popup-lhs-full')
+            }, void 0, popupDiv);
+            const bottomRow = createElement('div', {
+                className: 'highcharts-popup-bottom-row'
+            }, void 0, popupDiv);
+            addFormFields.call(this, lhsCol, chart, '', options, [], true);
+            this.addButton(bottomRow, isInit ?
+                (lang.addButton || 'Add') :
+                (lang.saveButton || 'Save'), isInit ? 'add' : 'save', popupDiv, callback);
+        }
+        /**
+         * Create annotation simple form. It contains two buttons
+         * (edit / remove) and text label.
+         * @private
+         * @param {Highcharts.Chart} - chart
+         * @param {Highcharts.AnnotationsOptions} - options
+         * @param {Function} - on click callback
+         */
+        function addToolbar(chart, options, callback) {
+            const lang = this.lang, popupDiv = this.container, showForm = this.showForm, toolbarClass = 'highcharts-annotation-toolbar';
+            // Set small size
+            if (popupDiv.className.indexOf(toolbarClass) === -1) {
+                popupDiv.className += ' ' + toolbarClass + ' highcharts-no-mousewheel';
+            }
+            // Set position
+            if (chart) {
+                popupDiv.style.top = chart.plotTop + 10 + 'px';
+            }
+            // Create label
+            const label = createElement('p', {
+                className: 'highcharts-annotation-label'
+            }, void 0, popupDiv);
+            label.setAttribute('aria-label', 'Annotation type');
+            label.appendChild(doc.createTextNode(pick(
+            // Advanced annotations:
+            lang[options.langKey] || options.langKey, 
+            // Basic shapes:
+            options.shapes && options.shapes[0].type, '')));
+            // Add buttons
+            let button = this.addButton(popupDiv, lang.editButton || 'Edit', 'edit', popupDiv, () => {
+                showForm.call(this, 'annotation-edit', chart, options, callback);
+            });
+            button.className += ' highcharts-annotation-edit-button';
+            button.style['background-image'] = 'url(' +
+                this.iconsURL + 'edit.svg)';
+            button = this.addButton(popupDiv, lang.removeButton || 'Remove', 'remove', popupDiv, callback);
+            button.className += ' highcharts-annotation-remove-button';
+            button.style['background-image'] = 'url(' +
+                this.iconsURL + 'destroy.svg)';
+        }
+        /**
+         * Create annotation's form fields.
+         * @private
+         * @param {Highcharts.HTMLDOMElement} parentDiv
+         * Div where inputs are placed
+         * @param {Highcharts.Chart} chart
+         * Chart
+         * @param {string} parentNode
+         * Name of parent to create chain of names
+         * @param {Highcharts.AnnotationsOptions} options
+         * Options
+         * @param {Array<unknown>} storage
+         * Array where all items are stored
+         * @param {boolean} [isRoot]
+         * Recursive flag for root
+         */
+        function addFormFields(parentDiv, chart, parentNode, options, storage, isRoot) {
+            if (!chart) {
+                return;
+            }
+            const addInput = this.addInput, lang = this.lang;
+            let parentFullName, titleName;
+            objectEach(options, (value, option) => {
+                // Create name like params.styles.fontSize
+                parentFullName = parentNode !== '' ? parentNode + '.' + option : option;
+                if (isObject(value)) {
+                    if (
+                    // Value is object of options
+                    !isArray(value) ||
+                        // Array of objects with params. i.e labels in Fibonacci
+                        (isArray(value) && isObject(value[0]))) {
+                        titleName = lang[option] || option;
+                        if (!titleName.match(/\d/g)) {
+                            storage.push([
+                                true,
+                                titleName,
+                                parentDiv
+                            ]);
+                        }
+                        addFormFields.call(this, parentDiv, chart, parentFullName, value, storage, false);
+                    }
+                    else {
+                        storage.push([
+                            this,
+                            parentFullName,
+                            'annotation',
+                            parentDiv,
+                            value
+                        ]);
+                    }
+                }
+            });
+            if (isRoot) {
+                stableSort(storage, (a) => (a[1].match(/format/g) ? -1 : 1));
+                if (isFirefox) {
+                    storage.reverse(); // (#14691)
+                }
+                storage.forEach((genInput) => {
+                    if (genInput[0] === true) {
+                        createElement('span', {
+                            className: 'highcharts-annotation-title'
+                        }, void 0, genInput[2]).appendChild(doc.createTextNode(genInput[1]));
+                    }
+                    else {
+                        genInput[4] = {
+                            value: genInput[4][0],
+                            type: genInput[4][1]
+                        };
+                        addInput.apply(genInput[0], genInput.splice(1));
+                    }
+                });
+            }
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        const PopupAnnotations = {
+            addForm,
+            addToolbar
+        };
+
+        return PopupAnnotations;
+    });
+    _registerModule(_modules, 'Extensions/Annotations/Popup/PopupIndicators.js', [_modules['Core/Renderer/HTML/AST.js'], _modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (AST, H, SeriesRegistry, U) {
+        /* *
+         *
+         *  Popup generator for Stock tools
+         *
+         *  (c) 2009-2024 Sebastian Bochan
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { doc } = H;
+        const { seriesTypes } = SeriesRegistry;
+        const { addEvent, createElement, defined, isArray, isObject, objectEach, stableSort } = U;
+        /* *
+         *
+         *  Enums
+         *
+         * */
+        /**
+         * Enum for properties which should have dropdown list.
+         * @private
+         */
+        var DropdownProperties;
+        (function (DropdownProperties) {
+            DropdownProperties[DropdownProperties["params.algorithm"] = 0] = "params.algorithm";
+            DropdownProperties[DropdownProperties["params.average"] = 1] = "params.average";
+        })(DropdownProperties || (DropdownProperties = {}));
+        /**
+         * List of available algorithms for the specific indicator.
+         * @private
+         */
+        const dropdownParameters = {
+            'algorithm-pivotpoints': ['standard', 'fibonacci', 'camarilla'],
+            'average-disparityindex': ['sma', 'ema', 'dema', 'tema', 'wma']
+        };
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * Create two columns (divs) in HTML.
+         * @private
+         * @param {Highcharts.HTMLDOMElement} container
+         * Container of columns
+         * @return {Highcharts.Dictionary<Highcharts.HTMLDOMElement>}
+         * Reference to two HTML columns (lhsCol, rhsCol)
+         */
+        function addColsContainer(container) {
+            // Left column
+            const lhsCol = createElement('div', {
+                className: 'highcharts-popup-lhs-col'
+            }, void 0, container);
+            // Right column
+            const rhsCol = createElement('div', {
+                className: 'highcharts-popup-rhs-col'
+            }, void 0, container);
+            // Wrapper content
+            createElement('div', {
+                className: 'highcharts-popup-rhs-col-wrapper'
+            }, void 0, rhsCol);
+            return {
+                lhsCol: lhsCol,
+                rhsCol: rhsCol
+            };
+        }
+        /**
+         * Create indicator's form. It contains two tabs (ADD and EDIT) with
+         * content.
+         * @private
+         */
+        function addForm(chart, _options, callback) {
+            const lang = this.lang;
+            let buttonParentDiv;
+            if (!chart) {
+                return;
+            }
+            // Add tabs
+            this.tabs.init.call(this, chart);
+            // Get all tabs content divs
+            const tabsContainers = this.container
+                .querySelectorAll('.highcharts-tab-item-content');
+            // ADD tab
+            addColsContainer(tabsContainers[0]);
+            addSearchBox.call(this, chart, tabsContainers[0]);
+            addIndicatorList.call(this, chart, tabsContainers[0], 'add');
+            buttonParentDiv = tabsContainers[0]
+                .querySelectorAll('.highcharts-popup-rhs-col')[0];
+            this.addButton(buttonParentDiv, lang.addButton || 'add', 'add', buttonParentDiv, callback);
+            // EDIT tab
+            addColsContainer(tabsContainers[1]);
+            addIndicatorList.call(this, chart, tabsContainers[1], 'edit');
+            buttonParentDiv = tabsContainers[1]
+                .querySelectorAll('.highcharts-popup-rhs-col')[0];
+            this.addButton(buttonParentDiv, lang.saveButton || 'save', 'edit', buttonParentDiv, callback);
+            this.addButton(buttonParentDiv, lang.removeButton || 'remove', 'remove', buttonParentDiv, callback);
+        }
+        /**
+         * Create typical inputs for chosen indicator. Fields are extracted from
+         * defaultOptions (ADD mode) or current indicator (ADD mode). Two extra
+         * fields are added:
+         * - hidden input - contains indicator type (required for callback)
+         * - select - list of series which can be linked with indicator
+         * @private
+         * @param {Highcharts.Chart} chart
+         * Chart
+         * @param {Highcharts.Series} series
+         * Indicator
+         * @param {string} seriesType
+         * Indicator type like: sma, ema, etc.
+         * @param {Highcharts.HTMLDOMElement} rhsColWrapper
+         * Element where created HTML list is added
+         */
+        function addFormFields(chart, series, seriesType, rhsColWrapper) {
+            const fields = series.params || series.options.params;
+            // Reset current content
+            rhsColWrapper.innerHTML = AST.emptyHTML;
+            // Create title (indicator name in the right column)
+            createElement('h3', {
+                className: 'highcharts-indicator-title'
+            }, void 0, rhsColWrapper).appendChild(doc.createTextNode(getNameType(series, seriesType).indicatorFullName));
+            // Input type
+            createElement('input', {
+                type: 'hidden',
+                name: 'highcharts-type-' + seriesType,
+                value: seriesType
+            }, void 0, rhsColWrapper);
+            // List all series with id
+            listAllSeries.call(this, seriesType, 'series', chart, rhsColWrapper, series, series.linkedParent && series.linkedParent.options.id);
+            if (fields.volumeSeriesID) {
+                listAllSeries.call(this, seriesType, 'volume', chart, rhsColWrapper, series, series.linkedParent && fields.volumeSeriesID);
+            }
+            // Add param fields
+            addParamInputs.call(this, chart, 'params', fields, seriesType, rhsColWrapper);
+        }
+        /**
+         * Create HTML list of all indicators (ADD mode) or added indicators
+         * (EDIT mode).
+         *
+         * @private
+         *
+         * @param {Highcharts.AnnotationChart} chart
+         *        The chart object.
+         *
+         * @param {string} [optionName]
+         *        Name of the option into which selection is being added.
+         *
+         * @param {HTMLDOMElement} [parentDiv]
+         *        HTML parent element.
+         *
+         * @param {string} listType
+         *        Type of list depending on the selected bookmark.
+         *        Might be 'add' or 'edit'.
+         *
+         * @param {string|undefined} filter
+         *        Applied filter string from the input.
+         *        For the first iteration, it's an empty string.
+         */
+        function addIndicatorList(chart, parentDiv, listType, filter) {
+            /**
+             *
+             */
+            function selectIndicator(series, indicatorType) {
+                const button = rhsColWrapper.parentNode
+                    .children[1];
+                addFormFields.call(popup, chart, series, indicatorType, rhsColWrapper);
+                if (button) {
+                    button.style.display = 'block';
+                }
+                // Add hidden input with series.id
+                if (isEdit && series.options) {
+                    createElement('input', {
+                        type: 'hidden',
+                        name: 'highcharts-id-' + indicatorType,
+                        value: series.options.id
+                    }, void 0, rhsColWrapper).setAttribute('highcharts-data-series-id', series.options.id);
+                }
+            }
+            const popup = this, lang = popup.lang, lhsCol = parentDiv.querySelectorAll('.highcharts-popup-lhs-col')[0], rhsCol = parentDiv.querySelectorAll('.highcharts-popup-rhs-col')[0], isEdit = listType === 'edit', series = (isEdit ?
+                chart.series : // EDIT mode
+                chart.options.plotOptions || {} // ADD mode
+            );
+            if (!chart && series) {
+                return;
+            }
+            let item, filteredSeriesArray = [];
+            // Filter and sort the series.
+            if (!isEdit && !isArray(series)) {
+                // Apply filters only for the 'add' indicator list.
+                filteredSeriesArray = filterSeries.call(this, series, filter);
+            }
+            else if (isArray(series)) {
+                filteredSeriesArray = filterSeriesArray.call(this, series);
+            }
+            // Sort indicators alphabetically.
+            stableSort(filteredSeriesArray, (a, b) => {
+                const seriesAName = a.indicatorFullName.toLowerCase(), seriesBName = b.indicatorFullName.toLowerCase();
+                return (seriesAName < seriesBName) ?
+                    -1 : (seriesAName > seriesBName) ? 1 : 0;
+            });
+            // If the list exists remove it from the DOM
+            // in order to create a new one with different filters.
+            if (lhsCol.children[1]) {
+                lhsCol.children[1].remove();
+            }
+            // Create wrapper for list.
+            const indicatorList = createElement('ul', {
+                className: 'highcharts-indicator-list'
+            }, void 0, lhsCol);
+            const rhsColWrapper = rhsCol.querySelectorAll('.highcharts-popup-rhs-col-wrapper')[0];
+            filteredSeriesArray.forEach((seriesSet) => {
+                const { indicatorFullName, indicatorType, series } = seriesSet;
+                item = createElement('li', {
+                    className: 'highcharts-indicator-list'
+                }, void 0, indicatorList);
+                const btn = createElement('button', {
+                    className: 'highcharts-indicator-list-item',
+                    textContent: indicatorFullName
+                }, void 0, item);
+                ['click', 'touchstart'].forEach((eventName) => {
+                    addEvent(btn, eventName, function () {
+                        selectIndicator(series, indicatorType);
+                    });
+                });
+            });
+            // Select first item from the list
+            if (filteredSeriesArray.length > 0) {
+                const { series, indicatorType } = filteredSeriesArray[0];
+                selectIndicator(series, indicatorType);
+            }
+            else if (!isEdit) {
+                AST.setElementHTML(rhsColWrapper.parentNode.children[0], lang.noFilterMatch || '');
+                rhsColWrapper.parentNode.children[1]
+                    .style.display = 'none';
+            }
+        }
+        /**
+         * Recurrent function which lists all fields, from params object and
+         * create them as inputs. Each input has unique `data-name` attribute,
+         * which keeps chain of fields i.e params.styles.fontSize.
+         * @private
+         * @param {Highcharts.Chart} chart
+         * Chart
+         * @param {string} parentNode
+         * Name of parent to create chain of names
+         * @param {Highcharts.PopupFieldsDictionary<string>} fields
+         * Params which are based for input create
+         * @param {string} type
+         * Indicator type like: sma, ema, etc.
+         * @param {Highcharts.HTMLDOMElement} parentDiv
+         * Element where created HTML list is added
+         */
+        function addParamInputs(chart, parentNode, fields, type, parentDiv) {
+            if (!chart) {
+                return;
+            }
+            const addInput = this.addInput;
+            objectEach(fields, (value, fieldName) => {
+                // Create name like params.styles.fontSize
+                const parentFullName = parentNode + '.' + fieldName;
+                if (defined(value) && // Skip if field is unnecessary, #15362
+                    parentFullName) {
+                    if (isObject(value)) {
+                        // (15733) 'Periods' has an arrayed value. Label must be
+                        // created here.
+                        addInput.call(this, parentFullName, type, parentDiv, {});
+                        addParamInputs.call(this, chart, parentFullName, value, type, parentDiv);
+                    }
+                    // If the option is listed in dropdown enum,
+                    // add the selection box for it.
+                    if (parentFullName in DropdownProperties) {
+                        // Add selection boxes.
+                        const selectBox = addSelection.call(this, type, parentFullName, parentDiv);
+                        // Add possible dropdown options.
+                        addSelectionOptions.call(this, chart, parentNode, selectBox, type, fieldName, value);
+                    }
+                    else if (
+                    // Skip volume field which is created by addFormFields.
+                    parentFullName !== 'params.volumeSeriesID' &&
+                        !isArray(value) // Skip params declared in array.
+                    ) {
+                        addInput.call(this, parentFullName, type, parentDiv, {
+                            value: value,
+                            type: 'number'
+                        } // All inputs are text type
+                        );
+                    }
+                }
+            });
+        }
+        /**
+         * Add searchbox HTML element and its' label.
+         *
+         * @private
+         *
+         * @param {Highcharts.AnnotationChart} chart
+         *        The chart object.
+         *
+         * @param {HTMLDOMElement} parentDiv
+         *        HTML parent element.
+         */
+        function addSearchBox(chart, parentDiv) {
+            const popup = this, lhsCol = parentDiv.querySelectorAll('.highcharts-popup-lhs-col')[0], options = 'searchIndicators', inputAttributes = {
+                value: '',
+                type: 'text',
+                htmlFor: 'search-indicators',
+                labelClassName: 'highcharts-input-search-indicators-label'
+            }, clearFilterText = this.lang.clearFilter, inputWrapper = createElement('div', {
+                className: 'highcharts-input-wrapper'
+            }, void 0, lhsCol);
+            const handleInputChange = function (inputText) {
+                // Apply some filters.
+                addIndicatorList.call(popup, chart, popup.container, 'add', inputText);
+            };
+            // Add input field with the label and button.
+            const input = this.addInput(options, 'input', inputWrapper, inputAttributes), button = createElement('a', {
+                textContent: clearFilterText
+            }, void 0, inputWrapper);
+            input.classList.add('highcharts-input-search-indicators');
+            button.classList.add('clear-filter-button');
+            // Add input change events.
+            addEvent(input, 'input', function () {
+                handleInputChange(this.value);
+                // Show clear filter button.
+                if (this.value.length) {
+                    button.style.display = 'inline-block';
+                }
+                else {
+                    button.style.display = 'none';
+                }
+            });
+            // Add clear filter click event.
+            ['click', 'touchstart'].forEach((eventName) => {
+                addEvent(button, eventName, function () {
+                    // Clear the input.
+                    input.value = '';
+                    handleInputChange('');
+                    // Hide clear filter button- no longer necessary.
+                    button.style.display = 'none';
+                });
+            });
+        }
+        /**
+         * Add selection HTML element and its' label.
+         *
+         * @private
+         *
+         * @param {string} indicatorType
+         * Type of the indicator i.e. sma, ema...
+         *
+         * @param {string} [optionName]
+         * Name of the option into which selection is being added.
+         *
+         * @param {HTMLDOMElement} [parentDiv]
+         * HTML parent element.
+         */
+        function addSelection(indicatorType, optionName, parentDiv) {
+            const optionParamList = optionName.split('.'), labelText = optionParamList[optionParamList.length - 1], selectName = 'highcharts-' + optionName + '-type-' + indicatorType, lang = this.lang;
+            // Add a label for the selection box.
+            createElement('label', {
+                htmlFor: selectName
+            }, null, parentDiv).appendChild(doc.createTextNode(lang[labelText] || optionName));
+            // Create a selection box.
+            const selectBox = createElement('select', {
+                name: selectName,
+                className: 'highcharts-popup-field',
+                id: 'highcharts-select-' + optionName
+            }, null, parentDiv);
+            selectBox.setAttribute('id', 'highcharts-select-' + optionName);
+            return selectBox;
+        }
+        /**
+         * Get and add selection options.
+         *
+         * @private
+         *
+         * @param {Highcharts.AnnotationChart} chart
+         *        The chart object.
+         *
+         * @param {string} [optionName]
+         *        Name of the option into which selection is being added.
+         *
+         * @param {HTMLSelectElement} [selectBox]
+         *        HTML select box element to which the options are being added.
+         *
+         * @param {string|undefined} indicatorType
+         *        Type of the indicator i.e. sma, ema...
+         *
+         * @param {string|undefined} parameterName
+         *        Name of the parameter which should be applied.
+         *
+         * @param {string|undefined} selectedOption
+         *        Default value in dropdown.
+         */
+        function addSelectionOptions(chart, optionName, selectBox, indicatorType, parameterName, selectedOption, currentSeries) {
+            // Get and apply selection options for the possible series.
+            if (optionName === 'series' || optionName === 'volume') {
+                // List all series which have id - mandatory for indicator.
+                chart.series.forEach((series) => {
+                    const seriesOptions = series.options, seriesName = seriesOptions.name ||
+                        seriesOptions.params ?
+                        series.name :
+                        seriesOptions.id || '';
+                    if (seriesOptions.id !== 'highcharts-navigator-series' &&
+                        seriesOptions.id !== (currentSeries &&
+                            currentSeries.options &&
+                            currentSeries.options.id)) {
+                        if (!defined(selectedOption) &&
+                            optionName === 'volume' &&
+                            series.type === 'column') {
+                            selectedOption = seriesOptions.id;
+                        }
+                        createElement('option', {
+                            value: seriesOptions.id
+                        }, void 0, selectBox).appendChild(doc.createTextNode(seriesName));
+                    }
+                });
+            }
+            else if (indicatorType && parameterName) {
+                // Get and apply options for the possible parameters.
+                const dropdownKey = parameterName + '-' + indicatorType, parameterOption = dropdownParameters[dropdownKey];
+                parameterOption.forEach((element) => {
+                    createElement('option', {
+                        value: element
+                    }, void 0, selectBox).appendChild(doc.createTextNode(element));
+                });
+            }
+            // Add the default dropdown value if defined.
+            if (defined(selectedOption)) {
+                selectBox.value = selectedOption;
+            }
+        }
+        /**
+         * Filter object of series which are not indicators.
+         * If the filter string exists, check against it.
+         *
+         * @private
+         *
+         * @param {Highcharts.FilteredSeries} series
+         *        All series are available in the plotOptions.
+         *
+         * @param {string|undefined} filter
+         *        Applied filter string from the input.
+         *        For the first iteration, it's an empty string.
+         *
+         * @return {Array<Highcharts.FilteredSeries>} filteredSeriesArray
+         *         Returns array of filtered series based on filter string.
+         */
+        function filterSeries(series, filter) {
+            const popup = this, lang = popup.chart && popup.chart.options.lang, indicatorAliases = lang &&
+                lang.navigation &&
+                lang.navigation.popup &&
+                lang.navigation.popup.indicatorAliases, filteredSeriesArray = [];
+            let filteredSeries;
+            objectEach(series, (series, value) => {
+                const seriesOptions = series && series.options;
+                // Allow only indicators.
+                if (series.params || seriesOptions &&
+                    seriesOptions.params) {
+                    const { indicatorFullName, indicatorType } = getNameType(series, value);
+                    if (filter) {
+                        // Replace invalid characters.
+                        const validFilter = filter.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                        const regex = new RegExp(validFilter, 'i'), alias = indicatorAliases &&
+                            indicatorAliases[indicatorType] &&
+                            indicatorAliases[indicatorType].join(' ') || '';
+                        if (indicatorFullName.match(regex) ||
+                            alias.match(regex)) {
+                            filteredSeries = {
+                                indicatorFullName,
+                                indicatorType,
+                                series: series
+                            };
+                            filteredSeriesArray.push(filteredSeries);
+                        }
+                    }
+                    else {
+                        filteredSeries = {
+                            indicatorFullName,
+                            indicatorType,
+                            series: series
+                        };
+                        filteredSeriesArray.push(filteredSeries);
+                    }
+                }
+            });
+            return filteredSeriesArray;
+        }
+        /**
+         * Filter an array of series and map its names and types.
+         *
+         * @private
+         *
+         * @param {Highcharts.FilteredSeries} series
+         *        All series that are available in the plotOptions.
+         *
+         * @return {Array<Highcharts.FilteredSeries>} filteredSeriesArray
+         *         Returns array of filtered series based on filter string.
+         */
+        function filterSeriesArray(series) {
+            const filteredSeriesArray = [];
+            // Allow only indicators.
+            series.forEach((series) => {
+                if (series.is('sma')) {
+                    filteredSeriesArray.push({
+                        indicatorFullName: series.name,
+                        indicatorType: series.type,
+                        series: series
+                    });
+                }
+            });
+            return filteredSeriesArray;
+        }
+        /**
+         * Get amount of indicators added to chart.
+         * @private
+         * @return {number} - Amount of indicators
+         */
+        function getAmount() {
+            let counter = 0;
+            this.series.forEach((serie) => {
+                if (serie.params ||
+                    serie.options.params) {
+                    counter++;
+                }
+            });
+            return counter;
+        }
+        /**
+         * Extract full name and type of requested indicator.
+         *
+         * @private
+         *
+         * @param {Highcharts.Series} series
+         * Series which name is needed(EDITmode - defaultOptions.series,
+         * ADDmode - indicator series).
+         *
+         * @param {string} [indicatorType]
+         * Type of the indicator i.e. sma, ema...
+         *
+         * @return {Highcharts.Dictionary<string>}
+         * Full name and series type.
+         */
+        function getNameType(series, indicatorType) {
+            const options = series.options;
+            // Add mode
+            let seriesName = (seriesTypes[indicatorType] &&
+                seriesTypes[indicatorType].prototype.nameBase) ||
+                indicatorType.toUpperCase(), seriesType = indicatorType;
+            // Edit
+            if (options && options.type) {
+                seriesType = series.options.type;
+                seriesName = series.name;
+            }
+            return {
+                indicatorFullName: seriesName,
+                indicatorType: seriesType
+            };
+        }
+        /**
+         * Create the selection box for the series,
+         * add options and apply the default one.
+         *
+         * @private
+         *
+         * @param {string} indicatorType
+         *        Type of the indicator i.e. sma, ema...
+         *
+         * @param {string} [optionName]
+         *        Name of the option into which selection is being added.
+         *
+         * @param {Highcharts.AnnotationChart} chart
+         *        The chart object.
+         *
+         * @param {HTMLDOMElement} [parentDiv]
+         *        HTML parent element.
+         *
+         * @param {string|undefined} selectedOption
+         *        Default value in dropdown.
+         */
+        function listAllSeries(indicatorType, optionName, chart, parentDiv, currentSeries, selectedOption) {
+            const popup = this;
+            // Won't work without the chart.
+            if (!chart) {
+                return;
+            }
+            // Add selection boxes.
+            const selectBox = addSelection.call(popup, indicatorType, optionName, parentDiv);
+            // Add possible dropdown options.
+            addSelectionOptions.call(popup, chart, optionName, selectBox, void 0, void 0, void 0, currentSeries);
+            // Add the default dropdown value if defined.
+            if (defined(selectedOption)) {
+                selectBox.value = selectedOption;
+            }
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        const PopupIndicators = {
+            addForm,
+            getAmount
+        };
+
+        return PopupIndicators;
+    });
+    _registerModule(_modules, 'Extensions/Annotations/Popup/PopupTabs.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+        /* *
+         *
+         *  Popup generator for Stock tools
+         *
+         *  (c) 2009-2024 Sebastian Bochan
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { doc } = H;
+        const { addEvent, createElement } = U;
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * Create tab content
+         * @private
+         * @return {HTMLDOMElement} - created HTML tab-content element
+         */
+        function addContentItem() {
+            const popupDiv = this.container;
+            return createElement('div', {
+                // #12100
+                className: 'highcharts-tab-item-content highcharts-no-mousewheel'
+            }, void 0, popupDiv);
+        }
+        /**
+         * Create tab menu item
+         * @private
+         * @param {string} tabName
+         * `add` or `edit`
+         * @param {number} [disableTab]
+         * Disable tab when 0
+         * @return {Highcharts.HTMLDOMElement}
+         * Created HTML tab-menu element
+         */
+        function addMenuItem(tabName, disableTab) {
+            const popupDiv = this.container, lang = this.lang;
+            let className = 'highcharts-tab-item';
+            if (disableTab === 0) {
+                className += ' highcharts-tab-disabled';
+            }
+            // Tab 1
+            const menuItem = createElement('button', {
+                className
+            }, void 0, popupDiv);
+            menuItem.appendChild(doc.createTextNode(lang[tabName + 'Button'] || tabName));
+            menuItem.setAttribute('highcharts-data-tab-type', tabName);
+            return menuItem;
+        }
+        /**
+         * Set all tabs as invisible.
+         * @private
+         */
+        function deselectAll() {
+            const popupDiv = this.container, tabs = popupDiv
+                .querySelectorAll('.highcharts-tab-item'), tabsContent = popupDiv
+                .querySelectorAll('.highcharts-tab-item-content');
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove('highcharts-tab-item-active');
+                tabsContent[i].classList.remove('highcharts-tab-item-show');
+            }
+        }
+        /**
+         * Init tabs. Create tab menu items, tabs containers
+         * @private
+         * @param {Highcharts.Chart} chart
+         * Reference to current chart
+         */
+        function init(chart) {
+            if (!chart) {
+                return;
+            }
+            const indicatorsCount = this.indicators.getAmount.call(chart);
+            // Create menu items
+            const firstTab = addMenuItem.call(this, 'add'); // Run by default
+            addMenuItem.call(this, 'edit', indicatorsCount);
+            // Create tabs containers
+            addContentItem.call(this);
+            addContentItem.call(this);
+            switchTabs.call(this, indicatorsCount);
+            // Activate first tab
+            selectTab.call(this, firstTab, 0);
+        }
+        /**
+         * Set tab as visible
+         * @private
+         * @param {globals.Element} - current tab
+         * @param {number} - Index of tab in menu
+         */
+        function selectTab(tab, index) {
+            const allTabs = this.container
+                .querySelectorAll('.highcharts-tab-item-content');
+            tab.className += ' highcharts-tab-item-active';
+            allTabs[index].className += ' highcharts-tab-item-show';
+        }
+        /**
+         * Add click event to each tab
+         * @private
+         * @param {number} disableTab
+         * Disable tab when 0
+         */
+        function switchTabs(disableTab) {
+            const popup = this, popupDiv = this.container, tabs = popupDiv.querySelectorAll('.highcharts-tab-item');
+            tabs.forEach((tab, i) => {
+                if (disableTab === 0 &&
+                    tab.getAttribute('highcharts-data-tab-type') === 'edit') {
+                    return;
+                }
+                ['click', 'touchstart'].forEach((eventName) => {
+                    addEvent(tab, eventName, function () {
+                        // Reset class on other elements
+                        deselectAll.call(popup);
+                        selectTab.call(popup, this, i);
+                    });
+                });
+            });
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        const PopupTabs = {
+            init
+        };
+
+        return PopupTabs;
+    });
+    _registerModule(_modules, 'Extensions/Annotations/Popup/Popup.js', [_modules['Shared/BaseForm.js'], _modules['Core/Globals.js'], _modules['Core/Defaults.js'], _modules['Extensions/Annotations/Popup/PopupAnnotations.js'], _modules['Extensions/Annotations/Popup/PopupIndicators.js'], _modules['Extensions/Annotations/Popup/PopupTabs.js'], _modules['Core/Utilities.js']], function (BaseForm, H, D, PopupAnnotations, PopupIndicators, PopupTabs, U) {
+        /* *
+         *
+         *  Popup generator for Stock tools
+         *
+         *  (c) 2009-2024 Sebastian Bochan
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { doc } = H;
+        const { getOptions } = D;
+        const { addEvent, createElement, extend, fireEvent, pick } = U;
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * Get values from all inputs and selections then create JSON.
+         *
+         * @private
+         *
+         * @param {Highcharts.HTMLDOMElement} parentDiv
+         * The container where inputs and selections are created.
+         *
+         * @param {string} type
+         * Type of the popup bookmark (add|edit|remove).
+         */
+        function getFields(parentDiv, type) {
+            const inputList = Array.prototype.slice.call(parentDiv.querySelectorAll('input')), selectList = Array.prototype.slice.call(parentDiv.querySelectorAll('select')), optionSeries = '#highcharts-select-series > option:checked', optionVolume = '#highcharts-select-volume > option:checked', linkedTo = parentDiv.querySelectorAll(optionSeries)[0], volumeTo = parentDiv.querySelectorAll(optionVolume)[0];
+            const fieldsOutput = {
+                actionType: type,
+                linkedTo: linkedTo && linkedTo.getAttribute('value') || '',
+                fields: {}
+            };
+            inputList.forEach((input) => {
+                const param = input.getAttribute('highcharts-data-name'), seriesId = input.getAttribute('highcharts-data-series-id');
+                // Params
+                if (seriesId) {
+                    fieldsOutput.seriesId = input.value;
+                }
+                else if (param) {
+                    fieldsOutput.fields[param] = input.value;
+                }
+                else {
+                    // Type like sma / ema
+                    fieldsOutput.type = input.value;
+                }
+            });
+            selectList.forEach((select) => {
+                const id = select.id;
+                // Get inputs only for the parameters, not for series and volume.
+                if (id !== 'highcharts-select-series' &&
+                    id !== 'highcharts-select-volume') {
+                    const parameter = id.split('highcharts-select-')[1];
+                    fieldsOutput.fields[parameter] = select.value;
+                }
+            });
+            if (volumeTo) {
+                fieldsOutput.fields['params.volumeSeriesID'] = volumeTo
+                    .getAttribute('value') || '';
+            }
+            return fieldsOutput;
+        }
+        /* *
+         *
+         *  Class
+         *
+         * */
+        class Popup extends BaseForm {
+            /* *
+             *
+             *  Constructor
+             *
+             * */
+            constructor(parentDiv, iconsURL, chart) {
+                super(parentDiv, iconsURL);
+                this.chart = chart;
+                this.lang = (getOptions().lang.navigation || {}).popup || {};
+                addEvent(this.container, 'mousedown', () => {
+                    const activeAnnotation = chart &&
+                        chart.navigationBindings &&
+                        chart.navigationBindings.activeAnnotation;
+                    if (activeAnnotation) {
+                        activeAnnotation.cancelClick = true;
+                        const unbind = addEvent(doc, 'click', () => {
+                            setTimeout(() => {
+                                activeAnnotation.cancelClick = false;
+                            }, 0);
+                            unbind();
+                        });
+                    }
+                });
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /**
+             * Create input with label.
+             *
+             * @private
+             *
+             * @param {string} option
+             *        Chain of fields i.e params.styles.fontSize separated by the dot.
+             *
+             * @param {string} indicatorType
+             *        Type of the indicator i.e. sma, ema...
+             *
+             * @param {HTMLDOMElement} parentDiv
+             *        HTML parent element.
+             *
+             * @param {Highcharts.InputAttributes} inputAttributes
+             *        Attributes of the input.
+             *
+             * @return {HTMLInputElement}
+             *         Return created input element.
+             */
+            addInput(option, indicatorType, parentDiv, inputAttributes) {
+                const optionParamList = option.split('.'), optionName = optionParamList[optionParamList.length - 1], lang = this.lang, inputName = 'highcharts-' + indicatorType + '-' + pick(inputAttributes.htmlFor, optionName);
+                if (!optionName.match(/^\d+$/)) {
+                    // Add label
+                    createElement('label', {
+                        htmlFor: inputName,
+                        className: inputAttributes.labelClassName
+                    }, void 0, parentDiv).appendChild(doc.createTextNode(lang[optionName] || optionName));
+                }
+                // Add input
+                const input = createElement('input', {
+                    name: inputName,
+                    value: inputAttributes.value,
+                    type: inputAttributes.type,
+                    className: 'highcharts-popup-field'
+                }, void 0, parentDiv);
+                input.setAttribute('highcharts-data-name', option);
+                return input;
+            }
+            closeButtonEvents() {
+                if (this.chart) {
+                    const navigationBindings = this.chart.navigationBindings;
+                    fireEvent(navigationBindings, 'closePopup');
+                    if (navigationBindings &&
+                        navigationBindings.selectedButtonElement) {
+                        fireEvent(navigationBindings, 'deselectButton', { button: navigationBindings.selectedButtonElement });
+                    }
+                }
+                else {
+                    super.closeButtonEvents();
+                }
+            }
+            /**
+             * Create button.
+             * @private
+             * @param {Highcharts.HTMLDOMElement} parentDiv
+             * Container where elements should be added
+             * @param {string} label
+             * Text placed as button label
+             * @param {string} type
+             * add | edit | remove
+             * @param {Function} callback
+             * On click callback
+             * @param {Highcharts.HTMLDOMElement} fieldsDiv
+             * Container where inputs are generated
+             * @return {Highcharts.HTMLDOMElement}
+             * HTML button
+             */
+            addButton(parentDiv, label, type, fieldsDiv, callback) {
+                const button = createElement('button', void 0, void 0, parentDiv);
+                button.appendChild(doc.createTextNode(label));
+                if (callback) {
+                    ['click', 'touchstart'].forEach((eventName) => {
+                        addEvent(button, eventName, () => {
+                            this.closePopup();
+                            return callback(getFields(fieldsDiv, type));
+                        });
+                    });
+                }
+                return button;
+            }
+            /**
+             * Create content and show popup.
+             * @private
+             * @param {string} - type of popup i.e indicators
+             * @param {Highcharts.Chart} - chart
+             * @param {Highcharts.AnnotationsOptions} - options
+             * @param {Function} - on click callback
+             */
+            showForm(type, chart, options, callback) {
+                if (!chart) {
+                    return;
+                }
+                // Show blank popup
+                this.showPopup();
+                // Indicator form
+                if (type === 'indicators') {
+                    this.indicators.addForm.call(this, chart, options, callback);
+                }
+                // Annotation small toolbar
+                if (type === 'annotation-toolbar') {
+                    this.annotations.addToolbar.call(this, chart, options, callback);
+                }
+                // Annotation edit form
+                if (type === 'annotation-edit') {
+                    this.annotations.addForm.call(this, chart, options, callback);
+                }
+                // Flags form - add / edit
+                if (type === 'flag') {
+                    this.annotations.addForm.call(this, chart, options, callback, true);
+                }
+                this.type = type;
+                // Explicit height is needed to make inner elements scrollable
+                this.container.style.height = this.container.offsetHeight + 'px';
+            }
+        }
+        extend(Popup.prototype, {
+            annotations: PopupAnnotations,
+            indicators: PopupIndicators,
+            tabs: PopupTabs
+        });
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return Popup;
+    });
+    _registerModule(_modules, 'Extensions/Annotations/Popup/PopupComposition.js', [_modules['Core/Globals.js'], _modules['Extensions/Annotations/Popup/Popup.js'], _modules['Core/Utilities.js']], function (H, Popup, U) {
+        /* *
+         *
+         *  Popup generator for Stock tools
+         *
+         *  (c) 2009-2024 Sebastian Bochan
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { composed } = H;
+        const { addEvent, pushUnique, wrap } = U;
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * @private
+         */
+        function compose(NagivationBindingsClass, PointerClass) {
+            if (pushUnique(composed, 'Popup')) {
+                addEvent(NagivationBindingsClass, 'closePopup', onNavigationBindingsClosePopup);
+                addEvent(NagivationBindingsClass, 'showPopup', onNavigationBindingsShowPopup);
+                wrap(PointerClass.prototype, 'onContainerMouseDown', wrapPointerOnContainerMouserDown);
+            }
+        }
+        /**
+         * @private
+         */
+        function onNavigationBindingsClosePopup() {
+            if (this.popup) {
+                this.popup.closePopup();
+            }
+        }
+        /**
+         * @private
+         */
+        function onNavigationBindingsShowPopup(config) {
+            if (!this.popup) {
+                // Add popup to main container
+                this.popup = new Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
+                    (this.chart.options.stockTools &&
+                        this.chart.options.stockTools.gui.iconsURL) ||
+                    'https://code.highcharts.com/11.4.8/gfx/stock-icons/'), this.chart);
+            }
+            this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
+        }
+        /**
+         * `onContainerMouseDown` blocks internal popup events, due to e.preventDefault.
+         * Related issue #4606
+         * @private
+         */
+        function wrapPointerOnContainerMouserDown(proceed, e) {
+            // Elements is not in popup
+            if (!this.inClass(e.target, 'highcharts-popup')) {
+                proceed.apply(this, Array.prototype.slice.call(arguments, 1));
+            }
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        const PopupComposition = {
+            compose
+        };
+
+        return PopupComposition;
+    });
+    _registerModule(_modules, 'Extensions/Annotations/Annotation.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Extensions/Annotations/AnnotationChart.js'], _modules['Extensions/Annotations/AnnotationDefaults.js'], _modules['Extensions/Annotations/Controllables/ControllableRect.js'], _modules['Extensions/Annotations/Controllables/ControllableCircle.js'], _modules['Extensions/Annotations/Controllables/ControllableEllipse.js'], _modules['Extensions/Annotations/Controllables/ControllablePath.js'], _modules['Extensions/Annotations/Controllables/ControllableImage.js'], _modules['Extensions/Annotations/Controllables/ControllableLabel.js'], _modules['Extensions/Annotations/ControlPoint.js'], _modules['Extensions/Annotations/ControlTarget.js'], _modules['Extensions/Annotations/EventEmitter.js'], _modules['Extensions/Annotations/MockPoint.js'], _modules['Extensions/Annotations/Popup/PopupComposition.js'], _modules['Core/Utilities.js']], function (A, AnnotationChart, AnnotationDefaults, ControllableRect, ControllableCircle, ControllableEllipse, ControllablePath, ControllableImage, ControllableLabel, ControlPoint, ControlTarget, EventEmitter, MockPoint, PopupComposition, U) {
+        /* *
+         *
+         *  (c) 2009-2024 Highsoft, Black Label
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { getDeferredAnimation } = A;
+        const { destroyObjectProperties, erase, fireEvent, merge, pick, splat } = U;
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * Hide or show annotation attached to points.
+         * @private
+         */
+        function adjustVisibility(item) {
+            const label = item.graphic, hasVisiblePoints = item.points.some((point) => (point.series.visible !== false &&
+                point.visible !== false));
+            if (label) {
+                if (!hasVisiblePoints) {
+                    label.hide();
+                }
+                else if (label.visibility === 'hidden') {
+                    label.show();
+                }
+            }
+        }
+        /**
+         * @private
+         */
+        function getLabelsAndShapesOptions(baseOptions, newOptions) {
+            const mergedOptions = {};
+            ['labels', 'shapes'].forEach((name) => {
+                const someBaseOptions = baseOptions[name];
+                if (someBaseOptions) {
+                    if (newOptions[name]) {
+                        mergedOptions[name] = splat(newOptions[name]).map(function (basicOptions, i) {
+                            return merge(someBaseOptions[i], basicOptions);
+                        });
+                    }
+                    else {
+                        mergedOptions[name] = baseOptions[name];
+                    }
+                }
+            });
+            return mergedOptions;
+        }
+        /* *
+         *
+         *  Class
+         *
+         * */
+        /**
+         * An annotation class which serves as a container for items like labels or
+         * shapes. Created items are positioned on the chart either by linking them to
+         * existing points or created mock points
+         *
+         * @requires modules/annotations
+         *
+         * @class
+         * @name Highcharts.Annotation
+         *
+         * @param {Highcharts.Chart} chart
+         *        A chart instance
+         * @param {Highcharts.AnnotationsOptions} userOptions
+         *        The annotation options
+         */
+        class Annotation extends EventEmitter {
+            /* *
+             *
+             *  Static Functions
+             *
+             * */
+            /**
+             * @private
+             */
+            static compose(ChartClass, NavigationBindingsClass, PointerClass, SVGRendererClass) {
+                AnnotationChart.compose(Annotation, ChartClass, PointerClass);
+                ControllableLabel.compose(SVGRendererClass);
+                ControllablePath.compose(ChartClass, SVGRendererClass);
+                NavigationBindingsClass.compose(Annotation, ChartClass);
+                PopupComposition.compose(NavigationBindingsClass, PointerClass);
+            }
+            /* *
+             *
+             *  Constructors
+             *
+             * */
+            constructor(chart, userOptions) {
+                super();
+                this.coll = 'annotations';
+                /**
+                 * The chart that the annotation belongs to.
+                 *
+                 * @name Highcharts.Annotation#chart
+                 * @type {Highcharts.Chart}
+                 */
+                this.chart = chart;
+                /**
+                 * The array of points which defines the annotation.
+                 * @private
+                 * @name Highcharts.Annotation#points
+                 * @type {Array<Highcharts.Point>}
+                 */
+                this.points = [];
+                /**
+                 * The array of control points.
+                 * @private
+                 * @name Highcharts.Annotation#controlPoints
+                 * @type {Array<Annotation.ControlPoint>}
+                 */
+                this.controlPoints = [];
+                this.coll = 'annotations';
+                this.index = -1;
+                /**
+                 * The array of labels which belong to the annotation.
+                 * @private
+                 * @name Highcharts.Annotation#labels
+                 * @type {Array<Highcharts.AnnotationLabelType>}
+                 */
+                this.labels = [];
+                /**
+                 * The array of shapes which belong to the annotation.
+                 * @private
+                 * @name Highcharts.Annotation#shapes
+                 * @type {Array<Highcharts.AnnotationShapeType>}
+                 */
+                this.shapes = [];
+                /**
+                 * The options for the annotations.
+                 *
+                 * @name Highcharts.Annotation#options
+                 * @type {Highcharts.AnnotationsOptions}
+                 */
+                this.options = merge(this.defaultOptions, userOptions);
+                /**
+                 * The user options for the annotations.
+                 *
+                 * @name Highcharts.Annotation#userOptions
+                 * @type {Highcharts.AnnotationsOptions}
+                 */
+                this.userOptions = userOptions;
+                // Handle labels and shapes - those are arrays
+                // Merging does not work with arrays (stores reference)
+                const labelsAndShapes = getLabelsAndShapesOptions(this.options, userOptions);
+                this.options.labels = labelsAndShapes.labels;
+                this.options.shapes = labelsAndShapes.shapes;
+                /**
+                 * The callback that reports to the overlapping-labels module which
+                 * labels it should account for.
+                 * @private
+                 * @name Highcharts.Annotation#labelCollector
+                 * @type {Function}
+                 */
+                /**
+                 * The group svg element.
+                 *
+                 * @name Highcharts.Annotation#group
+                 * @type {Highcharts.SVGElement}
+                 */
+                /**
+                 * The group svg element of the annotation's shapes.
+                 *
+                 * @name Highcharts.Annotation#shapesGroup
+                 * @type {Highcharts.SVGElement}
+                 */
+                /**
+                 * The group svg element of the annotation's labels.
+                 *
+                 * @name Highcharts.Annotation#labelsGroup
+                 * @type {Highcharts.SVGElement}
+                 */
+                this.init(chart, this.options);
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /**
+             * @private
+             */
+            addClipPaths() {
+                this.setClipAxes();
+                if (this.clipXAxis &&
+                    this.clipYAxis &&
+                    this.options.crop // #15399
+                ) {
+                    this.clipRect = this.chart.renderer.clipRect(this.getClipBox());
+                }
+            }
+            /**
+             * @private
+             */
+            addLabels() {
+                const labelsOptions = (this.options.labels || []);
+                labelsOptions.forEach((labelOptions, i) => {
+                    const label = this.initLabel(labelOptions, i);
+                    merge(true, labelsOptions[i], label.options);
+                });
+            }
+            /**
+             * @private
+             */
+            addShapes() {
+                const shapes = this.options.shapes || [];
+                shapes.forEach((shapeOptions, i) => {
+                    const shape = this.initShape(shapeOptions, i);
+                    merge(true, shapes[i], shape.options);
+                });
+            }
+            /**
+             * Destroy the annotation. This function does not touch the chart
+             * that the annotation belongs to (all annotations are kept in
+             * the chart.annotations array) - it is recommended to use
+             * {@link Highcharts.Chart#removeAnnotation} instead.
+             * @private
+             */
+            destroy() {
+                const chart = this.chart, destroyItem = function (item) {
+                    item.destroy();
+                };
+                this.labels.forEach(destroyItem);
+                this.shapes.forEach(destroyItem);
+                this.clipXAxis = null;
+                this.clipYAxis = null;
+                erase(chart.labelCollectors, this.labelCollector);
+                super.destroy();
+                this.destroyControlTarget();
+                destroyObjectProperties(this, chart);
+            }
+            /**
+             * Destroy a single item.
+             * @private
+             */
+            destroyItem(item) {
+                // Erase from shapes or labels array
+                erase(this[item.itemType + 's'], item);
+                item.destroy();
+            }
+            /**
+             * @private
+             */
+            getClipBox() {
+                if (this.clipXAxis && this.clipYAxis) {
+                    return {
+                        x: this.clipXAxis.left,
+                        y: this.clipYAxis.top,
+                        width: this.clipXAxis.width,
+                        height: this.clipYAxis.height
+                    };
+                }
+            }
+            /**
+             * Initialize the annotation properties.
+             * @private
+             */
+            initProperties(chart, userOptions) {
+                this.setOptions(userOptions);
+                const labelsAndShapes = getLabelsAndShapesOptions(this.options, userOptions);
+                this.options.labels = labelsAndShapes.labels;
+                this.options.shapes = labelsAndShapes.shapes;
+                this.chart = chart;
+                this.points = [];
+                this.controlPoints = [];
+                this.coll = 'annotations';
+                this.userOptions = userOptions;
+                this.labels = [];
+                this.shapes = [];
+            }
+            /**
+             * Initialize the annotation.
+             * @private
+             */
+            init(_annotationOrChart, _userOptions, index = this.index) {
+                const chart = this.chart, animOptions = this.options.animation;
+                this.index = index;
+                this.linkPoints();
+                this.addControlPoints();
+                this.addShapes();
+                this.addLabels();
+                this.setLabelCollector();
+                this.animationConfig = getDeferredAnimation(chart, animOptions);
+            }
+            /**
+             * Initialisation of a single label
+             * @private
+             */
+            initLabel(labelOptions, index) {
+                const options = merge(this.options.labelOptions, {
+                    controlPointOptions: this.options.controlPointOptions
+                }, labelOptions), label = new ControllableLabel(this, options, index);
+                label.itemType = 'label';
+                this.labels.push(label);
+                return label;
+            }
+            /**
+             * Initialisation of a single shape
+             * @private
+             * @param {Object} shapeOptions
+             * a config object for a single shape
+             * @param {number} index
+             * annotation may have many shapes, this is the shape's index saved in
+             * shapes.index.
+             */
+            initShape(shapeOptions, index) {
+                const options = merge(this.options.shapeOptions, {
+                    controlPointOptions: this.options.controlPointOptions
+                }, shapeOptions), shape = new (Annotation.shapesMap[options.type])(this, options, index);
+                shape.itemType = 'shape';
+                this.shapes.push(shape);
+                return shape;
+            }
+            /**
+             * @private
+             */
+            redraw(animation) {
+                this.linkPoints();
+                if (!this.graphic) {
+                    this.render();
+                }
+                if (this.clipRect) {
+                    this.clipRect.animate(this.getClipBox());
+                }
+                this.redrawItems(this.shapes, animation);
+                this.redrawItems(this.labels, animation);
+                this.redrawControlPoints(animation);
+            }
+            /**
+             * Redraw a single item.
+             * @private
+             */
+            redrawItem(item, animation) {
+                item.linkPoints();
+                if (!item.shouldBeDrawn()) {
+                    this.destroyItem(item);
+                }
+                else {
+                    if (!item.graphic) {
+                        this.renderItem(item);
+                    }
+                    item.redraw(pick(animation, true) && item.graphic.placed);
+                    if (item.points.length) {
+                        adjustVisibility(item);
+                    }
+                }
+            }
+            /**
+             * @private
+             */
+            redrawItems(items, animation) {
+                let i = items.length;
+                // Needs a backward loop. Labels/shapes array might be modified due to
+                // destruction of the item
+                while (i--) {
+                    this.redrawItem(items[i], animation);
+                }
+            }
+            /**
+             * See {@link Highcharts.Chart#removeAnnotation}.
+             * @private
+             */
+            remove() {
+                // Let chart.update() remove annotations on demand
+                return this.chart.removeAnnotation(this);
+            }
+            /**
+             * @private
+             */
+            render() {
+                const renderer = this.chart.renderer;
+                this.graphic = renderer
+                    .g('annotation')
+                    .attr({
+                    opacity: 0,
+                    zIndex: this.options.zIndex,
+                    visibility: this.options.visible ?
+                        'inherit' :
+                        'hidden'
+                })
+                    .add();
+                this.shapesGroup = renderer
+                    .g('annotation-shapes')
+                    .add(this.graphic);
+                if (this.options.crop) { // #15399
+                    this.shapesGroup.clip(this.chart.plotBoxClip);
+                }
+                this.labelsGroup = renderer
+                    .g('annotation-labels')
+                    .attr({
+                    // `hideOverlappingLabels` requires translation
+                    translateX: 0,
+                    translateY: 0
+                })
+                    .add(this.graphic);
+                this.addClipPaths();
+                if (this.clipRect) {
+                    this.graphic.clip(this.clipRect);
+                }
+                // Render shapes and labels before adding events (#13070).
+                this.renderItems(this.shapes);
+                this.renderItems(this.labels);
+                this.addEvents();
+                this.renderControlPoints();
+            }
+            /**
+             * @private
+             */
+            renderItem(item) {
+                item.render(item.itemType === 'label' ?
+                    this.labelsGroup :
+                    this.shapesGroup);
+            }
+            /**
+             * @private
+             */
+            renderItems(items) {
+                let i = items.length;
+                while (i--) {
+                    this.renderItem(items[i]);
+                }
+            }
+            /**
+             * @private
+             */
+            setClipAxes() {
+                const xAxes = this.chart.xAxis, yAxes = this.chart.yAxis, linkedAxes = (this.options.labels || [])
+                    .concat(this.options.shapes || [])
+                    .reduce((axes, labelOrShape) => {
+                    const point = labelOrShape &&
+                        (labelOrShape.point ||
+                            (labelOrShape.points && labelOrShape.points[0]));
+                    return [
+                        xAxes[point && point.xAxis] || axes[0],
+                        yAxes[point && point.yAxis] || axes[1]
+                    ];
+                }, []);
+                this.clipXAxis = linkedAxes[0];
+                this.clipYAxis = linkedAxes[1];
+            }
+            /**
+             * @private
+             */
+            setControlPointsVisibility(visible) {
+                const setItemControlPointsVisibility = function (item) {
+                    item.setControlPointsVisibility(visible);
+                };
+                this.controlPoints.forEach((controlPoint) => {
+                    controlPoint.setVisibility(visible);
+                });
+                this.shapes.forEach(setItemControlPointsVisibility);
+                this.labels.forEach(setItemControlPointsVisibility);
+            }
+            /**
+             * @private
+             */
+            setLabelCollector() {
+                const annotation = this;
+                annotation.labelCollector = function () {
+                    return annotation.labels.reduce(function (labels, label) {
+                        if (!label.options.allowOverlap) {
+                            labels.push(label.graphic);
+                        }
+                        return labels;
+                    }, []);
+                };
+                annotation.chart.labelCollectors.push(annotation.labelCollector);
+            }
+            /**
+             * Set an annotation options.
+             * @private
+             * @param {Highcharts.AnnotationsOptions} userOptions
+             *        User options for an annotation
+             */
+            setOptions(userOptions) {
+                this.options = merge(this.defaultOptions, userOptions);
+            }
+            /**
+             * Set the annotation's visibility.
+             * @private
+             * @param {boolean} [visible]
+             * Whether to show or hide an annotation. If the param is omitted, the
+             * annotation's visibility is toggled.
+             */
+            setVisibility(visible) {
+                const options = this.options, navigation = this.chart.navigationBindings, visibility = pick(visible, !options.visible);
+                this.graphic.attr('visibility', visibility ? 'inherit' : 'hidden');
+                if (!visibility) {
+                    const setItemControlPointsVisibility = function (item) {
+                        item.setControlPointsVisibility(visibility);
+                    };
+                    this.shapes.forEach(setItemControlPointsVisibility);
+                    this.labels.forEach(setItemControlPointsVisibility);
+                    if (navigation.activeAnnotation === this &&
+                        navigation.popup &&
+                        navigation.popup.type === 'annotation-toolbar') {
+                        fireEvent(navigation, 'closePopup');
+                    }
+                }
+                options.visible = visibility;
+            }
+            /**
+             * Updates an annotation.
+             *
+             * @function Highcharts.Annotation#update
+             *
+             * @param {Partial<Highcharts.AnnotationsOptions>} userOptions
+             *        New user options for the annotation.
+             *
+             */
+            update(userOptions, redraw) {
+                const chart = this.chart, labelsAndShapes = getLabelsAndShapesOptions(this.userOptions, userOptions), userOptionsIndex = chart.annotations.indexOf(this), options = merge(true, this.userOptions, userOptions);
+                options.labels = labelsAndShapes.labels;
+                options.shapes = labelsAndShapes.shapes;
+                this.destroy();
+                this.initProperties(chart, options);
+                this.init(chart, options);
+                // Update options in chart options, used in exporting (#9767, #21507):
+                chart.options.annotations[userOptionsIndex] = this.options;
+                this.isUpdating = true;
+                if (pick(redraw, true)) {
+                    chart.drawAnnotations();
+                }
+                fireEvent(this, 'afterUpdate');
+                this.isUpdating = false;
+            }
+        }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
+        /**
+         * @private
+         */
+        Annotation.ControlPoint = ControlPoint;
+        /**
+         * @private
+         */
+        Annotation.MockPoint = MockPoint;
+        /**
+         * An object uses for mapping between a shape type and a constructor.
+         * To add a new shape type extend this object with type name as a key
+         * and a constructor as its value.
+         *
+         * @private
+         */
+        Annotation.shapesMap = {
+            'rect': ControllableRect,
+            'circle': ControllableCircle,
+            'ellipse': ControllableEllipse,
+            'path': ControllablePath,
+            'image': ControllableImage
+        };
+        /**
+         * @private
+         */
+        Annotation.types = {};
+        Annotation.prototype.defaultOptions = AnnotationDefaults;
+        /**
+         * List of events for `annotation.options.events` that should not be
+         * added to `annotation.graphic` but to the `annotation`.
+         *
+         * @private
+         * @type {Array<string>}
+         */
+        Annotation.prototype.nonDOMEvents = ['add', 'afterUpdate', 'drag', 'remove'];
+        ControlTarget.compose(Annotation);
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Declarations
+         *
+         * */
+        /**
+         * Possible directions for draggable annotations. An empty string (`''`)
+         * makes the annotation undraggable.
+         *
+         * @typedef {''|'x'|'xy'|'y'} Highcharts.AnnotationDraggableValue
+         * @requires modules/annotations
+         */
+        /**
+         * @private
+         * @typedef {
+         *          Highcharts.AnnotationControllableCircle|
+         *          Highcharts.AnnotationControllableImage|
+         *          Highcharts.AnnotationControllablePath|
+         *          Highcharts.AnnotationControllableRect
+         *     } Highcharts.AnnotationShapeType
+         * @requires modules/annotations
+         */
+        /**
+         * @private
+         * @typedef {
+         *          Highcharts.AnnotationControllableLabel
+         *     } Highcharts.AnnotationLabelType
+         * @requires modules/annotations
+         */
+        /**
+         * A point-like object, a mock point or a point used in series.
+         * @private
+         * @typedef {
+         *          Highcharts.AnnotationMockPoint|
+         *          Highcharts.Point
+         *     } Highcharts.AnnotationPointType
+         * @requires modules/annotations
+         */
+        /**
+         * Shape point as string, object or function.
+         *
+         * @typedef {
+         *          string|
+         *          Highcharts.AnnotationMockPointOptionsObject|
+         *          Highcharts.AnnotationMockPointFunction
+         *     } Highcharts.AnnotationShapePointOptions
+         */
+        (''); // Keeps doclets above in JS file
+
+        return Annotation;
+    });
     _registerModule(_modules, 'Core/Chart/ChartNavigationComposition.js', [], function () {
         /**
          *
-         *  (c) 2010-2021 Paweł Fus
+         *  (c) 2010-2024 Paweł Fus
          *
          *  License: www.highcharts.com/license
          *
@@ -3729,7 +5687,7 @@
     _registerModule(_modules, 'Extensions/Annotations/NavigationBindingsUtilities.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
-         *  (c) 2009-2021 Highsoft, Black Label
+         *  (c) 2009-2024 Highsoft, Black Label
          *
          *  License: www.highcharts.com/license
          *
@@ -3785,7 +5743,7 @@
                 return isNumber(axisMin) && isNumber(axisMax) &&
                     coord.value >= (axisMin - minPointOffset) &&
                     coord.value <= (axisMax + minPointOffset) &&
-                    // don't count navigator axis
+                    // Don't count navigator axis
                     !coord.axis.options.isInternal;
             })[0]; // If the axes overlap, return the first axis that was found.
         }
@@ -3828,7 +5786,7 @@
     _registerModule(_modules, 'Extensions/Annotations/NavigationBindingsDefaults.js', [_modules['Extensions/Annotations/NavigationBindingsUtilities.js'], _modules['Core/Utilities.js']], function (NBU, U) {
         /* *
          *
-         *  (c) 2009-2021 Highsoft, Black Label
+         *  (c) 2009-2024 Highsoft, Black Label
          *
          *  License: www.highcharts.com/license
          *
@@ -3947,7 +5905,7 @@
                     className: 'highcharts-circle-annotation',
                     /** @ignore-option */
                     start: function (e) {
-                        const coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis), navigation = this.chart.options.navigation;
+                        const coords = this.chart.pointer?.getCoordinates(e), coordsX = coords && getAssignedAxis(coords.xAxis), coordsY = coords && getAssignedAxis(coords.yAxis), navigation = this.chart.options.navigation;
                         // Exit if clicked out of axes area
                         if (!coordsX || !coordsY) {
                             return;
@@ -4001,7 +5959,7 @@
                 ellipseAnnotation: {
                     className: 'highcharts-ellipse-annotation',
                     start: function (e) {
-                        const coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis), navigation = this.chart.options.navigation;
+                        const coords = this.chart.pointer?.getCoordinates(e), coordsX = coords && getAssignedAxis(coords.xAxis), coordsY = coords && getAssignedAxis(coords.yAxis), navigation = this.chart.options.navigation;
                         if (!coordsX || !coordsY) {
                             return;
                         }
@@ -4051,7 +6009,7 @@
                     className: 'highcharts-rectangle-annotation',
                     /** @ignore-option */
                     start: function (e) {
-                        const coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis);
+                        const coords = this.chart.pointer?.getCoordinates(e), coordsX = coords && getAssignedAxis(coords.xAxis), coordsY = coords && getAssignedAxis(coords.yAxis);
                         // Exit if clicked out of axes area
                         if (!coordsX || !coordsY) {
                             return;
@@ -4080,7 +6038,7 @@
                     steps: [
                         function (e, annotation) {
                             const shapes = annotation.options.shapes, points = ((shapes && shapes[0] && shapes[0].points) ||
-                                []), coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis);
+                                []), coords = this.chart.pointer?.getCoordinates(e), coordsX = coords && getAssignedAxis(coords.xAxis), coordsY = coords && getAssignedAxis(coords.yAxis);
                             if (coordsX && coordsY) {
                                 const x = coordsX.value, y = coordsY.value;
                                 // Top right point
@@ -4110,7 +6068,7 @@
                     className: 'highcharts-label-annotation',
                     /** @ignore-option */
                     start: function (e) {
-                        const coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis), navigation = this.chart.options.navigation;
+                        const coords = this.chart.pointer?.getCoordinates(e), coordsX = coords && getAssignedAxis(coords.xAxis), coordsY = coords && getAssignedAxis(coords.yAxis), navigation = this.chart.options.navigation;
                         // Exit if clicked out of axes area
                         if (!coordsX || !coordsY) {
                             return;
@@ -4144,7 +6102,7 @@
              * from a different server.
              *
              * @type      {string}
-             * @default   https://code.highcharts.com/11.2.0/gfx/stock-icons/
+             * @default   https://code.highcharts.com/11.4.8/gfx/stock-icons/
              * @since     7.1.3
              * @apioption navigation.iconsURL
              */
@@ -4224,7 +6182,7 @@
     _registerModule(_modules, 'Extensions/Annotations/NavigationBindings.js', [_modules['Core/Chart/ChartNavigationComposition.js'], _modules['Core/Defaults.js'], _modules['Core/Templating.js'], _modules['Core/Globals.js'], _modules['Extensions/Annotations/NavigationBindingsDefaults.js'], _modules['Extensions/Annotations/NavigationBindingsUtilities.js'], _modules['Core/Utilities.js']], function (ChartNavigationComposition, D, F, H, NavigationBindingDefaults, NBU, U) {
         /* *
          *
-         *  (c) 2009-2021 Highsoft, Black Label
+         *  (c) 2009-2024 Highsoft, Black Label
          *
          *  License: www.highcharts.com/license
          *
@@ -4233,15 +6191,9 @@
          * */
         const { setOptions } = D;
         const { format } = F;
-        const { doc, win } = H;
-        const { getFieldType } = NBU;
-        const { addEvent, attr, defined, fireEvent, isArray, isFunction, isNumber, isObject, merge, objectEach, pick } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { composed, doc, win } = H;
+        const { getAssignedAxis, getFieldType } = NBU;
+        const { addEvent, attr, defined, fireEvent, isArray, isFunction, isNumber, isObject, merge, objectEach, pick, pushUnique } = U;
         /* *
          *
          *  Functions
@@ -4315,7 +6267,7 @@
                     this.navigationBindings.container[0]) {
                     const container = this.navigationBindings.container[0];
                     objectEach(navigationBindings.boundClassNames, (value, key) => {
-                        // Get the HTML element coresponding to the className taken
+                        // Get the HTML element corresponding to the className taken
                         // from StockToolsBindings.
                         const buttonNode = container.querySelectorAll('.' + key);
                         if (buttonNode) {
@@ -4414,10 +6366,16 @@
             }
             // #18276, show popup on touchend, but not on touchmove
             let touchStartX, touchStartY;
+            /**
+             *
+             */
             function saveCoords(e) {
                 touchStartX = e.touches[0].clientX;
                 touchStartY = e.touches[0].clientY;
             }
+            /**
+             *
+             */
             function checkForTouchmove(e) {
                 const hasMoved = touchStartX ? Math.sqrt(Math.pow(touchStartX - e.changedTouches[0].clientX, 2) +
                     Math.pow(touchStartY - e.changedTouches[0].clientY, 2)) >= 4 : false;
@@ -4446,7 +6404,7 @@
              *
              * */
             static compose(AnnotationClass, ChartClass) {
-                if (U.pushUnique(composedMembers, AnnotationClass)) {
+                if (pushUnique(composed, 'NavigationBindings')) {
                     addEvent(AnnotationClass, 'remove', onAnnotationRemove);
                     // Basic shapes:
                     selectableAnnotation(AnnotationClass);
@@ -4454,17 +6412,11 @@
                     objectEach(AnnotationClass.types, (annotationType) => {
                         selectableAnnotation(annotationType);
                     });
-                }
-                if (U.pushUnique(composedMembers, ChartClass)) {
                     addEvent(ChartClass, 'destroy', onChartDestroy);
                     addEvent(ChartClass, 'load', onChartLoad);
                     addEvent(ChartClass, 'render', onChartRender);
-                }
-                if (U.pushUnique(composedMembers, NavigationBindings)) {
                     addEvent(NavigationBindings, 'closePopup', onNavigationBindingsClosePopup);
                     addEvent(NavigationBindings, 'deselectButton', onNavigationBindingsDeselectButton);
-                }
-                if (U.pushUnique(composedMembers, setOptions)) {
                     setOptions(NavigationBindingDefaults);
                 }
             }
@@ -4475,7 +6427,6 @@
              * */
             constructor(chart, options) {
                 this.boundClassNames = void 0;
-                this.selectedButton = void 0;
                 this.chart = chart;
                 this.options = options;
                 this.eventsToUnbind = [];
@@ -4490,8 +6441,15 @@
              *  Functions
              *
              * */
+            getCoords(e) {
+                const coords = this.chart.pointer?.getCoordinates(e);
+                return [
+                    coords && getAssignedAxis(coords.xAxis),
+                    coords && getAssignedAxis(coords.yAxis)
+                ];
+            }
             /**
-             * Initi all events conencted to NavigationBindings.
+             * Init all events connected to NavigationBindings.
              *
              * @private
              * @function Highcharts.NavigationBindings#initEvents
@@ -4546,7 +6504,7 @@
                 });
             }
             /**
-             * Hook for click on a button, method selcts/unselects buttons,
+             * Hook for click on a button, method selects/unselects buttons,
              * then calls `bindings.init` callback.
              *
              * @private
@@ -4591,8 +6549,7 @@
                     }
                 }
                 else {
-                    chart.stockTools &&
-                        chart.stockTools.toggleButtonActiveClass(button);
+                    chart.stockTools && button.classList.remove('highcharts-active');
                     svgContainer.removeClass('highcharts-draw-mode');
                     navigation.nextEvent = false;
                     navigation.mouseMoveEvent = false;
@@ -4726,19 +6683,23 @@
                     if (value !== 'undefined') {
                         let parent = config;
                         path.forEach((name, index) => {
-                            const nextName = pick(path[index + 1], '');
-                            if (pathLength === index) {
-                                // Last index, put value:
-                                parent[name] = value;
-                            }
-                            else if (!parent[name]) {
-                                // Create middle property:
-                                parent[name] = nextName.match(/\d/g) ? [] : {};
-                                parent = parent[name];
-                            }
-                            else {
-                                // Jump into next property
-                                parent = parent[name];
+                            if (name !== '__proto__' && name !== 'constructor') {
+                                const nextName = pick(path[index + 1], '');
+                                if (pathLength === index) {
+                                    // Last index, put value:
+                                    parent[name] = value;
+                                }
+                                else if (!parent[name]) {
+                                    // Create middle property:
+                                    parent[name] = nextName.match(/\d/g) ?
+                                        [] :
+                                        {};
+                                    parent = parent[name];
+                                }
+                                else {
+                                    // Jump into next property
+                                    parent = parent[name];
+                                }
                             }
                         });
                     }
@@ -4801,8 +6762,8 @@
                         nonEditables.indexOf(key) === -1 &&
                         ((parentEditables.indexOf &&
                             parentEditables.indexOf(key)) >= 0 ||
-                            parentEditables[key] || // nested array
-                            parentEditables === true // simple array
+                            parentEditables[key] || // Nested array
+                            parentEditables === true // Simple array
                         )) {
                         // Roots:
                         if (isArray(option)) {
@@ -5042,1989 +7003,18 @@
         * @name Highcharts.NavigationBindingsOptionsObject#steps
         * @type {Array<Function>|undefined}
         */
-        (''); // keeps doclets above in JS file
+        (''); // Keeps doclets above in JS file
 
         return NavigationBindings;
     });
-    _registerModule(_modules, 'Shared/BaseForm.js', [_modules['Core/Renderer/HTML/AST.js'], _modules['Core/Utilities.js']], function (AST, U) {
-        /* *
-         *
-         *  (c) 2009 - 2023 Highsoft AS
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        /* *
-         *
-         *  Imports
-         *
-         * */
-        const { addEvent, createElement } = U;
-        /* *
-         *
-         *  Class
-         *
-         * */
-        class BaseForm {
-            /* *
-             *
-             *  Constructor
-             *
-             * */
-            constructor(parentDiv, iconsURL) {
-                this.iconsURL = iconsURL;
-                this.container = this.createPopupContainer(parentDiv);
-                this.closeButton = this.addCloseButton();
-            }
-            /* *
-             *
-             *  Functions
-             *
-             * */
-            /**
-             * Create popup div container.
-             *
-             * @param {HTMLElement} parentDiv
-             * Parent div to attach popup.
-             *
-             * @param  {string} className
-             * Class name of the popup.
-             *
-             * @return {HTMLElement}
-             * Popup div.
-             */
-            createPopupContainer(parentDiv, className = 'highcharts-popup highcharts-no-tooltip') {
-                return createElement('div', { className }, void 0, parentDiv);
-            }
-            /**
-             * Create HTML element and attach click event to close popup.
-             *
-             * @param {string} className
-             * Class name of the close button.
-             *
-             * @return {HTMLElement}
-             * Close button.
-             */
-            addCloseButton(className = 'highcharts-popup-close') {
-                const popup = this, iconsURL = this.iconsURL;
-                // Create close popup button.
-                const closeButton = createElement('div', { className }, void 0, this.container);
-                closeButton.style['background-image'] = 'url(' +
-                    (iconsURL.match(/png|svg|jpeg|jpg|gif/ig) ?
-                        iconsURL : iconsURL + 'close.svg') + ')';
-                ['click', 'touchstart'].forEach((eventName) => {
-                    addEvent(closeButton, eventName, popup.closeButtonEvents.bind(popup));
-                });
-                // close popup when press ESC
-                addEvent(document, 'keydown', function (event) {
-                    if (event.code === 'Escape') {
-                        popup.closeButtonEvents();
-                    }
-                });
-                return closeButton;
-            }
-            /**
-             * Close button events.
-             * @return {void}
-             */
-            closeButtonEvents() {
-                this.closePopup();
-            }
-            /**
-             * Reset content of the current popup and show.
-             *
-             * @param {string} toolbarClass
-             * Class name of the toolbar which styles should be reset.
-             */
-            showPopup(toolbarClass = 'highcharts-annotation-toolbar') {
-                const popupDiv = this.container, popupCloseButton = this.closeButton;
-                this.type = void 0;
-                // Reset content.
-                popupDiv.innerHTML = AST.emptyHTML;
-                // Reset toolbar styles if exists.
-                if (popupDiv.className.indexOf(toolbarClass) >= 0) {
-                    popupDiv.classList.remove(toolbarClass);
-                    // reset toolbar inline styles
-                    popupDiv.removeAttribute('style');
-                }
-                // Add close button.
-                popupDiv.appendChild(popupCloseButton);
-                popupDiv.style.display = 'block';
-                popupDiv.style.height = '';
-            }
-            /**
-             * Hide popup.
-             */
-            closePopup() {
-                this.container.style.display = 'none';
-            }
-        }
-        /* *
-         *
-         *  Default Export
-         *
-         * */
+    _registerModule(_modules, 'masters/modules/annotations.src.js', [_modules['Core/Globals.js'], _modules['Extensions/Annotations/Annotation.js'], _modules['Extensions/Annotations/NavigationBindings.js']], function (Highcharts, Annotation, NavigationBindings) {
 
-        return BaseForm;
-    });
-    _registerModule(_modules, 'Extensions/Annotations/Popup/PopupAnnotations.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
-        /* *
-         *
-         *  Popup generator for Stock tools
-         *
-         *  (c) 2009-2021 Sebastian Bochan
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        const { doc, isFirefox } = H;
-        const { createElement, isArray, isObject, objectEach, pick, stableSort } = U;
-        /* *
-         *
-         *  Functions
-         *
-         * */
-        /**
-         * Create annotation simple form.
-         * It contains fields with param names.
-         * @private
-         * @param {Highcharts.Chart} chart
-         * Chart
-         * @param {Object} options
-         * Options
-         * @param {Function} callback
-         * On click callback
-         * @param {boolean} [isInit]
-         * If it is a form declared for init annotation
-         */
-        function addForm(chart, options, callback, isInit) {
-            if (!chart) {
-                return;
-            }
-            const popupDiv = this.container, lang = this.lang;
-            // create title of annotations
-            let lhsCol = createElement('h2', {
-                className: 'highcharts-popup-main-title'
-            }, void 0, popupDiv);
-            lhsCol.appendChild(doc.createTextNode(lang[options.langKey] || options.langKey || ''));
-            // left column
-            lhsCol = createElement('div', {
-                className: ('highcharts-popup-lhs-col highcharts-popup-lhs-full')
-            }, void 0, popupDiv);
-            const bottomRow = createElement('div', {
-                className: 'highcharts-popup-bottom-row'
-            }, void 0, popupDiv);
-            addFormFields.call(this, lhsCol, chart, '', options, [], true);
-            this.addButton(bottomRow, isInit ?
-                (lang.addButton || 'Add') :
-                (lang.saveButton || 'Save'), isInit ? 'add' : 'save', popupDiv, callback);
-        }
-        /**
-         * Create annotation simple form. It contains two buttons
-         * (edit / remove) and text label.
-         * @private
-         * @param {Highcharts.Chart} - chart
-         * @param {Highcharts.AnnotationsOptions} - options
-         * @param {Function} - on click callback
-         */
-        function addToolbar(chart, options, callback) {
-            const lang = this.lang, popupDiv = this.container, showForm = this.showForm, toolbarClass = 'highcharts-annotation-toolbar';
-            // set small size
-            if (popupDiv.className.indexOf(toolbarClass) === -1) {
-                popupDiv.className += ' ' + toolbarClass + ' highcharts-no-mousewheel';
-            }
-            // set position
-            if (chart) {
-                popupDiv.style.top = chart.plotTop + 10 + 'px';
-            }
-            // create label
-            createElement('span', void 0, void 0, popupDiv).appendChild(doc.createTextNode(pick(
-            // Advanced annotations:
-            lang[options.langKey] || options.langKey, 
-            // Basic shapes:
-            options.shapes && options.shapes[0].type, '')));
-            // add buttons
-            let button = this.addButton(popupDiv, lang.removeButton || 'Remove', 'remove', popupDiv, callback);
-            button.className += ' highcharts-annotation-remove-button';
-            button.style['background-image'] = 'url(' +
-                this.iconsURL + 'destroy.svg)';
-            button = this.addButton(popupDiv, lang.editButton || 'Edit', 'edit', popupDiv, () => {
-                showForm.call(this, 'annotation-edit', chart, options, callback);
-            });
-            button.className += ' highcharts-annotation-edit-button';
-            button.style['background-image'] = 'url(' +
-                this.iconsURL + 'edit.svg)';
-        }
-        /**
-         * Create annotation's form fields.
-         * @private
-         * @param {Highcharts.HTMLDOMElement} parentDiv
-         * Div where inputs are placed
-         * @param {Highcharts.Chart} chart
-         * Chart
-         * @param {string} parentNode
-         * Name of parent to create chain of names
-         * @param {Highcharts.AnnotationsOptions} options
-         * Options
-         * @param {Array<unknown>} storage
-         * Array where all items are stored
-         * @param {boolean} [isRoot]
-         * Recursive flag for root
-         */
-        function addFormFields(parentDiv, chart, parentNode, options, storage, isRoot) {
-            if (!chart) {
-                return;
-            }
-            const addInput = this.addInput, lang = this.lang;
-            let parentFullName, titleName;
-            objectEach(options, (value, option) => {
-                // create name like params.styles.fontSize
-                parentFullName = parentNode !== '' ? parentNode + '.' + option : option;
-                if (isObject(value)) {
-                    if (
-                    // value is object of options
-                    !isArray(value) ||
-                        // array of objects with params. i.e labels in Fibonacci
-                        (isArray(value) && isObject(value[0]))) {
-                        titleName = lang[option] || option;
-                        if (!titleName.match(/\d/g)) {
-                            storage.push([
-                                true,
-                                titleName,
-                                parentDiv
-                            ]);
-                        }
-                        addFormFields.call(this, parentDiv, chart, parentFullName, value, storage, false);
-                    }
-                    else {
-                        storage.push([
-                            this,
-                            parentFullName,
-                            'annotation',
-                            parentDiv,
-                            value
-                        ]);
-                    }
-                }
-            });
-            if (isRoot) {
-                stableSort(storage, (a) => (a[1].match(/format/g) ? -1 : 1));
-                if (isFirefox) {
-                    storage.reverse(); // (#14691)
-                }
-                storage.forEach((genInput) => {
-                    if (genInput[0] === true) {
-                        createElement('span', {
-                            className: 'highcharts-annotation-title'
-                        }, void 0, genInput[2]).appendChild(doc.createTextNode(genInput[1]));
-                    }
-                    else {
-                        genInput[4] = {
-                            value: genInput[4][0],
-                            type: genInput[4][1]
-                        };
-                        addInput.apply(genInput[0], genInput.splice(1));
-                    }
-                });
-            }
-        }
-        /* *
-         *
-         *  Default Export
-         *
-         * */
-        const PopupAnnotations = {
-            addForm,
-            addToolbar
-        };
+        const G = Highcharts;
+        G.Annotation = G.Annotation || Annotation;
+        G.NavigationBindings = G.NavigationBindings || NavigationBindings;
+        G.Annotation.compose(G.Chart, G.NavigationBindings, G.Pointer, G.SVGRenderer);
 
-        return PopupAnnotations;
-    });
-    _registerModule(_modules, 'Extensions/Annotations/Popup/PopupIndicators.js', [_modules['Core/Renderer/HTML/AST.js'], _modules['Core/Globals.js'], _modules['Extensions/Annotations/NavigationBindingsUtilities.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (AST, H, NU, SeriesRegistry, U) {
-        /* *
-         *
-         *  Popup generator for Stock tools
-         *
-         *  (c) 2009-2021 Sebastian Bochan
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        const { doc } = H;
-        const { annotationsFieldsTypes } = NU;
-        const { seriesTypes } = SeriesRegistry;
-        const { addEvent, createElement, defined, isArray, isObject, objectEach, stableSort } = U;
-        /* *
-         *
-         *  Enums
-         *
-         * */
-        /**
-         * Enum for properties which should have dropdown list.
-         * @private
-         */
-        var DropdownProperties;
-        (function (DropdownProperties) {
-            DropdownProperties[DropdownProperties["params.algorithm"] = 0] = "params.algorithm";
-            DropdownProperties[DropdownProperties["params.average"] = 1] = "params.average";
-        })(DropdownProperties || (DropdownProperties = {}));
-        /**
-         * List of available algorithms for the specific indicator.
-         * @private
-         */
-        const dropdownParameters = {
-            'algorithm-pivotpoints': ['standard', 'fibonacci', 'camarilla'],
-            'average-disparityindex': ['sma', 'ema', 'dema', 'tema', 'wma']
-        };
-        /* *
-         *
-         *  Functions
-         *
-         * */
-        /**
-         * Create two columns (divs) in HTML.
-         * @private
-         * @param {Highcharts.HTMLDOMElement} container
-         * Container of columns
-         * @return {Highcharts.Dictionary<Highcharts.HTMLDOMElement>}
-         * Reference to two HTML columns (lhsCol, rhsCol)
-         */
-        function addColsContainer(container) {
-            // left column
-            const lhsCol = createElement('div', {
-                className: 'highcharts-popup-lhs-col'
-            }, void 0, container);
-            // right column
-            const rhsCol = createElement('div', {
-                className: 'highcharts-popup-rhs-col'
-            }, void 0, container);
-            // wrapper content
-            createElement('div', {
-                className: 'highcharts-popup-rhs-col-wrapper'
-            }, void 0, rhsCol);
-            return {
-                lhsCol: lhsCol,
-                rhsCol: rhsCol
-            };
-        }
-        /**
-         * Create indicator's form. It contains two tabs (ADD and EDIT) with
-         * content.
-         * @private
-         */
-        function addForm(chart, _options, callback) {
-            const lang = this.lang;
-            let buttonParentDiv;
-            if (!chart) {
-                return;
-            }
-            // add tabs
-            this.tabs.init.call(this, chart);
-            // get all tabs content divs
-            const tabsContainers = this.container
-                .querySelectorAll('.highcharts-tab-item-content');
-            // ADD tab
-            addColsContainer(tabsContainers[0]);
-            addSearchBox.call(this, chart, tabsContainers[0]);
-            addIndicatorList.call(this, chart, tabsContainers[0], 'add');
-            buttonParentDiv = tabsContainers[0]
-                .querySelectorAll('.highcharts-popup-rhs-col')[0];
-            this.addButton(buttonParentDiv, lang.addButton || 'add', 'add', buttonParentDiv, callback);
-            // EDIT tab
-            addColsContainer(tabsContainers[1]);
-            addIndicatorList.call(this, chart, tabsContainers[1], 'edit');
-            buttonParentDiv = tabsContainers[1]
-                .querySelectorAll('.highcharts-popup-rhs-col')[0];
-            this.addButton(buttonParentDiv, lang.saveButton || 'save', 'edit', buttonParentDiv, callback);
-            this.addButton(buttonParentDiv, lang.removeButton || 'remove', 'remove', buttonParentDiv, callback);
-        }
-        /**
-         * Create typical inputs for chosen indicator. Fields are extracted from
-         * defaultOptions (ADD mode) or current indicator (ADD mode). Two extra
-         * fields are added:
-         * - hidden input - contains indicator type (required for callback)
-         * - select - list of series which can be linked with indicator
-         * @private
-         * @param {Highcharts.Chart} chart
-         * Chart
-         * @param {Highcharts.Series} series
-         * Indicator
-         * @param {string} seriesType
-         * Indicator type like: sma, ema, etc.
-         * @param {Highcharts.HTMLDOMElement} rhsColWrapper
-         * Element where created HTML list is added
-         */
-        function addFormFields(chart, series, seriesType, rhsColWrapper) {
-            const fields = series.params || series.options.params;
-            // reset current content
-            rhsColWrapper.innerHTML = AST.emptyHTML;
-            // create title (indicator name in the right column)
-            createElement('h3', {
-                className: 'highcharts-indicator-title'
-            }, void 0, rhsColWrapper).appendChild(doc.createTextNode(getNameType(series, seriesType).indicatorFullName));
-            // input type
-            createElement('input', {
-                type: 'hidden',
-                name: 'highcharts-type-' + seriesType,
-                value: seriesType
-            }, void 0, rhsColWrapper);
-            // list all series with id
-            listAllSeries.call(this, seriesType, 'series', chart, rhsColWrapper, series, series.linkedParent && series.linkedParent.options.id);
-            if (fields.volumeSeriesID) {
-                listAllSeries.call(this, seriesType, 'volume', chart, rhsColWrapper, series, series.linkedParent && fields.volumeSeriesID);
-            }
-            // add param fields
-            addParamInputs.call(this, chart, 'params', fields, seriesType, rhsColWrapper);
-        }
-        /**
-         * Create HTML list of all indicators (ADD mode) or added indicators
-         * (EDIT mode).
-         *
-         * @private
-         *
-         * @param {Highcharts.AnnotationChart} chart
-         *        The chart object.
-         *
-         * @param {string} [optionName]
-         *        Name of the option into which selection is being added.
-         *
-         * @param {HTMLDOMElement} [parentDiv]
-         *        HTML parent element.
-         *
-         * @param {string} listType
-         *        Type of list depending on the selected bookmark.
-         *        Might be 'add' or 'edit'.
-         *
-         * @param {string|undefined} filter
-         *        Applied filter string from the input.
-         *        For the first iteration, it's an empty string.
-         */
-        function addIndicatorList(chart, parentDiv, listType, filter) {
-            const popup = this, lang = popup.lang, lhsCol = parentDiv.querySelectorAll('.highcharts-popup-lhs-col')[0], rhsCol = parentDiv.querySelectorAll('.highcharts-popup-rhs-col')[0], isEdit = listType === 'edit', series = (isEdit ?
-                chart.series : // EDIT mode
-                chart.options.plotOptions || {} // ADD mode
-            );
-            if (!chart && series) {
-                return;
-            }
-            let item, filteredSeriesArray = [];
-            // Filter and sort the series.
-            if (!isEdit && !isArray(series)) {
-                // Apply filters only for the 'add' indicator list.
-                filteredSeriesArray = filterSeries.call(this, series, filter);
-            }
-            else if (isArray(series)) {
-                filteredSeriesArray = filterSeriesArray.call(this, series);
-            }
-            // Sort indicators alphabeticaly.
-            stableSort(filteredSeriesArray, (a, b) => {
-                const seriesAName = a.indicatorFullName.toLowerCase(), seriesBName = b.indicatorFullName.toLowerCase();
-                return (seriesAName < seriesBName) ?
-                    -1 : (seriesAName > seriesBName) ? 1 : 0;
-            });
-            // If the list exists remove it from the DOM
-            // in order to create a new one with different filters.
-            if (lhsCol.children[1]) {
-                lhsCol.children[1].remove();
-            }
-            // Create wrapper for list.
-            const indicatorList = createElement('ul', {
-                className: 'highcharts-indicator-list'
-            }, void 0, lhsCol);
-            const rhsColWrapper = rhsCol.querySelectorAll('.highcharts-popup-rhs-col-wrapper')[0];
-            filteredSeriesArray.forEach((seriesSet) => {
-                const { indicatorFullName, indicatorType, series } = seriesSet;
-                item = createElement('li', {
-                    className: 'highcharts-indicator-list'
-                }, void 0, indicatorList);
-                item.appendChild(doc.createTextNode(indicatorFullName));
-                ['click', 'touchstart'].forEach((eventName) => {
-                    addEvent(item, eventName, function () {
-                        const button = rhsColWrapper.parentNode
-                            .children[1];
-                        addFormFields.call(popup, chart, series, indicatorType, rhsColWrapper);
-                        if (button) {
-                            button.style.display = 'block';
-                        }
-                        // add hidden input with series.id
-                        if (isEdit && series.options) {
-                            createElement('input', {
-                                type: 'hidden',
-                                name: 'highcharts-id-' + indicatorType,
-                                value: series.options.id
-                            }, void 0, rhsColWrapper).setAttribute('highcharts-data-series-id', series.options.id);
-                        }
-                    });
-                });
-            });
-            // select first item from the list
-            if (indicatorList.childNodes.length > 0) {
-                indicatorList.childNodes[0].click();
-            }
-            else if (!isEdit) {
-                AST.setElementHTML(rhsColWrapper.parentNode.children[0], lang.noFilterMatch || '');
-                rhsColWrapper.parentNode.children[1]
-                    .style.display = 'none';
-            }
-        }
-        /**
-         * Recurent function which lists all fields, from params object and
-         * create them as inputs. Each input has unique `data-name` attribute,
-         * which keeps chain of fields i.e params.styles.fontSize.
-         * @private
-         * @param {Highcharts.Chart} chart
-         * Chart
-         * @param {string} parentNode
-         * Name of parent to create chain of names
-         * @param {Highcharts.PopupFieldsDictionary<string>} fields
-         * Params which are based for input create
-         * @param {string} type
-         * Indicator type like: sma, ema, etc.
-         * @param {Highcharts.HTMLDOMElement} parentDiv
-         * Element where created HTML list is added
-         */
-        function addParamInputs(chart, parentNode, fields, type, parentDiv) {
-            if (!chart) {
-                return;
-            }
-            const addInput = this.addInput;
-            objectEach(fields, (value, fieldName) => {
-                const predefinedType = annotationsFieldsTypes[fieldName];
-                let fieldType = type;
-                if (predefinedType) {
-                    fieldType = predefinedType;
-                }
-                // create name like params.styles.fontSize
-                const parentFullName = parentNode + '.' + fieldName;
-                if (defined(value) && // skip if field is unnecessary, #15362
-                    parentFullName) {
-                    if (isObject(value)) {
-                        // (15733) 'Periods' has an arrayed value. Label must be
-                        // created here.
-                        addInput.call(this, parentFullName, type, parentDiv, {});
-                        addParamInputs.call(this, chart, parentFullName, value, type, parentDiv);
-                    }
-                    // If the option is listed in dropdown enum,
-                    // add the selection box for it.
-                    if (parentFullName in DropdownProperties) {
-                        // Add selection boxes.
-                        const selectBox = addSelection.call(this, type, parentFullName, parentDiv);
-                        // Add possible dropdown options.
-                        addSelectionOptions.call(this, chart, parentNode, selectBox, type, fieldName, value);
-                    }
-                    else if (
-                    // Skip volume field which is created by addFormFields.
-                    parentFullName !== 'params.volumeSeriesID' &&
-                        !isArray(value) // Skip params declared in array.
-                    ) {
-                        addInput.call(this, parentFullName, type, parentDiv, {
-                            value: value,
-                            type: 'number'
-                        } // all inputs are text type
-                        );
-                    }
-                }
-            });
-        }
-        /**
-         * Add searchbox HTML element and its' label.
-         *
-         * @private
-         *
-         * @param {Highcharts.AnnotationChart} chart
-         *        The chart object.
-         *
-         * @param {HTMLDOMElement} parentDiv
-         *        HTML parent element.
-         */
-        function addSearchBox(chart, parentDiv) {
-            const popup = this, lhsCol = parentDiv.querySelectorAll('.highcharts-popup-lhs-col')[0], options = 'searchIndicators', inputAttributes = {
-                value: '',
-                type: 'text',
-                htmlFor: 'search-indicators',
-                labelClassName: 'highcharts-input-search-indicators-label'
-            }, clearFilterText = this.lang.clearFilter, inputWrapper = createElement('div', {
-                className: 'highcharts-input-wrapper'
-            }, void 0, lhsCol);
-            const handleInputChange = function (inputText) {
-                // Apply some filters.
-                addIndicatorList.call(popup, chart, popup.container, 'add', inputText);
-            };
-            // Add input field with the label and button.
-            const input = this.addInput(options, 'input', inputWrapper, inputAttributes), button = createElement('a', {
-                textContent: clearFilterText
-            }, void 0, inputWrapper);
-            input.classList.add('highcharts-input-search-indicators');
-            button.classList.add('clear-filter-button');
-            // Add input change events.
-            addEvent(input, 'input', function (e) {
-                handleInputChange(this.value);
-                // Show clear filter button.
-                if (this.value.length) {
-                    button.style.display = 'inline-block';
-                }
-                else {
-                    button.style.display = 'none';
-                }
-            });
-            // Add clear filter click event.
-            ['click', 'touchstart'].forEach((eventName) => {
-                addEvent(button, eventName, function () {
-                    // Clear the input.
-                    input.value = '';
-                    handleInputChange('');
-                    // Hide clear filter button- no longer nececary.
-                    button.style.display = 'none';
-                });
-            });
-        }
-        /**
-         * Add selection HTML element and its' label.
-         *
-         * @private
-         *
-         * @param {string} indicatorType
-         * Type of the indicator i.e. sma, ema...
-         *
-         * @param {string} [optionName]
-         * Name of the option into which selection is being added.
-         *
-         * @param {HTMLDOMElement} [parentDiv]
-         * HTML parent element.
-         */
-        function addSelection(indicatorType, optionName, parentDiv) {
-            const optionParamList = optionName.split('.'), labelText = optionParamList[optionParamList.length - 1], selectName = 'highcharts-' + optionName + '-type-' + indicatorType, lang = this.lang;
-            // Add a label for the selection box.
-            createElement('label', {
-                htmlFor: selectName
-            }, null, parentDiv).appendChild(doc.createTextNode(lang[labelText] || optionName));
-            // Create a selection box.
-            const selectBox = createElement('select', {
-                name: selectName,
-                className: 'highcharts-popup-field',
-                id: 'highcharts-select-' + optionName
-            }, null, parentDiv);
-            selectBox.setAttribute('id', 'highcharts-select-' + optionName);
-            return selectBox;
-        }
-        /**
-         * Get and add selection options.
-         *
-         * @private
-         *
-         * @param {Highcharts.AnnotationChart} chart
-         *        The chart object.
-         *
-         * @param {string} [optionName]
-         *        Name of the option into which selection is being added.
-         *
-         * @param {HTMLSelectElement} [selectBox]
-         *        HTML select box element to which the options are being added.
-         *
-         * @param {string|undefined} indicatorType
-         *        Type of the indicator i.e. sma, ema...
-         *
-         * @param {string|undefined} parameterName
-         *        Name of the parameter which should be applied.
-         *
-         * @param {string|undefined} selectedOption
-         *        Default value in dropdown.
-         */
-        function addSelectionOptions(chart, optionName, selectBox, indicatorType, parameterName, selectedOption, currentSeries) {
-            // Get and apply selection options for the possible series.
-            if (optionName === 'series' || optionName === 'volume') {
-                // List all series which have id - mandatory for indicator.
-                chart.series.forEach((series) => {
-                    const seriesOptions = series.options, seriesName = seriesOptions.name ||
-                        seriesOptions.params ?
-                        series.name :
-                        seriesOptions.id || '';
-                    if (seriesOptions.id !== 'highcharts-navigator-series' &&
-                        seriesOptions.id !== (currentSeries &&
-                            currentSeries.options &&
-                            currentSeries.options.id)) {
-                        if (!defined(selectedOption) &&
-                            optionName === 'volume' &&
-                            series.type === 'column') {
-                            selectedOption = seriesOptions.id;
-                        }
-                        createElement('option', {
-                            value: seriesOptions.id
-                        }, void 0, selectBox).appendChild(doc.createTextNode(seriesName));
-                    }
-                });
-            }
-            else if (indicatorType && parameterName) {
-                // Get and apply options for the possible parameters.
-                const dropdownKey = parameterName + '-' + indicatorType, parameterOption = dropdownParameters[dropdownKey];
-                parameterOption.forEach((element) => {
-                    createElement('option', {
-                        value: element
-                    }, void 0, selectBox).appendChild(doc.createTextNode(element));
-                });
-            }
-            // Add the default dropdown value if defined.
-            if (defined(selectedOption)) {
-                selectBox.value = selectedOption;
-            }
-        }
-        /**
-         * Filter object of series which are not indicators.
-         * If the filter string exists, check against it.
-         *
-         * @private
-         *
-         * @param {Highcharts.FilteredSeries} series
-         *        All series are available in the plotOptions.
-         *
-         * @param {string|undefined} filter
-         *        Applied filter string from the input.
-         *        For the first iteration, it's an empty string.
-         *
-         * @return {Array<Highcharts.FilteredSeries>} filteredSeriesArray
-         *         Returns array of filtered series based on filter string.
-         */
-        function filterSeries(series, filter) {
-            const popup = this, indicators = popup.indicators, lang = popup.chart && popup.chart.options.lang, indicatorAliases = lang &&
-                lang.navigation &&
-                lang.navigation.popup &&
-                lang.navigation.popup.indicatorAliases, filteredSeriesArray = [];
-            let filteredSeries;
-            objectEach(series, (series, value) => {
-                const seriesOptions = series && series.options;
-                // Allow only indicators.
-                if (series.params || seriesOptions &&
-                    seriesOptions.params) {
-                    const { indicatorFullName, indicatorType } = getNameType(series, value);
-                    if (filter) {
-                        // Replace invalid characters.
-                        const validFilter = filter.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                        const regex = new RegExp(validFilter, 'i'), alias = indicatorAliases &&
-                            indicatorAliases[indicatorType] &&
-                            indicatorAliases[indicatorType].join(' ') || '';
-                        if (indicatorFullName.match(regex) ||
-                            alias.match(regex)) {
-                            filteredSeries = {
-                                indicatorFullName,
-                                indicatorType,
-                                series: series
-                            };
-                            filteredSeriesArray.push(filteredSeries);
-                        }
-                    }
-                    else {
-                        filteredSeries = {
-                            indicatorFullName,
-                            indicatorType,
-                            series: series
-                        };
-                        filteredSeriesArray.push(filteredSeries);
-                    }
-                }
-            });
-            return filteredSeriesArray;
-        }
-        /**
-         * Filter an array of series and map its names and types.
-         *
-         * @private
-         *
-         * @param {Highcharts.FilteredSeries} series
-         *        All series that are available in the plotOptions.
-         *
-         * @return {Array<Highcharts.FilteredSeries>} filteredSeriesArray
-         *         Returns array of filtered series based on filter string.
-         */
-        function filterSeriesArray(series) {
-            const filteredSeriesArray = [];
-            // Allow only indicators.
-            series.forEach((series) => {
-                if (series.is('sma')) {
-                    filteredSeriesArray.push({
-                        indicatorFullName: series.name,
-                        indicatorType: series.type,
-                        series: series
-                    });
-                }
-            });
-            return filteredSeriesArray;
-        }
-        /**
-         * Get amount of indicators added to chart.
-         * @private
-         * @return {number} - Amount of indicators
-         */
-        function getAmount() {
-            let counter = 0;
-            this.series.forEach((serie) => {
-                if (serie.params ||
-                    serie.options.params) {
-                    counter++;
-                }
-            });
-            return counter;
-        }
-        /**
-         * Extract full name and type of requested indicator.
-         *
-         * @private
-         *
-         * @param {Highcharts.Series} series
-         * Series which name is needed(EDITmode - defaultOptions.series,
-         * ADDmode - indicator series).
-         *
-         * @param {string} [indicatorType]
-         * Type of the indicator i.e. sma, ema...
-         *
-         * @return {Highcharts.Dictionary<string>}
-         * Full name and series type.
-         */
-        function getNameType(series, indicatorType) {
-            const options = series.options;
-            // add mode
-            let seriesName = (seriesTypes[indicatorType] &&
-                seriesTypes[indicatorType].prototype.nameBase) ||
-                indicatorType.toUpperCase(), seriesType = indicatorType;
-            // edit
-            if (options && options.type) {
-                seriesType = series.options.type;
-                seriesName = series.name;
-            }
-            return {
-                indicatorFullName: seriesName,
-                indicatorType: seriesType
-            };
-        }
-        /**
-         * Create the selection box for the series,
-         * add options and apply the default one.
-         *
-         * @private
-         *
-         * @param {string} indicatorType
-         *        Type of the indicator i.e. sma, ema...
-         *
-         * @param {string} [optionName]
-         *        Name of the option into which selection is being added.
-         *
-         * @param {Highcharts.AnnotationChart} chart
-         *        The chart object.
-         *
-         * @param {HTMLDOMElement} [parentDiv]
-         *        HTML parent element.
-         *
-         * @param {string|undefined} selectedOption
-         *        Default value in dropdown.
-         */
-        function listAllSeries(indicatorType, optionName, chart, parentDiv, currentSeries, selectedOption) {
-            const popup = this, indicators = popup.indicators;
-            // Won't work without the chart.
-            if (!chart) {
-                return;
-            }
-            // Add selection boxes.
-            const selectBox = addSelection.call(popup, indicatorType, optionName, parentDiv);
-            // Add possible dropdown options.
-            addSelectionOptions.call(popup, chart, optionName, selectBox, void 0, void 0, void 0, currentSeries);
-            // Add the default dropdown value if defined.
-            if (defined(selectedOption)) {
-                selectBox.value = selectedOption;
-            }
-        }
-        /* *
-         *
-         *  Default Export
-         *
-         * */
-        const PopupIndicators = {
-            addForm,
-            getAmount
-        };
-
-        return PopupIndicators;
-    });
-    _registerModule(_modules, 'Extensions/Annotations/Popup/PopupTabs.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
-        /* *
-         *
-         *  Popup generator for Stock tools
-         *
-         *  (c) 2009-2021 Sebastian Bochan
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        const { doc } = H;
-        const { addEvent, createElement } = U;
-        /* *
-         *
-         *  Functions
-         *
-         * */
-        /**
-         * Create tab content
-         * @private
-         * @return {HTMLDOMElement} - created HTML tab-content element
-         */
-        function addContentItem() {
-            const popupDiv = this.container;
-            return createElement('div', {
-                // #12100
-                className: 'highcharts-tab-item-content highcharts-no-mousewheel'
-            }, void 0, popupDiv);
-        }
-        /**
-         * Create tab menu item
-         * @private
-         * @param {string} tabName
-         * `add` or `edit`
-         * @param {number} [disableTab]
-         * Disable tab when 0
-         * @return {Highcharts.HTMLDOMElement}
-         * Created HTML tab-menu element
-         */
-        function addMenuItem(tabName, disableTab) {
-            const popupDiv = this.container, lang = this.lang;
-            let className = 'highcharts-tab-item';
-            if (disableTab === 0) {
-                className += ' highcharts-tab-disabled';
-            }
-            // tab 1
-            const menuItem = createElement('span', {
-                className
-            }, void 0, popupDiv);
-            menuItem.appendChild(doc.createTextNode(lang[tabName + 'Button'] || tabName));
-            menuItem.setAttribute('highcharts-data-tab-type', tabName);
-            return menuItem;
-        }
-        /**
-         * Set all tabs as invisible.
-         * @private
-         */
-        function deselectAll() {
-            const popupDiv = this.container, tabs = popupDiv
-                .querySelectorAll('.highcharts-tab-item'), tabsContent = popupDiv
-                .querySelectorAll('.highcharts-tab-item-content');
-            for (let i = 0; i < tabs.length; i++) {
-                tabs[i].classList.remove('highcharts-tab-item-active');
-                tabsContent[i].classList.remove('highcharts-tab-item-show');
-            }
-        }
-        /**
-         * Init tabs. Create tab menu items, tabs containers
-         * @private
-         * @param {Highcharts.Chart} chart
-         * Reference to current chart
-         */
-        function init(chart) {
-            if (!chart) {
-                return;
-            }
-            const indicatorsCount = this.indicators.getAmount.call(chart);
-            // create menu items
-            const firstTab = addMenuItem.call(this, 'add'); // run by default
-            addMenuItem.call(this, 'edit', indicatorsCount);
-            // create tabs containers
-            addContentItem.call(this);
-            addContentItem.call(this);
-            switchTabs.call(this, indicatorsCount);
-            // activate first tab
-            selectTab.call(this, firstTab, 0);
-        }
-        /**
-         * Set tab as visible
-         * @private
-         * @param {globals.Element} - current tab
-         * @param {number} - Index of tab in menu
-         */
-        function selectTab(tab, index) {
-            const allTabs = this.container
-                .querySelectorAll('.highcharts-tab-item-content');
-            tab.className += ' highcharts-tab-item-active';
-            allTabs[index].className += ' highcharts-tab-item-show';
-        }
-        /**
-         * Add click event to each tab
-         * @private
-         * @param {number} disableTab
-         * Disable tab when 0
-         */
-        function switchTabs(disableTab) {
-            const popup = this, popupDiv = this.container, tabs = popupDiv.querySelectorAll('.highcharts-tab-item');
-            tabs.forEach((tab, i) => {
-                if (disableTab === 0 &&
-                    tab.getAttribute('highcharts-data-tab-type') === 'edit') {
-                    return;
-                }
-                ['click', 'touchstart'].forEach((eventName) => {
-                    addEvent(tab, eventName, function () {
-                        // reset class on other elements
-                        deselectAll.call(popup);
-                        selectTab.call(popup, this, i);
-                    });
-                });
-            });
-        }
-        /* *
-         *
-         *  Default Export
-         *
-         * */
-        const PopupTabs = {
-            init
-        };
-
-        return PopupTabs;
-    });
-    _registerModule(_modules, 'Extensions/Annotations/Popup/Popup.js', [_modules['Shared/BaseForm.js'], _modules['Core/Globals.js'], _modules['Core/Defaults.js'], _modules['Extensions/Annotations/Popup/PopupAnnotations.js'], _modules['Extensions/Annotations/Popup/PopupIndicators.js'], _modules['Extensions/Annotations/Popup/PopupTabs.js'], _modules['Core/Utilities.js']], function (BaseForm, H, D, PopupAnnotations, PopupIndicators, PopupTabs, U) {
-        /* *
-         *
-         *  Popup generator for Stock tools
-         *
-         *  (c) 2009-2021 Sebastian Bochan
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        const { doc } = H;
-        const { getOptions } = D;
-        const { addEvent, createElement, extend, fireEvent, pick } = U;
-        /* *
-         *
-         *  Functions
-         *
-         * */
-        /**
-         * Get values from all inputs and selections then create JSON.
-         *
-         * @private
-         *
-         * @param {Highcharts.HTMLDOMElement} parentDiv
-         * The container where inputs and selections are created.
-         *
-         * @param {string} type
-         * Type of the popup bookmark (add|edit|remove).
-         */
-        function getFields(parentDiv, type) {
-            const inputList = Array.prototype.slice.call(parentDiv.querySelectorAll('input')), selectList = Array.prototype.slice.call(parentDiv.querySelectorAll('select')), optionSeries = '#highcharts-select-series > option:checked', optionVolume = '#highcharts-select-volume > option:checked', linkedTo = parentDiv.querySelectorAll(optionSeries)[0], volumeTo = parentDiv.querySelectorAll(optionVolume)[0];
-            const fieldsOutput = {
-                actionType: type,
-                linkedTo: linkedTo && linkedTo.getAttribute('value') || '',
-                fields: {}
-            };
-            inputList.forEach((input) => {
-                const param = input.getAttribute('highcharts-data-name'), seriesId = input.getAttribute('highcharts-data-series-id');
-                // params
-                if (seriesId) {
-                    fieldsOutput.seriesId = input.value;
-                }
-                else if (param) {
-                    fieldsOutput.fields[param] = input.value;
-                }
-                else {
-                    // type like sma / ema
-                    fieldsOutput.type = input.value;
-                }
-            });
-            selectList.forEach((select) => {
-                const id = select.id;
-                // Get inputs only for the parameters, not for series and volume.
-                if (id !== 'highcharts-select-series' &&
-                    id !== 'highcharts-select-volume') {
-                    const parameter = id.split('highcharts-select-')[1];
-                    fieldsOutput.fields[parameter] = select.value;
-                }
-            });
-            if (volumeTo) {
-                fieldsOutput.fields['params.volumeSeriesID'] = volumeTo
-                    .getAttribute('value') || '';
-            }
-            return fieldsOutput;
-        }
-        /* *
-         *
-         *  Class
-         *
-         * */
-        class Popup extends BaseForm {
-            /* *
-             *
-             *  Constructor
-             *
-             * */
-            constructor(parentDiv, iconsURL, chart) {
-                super(parentDiv, iconsURL);
-                this.chart = chart;
-                this.lang = (getOptions().lang.navigation || {}).popup || {};
-                addEvent(this.container, 'mousedown', () => {
-                    const activeAnnotation = chart &&
-                        chart.navigationBindings &&
-                        chart.navigationBindings.activeAnnotation;
-                    if (activeAnnotation) {
-                        activeAnnotation.cancelClick = true;
-                        const unbind = addEvent(doc, 'click', () => {
-                            setTimeout(() => {
-                                activeAnnotation.cancelClick = false;
-                            }, 0);
-                            unbind();
-                        });
-                    }
-                });
-            }
-            /* *
-             *
-             *  Functions
-             *
-             * */
-            /**
-             * Create input with label.
-             *
-             * @private
-             *
-             * @param {string} option
-             *        Chain of fields i.e params.styles.fontSize separeted by the dot.
-             *
-             * @param {string} indicatorType
-             *        Type of the indicator i.e. sma, ema...
-             *
-             * @param {HTMLDOMElement} parentDiv
-             *        HTML parent element.
-             *
-             * @param {Highcharts.InputAttributes} inputAttributes
-             *        Attributes of the input.
-             *
-             * @return {HTMLInputElement}
-             *         Return created input element.
-             */
-            addInput(option, indicatorType, parentDiv, inputAttributes) {
-                const optionParamList = option.split('.'), optionName = optionParamList[optionParamList.length - 1], lang = this.lang, inputName = 'highcharts-' + indicatorType + '-' + pick(inputAttributes.htmlFor, optionName);
-                if (!optionName.match(/^\d+$/)) {
-                    // add label
-                    createElement('label', {
-                        htmlFor: inputName,
-                        className: inputAttributes.labelClassName
-                    }, void 0, parentDiv).appendChild(doc.createTextNode(lang[optionName] || optionName));
-                }
-                // add input
-                const input = createElement('input', {
-                    name: inputName,
-                    value: inputAttributes.value,
-                    type: inputAttributes.type,
-                    className: 'highcharts-popup-field'
-                }, void 0, parentDiv);
-                input.setAttribute('highcharts-data-name', option);
-                return input;
-            }
-            closeButtonEvents() {
-                if (this.chart) {
-                    const navigationBindings = this.chart.navigationBindings;
-                    fireEvent(navigationBindings, 'closePopup');
-                    if (navigationBindings &&
-                        navigationBindings.selectedButtonElement) {
-                        fireEvent(navigationBindings, 'deselectButton', { button: navigationBindings.selectedButtonElement });
-                    }
-                }
-                else {
-                    super.closeButtonEvents();
-                }
-            }
-            /**
-             * Create button.
-             * @private
-             * @param {Highcharts.HTMLDOMElement} parentDiv
-             * Container where elements should be added
-             * @param {string} label
-             * Text placed as button label
-             * @param {string} type
-             * add | edit | remove
-             * @param {Function} callback
-             * On click callback
-             * @param {Highcharts.HTMLDOMElement} fieldsDiv
-             * Container where inputs are generated
-             * @return {Highcharts.HTMLDOMElement}
-             * HTML button
-             */
-            addButton(parentDiv, label, type, fieldsDiv, callback) {
-                const button = createElement('button', void 0, void 0, parentDiv);
-                button.appendChild(doc.createTextNode(label));
-                if (callback) {
-                    ['click', 'touchstart'].forEach((eventName) => {
-                        addEvent(button, eventName, () => {
-                            this.closePopup();
-                            return callback(getFields(fieldsDiv, type));
-                        });
-                    });
-                }
-                return button;
-            }
-            /**
-             * Create content and show popup.
-             * @private
-             * @param {string} - type of popup i.e indicators
-             * @param {Highcharts.Chart} - chart
-             * @param {Highcharts.AnnotationsOptions} - options
-             * @param {Function} - on click callback
-             */
-            showForm(type, chart, options, callback) {
-                if (!chart) {
-                    return;
-                }
-                // show blank popup
-                this.showPopup();
-                // indicator form
-                if (type === 'indicators') {
-                    this.indicators.addForm.call(this, chart, options, callback);
-                }
-                // annotation small toolbar
-                if (type === 'annotation-toolbar') {
-                    this.annotations.addToolbar.call(this, chart, options, callback);
-                }
-                // annotation edit form
-                if (type === 'annotation-edit') {
-                    this.annotations.addForm.call(this, chart, options, callback);
-                }
-                // flags form - add / edit
-                if (type === 'flag') {
-                    this.annotations.addForm.call(this, chart, options, callback, true);
-                }
-                this.type = type;
-                // Explicit height is needed to make inner elements scrollable
-                this.container.style.height = this.container.offsetHeight + 'px';
-            }
-        }
-        extend(Popup.prototype, {
-            annotations: PopupAnnotations,
-            indicators: PopupIndicators,
-            tabs: PopupTabs
-        });
-        /* *
-         *
-         *  Default Export
-         *
-         * */
-
-        return Popup;
-    });
-    _registerModule(_modules, 'Extensions/Annotations/Popup/PopupComposition.js', [_modules['Extensions/Annotations/Popup/Popup.js'], _modules['Core/Utilities.js']], function (Popup, U) {
-        /* *
-         *
-         *  Popup generator for Stock tools
-         *
-         *  (c) 2009-2021 Sebastian Bochan
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        const { addEvent, wrap } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
-        /* *
-         *
-         *  Functions
-         *
-         * */
-        /**
-         * @private
-         */
-        function compose(NagivationBindingsClass, PointerClass) {
-            if (U.pushUnique(composedMembers, NagivationBindingsClass)) {
-                addEvent(NagivationBindingsClass, 'closePopup', onNavigationBindingsClosePopup);
-                addEvent(NagivationBindingsClass, 'showPopup', onNavigationBindingsShowPopup);
-            }
-            if (U.pushUnique(composedMembers, PointerClass)) {
-                wrap(PointerClass.prototype, 'onContainerMouseDown', wrapPointerOnContainerMouserDown);
-            }
-        }
-        /**
-         * @private
-         */
-        function onNavigationBindingsClosePopup() {
-            if (this.popup) {
-                this.popup.closePopup();
-            }
-        }
-        /**
-         * @private
-         */
-        function onNavigationBindingsShowPopup(config) {
-            if (!this.popup) {
-                // Add popup to main container
-                this.popup = new Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
-                    (this.chart.options.stockTools &&
-                        this.chart.options.stockTools.gui.iconsURL) ||
-                    'https://code.highcharts.com/11.2.0/gfx/stock-icons/'), this.chart);
-            }
-            this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
-        }
-        /**
-         * onContainerMouseDown blocks internal popup events, due to e.preventDefault.
-         * Related issue #4606
-         * @private
-         */
-        function wrapPointerOnContainerMouserDown(proceed, e) {
-            // elements is not in popup
-            if (!this.inClass(e.target, 'highcharts-popup')) {
-                proceed.apply(this, Array.prototype.slice.call(arguments, 1));
-            }
-        }
-        /* *
-         *
-         *  Default Export
-         *
-         * */
-        const PopupComposition = {
-            compose
-        };
-
-        return PopupComposition;
-    });
-    _registerModule(_modules, 'Extensions/Annotations/Annotation.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Extensions/Annotations/AnnotationChart.js'], _modules['Extensions/Annotations/AnnotationDefaults.js'], _modules['Extensions/Annotations/Controllables/ControllableRect.js'], _modules['Extensions/Annotations/Controllables/ControllableCircle.js'], _modules['Extensions/Annotations/Controllables/ControllableEllipse.js'], _modules['Extensions/Annotations/Controllables/ControllablePath.js'], _modules['Extensions/Annotations/Controllables/ControllableImage.js'], _modules['Extensions/Annotations/Controllables/ControllableLabel.js'], _modules['Extensions/Annotations/ControlPoint.js'], _modules['Extensions/Annotations/ControlTarget.js'], _modules['Extensions/Annotations/EventEmitter.js'], _modules['Extensions/Annotations/MockPoint.js'], _modules['Extensions/Annotations/NavigationBindings.js'], _modules['Extensions/Annotations/Popup/PopupComposition.js'], _modules['Core/Utilities.js']], function (A, AnnotationChart, AnnotationDefaults, ControllableRect, ControllableCircle, ControllableEllipse, ControllablePath, ControllableImage, ControllableLabel, ControlPoint, ControlTarget, EventEmitter, MockPoint, NavigationBindings, PopupComposition, U) {
-        /* *
-         *
-         *  (c) 2009-2021 Highsoft, Black Label
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        const { getDeferredAnimation } = A;
-        const { destroyObjectProperties, erase, fireEvent, merge, pick, splat } = U;
-        /* *
-         *
-         *  Functions
-         *
-         * */
-        /**
-         * Hide or show annotaiton attached to points.
-         * @private
-         */
-        function adjustVisibility(item) {
-            const label = item.graphic, hasVisiblePoints = item.points.some((point) => (point.series.visible !== false &&
-                point.visible !== false));
-            if (label) {
-                if (!hasVisiblePoints) {
-                    label.hide();
-                }
-                else if (label.visibility === 'hidden') {
-                    label.show();
-                }
-            }
-        }
-        /**
-         * @private
-         */
-        function getLabelsAndShapesOptions(baseOptions, newOptions) {
-            const mergedOptions = {};
-            ['labels', 'shapes'].forEach((name) => {
-                const someBaseOptions = baseOptions[name];
-                if (someBaseOptions) {
-                    if (newOptions[name]) {
-                        mergedOptions[name] = splat(newOptions[name]).map(function (basicOptions, i) {
-                            return merge(someBaseOptions[i], basicOptions);
-                        });
-                    }
-                    else {
-                        mergedOptions[name] = baseOptions[name];
-                    }
-                }
-            });
-            return mergedOptions;
-        }
-        /* *
-         *
-         *  Class
-         *
-         * */
-        /**
-         * An annotation class which serves as a container for items like labels or
-         * shapes. Created items are positioned on the chart either by linking them to
-         * existing points or created mock points
-         *
-         * @class
-         * @name Highcharts.Annotation
-         *
-         * @param {Highcharts.Chart} chart
-         *        A chart instance
-         * @param {Highcharts.AnnotationsOptions} userOptions
-         *        The annotation options
-         */
-        class Annotation extends EventEmitter {
-            /* *
-             *
-             *  Static Functions
-             *
-             * */
-            /**
-             * @private
-             */
-            static compose(ChartClass, PointerClass, SVGRendererClass) {
-                AnnotationChart.compose(Annotation, ChartClass, PointerClass);
-                ControllableLabel.compose(SVGRendererClass);
-                ControllablePath.compose(ChartClass, SVGRendererClass);
-                NavigationBindings.compose(Annotation, ChartClass);
-                PopupComposition.compose(NavigationBindings, PointerClass);
-            }
-            /* *
-             *
-             *  Constructors
-             *
-             * */
-            constructor(chart, userOptions) {
-                super();
-                this.coll = 'annotations';
-                this.animationConfig = void 0;
-                this.graphic = void 0;
-                this.group = void 0;
-                this.labelCollector = void 0;
-                this.labelsGroup = void 0;
-                this.shapesGroup = void 0;
-                /**
-                 * The chart that the annotation belongs to.
-                 *
-                 * @name Highcharts.Annotation#chart
-                 * @type {Highcharts.Chart}
-                 */
-                this.chart = chart;
-                /**
-                 * The array of points which defines the annotation.
-                 * @private
-                 * @name Highcharts.Annotation#points
-                 * @type {Array<Highcharts.Point>}
-                 */
-                this.points = [];
-                /**
-                 * The array of control points.
-                 * @private
-                 * @name Highcharts.Annotation#controlPoints
-                 * @type {Array<Annotation.ControlPoint>}
-                 */
-                this.controlPoints = [];
-                this.coll = 'annotations';
-                this.index = -1;
-                /**
-                 * The array of labels which belong to the annotation.
-                 * @private
-                 * @name Highcharts.Annotation#labels
-                 * @type {Array<Highcharts.AnnotationLabelType>}
-                 */
-                this.labels = [];
-                /**
-                 * The array of shapes which belong to the annotation.
-                 * @private
-                 * @name Highcharts.Annotation#shapes
-                 * @type {Array<Highcharts.AnnotationShapeType>}
-                 */
-                this.shapes = [];
-                /**
-                 * The options for the annotations.
-                 *
-                 * @name Highcharts.Annotation#options
-                 * @type {Highcharts.AnnotationsOptions}
-                 */
-                this.options = merge(this.defaultOptions, userOptions);
-                /**
-                 * The user options for the annotations.
-                 *
-                 * @name Highcharts.Annotation#userOptions
-                 * @type {Highcharts.AnnotationsOptions}
-                 */
-                this.userOptions = userOptions;
-                // Handle labels and shapes - those are arrays
-                // Merging does not work with arrays (stores reference)
-                const labelsAndShapes = getLabelsAndShapesOptions(this.options, userOptions);
-                this.options.labels = labelsAndShapes.labels;
-                this.options.shapes = labelsAndShapes.shapes;
-                /**
-                 * The callback that reports to the overlapping-labels module which
-                 * labels it should account for.
-                 * @private
-                 * @name Highcharts.Annotation#labelCollector
-                 * @type {Function}
-                 */
-                /**
-                 * The group svg element.
-                 *
-                 * @name Highcharts.Annotation#group
-                 * @type {Highcharts.SVGElement}
-                 */
-                /**
-                 * The group svg element of the annotation's shapes.
-                 *
-                 * @name Highcharts.Annotation#shapesGroup
-                 * @type {Highcharts.SVGElement}
-                 */
-                /**
-                 * The group svg element of the annotation's labels.
-                 *
-                 * @name Highcharts.Annotation#labelsGroup
-                 * @type {Highcharts.SVGElement}
-                 */
-                this.init(chart, this.options);
-            }
-            /* *
-             *
-             *  Functions
-             *
-             * */
-            /**
-             * @private
-             */
-            addClipPaths() {
-                this.setClipAxes();
-                if (this.clipXAxis &&
-                    this.clipYAxis &&
-                    this.options.crop // #15399
-                ) {
-                    this.clipRect = this.chart.renderer.clipRect(this.getClipBox());
-                }
-            }
-            /**
-             * @private
-             */
-            addLabels() {
-                const labelsOptions = (this.options.labels || []);
-                labelsOptions.forEach((labelOptions, i) => {
-                    const label = this.initLabel(labelOptions, i);
-                    merge(true, labelsOptions[i], label.options);
-                });
-            }
-            /**
-             * @private
-             */
-            addShapes() {
-                const shapes = this.options.shapes || [];
-                shapes.forEach((shapeOptions, i) => {
-                    const shape = this.initShape(shapeOptions, i);
-                    merge(true, shapes[i], shape.options);
-                });
-            }
-            /**
-             * Destroy the annotation. This function does not touch the chart
-             * that the annotation belongs to (all annotations are kept in
-             * the chart.annotations array) - it is recommended to use
-             * {@link Highcharts.Chart#removeAnnotation} instead.
-             * @private
-             */
-            destroy() {
-                const chart = this.chart, destroyItem = function (item) {
-                    item.destroy();
-                };
-                this.labels.forEach(destroyItem);
-                this.shapes.forEach(destroyItem);
-                this.clipXAxis = null;
-                this.clipYAxis = null;
-                erase(chart.labelCollectors, this.labelCollector);
-                super.destroy();
-                this.destroyControlTarget();
-                destroyObjectProperties(this, chart);
-            }
-            /**
-             * Destroy a single item.
-             * @private
-             */
-            destroyItem(item) {
-                // erase from shapes or labels array
-                erase(this[item.itemType + 's'], item);
-                item.destroy();
-            }
-            /**
-             * @private
-             */
-            getClipBox() {
-                if (this.clipXAxis && this.clipYAxis) {
-                    return {
-                        x: this.clipXAxis.left,
-                        y: this.clipYAxis.top,
-                        width: this.clipXAxis.width,
-                        height: this.clipYAxis.height
-                    };
-                }
-            }
-            /**
-             * Initialize the annotation properties.
-             * @private
-             */
-            initProperties(chart, userOptions) {
-                this.setOptions(userOptions);
-                const labelsAndShapes = getLabelsAndShapesOptions(this.options, userOptions);
-                this.options.labels = labelsAndShapes.labels;
-                this.options.shapes = labelsAndShapes.shapes;
-                this.chart = chart;
-                this.points = [];
-                this.controlPoints = [];
-                this.coll = 'annotations';
-                this.userOptions = userOptions;
-                this.labels = [];
-                this.shapes = [];
-            }
-            /**
-             * Initialize the annotation.
-             * @private
-             */
-            init(_annotationOrChart, _userOptions, index = this.index) {
-                const chart = this.chart, animOptions = this.options.animation;
-                this.index = index;
-                this.linkPoints();
-                this.addControlPoints();
-                this.addShapes();
-                this.addLabels();
-                this.setLabelCollector();
-                this.animationConfig = getDeferredAnimation(chart, animOptions);
-            }
-            /**
-             * Initialisation of a single label
-             * @private
-             */
-            initLabel(labelOptions, index) {
-                const options = merge(this.options.labelOptions, {
-                    controlPointOptions: this.options.controlPointOptions
-                }, labelOptions), label = new ControllableLabel(this, options, index);
-                label.itemType = 'label';
-                this.labels.push(label);
-                return label;
-            }
-            /**
-             * Initialisation of a single shape
-             * @private
-             * @param {Object} shapeOptions
-             * a confg object for a single shape
-             * @param {number} index
-             * annotation may have many shapes, this is the shape's index saved in
-             * shapes.index.
-             */
-            initShape(shapeOptions, index) {
-                const options = merge(this.options.shapeOptions, {
-                    controlPointOptions: this.options.controlPointOptions
-                }, shapeOptions), shape = new (Annotation.shapesMap[options.type])(this, options, index);
-                shape.itemType = 'shape';
-                this.shapes.push(shape);
-                return shape;
-            }
-            /**
-             * @private
-             */
-            redraw(animation) {
-                this.linkPoints();
-                if (!this.graphic) {
-                    this.render();
-                }
-                if (this.clipRect) {
-                    this.clipRect.animate(this.getClipBox());
-                }
-                this.redrawItems(this.shapes, animation);
-                this.redrawItems(this.labels, animation);
-                this.redrawControlPoints(animation);
-            }
-            /**
-             * Redraw a single item.
-             * @private
-             */
-            redrawItem(item, animation) {
-                item.linkPoints();
-                if (!item.shouldBeDrawn()) {
-                    this.destroyItem(item);
-                }
-                else {
-                    if (!item.graphic) {
-                        this.renderItem(item);
-                    }
-                    item.redraw(pick(animation, true) && item.graphic.placed);
-                    if (item.points.length) {
-                        adjustVisibility(item);
-                    }
-                }
-            }
-            /**
-             * @private
-             */
-            redrawItems(items, animation) {
-                let i = items.length;
-                // needs a backward loop
-                // labels/shapes array might be modified
-                // due to destruction of the item
-                while (i--) {
-                    this.redrawItem(items[i], animation);
-                }
-            }
-            /**
-             * See {@link Highcharts.Chart#removeAnnotation}.
-             * @private
-             */
-            remove() {
-                // Let chart.update() remove annoations on demand
-                return this.chart.removeAnnotation(this);
-            }
-            /**
-             * @private
-             */
-            render() {
-                const renderer = this.chart.renderer;
-                this.graphic = renderer
-                    .g('annotation')
-                    .attr({
-                    opacity: 0,
-                    zIndex: this.options.zIndex,
-                    visibility: this.options.visible ?
-                        'inherit' :
-                        'hidden'
-                })
-                    .add();
-                this.shapesGroup = renderer
-                    .g('annotation-shapes')
-                    .add(this.graphic);
-                if (this.options.crop) { // #15399
-                    this.shapesGroup.clip(this.chart.plotBoxClip);
-                }
-                this.labelsGroup = renderer
-                    .g('annotation-labels')
-                    .attr({
-                    // hideOverlappingLabels requires translation
-                    translateX: 0,
-                    translateY: 0
-                })
-                    .add(this.graphic);
-                this.addClipPaths();
-                if (this.clipRect) {
-                    this.graphic.clip(this.clipRect);
-                }
-                // Render shapes and labels before adding events (#13070).
-                this.renderItems(this.shapes);
-                this.renderItems(this.labels);
-                this.addEvents();
-                this.renderControlPoints();
-            }
-            /**
-             * @private
-             */
-            renderItem(item) {
-                item.render(item.itemType === 'label' ?
-                    this.labelsGroup :
-                    this.shapesGroup);
-            }
-            /**
-             * @private
-             */
-            renderItems(items) {
-                let i = items.length;
-                while (i--) {
-                    this.renderItem(items[i]);
-                }
-            }
-            /**
-             * @private
-             */
-            setClipAxes() {
-                const xAxes = this.chart.xAxis, yAxes = this.chart.yAxis, linkedAxes = (this.options.labels || [])
-                    .concat(this.options.shapes || [])
-                    .reduce((axes, labelOrShape) => {
-                    const point = labelOrShape &&
-                        (labelOrShape.point ||
-                            (labelOrShape.points && labelOrShape.points[0]));
-                    return [
-                        xAxes[point && point.xAxis] || axes[0],
-                        yAxes[point && point.yAxis] || axes[1]
-                    ];
-                }, []);
-                this.clipXAxis = linkedAxes[0];
-                this.clipYAxis = linkedAxes[1];
-            }
-            /**
-             * @private
-             */
-            setControlPointsVisibility(visible) {
-                const setItemControlPointsVisibility = function (item) {
-                    item.setControlPointsVisibility(visible);
-                };
-                this.controlPoints.forEach((controlPoint) => {
-                    controlPoint.setVisibility(visible);
-                });
-                this.shapes.forEach(setItemControlPointsVisibility);
-                this.labels.forEach(setItemControlPointsVisibility);
-            }
-            /**
-             * @private
-             */
-            setLabelCollector() {
-                const annotation = this;
-                annotation.labelCollector = function () {
-                    return annotation.labels.reduce(function (labels, label) {
-                        if (!label.options.allowOverlap) {
-                            labels.push(label.graphic);
-                        }
-                        return labels;
-                    }, []);
-                };
-                annotation.chart.labelCollectors.push(annotation.labelCollector);
-            }
-            /**
-             * Set an annotation options.
-             * @private
-             * @param {Highcharts.AnnotationsOptions} userOptions
-             *        User options for an annotation
-             */
-            setOptions(userOptions) {
-                this.options = merge(this.defaultOptions, userOptions);
-            }
-            /**
-             * Set the annotation's visibility.
-             * @private
-             * @param {boolean} [visible]
-             * Whether to show or hide an annotation. If the param is omitted, the
-             * annotation's visibility is toggled.
-             */
-            setVisibility(visible) {
-                const options = this.options, navigation = this.chart.navigationBindings, visibility = pick(visible, !options.visible);
-                this.graphic.attr('visibility', visibility ? 'inherit' : 'hidden');
-                if (!visibility) {
-                    const setItemControlPointsVisibility = function (item) {
-                        item.setControlPointsVisibility(visibility);
-                    };
-                    this.shapes.forEach(setItemControlPointsVisibility);
-                    this.labels.forEach(setItemControlPointsVisibility);
-                    if (navigation.activeAnnotation === this &&
-                        navigation.popup &&
-                        navigation.popup.type === 'annotation-toolbar') {
-                        fireEvent(navigation, 'closePopup');
-                    }
-                }
-                options.visible = visibility;
-            }
-            /**
-             * Updates an annotation.
-             *
-             * @function Highcharts.Annotation#update
-             *
-             * @param {Partial<Highcharts.AnnotationsOptions>} userOptions
-             *        New user options for the annotation.
-             *
-             */
-            update(userOptions, redraw) {
-                const chart = this.chart, labelsAndShapes = getLabelsAndShapesOptions(this.userOptions, userOptions), userOptionsIndex = chart.annotations.indexOf(this), options = merge(true, this.userOptions, userOptions);
-                options.labels = labelsAndShapes.labels;
-                options.shapes = labelsAndShapes.shapes;
-                this.destroy();
-                this.initProperties(chart, options);
-                this.init(chart, options);
-                // Update options in chart options, used in exporting (#9767):
-                chart.options.annotations[userOptionsIndex] = options;
-                this.isUpdating = true;
-                if (pick(redraw, true)) {
-                    chart.redraw();
-                }
-                fireEvent(this, 'afterUpdate');
-                this.isUpdating = false;
-            }
-        }
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        /**
-         * @private
-         */
-        Annotation.ControlPoint = ControlPoint;
-        /**
-         * @private
-         */
-        Annotation.MockPoint = MockPoint;
-        /**
-         * An object uses for mapping between a shape type and a constructor.
-         * To add a new shape type extend this object with type name as a key
-         * and a constructor as its value.
-         */
-        Annotation.shapesMap = {
-            'rect': ControllableRect,
-            'circle': ControllableCircle,
-            'ellipse': ControllableEllipse,
-            'path': ControllablePath,
-            'image': ControllableImage
-        };
-        /**
-         * @private
-         */
-        Annotation.types = {};
-        Annotation.prototype.defaultOptions = AnnotationDefaults;
-        /**
-         * List of events for `annotation.options.events` that should not be
-         * added to `annotation.graphic` but to the `annotation`.
-         *
-         * @private
-         * @type {Array<string>}
-         */
-        Annotation.prototype.nonDOMEvents = ['add', 'afterUpdate', 'drag', 'remove'];
-        ControlTarget.compose(Annotation);
-        /* *
-         *
-         *  Default Export
-         *
-         * */
-        /* *
-         *
-         *  API Declarations
-         *
-         * */
-        /**
-         * Possible directions for draggable annotations. An empty string (`''`)
-         * makes the annotation undraggable.
-         *
-         * @typedef {''|'x'|'xy'|'y'} Highcharts.AnnotationDraggableValue
-         * @requires modules/annotations
-         */
-        /**
-         * @private
-         * @typedef {
-         *          Highcharts.AnnotationControllableCircle|
-         *          Highcharts.AnnotationControllableImage|
-         *          Highcharts.AnnotationControllablePath|
-         *          Highcharts.AnnotationControllableRect
-         *     } Highcharts.AnnotationShapeType
-         * @requires modules/annotations
-         */
-        /**
-         * @private
-         * @typedef {
-         *          Highcharts.AnnotationControllableLabel
-         *     } Highcharts.AnnotationLabelType
-         * @requires modules/annotations
-         */
-        /**
-         * A point-like object, a mock point or a point used in series.
-         * @private
-         * @typedef {
-         *          Highcharts.AnnotationMockPoint|
-         *          Highcharts.Point
-         *     } Highcharts.AnnotationPointType
-         * @requires modules/annotations
-         */
-        /**
-         * Shape point as string, object or function.
-         *
-         * @typedef {
-         *          string|
-         *          Highcharts.AnnotationMockPointOptionsObject|
-         *          Highcharts.AnnotationMockPointFunction
-         *     } Highcharts.AnnotationShapePointOptions
-         */
-        (''); // keeps doclets above in JS file
-
-        return Annotation;
+        return Highcharts;
     });
     _registerModule(_modules, 'Extensions/Annotations/Types/BasicAnnotation.js', [_modules['Extensions/Annotations/Annotation.js'], _modules['Extensions/Annotations/MockPoint.js'], _modules['Core/Utilities.js']], function (Annotation, MockPoint, U) {
         /* *
@@ -7057,8 +7047,10 @@
                 if (options.shapes) {
                     delete options.labelOptions;
                     const type = options.shapes[0].type;
+                    options.shapes[0].className =
+                        (options.shapes[0].className || '') + ' highcharts-basic-shape';
                     // The rectangle is rendered as a path, whereas other basic shapes
-                    // are rendered as their respecitve SVG shapes.
+                    // are rendered as their respective SVG shapes.
                     if (type && type !== 'path') {
                         this.basicType = type;
                     }
@@ -7144,16 +7136,19 @@
                     },
                     events: {
                         drag: function (e, target) {
-                            const annotation = target.annotation, coords = this.chart.pointer.getCoordinates(e), points = target.options.points, shapes = annotation.userOptions.shapes, xAxisIndex = annotation.clipXAxis?.index || 0, yAxisIndex = annotation.clipYAxis?.index || 0, x = coords.xAxis[xAxisIndex].value, y = coords.yAxis[yAxisIndex].value;
-                            // Top right point
-                            points[1].x = x;
-                            // Bottom right point (cursor position)
-                            points[2].x = x;
-                            points[2].y = y;
-                            // Bottom left
-                            points[3].y = y;
-                            if (shapes && shapes[0]) {
-                                shapes[0].points = target.options.points;
+                            const annotation = target.annotation, coords = this.chart.pointer?.getCoordinates(e), points = target.options.points, shapes = annotation.userOptions.shapes, xAxisIndex = annotation.clipXAxis?.index || 0, yAxisIndex = annotation.clipYAxis?.index || 0;
+                            if (coords) {
+                                const x = coords.xAxis[xAxisIndex].value, y = coords.yAxis[yAxisIndex].value;
+                                // Top right point
+                                points[1].x = x;
+                                // Bottom right point (cursor position)
+                                points[2].x = x;
+                                points[2].y = y;
+                                // Bottom left
+                                points[3].y = y;
+                                if (shapes && shapes[0]) {
+                                    shapes[0].points = target.options.points;
+                                }
                             }
                             annotation.redraw(false);
                         }
@@ -7291,6 +7286,7 @@
             addShapes() {
                 const typeOptions = this.options.typeOptions, shape = this.initShape(merge(typeOptions.line, {
                     type: 'path',
+                    className: 'highcharts-crooked-lines',
                     points: this.points.map((_point, i) => (function (target) {
                         return target.annotation.points[i];
                     }))
@@ -7551,14 +7547,16 @@
                             return pointOptions;
                         },
                         this.points[3]
-                    ]
+                    ],
+                    className: 'highcharts-tunnel-lines'
                 }), 0);
                 this.options.typeOptions.line = line.options;
             }
             addBackground() {
                 const background = this.initShape(merge(this.options.typeOptions.background, {
                     type: 'path',
-                    points: this.points.slice()
+                    points: this.points.slice(),
+                    className: 'highcharts-tunnel-background'
                 }), 1);
                 this.options.typeOptions.background = background.options;
             }
@@ -7704,7 +7702,7 @@
                         points = [
                             points[0],
                             new MockPoint(annotation.chart, points[0].target, {
-                                // add 0 or 1 to x or y depending on type
+                                // Add 0 or 1 to x or y depending on type
                                 x: points[0].x + +(type === 'horizontalLine'),
                                 y: points[0].y + +(type === 'verticalLine'),
                                 xAxis: points[0].options.xAxis,
@@ -7717,7 +7715,7 @@
             }
             static findEdgeCoordinate(firstPoint, secondPoint, xOrY, edgePointFirstCoordinate) {
                 const xOrYOpposite = xOrY === 'x' ? 'y' : 'x';
-                // solves equation for x or y
+                // Solves equation for x or y
                 // y - y1 = (y2 - y1) / (x2 - x1) * (x - x1)
                 return ((secondPoint[xOrY] - firstPoint[xOrY]) *
                     (edgePointFirstCoordinate - firstPoint[xOrYOpposite]) /
@@ -7770,7 +7768,8 @@
                 }
                 const line = this.initShape(merge(typeOptions.line, {
                     type: 'path',
-                    points: points
+                    points: points,
+                    className: 'highcharts-infinity-lines'
                 }), 0);
                 typeOptions.line = line.options;
             }
@@ -7804,7 +7803,7 @@
          * @product   highstock
          * @apioption annotations.infinityLine
          */
-        (''); // keeps doclets above in transpiled file
+        (''); // Keeps doclets above in transpiled file
 
         return InfinityLine;
     });
@@ -7893,7 +7892,8 @@
                 const shape = this.initShape(merge(typeOptions.line, {
                     type: 'path',
                     d: this.getPath(),
-                    points: this.options.points
+                    points: this.options.points,
+                    className: 'highcharts-timecycles-lines'
                 }), 0);
                 typeOptions.line = shape.options;
             }
@@ -8079,14 +8079,16 @@
                     this.initShape({
                         type: 'path',
                         d: createPathDGenerator(i),
-                        stroke: lineColors[i] || lineColor
+                        stroke: lineColors[i] || lineColor,
+                        className: 'highcharts-fibonacci-line'
                     }, i);
                     if (i > 0) {
                         this.initShape({
                             type: 'path',
                             fill: backgroundColors[i - 1],
                             strokeWidth: 0,
-                            d: createPathDGenerator(i, true)
+                            d: createPathDGenerator(i, true),
+                            className: 'highcharts-fibonacci-background-' + (i - 1)
                         });
                     }
                 }, this);
@@ -8251,7 +8253,7 @@
                 // Distance between the two first lines in pixels
                 deltaX = points.length > 1 ?
                     points[1].plotX - points[0].plotX : 0, 
-                // firstLine.x + fibb * offset
+                // `firstLine.x + fibb * offset`
                 x = xAxis.toValue(points[0].plotX + plotLeftOrTop + fibonacciIndex * deltaX);
                 // We need 2 mock points with the same x coordinate, different y
                 points = [
@@ -8292,7 +8294,7 @@
                         edgePoint(1, 0, correctedFibb),
                         edgePoint(0, 1, correctedFibb)
                     ];
-                    // Calculate fibbonacci
+                    // Calculate fibonacci
                     nextFibb = fibb + nextFibb;
                     fibb = nextFibb - fibb;
                     // Save the second line for the control point
@@ -8301,8 +8303,9 @@
                     }
                     this.initShape(merge(this.options.typeOptions.line, {
                         type: 'path',
-                        points: points
-                    }), i // shape's index. Can be found in annotation.shapes[i].index
+                        points: points,
+                        className: 'highcharts-fibonacci-timezones-lines'
+                    }), i // Shape's index. Can be found in annotation.shapes[i].index
                     );
                 }
             }
@@ -8447,26 +8450,30 @@
                 this.addBackgrounds();
             }
             addLines() {
+                const className = 'highcharts-pitchfork-lines';
                 this.initShape({
                     type: 'path',
                     points: [
                         this.points[0],
                         Pitchfork.middleLineEdgePoint
-                    ]
+                    ],
+                    className
                 }, 0);
                 this.initShape({
                     type: 'path',
                     points: [
                         this.points[1],
                         Pitchfork.topLineEdgePoint
-                    ]
+                    ],
+                    className
                 }, 1);
                 this.initShape({
                     type: 'path',
                     points: [
                         this.points[2],
                         Pitchfork.bottomLineEdgePoint
-                    ]
+                    ],
+                    className
                 }, 2);
             }
             addBackgrounds() {
@@ -8494,7 +8501,8 @@
                                 yAxis: midPointOptions.yAxis
                             };
                         }
-                    ]
+                    ],
+                    className: 'highcharts-pitchfork-inner-background'
                 }), 3);
                 const outerBackground = this.initShape(merge(typeOptions.outerBackground, {
                     type: 'path',
@@ -8503,7 +8511,8 @@
                         shapes[1].points[1],
                         shapes[2].points[1],
                         this.points[2]
-                    ]
+                    ],
+                    className: 'highcharts-pitchfork-outer-background'
                 }), 4);
                 typeOptions.innerBackground = innerBackground.options;
                 typeOptions.outerBackground = outerBackground.options;
@@ -8614,7 +8623,8 @@
                     points: [
                         VerticalLine.connectorFirstPoint,
                         VerticalLine.connectorSecondPoint
-                    ]
+                    ],
+                    className: 'highcharts-vertical-line'
                 }), 0);
                 typeOptions.connector = connector.options;
                 this.userOptions.typeOptions.point = typeOptions.point;
@@ -8722,7 +8732,7 @@
          */
         function bins() {
             const series = this.chart.series, ext = getExtremes(this.xAxisMin, this.xAxisMax, this.yAxisMin, this.yAxisMax);
-            let bins = 0, isCalculated = false; // to avoid Infinity in formatter
+            let bins = 0, isCalculated = false; // To avoid Infinity in formatter
             series.forEach((serie) => {
                 if (serie.visible &&
                     serie.options.id !== 'highcharts-navigator-series') {
@@ -8801,7 +8811,7 @@
             else {
                 this.startYMax = getPointPos(yAxis, this.startYMin, parseFloat(height));
             }
-            // x / y selection type
+            // X / y selection type
             if (selectType === 'x') {
                 this.startYMin = yAxis.toValue(top);
                 this.startYMax = yAxis.toValue(top + yAxis.len);
@@ -8816,7 +8826,7 @@
          */
         function max() {
             const series = this.chart.series, ext = getExtremes(this.xAxisMin, this.xAxisMax, this.yAxisMin, this.yAxisMax);
-            let max = -Infinity, isCalculated = false; // to avoid Infinity in formatter
+            let max = -Infinity, isCalculated = false; // To avoid Infinity in formatter
             series.forEach((serie) => {
                 if (serie.visible &&
                     serie.options.id !== 'highcharts-navigator-series') {
@@ -8844,7 +8854,7 @@
          */
         function min() {
             const series = this.chart.series, ext = getExtremes(this.xAxisMin, this.xAxisMax, this.yAxisMin, this.yAxisMax);
-            let min = Infinity, isCalculated = false; // to avoid Infinity in formatter
+            let min = Infinity, isCalculated = false; // To avoid Infinity in formatter
             series.forEach((serie) => {
                 if (serie.visible &&
                     serie.options.id !== 'highcharts-navigator-series') {
@@ -9027,7 +9037,7 @@
                 }
                 let controlPoint = new ControlPoint(this.chart, this, this.options.controlPointOptions, 0);
                 this.controlPoints.push(controlPoint);
-                // add extra controlPoint for horizontal and vertical range
+                // Add extra controlPoint for horizontal and vertical range
                 if (selectType !== 'xy') {
                     controlPoint = new ControlPoint(this.chart, this, this.options.controlPointOptions, 1);
                     this.controlPoints.push(controlPoint);
@@ -9041,7 +9051,7 @@
              */
             addValues(resize) {
                 const typeOptions = this.options.typeOptions, formatter = typeOptions.label.formatter;
-                // set xAxisMin, xAxisMax, yAxisMin, yAxisMax
+                // Set xAxisMin, xAxisMax, yAxisMin, yAxisMax
                 recalculate.call(this, resize);
                 if (!typeOptions.label.enabled) {
                     return;
@@ -9098,7 +9108,8 @@
                 }
                 this.initShape(extend({
                     type: 'path',
-                    points: this.shapePointsOptions()
+                    points: this.shapePointsOptions(),
+                    className: 'highcharts-measure-background'
                 }, this.options.typeOptions.background), 2);
             }
             /**
@@ -9119,7 +9130,7 @@
                     xAxisMax = yAxisMax;
                     yAxisMax = temp;
                 }
-                // horizontal line
+                // Horizontal line
                 if (options.crosshairX.enabled) {
                     pathH = [[
                             'M',
@@ -9131,7 +9142,7 @@
                             yAxisMin + ((yAxisMax - yAxisMin) / 2)
                         ]];
                 }
-                // vertical line
+                // Vertical line
                 if (options.crosshairY.enabled) {
                     pathV = [[
                             'M',
@@ -9150,8 +9161,8 @@
                 }
                 else {
                     // Add new crosshairs
-                    crosshairOptionsX = merge(defaultOptions, options.crosshairX);
-                    crosshairOptionsY = merge(defaultOptions, options.crosshairY);
+                    crosshairOptionsX = merge(defaultOptions, { className: 'highcharts-measure-crosshair-x' }, options.crosshairX);
+                    crosshairOptionsY = merge(defaultOptions, { className: 'highcharts-measure-crosshair-y' }, options.crosshairY);
                     this.initShape(extend({ d: pathH }, crosshairOptionsX), 0);
                     this.initShape(extend({ d: pathV }, crosshairOptionsY), 1);
                 }
@@ -9161,7 +9172,7 @@
                 this.translate(x, y);
                 this.offsetX += x;
                 this.offsetY += y;
-                // animation, resize, setStartPoints
+                // Animation, resize, setStartPoints
                 this.redraw(false, false, true);
             }
             /**
@@ -9178,7 +9189,7 @@
              * x / y / xy
              */
             resize(dx, dy, cpIndex, selectType) {
-                // background shape
+                // Background shape
                 const bckShape = this.shapes[2];
                 if (selectType === 'x') {
                     if (cpIndex === 0) {
@@ -9234,7 +9245,7 @@
                 this.addCrosshairs();
                 this.redrawItems(this.shapes, animation);
                 this.redrawItems(this.labels, animation);
-                // redraw control point to run positioner
+                // Redraw control point to run positioner
                 this.controlPoints.forEach((controlPoint) => controlPoint.redraw());
             }
             translate(dx, dy) {
@@ -9385,7 +9396,7 @@
                      *
                      * <td>`this.min`</td>
                      *
-                     * <td>The mininimum value of the points in the selected
+                     * <td>The minimum value of the points in the selected
                      * range.</td>
                      *
                      * </tr>
@@ -9430,7 +9441,7 @@
                     let targetX = target.xAxisMax, targetY = target.yAxisMax, x, y;
                     if (selectType === 'x') {
                         targetY = (ext.yAxisMax + ext.yAxisMin) / 2;
-                        // first control point
+                        // First control point
                         if (cpIndex === 0) {
                             targetX = target.xAxisMin;
                         }
@@ -9438,7 +9449,7 @@
                     if (selectType === 'y') {
                         targetX = ext.xAxisMin +
                             ((ext.xAxisMax - ext.xAxisMin) / 2);
-                        // first control point
+                        // First control point
                         if (cpIndex === 0) {
                             targetY = target.yAxisMin;
                         }
@@ -9476,11 +9487,9 @@
 
         return Measure;
     });
-    _registerModule(_modules, 'masters/modules/annotations-advanced.src.js', [_modules['Core/Globals.js'], _modules['Extensions/Annotations/Annotation.js']], function (Highcharts, Annotation) {
+    _registerModule(_modules, 'masters/modules/annotations-advanced.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
-        const G = Highcharts;
-        G.Annotation = Annotation;
-        Annotation.compose(G.Chart, G.Pointer, G.SVGRenderer);
 
+        return Highcharts;
     });
 }));

@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -21,17 +21,6 @@ const { extend, merge } = U;
  *
  * */
 class PolygonSeries extends ScatterSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -55,6 +44,11 @@ class PolygonSeries extends ScatterSeries {
         AreaSeries.prototype.drawGraph.call(this);
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 PolygonSeries.defaultOptions = merge(ScatterSeries.defaultOptions, PolygonSeriesDefaults);
 extend(PolygonSeries.prototype, {
     type: 'polygon',

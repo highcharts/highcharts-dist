@@ -32,9 +32,6 @@ declare module "../highcharts.src" {
         removeAnnotation(idOrAnnotation: (number|string|Annotation)): void;
     }
     interface Point {
-        /**
-         * Indicates if this is a mock point for an annotation.
-         */
         mock?: boolean;
     }
 }

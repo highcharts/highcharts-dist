@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2022 Øystein Moseng
+ *  (c) 2009-2024 Øystein Moseng
  *
  *  Class representing an Instrument with mappable parameters for sonification.
  *
@@ -234,7 +234,6 @@ class SonificationInstrument {
      * @private
      */
     static noteStringToC0Distance(note) {
-        // eslint-disable-next-line require-unicode-regexp
         const match = note.match(/^([a-g][#b]?)([0-8])$/i), semitone = match ? match[1] : 'a', wholetone = semitone[0].toLowerCase(), accidental = semitone[1], octave = match ? parseInt(match[2], 10) : 4, accidentalOffset = accidental === '#' ?
             1 : accidental === 'b' ? -1 : 0;
         return ({

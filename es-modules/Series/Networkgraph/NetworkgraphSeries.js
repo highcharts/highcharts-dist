@@ -2,7 +2,7 @@
  *
  *  Networkgraph series
  *
- *  (c) 2010-2021 Paweł Fus
+ *  (c) 2010-2024 Paweł Fus
  *
  *  License: www.highcharts.com/license
  *
@@ -10,6 +10,7 @@
  *
  * */
 'use strict';
+import SVGElement from '../../Core/Renderer/SVG/SVGElement.js';
 import DragNodesComposition from '../DragNodesComposition.js';
 import GraphLayout from '../GraphLayoutComposition.js';
 import H from '../../Core/Globals.js';
@@ -24,6 +25,8 @@ import D from '../SimulationSeriesUtilities.js';
 const { initDataLabels, initDataLabelsDefer } = D;
 import U from '../../Core/Utilities.js';
 const { addEvent, defined, extend, merge, pick } = U;
+import TextPath from '../../Extensions/TextPath.js';
+TextPath.compose(SVGElement);
 /* *
  *
  *  Class
@@ -44,15 +47,6 @@ class NetworkgraphSeries extends Series {
          *
          * */
         super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.nodes = void 0;
-        this.options = void 0;
-        this.points = void 0;
         this.deferDataLabels = true;
     }
     /* *
@@ -81,7 +75,8 @@ class NetworkgraphSeries extends Series {
      * @private
      */
     deferLayout() {
-        let layoutOptions = this.options.layoutAlgorithm, graphLayoutsStorage = this.chart.graphLayoutsStorage, graphLayoutsLookup = this.chart.graphLayoutsLookup, chartOptions = this.chart.options.chart, layout;
+        const layoutOptions = this.options.layoutAlgorithm, chartOptions = this.chart.options.chart;
+        let layout, graphLayoutsStorage = this.chart.graphLayoutsStorage, graphLayoutsLookup = this.chart.graphLayoutsLookup;
         if (!this.visible) {
             return;
         }
@@ -116,7 +111,7 @@ class NetworkgraphSeries extends Series {
         NodesComposition.destroy.call(this);
     }
     /**
-     * Networkgraph has two separate collecions of nodes and lines, render
+     * Networkgraph has two separate collections of nodes and lines, render
      * dataLabels for both sets:
      * @private
      */
@@ -152,7 +147,7 @@ class NetworkgraphSeries extends Series {
     generatePoints() {
         let node, i;
         NodesComposition.generatePoints.apply(this, arguments);
-        // In networkgraph, it's fine to define stanalone nodes, create
+        // In networkgraph, it's fine to define standalone nodes, create
         // them:
         if (this.options.nodes) {
             this.options.nodes.forEach(function (nodeOptions) {
@@ -233,7 +228,7 @@ class NetworkgraphSeries extends Series {
      */
     markerAttribs(point, state) {
         const attribs = Series.prototype.markerAttribs.call(this, point, state);
-        // series.render() is called before initial positions are set:
+        // Series.render() is called before initial positions are set:
         if (!defined(point.plotY)) {
             attribs.y = 0;
         }
@@ -246,7 +241,8 @@ class NetworkgraphSeries extends Series {
      */
     pointAttribs(point, state) {
         // By default, only `selected` state is passed on
-        let pointState = state || point && point.state || 'normal', attribs = Series.prototype.pointAttribs.call(this, point, pointState), stateOptions = this.options.states[pointState];
+        const pointState = state || point && point.state || 'normal', stateOptions = this.options.states[pointState];
+        let attribs = Series.prototype.pointAttribs.call(this, point, pointState);
         if (point && !point.isNode) {
             attribs = point.getLinkAttributes();
             // For link, get prefixed names:
@@ -336,7 +332,7 @@ class NetworkgraphSeries extends Series {
 NetworkgraphSeries.defaultOptions = merge(Series.defaultOptions, NetworkgraphSeriesDefaults);
 extend(NetworkgraphSeries.prototype, {
     pointClass: NetworkgraphPoint,
-    animate: void 0,
+    animate: void 0, // Animation is run in `series.simulation`
     directTouch: true,
     drawGraph: void 0,
     forces: ['barycenter', 'repulsive', 'attractive'],
@@ -409,9 +405,9 @@ export default NetworkgraphSeries;
  * @callback Highcharts.NetworkgraphAfterSimulationCallbackFunction
  *
  * @param {Highcharts.Series} this
- *        The series where the event occured.
+ *        The series where the event occurred.
  *
  * @param {global.Event} event
- *        The event that occured.
+ *        The event that occurred.
  */
-''; // detach doclets above
+''; // Detach doclets above

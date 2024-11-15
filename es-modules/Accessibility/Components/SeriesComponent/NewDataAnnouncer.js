@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2021 Øystein Moseng
+ *  (c) 2009-2024 Øystein Moseng
  *
  *  Handle announcing new data for a chart.
  *
@@ -11,8 +11,9 @@
  * */
 'use strict';
 import H from '../../../Core/Globals.js';
+const { composed } = H;
 import U from '../../../Core/Utilities.js';
-const { addEvent, defined } = U;
+const { addEvent, defined, pushUnique } = U;
 import Announcer from '../../Utils/Announcer.js';
 import ChartUtilities from '../../Utils/ChartUtilities.js';
 const { getChartTitle } = ChartUtilities;
@@ -67,16 +68,9 @@ class NewDataAnnouncer {
      *
      * */
     constructor(chart) {
-        /* *
-         *
-         *  Public
-         *
-         * */
-        this.announcer = void 0;
         this.dirty = {
             allSeries: {}
         };
-        this.eventProvider = void 0;
         this.lastAnnouncementTime = 0;
         this.chart = chart;
     }
@@ -261,12 +255,6 @@ class NewDataAnnouncer {
      * */
     /* *
      *
-     *  Static Properties
-     *
-     * */
-    NewDataAnnouncer.composedMembers = [];
-    /* *
-     *
      *  Static Functions
      *
      * */
@@ -274,7 +262,7 @@ class NewDataAnnouncer {
      * @private
      */
     function compose(SeriesClass) {
-        if (U.pushUnique(NewDataAnnouncer.composedMembers, SeriesClass)) {
+        if (pushUnique(composed, 'A11y.NDA')) {
             addEvent(SeriesClass, 'addPoint', seriesOnAddPoint);
             addEvent(SeriesClass, 'updatedData', seriesOnUpdatedData);
         }
@@ -286,7 +274,8 @@ class NewDataAnnouncer {
      * @param {Highcharts.Point} point
      */
     function seriesOnAddPoint(e) {
-        const chart = this.chart, newDataAnnouncer = this.newDataAnnouncer;
+        const chart = this.chart, newDataAnnouncer = chart.accessibility?.components
+            .series.newDataAnnouncer;
         if (newDataAnnouncer &&
             newDataAnnouncer.chart === chart &&
             chartHasAnnounceEnabled(chart)) {
@@ -302,7 +291,8 @@ class NewDataAnnouncer {
      * @param {Highcharts.Series} series
      */
     function seriesOnUpdatedData() {
-        const chart = this.chart, newDataAnnouncer = this.newDataAnnouncer;
+        const chart = this.chart, newDataAnnouncer = chart.accessibility?.components
+            .series.newDataAnnouncer;
         if (newDataAnnouncer &&
             newDataAnnouncer.chart === chart &&
             chartHasAnnounceEnabled(chart)) {

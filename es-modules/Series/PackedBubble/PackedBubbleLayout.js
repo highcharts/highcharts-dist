@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Grzegorz Blachlinski, Sebastian Bochan
+ *  (c) 2010-2024 Grzegorz Blachlinski, Sebastian Bochan
  *
  *  License: www.highcharts.com/license
  *
@@ -13,12 +13,6 @@ import PackedBubbleIntegration from './PackedBubbleIntegration.js';
 import ReingoldFruchtermanLayout from '../Networkgraph/ReingoldFruchtermanLayout.js';
 import U from '../../Core/Utilities.js';
 const { addEvent, pick } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
 /* *
  *
  *  Functions
@@ -61,16 +55,15 @@ class PackedBubbleLayout extends ReingoldFruchtermanLayout {
         super(...arguments);
         this.index = NaN;
         this.nodes = [];
-        this.options = void 0;
         this.series = [];
     }
     static compose(ChartClass) {
         ReingoldFruchtermanLayout.compose(ChartClass);
         GraphLayout.integrations.packedbubble = PackedBubbleIntegration;
         GraphLayout.layouts.packedbubble = PackedBubbleLayout;
-        if (U.pushUnique(composedMembers, ChartClass)) {
+        const chartProto = ChartClass.prototype;
+        if (!chartProto.getSelectedParentNodes) {
             addEvent(ChartClass, 'beforeRedraw', onChartBeforeRedraw);
-            const chartProto = ChartClass.prototype;
             chartProto.getSelectedParentNodes = chartGetSelectedParentNodes;
         }
     }
@@ -121,12 +114,12 @@ class PackedBubbleLayout extends ReingoldFruchtermanLayout {
         }
     }
     repulsiveForces() {
-        const layout = this, bubblePadding = layout.options.bubblePadding;
+        const layout = this, bubblePadding = layout.options.bubblePadding, nodes = layout.nodes;
         let force, distanceR, distanceXY;
-        layout.nodes.forEach((node) => {
+        nodes.forEach((node) => {
             node.degree = node.mass;
             node.neighbours = 0;
-            layout.nodes.forEach((repNode) => {
+            nodes.forEach((repNode) => {
                 force = 0;
                 if (
                 // Node cannot repulse itself:
@@ -155,8 +148,8 @@ class PackedBubbleLayout extends ReingoldFruchtermanLayout {
     applyLimitBox(node, box) {
         const layout = this, factor = 0.01;
         let distanceXY, distanceR;
-        // parentNodeLimit should be used together
-        // with seriesInteraction: false
+        // `parentNodeLimit` should be used together with seriesInteraction:
+        // false
         if (layout.options.splitSeries &&
             !node.isParentNode &&
             layout.options.parentNodeLimit) {

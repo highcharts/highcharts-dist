@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -31,24 +31,6 @@ const { clamp, isNumber, extend, merge, pick, pInt, defined } = U;
  * @augments Highcharts.Series
  */
 class GaugeSeries extends Series {
-    constructor() {
-        /* *
-         *
-         *  Static properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.points = void 0;
-        this.options = void 0;
-        this.yAxis = void 0;
-        /* eslint-enable valid-jsdoc */
-    }
     /* *
      *
      *  Functions
@@ -107,7 +89,7 @@ class GaugeSeries extends Series {
             const graphic = point.graphic, shapeArgs = point.shapeArgs, d = shapeArgs.d, dialOptions = merge(options.dial, point.dial); // #1233
             if (graphic) {
                 graphic.animate(shapeArgs);
-                shapeArgs.d = d; // animate alters it
+                shapeArgs.d = d; // Animate alters it
             }
             else {
                 point.graphic =
@@ -160,11 +142,11 @@ class GaugeSeries extends Series {
             series.points.forEach((point) => {
                 const graphic = point.graphic;
                 if (graphic) {
-                    // start value
+                    // Start value
                     graphic.attr({
                         rotation: series.yAxis.startAngleRad * 180 / Math.PI
                     });
-                    // animate
+                    // Animate
                     graphic.animate({
                         rotation: point.shapeArgs.rotation
                     }, series.options.animation);
@@ -202,6 +184,11 @@ class GaugeSeries extends Series {
         return !!this.points.length; // != 0
     }
 }
+/* *
+ *
+ *  Static properties
+ *
+ * */
 /**
  * Gauges are circular plots displaying one or more values with a dial
  * pointing to values along the perimeter.
@@ -490,10 +477,10 @@ GaugeSeries.defaultOptions = merge(Series.defaultOptions, {
     // Prototype members
 });
 extend(GaugeSeries.prototype, {
-    // chart.angular will be set to true when a gauge series is present,
-    // and this will be used on the axes
+    // `chart.angular` will be set to true when a gauge series is present, and
+    // this will be used on the axes
     angular: true,
-    directTouch: true,
+    directTouch: true, // #5063
     drawGraph: noop,
     drawTracker: ColumnSeries.prototype.drawTracker,
     fixedBox: true,
@@ -568,4 +555,4 @@ export default GaugeSeries;
  * @product   highcharts
  * @apioption series.gauge.data
  */
-''; // adds the doclets above in the transpiled file
+''; // Adds the doclets above in the transpiled file

@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2016-2021 Torstein Honsi, Lars Cabrera
+ *  (c) 2016-2024 Torstein Honsi, Lars Cabrera
  *
  *  License: www.highcharts.com/license
  *
@@ -9,13 +9,7 @@
  * */
 'use strict';
 import U from '../Core/Utilities.js';
-const { addEvent, defined, isNumber, pick, pushUnique } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { addEvent, defined, isNumber, pick } = U;
 /* *
  *
  *  Composition
@@ -23,11 +17,9 @@ const composedMembers = [];
  * */
 /** @private */
 function compose(AxisClass, ChartClass) {
-    if (pushUnique(composedMembers, AxisClass)) {
+    const chartProto = ChartClass.prototype;
+    if (!chartProto.adjustHeight) {
         addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
-    }
-    if (pushUnique(composedMembers, ChartClass)) {
-        const chartProto = ChartClass.prototype;
         chartProto.adjustHeight = chartAdjustHeight;
         addEvent(ChartClass, 'render', chartProto.adjustHeight);
     }
@@ -54,7 +46,7 @@ function chartAdjustHeight() {
                 let height = pick(axis.brokenAxis && axis.brokenAxis.unitLength, axis.max + axis.tickInterval - axis.min) * staticScale;
                 // Minimum height is 1 x staticScale.
                 height = Math.max(height, staticScale);
-                let diff = height - chart.plotHeight;
+                const diff = height - chart.plotHeight;
                 if (!chart.scrollablePixelsY && Math.abs(diff) >= 1) {
                     chart.plotHeight = height;
                     chart.redrawTrigger = 'adjustHeight';
@@ -109,4 +101,4 @@ export default StaticScale;
  * @product   gantt
  * @apioption yAxis.staticScale
  */
-''; // keeps doclets above in JS file
+''; // Keeps doclets above in JS file

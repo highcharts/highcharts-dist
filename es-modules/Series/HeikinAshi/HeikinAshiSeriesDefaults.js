@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -93,7 +93,7 @@ const HeikinAshiDefaults = {
  * @product   highstock
  * @apioption series.heikinashi.data
  */
-''; // adds doclets above to transpilat
+''; // Adds doclets above to transpiled
 /* *
  *
  *  Default Export

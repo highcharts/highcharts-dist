@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -30,22 +30,6 @@ const { addEvent, merge, extend } = U;
  * @augments Highcharts.Series
  */
 class ErrorBarSeries extends BoxPlotSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -64,16 +48,21 @@ class ErrorBarSeries extends BoxPlotSeries {
             AreaRangeSeries.prototype.drawDataLabels.call(series);
             // Arearange drawDataLabels does not reset point.y to high,
             // but to low after drawing (#4133)
-            for (const point of series.data) {
+            for (const point of series.points) {
                 point.y = point[valKey];
             }
         }
     }
     toYData(point) {
-        // return a plain array for speedy calculation
+        // Return a plain array for speedy calculation
         return [point.low, point.high];
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 ErrorBarSeries.defaultOptions = merge(BoxPlotSeries.defaultOptions, ErrorBarSeriesDefaults);
 addEvent(ErrorBarSeries, 'afterTranslate', function () {
     for (const point of this.points) {
@@ -81,9 +70,8 @@ addEvent(ErrorBarSeries, 'afterTranslate', function () {
     }
 }, { order: 0 });
 extend(ErrorBarSeries.prototype, {
-    // pointClass: ErrorBarPoint, // just a declaration
-    pointArrayMap: ['low', 'high'],
-    pointValKey: 'high',
+    pointArrayMap: ['low', 'high'], // Array point configs are mapped to this
+    pointValKey: 'high', // Defines the top of the tracker
     doQuartiles: false
 });
 SeriesRegistry.registerSeriesType('errorbar', ErrorBarSeries);

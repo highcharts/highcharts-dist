@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Grzegorz Blachlinski, Sebastian Bochan
+ *  (c) 2010-2024 Grzegorz Blachlinski, Sebastian Bochan
  *
  *  License: www.highcharts.com/license
  *
@@ -18,21 +18,6 @@ const { seriesTypes: { bubble: { prototype: { pointClass: BubblePoint } } } } = 
  *
  * */
 class PackedBubblePoint extends BubblePoint {
-    constructor() {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        super(...arguments);
-        this.degree = NaN;
-        this.mass = NaN;
-        this.radius = NaN;
-        this.options = void 0;
-        this.series = void 0;
-        this.value = null;
-        /* eslint-enable valid-jsdoc */
-    }
     /* *
      *
      *  Functions
@@ -45,13 +30,13 @@ class PackedBubblePoint extends BubblePoint {
      * @private
      */
     destroy() {
-        if (this.series.layout) {
+        if (this.series?.layout) {
             this.series.layout.removeElementFromCollection(this, this.series.layout.nodes);
         }
         return Point.prototype.destroy.apply(this, arguments);
     }
     firePointEvent() {
-        const point = this, series = this.series, seriesOptions = series.options;
+        const series = this.series, seriesOptions = series.options;
         if (this.isParentNode && seriesOptions.parentNode) {
             const temp = seriesOptions.allowPointSelect;
             seriesOptions.allowPointSelect = (seriesOptions.parentNode.allowPointSelect);

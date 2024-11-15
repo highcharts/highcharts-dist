@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.4.8 (2024-08-29)
  *
  * Indicator series type for Highcharts Stock
  *
- * (c) 2010-2021 Paweł Dalek
+ * (c) 2010-2024 Paweł Dalek
  *
  * License: www.highcharts.com/license
  */
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -60,25 +60,6 @@
          * @augments Highcharts.Series
          */
         class NATRIndicator extends ATRIndicator {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /**
-                 * @lends Highcharts.Series#
-                 */
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.points = void 0;
-                this.options = void 0;
-            }
             /* *
              *
              *  Functions
@@ -98,6 +79,11 @@
                 return atrData;
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         /**
          * Normalized average true range indicator (NATR). This series requires
          * `linkedTo` option to be set and should be loaded after the
@@ -142,12 +128,13 @@
          * @requires  stock/indicators/natr
          * @apioption series.natr
          */
-        ''; // to include the above in the js output'
+        ''; // To include the above in the js output'
 
         return NATRIndicator;
     });
-    _registerModule(_modules, 'masters/indicators/natr.src.js', [], function () {
+    _registerModule(_modules, 'masters/indicators/natr.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

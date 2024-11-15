@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
  * Wind barb series module
  *
- * (c) 2010-2021 Torstein Honsi
+ * (c) 2010-2024 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -38,7 +38,7 @@
     _registerModule(_modules, 'Extensions/DataGrouping/ApproximationRegistry.js', [], function () {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -62,7 +62,7 @@
          * @private
          */
         const ApproximationRegistry = {
-        // approximations added programmatically
+        // Approximations added programmatically
         };
         /* *
          *
@@ -72,19 +72,20 @@
 
         return ApproximationRegistry;
     });
-    _registerModule(_modules, 'Series/OnSeriesComposition.js', [_modules['Series/Column/ColumnSeries.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (ColumnSeries, Series, U) {
+    _registerModule(_modules, 'Series/OnSeriesComposition.js', [_modules['Series/Column/ColumnSeries.js'], _modules['Core/Globals.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (ColumnSeries, H, Series, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        const { composed } = H;
         const { prototype: columnProto } = ColumnSeries;
         const { prototype: seriesProto } = Series;
-        const { defined, stableSort } = U;
+        const { defined, pushUnique, stableSort } = U;
         /* *
          *
          *  Composition
@@ -99,21 +100,14 @@
              * */
             /* *
              *
-             *  Properties
-             *
-             * */
-            const composedMembers = [];
-            /* *
-             *
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * @private
              */
             function compose(SeriesClass) {
-                if (U.pushUnique(composedMembers, SeriesClass)) {
+                if (pushUnique(composed, 'OnSeries')) {
                     const seriesProto = SeriesClass.prototype;
                     seriesProto.getPlotBox = getPlotBox;
                     seriesProto.translate = translate;
@@ -142,7 +136,7 @@
                 const series = this, options = series.options, chart = series.chart, points = series.points, optionsOnSeries = options.onSeries, onSeries = (optionsOnSeries &&
                     chart.get(optionsOnSeries)), step = onSeries && onSeries.options.step, onData = (onSeries && onSeries.points), inverted = chart.inverted, xAxis = series.xAxis, yAxis = series.yAxis;
                 let cursor = points.length - 1, point, lastPoint, onKey = options.onKey || 'y', i = onData && onData.length, xOffset = 0, leftPoint, lastX, rightPoint, currentDataGrouping, distanceRatio;
-                // relate to a master series
+                // Relate to a master series
                 if (onSeries && onSeries.visible && i) {
                     xOffset = (onSeries.pointXOffset || 0) + (onSeries.barW || 0) / 2;
                     currentDataGrouping = onSeries.currentDataGrouping;
@@ -159,7 +153,7 @@
                             typeof leftPoint[onKey] !== 'undefined') {
                             if (point.x <= lastX) { // #803
                                 point.plotY = leftPoint[onKey];
-                                // interpolate between points, #666
+                                // Interpolate between points, #666
                                 if (leftPoint.x < point.x &&
                                     !step) {
                                     rightPoint = onData[i + 1];
@@ -214,13 +208,13 @@
                                             }
                                         }
                                         else {
-                                            // the distance ratio, between 0 and 1
+                                            // The distance ratio, between 0 and 1
                                             distanceRatio =
                                                 (point.x - leftPoint.x) /
                                                     (rightPoint.x - leftPoint.x);
                                             point.plotY +=
                                                 distanceRatio *
-                                                    // the plotY distance
+                                                    // The plotY distance
                                                     (rightPoint[onKey] - leftPoint[onKey]);
                                             point.y +=
                                                 distanceRatio *
@@ -230,7 +224,7 @@
                                 }
                             }
                             cursor--;
-                            i++; // check again for points in the same x position
+                            i++; // Check again for points in the same x position
                             if (cursor < 0) {
                                 break;
                             }
@@ -266,7 +260,7 @@
                             point.shapeArgs = {}; // 847
                         }
                     }
-                    // if multiple flags appear at the same x, order them into a stack
+                    // If multiple flags appear at the same x, order them into a stack
                     lastPoint = points[i - 1];
                     if (lastPoint && lastPoint.plotX === point.plotX) {
                         if (typeof lastPoint.stackIndex === 'undefined') {
@@ -293,7 +287,7 @@
          *
          *  Wind barb series module
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -307,20 +301,6 @@
          *
          * */
         class WindbarbPoint extends ColumnSeries.prototype.pointClass {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.beaufort = void 0;
-                this.beaufortLevel = void 0;
-                this.direction = void 0;
-                this.options = void 0;
-                this.series = void 0;
-                this.value = void 0;
-            }
             /* *
              *
              *  Functions
@@ -343,7 +323,7 @@
          *
          *  Wind barb series module
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -533,7 +513,7 @@
          * @product   highcharts highstock
          * @apioption series.windbarb.data.direction
          */
-        ''; // adds doclets above to transpiled file
+        ''; // Adds doclets above to transpiled file
         /* *
          *
          *  Default Export
@@ -547,7 +527,7 @@
          *
          *  Wind barb series module
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -599,22 +579,6 @@
          * @augments Highcharts.Series
          */
         class WindbarbSeries extends ColumnSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Functions
@@ -651,15 +615,15 @@
                 }
                 // The stem and the arrow head
                 const path = [
-                    ['M', 0, 7 * u],
+                    ['M', 0, 7 * u], // Base of arrow
                     ['L', -1.5 * u, 7 * u],
                     ['L', 0, 10 * u],
                     ['L', 1.5 * u, 7 * u],
                     ['L', 0, 7 * u],
-                    ['L', 0, -10 * u] // top
+                    ['L', 0, -10 * u] // Top
                 ];
                 // For each full 50 knots, add a pennant
-                barbs = (knots - knots % 50) / 50; // pennants
+                barbs = (knots - knots % 50) / 50; // Pennants
                 if (barbs > 0) {
                     while (barbs--) {
                         path.push(pos === -10 ? ['L', 0, pos * u] : ['M', 0, pos * u], ['L', 5 * u, pos * u + 2], ['L', 0, pos * u + 4]);
@@ -678,7 +642,7 @@
                     }
                 }
                 // For each full 5 knots, add a half barb
-                barbs = (knots - knots % 5) / 5; // half barbs
+                barbs = (knots - knots % 5) / 5; // Half barbs
                 if (barbs > 0) {
                     while (barbs--) {
                         path.push(pos === -10 ? ['L', 0, pos * u] : ['M', 0, pos * u], ['L', 4 * u, pos * u]);
@@ -745,7 +709,7 @@
                     }, animObject(this.options.animation));
                 }
             }
-            markerAttribs(point, state) {
+            markerAttribs() {
                 return {};
             }
             getExtremes() {
@@ -757,15 +721,24 @@
                 return super.shouldShowTooltip(plotX, plotY, options);
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         WindbarbSeries.defaultOptions = merge(ColumnSeries.defaultOptions, WindbarbSeriesDefaults);
         OnSeriesComposition.compose(WindbarbSeries);
         extend(WindbarbSeries.prototype, {
-            beaufortFloor: [0, 0.3, 1.6, 3.4, 5.5, 8.0, 10.8, 13.9, 17.2, 20.8,
-                24.5, 28.5, 32.7],
-            beaufortName: ['Calm', 'Light air', 'Light breeze',
+            beaufortFloor: [
+                0, 0.3, 1.6, 3.4, 5.5, 8.0, 10.8, 13.9, 17.2, 20.8,
+                24.5, 28.5, 32.7
+            ], // @todo dictionary with names?
+            beaufortName: [
+                'Calm', 'Light air', 'Light breeze',
                 'Gentle breeze', 'Moderate breeze', 'Fresh breeze',
                 'Strong breeze', 'Near gale', 'Gale', 'Strong gale', 'Storm',
-                'Violent storm', 'Hurricane'],
+                'Violent storm', 'Hurricane'
+            ],
             invertible: false,
             parallelArrays: ['x', 'value', 'direction'],
             pointArrayMap: ['value', 'direction'],
@@ -797,8 +770,9 @@
 
         return WindbarbSeries;
     });
-    _registerModule(_modules, 'masters/modules/windbarb.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/windbarb.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

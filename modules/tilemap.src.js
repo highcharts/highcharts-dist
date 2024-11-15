@@ -1,9 +1,9 @@
 /**
- * @license Highmaps JS v11.2.0 (2023-10-30)
+ * @license Highmaps JS v11.4.8 (2024-08-29)
  *
  * Tilemap module
  *
- * (c) 2010-2021 Highsoft AS
+ * (c) 2010-2024 Highsoft AS
  *
  * License: www.highcharts.com/license
  */
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -40,7 +40,7 @@
          *
          *  Tilemaps module
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *  Author: Øystein Moseng
          *
          *  License: www.highcharts.com/license
@@ -56,18 +56,6 @@
          *
          * */
         class TilemapPoint extends HeatmapPoint {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.options = void 0;
-                this.radius = void 0;
-                this.series = void 0;
-                this.tileEdges = void 0;
-            }
             /* *
              *
              *  Functions
@@ -98,7 +86,7 @@
          *
          *  Tilemaps module
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *  Author: Øystein Moseng
          *
          *  License: www.highcharts.com/license
@@ -133,7 +121,7 @@
          * @excluding    jitter, joinBy, shadow, allAreas, mapData, marker, data,
          *               dataSorting, boostThreshold, boostBlending
          * @product      highcharts highmaps
-         * @requires     modules/tilemap.js
+         * @requires     modules/tilemap
          * @optionparent plotOptions.tilemap
          */
         const TilemapSeriesDefaults = {
@@ -209,7 +197,7 @@
          *            pointRange, shadow, stack, dataSorting, boostThreshold,
          *            boostBlending
          * @product   highcharts highmaps
-         * @requires  modules/tilemap.js
+         * @requires  modules/tilemap
          * @apioption series.tilemap
          */
         /**
@@ -306,7 +294,7 @@
          * @product   highcharts highmaps
          * @apioption series.tilemap.data.y
          */
-        ''; // keeps doclets above detached
+        ''; // Keeps doclets above detached
         /* *
          *
          *  Default Export
@@ -320,7 +308,7 @@
          *
          *  Tilemaps module
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *  Author: Øystein Moseng
          *
          *  License: www.highcharts.com/license
@@ -387,7 +375,8 @@
                             xAxis.translate(point.x - xPad * 2, 0, 1, 0, 1)), -xAxis.len, 2 * xAxis.len), x2 = clamp(Math.floor(xAxis.len -
                             xAxis.translate(point.x - xPad, 0, 1, 0, 1)), -xAxis.len, 2 * xAxis.len), x3 = clamp(Math.floor(xAxis.len -
                             xAxis.translate(point.x + xPad, 0, 1, 0, 1)), -xAxis.len, 2 * xAxis.len), x4 = clamp(Math.floor(xAxis.len -
-                            xAxis.translate(point.x + xPad * 2, 0, 1, 0, 1)), -xAxis.len, 2 * xAxis.len), y1 = clamp(Math.floor(yAxis.translate(point.y - yPad, 0, 1, 0, 1)), -yAxis.len, 2 * yAxis.len), y2 = clamp(Math.floor(yAxis.translate(point.y, 0, 1, 0, 1)), -yAxis.len, 2 * yAxis.len), y3 = clamp(Math.floor(yAxis.translate(point.y + yPad, 0, 1, 0, 1)), -yAxis.len, 2 * yAxis.len), pointPadding = pick(point.pointPadding, seriesPointPadding), 
+                            xAxis.translate(point.x + xPad * 2, 0, 1, 0, 1)), -xAxis.len, 2 * xAxis.len), y1 = clamp(Math.floor(yAxis.translate(point.y - yPad, 0, 1, 0, 1)), -yAxis.len, 2 * yAxis.len), y2 = clamp(Math.floor(yAxis.translate(point.y, 0, 1, 0, 1)), -yAxis.len, 2 * yAxis.len), y3 = clamp(Math.floor(yAxis.translate(point.y + yPad, 0, 1, 0, 1)), -yAxis.len, 2 * yAxis.len);
+                        const pointPadding = point.pointPadding ?? seriesPointPadding, 
                         // We calculate the point padding of the midpoints to
                         // preserve the angles of the shape.
                         midPointPadding = pointPadding *
@@ -520,8 +509,9 @@
                     let colsizePx, yRadiusPx, xRadiusPx, radius, forceNextRadiusCompute = false;
                     series.generatePoints();
                     for (const point of series.points) {
-                        let x = clamp(Math.round(xAxis.len -
-                            xAxis.translate(point.x, 0, 1, 0, 0)), -xAxis.len, 2 * xAxis.len), y = clamp(Math.round(yAxis.translate(point.y, 0, 1, 0, 0)), -yAxis.len, 2 * yAxis.len), pointPadding = seriesPointPadding, hasPerPointPadding = false;
+                        const x = clamp(Math.round(xAxis.len -
+                            xAxis.translate(point.x, 0, 1, 0, 0)), -xAxis.len, 2 * xAxis.len);
+                        let pointPadding = seriesPointPadding, hasPerPointPadding = false, y = clamp(Math.round(yAxis.translate(point.y, 0, 1, 0, 0)), -yAxis.len, 2 * yAxis.len);
                         // If there is point padding defined on a single point, add it
                         if (typeof point.pointPadding !== 'undefined') {
                             pointPadding = point.pointPadding;
@@ -603,7 +593,7 @@
          *
          *  Tilemaps module
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *  Author: Øystein Moseng
          *
          *  License: www.highcharts.com/license
@@ -611,15 +601,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { noop } = H;
+        const { composed, noop } = H;
         const { column: ColumnSeries, heatmap: HeatmapSeries, scatter: ScatterSeries } = SeriesRegistry.seriesTypes;
         const { addEvent, extend, merge, pushUnique } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
         /* *
          *
          *  Functions
@@ -675,30 +659,13 @@
          * @augments Highcharts.Series
          */
         class TilemapSeries extends HeatmapSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                this.tileShape = void 0;
-            }
             /* *
              *
              *  Static Functions
              *
              * */
             static compose(AxisClass) {
-                if (pushUnique(composedMembers, AxisClass)) {
+                if (pushUnique(composed, 'TilemapSeries')) {
                     addEvent(AxisClass, 'afterSetAxisTranslation', onAxisAfterSetAxisTranslation);
                 }
             }
@@ -744,7 +711,7 @@
                     padding.yPad, 0, 1, 0, 1));
                 const coord2 = Math.round(axis.translate(isX ? padding.xPad : 0, 0, 1, 0, 1));
                 return {
-                    padding: (axis.single ? // if there is only one tick adjust padding #18647
+                    padding: (axis.single ? // If there is only one tick adjust padding #18647
                         Math.abs(coord1 - coord2) / 2 :
                         Math.abs(coord1 - coord2)) || 0,
                     // Offset the yAxis length to compensate for shift. Setting the
@@ -774,13 +741,18 @@
                 return this.tileShape.translate.apply(this, arguments);
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         TilemapSeries.defaultOptions = merge(HeatmapSeries.defaultOptions, TilemapSeriesDefaults);
         extend(TilemapSeries.prototype, {
             // Revert the noop on getSymbol.
             getSymbol: noop,
             // Use drawPoints, markerAttribs, pointAttribs methods from the old
             // heatmap implementation.
-            // TODO: Consider standarizing heatmap and tilemap into more
+            // TODO: Consider standardizing heatmap and tilemap into more
             // consistent form.
             markerAttribs: ScatterSeries.prototype.markerAttribs,
             pointAttribs: ColumnSeries.prototype.pointAttribs,
@@ -800,7 +772,7 @@
         /**
          * @typedef {"circle"|"diamond"|"hexagon"|"square"} Highcharts.TilemapShapeValue
          */
-        ''; // keeps doclets above in JS file
+        ''; // Keeps doclets above in JS file
 
         return TilemapSeries;
     });
@@ -809,5 +781,6 @@
         const G = Highcharts;
         TilemapSeries.compose(G.Axis);
 
+        return Highcharts;
     });
 }));

@@ -55,7 +55,8 @@ class VerticalLine extends Annotation {
             points: [
                 VerticalLine.connectorFirstPoint,
                 VerticalLine.connectorSecondPoint
-            ]
+            ],
+            className: 'highcharts-vertical-line'
         }), 0);
         typeOptions.connector = connector.options;
         this.userOptions.typeOptions.point = typeOptions.point;

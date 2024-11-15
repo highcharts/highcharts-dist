@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -42,15 +42,17 @@ const MapSeriesDefaults = {
      * @private
      */
     affectsMapView: true,
-    animation: false,
+    animation: false, // Makes the complex shapes slow
     dataLabels: {
         crop: false,
         formatter: function () {
             const { numberFormatter } = this.series.chart;
             const { value } = this.point;
-            return isNumber(value) ? numberFormatter(value, -1) : '';
+            return isNumber(value) ?
+                numberFormatter(value, -1) :
+                this.point.name; // #20231
         },
-        inside: true,
+        inside: true, // For the color
         overflow: false,
         padding: 0,
         verticalAlign: 'middle'
@@ -272,7 +274,7 @@ const MapSeriesDefaults = {
         select: {
             /**
              * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-             * @default   #cccccc
+             * @default   ${palette.neutralColor20}
              * @product   highmaps
              * @apioption plotOptions.series.states.select.color
              */
@@ -516,7 +518,7 @@ const MapSeriesDefaults = {
  */
 /**
  * For map and mapline series types, the SVG path for the shape. For
- * compatibily with old IE, not all SVG path definitions are supported,
+ * compatibility with old IE, not all SVG path definitions are supported,
  * but M, L and C operators are safe.
  *
  * To achieve a better separation between the structure and the data,

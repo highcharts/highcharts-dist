@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2023 Highsoft AS
+ *  (c) 2009-2024 Highsoft AS
  *
  *  License: www.highcharts.com/license
  *
@@ -58,10 +58,10 @@ function MEDIAN(args, table) {
     if (!count) {
         return NaN;
     }
-    const half = Math.floor(count / 2); // floor because index starts at 0
+    const half = Math.floor(count / 2); // Floor because index starts at 0
     return (count % 2 ?
-        median[half] : // odd
-        (median[half - 1] + median[half]) / 2 // even
+        median[half] : // Odd
+        (median[half - 1] + median[half]) / 2 // Even
     );
 }
 /* *

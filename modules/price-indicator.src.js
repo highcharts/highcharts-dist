@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.4.8 (2024-08-29)
  *
  * Advanced Highcharts Stock tools
  *
- * (c) 2010-2021 Highsoft AS
+ * (c) 2010-2024 Highsoft AS
  * Author: Torstein Honsi
  *
  * License: www.highcharts.com/license
@@ -29,16 +29,16 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
             }
         }
     }
-    _registerModule(_modules, 'Extensions/PriceIndication.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Extensions/PriceIndication.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /**
-         * (c) 2009-2021 Sebastian Bochann
+         * (c) 2009-2024 Sebastian Bochann
          *
          * Price indicator for Highcharts
          *
@@ -46,13 +46,8 @@
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          */
+        const { composed } = H;
         const { addEvent, isArray, merge, pushUnique } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
         /* *
          *
          *  Composition
@@ -60,7 +55,7 @@
          * */
         /** @private */
         function compose(SeriesClass) {
-            if (pushUnique(composedMembers, SeriesClass)) {
+            if (pushUnique(composed, 'PriceIndication')) {
                 addEvent(SeriesClass, 'afterRender', onSeriesAfterRender);
             }
         }
@@ -103,7 +98,7 @@
                 }
                 if (lastVisiblePrice && lastVisiblePrice.enabled && pLength > 0) {
                     yAxis.crosshair = yAxis.options.crosshair = merge({
-                        color: 'transparent' // line invisible by default
+                        color: 'transparent' // Line invisible by default
                     }, seriesOptions.lastVisiblePrice);
                     yAxis.cross = series.lastVisiblePrice;
                     const lastPoint = points[pLength - 1].isInside ?
@@ -362,7 +357,7 @@
          * @apioption plotOptions.series.lastPrice.color
          *
          */
-        ''; // keeps doclets above in JS file
+        ''; // Keeps doclets above in JS file
 
         return PriceIndication;
     });
@@ -371,5 +366,6 @@
         const G = Highcharts;
         PriceIndication.compose(G.Series);
 
+        return Highcharts;
     });
 }));

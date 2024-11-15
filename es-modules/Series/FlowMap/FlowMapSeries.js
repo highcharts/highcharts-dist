@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2022 Askel Eirik Johansson, Piotr Madej
+ *  (c) 2010-2024 Askel Eirik Johansson, Piotr Madej
  *
  *  License: www.highcharts.com/license
  *
@@ -23,25 +23,6 @@ const { addEvent, arrayMax, arrayMin, defined, extend, isArray, merge, pick, rel
  * @augments Highcharts.Series
  */
 class FlowMapSeries extends MapLineSeries {
-    constructor() {
-        /* *
-         *
-         *  Static properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         * Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        this.smallestWeight = void 0;
-        this.greatestWeight = void 0;
-        this.centerOfPoints = void 0;
-    }
     /* *
      *
      *  Static Function
@@ -119,13 +100,13 @@ class FlowMapSeries extends MapLineSeries {
      */
     animate(init) {
         const series = this, points = series.points;
-        if (!init) { // run the animation
+        if (!init) { // Run the animation
             points.forEach((point) => {
                 if (point.shapeArgs &&
                     isArray(point.shapeArgs.d) &&
                     point.shapeArgs.d.length) {
                     const path = point.shapeArgs.d, x = path[0][1], y = path[0][2];
-                    // to animate SVG path the initial path array needs to be
+                    // To animate SVG path the initial path array needs to be
                     // same as target, but element should be visible, so we
                     // insert array elements with start (M) values
                     if (x && y) {
@@ -232,7 +213,7 @@ class FlowMapSeries extends MapLineSeries {
                 if ((foundPoint instanceof Point) &&
                     foundPoint.plotX &&
                     foundPoint.plotY) {
-                    // after linked point update flowmap point should
+                    // After linked point update flowmap point should
                     // be also updated
                     addEvent(foundPoint, 'update', dirtySeries);
                     return {
@@ -416,6 +397,11 @@ class FlowMapSeries extends MapLineSeries {
         return shapeArgs;
     }
 }
+/* *
+ *
+ *  Static properties
+ *
+ * */
 /**
  * A flowmap series is a series laid out on top of a map series allowing to
  * display route paths (e.g. flight or ship routes) or flows on a map. It
@@ -765,4 +751,4 @@ export default FlowMapSeries;
  * @type  {number}
  * @apioption series.flowmap.data.lineWidth
  */
-''; // adds doclets above to transpiled file
+''; // Adds doclets above to transpiled file

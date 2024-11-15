@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2021 Highsoft, Black Label
+ *  (c) 2009-2024 Highsoft, Black Label
  *
  *  License: www.highcharts.com/license
  *
@@ -14,18 +14,12 @@ const { setOptions } = D;
 import F from '../../Core/Templating.js';
 const { format } = F;
 import H from '../../Core/Globals.js';
-const { doc, win } = H;
+const { composed, doc, win } = H;
 import NavigationBindingDefaults from './NavigationBindingsDefaults.js';
 import NBU from './NavigationBindingsUtilities.js';
-const { getFieldType } = NBU;
+const { getAssignedAxis, getFieldType } = NBU;
 import U from '../../Core/Utilities.js';
-const { addEvent, attr, defined, fireEvent, isArray, isFunction, isNumber, isObject, merge, objectEach, pick } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { addEvent, attr, defined, fireEvent, isArray, isFunction, isNumber, isObject, merge, objectEach, pick, pushUnique } = U;
 /* *
  *
  *  Functions
@@ -99,7 +93,7 @@ function onChartRender() {
             this.navigationBindings.container[0]) {
             const container = this.navigationBindings.container[0];
             objectEach(navigationBindings.boundClassNames, (value, key) => {
-                // Get the HTML element coresponding to the className taken
+                // Get the HTML element corresponding to the className taken
                 // from StockToolsBindings.
                 const buttonNode = container.querySelectorAll('.' + key);
                 if (buttonNode) {
@@ -198,10 +192,16 @@ function selectableAnnotation(annotationType) {
     }
     // #18276, show popup on touchend, but not on touchmove
     let touchStartX, touchStartY;
+    /**
+     *
+     */
     function saveCoords(e) {
         touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
     }
+    /**
+     *
+     */
     function checkForTouchmove(e) {
         const hasMoved = touchStartX ? Math.sqrt(Math.pow(touchStartX - e.changedTouches[0].clientX, 2) +
             Math.pow(touchStartY - e.changedTouches[0].clientY, 2)) >= 4 : false;
@@ -230,7 +230,7 @@ class NavigationBindings {
      *
      * */
     static compose(AnnotationClass, ChartClass) {
-        if (U.pushUnique(composedMembers, AnnotationClass)) {
+        if (pushUnique(composed, 'NavigationBindings')) {
             addEvent(AnnotationClass, 'remove', onAnnotationRemove);
             // Basic shapes:
             selectableAnnotation(AnnotationClass);
@@ -238,17 +238,11 @@ class NavigationBindings {
             objectEach(AnnotationClass.types, (annotationType) => {
                 selectableAnnotation(annotationType);
             });
-        }
-        if (U.pushUnique(composedMembers, ChartClass)) {
             addEvent(ChartClass, 'destroy', onChartDestroy);
             addEvent(ChartClass, 'load', onChartLoad);
             addEvent(ChartClass, 'render', onChartRender);
-        }
-        if (U.pushUnique(composedMembers, NavigationBindings)) {
             addEvent(NavigationBindings, 'closePopup', onNavigationBindingsClosePopup);
             addEvent(NavigationBindings, 'deselectButton', onNavigationBindingsDeselectButton);
-        }
-        if (U.pushUnique(composedMembers, setOptions)) {
             setOptions(NavigationBindingDefaults);
         }
     }
@@ -259,7 +253,6 @@ class NavigationBindings {
      * */
     constructor(chart, options) {
         this.boundClassNames = void 0;
-        this.selectedButton = void 0;
         this.chart = chart;
         this.options = options;
         this.eventsToUnbind = [];
@@ -274,8 +267,15 @@ class NavigationBindings {
      *  Functions
      *
      * */
+    getCoords(e) {
+        const coords = this.chart.pointer?.getCoordinates(e);
+        return [
+            coords && getAssignedAxis(coords.xAxis),
+            coords && getAssignedAxis(coords.yAxis)
+        ];
+    }
     /**
-     * Initi all events conencted to NavigationBindings.
+     * Init all events connected to NavigationBindings.
      *
      * @private
      * @function Highcharts.NavigationBindings#initEvents
@@ -330,7 +330,7 @@ class NavigationBindings {
         });
     }
     /**
-     * Hook for click on a button, method selcts/unselects buttons,
+     * Hook for click on a button, method selects/unselects buttons,
      * then calls `bindings.init` callback.
      *
      * @private
@@ -375,8 +375,7 @@ class NavigationBindings {
             }
         }
         else {
-            chart.stockTools &&
-                chart.stockTools.toggleButtonActiveClass(button);
+            chart.stockTools && button.classList.remove('highcharts-active');
             svgContainer.removeClass('highcharts-draw-mode');
             navigation.nextEvent = false;
             navigation.mouseMoveEvent = false;
@@ -510,19 +509,23 @@ class NavigationBindings {
             if (value !== 'undefined') {
                 let parent = config;
                 path.forEach((name, index) => {
-                    const nextName = pick(path[index + 1], '');
-                    if (pathLength === index) {
-                        // Last index, put value:
-                        parent[name] = value;
-                    }
-                    else if (!parent[name]) {
-                        // Create middle property:
-                        parent[name] = nextName.match(/\d/g) ? [] : {};
-                        parent = parent[name];
-                    }
-                    else {
-                        // Jump into next property
-                        parent = parent[name];
+                    if (name !== '__proto__' && name !== 'constructor') {
+                        const nextName = pick(path[index + 1], '');
+                        if (pathLength === index) {
+                            // Last index, put value:
+                            parent[name] = value;
+                        }
+                        else if (!parent[name]) {
+                            // Create middle property:
+                            parent[name] = nextName.match(/\d/g) ?
+                                [] :
+                                {};
+                            parent = parent[name];
+                        }
+                        else {
+                            // Jump into next property
+                            parent = parent[name];
+                        }
                     }
                 });
             }
@@ -585,8 +588,8 @@ class NavigationBindings {
                 nonEditables.indexOf(key) === -1 &&
                 ((parentEditables.indexOf &&
                     parentEditables.indexOf(key)) >= 0 ||
-                    parentEditables[key] || // nested array
-                    parentEditables === true // simple array
+                    parentEditables[key] || // Nested array
+                    parentEditables === true // Simple array
                 )) {
                 // Roots:
                 if (isArray(option)) {
@@ -827,4 +830,4 @@ export default NavigationBindings;
 * @name Highcharts.NavigationBindingsOptionsObject#steps
 * @type {Array<Function>|undefined}
 */
-(''); // keeps doclets above in JS file
+(''); // Keeps doclets above in JS file

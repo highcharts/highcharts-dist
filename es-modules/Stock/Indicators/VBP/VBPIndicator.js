@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Paweł Dalek
+ *  (c) 2010-2024 Paweł Dalek
  *
  *  Volume By Price (VBP) indicator for Highcharts Stock
  *
@@ -18,7 +18,6 @@ const { noop } = H;
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 const { column: { prototype: columnProto }, sma: SMAIndicator } = SeriesRegistry.seriesTypes;
 import U from '../../../Core/Utilities.js';
-import StockChart from '../../../Core/Chart/StockChart.js';
 const { addEvent, arrayMax, arrayMin, correctFloat, defined, error, extend, isArray, merge } = U;
 /* *
  *
@@ -67,29 +66,6 @@ function arrayExtremesOHLC(data) {
  * @augments Highcharts.Series
  */
 class VBPIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.negWidths = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        this.posWidths = void 0;
-        this.priceZones = void 0;
-        this.rangeStep = void 0;
-        this.volumeDataArray = void 0;
-        this.zoneStarts = void 0;
-        this.zoneLinesSVG = void 0;
-    }
     /* *
      *
      *  Functions
@@ -97,12 +73,12 @@ class VBPIndicator extends SMAIndicator {
      * */
     init(chart, options) {
         const indicator = this;
-        // series.update() sends data that is not necessary
-        // as everything is calculated in getValues(), #17007
+        // Series.update() sends data that is not necessary as everything is
+        // calculated in getValues(), #17007
         delete options.data;
         super.init.apply(indicator, arguments);
         // Only after series are linked add some additional logic/properties.
-        const unbinder = addEvent(StockChart, 'afterLinkSeries', function () {
+        const unbinder = addEvent(this.chart.constructor, 'afterLinkSeries', function () {
             // Protection for a case where the indicator is being updated,
             // for a brief moment the indicator is deleted.
             if (indicator.options) {
@@ -316,7 +292,7 @@ class VBPIndicator extends SMAIndicator {
             yData: yData
         };
     }
-    // Specifing where each zone should start ans end
+    // Specifying where each zone should start ans end
     specifyZones(isOHLC, xValues, yValues, ranges, volumeSeries) {
         const indicator = this, rangeExtremes = (isOHLC ? arrayExtremesOHLC(yValues) : false), zoneStarts = indicator.zoneStarts = [], priceZones = [];
         let lowRange = rangeExtremes ?
@@ -368,7 +344,7 @@ class VBPIndicator extends SMAIndicator {
         // Checks if each point has a corresponding volume value
         if (abs(baseSeriesLength - volumeSeriesLength)) {
             // If the first point don't have volume, add 0 value at the
-            // beggining of the volume array
+            // beginning of the volume array
             if (xValues[0] !== volumeXData[0]) {
                 volumeYData.unshift(0);
             }
@@ -427,7 +403,7 @@ class VBPIndicator extends SMAIndicator {
         });
         return priceZones;
     }
-    // Function responsoble for drawing additional lines indicating zones
+    // Function responsible for drawing additional lines indicating zones
     drawZones(chart, yAxis, zonesValues, zonesStyles) {
         const indicator = this, renderer = chart.renderer, leftLinePos = 0, rightLinePos = chart.plotWidth, verticalOffset = chart.plotTop;
         let zoneLinesSVG = indicator.zoneLinesSVG, zoneLinesPath = [], verticalLinePos;
@@ -463,6 +439,11 @@ class VBPIndicator extends SMAIndicator {
         }
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Volume By Price indicator.
  *
@@ -601,4 +582,4 @@ export default VBPIndicator;
  * @requires  stock/indicators/volume-by-price
  * @apioption series.vbp
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

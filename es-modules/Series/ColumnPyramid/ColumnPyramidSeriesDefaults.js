@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Sebastian Bochan
+ *  (c) 2010-2024 Sebastian Bochan
  *
  *  License: www.highcharts.com/license
  *
@@ -116,7 +116,7 @@ const ColumnPyramidSeriesDefaults = {};
  * @product   highcharts highstock
  * @apioption series.columnpyramid.data
  */
-''; // keeps doclets above separate
+''; // Keeps doclets above separate
 /* *
  *
  *  Default Export

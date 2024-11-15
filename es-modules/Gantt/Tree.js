@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2016-2021 Highsoft AS
+ *  (c) 2016-2024 Highsoft AS
  *
  *  Authors: Jon Arild Nygard
  *
@@ -23,7 +23,7 @@ const { extend, isNumber, pick } = U;
  *
  * */
 /**
- * Creates an object map from parent id to childrens index.
+ * Creates an object map from parent id to children's index.
  *
  * @private
  * @function Highcharts.Tree#getListOfParents
@@ -31,32 +31,31 @@ const { extend, isNumber, pick } = U;
  * @param {Array<*>} data
  *        List of points set in options. `Array.parent` is parent id of point.
  *
- * @param {Array<string>} ids
- *        List of all point ids.
- *
  * @return {Highcharts.Dictionary<Array<*>>}
  * Map from parent id to children index in data
  */
 function getListOfParents(data) {
-    const listOfParents = data.reduce((prev, curr) => {
-        const parent = pick(curr.parent, '');
+    const root = '', ids = [], listOfParents = data.reduce((prev, curr) => {
+        const { parent = '', id } = curr;
         if (typeof prev[parent] === 'undefined') {
             prev[parent] = [];
         }
         prev[parent].push(curr);
+        if (id) {
+            ids.push(id);
+        }
         return prev;
     }, {});
-    // parents = Object.keys(listOfParents);
-    // If parent does not exist, hoist parent to root of tree.
-    // parents.forEach((parent, list): void => {
-    //     const children = listOfParents[parent];
-    //     if ((parent !== '') && (ids.indexOf(parent) === -1)) {
-    //         for (const child of children) {
-    //             (list as any)[''].push(child);
-    //         }
-    //         delete (list as any)[parent];
-    //     }
-    // });
+    Object.keys(listOfParents).forEach((node) => {
+        if ((node !== root) && (ids.indexOf(node) === -1)) {
+            const adoptedByRoot = listOfParents[node].map(function (orphan) {
+                const { ...parentExcluded } = orphan; // #15196
+                return parentExcluded;
+            });
+            listOfParents[root].push(...adoptedByRoot);
+            delete listOfParents[node];
+        }
+    });
     return listOfParents;
 }
 /** @private */
@@ -73,7 +72,7 @@ function getNode(id, parent, level, data, mapOfIdToChildren, options) {
     if (typeof before === 'function') {
         before(node, options);
     }
-    // Call getNode recursively on the children. Calulate the height of the
+    // Call getNode recursively on the children. Calculate the height of the
     // node, and the number of descendants.
     const children = ((mapOfIdToChildren[id] || [])).map((child) => {
         const node = getNode(child.id, id, (level + 1), child, mapOfIdToChildren, options), childStart = child.start || NaN, childEnd = (child.milestone === true ?
@@ -111,8 +110,7 @@ function getNode(id, parent, level, data, mapOfIdToChildren, options) {
 }
 /** @private */
 function getTree(data, options) {
-    const mapOfIdToChildren = getListOfParents(data);
-    return getNode('', null, 1, null, mapOfIdToChildren, options);
+    return getNode('', null, 1, null, getListOfParents(data), options);
 }
 /* *
  *

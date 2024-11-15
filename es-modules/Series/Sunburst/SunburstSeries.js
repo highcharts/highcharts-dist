@@ -2,7 +2,7 @@
  *
  *  This module implements sunburst charts in Highcharts.
  *
- *  (c) 2016-2021 Highsoft AS
+ *  (c) 2016-2024 Highsoft AS
  *
  *  Authors: Jon Arild Nygard
  *
@@ -26,6 +26,9 @@ import U from '../../Core/Utilities.js';
 import SunburstNode from './SunburstNode.js';
 import SunburstSeriesDefaults from './SunburstSeriesDefaults.js';
 const { defined, error, extend, fireEvent, isNumber, isObject, isString, merge, splat } = U;
+import SVGElement from '../../Core/Renderer/SVG/SVGElement.js';
+import TextPath from '../../Extensions/TextPath.js';
+TextPath.compose(SVGElement);
 /* *
  *
  *  Constants
@@ -197,11 +200,6 @@ function getDlOptions(params) {
                 2 * (options.padding || 0), 1);
         }
     }
-    // NOTE: alignDataLabel positions the data label differntly when rotation is
-    // 0. Avoiding this by setting rotation to a small number.
-    if (options.rotation === 0) {
-        options.rotation = 0.001;
-    }
     return options;
 }
 /** @private */
@@ -311,28 +309,6 @@ function cbSetTreeValuesBefore(node, options) {
  *
  * */
 class SunburstSeries extends TreemapSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.center = void 0;
-        this.data = void 0;
-        this.mapOptionsToLevel = void 0;
-        this.nodeMap = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        this.shapeRoot = void 0;
-        this.startAndEndRadians = void 0;
-        this.tree = void 0;
-    }
     /* *
      *
      *  Functions
@@ -342,7 +318,7 @@ class SunburstSeries extends TreemapSeries {
         if (labelOptions.textPath && labelOptions.textPath.enabled) {
             return;
         }
-        return super.alignDataLabel(point, dataLabel, labelOptions);
+        return super.alignDataLabel.apply(this, arguments);
     }
     /**
      * Animate the slices in. Similar to the animation of polar charts.
@@ -360,7 +336,7 @@ class SunburstSeries extends TreemapSeries {
             attribs = {
                 translateX: center[0] + plotLeft,
                 translateY: center[1] + plotTop,
-                scaleX: 0.001,
+                scaleX: 0.001, // #1499
                 scaleY: 0.001,
                 rotation: 10,
                 opacity: 0.01
@@ -435,15 +411,15 @@ class SunburstSeries extends TreemapSeries {
                 };
             }
             extend(point, {
-                shapeExisting: shape,
+                shapeExisting: shape, // Store for use in animation
                 tooltipPos: [shape.plotX, shape.plotY],
                 drillId: getDrillId(point, idRoot, nodeMap),
                 name: '' + (point.name || point.id || point.index),
-                plotX: shape.plotX,
-                plotY: shape.plotY,
+                plotX: shape.plotX, // Used for data label position
+                plotY: shape.plotY, // Used for data label position
                 value: node.val,
                 isInside: visible,
-                isNull: !visible // used for dataLabels & point.draw
+                isNull: !visible // Used for dataLabels & point.draw
             });
             point.dlOptions = getDlOptions({
                 point: point,
@@ -466,7 +442,7 @@ class SunburstSeries extends TreemapSeries {
             });
         }
         // Draw data labels after points
-        // TODO draw labels one by one to avoid addtional looping
+        // TODO draw labels one by one to avoid additional looping
         if (hackDataLabelAnimation && addedHack) {
             series.hasRendered = false;
             series.options.dataLabels.defer = true;
@@ -553,7 +529,7 @@ class SunburstSeries extends TreemapSeries {
             }
             child.shapeArgs = merge(values, {
                 plotX: center.x,
-                plotY: center.y + 4 * Math.abs(Math.cos(angle))
+                plotY: center.y
             });
             child.values = merge(values, {
                 val: val
@@ -570,7 +546,7 @@ class SunburstSeries extends TreemapSeries {
         rootId = updateRootId(series);
         let mapIdToNode = series.nodeMap, mapOptionsToLevel, nodeRoot = mapIdToNode && mapIdToNode[rootId], nodeIds = {};
         series.shapeRoot = nodeRoot && nodeRoot.shapeArgs;
-        if (!series.processedXData) { // hidden series
+        if (!series.processedXData) { // Hidden series
             series.processData();
         }
         series.generatePoints();
@@ -623,21 +599,26 @@ class SunburstSeries extends TreemapSeries {
         // Set mapOptionsToLevel on series for use in drawPoints.
         series.mapOptionsToLevel = mapOptionsToLevel;
         // #10669 - verify if all nodes have unique ids
-        for (const child of series.data) {
-            if (nodeIds[child.id]) {
+        for (const point of series.points) {
+            if (nodeIds[point.id]) {
                 error(31, false, series.chart);
             }
-            // map
-            nodeIds[child.id] = true;
+            // Map
+            nodeIds[point.id] = true;
         }
-        // reset object
+        // Reset object
         nodeIds = {};
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 SunburstSeries.defaultOptions = merge(TreemapSeries.defaultOptions, SunburstSeriesDefaults);
 extend(SunburstSeries.prototype, {
     axisTypes: [],
-    drawDataLabels: noop,
+    drawDataLabels: noop, // `drawDataLabels` is called in `drawPoints`
     getCenter: getCenter,
     isCartesian: false,
     // Mark that the sunburst is supported by the series on point feature.

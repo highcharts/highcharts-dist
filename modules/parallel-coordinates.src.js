@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
  * Support for parallel coordinates in Highcharts
  *
- * (c) 2010-2021 Pawel Fus
+ * (c) 2010-2024 Pawel Fus
  *
  * License: www.highcharts.com/license
  */
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -40,7 +40,7 @@
          *
          *  Parallel coordinates module
          *
-         *  (c) 2010-2021 Pawel Fus
+         *  (c) 2010-2024 Pawel Fus
          *
          *  License: www.highcharts.com/license
          *
@@ -166,7 +166,7 @@
          * @requires  modules/parallel-coordinates
          * @apioption yAxis.tooltipValueFormat
          */
-        ''; // keeps doclets above separate in JS file
+        ''; // Keeps doclets above separate in JS file
         /* *
          *
          *  Default Options
@@ -184,14 +184,14 @@
          *
          *  Parallel coordinates module
          *
-         *  (c) 2010-2021 Pawel Fus
+         *  (c) 2010-2024 Pawel Fus
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { addEvent, arrayMax, arrayMin, isNumber, merge, pick, pushUnique, splat } = U;
+        const { addEvent, arrayMax, arrayMin, isNumber, merge, pick, splat } = U;
         /* *
          *
          *  Class
@@ -258,12 +258,6 @@
              * */
             /* *
              *
-             *  Constants
-             *
-             * */
-            const composedMembers = [];
-            /* *
-             *
              *  Functions
              *
              * */
@@ -272,7 +266,7 @@
              * @private
              */
             function compose(AxisClass) {
-                if (pushUnique(composedMembers, AxisClass)) {
+                if (!AxisClass.keepProps.includes('parallel')) {
                     const axisCompo = AxisClass;
                     // On update, keep parallel additions.
                     AxisClass.keepProps.push('parallel');
@@ -357,20 +351,21 @@
 
         return ParallelAxis;
     });
-    _registerModule(_modules, 'Extensions/ParallelCoordinates/ParallelSeries.js', [_modules['Core/Templating.js'], _modules['Core/Utilities.js']], function (T, U) {
+    _registerModule(_modules, 'Extensions/ParallelCoordinates/ParallelSeries.js', [_modules['Core/Globals.js'], _modules['Core/Templating.js'], _modules['Core/Utilities.js']], function (H, T, U) {
         /* *
          *
          *  Parallel coordinates module
          *
-         *  (c) 2010-2021 Pawel Fus
+         *  (c) 2010-2024 Pawel Fus
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        const { composed } = H;
         const { format } = T;
-        const { addEvent, defined, erase, extend, insertItem, isNumber, pick, pushUnique, wrap } = U;
+        const { addEvent, defined, erase, extend, insertItem, isArray, isNumber, pick, pushUnique, wrap } = U;
         /* *
          *
          *  Composition
@@ -385,33 +380,22 @@
              * */
             /* *
              *
-             *  Constants
-             *
-             * */
-            const composedMembers = [];
-            /* *
-             *
              *  Functions
              *
              * */
             /** @private */
             function compose(SeriesClass) {
-                const { line: { prototype: { pointClass: LinePointClass } }, spline: { prototype: { pointClass: SplinePointClass } } } = SeriesClass.types;
-                if (LinePointClass &&
-                    pushUnique(composedMembers, LinePointClass)) {
-                    const linePointProto = LinePointClass.prototype;
-                    wrap(linePointProto, 'getLabelConfig', wrapSeriesGetLabelConfig);
-                }
-                if (pushUnique(composedMembers, SeriesClass)) {
-                    const CompoClass = SeriesClass;
+                if (pushUnique(composed, 'ParallelSeries')) {
+                    const CompoClass = SeriesClass, { line: { prototype: { pointClass: LinePointClass } }, spline: { prototype: { pointClass: SplinePointClass } } } = SeriesClass.types;
                     addEvent(CompoClass, 'afterTranslate', onSeriesAfterTranslate, { order: 1 });
                     addEvent(CompoClass, 'bindAxes', onSeriesBindAxes);
                     addEvent(CompoClass, 'destroy', onSeriesDestroy);
-                }
-                if (SplinePointClass &&
-                    pushUnique(composedMembers, SplinePointClass)) {
-                    const splinePointProto = SplinePointClass.prototype;
-                    wrap(splinePointProto, 'getLabelConfig', wrapSeriesGetLabelConfig);
+                    if (LinePointClass) {
+                        wrap(LinePointClass.prototype, 'getLabelConfig', wrapSeriesGetLabelConfig);
+                    }
+                    if (SplinePointClass) {
+                        wrap(SplinePointClass.prototype, 'getLabelConfig', wrapSeriesGetLabelConfig);
+                    }
                 }
             }
             ParallelSeries.compose = compose;
@@ -508,7 +492,7 @@
                     else if (yAxis.dateTime) {
                         formattedValue = chart.time.dateFormat(chart.time.resolveDTLFormat(yAxisOptions.dateTimeLabelFormats[yAxis.tickPositions.info.unitName]).main, this.y);
                     }
-                    else if (yAxisOptions.categories) {
+                    else if (isArray(yAxisOptions.categories)) {
                         formattedValue = yAxisOptions.categories[this.y];
                     }
                     else {
@@ -533,14 +517,14 @@
          *
          *  Parallel coordinates module
          *
-         *  (c) 2010-2021 Pawel Fus
+         *  (c) 2010-2024 Pawel Fus
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { addEvent, defined, merge, pushUnique, splat } = U;
+        const { addEvent, defined, merge, splat } = U;
         /* *
          *
          *  Class
@@ -604,12 +588,6 @@
              * */
             /* *
              *
-             *  Constants
-             *
-             * */
-            const composedMembers = [];
-            /* *
-             *
              *  Functions
              *
              * */
@@ -617,15 +595,11 @@
             function compose(AxisClass, ChartClass, highchartsDefaultOptions, SeriesClass) {
                 ParallelAxis.compose(AxisClass);
                 ParallelSeries.compose(SeriesClass);
-                if (pushUnique(composedMembers, ChartClass)) {
-                    const ChartCompo = ChartClass;
-                    const addsProto = ChartAdditions.prototype;
-                    const chartProto = ChartCompo.prototype;
+                const ChartCompo = ChartClass, addsProto = ChartAdditions.prototype, chartProto = ChartCompo.prototype;
+                if (!chartProto.setParallelInfo) {
                     chartProto.setParallelInfo = addsProto.setParallelInfo;
                     addEvent(ChartCompo, 'init', onChartInit);
                     addEvent(ChartCompo, 'update', onChartUpdate);
-                }
-                if (pushUnique(composedMembers, highchartsDefaultOptions)) {
                     merge(true, highchartsDefaultOptions.chart, ParallelCoordinatesDefaults.chart);
                 }
             }
@@ -641,7 +615,7 @@
                  * Flag used in parallel coordinates plot to check if chart has
                  * ||-coords (parallel coords).
                  *
-                 * @requires module:modules/parallel-coordinates
+                 * @requires modules/parallel-coordinates
                  *
                  * @name Highcharts.Chart#hasParallelCoordinates
                  * @type {boolean}
@@ -657,7 +631,8 @@
                     if (!options.legend) {
                         options.legend = {};
                     }
-                    if (typeof options.legend.enabled === 'undefined') {
+                    if (options.legend &&
+                        typeof options.legend.enabled === 'undefined') {
                         options.legend.enabled = false;
                     }
                     merge(true, options, 
@@ -673,7 +648,7 @@
                         }
                     });
                     options.yAxis = defaultYAxis.concat(newYAxes);
-                    options.xAxis = merge(ParallelCoordinatesDefaults.xAxis, // docs
+                    options.xAxis = merge(ParallelCoordinatesDefaults.xAxis, // Docs
                     splat(options.xAxis || {})[0]);
                 }
             }
@@ -714,5 +689,6 @@
         const G = Highcharts;
         ParallelCoordinates.compose(G.Axis, G.Chart, G.defaultOptions, G.Series);
 
+        return Highcharts;
     });
 }));

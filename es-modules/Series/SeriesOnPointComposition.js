@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2022 Rafal Sebestjanski, Piotr Madej
+ *  (c) 2010-2024 Rafal Sebestjanski, Piotr Madej
  *
  *  License: www.highcharts.com/license
  *
@@ -8,13 +8,15 @@
  *
  * */
 'use strict';
+import H from '../Core/Globals.js';
+const { composed } = H;
 import Point from '../Core/Series/Point.js';
 import Series from '../Core/Series/Series.js';
 import SeriesRegistry from '../Core/Series/SeriesRegistry.js';
+const { bubble } = SeriesRegistry.seriesTypes;
 import SVGRenderer from '../Core/Renderer/SVG/SVGRenderer.js';
-const { bubble, pie, sunburst } = SeriesRegistry.seriesTypes;
 import U from '../Core/Utilities.js';
-const { addEvent, defined, find, isNumber } = U;
+const { addEvent, defined, find, isNumber, pushUnique } = U;
 /* *
  *
  *  Composition
@@ -29,16 +31,9 @@ var SeriesOnPointComposition;
      * */
     /* *
      *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * Extends the series with a small addition.
      *
@@ -51,24 +46,22 @@ var SeriesOnPointComposition;
      * Chart class to use.
      */
     function compose(SeriesClass, ChartClass) {
-        const { chartGetZData, seriesAfterInit, seriesAfterRender, seriesGetCenter, seriesShowOrHide, seriesTranslate } = Additions.prototype;
-        // We can mark support for pie series here because it's in the core.
-        // But all other series outside the core should be marked in its module.
-        // This is crucial when loading series-on-point before loading a
-        // module, e.g. sunburst.
-        // Supported series types:
-        // - pie
-        // - sunburst
-        pie.prototype.onPointSupported = true;
-        if (U.pushUnique(composedMembers, SeriesClass)) {
-            addEvent(Series, 'afterInit', seriesAfterInit);
-            addEvent(Series, 'afterRender', seriesAfterRender);
-            addEvent(Series, 'afterGetCenter', seriesGetCenter);
-            addEvent(Series, 'hide', seriesShowOrHide);
-            addEvent(Series, 'show', seriesShowOrHide);
-            addEvent(Series, 'translate', seriesTranslate);
-        }
-        if (U.pushUnique(composedMembers, ChartClass)) {
+        if (pushUnique(composed, 'SeriesOnPoint')) {
+            const { chartGetZData, seriesAfterInit, seriesAfterRender, seriesGetCenter, seriesShowOrHide, seriesTranslate } = Additions.prototype;
+            // We can mark support for pie series here because it's in the core.
+            // But all other series outside the core should be marked in its
+            // module. This is crucial when loading series-on-point before
+            // loading a module, e.g. sunburst.
+            // Supported series types:
+            // - pie
+            // - sunburst
+            SeriesClass.types.pie.prototype.onPointSupported = true;
+            addEvent(SeriesClass, 'afterInit', seriesAfterInit);
+            addEvent(SeriesClass, 'afterRender', seriesAfterRender);
+            addEvent(SeriesClass, 'afterGetCenter', seriesGetCenter);
+            addEvent(SeriesClass, 'hide', seriesShowOrHide);
+            addEvent(SeriesClass, 'show', seriesShowOrHide);
+            addEvent(SeriesClass, 'translate', seriesTranslate);
             addEvent(ChartClass, 'beforeRender', chartGetZData);
             addEvent(ChartClass, 'beforeRedraw', chartGetZData);
         }
@@ -157,7 +150,7 @@ var SeriesOnPointComposition;
                 d: SVGRenderer.prototype.crispLine([
                     ['M', xFrom, yFrom],
                     ['L', xTo, yTo]
-                ], width, 'ceil'),
+                ], width),
                 'stroke-width': width
             };
             if (!chart.styledMode) {
@@ -230,7 +223,7 @@ var SeriesOnPointComposition;
         seriesShowOrHide() {
             const allSeries = this.chart.series;
             // When toggling a series visibility, loop through all points
-            this.points.forEach((point) => {
+            this.points?.forEach((point) => {
                 // Find all series that are on toggled points
                 const series = find(allSeries, (series) => {
                     const id = ((series.onPoint || {}).options || {}).id;
@@ -240,7 +233,7 @@ var SeriesOnPointComposition;
                     return id === point.id;
                 });
                 // And also toggle series that are on toggled points. Redraw is
-                // not needed because it's fired later after showOrhide event
+                // not needed because it's fired later after showOrHide event
                 series && series.setVisible(!series.visible, false);
             });
         }
@@ -389,4 +382,4 @@ export default SeriesOnPointComposition;
  * @type       {number}
  * @apioption  plotOptions.series.onPoint.position.y
  */
-''; // keeps doclets above in transpiled file
+''; // Keeps doclets above in transpiled file

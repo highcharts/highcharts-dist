@@ -2,7 +2,7 @@
  *
  *  Networkgraph series
  *
- *  (c) 2010-2021 Paweł Fus
+ *  (c) 2010-2024 Paweł Fus
  *
  *  License: www.highcharts.com/license
  *
@@ -238,7 +238,7 @@ class QuadTreeNode {
     updateMassAndCenter() {
         let mass = 0, plotX = 0, plotY = 0;
         if (this.isInternal) {
-            // Calcualte weightened mass of the quad node:
+            // Calculate weightened mass of the quad node:
             for (const pointMass of this.nodes) {
                 if (!pointMass.isEmpty) {
                     mass += pointMass.mass;

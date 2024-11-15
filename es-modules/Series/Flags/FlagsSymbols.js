@@ -68,7 +68,7 @@ var FlagsSymbols;
                 x -= Math.round((h - w) / 2);
                 w = h;
             }
-            path = (symbols[shape])(x, y, w, h);
+            path = (symbols[shape])(x, y, w, h, options);
             if (anchorX && anchorY) {
                 /**
                  * If the label is below the anchor, draw the connecting line

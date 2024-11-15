@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2023 Highsoft AS
+ *  (c) 2009-2024 Highsoft AS
  *
  *  License: www.highcharts.com/license
  *
@@ -51,7 +51,7 @@ class DataConverter {
          */
         this.dateFormats = {
             'YYYY/mm/dd': {
-                regex: /^([0-9]{4})([\-\.\/])([0-9]{1,2})\2([0-9]{1,2})$/,
+                regex: /^(\d{4})([\-\.\/])(\d{1,2})\2(\d{1,2})$/,
                 parser: function (match) {
                     return (match ?
                         Date.UTC(+match[1], match[3] - 1, +match[4]) :
@@ -59,16 +59,16 @@ class DataConverter {
                 }
             },
             'dd/mm/YYYY': {
-                regex: /^([0-9]{1,2})([\-\.\/])([0-9]{1,2})\2([0-9]{4})$/,
+                regex: /^(\d{1,2})([\-\.\/])(\d{1,2})\2(\d{4})$/,
                 parser: function (match) {
                     return (match ?
                         Date.UTC(+match[4], match[3] - 1, +match[1]) :
                         NaN);
                 },
-                alternative: 'mm/dd/YYYY' // different format with the same regex
+                alternative: 'mm/dd/YYYY' // Different format with the same regex
             },
             'mm/dd/YYYY': {
-                regex: /^([0-9]{1,2})([\-\.\/])([0-9]{1,2})\2([0-9]{4})$/,
+                regex: /^(\d{1,2})([\-\.\/])(\d{1,2})\2(\d{4})$/,
                 parser: function (match) {
                     return (match ?
                         Date.UTC(+match[4], match[1] - 1, +match[3]) :
@@ -76,7 +76,7 @@ class DataConverter {
                 }
             },
             'dd/mm/YY': {
-                regex: /^([0-9]{1,2})([\-\.\/])([0-9]{1,2})\2([0-9]{2})$/,
+                regex: /^(\d{1,2})([\-\.\/])(\d{1,2})\2(\d{2})$/,
                 parser: function (match) {
                     const d = new Date();
                     if (!match) {
@@ -91,10 +91,10 @@ class DataConverter {
                     }
                     return Date.UTC(year, match[3] - 1, +match[1]);
                 },
-                alternative: 'mm/dd/YY' // different format with the same regex
+                alternative: 'mm/dd/YY' // Different format with the same regex
             },
             'mm/dd/YY': {
-                regex: /^([0-9]{1,2})([\-\.\/])([0-9]{1,2})\2([0-9]{2})$/,
+                regex: /^(\d{1,2})([\-\.\/])(\d{1,2})\2(\d{2})$/,
                 parser: function (match) {
                     return (match ?
                         Date.UTC(+match[4] + 2000, match[1] - 1, +match[3]) :
@@ -246,7 +246,7 @@ class DataConverter {
     deduceDateFormat(data, limit, save) {
         const parser = this, stable = [], max = [];
         let format = 'YYYY/mm/dd', thing, guessedFormat = [], i = 0, madeDeduction = false, 
-        // candidates = {},
+        /// candidates = {},
         elem, j;
         if (!limit || limit > data.length) {
             limit = data.length;
@@ -256,7 +256,7 @@ class DataConverter {
                 data[i] && data[i].length) {
                 thing = data[i]
                     .trim()
-                    .replace(/[-\.\/]/g, ' ')
+                    .replace(/[\-\.\/]/g, ' ')
                     .split(' ');
                 guessedFormat = [
                     '',
@@ -283,7 +283,7 @@ class DataConverter {
                                 else {
                                     guessedFormat[j] = 'YYYY';
                                 }
-                                // madeDeduction = true;
+                                /// madeDeduction = true;
                             }
                             else if (elem > 12 &&
                                 elem <= 31) {
@@ -347,7 +347,11 @@ class DataConverter {
      * @param {DataConverter.Options} [options]
      * Options for the export.
      */
-    export(connector, options) {
+    export(
+    /* eslint-disable @typescript-eslint/no-unused-vars */
+    connector, options
+    /* eslint-enable @typescript-eslint/no-unused-vars */
+    ) {
         this.emit({
             type: 'exportError',
             columns: [],
@@ -386,17 +390,17 @@ class DataConverter {
             }
             const floatValue = parseFloat(innerTrimedValue);
             if (+innerTrimedValue === floatValue) {
-                // string is numeric
+                // String is numeric
                 value = floatValue;
             }
             else {
-                // determine if a date string
+                // Determine if a date string
                 const dateValue = converter.parseDate(value);
                 result = isNumber(dateValue) ? 'Date' : 'string';
             }
         }
         if (typeof value === 'number') {
-            // greater than milliseconds in a year assumed timestamp
+            // Greater than milliseconds in a year assumed timestamp
             result = value > 365 * 24 * 3600 * 1000 ? 'Date' : 'number';
         }
         return result;
@@ -422,7 +426,9 @@ class DataConverter {
      * @param {DataConverter.UserOptions} options
      * Options of the DataConverter.
      */
-    parse(options) {
+    parse(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    options) {
         this.emit({
             type: 'parseError',
             columns: [],
@@ -432,8 +438,6 @@ class DataConverter {
     }
     /**
      * Parse a date and return it as a number.
-     *
-     * @function Highcharts.Data#parseDate
      *
      * @param {string} value
      * Value to parse.
@@ -455,9 +459,9 @@ class DataConverter {
                     format = converter.dateFormats[key];
                     match = value.match(format.regex);
                     if (match) {
-                        // converter.options.dateFormat = dateFormat = key;
+                        // `converter.options.dateFormat` = dateFormat = key;
                         dateFormat = key;
-                        // converter.options.alternativeFormat =
+                        // `converter.options.alternativeFormat` =
                         // format.alternative || '';
                         result = format.parser(match);
                         break;
@@ -491,7 +495,7 @@ class DataConverter {
                 }
                 else if (isNumber(match)) {
                     result = match - (new Date(match)).getTimezoneOffset() * 60000;
-                    if ( // reset dates without year in Chrome
+                    if ( // Reset dates without year in Chrome
                     value.indexOf('2001') === -1 &&
                         (new Date(result)).getFullYear() === 2001) {
                         result = NaN;
@@ -517,7 +521,7 @@ class DataConverter {
         if (typeof str === 'string') {
             str = str.replace(/^\s+|\s+$/g, '');
             // Clear white space insdie the string, like thousands separators
-            if (inside && /^[0-9\s]+$/.test(str)) {
+            if (inside && /^[\d\s]+$/.test(str)) {
                 str = str.replace(/\s/g, '');
             }
         }

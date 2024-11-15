@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.4.8 (2024-08-29)
  *
  * Indicator series type for Highcharts Stock
  *
- * (c) 2010-2021 Sebastian Bochan
+ * (c) 2010-2024 Sebastian Bochan
  *
  * License: www.highcharts.com/license
  */
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -59,28 +59,14 @@
          * @augments Highcharts.Series
          */
         class ADIndicator extends SMAIndicator {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Static Functions
              *
              * */
-            static populateAverage(xVal, yVal, yValVolume, i, _period) {
+            static populateAverage(xVal, yVal, yValVolume, i, 
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            _period) {
                 const high = yVal[i][1], low = yVal[i][2], close = yVal[i][3], volume = yValVolume[i], adY = close === high && close === low || high === low ?
                     0 :
                     ((2 * close - low - high) / (high - low)) * volume, adX = xVal[i];
@@ -105,7 +91,7 @@
                         ' not found! Check `volumeSeriesID`.', true, series.chart);
                     return;
                 }
-                // i = period <-- skip first N-points
+                // When i = period <-- skip first N-points
                 // Calculate value one-by-one for each period in visible data
                 for (i = period; i < yValLen; i++) {
                     len = AD.length;
@@ -124,6 +110,11 @@
                 };
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         /**
          * Accumulation Distribution (AD). This series requires `linkedTo` option to
          * be set.
@@ -143,7 +134,7 @@
              * @excluding index
              */
             params: {
-                index: void 0,
+                index: void 0, // Unused index, do not inherit (#15362)
                 /**
                  * The id of volume series which is mandatory.
                  * For example using OHLC data, volumeSeriesID='volume' means
@@ -181,12 +172,13 @@
          * @requires  stock/indicators/accumulation-distribution
          * @apioption series.ad
          */
-        ''; // add doclet above to transpiled file
+        ''; // Add doclet above to transpiled file
 
         return ADIndicator;
     });
-    _registerModule(_modules, 'masters/indicators/accumulation-distribution.src.js', [], function () {
+    _registerModule(_modules, 'masters/indicators/accumulation-distribution.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

@@ -26,22 +26,6 @@ const { correctFloat, extend, merge, error } = U;
  * @augments Highcharts.Series
  */
 class ChaikinIndicator extends EMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -94,6 +78,11 @@ class ChaikinIndicator extends EMAIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Chaikin Oscillator. This series requires the `linkedTo` option to
  * be set and should be loaded after the `stock/indicators/indicators.js`.
@@ -113,13 +102,13 @@ class ChaikinIndicator extends EMAIndicator {
  */
 ChaikinIndicator.defaultOptions = merge(EMAIndicator.defaultOptions, {
     /**
-     * Paramters used in calculation of Chaikin Oscillator
+     * Parameters used in calculation of Chaikin Oscillator
      * series points.
      *
      * @excluding index
      */
     params: {
-        index: void 0,
+        index: void 0, // Unused index, do not inherit (#15362)
         /**
          * The id of volume series which is mandatory.
          * For example using OHLC data, volumeSeriesID='volume' means
@@ -171,4 +160,4 @@ export default ChaikinIndicator;
  * @requires  stock/indicators/chaikin
  * @apioption series.chaikin
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

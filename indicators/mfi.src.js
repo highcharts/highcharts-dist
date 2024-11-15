@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.4.8 (2024-08-29)
  *
  * Money Flow Index indicator for Highcharts Stock
  *
- * (c) 2010-2021 Grzegorz Blachliński
+ * (c) 2010-2024 Grzegorz Blachliński
  *
  * License: www.highcharts.com/license
  */
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -40,7 +40,7 @@
          *
          *  Money Flow Index indicator for Highcharts Stock
          *
-         *  (c) 2010-2021 Grzegorz Blachliński
+         *  (c) 2010-2024 Grzegorz Blachliński
          *
          *  License: www.highcharts.com/license
          *
@@ -55,17 +55,29 @@
          *
          * */
         // Utils:
+        /**
+         *
+         */
         function sumArray(array) {
             return array.reduce(function (prev, cur) {
                 return prev + cur;
             });
         }
+        /**
+         *
+         */
         function toFixed(a, n) {
             return parseFloat(a.toFixed(n));
         }
+        /**
+         *
+         */
         function calculateTypicalPrice(point) {
             return (point[1] + point[2] + point[3]) / 3;
         }
+        /**
+         *
+         */
         function calculateRawMoneyFlow(typicalPrice, volume) {
             return typicalPrice * volume;
         }
@@ -84,22 +96,6 @@
          * @augments Highcharts.Series
          */
         class MFIIndicator extends SMAIndicator {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Functions
@@ -169,6 +165,11 @@
                 };
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         /**
          * Money Flow Index. This series requires `linkedTo` option to be set and
          * should be loaded after the `stock/indicators/indicators.js` file.
@@ -188,7 +189,7 @@
              * @excluding index
              */
             params: {
-                index: void 0,
+                index: void 0, // Unchangeable index, do not inherit (#15362)
                 /**
                  * The id of volume series which is mandatory.
                  * For example using OHLC data, volumeSeriesID='volume' means
@@ -227,12 +228,13 @@
          * @requires  stock/indicators/mfi
          * @apioption series.mfi
          */
-        ''; // to include the above in the js output
+        ''; // To include the above in the js output
 
         return MFIIndicator;
     });
-    _registerModule(_modules, 'masters/indicators/mfi.src.js', [], function () {
+    _registerModule(_modules, 'masters/indicators/mfi.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

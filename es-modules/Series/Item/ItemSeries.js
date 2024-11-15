@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2019-2021 Torstein Honsi
+ *  (c) 2019-2024 Torstein Honsi
  *
  *  Item series type for Highcharts
  *
@@ -26,7 +26,7 @@ const { defined, extend, fireEvent, isNumber, merge, pick } = U;
 /**
  * The item series type.
  *
- * @requires module:modules/item-series
+ * @requires modules/item-series
  *
  * @private
  * @class
@@ -35,17 +35,6 @@ const { defined, extend, fireEvent, isNumber, merge, pick } = U;
  * @augments Highcharts.seriesTypes.pie
  */
 class ItemSeries extends PieSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -73,7 +62,7 @@ class ItemSeries extends PieSeries {
     drawDataLabels() {
         if (this.center && this.slots) {
             super.drawDataLabels();
-            // or it's just a dot chart with no natural place to put the data labels
+            // Or it's just a dot chart with no natural place to put the data labels
         }
         else {
             for (const point of this.points) {
@@ -168,7 +157,7 @@ class ItemSeries extends PieSeries {
                 if (!graphic.isActive) {
                     graphic.destroy();
                     graphics.splice(j, 1);
-                    j--; // Need to substract 1 after splice, #19053
+                    j--; // Need to subtract 1 after splice, #19053
                 }
                 else {
                     graphic.isActive = false;
@@ -310,7 +299,7 @@ class ItemSeries extends PieSeries {
     }
     translate(positions) {
         // Initialize chart without setting data, #13379.
-        if (this.total === 0 && // check if that is a (semi-)circle
+        if (this.total === 0 && // Check if that is a (semi-)circle
             isNumber(this.options.startAngle) &&
             isNumber(this.options.endAngle)) {
             this.center = this.getCenter();
@@ -329,6 +318,11 @@ class ItemSeries extends PieSeries {
         }
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 ItemSeries.defaultOptions = merge(PieSeries.defaultOptions, ItemSeriesDefaults);
 extend(ItemSeries.prototype, {
     markerAttribs: void 0,

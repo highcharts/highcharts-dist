@@ -1,6 +1,6 @@
 /* *
  *
- *  Copyright (c) 2010-2021 Highsoft AS
+ *  (c) 2010-2024 Highsoft AS
  *  Author: Sebastian Domas
  *
  *  License: www.highcharts.com/license
@@ -14,7 +14,7 @@ import HistogramSeriesDefaults from './HistogramSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
-const { arrayMax, arrayMin, correctFloat, extend, isNumber, merge, objectEach } = U;
+const { arrayMax, arrayMin, correctFloat, extend, isNumber, merge } = U;
 /* ************************************************************************** *
  *  HISTOGRAM
  * ************************************************************************** */
@@ -61,18 +61,6 @@ function fitToBinLeftClosed(bins) {
  * @augments Highcharts.Series
  */
 class HistogramSeries extends ColumnSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        this.userOptions = void 0;
-    }
     /* *
      *
      *  Functions
@@ -130,7 +118,7 @@ class HistogramSeries extends ColumnSeries {
             data.push({
                 x: Number(key),
                 y: bins[key],
-                x2: correctFloat(Number(x) + binWidth)
+                x2: correctFloat(Number(key) + binWidth)
             });
         }
         data.sort((a, b) => (a.x - b.x));
@@ -147,6 +135,11 @@ class HistogramSeries extends ColumnSeries {
         this.setData(data, false);
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 HistogramSeries.defaultOptions = merge(ColumnSeries.defaultOptions, HistogramSeriesDefaults);
 extend(HistogramSeries.prototype, {
     hasDerivedData: DerivedComposition.hasDerivedData

@@ -3,7 +3,7 @@
  *  Experimental Highcharts module which enables visualization of a Venn
  *  diagram.
  *
- *  (c) 2016-2021 Highsoft AS
+ *  (c) 2016-2024 Highsoft AS
  *  Authors: Jon Arild Nygard
  *
  *  Layout algorithm by Ben Frederickson:
@@ -44,24 +44,6 @@ const { addEvent, extend, isArray, isNumber, isObject, merge } = U;
  * @augments Highcharts.Series
  */
 class VennSeries extends ScatterSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.mapOfIdToRelation = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        /* eslint-enable valid-jsdoc */
-    }
     /* *
      *
      *  Static Functions
@@ -69,7 +51,7 @@ class VennSeries extends ScatterSeries {
      * */
     /**
      * Finds the optimal label position by looking for a position that has a low
-     * distance from the internal circles, and as large possible distane to the
+     * distance from the internal circles, and as large possible distance to the
      * external circles.
      * @private
      * @todo Optimize the intial position.
@@ -138,7 +120,7 @@ class VennSeries extends ScatterSeries {
         return best;
     }
     /**
-     * Calulates data label values for a given relations object.
+     * Calculates data label values for a given relations object.
      *
      * @private
      * @todo add unit tests
@@ -168,7 +150,7 @@ class VennSeries extends ScatterSeries {
         // Filter out external circles that are completely overlapping all
         // internal
         data.external = data.external.filter((externalCircle) => data.internal.some((internalCircle) => !isCircle1CompletelyOverlappingCircle2(externalCircle, internalCircle)));
-        // Calulate the label position.
+        // Calculate the label position.
         const position = VennSeries.getLabelPosition(data.internal, data.external);
         // Calculate the label width
         const width = VennUtils.getLabelWidth(position, data.internal, data.external);
@@ -185,7 +167,7 @@ class VennSeries extends ScatterSeries {
      * @todo Add support for constrained MDS.
      * @param {Array<Highchats.VennRelationObject>} relations
      * List of the overlap between two or more sets, or the size of a single
-     * sset.
+     * set.
      * @return {Highcharts.Dictionary<*>}
      * List of circles and their calculated positions.
      */
@@ -227,7 +209,7 @@ class VennSeries extends ScatterSeries {
      * area, and center of x and y.
      */
     static getScale(targetWidth, targetHeight, field) {
-        const height = field.bottom - field.top, // top is smaller than bottom
+        const height = field.bottom - field.top, // Top is smaller than bottom
         width = field.right - field.left, scaleX = width > 0 ? 1 / width * targetWidth : 1, scaleY = height > 0 ? 1 / height * targetHeight : 1, adjustX = (field.right + field.left) / 2, adjustY = (field.top + field.bottom) / 2, scale = Math.min(scaleX, scaleY);
         return {
             scale: scale,
@@ -387,7 +369,8 @@ class VennSeries extends ScatterSeries {
         }), scaling = VennSeries.getScale(chart.plotWidth, chart.plotHeight, field), scale = scaling.scale, centerX = scaling.centerX, centerY = scaling.centerY;
         // Iterate all points and calculate and draw their graphics.
         for (const point of this.points) {
-            let sets = isArray(point.sets) ? point.sets : [], id = sets.join(), shape = mapOfIdToShape[id], shapeArgs, dataLabelValues = mapOfIdToLabelValues[id] || {}, dataLabelWidth = dataLabelValues.width, dataLabelPosition = dataLabelValues.position, dlOptions = point.options && point.options.dataLabels;
+            const sets = isArray(point.sets) ? point.sets : [], id = sets.join(), shape = mapOfIdToShape[id], dataLabelValues = mapOfIdToLabelValues[id] || {}, dlOptions = point.options && point.options.dataLabels;
+            let shapeArgs, dataLabelWidth = dataLabelValues.width, dataLabelPosition = dataLabelValues.position;
             if (shape) {
                 if (shape.r) {
                     shapeArgs = {
@@ -443,6 +426,11 @@ class VennSeries extends ScatterSeries {
         }
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 VennSeries.splitter = 'highcharts-split';
 VennSeries.defaultOptions = merge(ScatterSeries.defaultOptions, VennSeriesDefaults);
 extend(VennSeries.prototype, {

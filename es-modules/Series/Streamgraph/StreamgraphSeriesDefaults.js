@@ -2,7 +2,7 @@
  *
  *  Streamgraph module
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -143,7 +143,7 @@ const StreamgraphSeriesDefaults = {
  * @default   1
  * @apioption series.streamgraph.fillOpacity
  */
-''; // keeps doclets above separate
+''; // Keeps doclets above separate
 /* *
  *
  *  Default Export

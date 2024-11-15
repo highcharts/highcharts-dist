@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Highsoft AS
+ *  (c) 2010-2024 Highsoft AS
  *
  *  Author: Sebastian Domas
  *
@@ -29,7 +29,7 @@
  * @product      highcharts
  * @excluding    boostThreshold, connectNulls, dragDrop, stacking,
  *               pointInterval, pointIntervalUnit
- * @requires     modules/bellcurve
+ * @requires     modules/histogram-bellcurve
  * @optionparent plotOptions.bellcurve
  */
 const BellcurveSeriesDefaults = {
@@ -86,7 +86,7 @@ const BellcurveSeriesDefaults = {
  * @since     6.0.0
  * @product   highcharts
  * @excluding dataParser, dataURL, data, boostThreshold, boostBlending
- * @requires  modules/bellcurve
+ * @requires  modules/histogram-bellcurve
  * @apioption series.bellcurve
  */
 /**
@@ -116,7 +116,7 @@ const BellcurveSeriesDefaults = {
  * @default   {highstock} 0.75
  * @apioption series.bellcurve.fillOpacity
  */
-''; // keeps doclets above separate
+''; // Keeps doclets above separate
 /* *
  *
  *  Default Export

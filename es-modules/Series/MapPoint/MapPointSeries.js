@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -39,15 +39,6 @@ class MapPointSeries extends ScatterSeries {
          *
          * */
         super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.chart = void 0;
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
         this.clearBounds = MapSeries.prototype.clearBounds;
         /* eslint-enable valid-jsdoc */
     }
@@ -206,4 +197,4 @@ export default MapPointSeries;
  *  API Options
  *
  * */
-''; // adds doclets above to transpiled file
+''; // Adds doclets above to transpiled file

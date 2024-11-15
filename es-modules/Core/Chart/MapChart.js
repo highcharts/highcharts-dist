@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -45,7 +45,7 @@ class MapChart extends Chart {
      *        Custom options.
      *
      * @param {Function} [callback]
-     *        Function to run when the chart has loaded and and all external
+     *        Function to run when the chart has loaded and all external
      *        images are loaded.
      *
      *
@@ -67,11 +67,11 @@ class MapChart extends Chart {
                     '{geojson.copyrightShort}</a>'),
                 mapTextFull: pick(defaultCreditsOptions.mapTextFull, '{geojson.copyright}')
             },
-            mapView: {},
+            mapView: {}, // Required to enable Chart.mapView
             tooltip: {
                 followTouchMove: false
             }
-        }, userOptions // user's options
+        }, userOptions // User's options
         );
         super.init(options, callback);
     }
@@ -118,6 +118,16 @@ class MapChart extends Chart {
                 [chartX, chartY] :
                 void 0);
         }
+    }
+    update(options) {
+        // Calculate and set the recommended map view if map option is set
+        if (options.chart && 'map' in options.chart) {
+            this.mapView?.recommendMapView(this, [
+                options.chart.map,
+                ...(this.options.series || []).map((s) => s.mapData)
+            ], true);
+        }
+        super.update.apply(this, arguments);
     }
 }
 /* *
@@ -193,7 +203,7 @@ class MapChart extends Chart {
         if (typeof path === 'string') {
             path = path
                 // Move letters apart
-                .replace(/([A-Za-z])/g, ' $1 ')
+                .replace(/([A-Z])/gi, ' $1 ')
                 // Trim
                 .replace(/^\s*/, '').replace(/\s*$/, '');
             // Split on spaces and commas. The semicolon is bogus, designed to
@@ -201,7 +211,7 @@ class MapChart extends Chart {
             // specific styled mode files.
             const split = path.split(/[ ,;]+/);
             arr = split.map((item) => {
-                if (!/[A-za-z]/.test(item)) {
+                if (!/[A-Z]/i.test(item)) {
                     return parseFloat(item);
                 }
                 return item;

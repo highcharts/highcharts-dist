@@ -26,24 +26,6 @@ const { merge, extend, defined, isArray } = U;
  * @augments Highcharts.Series
  */
 class PivotPointsIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        this.endPoint = void 0;
-        this.plotEndPoint = void 0;
-    }
     /* *
      *
      *  Functions
@@ -106,7 +88,7 @@ class PivotPointsIndicator extends SMAIndicator {
         let currentLabel, pointsLength, point, i;
         if (indicator.options.dataLabels.enabled) {
             pointsLength = indicator.points.length;
-            // For every Ressitance/Support group we need to render labels.
+            // For every Resistance/Support group we need to render labels.
             // Add one more item, which will just store dataLabels from
             // previous iteration
             pointMapping.concat([false]).forEach((position, k) => {
@@ -230,6 +212,11 @@ class PivotPointsIndicator extends SMAIndicator {
         return avg;
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Pivot points indicator. This series requires the `linkedTo` option to be
  * set and should be loaded after `stock/indicators/indicators.js` file.
@@ -241,7 +228,7 @@ class PivotPointsIndicator extends SMAIndicator {
  * @since        6.0.0
  * @product      highstock
  * @requires     stock/indicators/indicators
- * @requires     stock/indicators/pivotpoints
+ * @requires     stock/indicators/pivot-points
  * @optionparent plotOptions.pivotpoints
  */
 PivotPointsIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
@@ -249,10 +236,10 @@ PivotPointsIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
      * @excluding index
      */
     params: {
-        index: void 0,
+        index: void 0, // Unchangeable index, do not inherit (#15362)
         period: 28,
         /**
-         * Algorithm used to calculate ressistance and support lines based
+         * Algorithm used to calculate resistance and support lines based
          * on pivot points. Implemented algorithms: `'standard'`,
          * `'fibonacci'` and `'camarilla'`
          */
@@ -302,7 +289,7 @@ export default PivotPointsIndicator;
  * @product   highstock
  * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
- * @requires  stock/indicators/pivotpoints
+ * @requires  stock/indicators/pivot-points
  * @apioption series.pivotpoints
  */
-''; // to include the above in the js output'
+''; // To include the above in the js output'

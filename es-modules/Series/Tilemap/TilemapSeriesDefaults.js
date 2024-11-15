@@ -2,7 +2,7 @@
  *
  *  Tilemaps module
  *
- *  (c) 2010-2021 Highsoft AS
+ *  (c) 2010-2024 Highsoft AS
  *  Author: Øystein Moseng
  *
  *  License: www.highcharts.com/license
@@ -38,7 +38,7 @@
  * @excluding    jitter, joinBy, shadow, allAreas, mapData, marker, data,
  *               dataSorting, boostThreshold, boostBlending
  * @product      highcharts highmaps
- * @requires     modules/tilemap.js
+ * @requires     modules/tilemap
  * @optionparent plotOptions.tilemap
  */
 const TilemapSeriesDefaults = {
@@ -114,7 +114,7 @@ const TilemapSeriesDefaults = {
  *            pointRange, shadow, stack, dataSorting, boostThreshold,
  *            boostBlending
  * @product   highcharts highmaps
- * @requires  modules/tilemap.js
+ * @requires  modules/tilemap
  * @apioption series.tilemap
  */
 /**
@@ -211,7 +211,7 @@ const TilemapSeriesDefaults = {
  * @product   highcharts highmaps
  * @apioption series.tilemap.data.y
  */
-''; // keeps doclets above detached
+''; // Keeps doclets above detached
 /* *
  *
  *  Default Export

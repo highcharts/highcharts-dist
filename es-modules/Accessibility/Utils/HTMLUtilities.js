@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2021 Øystein Moseng
+ *  (c) 2009-2024 Øystein Moseng
  *
  *  Utility functions for accessibility module.
  *
@@ -176,8 +176,8 @@ function getFakeMouseEvent(type, position, relatedTarget) {
             // Coords
             pos.x, pos.y, pos.x, pos.y, 
             // Pressed keys
-            false, false, false, false, 0, // button
-            null // related target
+            false, false, false, false, 0, // Button
+            null // Related target
             );
             return evt;
         }
@@ -204,7 +204,7 @@ function getHeadingTagNameForElement(element) {
         const headingLevel = parseInt(tagName.slice(1), 10), newLevel = Math.min(6, headingLevel + 1);
         return 'h' + newLevel;
     };
-    const isHeading = (tagName) => /H[1-6]/.test(tagName);
+    const isHeading = (tagName) => /^H[1-6]$/i.test(tagName);
     const getPreviousSiblingsHeading = (el) => {
         let sibling = el;
         while (sibling = sibling.previousSibling) { // eslint-disable-line

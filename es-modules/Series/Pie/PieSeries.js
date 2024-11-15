@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -19,7 +19,7 @@ import Series from '../../Core/Series/Series.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import Symbols from '../../Core/Renderer/SVG/Symbols.js';
 import U from '../../Core/Utilities.js';
-const { clamp, extend, fireEvent, merge, pick, relativeLength, splat } = U;
+const { clamp, extend, fireEvent, merge, pick } = U;
 /* *
  *
  *  Class
@@ -35,24 +35,6 @@ const { clamp, extend, fireEvent, merge, pick, relativeLength, splat } = U;
  * @augments Highcharts.Series
  */
 class PieSeries extends Series {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.center = void 0;
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        /* eslint-enable valid-jsdoc */
-    }
     /* *
      *
      *  Functions
@@ -69,14 +51,14 @@ class PieSeries extends Series {
             points.forEach(function (point) {
                 const graphic = point.graphic, args = point.shapeArgs;
                 if (graphic && args) {
-                    // start values
+                    // Start values
                     graphic.attr({
-                        // animate from inner radius (#779)
+                        // Animate from inner radius (#779)
                         r: pick(point.startR, (series.center && series.center[3] / 2)),
                         start: startAngleRad,
                         end: startAngleRad
                     });
-                    // animate
+                    // Animate
                     graphic.animate({
                         r: args.r,
                         start: args.start,
@@ -195,7 +177,7 @@ class PieSeries extends Series {
         if (series.group && !chart.styledMode) {
             series.group.shadow(series.options.shadow);
         }
-        // draw the slices
+        // Draw the slices
         series.points.forEach(function (point) {
             const animateTo = {};
             graphic = point.graphic;
@@ -257,7 +239,7 @@ class PieSeries extends Series {
     translate(positions) {
         fireEvent(this, 'translate');
         this.generatePoints();
-        const series = this, precision = 1000, // issue #172
+        const series = this, precision = 1000, // Issue #172
         options = series.options, slicedOffset = options.slicedOffset, radians = getStartAndEndRadians(options.startAngle, options.endAngle), startAngleRad = series.startAngleRad = radians.start, endAngleRad = series.endAngleRad = radians.end, circ = endAngleRad - startAngleRad, // 2 * Math.PI,
         points = series.points, ignoreHiddenPoint = options.ignoreHiddenPoint, len = points.length;
         let start, end, angle, 
@@ -267,6 +249,14 @@ class PieSeries extends Series {
         // given. If positions are passed as a parameter, we're in a
         // recursive loop for adjusting space for data labels.
         if (!positions) {
+            /**
+             * The series center position, read only. This applies only to
+             * circular chart types like pie and sunburst. It is an array of
+             * `[centerX, centerY, diameter, innerDiameter]`.
+             *
+             * @name Highcharts.Series#center
+             * @type {Array<number>}
+             */
             series.center = positions = series.getCenter();
         }
         // Calculate the geometry for each point
@@ -344,6 +334,11 @@ class PieSeries extends Series {
         }
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 PieSeries.defaultOptions = merge(Series.defaultOptions, PieSeriesDefaults);
 extend(PieSeries.prototype, {
     axisTypes: [],
@@ -352,6 +347,7 @@ extend(PieSeries.prototype, {
     drawTracker: ColumnSeries.prototype.drawTracker,
     getCenter: CU.getCenter,
     getSymbol: noop,
+    invertible: false,
     isCartesian: false,
     noSharedTooltip: true,
     pointAttribs: ColumnSeries.prototype.pointAttribs,

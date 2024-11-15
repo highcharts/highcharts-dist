@@ -2,7 +2,7 @@
  *
  *  Wind barb series module
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -63,22 +63,6 @@ function registerApproximation() {
  * @augments Highcharts.Series
  */
 class WindbarbSeries extends ColumnSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -115,15 +99,15 @@ class WindbarbSeries extends ColumnSeries {
         }
         // The stem and the arrow head
         const path = [
-            ['M', 0, 7 * u],
+            ['M', 0, 7 * u], // Base of arrow
             ['L', -1.5 * u, 7 * u],
             ['L', 0, 10 * u],
             ['L', 1.5 * u, 7 * u],
             ['L', 0, 7 * u],
-            ['L', 0, -10 * u] // top
+            ['L', 0, -10 * u] // Top
         ];
         // For each full 50 knots, add a pennant
-        barbs = (knots - knots % 50) / 50; // pennants
+        barbs = (knots - knots % 50) / 50; // Pennants
         if (barbs > 0) {
             while (barbs--) {
                 path.push(pos === -10 ? ['L', 0, pos * u] : ['M', 0, pos * u], ['L', 5 * u, pos * u + 2], ['L', 0, pos * u + 4]);
@@ -142,7 +126,7 @@ class WindbarbSeries extends ColumnSeries {
             }
         }
         // For each full 5 knots, add a half barb
-        barbs = (knots - knots % 5) / 5; // half barbs
+        barbs = (knots - knots % 5) / 5; // Half barbs
         if (barbs > 0) {
             while (barbs--) {
                 path.push(pos === -10 ? ['L', 0, pos * u] : ['M', 0, pos * u], ['L', 4 * u, pos * u]);
@@ -209,7 +193,7 @@ class WindbarbSeries extends ColumnSeries {
             }, animObject(this.options.animation));
         }
     }
-    markerAttribs(point, state) {
+    markerAttribs() {
         return {};
     }
     getExtremes() {
@@ -221,15 +205,24 @@ class WindbarbSeries extends ColumnSeries {
         return super.shouldShowTooltip(plotX, plotY, options);
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 WindbarbSeries.defaultOptions = merge(ColumnSeries.defaultOptions, WindbarbSeriesDefaults);
 OnSeriesComposition.compose(WindbarbSeries);
 extend(WindbarbSeries.prototype, {
-    beaufortFloor: [0, 0.3, 1.6, 3.4, 5.5, 8.0, 10.8, 13.9, 17.2, 20.8,
-        24.5, 28.5, 32.7],
-    beaufortName: ['Calm', 'Light air', 'Light breeze',
+    beaufortFloor: [
+        0, 0.3, 1.6, 3.4, 5.5, 8.0, 10.8, 13.9, 17.2, 20.8,
+        24.5, 28.5, 32.7
+    ], // @todo dictionary with names?
+    beaufortName: [
+        'Calm', 'Light air', 'Light breeze',
         'Gentle breeze', 'Moderate breeze', 'Fresh breeze',
         'Strong breeze', 'Near gale', 'Gale', 'Strong gale', 'Storm',
-        'Violent storm', 'Hurricane'],
+        'Violent storm', 'Hurricane'
+    ],
     invertible: false,
     parallelArrays: ['x', 'value', 'direction'],
     pointArrayMap: ['value', 'direction'],

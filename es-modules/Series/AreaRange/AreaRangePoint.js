@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -11,36 +11,23 @@
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { area: { prototype: { pointClass: AreaPoint, pointClass: { prototype: areaProto } } } } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
-const { defined, isNumber, merge } = U;
+const { defined, isNumber } = U;
 /* *
  *
  *  Class
  *
  * */
 class AreaRangePoint extends AreaPoint {
-    constructor() {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        super(...arguments);
-        /**
-         * Range series only. The high or maximum value for each data point.
-         * @name Highcharts.Point#high
-         * @type {number|undefined}
-         */
-        this.high = void 0;
-        /**
-         * Range series only. The low or minimum value for each data point.
-         * @name Highcharts.Point#low
-         * @type {number|undefined}
-         */
-        this.low = void 0;
-        this.options = void 0;
-        this.plotX = void 0;
-        this.series = void 0;
-    }
+    /**
+     * Range series only. The high or maximum value for each data point.
+     * @name Highcharts.Point#high
+     * @type {number|undefined}
+     */
+    /**
+     * Range series only. The low or minimum value for each data point.
+     * @name Highcharts.Point#low
+     * @type {number|undefined}
+     */
     /* *
      *
      *  Functions
@@ -50,7 +37,7 @@ class AreaRangePoint extends AreaPoint {
      * @private
      */
     setState() {
-        const prevState = this.state, series = this.series, isPolar = series.chart.polar, seriesOptionsMarker = series.options.marker, seriesDefaultSymbol = series.symbol;
+        const prevState = this.state, series = this.series, isPolar = series.chart.polar;
         if (!defined(this.plotHigh)) {
             // Boost doesn't calculate plotHigh
             this.plotHigh = series.yAxis.toPixels(this.high, true);

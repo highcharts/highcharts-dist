@@ -315,7 +315,7 @@ const DrilldownDefaults = {
  * @requires modules/drilldown
  * @apioption lang.drillUpText
  */
-''; // keep doclets above detached in JS file
+''; // Keep doclets above detached in JS file
 /* *
  *
  *  Default Export

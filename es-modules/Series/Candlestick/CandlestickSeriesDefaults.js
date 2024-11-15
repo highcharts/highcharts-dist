@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -8,10 +8,6 @@
  *
  * */
 'use strict';
-import D from '../../Core/Defaults.js';
-const { defaultOptions } = D;
-import U from '../../Core/Utilities.js';
-const { merge } = U;
 /* *
  *
  *  API Options
@@ -170,7 +166,7 @@ const CandlestickSeriesDefaults = {
  * @product   highstock
  * @apioption series.candlestick.data
  */
-''; // adds doclets above to transpilat
+''; // Adds doclets above to transpiled
 /* *
  *
  *  Default Export

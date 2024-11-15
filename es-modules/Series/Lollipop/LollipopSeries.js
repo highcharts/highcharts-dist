@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Sebastian Bochan, Rafal Sebestjanski
+ *  (c) 2010-2024 Sebastian Bochan, Rafal Sebestjanski
  *
  *  License: www.highcharts.com/license
  *
@@ -11,7 +11,9 @@
 import LollipopPoint from './LollipopPoint.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import Series from '../../Core/Series/Series.js';
-const { seriesTypes: { column: { prototype: colProto }, dumbbell: { prototype: dumbbellProto }, scatter: ScatterSeries } } = SeriesRegistry;
+const { seriesTypes: { column: { prototype: colProto }, dumbbell: { prototype: dumbbellProto }, 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+scatter: ScatterSeries } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
 const { extend, merge } = U;
 /* *
@@ -30,31 +32,12 @@ const { extend, merge } = U;
  *
  */
 class LollipopSeries extends Series {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /**
      * Extend the series' drawPoints method by applying a connector
      * and coloring markers.
      * @private
      *
      * @function Highcharts.Series#drawPoints
-     *
-     * @param {Highcharts.Series} this The series of points.
-     *
      */
     drawPoints() {
         const series = this, pointLength = series.points.length;
@@ -73,8 +56,6 @@ class LollipopSeries extends Series {
      *
      * @function Highcharts.Series#translate
      *
-     * @param {Highcharts.Series} this The series of points.
-     *
      */
     translate() {
         const series = this;
@@ -89,6 +70,11 @@ class LollipopSeries extends Series {
         }
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * The lollipop series is a carteseian series with a line anchored from
  * the x axis and a dot at the end to mark the value.
@@ -248,4 +234,4 @@ export default LollipopSeries;
  * @product   highcharts highstock
  * @apioption series.line.data.y
  */
-(''); // adds doclets above to transpiled file
+(''); // Adds doclets above to transpiled file

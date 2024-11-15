@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -8,14 +8,6 @@
  *
  * */
 'use strict';
-import U from '../Core/Utilities.js';
-const { pushUnique } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
 /* *
  *
  *  Variables
@@ -27,6 +19,9 @@ let symbols;
  *  Functions
  *
  * */
+/**
+ *
+ */
 function bottomButton(x, y, w, h, options) {
     if (options) {
         const r = options?.r || 0;
@@ -35,13 +30,17 @@ function bottomButton(x, y, w, h, options) {
     }
     return symbols.roundedRect(x, y, w, h, options);
 }
+/**
+ *
+ */
 function compose(SVGRendererClass) {
-    if (pushUnique(composedMembers, SVGRendererClass)) {
-        symbols = SVGRendererClass.prototype.symbols;
-        symbols.bottombutton = bottomButton;
-        symbols.topbutton = topButton;
-    }
+    symbols = SVGRendererClass.prototype.symbols;
+    symbols.bottombutton = bottomButton;
+    symbols.topbutton = topButton;
 }
+/**
+ *
+ */
 function topButton(x, y, w, h, options) {
     if (options) {
         const r = options?.r || 0;

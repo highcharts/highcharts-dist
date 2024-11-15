@@ -14,7 +14,7 @@ import * as _Highcharts from "../highcharts.src";
 export function factory(highcharts: typeof Highcharts): void;
 declare module "../highcharts.src" {
     /**
-     * Callback function that returns the correspondig Date object to a match.
+     * Callback function that returns the corresponding Date object to a match.
      */
     type DataDateFormatCallbackFunction = (match: Array<number>) => number;
     interface AjaxSettingsObject {
@@ -81,6 +81,9 @@ declare module "../highcharts.src" {
         /**
          * If a complete callback function is provided in the options, interpret
          * the columns into a Highcharts options object.
+         *
+         * The function requires that the context has the `valueCount` property
+         * set.
          */
         complete(): void;
         /**
@@ -102,7 +105,7 @@ declare module "../highcharts.src" {
          *
          * @return Data rows
          */
-        getData(): (Array<Array<(number|string)>>|undefined);
+        getData(): (Array<Array<DataValueType>>|undefined);
         /**
          * Parse a single column. Set properties like .isDatetime and
          * .isNumeric.
@@ -156,6 +159,12 @@ declare module "../highcharts.src" {
         trim(str: string, inside?: boolean): string;
         /**
          * Updates the chart with new data options.
+         *
+         * @param options
+         *        The new data options.
+         *
+         * @param redraw
+         *        Whether to redraw the chart after the new options are set.
          */
         update(options: DataOptions, redraw?: boolean): void;
     }
@@ -165,7 +174,7 @@ declare module "../highcharts.src" {
      * @param settings
      *        The Ajax settings to use.
      *
-     * @return Returns false, if error occured.
+     * @return Returns false, if error occurred.
      */
     function ajax(settings: AjaxSettingsObject): (false|undefined);
     /**
@@ -188,6 +197,7 @@ declare module "../highcharts.src" {
      * googleSpreadsheetRange option is set.
      */
     function getRange(): void;
+    function hasURLOption(): void;
 }
 export default factory;
 export let Highcharts: typeof _Highcharts;

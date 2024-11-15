@@ -26,22 +26,6 @@ const { correctFloat, extend, merge } = U;
  * @augments Highcharts.Series
  */
 class KeltnerChannelsIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -73,7 +57,7 @@ class KeltnerChannelsIndicator extends SMAIndicator {
         }), seriesATR = SeriesRegistry.seriesTypes.atr.prototype.getValues(series, {
             period: periodATR
         }), xData = [], yData = [];
-        // middle line, top line and bottom lineI
+        // Middle line, top line and bottom lineI
         let ML, TL, BL, date, pointEMA, pointATR, i;
         if (yValLen < period) {
             return;
@@ -96,6 +80,11 @@ class KeltnerChannelsIndicator extends SMAIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Keltner Channels. This series requires the `linkedTo` option to be set
  * and should be loaded after the `stock/indicators/indicators.js`,
@@ -223,4 +212,4 @@ export default KeltnerChannelsIndicator;
  * @requires     stock/indicators/keltner-channels
  * @apioption    series.keltnerchannels
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

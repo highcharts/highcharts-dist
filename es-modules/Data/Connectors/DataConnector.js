@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2023 Highsoft AS
+ *  (c) 2009-2024 Highsoft AS
  *
  *  License: www.highcharts.com/license
  *
@@ -99,14 +99,16 @@ class DataConnector {
      * @return {Array<string>|undefined}
      * Order of columns.
      */
-    getColumnOrder(usePresentationState) {
+    getColumnOrder(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    usePresentationState) {
         const connector = this, columns = connector.metadata.columns, names = Object.keys(columns || {});
         if (names.length) {
             return names.sort((a, b) => (pick(columns[a].index, 0) - pick(columns[b].index, 0)));
         }
     }
     /**
-     * Retrieves the columns of the the dataTable,
+     * Retrieves the columns of the dataTable,
      * applies column order from meta.
      *
      * @param {boolean} [usePresentationOrder]

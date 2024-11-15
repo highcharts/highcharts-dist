@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2014-2021 Highsoft AS
+ *  (c) 2014-2024 Highsoft AS
  *
  *  Authors: Jon Arild Nygard / Oystein Moseng
  *
@@ -71,7 +71,7 @@ const TreemapSeriesDefaults = {
      * @since 10.0.0
      * @product   highcharts
      * @extends   navigation.breadcrumbs
-     * @optionparent plotOptions.treemap.breadcrumbs
+     * @apioption plotOptions.treemap.breadcrumbs
      */
     /**
      * When the series contains less points than the crop threshold, all
@@ -459,7 +459,21 @@ const TreemapSeriesDefaults = {
             shadow: false
         }
     },
-    legendSymbol: 'rectangle'
+    legendSymbol: 'rectangle',
+    /**
+     * This option enables automatic traversing to the last child level upon
+     * node interaction. This feature simplifies navigation by immediately
+     * focusing on the deepest layer of the data structure without intermediate
+     * steps.
+     *
+     * @sample {highcharts} highcharts/plotoptions/treemap-traverse-to-leaf/
+     *         Traverse to leaf enabled
+     *
+     * @since   @next
+     *
+     * @product highcharts
+     */
+    traverseToLeaf: false
 };
 /**
  * A `treemap` series. If the [type](#series.treemap.type) option is
@@ -543,7 +557,7 @@ const TreemapSeriesDefaults = {
  * @product   highcharts
  * @apioption series.treemap.data.parent
  */
-''; // keeps doclets above detached
+''; // Keeps doclets above detached
 /* *
  *
  *  Default Export

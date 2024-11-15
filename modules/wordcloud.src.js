@@ -1,7 +1,7 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
- * (c) 2016-2021 Highsoft AS
+ * (c) 2016-2024 Highsoft AS
  * Authors: Jon Arild Nygard
  *
  * License: www.highcharts.com/license
@@ -27,20 +27,19 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
             }
         }
     }
-    _registerModule(_modules, 'Series/DrawPointUtilities.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Series/DrawPointUtilities.js', [], function () {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { isNumber } = U;
         /* *
          *
          *  Functions
@@ -98,7 +97,7 @@
                         onComplete();
                     }
                 };
-                // animate only runs complete callback if something was animated.
+                // Animate only runs complete callback if something was animated.
                 if (Object.keys(animatableAttribs).length) {
                     graphic.animate(animatableAttribs, void 0, () => destroy());
                 }
@@ -123,7 +122,7 @@
          *
          *  Experimental Highcharts module which enables visualization of a word cloud.
          *
-         *  (c) 2016-2021 Highsoft AS
+         *  (c) 2016-2024 Highsoft AS
          *  Authors: Jon Arild Nygard
          *
          *  License: www.highcharts.com/license
@@ -138,19 +137,6 @@
          *
          * */
         class WordcloudPoint extends ColumnPoint {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.dimensions = void 0;
-                this.options = void 0;
-                this.polygon = void 0;
-                this.rect = void 0;
-                this.series = void 0;
-            }
             /* *
              *
              *  Functions
@@ -176,7 +162,7 @@
          *
          *  Experimental Highcharts module which enables visualization of a word cloud.
          *
-         *  (c) 2016-2021 Highsoft AS
+         *  (c) 2016-2024 Highsoft AS
          *  Authors: Jon Arild Nygard
          *
          *  License: www.highcharts.com/license
@@ -230,7 +216,7 @@
             /**
              * @ignore-option
              */
-            clip: false,
+            clip: false, // Something goes wrong with clip. // @todo fix this
             colorByPoint: true,
             cropThreshold: Infinity,
             /**
@@ -369,7 +355,7 @@
          * @product   highcharts
          * @apioption series.wordcloud.data.weight
          */
-        ''; // detach doclets above
+        ''; // Detach doclets above
         /* *
          *
          *  Default Export
@@ -383,7 +369,7 @@
          *
          *  Experimental Highcharts module which enables visualization of a word cloud.
          *
-         *  (c) 2016-2021 Highsoft AS
+         *  (c) 2016-2024 Highsoft AS
          *  Authors: Jon Arild Nygard
          *
          *  License: www.highcharts.com/license
@@ -431,8 +417,8 @@
          *         Returns the two normals in an array.
          */
         function getNormals(p1, p2) {
-            const dx = p2[0] - p1[0], // x2 - x1
-            dy = p2[1] - p1[1]; // y2 - y1
+            const dx = p2[0] - p1[0], // X2 - x1
+            dy = p2[1] - p1[1]; // Y2 - y1
             return [
                 [-dy, dx],
                 [dy, -dx]
@@ -588,7 +574,7 @@
             return result;
         }
         /**
-         * Gives a set of cordinates for an rectangular spiral.
+         * Gives a set of coordinates for an rectangular spiral.
          *
          * @private
          * @function squareSpiral
@@ -603,7 +589,9 @@
          * Resulting coordinates, x and y. False if the word should be dropped from
          * the visualization.
          */
-        function squareSpiral(attempt, params) {
+        function squareSpiral(attempt, 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        params) {
             const a = attempt * 4, k = Math.ceil((Math.sqrt(a) - 1) / 2), isBoolean = (x) => (typeof x === 'boolean');
             let t = 2 * k + 1, m = Math.pow(t, 2), result = false;
             t -= 1;
@@ -642,7 +630,7 @@
             return result;
         }
         /**
-         * Gives a set of cordinates for an rectangular spiral.
+         * Gives a set of coordinates for an rectangular spiral.
          *
          * @private
          * @function rectangularSpiral
@@ -813,7 +801,7 @@
         function getSpiral(fn, params) {
             const length = 10000, arr = [];
             for (let i = 1; i < length; i++) {
-                // @todo unnecessary amount of precaclulation
+                // @todo unnecessary amount of precalculation
                 arr.push(fn(i, params));
             }
             return (attempt) => (attempt <= length ? arr[attempt - 1] : false);
@@ -884,7 +872,7 @@
             };
             point.polygon = polygon;
             point.rotation = options.rotation;
-            /* while w intersects any previously placed words:
+            /* While w intersects any previously placed words:
                 do {
                 move w a little bit along a spiral path
                 } while any part of w is outside the playing field and
@@ -1095,7 +1083,7 @@
          *
          *  Experimental Highcharts module which enables visualization of a word cloud.
          *
-         *  (c) 2016-2021 Highsoft AS
+         *  (c) 2016-2024 Highsoft AS
          *  Authors: Jon Arild Nygard
          *
          *  License: www.highcharts.com/license
@@ -1119,22 +1107,6 @@
          * @augments Highcharts.Series
          */
         class WordcloudSeries extends ColumnSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 * Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /**
              *
              * Functions
@@ -1174,8 +1146,8 @@
                 const series = this, hasRendered = series.hasRendered, xAxis = series.xAxis, yAxis = series.yAxis, chart = series.chart, group = series.group, options = series.options, animation = options.animation, allowExtendPlayingField = options.allowExtendPlayingField, renderer = chart.renderer, placed = [], placementStrategy = series.placementStrategy[options.placementStrategy], rotation = options.rotation, weights = series.points.map(function (p) {
                     return p.weight;
                 }), maxWeight = Math.max.apply(null, weights), 
-                // concat() prevents from sorting the original array.
-                data = series.points.concat().sort((a, b) => (b.weight - a.weight // Sort descending
+                // `concat()` prevents from sorting the original array.
+                points = series.points.concat().sort((a, b) => (b.weight - a.weight // Sort descending
                 ));
                 let testElement = renderer.text().add(group), field;
                 // Reset the scale before finding the dimensions (#11993).
@@ -1189,7 +1161,7 @@
                 });
                 // Get the dimensions for each word.
                 // Used in calculating the playing field.
-                for (const point of data) {
+                for (const point of points) {
                     const relativeWeight = 1 / maxWeight * point.weight, fontSize = series.deriveFontSize(relativeWeight, options.maxFontSize, options.minFontSize), css = extend({
                         fontSize: fontSize + 'px'
                     }, options.style);
@@ -1205,23 +1177,23 @@
                     };
                 }
                 // Calculate the playing field.
-                field = getPlayingField(xAxis.len, yAxis.len, data);
+                field = getPlayingField(xAxis.len, yAxis.len, points);
                 const spiral = getSpiral(series.spirals[options.spiral], {
                     field: field
                 });
                 // Draw all the points.
-                for (const point of data) {
+                for (const point of points) {
                     const relativeWeight = 1 / maxWeight * point.weight, fontSize = series.deriveFontSize(relativeWeight, options.maxFontSize, options.minFontSize), css = extend({
                         fontSize: fontSize + 'px'
                     }, options.style), placement = placementStrategy(point, {
-                        data: data,
+                        data: points,
                         field: field,
                         placed: placed,
                         rotation: rotation
                     }), attr = extend(series.pointAttribs(point, (point.selected && 'select')), {
                         align: 'center',
                         'alignment-baseline': 'middle',
-                        'dominant-baseline': 'middle',
+                        'dominant-baseline': 'middle', // #15973: Firefox
                         x: placement.x,
                         y: placement.y,
                         text: point.name,
@@ -1278,7 +1250,7 @@
                         if (!hasRendered) {
                             attr.x = 0;
                             attr.y = 0;
-                            // or animate from previous position
+                            // Or animate from previous position
                         }
                         else {
                             delete attr.x;
@@ -1318,11 +1290,16 @@
                 return {
                     translateX: x + (width / 2),
                     translateY: y + (height / 2),
-                    scaleX: 1,
+                    scaleX: 1, // #1623
                     scaleY: 1
                 };
             }
         }
+        /* *
+         *
+         *  Static properties
+         *
+         * */
         WordcloudSeries.defaultOptions = merge(ColumnSeries.defaultOptions, WordcloudSeriesDefaults);
         extend(WordcloudSeries.prototype, {
             animate: noop,
@@ -1378,8 +1355,9 @@
 
         return WordcloudSeries;
     });
-    _registerModule(_modules, 'masters/modules/wordcloud.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/wordcloud.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

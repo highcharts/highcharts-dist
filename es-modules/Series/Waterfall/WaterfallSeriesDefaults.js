@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -173,7 +173,7 @@ const WaterfallSeriesDefaults = {
  */
 /**
  * When this property is true, the points acts as a summary column for
- * the values added or substracted since the last intermediate sum,
+ * the values added or subtracted since the last intermediate sum,
  * or since the start of the series. The `y` value is ignored.
  *
  * @sample {highcharts} highcharts/demo/waterfall/
@@ -196,7 +196,7 @@ const WaterfallSeriesDefaults = {
  * @product   highcharts
  * @apioption series.waterfall.data.isSum
  */
-''; // adds doclets above to transpiled file
+''; // Adds doclets above to transpiled file
 /* *
  *
  *  Default Export

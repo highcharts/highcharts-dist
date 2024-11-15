@@ -2,7 +2,7 @@
  *
  *  Popup generator for Stock tools
  *
- *  (c) 2009-2021 Sebastian Bochan
+ *  (c) 2009-2024 Sebastian Bochan
  *
  *  License: www.highcharts.com/license
  *
@@ -13,8 +13,6 @@
 import AST from '../../../Core/Renderer/HTML/AST.js';
 import H from '../../../Core/Globals.js';
 const { doc } = H;
-import NU from '../NavigationBindingsUtilities.js';
-const { annotationsFieldsTypes } = NU;
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 const { seriesTypes } = SeriesRegistry;
 import U from '../../../Core/Utilities.js';
@@ -55,15 +53,15 @@ const dropdownParameters = {
  * Reference to two HTML columns (lhsCol, rhsCol)
  */
 function addColsContainer(container) {
-    // left column
+    // Left column
     const lhsCol = createElement('div', {
         className: 'highcharts-popup-lhs-col'
     }, void 0, container);
-    // right column
+    // Right column
     const rhsCol = createElement('div', {
         className: 'highcharts-popup-rhs-col'
     }, void 0, container);
-    // wrapper content
+    // Wrapper content
     createElement('div', {
         className: 'highcharts-popup-rhs-col-wrapper'
     }, void 0, rhsCol);
@@ -83,9 +81,9 @@ function addForm(chart, _options, callback) {
     if (!chart) {
         return;
     }
-    // add tabs
+    // Add tabs
     this.tabs.init.call(this, chart);
-    // get all tabs content divs
+    // Get all tabs content divs
     const tabsContainers = this.container
         .querySelectorAll('.highcharts-tab-item-content');
     // ADD tab
@@ -121,24 +119,24 @@ function addForm(chart, _options, callback) {
  */
 function addFormFields(chart, series, seriesType, rhsColWrapper) {
     const fields = series.params || series.options.params;
-    // reset current content
+    // Reset current content
     rhsColWrapper.innerHTML = AST.emptyHTML;
-    // create title (indicator name in the right column)
+    // Create title (indicator name in the right column)
     createElement('h3', {
         className: 'highcharts-indicator-title'
     }, void 0, rhsColWrapper).appendChild(doc.createTextNode(getNameType(series, seriesType).indicatorFullName));
-    // input type
+    // Input type
     createElement('input', {
         type: 'hidden',
         name: 'highcharts-type-' + seriesType,
         value: seriesType
     }, void 0, rhsColWrapper);
-    // list all series with id
+    // List all series with id
     listAllSeries.call(this, seriesType, 'series', chart, rhsColWrapper, series, series.linkedParent && series.linkedParent.options.id);
     if (fields.volumeSeriesID) {
         listAllSeries.call(this, seriesType, 'volume', chart, rhsColWrapper, series, series.linkedParent && fields.volumeSeriesID);
     }
-    // add param fields
+    // Add param fields
     addParamInputs.call(this, chart, 'params', fields, seriesType, rhsColWrapper);
 }
 /**
@@ -165,6 +163,25 @@ function addFormFields(chart, series, seriesType, rhsColWrapper) {
  *        For the first iteration, it's an empty string.
  */
 function addIndicatorList(chart, parentDiv, listType, filter) {
+    /**
+     *
+     */
+    function selectIndicator(series, indicatorType) {
+        const button = rhsColWrapper.parentNode
+            .children[1];
+        addFormFields.call(popup, chart, series, indicatorType, rhsColWrapper);
+        if (button) {
+            button.style.display = 'block';
+        }
+        // Add hidden input with series.id
+        if (isEdit && series.options) {
+            createElement('input', {
+                type: 'hidden',
+                name: 'highcharts-id-' + indicatorType,
+                value: series.options.id
+            }, void 0, rhsColWrapper).setAttribute('highcharts-data-series-id', series.options.id);
+        }
+    }
     const popup = this, lang = popup.lang, lhsCol = parentDiv.querySelectorAll('.highcharts-popup-lhs-col')[0], rhsCol = parentDiv.querySelectorAll('.highcharts-popup-rhs-col')[0], isEdit = listType === 'edit', series = (isEdit ?
         chart.series : // EDIT mode
         chart.options.plotOptions || {} // ADD mode
@@ -181,7 +198,7 @@ function addIndicatorList(chart, parentDiv, listType, filter) {
     else if (isArray(series)) {
         filteredSeriesArray = filterSeriesArray.call(this, series);
     }
-    // Sort indicators alphabeticaly.
+    // Sort indicators alphabetically.
     stableSort(filteredSeriesArray, (a, b) => {
         const seriesAName = a.indicatorFullName.toLowerCase(), seriesBName = b.indicatorFullName.toLowerCase();
         return (seriesAName < seriesBName) ?
@@ -202,29 +219,20 @@ function addIndicatorList(chart, parentDiv, listType, filter) {
         item = createElement('li', {
             className: 'highcharts-indicator-list'
         }, void 0, indicatorList);
-        item.appendChild(doc.createTextNode(indicatorFullName));
+        const btn = createElement('button', {
+            className: 'highcharts-indicator-list-item',
+            textContent: indicatorFullName
+        }, void 0, item);
         ['click', 'touchstart'].forEach((eventName) => {
-            addEvent(item, eventName, function () {
-                const button = rhsColWrapper.parentNode
-                    .children[1];
-                addFormFields.call(popup, chart, series, indicatorType, rhsColWrapper);
-                if (button) {
-                    button.style.display = 'block';
-                }
-                // add hidden input with series.id
-                if (isEdit && series.options) {
-                    createElement('input', {
-                        type: 'hidden',
-                        name: 'highcharts-id-' + indicatorType,
-                        value: series.options.id
-                    }, void 0, rhsColWrapper).setAttribute('highcharts-data-series-id', series.options.id);
-                }
+            addEvent(btn, eventName, function () {
+                selectIndicator(series, indicatorType);
             });
         });
     });
-    // select first item from the list
-    if (indicatorList.childNodes.length > 0) {
-        indicatorList.childNodes[0].click();
+    // Select first item from the list
+    if (filteredSeriesArray.length > 0) {
+        const { series, indicatorType } = filteredSeriesArray[0];
+        selectIndicator(series, indicatorType);
     }
     else if (!isEdit) {
         AST.setElementHTML(rhsColWrapper.parentNode.children[0], lang.noFilterMatch || '');
@@ -233,7 +241,7 @@ function addIndicatorList(chart, parentDiv, listType, filter) {
     }
 }
 /**
- * Recurent function which lists all fields, from params object and
+ * Recurrent function which lists all fields, from params object and
  * create them as inputs. Each input has unique `data-name` attribute,
  * which keeps chain of fields i.e params.styles.fontSize.
  * @private
@@ -254,14 +262,9 @@ function addParamInputs(chart, parentNode, fields, type, parentDiv) {
     }
     const addInput = this.addInput;
     objectEach(fields, (value, fieldName) => {
-        const predefinedType = annotationsFieldsTypes[fieldName];
-        let fieldType = type;
-        if (predefinedType) {
-            fieldType = predefinedType;
-        }
-        // create name like params.styles.fontSize
+        // Create name like params.styles.fontSize
         const parentFullName = parentNode + '.' + fieldName;
-        if (defined(value) && // skip if field is unnecessary, #15362
+        if (defined(value) && // Skip if field is unnecessary, #15362
             parentFullName) {
             if (isObject(value)) {
                 // (15733) 'Periods' has an arrayed value. Label must be
@@ -285,7 +288,7 @@ function addParamInputs(chart, parentNode, fields, type, parentDiv) {
                 addInput.call(this, parentFullName, type, parentDiv, {
                     value: value,
                     type: 'number'
-                } // all inputs are text type
+                } // All inputs are text type
                 );
             }
         }
@@ -322,7 +325,7 @@ function addSearchBox(chart, parentDiv) {
     input.classList.add('highcharts-input-search-indicators');
     button.classList.add('clear-filter-button');
     // Add input change events.
-    addEvent(input, 'input', function (e) {
+    addEvent(input, 'input', function () {
         handleInputChange(this.value);
         // Show clear filter button.
         if (this.value.length) {
@@ -338,7 +341,7 @@ function addSearchBox(chart, parentDiv) {
             // Clear the input.
             input.value = '';
             handleInputChange('');
-            // Hide clear filter button- no longer nececary.
+            // Hide clear filter button- no longer necessary.
             button.style.display = 'none';
         });
     });
@@ -450,7 +453,7 @@ function addSelectionOptions(chart, optionName, selectBox, indicatorType, parame
  *         Returns array of filtered series based on filter string.
  */
 function filterSeries(series, filter) {
-    const popup = this, indicators = popup.indicators, lang = popup.chart && popup.chart.options.lang, indicatorAliases = lang &&
+    const popup = this, lang = popup.chart && popup.chart.options.lang, indicatorAliases = lang &&
         lang.navigation &&
         lang.navigation.popup &&
         lang.navigation.popup.indicatorAliases, filteredSeriesArray = [];
@@ -546,11 +549,11 @@ function getAmount() {
  */
 function getNameType(series, indicatorType) {
     const options = series.options;
-    // add mode
+    // Add mode
     let seriesName = (seriesTypes[indicatorType] &&
         seriesTypes[indicatorType].prototype.nameBase) ||
         indicatorType.toUpperCase(), seriesType = indicatorType;
-    // edit
+    // Edit
     if (options && options.type) {
         seriesType = series.options.type;
         seriesName = series.name;
@@ -582,7 +585,7 @@ function getNameType(series, indicatorType) {
  *        Default value in dropdown.
  */
 function listAllSeries(indicatorType, optionName, chart, parentDiv, currentSeries, selectedOption) {
-    const popup = this, indicators = popup.indicators;
+    const popup = this;
     // Won't work without the chart.
     if (!chart) {
         return;

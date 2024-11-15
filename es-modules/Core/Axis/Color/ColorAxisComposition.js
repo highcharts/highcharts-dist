@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -26,12 +26,6 @@ var ColorAxisComposition;
      * */
     /* *
      *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Variables
      *
      * */
@@ -41,39 +35,29 @@ var ColorAxisComposition;
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * @private
      */
     function compose(ColorAxisClass, ChartClass, FxClass, LegendClass, SeriesClass) {
-        if (!ColorAxisConstructor) {
+        const chartProto = ChartClass.prototype, fxProto = FxClass.prototype, seriesProto = SeriesClass.prototype;
+        if (!chartProto.collectionsWithUpdate.includes('colorAxis')) {
             ColorAxisConstructor = ColorAxisClass;
-        }
-        if (U.pushUnique(composedMembers, ChartClass)) {
-            const chartProto = ChartClass.prototype;
             chartProto.collectionsWithUpdate.push('colorAxis');
             chartProto.collectionsWithInit.colorAxis = [
                 chartProto.addColorAxis
             ];
             addEvent(ChartClass, 'afterGetAxes', onChartAfterGetAxes);
             wrapChartCreateAxis(ChartClass);
-        }
-        if (U.pushUnique(composedMembers, FxClass)) {
-            const fxProto = FxClass.prototype;
             fxProto.fillSetter = wrapFxFillSetter;
             fxProto.strokeSetter = wrapFxStrokeSetter;
-        }
-        if (U.pushUnique(composedMembers, LegendClass)) {
             addEvent(LegendClass, 'afterGetAllItems', onLegendAfterGetAllItems);
             addEvent(LegendClass, 'afterColorizeItem', onLegendAfterColorizeItem);
             addEvent(LegendClass, 'afterUpdate', onLegendAfterUpdate);
-        }
-        if (U.pushUnique(composedMembers, SeriesClass)) {
-            extend(SeriesClass.prototype, {
+            extend(seriesProto, {
                 optionalAxis: 'colorAxis',
                 translateColors: seriesTranslateColors
             });
-            extend(SeriesClass.prototype.pointClass.prototype, {
+            extend(seriesProto.pointClass.prototype, {
                 setVisible: pointSetVisible
             });
             addEvent(SeriesClass, 'afterTranslate', onSeriesAfterTranslate, { order: 1 });
@@ -86,11 +70,13 @@ var ColorAxisComposition;
      * @private
      */
     function onChartAfterGetAxes() {
-        const options = this.options;
+        const { userOptions } = this;
         this.colorAxis = [];
-        if (options.colorAxis) {
-            options.colorAxis = splat(options.colorAxis);
-            options.colorAxis.map((axisOptions) => (new ColorAxisConstructor(this, axisOptions)));
+        // If a `colorAxis` config is present in the user options (not in a
+        // theme), instanciate it.
+        if (userOptions.colorAxis) {
+            userOptions.colorAxis = splat(userOptions.colorAxis);
+            userOptions.colorAxis.map((axisOptions) => (new ColorAxisConstructor(this, axisOptions)));
         }
     }
     /**
@@ -199,7 +185,7 @@ var ColorAxisComposition;
                 point[key][method]();
             }
         });
-        this.series.buildKDTree(); // rebuild kdtree #13195
+        this.series.buildKDTree(); // Rebuild kdtree #13195
     }
     ColorAxisComposition.pointSetVisible = pointSetVisible;
     /**
@@ -209,7 +195,8 @@ var ColorAxisComposition;
      * @function Highcharts.colorSeriesMixin.translateColors
      */
     function seriesTranslateColors() {
-        const series = this, points = this.data.length ? this.data : this.points, nullColor = this.options.nullColor, colorAxis = this.colorAxis, colorKey = this.colorKey;
+        const series = this, points = this.getPointsCollection(), // #17945
+        nullColor = this.options.nullColor, colorAxis = this.colorAxis, colorKey = this.colorKey;
         points.forEach((point) => {
             const value = point.getNestedProperty(colorKey), color = point.options.color || (point.isNull || point.value === null ?
                 nullColor :

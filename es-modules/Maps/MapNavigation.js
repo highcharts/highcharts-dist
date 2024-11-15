@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -10,17 +10,13 @@
 'use strict';
 import D from '../Core/Defaults.js';
 const { setOptions } = D;
+import H from '../Core/Globals.js';
+const { composed } = H;
 import MapNavigationDefaults from './MapNavigationDefaults.js';
 import MapPointer from './MapPointer.js';
 import MapSymbols from './MapSymbols.js';
 import U from '../Core/Utilities.js';
 const { addEvent, extend, merge, objectEach, pick, pushUnique } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
 /* *
  *
  *  Functions
@@ -65,7 +61,7 @@ class MapNavigation {
     static compose(MapChartClass, PointerClass, SVGRendererClass) {
         MapPointer.compose(PointerClass);
         MapSymbols.compose(SVGRendererClass);
-        if (pushUnique(composedMembers, MapChartClass)) {
+        if (pushUnique(composed, 'Map.Navigation')) {
             // Extend the Chart.render method to add zooming and panning
             addEvent(MapChartClass, 'beforeRender', function () {
                 // Render the plus and minus buttons. Doing this before the
@@ -73,8 +69,6 @@ class MapNavigation {
                 this.mapNavigation = new MapNavigation(this);
                 this.mapNavigation.update();
             });
-        }
-        if (pushUnique(composedMembers, setOptions)) {
             setOptions(MapNavigationDefaults);
         }
     }
@@ -84,29 +78,14 @@ class MapNavigation {
      *
      * */
     constructor(chart) {
-        this.navButtonsGroup = void 0;
         this.chart = chart;
         this.navButtons = [];
-        this.init(chart);
     }
     /* *
      *
      *  Functions
      *
      * */
-    /**
-     * Initialize function.
-     *
-     * @function MapNavigation#init
-     *
-     * @param {Highcharts.Chart} chart
-     *        The Chart instance.
-     *
-     * @return {void}
-     */
-    init(chart) {
-        this.chart = chart;
-    }
     /**
      * Update the map navigation with new options. Calling this is the same as
      * calling `chart.update({ mapNavigation: {} })`.
@@ -121,7 +100,7 @@ class MapNavigation {
             this.handler.call(chart, e);
             stopEvent(e); // Stop default click event (#4444)
         };
-        let navOptions = chart.options.mapNavigation, attr;
+        let navOptions = chart.options.mapNavigation;
         // Merge in new options in case of update, and register back to chart
         // options.
         if (options) {
@@ -137,15 +116,18 @@ class MapNavigation {
             if (!mapNav.navButtonsGroup) {
                 mapNav.navButtonsGroup = chart.renderer.g()
                     .attr({
-                    zIndex: 4 // #4955, // #8392
+                    zIndex: 7 // #4955, #8392, #20476
                 })
                     .add();
             }
             objectEach(navOptions.buttons, (buttonOptions, n) => {
                 buttonOptions = merge(navOptions.buttonOptions, buttonOptions);
+                const attr = {
+                    padding: buttonOptions.padding
+                };
                 // Presentational
                 if (!chart.styledMode && buttonOptions.theme) {
-                    attr = buttonOptions.theme;
+                    extend(attr, buttonOptions.theme);
                     attr.style = merge(buttonOptions.theme.style, buttonOptions.style // #3203
                     );
                 }
@@ -163,7 +145,6 @@ class MapNavigation {
                     width,
                     height,
                     title: chart.options.lang[n],
-                    padding: buttonOptions.padding,
                     zIndex: 5
                 })
                     .add(mapNav.navButtonsGroup);

@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -25,8 +25,10 @@ var DarkBlueTheme;
      *
      * */
     DarkBlueTheme.options = {
-        colors: ['#DDDF0D', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee',
-            '#ff0066', '#eeaaee', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee'],
+        colors: [
+            '#DDDF0D', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee',
+            '#ff0066', '#eeaaee', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee'
+        ],
         chart: {
             backgroundColor: {
                 linearGradient: { x1: 0, y1: 0, x2: 1, y2: 1 },
@@ -81,7 +83,6 @@ var DarkBlueTheme;
                 }
             },
             lineColor: '#A0A0A0',
-            minorTickInterval: null,
             tickColor: '#A0A0A0',
             tickWidth: 1,
             title: {
@@ -160,7 +161,7 @@ var DarkBlueTheme;
                 }
             }
         },
-        // scroll charts
+        // Scroll charts
         rangeSelector: {
             buttonTheme: {
                 fill: {

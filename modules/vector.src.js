@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
  * Vector plot series module
  *
- * (c) 2010-2021 Torstein Honsi
+ * (c) 2010-2024 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -40,7 +40,7 @@
          *
          *  Vector plot series module
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -182,7 +182,7 @@
          * @product   highcharts highstock
          * @apioption series.vector.data.direction
          */
-        ''; // adds doclets above to the transpiled file
+        ''; // Adds doclets above to the transpiled file
         /* *
          *
          *  Default Export
@@ -196,7 +196,7 @@
          *
          *  Vector plot series module
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -221,23 +221,6 @@
          * @augments Highcharts.seriesTypes.scatter
          */
         class VectorSeries extends ScatterSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.lengthMax = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Functions
@@ -273,17 +256,17 @@
                 // The stem and the arrow head. Draw the arrow first with rotation
                 // 0, which is the arrow pointing down (vector from north to south).
                 path = [
-                    ['M', 0, 7 * u + o],
+                    ['M', 0, 7 * u + o], // Base of arrow
                     ['L', -1.5 * u, 7 * u + o],
                     ['L', 0, 10 * u + o],
                     ['L', 1.5 * u, 7 * u + o],
                     ['L', 0, 7 * u + o],
-                    ['L', 0, -10 * u + o] // top
+                    ['L', 0, -10 * u + o] // Top
                 ];
                 return path;
             }
             /*
-            drawLegendSymbol: function (legend, item) {
+            DrawLegendSymbol: function (legend, item) {
                 let options = legend.options,
                     symbolHeight = legend.symbolHeight,
                     square = options.squareSymbol,
@@ -367,6 +350,11 @@
                 this.lengthMax = arrayMax(this.lengthData);
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         VectorSeries.defaultOptions = merge(ScatterSeries.defaultOptions, VectorSeriesDefaults);
         extend(VectorSeries.prototype, {
             /**
@@ -396,8 +384,9 @@
 
         return VectorSeries;
     });
-    _registerModule(_modules, 'masters/modules/vector.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/vector.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
+        return Highcharts;
     });
 }));

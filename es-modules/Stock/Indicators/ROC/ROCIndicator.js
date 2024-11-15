@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Kacper Madej
+ *  (c) 2010-2024 Kacper Madej
  *
  *  License: www.highcharts.com/license
  *
@@ -18,6 +18,9 @@ const { isArray, merge, extend } = U;
  *
  * */
 // Utils:
+/**
+ *
+ */
 function populateAverage(xVal, yVal, i, period, index) {
     /* Calculated as:
 
@@ -27,14 +30,14 @@ function populateAverage(xVal, yVal, i, period, index) {
        Return y as null when avoiding division by zero */
     let nDaysAgoY, rocY;
     if (index < 0) {
-        // y data given as an array of values
+        // Y data given as an array of values
         nDaysAgoY = yVal[i - period];
         rocY = nDaysAgoY ?
             (yVal[i] - nDaysAgoY) / nDaysAgoY * 100 :
             null;
     }
     else {
-        // y data given as an array of arrays and the index should be used
+        // Y data given as an array of arrays and the index should be used
         nDaysAgoY = yVal[i - period][index];
         rocY = nDaysAgoY ?
             (yVal[i][index] - nDaysAgoY) / nDaysAgoY * 100 :
@@ -57,22 +60,6 @@ function populateAverage(xVal, yVal, i, period, index) {
  * @augments Highcharts.Series
  */
 class ROCIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -90,7 +77,7 @@ class ROCIndicator extends SMAIndicator {
         if (isArray(yVal[0])) {
             index = params.index;
         }
-        // i = period <-- skip first N-points
+        // I = period <-- skip first N-points
         // Calculate value one-by-one for each period in visible data
         for (i = period; i < yValLen; i++) {
             ROCPoint = populateAverage(xVal, yVal, i, period, index);
@@ -105,6 +92,11 @@ class ROCIndicator extends SMAIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Rate of change indicator (ROC). The indicator value for each point
  * is defined as:
@@ -171,4 +163,4 @@ export default ROCIndicator;
  * @requires  stock/indicators/roc
  * @apioption series.roc
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

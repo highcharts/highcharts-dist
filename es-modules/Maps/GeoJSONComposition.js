@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -13,7 +13,7 @@ const { win } = H;
 import T from '../Core/Templating.js';
 const { format } = T;
 import U from '../Core/Utilities.js';
-const { error, extend, merge, pushUnique, wrap } = U;
+const { error, extend, merge, wrap } = U;
 /* *
  *
  *  Composition
@@ -21,12 +21,6 @@ const { error, extend, merge, pushUnique, wrap } = U;
  * */
 var GeoJSONComposition;
 (function (GeoJSONComposition) {
-    /* *
-     *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
     /* *
      *
      *  Functions
@@ -166,13 +160,13 @@ var GeoJSONComposition;
     }
     /** @private */
     function compose(ChartClass) {
-        if (pushUnique(composedMembers, ChartClass)) {
-            const proto = ChartClass.prototype;
-            proto.fromLatLonToPoint = chartFromLatLonToPoint;
-            proto.fromPointToLatLon = chartFromPointToLatLon;
-            proto.transformFromLatLon = chartTransformFromLatLon;
-            proto.transformToLatLon = chartTransformToLatLon;
-            wrap(proto, 'addCredits', wrapChartAddCredit);
+        const chartProto = ChartClass.prototype;
+        if (!chartProto.transformFromLatLon) {
+            chartProto.fromLatLonToPoint = chartFromLatLonToPoint;
+            chartProto.fromPointToLatLon = chartFromPointToLatLon;
+            chartProto.transformFromLatLon = chartTransformFromLatLon;
+            chartProto.transformToLatLon = chartTransformToLatLon;
+            wrap(chartProto, 'addCredits', wrapChartAddCredit);
         }
     }
     GeoJSONComposition.compose = compose;
@@ -268,8 +262,9 @@ var GeoJSONComposition;
             objectName = Object.keys(topology.objects)[0];
         }
         const obj = topology.objects[objectName];
-        // Already decoded => return cache
-        if (obj['hc-decoded-geojson']) {
+        // Already decoded with the same title => return cache
+        if (obj['hc-decoded-geojson'] &&
+            obj['hc-decoded-geojson'].title === topology.title) {
             return obj['hc-decoded-geojson'];
         }
         // Do the initial transform
@@ -291,7 +286,7 @@ var GeoJSONComposition;
                 }
             }
         }
-        // Recurse down any depth of multi-dimentional arrays of arcs and insert
+        // Recurse down any depth of multi-dimensional arrays of arcs and insert
         // the coordinates
         const arcsToCoordinates = (arcs) => {
             if (typeof arcs[0] === 'number') {
@@ -344,11 +339,6 @@ var GeoJSONComposition;
      */
     function wrapChartAddCredit(proceed, credits) {
         credits = merge(true, this.options.credits, credits);
-        // Disable credits link if map credits enabled. This to allow for
-        // in-text anchors.
-        if (this.mapCredits) {
-            credits.href = void 0;
-        }
         proceed.call(this, credits);
         // Add full map credits to hover
         if (this.credits && this.mapCreditsFull) {
@@ -430,7 +420,7 @@ export default GeoJSONComposition;
 * @name Highcharts.GeoJSONTranslation#crs
 * @type {string}
 */ /**
-* Define the portion of the map that this defintion applies to. Defined as a
+* Define the portion of the map that this definition applies to. Defined as a
 * GeoJSON polygon feature object, with `type` and `coordinates` properties.
 * @name Highcharts.GeoJSONTranslation#hitZone
 * @type {Highcharts.Dictionary<*>|undefined}
@@ -505,9 +495,15 @@ export default GeoJSONComposition;
  * @typedef {Array<number>} Highcharts.LonLatArray
  */
 /**
+ * An array of GeoJSON or TopoJSON objects or strings used as map data for
+ * series.
+ *
+ * @typedef {Array<*>|GeoJSON|TopoJSON|string} Highcharts.MapDataType
+ */
+/**
  * A TopoJSON object, see description on the
  * [project's GitHub page](https://github.com/topojson/topojson).
  *
  * @typedef {Object} Highcharts.TopoJSON
  */
-''; // detach doclets above
+''; // Detach doclets above

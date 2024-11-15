@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
  * Client side exporting module
  *
- * (c) 2015-2021 Torstein Honsi / Oystein Moseng
+ * (c) 2015-2024 Torstein Honsi / Oystein Moseng
  *
  * License: www.highcharts.com/license
  */
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -38,7 +38,7 @@
     _registerModule(_modules, 'Extensions/DownloadURL.js', [_modules['Core/Globals.js']], function (H) {
         /* *
          *
-         *  (c) 2015-2023 Oystein Moseng
+         *  (c) 2015-2024 Oystein Moseng
          *
          *  License: www.highcharts.com/license
          *
@@ -76,7 +76,7 @@
         function dataURLtoBlob(dataURL) {
             const parts = dataURL
                 .replace(/filename=.*;/, '')
-                .match(/data:([^;]*)(;base64)?,([0-9A-Za-z+/]+)/);
+                .match(/data:([^;]*)(;base64)?,([A-Z+\d\/]+)/i);
             if (parts &&
                 parts.length > 3 &&
                 (win.atob) &&
@@ -115,6 +115,9 @@
                 return;
             }
             dataURL = '' + dataURL;
+            if (nav.userAgent.length > 1000 /* RegexLimits.shortLimit */) {
+                throw new Error('Input too long');
+            }
             const // Some browsers have limitations for data URL lengths. Try to convert
             // to Blob or fall back. Edge always needs that blob.
             isOldEdgeBrowser = /Edge\/\d+/.test(nav.userAgent), 
@@ -164,7 +167,7 @@
     _registerModule(_modules, 'Extensions/OfflineExporting/OfflineExportingDefaults.js', [], function () {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -177,7 +180,7 @@
          *
          * */
         const OfflineExportingDefaults = {
-            libURL: 'https://code.highcharts.com/11.2.0/lib/',
+            libURL: 'https://code.highcharts.com/11.4.8/lib/',
             // When offline-exporting is loaded, redefine the menu item definitions
             // related to download.
             menuItemDefinitions: {
@@ -233,20 +236,13 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        /* global MSBlobBuilder */
         const { defaultOptions } = D;
         const { downloadURL } = DownloadURL;
-        const { win, doc } = H;
+        const { doc, win } = H;
         const { ajax } = HU;
         const { addEvent, error, extend, fireEvent, merge } = U;
-        AST.allowedAttributes.push('data-z-index', 'fill-opacity', 'rx', 'ry', 'stroke-dasharray', 'stroke-linejoin', 'text-anchor', 'transform', 'version', 'viewBox', 'visibility', 'xmlns', 'xmlns:xlink');
+        AST.allowedAttributes.push('data-z-index', 'fill-opacity', 'filter', 'rx', 'ry', 'stroke-dasharray', 'stroke-linejoin', 'stroke-opacity', 'text-anchor', 'transform', 'version', 'viewBox', 'visibility', 'xmlns', 'xmlns:xlink');
         AST.allowedTags.push('desc', 'clippath', 'g');
-        /* *
-         *
-         * Constants
-         *
-         * */
-        const composedMembers = [];
         /* *
          *
          *  Composition
@@ -279,8 +275,8 @@
              * @private
              */
             function compose(ChartClass) {
-                if (U.pushUnique(composedMembers, ChartClass)) {
-                    const chartProto = ChartClass.prototype;
+                const chartProto = ChartClass.prototype;
+                if (!chartProto.exportChartLocal) {
                     chartProto.getSVGForLocalExport = getSVGForLocalExport;
                     chartProto.exportChartLocal = exportChartLocal;
                     // Extend the default options to use the local exporter logic
@@ -289,7 +285,6 @@
                 return ChartClass;
             }
             OfflineExporting.compose = compose;
-            /* eslint-disable valid-jsdoc */
             /**
              * Get data URL to an image of an SVG and call download on it options
              * object:
@@ -450,7 +445,10 @@
                         outlineElements =
                             el.getElementsByClassName('highcharts-text-outline');
                         while (outlineElements.length > 0) {
-                            el.removeChild(outlineElements[0]);
+                            const outline = outlineElements[0];
+                            if (outline.parentNode) {
+                                outline.parentNode.removeChild(outline);
+                            }
                         }
                     });
                     const svgNode = dummySVGContainer.querySelector('svg');
@@ -530,41 +528,49 @@
                             failCallback(e);
                         }
                     }, function () {
+                        if (svg.length > 100000000 /* RegexLimits.svgLimit */) {
+                            throw new Error('Input too long');
+                        }
                         // Failed due to tainted canvas
                         // Create new and untainted canvas
-                        const canvas = doc.createElement('canvas'), ctx = canvas.getContext('2d'), imageWidth = svg.match(/^<svg[^>]*width\s*=\s*\"?(\d+)\"?[^>]*>/)[1] * scale, imageHeight = svg.match(/^<svg[^>]*height\s*=\s*\"?(\d+)\"?[^>]*>/)[1] * scale, downloadWithCanVG = function () {
-                            const v = win.canvg.Canvg.fromString(ctx, svg);
-                            v.start();
-                            try {
-                                downloadURL(win.navigator.msSaveOrOpenBlob ?
-                                    canvas.msToBlob() :
-                                    canvas.toDataURL(imageType), filename);
-                                if (successCallback) {
-                                    successCallback();
+                        const canvas = doc.createElement('canvas'), ctx = canvas.getContext('2d'), matchedImageWidth = svg.match(
+                        // eslint-disable-next-line max-len
+                        /^<svg[^>]*\s{,1000}width\s{,1000}=\s{,1000}\"?(\d+)\"?[^>]*>/), matchedImageHeight = svg.match(
+                        // eslint-disable-next-line max-len
+                        /^<svg[^>]*\s{0,1000}height\s{,1000}=\s{,1000}\"?(\d+)\"?[^>]*>/);
+                        if (ctx && matchedImageWidth && matchedImageHeight) {
+                            const imageWidth = +matchedImageWidth[1] * scale, imageHeight = +matchedImageHeight[1] * scale, downloadWithCanVG = () => {
+                                const v = win.canvg.Canvg.fromString(ctx, svg);
+                                v.start();
+                                try {
+                                    downloadURL(win.navigator.msSaveOrOpenBlob ?
+                                        canvas.msToBlob() :
+                                        canvas.toDataURL(imageType), filename);
+                                    if (successCallback) {
+                                        successCallback();
+                                    }
                                 }
-                            }
-                            catch (e) {
-                                failCallback(e);
-                            }
-                            finally {
-                                finallyHandler();
-                            }
-                        };
-                        canvas.width = imageWidth;
-                        canvas.height = imageHeight;
-                        if (win.canvg) {
-                            // Use preloaded canvg
-                            downloadWithCanVG();
-                        }
-                        else {
-                            // Must load canVG first. // Don't destroy the object
-                            // URL yet since we are doing things asynchronously. A
-                            // cleaner solution would be nice, but this will do for
-                            // now.
-                            objectURLRevoke = true;
-                            getScript(libURL + 'canvg.js', function () {
+                                catch (e) {
+                                    failCallback(e);
+                                }
+                                finally {
+                                    finallyHandler();
+                                }
+                            };
+                            canvas.width = imageWidth;
+                            canvas.height = imageHeight;
+                            if (win.canvg) {
+                                // Use preloaded canvg
                                 downloadWithCanVG();
-                            });
+                            }
+                            else {
+                                // Must load canVG first.
+                                // Don't destroy the object URL yet since we are
+                                // doing things asynchronously. A cleaner solution
+                                // would be nice, but this will do for now.
+                                objectURLRevoke = true;
+                                getScript(libURL + 'canvg.js', downloadWithCanVG);
+                            }
                         }
                     }, 
                     // No canvas support
@@ -859,7 +865,7 @@
                     userAgent.indexOf('Chrome') < 0);
                 try {
                     // Safari requires data URI since it doesn't allow navigation to
-                    // blob URLs. ForeignObjects also dont work well in Blobs in Chrome
+                    // blob URLs. ForeignObjects also don't work well in Blobs in Chrome
                     // (#14780).
                     if (!webKit && svg.indexOf('<foreignObject') === -1) {
                         return OfflineExporting.domurl.createObjectURL(new win.Blob([svg], {
@@ -934,11 +940,12 @@
 
         const G = Highcharts;
         // Compatibility
-        G.dataURLtoBlob = DownloadURL.dataURLtoBlob;
+        G.dataURLtoBlob = G.dataURLtoBlob || DownloadURL.dataURLtoBlob;
         G.downloadSVGLocal = OfflineExporting.downloadSVGLocal;
-        G.downloadURL = DownloadURL.downloadURL;
+        G.downloadURL = G.downloadURL || DownloadURL.downloadURL;
         // Compose
         OfflineExporting.compose(G.Chart);
 
+        return Highcharts;
     });
 }));

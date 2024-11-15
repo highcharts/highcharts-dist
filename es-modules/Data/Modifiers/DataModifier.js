@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2023 Highsoft AS
+ *  (c) 2009-2024 Highsoft AS
  *
  *  License: www.highcharts.com/license
  *
@@ -22,7 +22,6 @@ const { addEvent, fireEvent, merge } = U;
 /**
  * Abstract class to provide an interface for modifying a table.
  *
- * @private
  */
 class DataModifier {
     /* *
@@ -146,7 +145,11 @@ class DataModifier {
      * @return {Highcharts.DataTable}
      * Table with `modified` property as a reference.
      */
-    modifyCell(table, columnName, rowIndex, cellValue, eventDetail) {
+    modifyCell(table, 
+    /* eslint-disable @typescript-eslint/no-unused-vars */
+    columnName, rowIndex, cellValue, eventDetail
+    /* eslint-enable @typescript-eslint/no-unused-vars */
+    ) {
         return this.modifyTable(table);
     }
     /**
@@ -168,7 +171,11 @@ class DataModifier {
      * @return {Highcharts.DataTable}
      * Table with `modified` property as a reference.
      */
-    modifyColumns(table, columns, rowIndex, eventDetail) {
+    modifyColumns(table, 
+    /* eslint-disable @typescript-eslint/no-unused-vars */
+    columns, rowIndex, eventDetail
+    /* eslint-enable @typescript-eslint/no-unused-vars */
+    ) {
         return this.modifyTable(table);
     }
     /**
@@ -190,7 +197,11 @@ class DataModifier {
      * @return {Highcharts.DataTable}
      * Table with `modified` property as a reference.
      */
-    modifyRows(table, rows, rowIndex, eventDetail) {
+    modifyRows(table, 
+    /* eslint-disable @typescript-eslint/no-unused-vars */
+    rows, rowIndex, eventDetail
+    /* eslint-enable @typescript-eslint/no-unused-vars */
+    ) {
         return this.modifyTable(table);
     }
     /**
@@ -216,7 +227,6 @@ class DataModifier {
  * */
 /**
  * Additionally provided types for modifier events and options.
- * @private
  */
 (function (DataModifier) {
     /* *

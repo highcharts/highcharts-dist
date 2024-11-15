@@ -1,7 +1,6 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
- * @module highcharts/modules/arc-diagram
- * @requires highcharts
+ * @license Highcharts JS v@product.version@ (@product.date@)
+ * @module modules/arc-diagram
  * @requires highcharts/modules/sankey
  *
  * Arc diagram module
@@ -11,4 +10,6 @@
  * License: www.highcharts.com/license
  */
 'use strict';
+import Highcharts from '../../Core/Globals.js';
 import '../../Series/ArcDiagram/ArcDiagramSeries.js';
+export default Highcharts;

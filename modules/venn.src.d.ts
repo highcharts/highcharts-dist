@@ -39,6 +39,9 @@ declare module "../highcharts.src" {
      * @return Root number.
      */
     function bisect(f: Function, a: number, b: number, tolerance?: number, maxIterations?: number): number;
+    function isSet(): void;
+    function isValidRelation(): void;
+    function isValidSet(): void;
 }
 export default factory;
 export let Highcharts: typeof _Highcharts;

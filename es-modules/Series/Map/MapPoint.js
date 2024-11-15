@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -21,17 +21,11 @@ const { extend, isNumber, pick } = U;
  *
  * */
 class MapPoint extends ScatterPoint {
-    constructor() {
-        /* *
-         *
-         *  Static Functions
-         *
-         * */
-        super(...arguments);
-        this.options = void 0;
-        this.path = void 0;
-        this.series = void 0;
-    }
+    /* *
+     *
+     *  Static Functions
+     *
+     * */
     /**
      * Get the projected path based on the geometry. May also be called on
      * mapData options (not point instances), hence static.
@@ -66,7 +60,11 @@ class MapPoint extends ScatterPoint {
             const joinKey = joinBy[1], mapKey = super.getNestedProperty(joinKey), mapPoint = typeof mapKey !== 'undefined' &&
                 series.mapMap[mapKey];
             if (mapPoint) {
-                extend(point, mapPoint); // copy over properties
+                // Copy over properties; #20231 prioritize point.name
+                extend(point, {
+                    ...mapPoint,
+                    name: point.name ?? mapPoint.name
+                });
             }
             else if (series.pointArrayMap.indexOf('value') !== -1) {
                 point.value = point.value || null;

@@ -2,7 +2,7 @@
  *
  *  Vector plot series module
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -33,23 +33,6 @@ import VectorSeriesDefaults from './VectorSeriesDefaults.js';
  * @augments Highcharts.seriesTypes.scatter
  */
 class VectorSeries extends ScatterSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.lengthMax = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -85,17 +68,17 @@ class VectorSeries extends ScatterSeries {
         // The stem and the arrow head. Draw the arrow first with rotation
         // 0, which is the arrow pointing down (vector from north to south).
         path = [
-            ['M', 0, 7 * u + o],
+            ['M', 0, 7 * u + o], // Base of arrow
             ['L', -1.5 * u, 7 * u + o],
             ['L', 0, 10 * u + o],
             ['L', 1.5 * u, 7 * u + o],
             ['L', 0, 7 * u + o],
-            ['L', 0, -10 * u + o] // top
+            ['L', 0, -10 * u + o] // Top
         ];
         return path;
     }
     /*
-    drawLegendSymbol: function (legend, item) {
+    DrawLegendSymbol: function (legend, item) {
         let options = legend.options,
             symbolHeight = legend.symbolHeight,
             square = options.squareSymbol,
@@ -179,6 +162,11 @@ class VectorSeries extends ScatterSeries {
         this.lengthMax = arrayMax(this.lengthData);
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 VectorSeries.defaultOptions = merge(ScatterSeries.defaultOptions, VectorSeriesDefaults);
 extend(VectorSeries.prototype, {
     /**

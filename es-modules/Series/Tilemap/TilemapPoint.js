@@ -2,7 +2,7 @@
  *
  *  Tilemaps module
  *
- *  (c) 2010-2021 Highsoft AS
+ *  (c) 2010-2024 Highsoft AS
  *  Author: Øystein Moseng
  *
  *  License: www.highcharts.com/license
@@ -22,18 +22,6 @@ const { extend } = U;
  *
  * */
 class TilemapPoint extends HeatmapPoint {
-    constructor() {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        super(...arguments);
-        this.options = void 0;
-        this.radius = void 0;
-        this.series = void 0;
-        this.tileEdges = void 0;
-    }
     /* *
      *
      *  Functions

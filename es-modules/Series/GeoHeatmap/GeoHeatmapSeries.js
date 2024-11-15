@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2023 Highsoft AS
+ *  (c) 2010-2024 Highsoft AS
  *
  *  Authors: Magdalena Gut, Piotr Madej
  *
@@ -58,16 +58,6 @@ class GeoHeatmapSeries extends MapSeries {
          *
          * */
         super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.options = void 0;
-        this.data = void 0;
-        this.points = void 0;
-        this.canvas = void 0;
-        this.context = void 0;
         this.isDirtyCanvas = true;
     }
     /* *
@@ -292,7 +282,7 @@ class GeoHeatmapSeries extends MapSeries {
             chart.tooltip.options.enabled) {
             if (
             // If user drags map do not build k-d-tree
-            chart.pointer.hasDragged === false &&
+            !chart.pointer.hasDragged &&
                 // If user zooms in/out map do not build k-d-tree
                 (+series.image.attr('animator') <= 0.01 ||
                     +series.image.attr('animator') >= 0.99)) {
@@ -369,9 +359,6 @@ GeoHeatmapSeries.defaultOptions = merge(MapSeries.defaultOptions, {
      * @sample maps/demo/geoheatmap-europe/
      *         1 by default, set to 5
      *
-     * @type      {number}
-     * @default   1
-     * @since 11.0.0
      * @product   highmaps
      * @apioption plotOptions.geoheatmap.colsize
      */
@@ -383,7 +370,6 @@ GeoHeatmapSeries.defaultOptions = merge(MapSeries.defaultOptions, {
      * default value is pulled from the [options.colors](#colors) array.
      *
      * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-     * @since 11.0.0
      * @product   highmaps
      * @apioption plotOptions.geoheatmap.color
      */
@@ -394,9 +380,6 @@ GeoHeatmapSeries.defaultOptions = merge(MapSeries.defaultOptions, {
      * @sample maps/demo/geoheatmap-europe/
      *         1 by default, set to 5
      *
-     * @type      {number}
-     * @default   1
-     * @since 11.0.0
      * @product   highmaps
      * @apioption plotOptions.geoheatmap.rowsize
      */
@@ -411,29 +394,29 @@ GeoHeatmapSeries.defaultOptions = merge(MapSeries.defaultOptions, {
      *         datasets
      *
      * @type      {boolean|Highcharts.InterpolationOptionsObject}
-     * @since     @next
+     * @since     11.2.0
      * @product   highmaps
      */
     interpolation: {
         /**
          * Enable or disable the interpolation of the geoheatmap series.
          *
-         * @since     @next
+         * @since 11.2.0
          */
         enabled: false,
         /**
          * Represents how much blur should be added to the interpolated
          * image. Works best in the range of 0-1, all higher values
-         * would need a lot more perfomance of the machine to calculate
+         * would need a lot more performance of the machine to calculate
          * more detailed interpolation.
          *
          *  * **Note:** Useful, if the data is spread into wide range of
-         *  longitue and latitude values.
+         *  longitude and latitude values.
          *
          * @sample maps/series-geoheatmap/turkey-fire-areas
          *         Simple demo of GeoHeatmap interpolation
          *
-         * @since     @next
+         * @since  11.2.0
          */
         blur: 1
     }
@@ -525,7 +508,7 @@ export default GeoHeatmapSeries;
  * @apioption series.geoheatmap.data.color
  */
 /**
- * The value of the point, resulting in a color controled by options
+ * The value of the point, resulting in a color controlled by options
  * as set in the [colorAxis](#colorAxis) configuration.
  *
  * @type      {number|null}
@@ -544,10 +527,10 @@ export default GeoHeatmapSeries;
 */ /**
 * Represents how much blur should be added to the interpolated
 * image. Works best in the range of 0-1, all higher values
-* would need a lot more perfomance of the machine to calculate
+* would need a lot more performance of the machine to calculate
 * more detailed interpolation.
 *
 * @name Highcharts.InterpolationOptionsObject#blur
 * @type {number}
 */
-''; // adds doclets above to the transpiled file
+''; // Adds doclets above to the transpiled file

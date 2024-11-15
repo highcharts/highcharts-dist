@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -14,7 +14,7 @@ import H from '../../Core/Globals.js';
 import ScrollbarAxis from '../../Core/Axis/ScrollbarAxis.js';
 import ScrollbarDefaults from './ScrollbarDefaults.js';
 import U from '../../Core/Utilities.js';
-const { addEvent, correctFloat, defined, destroyObjectProperties, fireEvent, merge, pick, removeEvent } = U;
+const { addEvent, correctFloat, crisp, defined, destroyObjectProperties, fireEvent, merge, pick, removeEvent } = U;
 /* *
  *
  *  Constants
@@ -86,25 +86,16 @@ class Scrollbar {
          *
          * */
         this._events = [];
-        this.chart = void 0;
         this.chartX = 0;
         this.chartY = 0;
         this.from = 0;
-        this.group = void 0;
-        this.options = void 0;
-        this.renderer = void 0;
-        this.scrollbar = void 0;
         this.scrollbarButtons = [];
-        this.scrollbarGroup = void 0;
         this.scrollbarLeft = 0;
-        this.scrollbarRifles = void 0;
         this.scrollbarStrokeWidth = 1;
         this.scrollbarTop = 0;
         this.size = 0;
         this.to = 0;
-        this.track = void 0;
         this.trackBorderWidth = 1;
-        this.userOptions = void 0;
         this.x = 0;
         this.y = 0;
         this.init(renderer, options, chart);
@@ -122,8 +113,8 @@ class Scrollbar {
      */
     addEvents() {
         const buttonsOrder = this.options.inverted ? [1, 0] : [0, 1], buttons = this.scrollbarButtons, bar = this.scrollbarGroup.element, track = this.track.element, mouseDownHandler = this.mouseDownHandler.bind(this), mouseMoveHandler = this.mouseMoveHandler.bind(this), mouseUpHandler = this.mouseUpHandler.bind(this);
-        // Mouse events
         const _events = [
+            // Mouse events
             [
                 buttons[buttonsOrder[0]].element,
                 'click',
@@ -137,12 +128,12 @@ class Scrollbar {
             [track, 'click', this.trackClick.bind(this)],
             [bar, 'mousedown', mouseDownHandler],
             [bar.ownerDocument, 'mousemove', mouseMoveHandler],
-            [bar.ownerDocument, 'mouseup', mouseUpHandler]
+            [bar.ownerDocument, 'mouseup', mouseUpHandler],
+            // Touch events
+            [bar, 'touchstart', mouseDownHandler],
+            [bar.ownerDocument, 'touchmove', mouseMoveHandler],
+            [bar.ownerDocument, 'touchend', mouseUpHandler]
         ];
-        // Touch events
-        if (H.hasTouch) {
-            _events.push([bar, 'touchstart', mouseDownHandler], [bar.ownerDocument, 'touchmove', mouseMoveHandler], [bar.ownerDocument, 'touchend', mouseUpHandler]);
-        }
         // Add them all
         _events.forEach(function (args) {
             addEvent.apply(null, args);
@@ -188,7 +179,7 @@ class Scrollbar {
     cursorToScrollbarPosition(normalizedEvent) {
         const scroller = this, options = scroller.options, minWidthDifference = options.minWidth > scroller.calculatedWidth ?
             options.minWidth :
-            0; // minWidth distorts translation
+            0; // `minWidth` distorts translation
         return {
             chartX: (normalizedEvent.chartX - scroller.x -
                 scroller.xOffset) /
@@ -255,9 +246,8 @@ class Scrollbar {
             rect.attr(rect.crisp({
                 x: -0.5,
                 y: -0.5,
-                // +1 to compensate for crispifying in rect method
-                width: size + 1,
-                height: size + 1,
+                width: size,
+                height: size,
                 r: options.buttonBorderRadius
             }, rect.strokeWidth()));
             // Button arrow
@@ -299,7 +289,7 @@ class Scrollbar {
         scroller.options = merge(ScrollbarDefaults, defaultOptions.scrollbar, options);
         scroller.options.margin = pick(scroller.options.margin, 10);
         scroller.chart = chart;
-        // backward compatibility
+        // Backward compatibility
         scroller.size = pick(scroller.options.size, scroller.options.height);
         // Init
         if (options.enabled) {
@@ -308,7 +298,7 @@ class Scrollbar {
         }
     }
     mouseDownHandler(e) {
-        const scroller = this, normalizedEvent = scroller.chart.pointer.normalize(e), mousePosition = scroller.cursorToScrollbarPosition(normalizedEvent);
+        const scroller = this, normalizedEvent = scroller.chart.pointer?.normalize(e) || e, mousePosition = scroller.cursorToScrollbarPosition(normalizedEvent);
         scroller.chartX = mousePosition.chartX;
         scroller.chartY = mousePosition.chartY;
         scroller.initPositions = [scroller.from, scroller.to];
@@ -319,7 +309,7 @@ class Scrollbar {
      * @private
      */
     mouseMoveHandler(e) {
-        const scroller = this, normalizedEvent = scroller.chart.pointer.normalize(e), options = scroller.options, direction = options.vertical ?
+        const scroller = this, normalizedEvent = scroller.chart.pointer?.normalize(e) || e, options = scroller.options, direction = options.vertical ?
             'chartY' : 'chartX', initPositions = scroller.initPositions || [];
         let scrollPosition, chartPosition, change;
         // In iOS, a mousemove event with e.pageX === 0 is fired when
@@ -377,7 +367,7 @@ class Scrollbar {
      * @param {number} width
      *        width of the scrollbar
      * @param {number} height
-     *        height of the scorllbar
+     *        height of the scrollbar
      */
     position(x, y, width, height) {
         const scroller = this, options = scroller.options, { buttonsEnabled, margin = 0, vertical } = options, method = scroller.rendered ? 'animate' : 'attr';
@@ -386,7 +376,7 @@ class Scrollbar {
         scroller.group.show();
         scroller.x = x;
         scroller.y = y + this.trackBorderWidth;
-        scroller.width = width; // width with buttons
+        scroller.width = width; // Width with buttons
         scroller.height = height;
         scroller.xOffset = xOffset;
         scroller.yOffset = yOffset;
@@ -395,14 +385,14 @@ class Scrollbar {
             scroller.width = scroller.yOffset = width = yOffset = scroller.size;
             scroller.xOffset = xOffset = 0;
             scroller.yOffset = yOffset = buttonsEnabled ? scroller.size : 0;
-            // width without buttons
+            // Width without buttons
             scroller.barWidth = height - (buttonsEnabled ? width * 2 : 0);
             scroller.x = x = x + margin;
         }
         else {
             scroller.height = height = scroller.size;
             scroller.xOffset = xOffset = buttonsEnabled ? scroller.size : 0;
-            // width without buttons
+            // Width without buttons
             scroller.barWidth = width - (buttonsEnabled ? height * 2 : 0);
             scroller.y = scroller.y + margin;
         }
@@ -445,7 +435,7 @@ class Scrollbar {
             .attr({
             zIndex: options.zIndex
         })
-            .hide() // initially hide the scrollbar #15863
+            .hide() // Initially hide the scrollbar #15863
             .add();
         // Draw the scrollbar group
         scroller.group = group;
@@ -467,8 +457,8 @@ class Scrollbar {
         const trackBorderWidth = scroller.trackBorderWidth =
             scroller.track.strokeWidth();
         scroller.track.attr({
-            x: -trackBorderWidth % 2 / 2,
-            y: -trackBorderWidth % 2 / 2
+            x: -crisp(0, trackBorderWidth),
+            y: -crisp(0, trackBorderWidth)
         });
         // Draw the scrollbar itself
         scroller.scrollbarGroup = renderer.g().add(group);
@@ -502,7 +492,7 @@ class Scrollbar {
             });
         }
         scroller.scrollbarStrokeWidth = scroller.scrollbar.strokeWidth();
-        scroller.scrollbarGroup.translate(-scroller.scrollbarStrokeWidth % 2 / 2, -scroller.scrollbarStrokeWidth % 2 / 2);
+        scroller.scrollbarGroup.translate(-crisp(0, scroller.scrollbarStrokeWidth), -crisp(0, scroller.scrollbarStrokeWidth));
         // Draw the buttons:
         scroller.drawScrollbarButton(0);
         scroller.drawScrollbarButton(1);
@@ -601,7 +591,7 @@ class Scrollbar {
     }
     trackClick(e) {
         const scroller = this;
-        const normalizedEvent = scroller.chart.pointer.normalize(e), range = scroller.to - scroller.from, top = scroller.y + scroller.scrollbarTop, left = scroller.x + scroller.scrollbarLeft;
+        const normalizedEvent = scroller.chart.pointer?.normalize(e) || e, range = scroller.to - scroller.from, top = scroller.y + scroller.scrollbarTop, left = scroller.x + scroller.scrollbarLeft;
         if ((scroller.options.vertical && normalizedEvent.chartY > top) ||
             (!scroller.options.vertical && normalizedEvent.chartX > left)) {
             // On the top or on the left side of the track:

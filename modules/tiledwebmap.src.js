@@ -1,7 +1,7 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.4.8 (2024-08-29)
  *
- * (c) 2009-2022
+ * (c) 2009-2024
  *
  * License: www.highcharts.com/license
  */
@@ -26,7 +26,7 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(new CustomEvent(
+                Highcharts.win.dispatchEvent(new CustomEvent(
                     'HighchartsModuleLoaded',
                     { detail: { path: path, module: obj[path] } }
                 ));
@@ -443,7 +443,7 @@
     _registerModule(_modules, 'Series/TiledWebMap/TiledWebMapSeriesDefaults.js', [], function () {
         /* *
          *
-         *  (c) 2010-2023 Hubert Kozik, Kamil Musiałowski
+         *  (c) 2010-2024 Hubert Kozik, Kamil Musiałowski
          *
          *  License: www.highcharts.com/license
          *
@@ -577,7 +577,7 @@
          * @product   highmaps
          * @apioption plotOptions.tiledwebmap.provider.url
          */
-        ''; // keeps doclets above detached
+        ''; // Keeps doclets above detached
         /* *
          *
          *  Default Export
@@ -586,32 +586,27 @@
 
         return TiledWebMapSeriesDefaults;
     });
-    _registerModule(_modules, 'Series/TiledWebMap/TiledWebMapSeries.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Maps/TilesProviders/TilesProviderRegistry.js'], _modules['Series/TiledWebMap/TiledWebMapSeriesDefaults.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, TilesProvidersRegistry, TiledWebMapSeriesDefaults, U) {
+    _registerModule(_modules, 'Series/TiledWebMap/TiledWebMapSeries.js', [_modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Maps/TilesProviders/TilesProviderRegistry.js'], _modules['Series/TiledWebMap/TiledWebMapSeriesDefaults.js'], _modules['Core/Utilities.js']], function (H, SeriesRegistry, TilesProvidersRegistry, TiledWebMapSeriesDefaults, U) {
         /* *
          *
-         *  (c) 2010-2023 Hubert Kozik, Kamil Musiałowski
+         *  (c) 2010-2024 Hubert Kozik, Kamil Musiałowski
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        const { composed } = H;
         const { map: MapSeries } = SeriesRegistry.seriesTypes;
         const { addEvent, defined, error, merge, pick, pushUnique } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
         /* *
          *
          *  Functions
          *
          * */
         /** @private */
-        function onChartBeforeMapViewInit(e) {
-            const twm = (this.options.series || []).filter((s) => s.type === 'tiledwebmap')[0], { geoBounds } = e;
+        function onRecommendMapView(e) {
+            const { geoBounds, chart } = e, twm = (chart.options.series || []).filter((s) => s.type === 'tiledwebmap')[0];
             if (twm && twm.provider && twm.provider.type && !twm.provider.url) {
                 const ProviderDefinition = TilesProvidersRegistry[twm.provider.type];
                 if (!defined(ProviderDefinition)) {
@@ -620,25 +615,23 @@
                 }
                 else {
                     const def = new ProviderDefinition(), { initialProjectionName: providerProjectionName } = def;
-                    if (this.options.mapView) {
-                        if (geoBounds) {
-                            const { x1, y1, x2, y2 } = geoBounds;
-                            this.options.mapView.recommendedMapView = {
-                                projection: {
-                                    name: providerProjectionName,
-                                    parallels: [y1, y2],
-                                    rotation: [-(x1 + x2) / 2]
-                                }
-                            };
-                        }
-                        else {
-                            this.options.mapView.recommendedMapView = {
-                                projection: {
-                                    name: providerProjectionName
-                                },
-                                minZoom: 0
-                            };
-                        }
+                    if (geoBounds) {
+                        const { x1, y1, x2, y2 } = geoBounds;
+                        this.recommendedMapView = {
+                            projection: {
+                                name: providerProjectionName,
+                                parallels: [y1, y2],
+                                rotation: [-(x1 + x2) / 2]
+                            }
+                        };
+                    }
+                    else {
+                        this.recommendedMapView = {
+                            projection: {
+                                name: providerProjectionName
+                            },
+                            minZoom: 0
+                        };
                     }
                     return false;
                 }
@@ -667,12 +660,6 @@
                  *
                  * */
                 super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.options = void 0;
                 this.redrawTiles = false;
                 this.isAnimating = false;
             }
@@ -681,9 +668,9 @@
              *  Static Functions
              *
              * */
-            static compose(ChartClass) {
-                if (pushUnique(composedMembers, ChartClass)) {
-                    addEvent(ChartClass, 'beforeMapViewInit', onChartBeforeMapViewInit);
+            static compose(MapViewClass) {
+                if (pushUnique(composed, 'TiledWebMapSeries')) {
+                    addEvent(MapViewClass, 'onRecommendMapView', onRecommendMapView);
                 }
             }
             /* *
@@ -693,9 +680,7 @@
              * */
             /**
              * Convert map coordinates in longitude/latitude to tile
-             *
-             * @function Highcharts.MapView#lonLatToTile
-             * @since 11.1.0
+             * @private
              * @param  {Highcharts.MapLonLatObject} lonLat
              *         The map coordinates
              * @return {Highcharts.PositionObject}
@@ -709,9 +694,7 @@
             }
             /**
              * Convert tile to map coordinates in longitude/latitude
-             *
-             * @function Highcharts.MapView#tileToLonLat
-             * @since 11.1.0
+             * @private
              * @param  xTile
              *         Position x of the tile
              * @param  yTile
@@ -798,7 +781,7 @@
                             theme = def.themes[provider.theme];
                         }
                         else {
-                            // if nothing set take first theme
+                            // If nothing set take first theme
                             const firstTheme = Object.keys(def.themes)[0];
                             theme = def.themes[firstTheme];
                             error('Highcharts warning: The Tiles Provider\'s Theme \'' +
@@ -859,7 +842,7 @@
                                 'than supported by Tiles Provider.', false);
                         }
                     }
-                    // if zoom is smaller/higher than supported by provider
+                    // If zoom is smaller/higher than supported by provider
                     if (defined(this.minZoom) && zoomFloor < this.minZoom) {
                         zoomFloor = this.minZoom;
                         maxTile = Math.pow(2, zoomFloor);
@@ -908,13 +891,13 @@
                                                 givenZoom === series.minZoom) {
                                                 tiles[`${givenZoom}`]
                                                     .actualTilesCount++;
-                                                // if last tile
+                                                // If last tile
                                                 if (tiles[`${givenZoom}`]
                                                     .howManyTiles ===
                                                     tiles[`${givenZoom}`]
                                                         .actualTilesCount) {
                                                     tiles[givenZoom].loaded = true;
-                                                    // fade-in new tiles if there is
+                                                    // Fade-in new tiles if there is
                                                     // no other animation
                                                     if (!series.isAnimating) {
                                                         series.redrawTiles = false;
@@ -936,7 +919,7 @@
                                 }
                             }
                         };
-                        // calculate topLeft and bottomRight corners without normalize
+                        // Calculate topLeft and bottomRight corners without normalize
                         const topLeftUnits = mapView.pixelsToProjectedUnits({
                             x: 0,
                             y: 0
@@ -950,14 +933,14 @@
                             lon: bottomRightArr[0] - lambda,
                             lat: bottomRightArr[1]
                         };
-                        // do not support vertical looping
+                        // Do not support vertical looping
                         if (topLeft.lat > mapView.projection.maxLatitude ||
                             bottomRight.lat < -1 * mapView.projection.maxLatitude) {
                             topLeft.lat = mapView.projection.maxLatitude;
                             bottomRight.lat = -1 * mapView.projection.maxLatitude;
                         }
                         const startPos = this.lonLatToTile(topLeft, zoomFloor), endPos = this.lonLatToTile(bottomRight, zoomFloor);
-                        // calculate group translations based on first loaded tile
+                        // Calculate group translations based on first loaded tile
                         const firstTileLonLat = this.tileToLonLat(startPos.x, startPos.y, zoomFloor), units = mapView.projection.def.forward([
                             firstTileLonLat.lon + lambda,
                             firstTileLonLat.lat
@@ -985,7 +968,7 @@
                     for (const zoomKey of Object.keys(tiles)) {
                         for (const key of Object.keys(tiles[zoomKey].tiles)) {
                             if (mapView.projection && mapView.projection.def) {
-                                // calculate group translations based on first loaded
+                                // Calculate group translations based on first loaded
                                 // tile
                                 const scale = ((tileSize / worldSize) *
                                     Math.pow(2, zoom)) / ((tileSize / worldSize) *
@@ -1022,7 +1005,7 @@
                                             .attr({ animator: 0 })
                                             .animate({ animator: 1 }, { step }, function () {
                                             series.isAnimating = false;
-                                            // if animate ended after loading
+                                            // If animate ended after loading
                                             // the tiles
                                             if (series.redrawTiles) {
                                                 series.redrawTiles = false;
@@ -1033,7 +1016,7 @@
                                         // animation is off
                                     }
                                     else {
-                                        // animate tiles if something broke
+                                        // Animate tiles if something broke
                                         if (series.redrawTiles ||
                                             parseFloat(zoomKey) !== zoomFloor ||
                                             ((tiles[zoomKey].isActive ||
@@ -1072,7 +1055,7 @@
                     this.transformGroups = [];
                 }
                 if (mapView &&
-                    !defined(mapView.options.projection) &&
+                    !defined(chart.userOptions.mapView?.projection) &&
                     provider &&
                     provider.type) {
                     const ProviderDefinition = TilesProvidersRegistry[provider.type];
@@ -1098,11 +1081,12 @@
 
         return TiledWebMapSeries;
     });
-    _registerModule(_modules, 'masters/modules/tiledwebmap.src.js', [_modules['Core/Globals.js'], _modules['Series/TiledWebMap/TiledWebMapSeries.js'], _modules['Maps/TilesProviders/TilesProviderRegistry.js']], function (Highcharts, TiledWebMapSeries, TilesProviderRegistry) {
+    _registerModule(_modules, 'masters/modules/tiledwebmap.src.js', [_modules['Core/Globals.js'], _modules['Maps/TilesProviders/TilesProviderRegistry.js'], _modules['Series/TiledWebMap/TiledWebMapSeries.js']], function (Highcharts, TilesProviderRegistry, TiledWebMapSeries) {
 
         const G = Highcharts;
-        G.TilesProviderRegistry = TilesProviderRegistry;
-        TiledWebMapSeries.compose(G.Chart);
+        G.TilesProviderRegistry = G.TilesProviderRegistry || TilesProviderRegistry;
+        TiledWebMapSeries.compose(G.MapView);
 
+        return Highcharts;
     });
 }));

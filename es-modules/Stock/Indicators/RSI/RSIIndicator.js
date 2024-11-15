@@ -16,6 +16,9 @@ const { isNumber, merge } = U;
  *
  * */
 // Utils:
+/**
+ *
+ */
 function toFixed(a, n) {
     return parseFloat(a.toFixed(n));
 }
@@ -34,22 +37,6 @@ function toFixed(a, n) {
  * @augments Highcharts.Series
  */
 class RSIIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.points = void 0;
-        this.options = void 0;
-    }
     /* *
      *
      *  Functions
@@ -68,7 +55,7 @@ class RSIIndicator extends SMAIndicator {
             values = yVal;
         }
         else {
-            // in case of the situation, where the series type has data length
+            // In case of the situation, where the series type has data length
             // longer then 4 (HLC, range), this ensures that we are not trying
             // to reach the index out of bounds
             index = Math.min(index, yVal[0].length - 1);
@@ -126,6 +113,11 @@ class RSIIndicator extends SMAIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Relative strength index (RSI) technical indicator. This series
  * requires the `linkedTo` option to be set and should be loaded after
@@ -171,4 +163,4 @@ export default RSIIndicator;
  * @requires  stock/indicators/rsi
  * @apioption series.rsi
  */
-''; // to include the above in the js output
+''; // To include the above in the js output

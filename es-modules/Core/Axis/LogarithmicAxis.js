@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -27,24 +27,17 @@ var LogarithmicAxis;
      * */
     /* *
      *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * Provides logarithmic support for axes.
      * @private
      */
     function compose(AxisClass) {
-        if (U.pushUnique(composedMembers, AxisClass)) {
+        if (!AxisClass.keepProps.includes('logarithmic')) {
             AxisClass.keepProps.push('logarithmic');
-            addEvent(AxisClass, 'init', onInit);
+            addEvent(AxisClass, 'afterSetType', onAfterSetType);
             addEvent(AxisClass, 'afterInit', onAfterInit);
         }
         return AxisClass;
@@ -53,17 +46,12 @@ var LogarithmicAxis;
     /**
      * @private
      */
-    function onInit(e) {
-        const axis = this;
-        const options = e.userOptions;
-        let logarithmic = axis.logarithmic;
-        if (options.type !== 'logarithmic') {
-            axis.logarithmic = void 0;
+    function onAfterSetType() {
+        if (this.type !== 'logarithmic') {
+            this.logarithmic = void 0;
         }
         else {
-            if (!logarithmic) {
-                logarithmic = axis.logarithmic = new Additions(axis);
-            }
+            this.logarithmic ?? (this.logarithmic = new Additions(this));
         }
     }
     /**
@@ -72,7 +60,7 @@ var LogarithmicAxis;
     function onAfterInit() {
         const axis = this;
         const log = axis.logarithmic;
-        // extend logarithmic axis
+        // Extend logarithmic axis
         if (log) {
             axis.lin2val = function (num) {
                 return log.lin2log(num);

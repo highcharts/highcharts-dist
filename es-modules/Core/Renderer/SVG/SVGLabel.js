@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -29,10 +29,10 @@ class SVGLabel extends SVGElement {
      *
      * */
     constructor(renderer, str, x, y, shape, anchorX, anchorY, useHTML, baseline, className) {
-        super();
+        super(renderer, 'g');
         this.paddingLeftSetter = this.paddingSetter;
         this.paddingRightSetter = this.paddingSetter;
-        this.init(renderer, 'g');
+        this.doUpdate = false;
         this.textStr = str;
         this.x = x;
         this.y = y;
@@ -150,36 +150,59 @@ class SVGLabel extends SVGElement {
         if (value) {
             this.needsBox = true;
         }
-        // for animation getter (#6776)
+        // For animation getter (#6776)
         this.fill = value;
         this.boxAttr(key, value);
     }
     /*
      * Return the bounding box of the box, not the group.
      */
-    getBBox() {
+    getBBox(reload, rot) {
         // If we have a text string and the DOM bBox was 0, it typically means
         // that the label was first rendered hidden, so we need to update the
         // bBox (#15246)
         if (this.textStr && this.bBox.width === 0 && this.bBox.height === 0) {
             this.updateBoxSize();
         }
-        const padding = this.padding;
-        const paddingLeft = pick(this.paddingLeft, padding);
-        return {
-            width: this.width || 0,
-            height: this.height || 0,
-            x: this.bBox.x - paddingLeft,
-            y: this.bBox.y - padding
+        const { padding, height = 0, translateX = 0, translateY = 0, width = 0 } = this, paddingLeft = pick(this.paddingLeft, padding), rotation = rot ?? (this.rotation || 0);
+        let bBox = {
+            width,
+            height,
+            x: translateX + this.bBox.x - paddingLeft,
+            y: translateY + this.bBox.y - padding + this.baselineOffset
         };
+        if (rotation) {
+            bBox = this.getRotatedBox(bBox, rotation);
+        }
+        return bBox;
     }
     getCrispAdjust() {
-        return this.renderer.styledMode && this.box ?
-            this.box.strokeWidth() % 2 / 2 :
-            (this['stroke-width'] ? parseInt(this['stroke-width'], 10) : 0) % 2 / 2;
+        return (this.renderer.styledMode && this.box ?
+            this.box.strokeWidth() :
+            (this['stroke-width'] ?
+                parseInt(this['stroke-width'], 10) :
+                0)) % 2 / 2;
     }
     heightSetter(value) {
         this.heightSetting = value;
+        this.doUpdate = true;
+    }
+    /**
+     * This method is executed in the end of `attr()`, after setting all
+     * attributes in the hash. In can be used to efficiently consolidate
+     * multiple attributes in one SVG property -- e.g., translate, rotate and
+     * scale are merged in one "transform" attribute in the SVG node.
+     * Also updating height or width should trigger update of the box size.
+     *
+     * @private
+     * @function Highcharts.SVGLabel#afterSetters
+     */
+    afterSetters() {
+        super.afterSetters();
+        if (this.doUpdate) {
+            this.updateBoxSize();
+            this.doUpdate = false;
+        }
     }
     /*
      * After the text element is added, get the desired size of the border
@@ -214,7 +237,7 @@ class SVGLabel extends SVGElement {
         this.boxAttr(key, value);
     }
     strokeSetter(value, key) {
-        // for animation getter (#6776)
+        // For animation getter (#6776)
         this.stroke = value;
         this.boxAttr(key, value);
     }
@@ -234,6 +257,7 @@ class SVGLabel extends SVGElement {
             this.text.attr({ text });
         }
         this.updateTextPadding();
+        this.reAlign();
     }
     /*
      * This function runs after the label is added to the DOM (when the bounding
@@ -243,12 +267,12 @@ class SVGLabel extends SVGElement {
     updateBoxSize() {
         const text = this.text, attribs = {}, padding = this.padding, 
         // #12165 error when width is null (auto)
-        // #12163 when fontweight: bold, recalculate bBox withot cache
+        // #12163 when fontweight: bold, recalculate bBox without cache
         // #3295 && 3514 box failure when string equals 0
         bBox = this.bBox = (((!isNumber(this.widthSetting) ||
             !isNumber(this.heightSetting) ||
             this.textAlign) && defined(text.textStr)) ?
-            text.getBBox() :
+            text.getBBox(void 0, 0) :
             SVGLabel.emptyBBox);
         let crispAdjust;
         this.width = this.getPaddedWidth();
@@ -301,13 +325,13 @@ class SVGLabel extends SVGElement {
             // Determine y based on the baseline
             const textY = this.baseline ? 0 : this.baselineOffset;
             let textX = pick(this.paddingLeft, this.padding);
-            // compensate for alignment
+            // Compensate for alignment
             if (defined(this.widthSetting) &&
                 this.bBox &&
                 (this.textAlign === 'center' || this.textAlign === 'right')) {
                 textX += { center: 0.5, right: 1 }[this.textAlign] * (this.widthSetting - this.bBox.width);
             }
-            // update if anything changed
+            // Update if anything changed
             if (textX !== text.x || textY !== text.y) {
                 text.attr('x', textX);
                 // #8159 - prevent misplaced data labels in treemap
@@ -319,14 +343,15 @@ class SVGLabel extends SVGElement {
                     text.attr('y', textY);
                 }
             }
-            // record current values
+            // Record current values
             text.x = textX;
             text.y = textY;
         }
     }
     widthSetter(value) {
-        // width:auto => null
+        // `width:auto` => null
         this.widthSetting = isNumber(value) ? value : void 0;
+        this.doUpdate = true;
     }
     getPaddedWidth() {
         const padding = this.padding;
@@ -337,7 +362,7 @@ class SVGLabel extends SVGElement {
             paddingRight);
     }
     xSetter(value) {
-        this.x = value; // for animation getter
+        this.x = value; // For animation getter
         if (this.alignFactor) {
             value -= this.alignFactor * this.getPaddedWidth();
             // Force animation even when setting to the same value (#7898)

@@ -1,11 +1,11 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v@product.version@ (@product.date@)
  * @module highcharts/modules/data-tools
  * @requires highcharts
  *
  * Highcharts
  *
- * (c) 2010-2023 Highsoft AS
+ * (c) 2010-2024 Highsoft AS
  *
  * License: www.highcharts.com/license
  */
@@ -28,10 +28,11 @@ import '../../Data/Modifiers/MathModifier.js';
 import '../../Data/Modifiers/RangeModifier.js';
 import '../../Data/Modifiers/SortModifier.js';
 const G = Highcharts;
-G.DataConnector = DataConnector;
-G.DataConverter = DataConverter;
-G.DataCursor = DataCursor;
-G.DataModifier = DataModifier;
-G.DataPool = DataPool;
-G.DataTable = DataTable;
-G.Formula = Formula;
+G.DataConnector = G.DataConnector || DataConnector;
+G.DataConverter = G.DataConverter || DataConverter;
+G.DataCursor = G.DataCursor || DataCursor;
+G.DataModifier = G.DataModifier || DataModifier;
+G.DataPool = G.DataPool || DataPool;
+G.DataTable = G.DataTable || DataTable;
+G.Formula = G.Formula || Formula;
+export default Highcharts;

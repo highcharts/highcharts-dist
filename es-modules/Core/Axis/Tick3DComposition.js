@@ -1,8 +1,8 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
- *  Extenstion for 3d axes
+ *  Extension for 3d axes
  *
  *  License: www.highcharts.com/license
  *
@@ -10,14 +10,10 @@
  *
  * */
 'use strict';
+import H from '../Globals.js';
+const { composed } = H;
 import U from '../Utilities.js';
-const { addEvent, extend, wrap } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { addEvent, extend, pushUnique, wrap } = U;
 /* *
  *
  *  Functions
@@ -27,7 +23,7 @@ const composedMembers = [];
  * @private
  */
 function compose(TickClass) {
-    if (U.pushUnique(composedMembers, TickClass)) {
+    if (pushUnique(composed, 'Axis.Tick3D')) {
         addEvent(TickClass, 'afterGetLabelPosition', onTickAfterGetLabelPosition);
         wrap(TickClass.prototype, 'getMarkPath', wrapTickGetMarkPath);
     }

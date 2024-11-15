@@ -2,7 +2,7 @@
  *
  *  Experimental Highcharts module which enables visualization of a word cloud.
  *
- *  (c) 2016-2021 Highsoft AS
+ *  (c) 2016-2024 Highsoft AS
  *  Authors: Jon Arild Nygard
  *
  *  License: www.highcharts.com/license
@@ -34,22 +34,6 @@ const { archimedeanSpiral, extendPlayingField, getBoundingBoxFromPolygon, getPla
  * @augments Highcharts.Series
  */
 class WordcloudSeries extends ColumnSeries {
-    constructor() {
-        /* *
-         *
-         *  Static properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         * Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /**
      *
      * Functions
@@ -89,8 +73,8 @@ class WordcloudSeries extends ColumnSeries {
         const series = this, hasRendered = series.hasRendered, xAxis = series.xAxis, yAxis = series.yAxis, chart = series.chart, group = series.group, options = series.options, animation = options.animation, allowExtendPlayingField = options.allowExtendPlayingField, renderer = chart.renderer, placed = [], placementStrategy = series.placementStrategy[options.placementStrategy], rotation = options.rotation, weights = series.points.map(function (p) {
             return p.weight;
         }), maxWeight = Math.max.apply(null, weights), 
-        // concat() prevents from sorting the original array.
-        data = series.points.concat().sort((a, b) => (b.weight - a.weight // Sort descending
+        // `concat()` prevents from sorting the original array.
+        points = series.points.concat().sort((a, b) => (b.weight - a.weight // Sort descending
         ));
         let testElement = renderer.text().add(group), field;
         // Reset the scale before finding the dimensions (#11993).
@@ -104,7 +88,7 @@ class WordcloudSeries extends ColumnSeries {
         });
         // Get the dimensions for each word.
         // Used in calculating the playing field.
-        for (const point of data) {
+        for (const point of points) {
             const relativeWeight = 1 / maxWeight * point.weight, fontSize = series.deriveFontSize(relativeWeight, options.maxFontSize, options.minFontSize), css = extend({
                 fontSize: fontSize + 'px'
             }, options.style);
@@ -120,23 +104,23 @@ class WordcloudSeries extends ColumnSeries {
             };
         }
         // Calculate the playing field.
-        field = getPlayingField(xAxis.len, yAxis.len, data);
+        field = getPlayingField(xAxis.len, yAxis.len, points);
         const spiral = getSpiral(series.spirals[options.spiral], {
             field: field
         });
         // Draw all the points.
-        for (const point of data) {
+        for (const point of points) {
             const relativeWeight = 1 / maxWeight * point.weight, fontSize = series.deriveFontSize(relativeWeight, options.maxFontSize, options.minFontSize), css = extend({
                 fontSize: fontSize + 'px'
             }, options.style), placement = placementStrategy(point, {
-                data: data,
+                data: points,
                 field: field,
                 placed: placed,
                 rotation: rotation
             }), attr = extend(series.pointAttribs(point, (point.selected && 'select')), {
                 align: 'center',
                 'alignment-baseline': 'middle',
-                'dominant-baseline': 'middle',
+                'dominant-baseline': 'middle', // #15973: Firefox
                 x: placement.x,
                 y: placement.y,
                 text: point.name,
@@ -193,7 +177,7 @@ class WordcloudSeries extends ColumnSeries {
                 if (!hasRendered) {
                     attr.x = 0;
                     attr.y = 0;
-                    // or animate from previous position
+                    // Or animate from previous position
                 }
                 else {
                     delete attr.x;
@@ -233,11 +217,16 @@ class WordcloudSeries extends ColumnSeries {
         return {
             translateX: x + (width / 2),
             translateY: y + (height / 2),
-            scaleX: 1,
+            scaleX: 1, // #1623
             scaleY: 1
         };
     }
 }
+/* *
+ *
+ *  Static properties
+ *
+ * */
 WordcloudSeries.defaultOptions = merge(ColumnSeries.defaultOptions, WordcloudSeriesDefaults);
 extend(WordcloudSeries.prototype, {
     animate: noop,

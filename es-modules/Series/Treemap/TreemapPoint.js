@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2014-2021 Highsoft AS
+ *  (c) 2014-2024 Highsoft AS
  *
  *  Authors: Jon Arild Nygard / Oystein Moseng
  *
@@ -28,12 +28,7 @@ class TreemapPoint extends ScatterPoint {
          *
          * */
         super(...arguments);
-        this.name = void 0;
-        this.node = void 0;
-        this.options = void 0;
-        this.series = void 0;
         this.shapeType = 'rect';
-        this.value = void 0;
     }
     /* *
      *
@@ -47,7 +42,8 @@ class TreemapPoint extends ScatterPoint {
         const series = this.series, options = series.options;
         let className = super.getClassName();
         // Above the current level
-        if (this.node.level <= series.nodeMap[series.rootNode].level) {
+        if (this.node.level <= series.nodeMap[series.rootNode].level &&
+            this.node.children.length) {
             className += ' highcharts-above-level';
         }
         else if (!this.node.isLeaf &&

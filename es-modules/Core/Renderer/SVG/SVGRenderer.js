@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -9,6 +9,8 @@
  * */
 'use strict';
 import AST from '../HTML/AST.js';
+import D from '../../Defaults.js';
+const { defaultOptions } = D;
 import Color from '../../Color/Color.js';
 import H from '../../Globals.js';
 const { charts, deg2rad, doc, isFirefox, isMS, isWebKit, noop, SVG_NS, symbolSizes, win } = H;
@@ -18,7 +20,7 @@ import SVGLabel from './SVGLabel.js';
 import Symbols from './Symbols.js';
 import TextBuilder from './TextBuilder.js';
 import U from '../../Utilities.js';
-const { addEvent, attr, createElement, css, defined, destroyObjectProperties, extend, isArray, isNumber, isObject, isString, merge, pick, pInt, uniqueKey } = U;
+const { addEvent, attr, createElement, crisp, css, defined, destroyObjectProperties, extend, isArray, isNumber, isObject, isString, merge, pick, pInt, replaceNested, uniqueKey } = U;
 /* *
  *
  *  Variables
@@ -39,6 +41,10 @@ let hasInternalReferenceBug;
  *
  * An existing chart's renderer can be accessed through {@link Chart.renderer}.
  * The renderer can also be used completely decoupled from a chart.
+ *
+ * See [How to use the SVG Renderer](
+ * https://www.highcharts.com/docs/advanced-chart-features/renderer) for a
+ * comprehensive tutorial.
  *
  * @sample highcharts/members/renderer-on-chart
  *         Annotating a chart programmatically.
@@ -78,63 +84,37 @@ let hasInternalReferenceBug;
  *        etc.
  */
 class SVGRenderer {
-    /* *
+    /**
+     * The root `svg` node of the renderer.
      *
-     *  Constructors
+     * @name Highcharts.SVGRenderer#box
+     * @type {Highcharts.SVGDOMElement}
+     */
+    /**
+     * The wrapper for the root `svg` node of the renderer.
      *
-     * */
-    constructor(container, width, height, style, forExport, allowHTML, styledMode) {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.alignedObjects = void 0;
-        /**
-         * The root `svg` node of the renderer.
-         *
-         * @name Highcharts.SVGRenderer#box
-         * @type {Highcharts.SVGDOMElement}
-         */
-        this.box = void 0;
-        /**
-         * The wrapper for the root `svg` node of the renderer.
-         *
-         * @name Highcharts.SVGRenderer#boxWrapper
-         * @type {Highcharts.SVGElement}
-         */
-        this.boxWrapper = void 0;
-        this.cache = void 0;
-        this.cacheKeys = void 0;
-        this.chartIndex = void 0;
-        /**
-         * A pointer to the `defs` node of the root SVG.
-         *
-         * @name Highcharts.SVGRenderer#defs
-         * @type {Highcharts.SVGElement}
-         */
-        this.defs = void 0;
-        this.globalAnimation = void 0;
-        this.gradients = void 0;
-        this.height = void 0;
-        this.imgCount = void 0;
-        this.style = void 0;
-        /**
-         * Page url used for internal references.
-         *
-         * @private
-         * @name Highcharts.SVGRenderer#url
-         * @type {string}
-         */
-        this.url = void 0;
-        this.width = void 0;
-        this.init(container, width, height, style, forExport, allowHTML, styledMode);
-    }
-    /* *
+     * @name Highcharts.SVGRenderer#boxWrapper
+     * @type {Highcharts.SVGElement}
+     */
+    /**
+     * A pointer to the `defs` node of the root SVG.
      *
-     *  Functions
+     * @name Highcharts.SVGRenderer#defs
+     * @type {Highcharts.SVGElement}
+     */
+    /**
+     * Whether the rendered content is intended for export.
      *
-     * */
+     * @name Highcharts.SVGRenderer#forExport
+     * @type {boolean | undefined}
+     */
+    /**
+     * Page url used for internal references.
+     *
+     * @private
+     * @name Highcharts.SVGRenderer#url
+     * @type {string}
+     */
     /**
      * Initialize the SVGRenderer. Overridable initializer function that takes
      * the same parameters as the constructor.
@@ -165,7 +145,7 @@ class SVGRenderer {
      * does, it will avoid setting presentational attributes in some cases, but
      * not when set explicitly through `.attr` and `.css` etc.
      */
-    init(container, width, height, style, forExport, allowHTML, styledMode) {
+    constructor(container, width, height, style, forExport, allowHTML, styledMode) {
         const renderer = this, boxWrapper = renderer
             .createElement('svg')
             .attr({
@@ -173,7 +153,7 @@ class SVGRenderer {
             'class': 'highcharts-root'
         }), element = boxWrapper.element;
         if (!styledMode) {
-            boxWrapper.css(this.getStyle(style));
+            boxWrapper.css(this.getStyle(style || {}));
         }
         container.appendChild(element);
         // Always use ltr on the container, otherwise text-anchor will be
@@ -185,20 +165,20 @@ class SVGRenderer {
         }
         this.box = element;
         this.boxWrapper = boxWrapper;
-        renderer.alignedObjects = [];
+        this.alignedObjects = [];
         this.url = this.getReferenceURL();
         // Add description
         const desc = this.createElement('desc').add();
-        desc.element.appendChild(doc.createTextNode('Created with Highcharts 11.2.0'));
-        renderer.defs = this.createElement('defs').add();
-        renderer.allowHTML = allowHTML;
-        renderer.forExport = forExport;
-        renderer.styledMode = styledMode;
-        renderer.gradients = {}; // Object where gradient SvgElements are stored
-        renderer.cache = {}; // Cache for numerical bounding boxes
-        renderer.cacheKeys = [];
-        renderer.imgCount = 0;
-        renderer.rootFontSize = boxWrapper.getStyle('font-size');
+        desc.element.appendChild(doc.createTextNode('Created with @product.name@ @product.version@'));
+        this.defs = this.createElement('defs').add();
+        this.allowHTML = allowHTML;
+        this.forExport = forExport;
+        this.styledMode = styledMode;
+        this.gradients = {}; // Object where gradient SvgElements are stored
+        this.cache = {}; // Cache for numerical bounding boxes
+        this.cacheKeys = [];
+        this.imgCount = 0;
+        this.rootFontSize = boxWrapper.getStyle('font-size');
         renderer.setSize(width, height, false);
         // Issue 110 workaround:
         // In Firefox, if a div is positioned by percentage, its pixel position
@@ -217,12 +197,17 @@ class SVGRenderer {
                     top: (Math.ceil(rect.top) - rect.top) + 'px'
                 });
             };
-            // run the fix now
+            // Run the fix now
             subPixelFix();
-            // run it on resize
+            // Run it on resize
             renderer.unSubPixelFix = addEvent(win, 'resize', subPixelFix);
         }
     }
+    /* *
+     *
+     *  Functions
+     *
+     * */
     /**
      * General method for adding a definition to the SVG `defs` tag. Can be used
      * for gradients, fills, filters etc. Styled mode only. A hook for adding
@@ -319,13 +304,12 @@ class SVGRenderer {
                 doc.body.removeChild(svg);
             }
             if (hasInternalReferenceBug) {
-                return win.location.href
-                    .split('#')[0] // remove the hash
-                    .replace(/<[^>]*>/g, '') // wing cut HTML
-                    // escape parantheses and quotes
-                    .replace(/([\('\)])/g, '\\$1')
-                    // replace spaces (needed for Safari only)
-                    .replace(/ /g, '%20');
+                // Scan alert #[72]: Loop for nested patterns
+                return replaceNested(win.location.href.split('#')[0], // Remove hash
+                [/<[^>]*>/g, ''], // Wing cut HTML
+                [/([\('\)])/g, '\\$1'], // Escape parantheses and quotes
+                [/ /g, '%20'] // Replace spaces (needed for Safari only)
+                );
             }
         }
         return '';
@@ -363,8 +347,8 @@ class SVGRenderer {
     /**
      * Detect whether the renderer is hidden. This happens when one of the
      * parent elements has `display: none`. Used internally to detect when we
-     * needto render preliminarily in another div to get the text bounding boxes
-     * right.
+     * need to render preliminarily in another div to get the text bounding
+     * boxes right.
      *
      * @function Highcharts.SVGRenderer#isHidden
      *
@@ -412,9 +396,7 @@ class SVGRenderer {
      * The generated SVGElement.
      */
     createElement(nodeName) {
-        const wrapper = new this.Element();
-        wrapper.init(this, nodeName);
-        return wrapper;
+        return new this.Element(this, nodeName);
     }
     /**
      * Get converted radial gradient attributes according to the radial
@@ -447,7 +429,7 @@ class SVGRenderer {
             `highcharts-drop-shadow-${this.chartIndex}`,
             ...Object.keys(shadowOptions)
                 .map((key) => `${key}-${shadowOptions[key]}`)
-        ].join('-').toLowerCase().replace(/[^a-z0-9\-]/g, ''), options = merge({
+        ].join('-').toLowerCase().replace(/[^a-z\d\-]/g, ''), options = merge({
             color: '#000000',
             offsetX: 1,
             offsetY: 1,
@@ -461,21 +443,36 @@ class SVGRenderer {
                     id,
                     filterUnits: options.filterUnits
                 },
-                children: [{
-                        tagName: 'feDropShadow',
-                        attributes: {
-                            dx: options.offsetX,
-                            dy: options.offsetY,
-                            'flood-color': options.color,
-                            // Tuned and modified to keep a preserve compatibility
-                            // with the old settings
-                            'flood-opacity': Math.min(options.opacity * 5, 1),
-                            stdDeviation: options.width / 2
-                        }
-                    }]
+                children: this.getShadowFilterContent(options)
             });
         }
         return id;
+    }
+    /**
+     * Get shadow filter content.
+     * NOTE! Overridden in es5 module for IE11 compatibility.
+     *
+     * @private
+     * @function Highcharts.SVGRenderer#getShadowFilterContent
+     *
+     * @param {ShadowOptionsObject} options
+     * The shadow options.
+     * @return {Array<AST.Node>}
+     * The shadow filter content.
+     */
+    getShadowFilterContent(options) {
+        return [{
+                tagName: 'feDropShadow',
+                attributes: {
+                    dx: options.offsetX,
+                    dy: options.offsetY,
+                    'flood-color': options.color,
+                    // Tuned and modified to keep a preserve compatibility
+                    // with the old settings
+                    'flood-opacity': Math.min(options.opacity * 5, 1),
+                    stdDeviation: options.width / 2
+                }
+            }];
     }
     /**
      * Parse a simple HTML string into SVG tspans. Called internally when text
@@ -520,7 +517,9 @@ class SVGRenderer {
         return 1.05 / (l + 0.05) > (l + 0.05) / 0.05 ? '#FFFFFF' : '#000000';
     }
     /**
-     * Create a button with preset states.
+     * Create a button with preset states. Styles for the button can either be
+     * set as arguments, or a general theme for all buttons can be set by the
+     * `global.buttonTheme` option.
      *
      * @function Highcharts.SVGRenderer#button
      *
@@ -558,56 +557,31 @@ class SVGRenderer {
      * The button element.
      */
     button(text, x, y, callback, theme = {}, hoverState, selectState, disabledState, shape, useHTML) {
-        const label = this.label(text, x, y, shape, void 0, void 0, useHTML, void 0, 'button'), styledMode = this.styledMode, states = theme.states || {};
+        const label = this.label(text, x, y, shape, void 0, void 0, useHTML, void 0, 'button'), styledMode = this.styledMode, args = arguments;
         let curState = 0;
-        theme = merge(theme);
+        theme = merge(defaultOptions.global.buttonTheme, theme);
+        // @todo Consider moving this to a lower level, like .attr
+        if (styledMode) {
+            delete theme.fill;
+            delete theme.stroke;
+            delete theme['stroke-width'];
+        }
+        const states = theme.states || {}, normalStyle = theme.style || {};
         delete theme.states;
-        const normalStyle = merge({
-            color: "#333333" /* Palette.neutralColor80 */,
-            cursor: 'pointer',
-            fontSize: '0.8em',
-            fontWeight: 'normal'
-        }, theme.style);
         delete theme.style;
-        // Remove stylable attributes. Pass in the ButtonThemeObject and get the
-        // SVGAttributes subset back.
-        let normalState = AST.filterUserAttributes(theme);
-        // Default, non-stylable attributes
-        label.attr(merge({ padding: 8, r: 2 }, normalState));
-        // Presentational. The string type is a mistake, it is just for
-        // compliance with SVGAttribute and is not used in button theme.
-        let hoverStyle, selectStyle, disabledStyle;
+        // Presentational
+        const stateAttribs = [
+            AST.filterUserAttributes(theme)
+        ], 
+        // The string type is a mistake, it is just for compliance with
+        // SVGAttribute and is not used in button theme.
+        stateStyles = [normalStyle];
         if (!styledMode) {
-            // Normal state - prepare the attributes
-            normalState = merge({
-                fill: "#f7f7f7" /* Palette.neutralColor3 */,
-                stroke: "#cccccc" /* Palette.neutralColor20 */,
-                'stroke-width': 1
-            }, normalState);
-            // Hover state
-            hoverState = merge(normalState, {
-                fill: "#e6e6e6" /* Palette.neutralColor10 */
-            }, AST.filterUserAttributes(hoverState || states.hover || {}));
-            hoverStyle = hoverState.style;
-            delete hoverState.style;
-            // Pressed state
-            selectState = merge(normalState, {
-                fill: "#e6e9ff" /* Palette.highlightColor10 */,
-                style: {
-                    color: "#000000" /* Palette.neutralColor100 */,
-                    fontWeight: 'bold'
-                }
-            }, AST.filterUserAttributes(selectState || states.select || {}));
-            selectStyle = selectState.style;
-            delete selectState.style;
-            // Disabled state
-            disabledState = merge(normalState, {
-                style: {
-                    color: "#cccccc" /* Palette.neutralColor20 */
-                }
-            }, AST.filterUserAttributes(disabledState || states.disabled || {}));
-            disabledStyle = disabledState.style;
-            delete disabledState.style;
+            ['hover', 'select', 'disabled'].forEach((stateName, i) => {
+                stateAttribs.push(merge(stateAttribs[0], AST.filterUserAttributes(args[i + 5] || states[stateName] || {})));
+                stateStyles.push(stateAttribs[i + 1].style);
+                delete stateAttribs[i + 1].style;
+            });
         }
         // Add the events. IE9 and IE10 need mouseover and mouseout to function
         // (#667).
@@ -621,7 +595,7 @@ class SVGRenderer {
                 label.setState(curState);
             }
         });
-        label.setState = function (state) {
+        label.setState = (state = 0) => {
             // Hover state is temporary, don't record it
             if (state !== 1) {
                 label.state = curState = state;
@@ -630,31 +604,19 @@ class SVGRenderer {
             label
                 .removeClass(/highcharts-button-(normal|hover|pressed|disabled)/)
                 .addClass('highcharts-button-' +
-                ['normal', 'hover', 'pressed', 'disabled'][state || 0]);
+                ['normal', 'hover', 'pressed', 'disabled'][state]);
             if (!styledMode) {
-                label
-                    .attr([
-                    normalState,
-                    hoverState,
-                    selectState,
-                    disabledState
-                ][state || 0]);
-                const css = [
-                    normalStyle,
-                    hoverStyle,
-                    selectStyle,
-                    disabledStyle
-                ][state || 0];
+                label.attr(stateAttribs[state]);
+                const css = stateStyles[state];
                 if (isObject(css)) {
                     label.css(css);
                 }
             }
         };
+        label.attr(stateAttribs[0]);
         // Presentational attributes
         if (!styledMode) {
-            label
-                .attr(normalState)
-                .css(extend({ cursor: 'default' }, normalStyle));
+            label.css(extend({ cursor: 'default' }, normalStyle));
             // HTML labels don't need to handle pointer events because click and
             // mouseenter/mouseleave is bound to the underlying <g> element.
             // Should this be reconsidered, we need more complex logic to share
@@ -684,26 +646,17 @@ class SVGRenderer {
      * @param {number} width
      *        The width of the line.
      *
-     * @param {string} [roundingFunction=round]
-     *        The rounding function name on the `Math` object, can be one of
-     *        `round`, `floor` or `ceil`.
-     *
      * @return {Highcharts.SVGPathArray}
      *         The original points array, but modified to render crisply.
      */
-    crispLine(points, width, roundingFunction = 'round') {
-        const start = points[0];
-        const end = points[1];
+    crispLine(points, width) {
+        const [start, end] = points;
         // Normalize to a crisp line
         if (defined(start[1]) && start[1] === end[1]) {
-            // Substract due to #1129. Now bottom and left axis gridlines behave
-            // the same.
-            start[1] = end[1] =
-                Math[roundingFunction](start[1]) - (width % 2 / 2);
+            start[1] = end[1] = crisp(start[1], width);
         }
         if (defined(start[2]) && start[2] === end[2]) {
-            start[2] = end[2] =
-                Math[roundingFunction](start[2]) + (width % 2 / 2);
+            start[2] = end[2] = crisp(start[2], width);
         }
         return points;
     }
@@ -746,7 +699,7 @@ class SVGRenderer {
         if (isArray(path)) {
             attribs.d = path;
         }
-        else if (isObject(path)) { // attributes
+        else if (isObject(path)) { // Attributes
             extend(attribs, path);
         }
         return this.createElement('path').attr(attribs);
@@ -1096,19 +1049,19 @@ class SVGRenderer {
      */
     symbol(symbol, x, y, width, height, options) {
         const ren = this, imageRegex = /^url\((.*?)\)$/, isImage = imageRegex.test(symbol), sym = (!isImage && (this.symbols[symbol] ? symbol : 'circle')), 
-        // get the symbol definition function
+        // Get the symbol definition function
         symbolFn = (sym && this.symbols[sym]);
         let obj, path, imageSrc, centerImage;
         if (symbolFn) {
             // Check if there's a path defined for this symbol
             if (typeof x === 'number') {
-                path = symbolFn.call(this.symbols, Math.round(x || 0), Math.round(y || 0), width || 0, height || 0, options);
+                path = symbolFn.call(this.symbols, x || 0, y || 0, width || 0, height || 0, options);
             }
             obj = this.path(path);
             if (!ren.styledMode) {
                 obj.attr('fill', 'none');
             }
-            // expando properties for use in animate and attr
+            // Expando properties for use in animate and attr
             extend(obj, {
                 symbolName: (sym || void 0),
                 x: x,
@@ -1181,6 +1134,7 @@ class SVGRenderer {
                 });
             }
             img.isImg = true;
+            img.symbolUrl = symbol;
             if (defined(img.imgwidth) && defined(img.imgheight)) {
                 centerImage(img);
             }
@@ -1235,6 +1189,9 @@ class SVGRenderer {
      * to {@link SVGElement} objects through the {@link SVGElement#clip}
      * function.
      *
+     * This function is deprecated as of v11.2. Instead, use a regular shape
+     * (`rect`, `path` etc), and the `SVGElement.clipTo` function.
+     *
      * @example
      * let circle = renderer.circle(100, 100, 100)
      *     .attr({ fill: 'red' })
@@ -1243,6 +1200,8 @@ class SVGRenderer {
      *
      * // Leave only the lower right quarter visible
      * circle.clip(clipRect);
+     *
+     * @deprecated
      *
      * @function Highcharts.SVGRenderer#clipRect
      *
@@ -1258,16 +1217,7 @@ class SVGRenderer {
      *         A clipping rectangle.
      */
     clipRect(x, y, width, height) {
-        const 
-        // Add a hyphen at the end to avoid confusion in testing indexes
-        // -1 and -10, -11 etc (#6550)
-        id = uniqueKey() + '-', clipPath = this.createElement('clipPath').attr({
-            id: id
-        }).add(this.defs), wrapper = this.rect(x, y, width, height, 0).add(clipPath);
-        wrapper.id = id;
-        wrapper.clipPath = clipPath;
-        wrapper.count = 0;
-        return wrapper;
+        return this.rect(x, y, width, height, 0);
     }
     /**
      * Draw text. The text can contain a subset of HTML, like spans and anchors
@@ -1695,7 +1645,7 @@ extend(SVGRenderer.prototype, {
         '&': '&amp;',
         '<': '&lt;',
         '>': '&gt;',
-        "'": '&#39;',
+        "'": '&#39;', // eslint-disable-line quotes
         '"': '&quot;'
     },
     /**
@@ -1733,7 +1683,7 @@ export default SVGRenderer;
  * */
 /**
  * A clipping rectangle that can be applied to one or more {@link SVGElement}
- * instances. It is instanciated with the {@link SVGRenderer#clipRect} function
+ * instances. It is instantiated with the {@link SVGRenderer#clipRect} function
  * and applied with the {@link SVGElement#clip} function.
  *
  * @example
@@ -1809,7 +1759,7 @@ export default SVGRenderer;
 * The shadow color.
 * @name    Highcharts.ShadowOptionsObject#color
 * @type    {Highcharts.ColorString|undefined}
-* @default #000000
+* @default ${palette.neutralColor100}
 */ /**
 * The horizontal offset from the element.
 *
@@ -1928,4 +1878,4 @@ export default SVGRenderer;
 * @name Highcharts.SymbolOptionsObject#start
 * @type {number|undefined}
 */
-(''); // keeps doclets above in transpiled file
+(''); // Keeps doclets above in transpiled file
