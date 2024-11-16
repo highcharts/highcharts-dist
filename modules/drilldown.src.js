@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.8 (2024-08-29)
+ * @license Highcharts JS v11.4.8 (2024-11-16)
  *
  * Highcharts Drilldown module
  *
@@ -58,7 +58,7 @@
         const lang = {
             /**
              * @since   10.0.0
-             * @product highcharts
+             * @product highcharts highmaps
              *
              * @private
              */
@@ -1027,7 +1027,7 @@
              * up through the drilldown levels.
              *
              * @since 10.0.0
-             * @product   highcharts
+             * @product   highcharts highmaps
              * @extends   navigation.breadcrumbs
              * @optionparent drilldown.breadcrumbs
              */
@@ -1531,8 +1531,6 @@
                             series.options.enableMouseTracking =
                                 pick((series.userOptions &&
                                     series.userOptions.enableMouseTracking), true);
-                            series.isDirty = true;
-                            chart.redraw();
                         }
                     });
                     if (chart.drilldown) {

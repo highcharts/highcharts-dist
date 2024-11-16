@@ -990,7 +990,9 @@ class Series {
      * Force getting extremes of a total series data range.
      */
     getProcessedData(forceExtremesFromAll) {
-        const series = this, xAxis = series.xAxis, options = series.options, cropThreshold = options.cropThreshold, logarithmic = xAxis?.logarithmic, isCartesian = series.isCartesian;
+        const series = this, xAxis = series.xAxis, options = series.options, cropThreshold = options.cropThreshold, getExtremesFromAll = forceExtremesFromAll ||
+            // X-range series etc, #21003
+            series.getExtremesFromAll, logarithmic = xAxis?.logarithmic, isCartesian = series.isCartesian;
         let croppedData, cropped, cropStart = 0, xExtremes, min, max, 
         // Copied during slice operation:
         processedXData = series.xData, processedYData = series.yData, updatingNames = false;
@@ -1005,7 +1007,7 @@ class Series {
         // Optionally filter out points outside the plot area
         if (isCartesian &&
             series.sorted &&
-            !forceExtremesFromAll &&
+            !getExtremesFromAll &&
             (!cropThreshold ||
                 dataLength > cropThreshold ||
                 series.forceCrop)) {
@@ -1119,7 +1121,7 @@ class Series {
         const series = this, options = series.options, dataOptions = series.processedData || options.data, processedXData = series.processedXData, processedYData = series.processedYData, PointClass = series.pointClass, processedDataLength = processedXData.length, cropStart = series.cropStart || 0, hasGroupedData = series.hasGroupedData, keys = options.keys, points = [], groupCropStartIndex = (options.dataGrouping &&
             options.dataGrouping.groupAll ?
             cropStart :
-            0);
+            0), categories = series.xAxis?.categories;
         let dataLength, cursor, point, i, data = series.data;
         if (!data && !hasGroupedData) {
             const arr = [];
@@ -1163,6 +1165,10 @@ class Series {
                 point.index = hasGroupedData ?
                     (groupCropStartIndex + i) : cursor;
                 points[i] = point;
+                // Set point properties for convenient access in tooltip and
+                // data labels
+                point.category = categories?.[point.x] ?? point.x;
+                point.key = point.name ?? point.category;
             }
         }
         // Restore keys options (#6590)
@@ -1373,7 +1379,7 @@ class Series {
             this.processData();
         }
         this.generatePoints();
-        const series = this, options = series.options, stacking = options.stacking, xAxis = series.xAxis, categories = xAxis.categories, enabledDataSorting = series.enabledDataSorting, yAxis = series.yAxis, points = series.points, dataLength = points.length, pointPlacement = series.pointPlacementToXValue(), // #7860
+        const series = this, options = series.options, stacking = options.stacking, xAxis = series.xAxis, enabledDataSorting = series.enabledDataSorting, yAxis = series.yAxis, points = series.points, dataLength = points.length, pointPlacement = series.pointPlacementToXValue(), // #7860
         dynamicallyPlaced = Boolean(pointPlacement), threshold = options.threshold, stackThreshold = options.startFromThreshold ? threshold : 0;
         let i, plotX, lastPlotX, stackIndicator, closestPointRangePx = Number.MAX_VALUE;
         /**
@@ -1486,8 +1492,6 @@ class Series {
                 plotX; // #1514, #5383, #5518
             // Negative points #19028
             point.negative = (point.y || 0) < (threshold || 0);
-            // Some API data
-            point.category = pick(categories && categories[point.x], point.x);
             // Determine auto enabling of markers (#3635, #5099)
             if (!point.isNull && point.visible !== false) {
                 if (typeof lastPlotX !== 'undefined') {
@@ -2822,6 +2826,7 @@ class Series {
             // New type requires new point classes
             (newType && newType !== this.type) ||
             // New options affecting how the data points are built
+            typeof options.keys !== 'undefined' ||
             typeof options.pointStart !== 'undefined' ||
             typeof options.pointInterval !== 'undefined' ||
             typeof options.relativeXValue !== 'undefined' ||

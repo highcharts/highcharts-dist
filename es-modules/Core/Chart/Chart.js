@@ -620,13 +620,13 @@ class Chart {
      * Create the Axis instances based on the config options.
      *
      * @private
-     * @function Highcharts.Chart#getAxes
-     * @emits Highcharts.Chart#event:afterGetAxes
-     * @emits Highcharts.Chart#event:getAxes
+     * @function Highcharts.Chart#createAxes
+     * @emits Highcharts.Chart#event:afterCreateAxes
+     * @emits Highcharts.Chart#event:createAxes
      */
-    getAxes() {
+    createAxes() {
         const options = this.userOptions;
-        fireEvent(this, 'getAxes');
+        fireEvent(this, 'createAxes');
         for (const coll of ['xAxis', 'yAxis']) {
             const arr = options[coll] = splat(options[coll] || {});
             for (const axisOptions of arr) {
@@ -634,7 +634,7 @@ class Chart {
                 new Axis(this, axisOptions, coll);
             }
         }
-        fireEvent(this, 'afterGetAxes');
+        fireEvent(this, 'afterCreateAxes');
     }
     /**
      * Returns an array of all currently selected points in the chart. Points
@@ -878,8 +878,8 @@ class Chart {
      * @function Highcharts.Chart#getChartSize
      */
     getChartSize() {
-        const chart = this, optionsChart = chart.options.chart, widthOption = optionsChart.width, heightOption = optionsChart.height, containerBox = chart.getContainerBox(), enableDefaultHeight = containerBox.height > 1 &&
-            !( // #21510, prevent infinite reflow
+        const chart = this, optionsChart = chart.options.chart, widthOption = optionsChart.width, heightOption = optionsChart.height, containerBox = chart.getContainerBox(), enableDefaultHeight = containerBox.height <= 1 ||
+            ( // #21510, prevent infinite reflow
             !chart.renderTo.parentElement?.style.height &&
                 chart.renderTo.style.height === '100%');
         /**
@@ -898,7 +898,7 @@ class Chart {
          * @type {number}
          */
         chart.chartHeight = Math.max(0, relativeLength(heightOption, chart.chartWidth) ||
-            (enableDefaultHeight ? containerBox.height : 400));
+            (enableDefaultHeight ? 400 : containerBox.height));
         chart.containerBox = containerBox;
     }
     /**
@@ -1887,7 +1887,7 @@ class Chart {
         // Set the common chart properties (mainly invert) from the given series
         chart.propFromSeries();
         // Get axes
-        chart.getAxes();
+        chart.createAxes();
         // Initialize the series
         const series = isArray(options.series) ? options.series : [];
         options.series = []; // Avoid mutation

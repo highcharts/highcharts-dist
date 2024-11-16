@@ -6,6 +6,83 @@
 import * as Highcharts from "../highcharts";
 declare module "../highcharts" {
     /**
+     * (Highstock) Point accessibility options for a series.
+     */
+    interface PlotLinearregressionAccessibilityPointOptions {
+        /**
+         * (Highstock) Date format to use for points on datetime axes when
+         * describing them to screen reader users.
+         *
+         * Defaults to the same format as in tooltip.
+         *
+         * For an overview of the replacement codes, see dateFormat.
+         */
+        dateFormat?: string;
+        /**
+         * (Highstock) Formatter function to determine the date/time format used
+         * with points on datetime axes when describing them to screen reader
+         * users. Receives one argument, `point`, referring to the point to
+         * describe. Should return a date format string compatible with
+         * dateFormat.
+         */
+        dateFormatter?: Highcharts.ScreenReaderFormatterCallbackFunction<Highcharts.Point>;
+        /**
+         * (Highstock) Whether or not to describe points with the value `null`
+         * to assistive technology, such as screen readers.
+         */
+        describeNull?: boolean;
+        /**
+         * (Highstock) A format string to use instead of the default for point
+         * descriptions.
+         *
+         * The context of the format string is the point instance.
+         *
+         * As opposed to accessibility.point.valueDescriptionFormat, this option
+         * replaces the whole description.
+         */
+        descriptionFormat?: string;
+        /**
+         * (Highstock) Formatter function to use instead of the default for
+         * point descriptions. Same as
+         * `accessibility.point.descriptionFormatter`, but applies to a series
+         * instead of the whole chart.
+         *
+         * Note: Prefer using accessibility.point.valueDescriptionFormat instead
+         * if possible, as default functionality such as describing annotations
+         * will be preserved.
+         */
+        descriptionFormatter?: Highcharts.ScreenReaderFormatterCallbackFunction<Highcharts.Point>;
+        /**
+         * (Highstock) Decimals to use for the values in the point descriptions.
+         * Uses tooltip.valueDecimals if not defined.
+         */
+        valueDecimals?: number;
+        /**
+         * (Highstock) Format to use for describing the values of data points to
+         * assistive technology - including screen readers. The point context is
+         * available as `{point}`.
+         *
+         * Other available context variables include `{index}`, `{value}`, and
+         * `{xDescription}`.
+         *
+         * Additionally, the series name, annotation info, and description added
+         * in `point.accessibility.description` is added by default if relevant.
+         * To override this, use the accessibility.point.descriptionFormatter
+         * option.
+         */
+        valueDescriptionFormat?: string;
+        /**
+         * (Highstock) Prefix to add to the values in the point descriptions.
+         * Uses tooltip.valuePrefix if not defined.
+         */
+        valuePrefix?: string;
+        /**
+         * (Highstock) Suffix to add to the values in the point descriptions.
+         * Uses tooltip.valueSuffix if not defined.
+         */
+        valueSuffix?: string;
+    }
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Options for the series data
      * labels, appearing next to each data point.
      *
@@ -261,6 +338,13 @@ declare module "../highcharts" {
          * `zIndex` of 2 to display it behind the series.
          */
         zIndex?: number;
+    }
+    /**
+     * (Highcharts, Highstock, Gantt) Styles for the series label. The color
+     * defaults to the series color, or a contrast color if `onArea`.
+     */
+    interface PlotLinearregressionLabelStyleOptions {
+        fontSize?: (number|string);
     }
     /**
      * (Highstock) Options for the _Series on point_ feature. Only `pie` and
@@ -666,6 +750,12 @@ declare module "../highcharts" {
          * be one of `areaMarker`, `lineMarker` or `rectangle`.
          */
         legendSymbol?: Highcharts.OptionsLegendSymbolValue;
+        /**
+         * (Highcharts, Highstock, Highmaps) Defines the color of the legend
+         * symbol for this series. Defaults to undefined, in which case the
+         * series color is used. Does not work with styled mode.
+         */
+        legendSymbolColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
         /**
          * (Highcharts, Highstock) The SVG value used for the `stroke-linecap`
          * and `stroke-linejoin` of a line graph. Round means that lines are

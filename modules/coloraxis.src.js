@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.8 (2024-08-29)
+ * @license Highcharts JS v11.4.8 (2024-11-16)
  *
  * ColorAxis module
  *
@@ -81,7 +81,7 @@
                     chartProto.collectionsWithInit.colorAxis = [
                         chartProto.addColorAxis
                     ];
-                    addEvent(ChartClass, 'afterGetAxes', onChartAfterGetAxes);
+                    addEvent(ChartClass, 'afterCreateAxes', onChartAfterCreateAxes);
                     wrapChartCreateAxis(ChartClass);
                     fxProto.fillSetter = wrapFxFillSetter;
                     fxProto.strokeSetter = wrapFxStrokeSetter;
@@ -101,10 +101,10 @@
             }
             ColorAxisComposition.compose = compose;
             /**
-             * Extend the chart getAxes method to also get the color axis.
+             * Extend the chart createAxes method to also make the color axis.
              * @private
              */
-            function onChartAfterGetAxes() {
+            function onChartAfterCreateAxes() {
                 const { userOptions } = this;
                 this.colorAxis = [];
                 // If a `colorAxis` config is present in the user options (not in a

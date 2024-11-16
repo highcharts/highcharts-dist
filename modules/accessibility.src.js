@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.8 (2024-08-29)
+ * @license Highcharts JS v11.4.8 (2024-11-16)
  *
  * Accessibility module
  *
@@ -259,7 +259,7 @@
                 // No previous siblings are headings, try parent node
                 const parent = el.parentElement;
                 if (!parent) {
-                    return 'p';
+                    return 'h6';
                 }
                 const parentTagName = parent.tagName;
                 if (isHeading(parentTagName)) {
@@ -1634,7 +1634,7 @@
                 }
                 // Add the border rect
                 const bb = this.getBBox(), pad = pick(margin, 3), parent = this.parentGroup, scaleX = this.scaleX || parent && parent.scaleX, scaleY = this.scaleY || parent && parent.scaleY, oneDefined = scaleX ? !scaleY : scaleY, scaleBoth = oneDefined ? Math.abs(scaleX || scaleY || 1) :
-                    (Math.abs(scaleX || 1) + Math.abs(scaleY || 1)) / 2;
+                    (Math.abs(scaleX || 1) + Math.abs(scaleY || 1)) / 2, lineHeight = this.renderer.fontMetrics(this).h;
                 bb.x += this.translateX ? this.translateX : 0;
                 bb.y += this.translateY ? this.translateY : 0;
                 let borderPosX = bb.x - pad, borderPosY = bb.y - pad, borderWidth = bb.width + 2 * pad, borderHeight = bb.height + 2 * pad;
@@ -1672,7 +1672,11 @@
                         borderPosX = attrX - (bb.width * correction.x) - pad;
                     }
                     if (!isNaN(attrY)) {
-                        borderPosY = attrY - (bb.height * correction.y) - pad;
+                        // Correct by line height if "text-achor" == "start", #19335.
+                        const dim = this.attr('text-anchor') === 'start' ?
+                            lineHeight :
+                            bb.height;
+                        borderPosY = attrY - (dim * correction.y) - pad;
                     }
                     if (isLabel && isRotated) {
                         const temp = borderWidth;
@@ -7245,7 +7249,7 @@
                         if (baseSeries) {
                             erase(baseSeries, base); // #21043
                         }
-                        if (this.navigatorSeries) {
+                        if (this.navigatorSeries && navigator.series) {
                             erase(navigator.series, this.navigatorSeries);
                             if (defined(this.navigatorSeries.options)) {
                                 this.navigatorSeries.remove(false);
@@ -9230,7 +9234,6 @@
                             e.preventDefault();
                             e.stopPropagation();
                             if (a11y) {
-                                a11y.keyboardNavigation.tabindexContainer.focus();
                                 a11y.keyboardNavigation.move(e.shiftKey ? -1 : 1);
                             }
                         }

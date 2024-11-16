@@ -64,7 +64,8 @@ class TreegraphSeries extends TreemapSeries {
         const series = this, collectors = this.chart.labelCollectors, collectorFunc = function () {
             const linkLabels = [];
             // Check links for overlap
-            if (!splat(series.options.dataLabels)[0].allowOverlap) {
+            if (series.options.dataLabels &&
+                !splat(series.options.dataLabels)[0].allowOverlap) {
                 for (const link of (series.links || [])) {
                     if (link.dataLabel) {
                         linkLabels.push(link.dataLabel);
@@ -292,8 +293,9 @@ class TreegraphSeries extends TreemapSeries {
             }
             // Set dataLabel width to the width of the point shape.
             if (point.shapeArgs &&
-                !splat(series.options.dataLabels)[0].style.width) {
-                options.style.width = point.shapeArgs.width;
+                series.options.dataLabels &&
+                !splat(series.options.dataLabels)[0].style?.width) {
+                options.style.width = `${point.shapeArgs.width || 0}px`;
                 if (point.dataLabel) {
                     point.dataLabel.css({
                         width: point.shapeArgs.width + 'px'

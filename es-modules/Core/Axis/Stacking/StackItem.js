@@ -13,7 +13,7 @@ const { format } = T;
 import SeriesRegistry from '../../Series/SeriesRegistry.js';
 const { series: Series } = SeriesRegistry;
 import U from '../../Utilities.js';
-const { destroyObjectProperties, fireEvent, isNumber, pick } = U;
+const { destroyObjectProperties, fireEvent, getAlignFactor, isNumber, pick } = U;
 /* *
  *
  *  Class
@@ -166,11 +166,8 @@ class StackItem {
                 x: label.alignAttr.x,
                 y: label.alignAttr.y,
                 rotation: options.rotation,
-                rotationOriginX: labelBox.width * {
-                    left: 0,
-                    center: 0.5,
-                    right: 1
-                }[options.textAlign || 'center'],
+                rotationOriginX: labelBox.width *
+                    getAlignFactor(options.textAlign || 'center'),
                 rotationOriginY: labelBox.height / 2
             });
             // Check if the dataLabel should be visible.
@@ -193,17 +190,10 @@ class StackItem {
      * @return {{x: number, y: number}} Adjusted BBox position of the stack.
      */
     adjustStackPosition({ labelBox, verticalAlign, textAlign }) {
-        const factorMap = {
-            bottom: 0,
-            middle: 1,
-            top: 2,
-            right: 1,
-            center: 0,
-            left: -1
-        }, verticalAlignFactor = factorMap[verticalAlign], textAlignFactor = factorMap[textAlign];
         return {
-            x: labelBox.width / 2 + (labelBox.width / 2) * textAlignFactor,
-            y: (labelBox.height / 2) * verticalAlignFactor
+            x: labelBox.width / 2 +
+                (labelBox.width / 2) * (2 * getAlignFactor(textAlign) - 1),
+            y: (labelBox.height / 2) * 2 * (1 - getAlignFactor(verticalAlign))
         };
     }
     /**

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.8 (2024-08-29)
+ * @license Highcharts JS v11.4.8 (2024-11-16)
  *
  * Client side exporting module
  *
@@ -295,7 +295,6 @@
              *
              * - **scale:** Scaling factor of downloaded image compared to source.
              * Default is `1`.
-             *
              * - **libURL:** URL pointing to location of dependency scripts to download
              * on demand. Default is the exporting.libURL option of the global
              * Highcharts options pointing to our server.

@@ -93,6 +93,12 @@ function axisMinFromRange() {
 /**
  * @private
  */
+function updateRangeSelectorButtons() {
+    this.rangeSelector?.redrawElements();
+}
+/**
+ * @private
+ */
 function compose(AxisClass, ChartClass, RangeSelectorClass) {
     RangeSelectorConstructor = RangeSelectorClass;
     if (pushUnique(composed, 'RangeSelector')) {
@@ -104,6 +110,7 @@ function compose(AxisClass, ChartClass, RangeSelectorClass) {
         addEvent(ChartClass, 'getMargins', onChartGetMargins);
         addEvent(ChartClass, 'redraw', redrawRangeSelector);
         addEvent(ChartClass, 'update', onChartUpdate);
+        addEvent(ChartClass, 'beforeRedraw', updateRangeSelectorButtons);
         chartProto.callbacks.push(redrawRangeSelector);
         extend(defaultOptions, { rangeSelector: RangeSelectorDefaults.rangeSelector });
         extend(defaultOptions.lang, RangeSelectorDefaults.lang);
@@ -134,7 +141,7 @@ function onChartBeforeRender() {
             if (verticalAlign === 'bottom') {
                 this.extraBottomMargin = true;
             }
-            else if (verticalAlign !== 'middle') {
+            else if (verticalAlign === 'top') {
                 this.extraTopMargin = true;
             }
         }
@@ -189,13 +196,16 @@ function onChartDestroy() {
  */
 function onChartGetMargins() {
     const rangeSelector = this.rangeSelector;
-    if (rangeSelector) {
+    if (rangeSelector?.options?.enabled) {
         const rangeSelectorHeight = rangeSelector.getHeight();
-        if (this.extraTopMargin) {
-            this.plotTop += rangeSelectorHeight;
-        }
-        if (this.extraBottomMargin) {
-            this.marginBottom += rangeSelectorHeight;
+        const verticalAlign = rangeSelector.options.verticalAlign;
+        if (!rangeSelector.options.floating) {
+            if (verticalAlign === 'bottom') {
+                this.marginBottom += rangeSelectorHeight;
+            }
+            else if (verticalAlign !== 'middle') {
+                this.plotTop += rangeSelectorHeight;
+            }
         }
     }
 }

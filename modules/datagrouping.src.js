@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.4.8 (2024-08-29)
+ * @license Highstock JS v11.4.8 (2024-11-16)
  *
  * Data grouping module
  *
@@ -1063,13 +1063,13 @@
          * @private
          */
         function onTooltipHeaderFormatter(e) {
-            const chart = this.chart, time = chart.time, labelConfig = e.labelConfig, series = labelConfig.series, point = labelConfig.point, options = series.options, tooltipOptions = series.tooltipOptions, dataGroupingOptions = options.dataGrouping, xAxis = series.xAxis;
-            let xDateFormat = tooltipOptions.xDateFormat, xDateFormatEnd, currentDataGrouping, dateTimeLabelFormats, labelFormats, formattedKey, formatString = tooltipOptions[e.isFooter ? 'footerFormat' : 'headerFormat'];
+            const chart = this.chart, time = chart.time, point = e.point, series = point.series, options = series.options, tooltipOptions = series.tooltipOptions, dataGroupingOptions = options.dataGrouping, xAxis = series.xAxis;
+            let xDateFormat = tooltipOptions.xDateFormat || '', xDateFormatEnd, currentDataGrouping, dateTimeLabelFormats, labelFormats, formattedKey, formatString = tooltipOptions[e.isFooter ? 'footerFormat' : 'headerFormat'];
             // Apply only to grouped series
             if (xAxis &&
                 xAxis.options.type === 'datetime' &&
                 dataGroupingOptions &&
-                isNumber(labelConfig.key)) {
+                isNumber(point.key)) {
                 // Set variables
                 currentDataGrouping = series.currentDataGrouping;
                 dateTimeLabelFormats = dataGroupingOptions.dateTimeLabelFormats ||
@@ -1091,9 +1091,9 @@
                     // it, but if the least distance is one day, skip hours and minutes etc.
                 }
                 else if (!xDateFormat && dateTimeLabelFormats && xAxis.dateTime) {
-                    xDateFormat = xAxis.dateTime.getXDateFormat(labelConfig.x, tooltipOptions.dateTimeLabelFormats);
+                    xDateFormat = xAxis.dateTime.getXDateFormat(point.x, tooltipOptions.dateTimeLabelFormats);
                 }
-                const groupStart = pick(series.groupMap?.[point.index].groupStart, labelConfig.key), groupEnd = groupStart + currentDataGrouping?.totalRange - 1;
+                const groupStart = pick(series.groupMap?.[point.index].groupStart, point.key), groupEnd = groupStart + (currentDataGrouping?.totalRange || 0) - 1;
                 formattedKey = time.dateFormat(xDateFormat, groupStart);
                 if (xDateFormatEnd) {
                     formattedKey += time.dateFormat(xDateFormatEnd, groupEnd);
@@ -1104,7 +1104,7 @@
                 }
                 // Return the replaced format
                 e.text = format(formatString, {
-                    point: extend(labelConfig.point, { key: formattedKey }),
+                    point: extend(point, { key: formattedKey }),
                     series: series
                 }, chart);
                 e.preventDefault();

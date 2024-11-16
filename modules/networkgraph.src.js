@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.8 (2024-08-29)
+ * @license Highcharts JS v11.4.8 (2024-11-16)
  *
  * Force directed graph module
  *
@@ -985,11 +985,10 @@
                  * Note that if a `format` is defined, the format takes precedence
                  * and the formatter is ignored.
                  *
-                 * @type  {Highcharts.SeriesNetworkgraphDataLabelsFormatterCallbackFunction}
                  * @since 7.0.0
                  */
                 formatter: function () {
-                    return this.key;
+                    return String(this.key ?? '');
                 },
                 /**
                  * The
@@ -1007,13 +1006,12 @@
                  * The `linkFormat` option takes precedence over the
                  * `linkFormatter`.
                  *
-                 * @type  {Highcharts.SeriesNetworkgraphDataLabelsFormatterCallbackFunction}
                  * @since 7.1.0
                  */
                 linkFormatter: function () {
-                    return (this.point.fromNode.name +
+                    return (this.fromNode.name +
                         '<br>' +
-                        this.point.toNode.name);
+                        this.toNode.name);
                 },
                 /**
                  * Options for a _link_ label text which should follow link
@@ -3177,6 +3175,7 @@
                     node = this.nodes[i];
                     node.degree = node.getDegree();
                     node.radius = pick(node.marker && node.marker.radius, this.options.marker && this.options.marker.radius, 0);
+                    node.key = node.name;
                     // If node exists, but it's not available in nodeLookup,
                     // then it's leftover from previous runs (e.g. setData)
                     if (!this.nodeLookup[node.id]) {
@@ -3378,41 +3377,6 @@
          *  API Declarations
          *
          * */
-        /**
-         * Formatter callback function.
-         *
-         * @callback Highcharts.SeriesNetworkgraphDataLabelsFormatterCallbackFunction
-         *
-         * @param {Highcharts.SeriesNetworkgraphDataLabelsFormatterContextObject|Highcharts.PointLabelObject} this
-         *        Data label context to format
-         *
-         * @return {string}
-         *         Formatted data label text
-         */
-        /**
-         * Context for the formatter function.
-         *
-         * @interface Highcharts.SeriesNetworkgraphDataLabelsFormatterContextObject
-         * @extends Highcharts.PointLabelObject
-         * @since 7.0.0
-         */ /**
-        * The color of the node.
-        * @name Highcharts.SeriesNetworkgraphDataLabelsFormatterContextObject#color
-        * @type {Highcharts.ColorString}
-        * @since 7.0.0
-        */ /**
-        * The point (node) object. The node name, if defined, is available through
-        * `this.point.name`. Arrays: `this.point.linksFrom` and `this.point.linksTo`
-        * contains all nodes connected to this point.
-        * @name Highcharts.SeriesNetworkgraphDataLabelsFormatterContextObject#point
-        * @type {Highcharts.Point}
-        * @since 7.0.0
-        */ /**
-        * The ID of the node.
-        * @name Highcharts.SeriesNetworkgraphDataLabelsFormatterContextObject#key
-        * @type {string}
-        * @since 7.0.0
-        */
         /**
          * Callback that fires after the end of Networkgraph series simulation
          * when the layout is stable.

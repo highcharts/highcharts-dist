@@ -293,7 +293,7 @@ class ColumnSeries extends Series {
         // tightly, so we allow individual columns to have individual sizes.
         // When pointPadding is greater, we strive for equal-width columns
         // (#2694).
-        if (options.pointPadding) {
+        if (options.pointPadding && options.crisp) {
             seriesBarW = Math.ceil(seriesBarW);
         }
         Series.prototype.translate.apply(series);
@@ -514,11 +514,18 @@ class ColumnSeries extends Series {
      */
     drawTracker(points = this.points) {
         const series = this, chart = series.chart, pointer = chart.pointer, onMouseOver = function (e) {
-            const point = pointer?.getPointFromEvent(e);
+            pointer?.normalize(e);
+            const point = pointer?.getPointFromEvent(e), 
+            // Run point events only for points inside plot area, #21136
+            isInsidePlot = chart.scrollablePlotArea ?
+                chart.isInsidePlot(e.chartX - chart.plotLeft, e.chartY - chart.plotTop, {
+                    visiblePlotOnly: true
+                }) : true;
             // Undefined on graph in scatterchart
             if (pointer &&
                 point &&
-                series.options.enableMouseTracking) {
+                series.options.enableMouseTracking &&
+                isInsidePlot) {
                 pointer.isDirectTouch = true;
                 point.onMouseOver(e);
             }

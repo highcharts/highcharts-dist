@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.8 (2024-08-29)
+ * @license Highcharts JS v11.4.8 (2024-11-16)
  *
  * X-range series
  *
@@ -112,7 +112,7 @@
             colorByPoint: true,
             dataLabels: {
                 formatter: function () {
-                    let amount = this.point.partialFill;
+                    let amount = this.partialFill;
                     if (isObject(amount)) {
                         amount = amount.amount;
                     }
@@ -341,20 +341,6 @@
                 this.series.drawPoint(this, this.series.getAnimationVerb());
             }
             /**
-             * Add x2 and yCategory to the available properties for tooltip formats.
-             *
-             * @private
-             */
-            getLabelConfig() {
-                const cfg = super.getLabelConfig.call(this), yCats = this.series.yAxis.categories;
-                cfg.x2 = this.x2;
-                cfg.yCategory = this.yCategory = yCats && yCats[this.y];
-                // Use 'category' as 'key' to ensure tooltip datetime formatting.
-                // Use 'name' only when 'category' is undefined.
-                cfg.key = this.category || this.name;
-                return cfg;
-            }
-            /**
              * @private
              */
             isValid() {
@@ -366,6 +352,11 @@
             ttBelow: false,
             tooltipDateKeys: ['x', 'x2']
         });
+        /* *
+         *
+         *  Class Namespace
+         *
+         * */
         /* *
          *
          *  Default Export
@@ -665,6 +656,11 @@
                         height: shapeArgs.height
                     };
                 }
+                // Add formatting keys for tooltip and data labels. Use 'category' as
+                // 'key' to ensure tooltip datetime formatting. Use 'name' only when
+                // 'category' is undefined.
+                point.key = point.category || point.name;
+                point.yCategory = yAxis.categories?.[point.y ?? -1];
             }
             /**
              * @private

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.4.8 (2024-08-29)
+ * @license Highstock JS v11.4.8 (2024-11-16)
  *
  * Advanced Highcharts Stock tools
  *
@@ -2482,7 +2482,8 @@
                             background: {
                                 width: 0,
                                 height: 0,
-                                strokeWidth: 10
+                                strokeWidth: 0,
+                                stroke: "#ffffff" /* Palette.backgroundColor */
                             },
                             crosshairX: {
                                 strokeWidth: 1,

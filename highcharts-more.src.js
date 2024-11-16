@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.8 (2024-08-29)
+ * @license Highcharts JS v11.4.8 (2024-11-16)
  *
  * (c) 2009-2024 Torstein Honsi
  *
@@ -1482,7 +1482,7 @@
              * value of the box width. Set `0` to disable whiskers.
              *
              * @sample {highcharts} highcharts/plotoptions/box-plot-styling/
-             *         True by default
+             *         Box plot styling
              *
              * @type    {number|string}
              * @since   3.0
@@ -1889,7 +1889,7 @@
          *
          * */
         const { noop } = H;
-        const { crisp, extend, merge, pick } = U;
+        const { crisp, extend, merge, pick, relativeLength } = U;
         /* *
          *
          *  Class
@@ -1915,6 +1915,28 @@
                 // No attributes should be set on point.graphic which is the group
                 return {};
             }
+            // Get an SVGPath object for both whiskers
+            getWhiskerPair(halfWidth, stemX, upperWhiskerLength, lowerWhiskerLength, point) {
+                const strokeWidth = point.whiskers.strokeWidth(), getWhisker = (xLen, yPos) => {
+                    const halfLen = relativeLength(xLen, 2 * halfWidth) / 2, crispedYPos = crisp(yPos, strokeWidth);
+                    return [
+                        [
+                            'M',
+                            crisp(stemX - halfLen),
+                            crispedYPos
+                        ],
+                        [
+                            'L',
+                            crisp(stemX + halfLen),
+                            crispedYPos
+                        ]
+                    ];
+                };
+                return [
+                    ...getWhisker(upperWhiskerLength, point.highPlot),
+                    ...getWhisker(lowerWhiskerLength, point.lowPlot)
+                ];
+            }
             // Translate data points from raw values x and y to plotX and plotY
             translate() {
                 const series = this, yAxis = series.yAxis, pointArrayMap = series.pointArrayMap;
@@ -1937,16 +1959,16 @@
                 const series = this, points = series.points, options = series.options, chart = series.chart, renderer = chart.renderer, 
                 // Error bar inherits this series type but doesn't do quartiles
                 doQuartiles = series.doQuartiles !== false, whiskerLength = series.options.whiskerLength;
-                let q1Plot, q3Plot, highPlot, lowPlot, medianPlot, medianPath, boxPath, graphic, width, x, right, halfWidth, pointWiskerLength;
+                let q1Plot, q3Plot, highPlot, lowPlot, medianPlot, medianPath, boxPath, graphic, width, x, right;
                 for (const point of points) {
                     graphic = point.graphic;
-                    const verb = graphic ? 'animate' : 'attr', shapeArgs = point.shapeArgs, boxAttr = {}, stemAttr = {}, whiskersAttr = {}, medianAttr = {}, color = point.color || series.color;
+                    const verb = graphic ? 'animate' : 'attr', shapeArgs = point.shapeArgs, boxAttr = {}, stemAttr = {}, whiskersAttr = {}, medianAttr = {}, color = point.color || series.color, pointWhiskerLength = (point.options.whiskerLength ||
+                        whiskerLength);
                     if (typeof point.plotY !== 'undefined') {
                         // Vector coordinates
                         width = shapeArgs.width;
                         x = shapeArgs.x;
                         right = x + width;
-                        halfWidth = width / 2;
                         q1Plot = doQuartiles ? point.q1Plot : point.lowPlot;
                         q3Plot = doQuartiles ? point.q3Plot : point.lowPlot;
                         highPlot = point.highPlot;
@@ -1981,7 +2003,7 @@
                                 options.dashStyle);
                             point.stem.attr(stemAttr);
                             // Whiskers attributes
-                            if (whiskerLength) {
+                            if (pointWhiskerLength) {
                                 whiskersAttr.stroke = (point.whiskerColor ||
                                     options.whiskerColor ||
                                     color);
@@ -2043,23 +2065,13 @@
                             point.box[verb]({ d });
                         }
                         // The whiskers
-                        if (whiskerLength) {
-                            const whiskerStrokeWidth = point.whiskers.strokeWidth();
-                            highPlot = crisp(point.highPlot, whiskerStrokeWidth);
-                            lowPlot = crisp(point.lowPlot, whiskerStrokeWidth);
-                            pointWiskerLength = (typeof whiskerLength === 'string' &&
-                                (/%$/).test(whiskerLength)) ?
-                                halfWidth * parseFloat(whiskerLength) / 100 :
-                                Number(whiskerLength) / 2;
-                            d = [
-                                // High whisker
-                                ['M', crisp(stemX - pointWiskerLength), highPlot],
-                                ['L', crisp(stemX + pointWiskerLength), highPlot],
-                                // Low whisker
-                                ['M', crisp(stemX - pointWiskerLength), lowPlot],
-                                ['L', crisp(stemX + pointWiskerLength), lowPlot]
-                            ];
-                            point.whiskers[verb]({ d });
+                        if (pointWhiskerLength) {
+                            const halfWidth = width / 2, whiskers = this.getWhiskerPair(halfWidth, stemX, (point.upperWhiskerLength ??
+                                options.upperWhiskerLength ??
+                                pointWhiskerLength), (point.lowerWhiskerLength ??
+                                options.lowerWhiskerLength ??
+                                pointWhiskerLength), point);
+                            point.whiskers[verb]({ d: whiskers });
                         }
                         // The median
                         medianPlot = crisp(point.medianPlot, point.medianShape.strokeWidth());
@@ -3204,6 +3216,25 @@
                 });
             }
         }
+        /**
+         * If a user has defined categories, it is necessary to retroactively hide any
+         * ticks added by the 'onAxisFoundExtremes' function above (#21672).
+         *
+         * Otherwise they can show up on the axis, alongside user-defined categories.
+         */
+        function onAxisAfterRender() {
+            const { ticks, tickPositions, dataMin = 0, dataMax = 0, categories } = this, type = this.options.type;
+            if ((categories?.length || type === 'category') &&
+                this.series.find((s) => s.bubblePadding)) {
+                let tickCount = tickPositions.length;
+                while (tickCount--) {
+                    const tick = ticks[tickPositions[tickCount]], pos = tick.pos || 0;
+                    if (pos > dataMax || pos < dataMin) {
+                        tick.label?.hide();
+                    }
+                }
+            }
+        }
         /* *
          *
          *  Class
@@ -3219,6 +3250,7 @@
                 BubbleLegendComposition.compose(ChartClass, LegendClass);
                 if (pushUnique(composed, 'Series.Bubble')) {
                     addEvent(AxisClass, 'foundExtremes', onAxisFoundExtremes);
+                    addEvent(AxisClass, 'afterRender', onAxisAfterRender);
                 }
             }
             /* *
@@ -3719,7 +3751,7 @@
          * not specified, it is inherited from [chart.type](#chart.type).
          *
          * @extends   series,plotOptions.bubble
-         * @excluding dataParser, dataURL, stack
+         * @excluding dataParser, dataURL, legendSymbolColor, stack
          * @product   highcharts highstock
          * @requires  highcharts-more
          * @apioption series.bubble
@@ -5646,10 +5678,10 @@
          *         Split packed bubble chart
          *
          * @extends      plotOptions.bubble
-         * @excluding    connectEnds, connectNulls, cropThreshold, dragDrop, jitter,
-         *               keys, pointPlacement, sizeByAbsoluteValue, step, xAxis,
-         *               yAxis, zMax, zMin, dataSorting, boostThreshold,
-         *               boostBlending
+         * @excluding    boostThreshold, boostBlending,connectEnds, connectNulls,
+         *               cropThreshold, dataSorting, dragDrop, jitter,
+         *               legendSymbolColor, keys, pointPlacement, sizeByAbsoluteValue,
+         *               step, xAxis, yAxis, zMax, zMin
          * @product      highcharts
          * @since        7.0.0
          * @requires     highcharts-more
@@ -5759,7 +5791,6 @@
                  * Note that if a `format` is defined, the format takes precedence
                  * and the formatter is ignored.
                  *
-                 * @type  {Highcharts.SeriesPackedBubbleDataLabelsFormatterCallbackFunction}
                  * @since 7.0.0
                  */
                 formatter: function () {
@@ -5774,11 +5805,10 @@
                  */
                 // eslint-disable-next-line valid-jsdoc
                 /**
-                 * @type  {Highcharts.SeriesPackedBubbleDataLabelsFormatterCallbackFunction}
                  * @since 7.1.0
                  */
                 parentNodeFormatter: function () {
-                    return this.name;
+                    return this.name || '';
                 },
                 /**
                  * @sample {highcharts} highcharts/series-packedbubble/packed-dashboard
@@ -8701,47 +8731,6 @@
          *  Default Export
          *
          * */
-        /* *
-         *
-         *  API Declarations
-         *
-         * */
-        /**
-         * Formatter callback function.
-         *
-         * @callback Highcharts.SeriesPackedBubbleDataLabelsFormatterCallbackFunction
-         *
-         * @param {Highcharts.SeriesPackedBubbleDataLabelsFormatterContextObject} this
-         *        Data label context to format
-         *
-         * @return {string}
-         *         Formatted data label text
-         */
-        /**
-         * Context for the formatter function.
-         *
-         * @interface Highcharts.SeriesPackedBubbleDataLabelsFormatterContextObject
-         * @extends Highcharts.PointLabelObject
-         * @since 7.0.0
-         */ /**
-        * The color of the node.
-        * @name Highcharts.SeriesPackedBubbleDataLabelsFormatterContextObject#color
-        * @type {Highcharts.ColorString}
-        * @since 7.0.0
-        */ /**
-        * The point (node) object. The node name, if defined, is available through
-        * `this.point.name`. Arrays: `this.point.linksFrom` and `this.point.linksTo`
-        * contains all nodes connected to this point.
-        * @name Highcharts.SeriesPackedBubbleDataLabelsFormatterContextObject#point
-        * @type {Highcharts.Point}
-        * @since 7.0.0
-        */ /**
-        * The ID of the node.
-        * @name Highcharts.SeriesPackedBubbleDataLabelsFormatterContextObject#key
-        * @type {string}
-        * @since 7.0.0
-        */
-        ''; // Detach doclets above
 
         return PackedBubbleSeries;
     });
@@ -10086,11 +10075,11 @@
         /**
          *
          */
-        function onChartGetAxes() {
+        function onChartCreateAxes() {
             if (!this.pane) {
                 this.pane = [];
             }
-            this.options.pane = splat(this.options.pane);
+            this.options.pane = splat(this.options.pane || {});
             this.options.pane.forEach((paneOptions) => {
                 new Pane(// eslint-disable-line no-new
                 paneOptions, this);
@@ -10841,7 +10830,7 @@
                 if (pushUnique(composed, 'Polar')) {
                     const chartProto = ChartClass.prototype, pointProto = PointClass.prototype, pointerProto = PointerClass.prototype, seriesProto = SeriesClass.prototype;
                     addEvent(ChartClass, 'afterDrawChartBox', onChartAfterDrawChartBox);
-                    addEvent(ChartClass, 'getAxes', onChartGetAxes);
+                    addEvent(ChartClass, 'createAxes', onChartCreateAxes);
                     addEvent(ChartClass, 'init', onChartAfterInit);
                     wrap(chartProto, 'get', wrapChartGet);
                     wrap(pointerProto, 'getCoordinates', wrapPointerGetCoordinates);

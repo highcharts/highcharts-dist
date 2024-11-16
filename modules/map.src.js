@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v11.4.8 (2024-08-29)
+ * @license Highmaps JS v11.4.8 (2024-11-16)
  *
  * Highmaps as a plugin for Highcharts or Highcharts Stock.
  *
@@ -81,7 +81,7 @@
                     chartProto.collectionsWithInit.colorAxis = [
                         chartProto.addColorAxis
                     ];
-                    addEvent(ChartClass, 'afterGetAxes', onChartAfterGetAxes);
+                    addEvent(ChartClass, 'afterCreateAxes', onChartAfterCreateAxes);
                     wrapChartCreateAxis(ChartClass);
                     fxProto.fillSetter = wrapFxFillSetter;
                     fxProto.strokeSetter = wrapFxStrokeSetter;
@@ -101,10 +101,10 @@
             }
             ColorAxisComposition.compose = compose;
             /**
-             * Extend the chart getAxes method to also get the color axis.
+             * Extend the chart createAxes method to also make the color axis.
              * @private
              */
-            function onChartAfterGetAxes() {
+            function onChartAfterCreateAxes() {
                 const { userOptions } = this;
                 this.colorAxis = [];
                 // If a `colorAxis` config is present in the user options (not in a
@@ -1984,12 +1984,8 @@
          */
         function stopEvent(e) {
             if (e) {
-                if (e.preventDefault) {
-                    e.preventDefault();
-                }
-                if (e.stopPropagation) {
-                    e.stopPropagation();
-                }
+                e.preventDefault?.();
+                e.stopPropagation?.();
                 e.cancelBubble = true;
             }
         }
@@ -2066,7 +2062,7 @@
                 }
                 // Destroy buttons in case of dynamic update
                 while (navButtons.length) {
-                    navButtons.pop().destroy();
+                    navButtons.pop()?.destroy();
                 }
                 if (!chart.renderer.forExport &&
                     pick(navOptions.enableButtons, navOptions.enabled)) {
@@ -2157,7 +2153,7 @@
                     // Check the mapNavigation buttons collision with exporting button
                     // and translate the mapNavigation button if they overlap.
                     const adjustMapNavBtn = function () {
-                        const expBtnBBox = chart.exportingGroup && chart.exportingGroup.getBBox();
+                        const expBtnBBox = chart.exportingGroup?.getBBox();
                         if (expBtnBBox) {
                             const navBtnsBBox = mapNav.navButtonsGroup.getBBox();
                             // If buttons overlap
@@ -2216,10 +2212,13 @@
                         // Prevent scrolling when the pointer is over the element
                         // with that class, for example anotation popup #12100.
                         if (!chart.pointer.inClass(e.target, 'highcharts-no-mousewheel')) {
+                            const initialZoom = chart.mapView?.zoom;
                             chart.pointer.onContainerMouseWheel(e);
-                            // Issue #5011, returning false from non-jQuery event
-                            // does not prevent default
-                            stopEvent(e);
+                            // If the zoom level changed, prevent the default action
+                            // which is to scroll the page
+                            if (initialZoom !== chart.mapView?.zoom) {
+                                stopEvent(e);
+                            }
                         }
                         return false;
                     });
@@ -2872,7 +2871,7 @@
                     const { value } = this.point;
                     return isNumber(value) ?
                         numberFormatter(value, -1) :
-                        this.point.name; // #20231
+                        (this.point.name || ''); // #20231
                 },
                 inside: true, // For the color
                 overflow: false,
@@ -6920,9 +6919,11 @@
                 if (options.joinBy === null) {
                     joinBy = '_i';
                 }
-                joinBy = this.joinBy = splat(joinBy);
-                if (!joinBy[1]) {
-                    joinBy[1] = joinBy[0];
+                if (joinBy) {
+                    this.joinBy = splat(joinBy);
+                    if (!this.joinBy[1]) {
+                        this.joinBy[1] = this.joinBy[0];
+                    }
                 }
                 return options;
             }
@@ -8787,6 +8788,25 @@
                 });
             }
         }
+        /**
+         * If a user has defined categories, it is necessary to retroactively hide any
+         * ticks added by the 'onAxisFoundExtremes' function above (#21672).
+         *
+         * Otherwise they can show up on the axis, alongside user-defined categories.
+         */
+        function onAxisAfterRender() {
+            const { ticks, tickPositions, dataMin = 0, dataMax = 0, categories } = this, type = this.options.type;
+            if ((categories?.length || type === 'category') &&
+                this.series.find((s) => s.bubblePadding)) {
+                let tickCount = tickPositions.length;
+                while (tickCount--) {
+                    const tick = ticks[tickPositions[tickCount]], pos = tick.pos || 0;
+                    if (pos > dataMax || pos < dataMin) {
+                        tick.label?.hide();
+                    }
+                }
+            }
+        }
         /* *
          *
          *  Class
@@ -8802,6 +8822,7 @@
                 BubbleLegendComposition.compose(ChartClass, LegendClass);
                 if (pushUnique(composed, 'Series.Bubble')) {
                     addEvent(AxisClass, 'foundExtremes', onAxisFoundExtremes);
+                    addEvent(AxisClass, 'afterRender', onAxisAfterRender);
                 }
             }
             /* *
@@ -9302,7 +9323,7 @@
          * not specified, it is inherited from [chart.type](#chart.type).
          *
          * @extends   series,plotOptions.bubble
-         * @excluding dataParser, dataURL, stack
+         * @excluding dataParser, dataURL, legendSymbolColor, stack
          * @product   highcharts highstock
          * @requires  highcharts-more
          * @apioption series.bubble
@@ -9896,11 +9917,11 @@
          *         Heavy heatmap
          *
          * @extends      plotOptions.scatter
-         * @excluding    animationLimit, connectEnds, connectNulls, cropThreshold,
-         *               dashStyle, findNearestPointBy, getExtremesFromAll, jitter,
-         *               linecap, lineWidth, pointInterval, pointIntervalUnit,
-         *               pointRange, pointStart, shadow, softThreshold, stacking,
-         *               step, threshold, cluster, dragDrop
+         * @excluding    animationLimit, cluster, connectEnds, connectNulls,
+         *               cropThreshold, dashStyle, dragDrop, findNearestPointBy,
+         *               getExtremesFromAll, jitter, legendSymbolColor, linecap,
+         *               lineWidth, pointInterval, pointIntervalUnit, pointRange,
+         *               pointStart, shadow, softThreshold, stacking, step, threshold
          * @product      highcharts highmaps
          * @optionparent plotOptions.heatmap
          */

@@ -1065,7 +1065,9 @@ var AxisDefaults;
                 color: "#333333" /* Palette.neutralColor80 */,
                 /** @internal */
                 cursor: 'default',
-                /** @internal */
+                /**
+                 * @type {number|string}
+                 */
                 fontSize: '0.8em'
             }
         },
@@ -1933,7 +1935,9 @@ var AxisDefaults;
             style: {
                 /** @internal */
                 color: "#666666" /* Palette.neutralColor60 */,
-                /** @internal */
+                /**
+                 * @type {number|string}
+                 */
                 fontSize: '0.8em'
             }
         },
@@ -1989,6 +1993,7 @@ var AxisDefaults;
          * @product   highcharts gantt
          * @type      {boolean}
          * @default   true
+         * @apioption xAxis.uniqueNames
          */
         /**
          * Datetime axis only. An array determining what time intervals the
@@ -3003,7 +3008,9 @@ var AxisDefaults;
             style: {
                 /** @internal */
                 color: "#000000" /* Palette.neutralColor100 */,
-                /** @internal */
+                /**
+                 * @type {number|string}
+                 */
                 fontSize: '0.7em',
                 /** @internal */
                 fontWeight: 'bold',

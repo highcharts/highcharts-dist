@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.8 (2024-08-29)
+ * @license Highcharts JS v11.4.8 (2024-11-16)
  *
  * (c) 2009-2024 Sebastian Bochan, Rafal Sebestjanski
  *
@@ -246,8 +246,9 @@
          *
          * @extends      plotOptions.arearange
          * @product      highcharts highstock
-         * @excluding    fillColor, fillOpacity, lineWidth, stack, stacking,
-         *               stickyTracking, trackByArea, boostThreshold, boostBlending
+         * @excluding    boostThreshold, boostBlendingfillColor, fillOpacity,
+         *               legendSymbolColor, lineWidth, stack, stacking, stickyTracking,
+         *               trackByArea
          * @since 8.0.0
          * @optionparent plotOptions.dumbbell
          */

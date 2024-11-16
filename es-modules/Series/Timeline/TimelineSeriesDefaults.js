@@ -114,7 +114,6 @@ const TimelineSeriesDefaults = {
         distance: void 0,
         // eslint-disable-next-line jsdoc/require-description
         /**
-         * @type    {Highcharts.TimelineDataLabelsFormatterCallbackFunction}
          * @default function () {
          *   let format;
          *
@@ -142,7 +141,7 @@ const TimelineSeriesDefaults = {
             }
             format += '<span class="highcharts-strong">' +
                 (this.key || '') + '</span><br/>' +
-                (this.point.label || '');
+                (this.label || '');
             return format;
         },
         style: {

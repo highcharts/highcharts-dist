@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v11.4.8 (2024-08-29)
+ * @license Highcharts Gantt JS v11.4.8 (2024-11-16)
  *
  * Tree Grid
  *
@@ -2364,7 +2364,7 @@
          *
          * */
         const { getLevelOptions } = TU;
-        const { addEvent, find, fireEvent, isArray, isObject, isString, merge, pick, removeEvent, wrap } = U;
+        const { addEvent, isArray, splat, find, fireEvent, isObject, isString, merge, pick, removeEvent, wrap } = U;
         /* *
          *
          *  Variables
@@ -2561,13 +2561,22 @@
                     }));
                 let numberOfSeries = 0, data, treeGrid;
                 if (isDirty) {
+                    const seriesHasPrimitivePoints = [];
                     // Concatenate data from all series assigned to this axis.
                     data = axis.series.reduce(function (arr, s) {
+                        const seriesData = (s.options.data || []), firstPoint = seriesData[0], 
+                        // Check if the first point is a simple array of values.
+                        // If so we assume that this is the case for all points.
+                        foundPrimitivePoint = (Array.isArray(firstPoint) &&
+                            !firstPoint.find((value) => (typeof value === 'object')));
+                        seriesHasPrimitivePoints.push(foundPrimitivePoint);
                         if (s.visible) {
                             // Push all data to array
-                            (s.options.data || []).forEach(function (data) {
-                                // For using keys - rebuild the data structure
-                                if (s.options.keys && s.options.keys.length) {
+                            seriesData.forEach(function (data) {
+                                // For using keys, or when using primitive points,
+                                // rebuild the data structure
+                                if (foundPrimitivePoint ||
+                                    (s.options.keys && s.options.keys.length)) {
                                     data = s.pointClass.prototype
                                         .optionsToObject
                                         .call({ series: s }, data);
@@ -2607,16 +2616,18 @@
                     axis.hasNames = true;
                     axis.treeGrid.tree = treeGrid.tree;
                     // Update yData now that we have calculated the y values
-                    axis.series.forEach(function (series) {
+                    axis.series.forEach(function (series, index) {
                         const axisData = (series.options.data || []).map(function (d) {
-                            if (isArray(d) &&
-                                series.options.keys &&
-                                series.options.keys.length) {
+                            if (seriesHasPrimitivePoints[index] ||
+                                (isArray(d) &&
+                                    series.options.keys &&
+                                    series.options.keys.length)) {
                                 // Get the axisData from the data array used to
                                 // build the treeGrid where has been modified
                                 data.forEach(function (point) {
-                                    if (d.indexOf(point.x) >= 0 &&
-                                        d.indexOf(point.x2) >= 0) {
+                                    const toArray = splat(d);
+                                    if (toArray.indexOf(point.x || 0) >= 0 &&
+                                        toArray.indexOf(point.x2 || 0) >= 0) {
                                         d = point;
                                     }
                                 });

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.8 (2024-08-29)
+ * @license Highcharts JS v11.4.8 (2024-11-16)
  * Organization chart series type
  *
  * (c) 2019-2024 Torstein Honsi
@@ -327,8 +327,7 @@
                     }
                     // PhantomJS doesn't support flex, roll back to absolute
                     // positioning
-                    if (this
-                        .series.chart.renderer.forExport) {
+                    if (this.series.chart.renderer.forExport) {
                         outerStyle.display = 'block';
                         innerStyle.position = 'absolute';
                         innerStyle.left = image ? '30%' : 0;

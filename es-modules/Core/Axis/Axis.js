@@ -727,7 +727,8 @@ class Axis {
     getMinorTickPositions() {
         const axis = this, options = axis.options, tickPositions = axis.tickPositions, minorTickInterval = axis.minorTickInterval, pointRangePadding = axis.pointRangePadding || 0, min = (axis.min || 0) - pointRangePadding, // #1498
         max = (axis.max || 0) + pointRangePadding, // #1498
-        range = max - min;
+        range = axis.brokenAxis?.hasBreaks ?
+            axis.brokenAxis.unitLength : max - min;
         let minorTickPositions = [], pos;
         // If minor ticks get too dense, they are hard to read, and may cause
         // long running script. So we don't draw them.
