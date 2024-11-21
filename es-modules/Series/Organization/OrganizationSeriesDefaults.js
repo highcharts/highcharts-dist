@@ -176,8 +176,7 @@ const OrganizationSeriesDefaults = {
             }
             // PhantomJS doesn't support flex, roll back to absolute
             // positioning
-            if (this
-                .series.chart.renderer.forExport) {
+            if (this.series.chart.renderer.forExport) {
                 outerStyle.display = 'block';
                 innerStyle.position = 'absolute';
                 innerStyle.left = image ? '30%' : 0;

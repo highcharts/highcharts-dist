@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.8 (2024-08-29)
+ * @license Highcharts JS v11.4.8 (2024-11-21)
  *
  * Arc diagram module
  *
@@ -109,11 +109,10 @@
          * @product      highcharts
          * @requires     modules/arc-diagram
          * @exclude      curveFactor, connectEnds, connectNulls, colorAxis, colorKey,
-         *               dataSorting, dragDrop, getExtremesFromAll, nodeAlignment,
-         *               nodePadding, centerInCategory, pointInterval,
-         *               pointIntervalUnit, pointPlacement, pointStart,
-         *               relativeXValue, softThreshold, stack, stacking, step,
-         *               xAxis, yAxis
+         *               dataSorting, dragDrop, getExtremesFromAll, legendSymbolColor,
+         *               nodeAlignment, nodePadding, centerInCategory, pointInterval,
+         *               pointIntervalUnit, pointPlacement, pointStart, relativeXValue,
+         *               softThreshold, stack, stacking, step, xAxis, yAxis
          * @optionparent plotOptions.arcdiagram
          */
         const ArcDiagramSeriesDefaults = {
@@ -2904,6 +2903,20 @@
              * @apioption plotOptions.series.legendSymbol
              */
             /**
+             * Defines the color of the legend symbol for this series. Defaults to
+             * undefined, in which case the series color is used. Does not work with
+             * styled mode.
+             *
+             * @sample {highcharts|highstock} highcharts/series/legend-symbol-color/
+             *         Change the legend symbol color
+             *
+             * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+             * @default   undefined
+             * @since     next
+             * @product   highcharts highstock highmaps
+             * @apioption plotOptions.series.legendSymbolColor
+             */
+            /**
              * Determines whether the series should look for the nearest point
              * in both dimensions or just the x-dimension when hovering the series.
              * Defaults to `'xy'` for scatter series and `'x'` for most other
@@ -3917,7 +3930,9 @@
              * Force getting extremes of a total series data range.
              */
             getProcessedData(forceExtremesFromAll) {
-                const series = this, xAxis = series.xAxis, options = series.options, cropThreshold = options.cropThreshold, logarithmic = xAxis?.logarithmic, isCartesian = series.isCartesian;
+                const series = this, xAxis = series.xAxis, options = series.options, cropThreshold = options.cropThreshold, getExtremesFromAll = forceExtremesFromAll ||
+                    // X-range series etc, #21003
+                    series.getExtremesFromAll, logarithmic = xAxis?.logarithmic, isCartesian = series.isCartesian;
                 let croppedData, cropped, cropStart = 0, xExtremes, min, max, 
                 // Copied during slice operation:
                 processedXData = series.xData, processedYData = series.yData, updatingNames = false;
@@ -3932,7 +3947,7 @@
                 // Optionally filter out points outside the plot area
                 if (isCartesian &&
                     series.sorted &&
-                    !forceExtremesFromAll &&
+                    !getExtremesFromAll &&
                     (!cropThreshold ||
                         dataLength > cropThreshold ||
                         series.forceCrop)) {
@@ -4046,7 +4061,7 @@
                 const series = this, options = series.options, dataOptions = series.processedData || options.data, processedXData = series.processedXData, processedYData = series.processedYData, PointClass = series.pointClass, processedDataLength = processedXData.length, cropStart = series.cropStart || 0, hasGroupedData = series.hasGroupedData, keys = options.keys, points = [], groupCropStartIndex = (options.dataGrouping &&
                     options.dataGrouping.groupAll ?
                     cropStart :
-                    0);
+                    0), categories = series.xAxis?.categories;
                 let dataLength, cursor, point, i, data = series.data;
                 if (!data && !hasGroupedData) {
                     const arr = [];
@@ -4090,6 +4105,10 @@
                         point.index = hasGroupedData ?
                             (groupCropStartIndex + i) : cursor;
                         points[i] = point;
+                        // Set point properties for convenient access in tooltip and
+                        // data labels
+                        point.category = categories?.[point.x] ?? point.x;
+                        point.key = point.name ?? point.category;
                     }
                 }
                 // Restore keys options (#6590)
@@ -4300,7 +4319,7 @@
                     this.processData();
                 }
                 this.generatePoints();
-                const series = this, options = series.options, stacking = options.stacking, xAxis = series.xAxis, categories = xAxis.categories, enabledDataSorting = series.enabledDataSorting, yAxis = series.yAxis, points = series.points, dataLength = points.length, pointPlacement = series.pointPlacementToXValue(), // #7860
+                const series = this, options = series.options, stacking = options.stacking, xAxis = series.xAxis, enabledDataSorting = series.enabledDataSorting, yAxis = series.yAxis, points = series.points, dataLength = points.length, pointPlacement = series.pointPlacementToXValue(), // #7860
                 dynamicallyPlaced = Boolean(pointPlacement), threshold = options.threshold, stackThreshold = options.startFromThreshold ? threshold : 0;
                 let i, plotX, lastPlotX, stackIndicator, closestPointRangePx = Number.MAX_VALUE;
                 /**
@@ -4413,8 +4432,6 @@
                         plotX; // #1514, #5383, #5518
                     // Negative points #19028
                     point.negative = (point.y || 0) < (threshold || 0);
-                    // Some API data
-                    point.category = pick(categories && categories[point.x], point.x);
                     // Determine auto enabling of markers (#3635, #5099)
                     if (!point.isNull && point.visible !== false) {
                         if (typeof lastPlotX !== 'undefined') {
@@ -5749,6 +5766,7 @@
                     // New type requires new point classes
                     (newType && newType !== this.type) ||
                     // New options affecting how the data points are built
+                    typeof options.keys !== 'undefined' ||
                     typeof options.pointStart !== 'undefined' ||
                     typeof options.pointInterval !== 'undefined' ||
                     typeof options.relativeXValue !== 'undefined' ||
@@ -6732,7 +6750,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { defined, extend, isNumber, merge, pick, removeEvent } = U;
+        const { defined, extend, getAlignFactor, isNumber, merge, pick, removeEvent } = U;
         /* *
          *
          *  Class
@@ -6793,11 +6811,7 @@
              *
              * */
             alignSetter(value) {
-                const alignFactor = ({
-                    left: 0,
-                    center: 0.5,
-                    right: 1
-                })[value];
+                const alignFactor = getAlignFactor(value);
                 if (alignFactor !== this.alignFactor) {
                     this.alignFactor = alignFactor;
                     // Bounding box exists, means we're dynamically changing
@@ -7046,14 +7060,12 @@
                 if (!text.textPath) {
                     this.updateBoxSize();
                     // Determine y based on the baseline
-                    const textY = this.baseline ? 0 : this.baselineOffset;
-                    let textX = pick(this.paddingLeft, this.padding);
-                    // Compensate for alignment
-                    if (defined(this.widthSetting) &&
-                        this.bBox &&
-                        (this.textAlign === 'center' || this.textAlign === 'right')) {
-                        textX += { center: 0.5, right: 1 }[this.textAlign] * (this.widthSetting - this.bBox.width);
-                    }
+                    const textY = this.baseline ? 0 : this.baselineOffset, textX = (this.paddingLeft ?? this.padding) +
+                        // Compensate for alignment
+                        ((defined(this.widthSetting) && this.bBox) ?
+                            getAlignFactor(this.textAlign) *
+                                (this.widthSetting - this.bBox.width) :
+                            0);
                     // Update if anything changed
                     if (textX !== text.x || textY !== text.y) {
                         text.attr('x', textX);

@@ -96,7 +96,24 @@ var ColumnDataLabel;
     ColumnDataLabel.compose = compose;
     /** @private */
     function getDataLabelPosition(point, distance) {
-        const { center, options } = this, r = center[2] / 2, angle = point.angle || 0, cosAngle = Math.cos(angle), sinAngle = Math.sin(angle), x = center[0] + cosAngle * r, y = center[1] + sinAngle * r, finalConnectorOffset = Math.min((options.slicedOffset || 0) + (options.borderWidth || 0), distance / 5); // #1678
+        const halfPI = Math.PI / 2, { start = 0, end = 0 } = point.shapeArgs || {};
+        let angle = point.angle || 0;
+        // If a large slice is crossing the lowest point, prefer rendering it 45
+        // degrees out at either lower right or lower left. That's where there's
+        // most likely to be space available and avoid text being truncated
+        // (#22100). Technically this logic should also apply to the top point,
+        // but that is more of an edge case since the default start angle is at
+        // the top.
+        if (distance > 0 &&
+            // Crossing the bottom
+            start < halfPI && end > halfPI &&
+            // Angle within the bottom quadrant
+            angle > halfPI / 2 && angle < halfPI * 1.5) {
+            angle = angle <= halfPI ?
+                Math.max(halfPI / 2, (start + halfPI) / 2) :
+                Math.min(halfPI * 1.5, (halfPI + end) / 2);
+        }
+        const { center, options } = this, r = center[2] / 2, cosAngle = Math.cos(angle), sinAngle = Math.sin(angle), x = center[0] + cosAngle * r, y = center[1] + sinAngle * r, finalConnectorOffset = Math.min((options.slicedOffset || 0) + (options.borderWidth || 0), distance / 5); // #1678
         return {
             natural: {
                 // Initial position of the data label - it's utilized for
@@ -113,6 +130,7 @@ var ColumnDataLabel;
             // Center - data label overlaps the pie
             alignment: distance < 0 ? 'center' : point.half ? 'right' : 'left',
             connectorPosition: {
+                angle,
                 breakAt: {
                     x: x + cosAngle * finalConnectorOffset,
                     y: y + sinAngle * finalConnectorOffset
@@ -222,6 +240,30 @@ var ColumnDataLabel;
                 });
                 distributionLength = bottom + size - top;
                 distribute(positions, distributionLength, distributionLength / 5);
+                // Uncomment this to visualize the boxes
+                /*
+                points.forEach((point): void => {
+                    const box = point.distributeBox;
+                    point.dlBox?.destroy();
+                    if (box?.pos) {
+                        point.dlBox = chart.renderer.rect(
+                            chart.plotLeft + this.center[0] + (
+                                halfIdx ?
+                                    -this.center[2] / 2 - 100 :
+                                    this.center[2] / 2
+                            ),
+                            chart.plotTop + box.pos,
+                            100,
+                            box.size
+                        )
+                            .attr({
+                                stroke: 'silver',
+                                'stroke-width': 1
+                            })
+                            .add();
+                    }
+                });
+                // */
             }
             // Now the used slots are sorted, fill them up sequentially
             points.forEach((point) => {

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.8 (2024-08-29)
+ * @license Highcharts JS v11.4.8 (2024-11-21)
  *
  * Sankey diagram module
  *
@@ -424,14 +424,14 @@
          * @extends      plotOptions.column
          * @since        6.0.0
          * @product      highcharts
-         * @excluding    animationLimit, boostThreshold, borderRadius,
-         *               crisp, cropThreshold, colorAxis, colorKey, depth, dragDrop,
-         *               edgeColor, edgeWidth, findNearestPointBy, grouping,
-         *               groupPadding, groupZPadding, maxPointWidth, negativeColor,
-         *               pointInterval, pointIntervalUnit, pointPadding,
-         *               pointPlacement, pointRange, pointStart, pointWidth,
-         *               shadow, softThreshold, stacking, threshold, zoneAxis,
-         *               zones, minPointLength, dataSorting, boostBlending
+         * @excluding    animationLimit, boostBlending, boostThreshold, borderRadius,
+         *               crisp, cropThreshold, colorAxis, colorKey, dataSorting, depth,
+         *               dragDrop, edgeColor, edgeWidth, findNearestPointBy, grouping,
+         *               groupPadding, groupZPadding, legendSymbolColor, maxPointWidth,
+         *               minPointLength, negativeColor, pointInterval,
+         *               pointIntervalUnit, pointPadding, pointPlacement, pointRange,
+         *               pointStart, pointWidth, shadow, softThreshold, stacking,
+         *               threshold, zoneAxis, zones
          * @requires     modules/sankey
          * @optionparent plotOptions.sankey
          *
@@ -1002,7 +1002,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { defined, relativeLength } = U;
+        const { defined, getAlignFactor, relativeLength } = U;
         /* *
          *
          *  Composition
@@ -1120,11 +1120,7 @@
                         return height;
                     }, 0);
                     // Node alignment option handling #19096
-                    return {
-                        top: 0,
-                        center: 0.5,
-                        bottom: 1
-                    }[series.options.nodeAlignment || 'center'] * ((series.chart.plotSizeY || 0) - height);
+                    return getAlignFactor(series.options.nodeAlignment || 'center') * ((series.chart.plotSizeY || 0) - height);
                 }
                 /**
                  * Get the left position of the column in pixels
@@ -2226,23 +2222,12 @@
          *
          * @callback Highcharts.SeriesSankeyDataLabelsFormatterCallbackFunction
          *
-         * @param {Highcharts.SeriesSankeyDataLabelsFormatterContextObject|Highcharts.PointLabelObject} this
+         * @param {Highcharts.Point} this
          *        Data label context to format
          *
          * @return {string|undefined}
          *         Formatted data label text
          */
-        /**
-         * Context for the node formatter function.
-         *
-         * @interface Highcharts.SeriesSankeyDataLabelsFormatterContextObject
-         * @extends Highcharts.PointLabelObject
-         */ /**
-        * The node object. The node name, if defined, is available through
-        * `this.point.name`.
-        * @name Highcharts.SeriesSankeyDataLabelsFormatterContextObject#point
-        * @type {Highcharts.SankeyNodeObject}
-        */
         ''; // Detach doclets above
 
         return SankeySeries;

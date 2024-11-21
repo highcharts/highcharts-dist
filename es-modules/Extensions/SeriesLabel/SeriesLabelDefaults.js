@@ -105,7 +105,9 @@ const SeriesLabelDefaults = {
      * @type {Highcharts.CSSObject}
      */
     style: {
-        /** @internal */
+        /**
+         * @type {number|string}
+         */
         fontSize: '0.8em',
         /** @internal */
         fontWeight: 'bold'

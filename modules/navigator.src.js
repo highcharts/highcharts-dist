@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.8 (2024-08-29)
+ * @license Highcharts JS v11.4.8 (2024-11-21)
  *
  * Standalone navigator module
  *
@@ -3381,7 +3381,7 @@
                         if (baseSeries) {
                             erase(baseSeries, base); // #21043
                         }
-                        if (this.navigatorSeries) {
+                        if (this.navigatorSeries && navigator.series) {
                             erase(navigator.series, this.navigatorSeries);
                             if (defined(this.navigatorSeries.options)) {
                                 this.navigatorSeries.remove(false);
@@ -3742,6 +3742,9 @@
                 this.boundAxes = [];
                 this.userOptions = userOptions;
                 this.chartOptions = merge(G.getOptions(), standaloneNavigatorDefaults, { navigator: userOptions });
+                if (this.chartOptions.chart && userOptions.height) {
+                    this.chartOptions.chart.height = userOptions.height;
+                }
                 const chart = new Chart(element, this.chartOptions);
                 chart.options = merge(chart.options, { navigator: { enabled: true }, scrollbar: { enabled: true } });
                 if (this.chartOptions.navigator && this.chartOptions.scrollbar) {
@@ -3881,7 +3884,7 @@
              *         specified, the standalone navigator will be redrawn.
              */
             update(newOptions, redraw) {
-                this.chartOptions = merge(this.chartOptions, { navigator: newOptions });
+                this.chartOptions = merge(this.chartOptions, newOptions.height && { chart: { height: newOptions.height } }, { navigator: newOptions });
                 this.navigator.chart.update(this.chartOptions, redraw);
             }
             /**

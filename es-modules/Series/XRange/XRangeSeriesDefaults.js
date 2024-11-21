@@ -76,7 +76,7 @@ const XRangeSeriesDefaults = {
     colorByPoint: true,
     dataLabels: {
         formatter: function () {
-            let amount = this.point.partialFill;
+            let amount = this.partialFill;
             if (isObject(amount)) {
                 amount = amount.amount;
             }

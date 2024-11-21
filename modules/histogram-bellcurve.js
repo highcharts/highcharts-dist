@@ -1,5 +1,5 @@
 !/**
- * Highcharts JS v11.4.8 (2024-08-29)
+ * Highcharts JS v11.4.8 (2024-11-21)
  *
  * (c) 2010-2024 Highsoft AS
  * Author: Sebastian Domas

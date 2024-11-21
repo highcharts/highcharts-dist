@@ -609,8 +609,8 @@ var Exporting;
      *
      * @requires modules/exporting
      */
-    function getChartHTML() {
-        if (this.styledMode) {
+    function getChartHTML(applyStyleSheets) {
+        if (applyStyleSheets) {
             this.inlineStyles();
         }
         return this.container.innerHTML;
@@ -768,7 +768,8 @@ var Exporting;
             }
         });
         // Get the SVG from the container's innerHTML
-        svg = chartCopy.getChartHTML();
+        svg = chartCopy.getChartHTML(chart.styledMode ||
+            options.exporting?.applyStyleSheets);
         fireEvent(this, 'getSVG', { chartCopy: chartCopy });
         svg = chart.sanitizeSVG(svg, options);
         // Free up memory

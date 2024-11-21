@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.8 (2024-08-29)
+ * @license Highcharts JS v11.4.8 (2024-11-21)
  *
  * Highcharts funnel module
  *
@@ -364,7 +364,7 @@
              * @private
              */
             drawDataLabels() {
-                (splat(this.options.dataLabels)[0].inside ?
+                (splat(this.options.dataLabels || {})[0].inside ?
                     ColumnSeries :
                     PieSeries).prototype.drawDataLabels.call(this);
             }

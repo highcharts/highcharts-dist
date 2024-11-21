@@ -6,6 +6,83 @@
 import * as Highcharts from "../highcharts";
 declare module "../highcharts" {
     /**
+     * (Highcharts) Point accessibility options for a series.
+     */
+    interface PlotWordcloudAccessibilityPointOptions {
+        /**
+         * (Highcharts) Date format to use for points on datetime axes when
+         * describing them to screen reader users.
+         *
+         * Defaults to the same format as in tooltip.
+         *
+         * For an overview of the replacement codes, see dateFormat.
+         */
+        dateFormat?: string;
+        /**
+         * (Highcharts) Formatter function to determine the date/time format
+         * used with points on datetime axes when describing them to screen
+         * reader users. Receives one argument, `point`, referring to the point
+         * to describe. Should return a date format string compatible with
+         * dateFormat.
+         */
+        dateFormatter?: Highcharts.ScreenReaderFormatterCallbackFunction<Highcharts.Point>;
+        /**
+         * (Highcharts) Whether or not to describe points with the value `null`
+         * to assistive technology, such as screen readers.
+         */
+        describeNull?: boolean;
+        /**
+         * (Highcharts) A format string to use instead of the default for point
+         * descriptions.
+         *
+         * The context of the format string is the point instance.
+         *
+         * As opposed to accessibility.point.valueDescriptionFormat, this option
+         * replaces the whole description.
+         */
+        descriptionFormat?: string;
+        /**
+         * (Highcharts) Formatter function to use instead of the default for
+         * point descriptions. Same as
+         * `accessibility.point.descriptionFormatter`, but applies to a series
+         * instead of the whole chart.
+         *
+         * Note: Prefer using accessibility.point.valueDescriptionFormat instead
+         * if possible, as default functionality such as describing annotations
+         * will be preserved.
+         */
+        descriptionFormatter?: Highcharts.ScreenReaderFormatterCallbackFunction<Highcharts.Point>;
+        /**
+         * (Highcharts) Decimals to use for the values in the point
+         * descriptions. Uses tooltip.valueDecimals if not defined.
+         */
+        valueDecimals?: number;
+        /**
+         * (Highcharts) Format to use for describing the values of data points
+         * to assistive technology - including screen readers. The point context
+         * is available as `{point}`.
+         *
+         * Other available context variables include `{index}`, `{value}`, and
+         * `{xDescription}`.
+         *
+         * Additionally, the series name, annotation info, and description added
+         * in `point.accessibility.description` is added by default if relevant.
+         * To override this, use the accessibility.point.descriptionFormatter
+         * option.
+         */
+        valueDescriptionFormat?: string;
+        /**
+         * (Highcharts) Prefix to add to the values in the point descriptions.
+         * Uses tooltip.valuePrefix if not defined.
+         */
+        valuePrefix?: string;
+        /**
+         * (Highcharts) Suffix to add to the values in the point descriptions.
+         * Uses tooltip.valueSuffix if not defined.
+         */
+        valueSuffix?: string;
+    }
+    /**
      * (Highcharts) Options for the connector in the _Series on point_ feature.
      *
      * In styled mode, the connector can be styled with the

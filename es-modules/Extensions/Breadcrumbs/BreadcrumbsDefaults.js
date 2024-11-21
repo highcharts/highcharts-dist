@@ -21,7 +21,7 @@
 const lang = {
     /**
      * @since   10.0.0
-     * @product highcharts
+     * @product highcharts highmaps
      *
      * @private
      */

@@ -268,7 +268,7 @@ var OrdinalAxis;
         const positions = ordinal.getExtendedPositions();
         // In some cases (especially in early stages of the chart creation) the
         // getExtendedPositions might return undefined.
-        if (positions && positions.length) {
+        if (positions?.length) {
             // Convert back from modivied value to pixels. // #15970
             const pixelVal = correctFloat((val - localMin) * localA +
                 axis.minPixelPadding), index = correctFloat(ordinal.getIndexOfPoint(pixelVal, positions)), mantissa = correctFloat(index % 1);
@@ -428,8 +428,8 @@ var OrdinalAxis;
                         movedUnits
                 ]));
                 // Apply it if it is within the available data range
-                if (trimmedRange.min >= Math.min(extremes.dataMin, min) &&
-                    trimmedRange.max <= Math.max(dataMax, max) + overscroll) {
+                if (trimmedRange.min >= Math.min(ordinalPositions[0], min) &&
+                    trimmedRange.max <= Math.max(ordinalPositions[ordinalPositions.length - 1], max) + overscroll) {
                     xAxis.setExtremes(trimmedRange.min, trimmedRange.max, true, false, { trigger: 'pan' });
                 }
                 chart.mouseDownX = chartX; // Set new reference for next run
@@ -762,9 +762,11 @@ var OrdinalAxis;
          * @private
          */
         getExtendedPositions(withOverscroll = true) {
-            const ordinal = this, axis = ordinal.axis, axisProto = axis.constructor.prototype, chart = axis.chart, grouping = axis.series[0]?.currentDataGrouping, key = grouping ?
-                grouping.count + grouping.unitName :
-                'raw', overscroll = withOverscroll ?
+            const ordinal = this, axis = ordinal.axis, axisProto = axis.constructor.prototype, chart = axis.chart, key = axis.series.reduce((k, series) => {
+                const grouping = series.currentDataGrouping;
+                return (k +
+                    (grouping ? grouping.count + grouping.unitName : 'raw'));
+            }, ''), overscroll = withOverscroll ?
                 axis.ordinal.convertOverscroll(axis.options.overscroll) : 0, extremes = axis.getExtremes();
             let fakeAxis, fakeSeries = void 0, ordinalIndex = ordinal.index;
             // If this is the first time, or the ordinal index is deleted by
@@ -802,7 +804,7 @@ var OrdinalAxis;
                 fakeAxis.ordinal.axis = fakeAxis;
                 // Add the fake series to hold the full data, then apply
                 // processData to it
-                axis.series.forEach(function (series) {
+                axis.series.forEach((series) => {
                     fakeSeries = {
                         xAxis: fakeAxis,
                         xData: series.xData.slice(),
@@ -818,17 +820,17 @@ var OrdinalAxis;
                         fakeSeries.xData = fakeSeries.xData.concat(ordinal.getOverscrollPositions());
                     }
                     fakeSeries.options = {
-                        dataGrouping: grouping ? {
+                        ...series.options,
+                        dataGrouping: series.currentDataGrouping ? {
                             firstAnchor: series.options.dataGrouping?.firstAnchor,
                             anchor: series.options.dataGrouping?.anchor,
                             lastAnchor: series.options.dataGrouping?.firstAnchor,
                             enabled: true,
                             forced: true,
-                            // Doesn't matter which, use the fastest
                             approximation: 'open',
                             units: [[
-                                    grouping.unitName,
-                                    [grouping.count]
+                                    series.currentDataGrouping.unitName,
+                                    [series.currentDataGrouping.count]
                                 ]]
                         } : {
                             enabled: false
@@ -910,7 +912,7 @@ var OrdinalAxis;
          * Get index of point inside the ordinal positions array.
          *
          * @private
-         * @param {number} val
+         * @param {number} pixelVal
          * The pixel value of a point.
          *
          * @param {Array<number>} [ordinalArray]
@@ -918,39 +920,14 @@ var OrdinalAxis;
          * Either ordinalPositions if the value is inside the plotArea or
          * extendedOrdinalPositions if not.
          */
-        getIndexOfPoint(val, ordinalArray) {
-            const ordinal = this, axis = ordinal.axis;
-            let firstPointVal = 0;
-            // Check whether the series has at least one point inside the chart
-            const hasPointsInside = function (series) {
-                const { min, max } = axis;
-                if (defined(min) && defined(max)) {
-                    return series.points.some((point) => point.x >= min && point.x <= max);
-                }
-                return false;
-            };
-            let firstPointX;
-            // When more series assign to axis, find the smallest one, #15987.
-            axis.series.forEach((series) => {
-                const firstPoint = series.points?.[0];
-                if (defined(firstPoint?.plotX) &&
-                    (firstPoint.plotX < firstPointX ||
-                        !defined(firstPointX)) &&
-                    hasPointsInside(series)) {
-                    firstPointX = firstPoint.plotX;
-                    firstPointVal = firstPoint.x;
-                }
-            });
-            // If undefined, give a default value
-            firstPointX ?? (firstPointX = axis.minPixelPadding);
-            // Distance in pixels between two points on the ordinal axis in the
-            // current zoom.
-            const ordinalPointPixelInterval = axis.translationSlope * (ordinal.slope ||
-                axis.closestPointRange ||
-                ordinal.overscrollPointsRange), 
-            // `toValue` for the first point.
-            shiftIndex = correctFloat((val - firstPointX) / ordinalPointPixelInterval);
-            return Additions.findIndexOf(ordinalArray, firstPointVal, true) + shiftIndex;
+        getIndexOfPoint(pixelVal, ordinalArray) {
+            const ordinal = this, axis = ordinal.axis, min = axis.min, minX = axis.minPixelPadding, indexOfMin = getIndexInArray(ordinalArray, min);
+            const ordinalPointPixelInterval = axis.translationSlope *
+                (ordinal.slope ||
+                    axis.closestPointRange ||
+                    ordinal.overscrollPointsRange);
+            const shiftIndex = correctFloat((pixelVal - minX) / ordinalPointPixelInterval);
+            return indexOfMin + shiftIndex;
         }
         /**
          * Get ticks for an ordinal axis within a range where points don't
@@ -966,7 +943,7 @@ var OrdinalAxis;
             let max = axis.dataMax;
             if (defined(distance)) {
                 // Max + pointRange because we need to scroll to the last
-                while (max <= axis.dataMax + extraRange) {
+                while (max < axis.dataMax + extraRange) {
                     max += distance;
                     positions.push(max);
                 }

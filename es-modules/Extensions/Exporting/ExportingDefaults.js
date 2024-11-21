@@ -18,7 +18,8 @@ const { isTouchDevice } = H;
 // Add the export related options
 /**
  * Options for the exporting module. For an overview on the matter, see
- * [the docs](https://www.highcharts.com/docs/export-module/export-module-overview).
+ * [the docs](https://www.highcharts.com/docs/export-module/export-module-overview) and
+ * read our [Fair Usage Policy](https://www.highcharts.com/docs/export-module/privacy-disclaimer-export).
  *
  * @requires     modules/exporting
  * @optionparent exporting
@@ -48,6 +49,20 @@ const exporting = {
      * @apioption exporting.allowTableSorting
      */
     allowTableSorting: true,
+    /**
+     * Allow exporting a chart retaining any user-applied CSS.
+     *
+     * Note that this is is default behavior in [styledMode](#chart.styledMode).
+     *
+     * @see [styledMode](#chart.styledMode)
+     *
+     * @sample {highcharts} highcharts/exporting/apply-stylesheets/
+     *
+     * @type      {boolean}
+     * @default   false
+     * @since next
+     * @apioption exporting.applyStyleSheets
+     */
     /**
      * Additional chart options to be merged into the chart before exporting to
      * an image format. This does not apply to printing the chart via the export

@@ -293,7 +293,6 @@ class RangeSelectorComponent extends AccessibilityComponent {
                     e.preventDefault();
                     e.stopPropagation();
                     if (a11y) {
-                        a11y.keyboardNavigation.tabindexContainer.focus();
                         a11y.keyboardNavigation.move(e.shiftKey ? -1 : 1);
                     }
                 }

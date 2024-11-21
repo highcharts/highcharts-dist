@@ -15,7 +15,7 @@ const { composed } = H;
 import T from '../../Core/Templating.js';
 const { format } = T;
 import U from '../../Core/Utilities.js';
-const { addEvent, defined, erase, extend, insertItem, isArray, isNumber, pick, pushUnique, wrap } = U;
+const { addEvent, defined, erase, extend, insertItem, isArray, isNumber, pushUnique } = U;
 /* *
  *
  *  Composition
@@ -36,16 +36,11 @@ var ParallelSeries;
     /** @private */
     function compose(SeriesClass) {
         if (pushUnique(composed, 'ParallelSeries')) {
-            const CompoClass = SeriesClass, { line: { prototype: { pointClass: LinePointClass } }, spline: { prototype: { pointClass: SplinePointClass } } } = SeriesClass.types;
+            const CompoClass = SeriesClass;
             addEvent(CompoClass, 'afterTranslate', onSeriesAfterTranslate, { order: 1 });
             addEvent(CompoClass, 'bindAxes', onSeriesBindAxes);
             addEvent(CompoClass, 'destroy', onSeriesDestroy);
-            if (LinePointClass) {
-                wrap(LinePointClass.prototype, 'getLabelConfig', wrapSeriesGetLabelConfig);
-            }
-            if (SplinePointClass) {
-                wrap(SplinePointClass.prototype, 'getLabelConfig', wrapSeriesGetLabelConfig);
-            }
+            addEvent(SeriesClass, 'afterGeneratePoints', onSeriesAfterGeneratePoints);
         }
     }
     ParallelSeries.compose = compose;
@@ -127,31 +122,28 @@ var ParallelSeries;
     /**
      * @private
      */
-    function wrapSeriesGetLabelConfig(proceed) {
-        const chart = this.series && this.series.chart, config = proceed.apply(this, [].slice.call(arguments, 1));
-        let formattedValue, yAxisOptions, labelFormat, yAxis;
-        if (chart &&
-            chart.hasParallelCoordinates &&
-            !defined(config.formattedValue)) {
-            yAxis = chart.yAxis[this.x];
-            yAxisOptions = yAxis.options;
-            labelFormat = pick(yAxisOptions.tooltipValueFormat, yAxisOptions.labels.format);
-            if (labelFormat) {
-                formattedValue = format(labelFormat, extend(this, { value: this.y }), chart);
+    function onSeriesAfterGeneratePoints() {
+        const chart = this.chart;
+        if (chart?.hasParallelCoordinates) {
+            for (const point of this.points) {
+                const yAxis = chart.yAxis[point.x || 0], yAxisOptions = yAxis.options, labelFormat = yAxisOptions.tooltipValueFormat ??
+                    yAxisOptions.labels.format;
+                let formattedValue;
+                if (labelFormat) {
+                    formattedValue = format(labelFormat, extend(point, { value: point.y }), chart);
+                }
+                else if (yAxis.dateTime) {
+                    formattedValue = chart.time.dateFormat(chart.time.resolveDTLFormat(yAxisOptions.dateTimeLabelFormats?.[yAxis.tickPositions.info?.unitName || 'year'] || '').main, point.y ?? void 0);
+                }
+                else if (isArray(yAxisOptions.categories)) {
+                    formattedValue = yAxisOptions.categories[point.y ?? -1];
+                }
+                else {
+                    formattedValue = String(point.y ?? '');
+                }
+                point.formattedValue = formattedValue;
             }
-            else if (yAxis.dateTime) {
-                formattedValue = chart.time.dateFormat(chart.time.resolveDTLFormat(yAxisOptions.dateTimeLabelFormats[yAxis.tickPositions.info.unitName]).main, this.y);
-            }
-            else if (isArray(yAxisOptions.categories)) {
-                formattedValue = yAxisOptions.categories[this.y];
-            }
-            else {
-                formattedValue = this.y;
-            }
-            config.formattedValue =
-                config.point.formattedValue = formattedValue;
         }
-        return config;
     }
 })(ParallelSeries || (ParallelSeries = {}));
 /* *

@@ -133,6 +133,8 @@ class MockPoint {
          * @default true
          */
         this.mock = true;
+        // Circular reference for formats and formatters
+        this.point = this;
         /**
          * A mock series instance imitating a real series from a real point.
          *
@@ -201,20 +203,6 @@ class MockPoint {
         this.setAxis(options, 'x');
         this.setAxis(options, 'y');
         this.refresh();
-    }
-    /**
-     * Returns a label config object - the same as
-     * Highcharts.Point.prototype.getLabelConfig
-     * @private
-     * @return {Highcharts.AnnotationMockLabelOptionsObject}
-     * The point's label config
-     */
-    getLabelConfig() {
-        return {
-            x: this.x,
-            y: this.y,
-            point: this
-        };
     }
     /**
      * Get the point's options.

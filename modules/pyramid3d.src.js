@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.8 (2024-08-29)
+ * @license Highcharts JS v11.4.8 (2024-11-21)
  *
  * Highcharts 3D funnel module
  *
@@ -62,7 +62,7 @@
          *         Pyramid3d
          *
          * @extends      plotOptions.funnel3d
-         * @excluding    neckHeight, neckWidth, dataSorting
+         * @excluding    dataSorting, legendSymbolColor, neckHeight, neckWidth,
          * @product      highcharts
          * @since        7.1.0
          * @requires     highcharts-3d

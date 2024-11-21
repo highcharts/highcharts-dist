@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.8 (2024-08-29)
+ * @license Highcharts JS v11.4.8 (2024-11-21)
  *
  * Annotations module
  *
@@ -1472,6 +1472,8 @@
                  * @default true
                  */
                 this.mock = true;
+                // Circular reference for formats and formatters
+                this.point = this;
                 /**
                  * A mock series instance imitating a real series from a real point.
                  *
@@ -1540,20 +1542,6 @@
                 this.setAxis(options, 'x');
                 this.setAxis(options, 'y');
                 this.refresh();
-            }
-            /**
-             * Returns a label config object - the same as
-             * Highcharts.Point.prototype.getLabelConfig
-             * @private
-             * @return {Highcharts.AnnotationMockLabelOptionsObject}
-             * The point's label config
-             */
-            getLabelConfig() {
-                return {
-                    x: this.x,
-                    y: this.y,
-                    point: this
-                };
             }
             /**
              * Get the point's options.
@@ -3146,7 +3134,7 @@
          *
          * */
         const { format } = F;
-        const { extend, isNumber, pick } = U;
+        const { extend, getAlignFactor, isNumber, pick } = U;
         /* *
          *
          *  Functions
@@ -3228,29 +3216,13 @@
              * Aligned position.
              */
             static alignedPosition(alignOptions, box) {
-                const align = alignOptions.align, vAlign = alignOptions.verticalAlign;
-                let x = (box.x || 0) + (alignOptions.x || 0), y = (box.y || 0) + (alignOptions.y || 0), alignFactor, vAlignFactor;
-                if (align === 'right') {
-                    alignFactor = 1;
-                }
-                else if (align === 'center') {
-                    alignFactor = 2;
-                }
-                if (alignFactor) {
-                    x += (box.width - (alignOptions.width || 0)) / alignFactor;
-                }
-                if (vAlign === 'bottom') {
-                    vAlignFactor = 1;
-                }
-                else if (vAlign === 'middle') {
-                    vAlignFactor = 2;
-                }
-                if (vAlignFactor) {
-                    y += (box.height - (alignOptions.height || 0)) / vAlignFactor;
-                }
                 return {
-                    x: Math.round(x),
-                    y: Math.round(y)
+                    x: Math.round((box.x || 0) + (alignOptions.x || 0) +
+                        (box.width - (alignOptions.width || 0)) *
+                            getAlignFactor(alignOptions.align)),
+                    y: Math.round((box.y || 0) + (alignOptions.y || 0) +
+                        (box.height - (alignOptions.height || 0)) *
+                            getAlignFactor(alignOptions.verticalAlign))
                 };
             }
             static compose(SVGRendererClass) {
@@ -3394,7 +3366,7 @@
                 }
                 label.attr({
                     text: text ?
-                        format(String(text), point.getLabelConfig(), this.annotation.chart) :
+                        format(String(text), point, this.annotation.chart) :
                         options.formatter.call(point, this)
                 });
                 const anchor = this.anchor(point);
@@ -5001,12 +4973,10 @@
         function getLabelsAndShapesOptions(baseOptions, newOptions) {
             const mergedOptions = {};
             ['labels', 'shapes'].forEach((name) => {
-                const someBaseOptions = baseOptions[name];
+                const someBaseOptions = baseOptions[name], newOptionsValue = newOptions[name];
                 if (someBaseOptions) {
-                    if (newOptions[name]) {
-                        mergedOptions[name] = splat(newOptions[name]).map(function (basicOptions, i) {
-                            return merge(someBaseOptions[i], basicOptions);
-                        });
+                    if (newOptionsValue) {
+                        mergedOptions[name] = splat(newOptionsValue).map((basicOptions, i) => merge(someBaseOptions[i], basicOptions));
                     }
                     else {
                         mergedOptions[name] = baseOptions[name];
@@ -9021,6 +8991,9 @@
                         y: this.yAxisMax,
                         xAxis: xAxis,
                         yAxis: yAxis
+                    },
+                    {
+                        command: 'Z'
                     }
                 ];
             }
@@ -9108,7 +9081,7 @@
                 }
                 this.initShape(extend({
                     type: 'path',
-                    points: this.shapePointsOptions(),
+                    points: shapePoints,
                     className: 'highcharts-measure-background'
                 }, this.options.typeOptions.background), 2);
             }
@@ -9245,6 +9218,28 @@
                 this.addCrosshairs();
                 this.redrawItems(this.shapes, animation);
                 this.redrawItems(this.labels, animation);
+                const backgroundOptions = this.options.typeOptions.background;
+                if (backgroundOptions?.strokeWidth &&
+                    this.shapes[2]?.graphic) {
+                    const offset = (backgroundOptions.strokeWidth) / 2;
+                    const background = this.shapes[2];
+                    const path = background.graphic.pathArray;
+                    const p1 = path[0];
+                    const p2 = path[1];
+                    const p3 = path[2];
+                    const p4 = path[3];
+                    p1[1] = (p1[1] || 0) + offset;
+                    p2[1] = (p2[1] || 0) - offset;
+                    p3[1] = (p3[1] || 0) - offset;
+                    p4[1] = (p4[1] || 0) + offset;
+                    p1[2] = (p1[2] || 0) + offset;
+                    p2[2] = (p2[2] || 0) + offset;
+                    p3[2] = (p3[2] || 0) - offset;
+                    p4[2] = (p4[2] || 0) - offset;
+                    background.graphic.attr({
+                        d: path
+                    });
+                }
                 // Redraw control point to run positioner
                 this.controlPoints.forEach((controlPoint) => controlPoint.redraw());
             }

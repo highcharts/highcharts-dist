@@ -329,7 +329,7 @@ function chartGetDataRows(multiLevelHeaders) {
                 rows[key].xValues[xAxisIndex] = mockPoint.x;
                 while (j < valueCount) {
                     prop = pointArrayMap[j]; // `y`, `z` etc
-                    val = mockPoint[prop];
+                    val = series.pointClass.prototype.getNestedProperty.apply(mockPoint, [prop]); // Allow values from nested properties (#20470)
                     rows[key][i + j] = pick(
                     // Y axis category if present
                     categoryAndDatetimeMap.categoryMap[prop][val], 

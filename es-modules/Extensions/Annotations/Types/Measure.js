@@ -318,6 +318,9 @@ class Measure extends Annotation {
                 y: this.yAxisMax,
                 xAxis: xAxis,
                 yAxis: yAxis
+            },
+            {
+                command: 'Z'
             }
         ];
     }
@@ -405,7 +408,7 @@ class Measure extends Annotation {
         }
         this.initShape(extend({
             type: 'path',
-            points: this.shapePointsOptions(),
+            points: shapePoints,
             className: 'highcharts-measure-background'
         }, this.options.typeOptions.background), 2);
     }
@@ -542,6 +545,28 @@ class Measure extends Annotation {
         this.addCrosshairs();
         this.redrawItems(this.shapes, animation);
         this.redrawItems(this.labels, animation);
+        const backgroundOptions = this.options.typeOptions.background;
+        if (backgroundOptions?.strokeWidth &&
+            this.shapes[2]?.graphic) {
+            const offset = (backgroundOptions.strokeWidth) / 2;
+            const background = this.shapes[2];
+            const path = background.graphic.pathArray;
+            const p1 = path[0];
+            const p2 = path[1];
+            const p3 = path[2];
+            const p4 = path[3];
+            p1[1] = (p1[1] || 0) + offset;
+            p2[1] = (p2[1] || 0) - offset;
+            p3[1] = (p3[1] || 0) - offset;
+            p4[1] = (p4[1] || 0) + offset;
+            p1[2] = (p1[2] || 0) + offset;
+            p2[2] = (p2[2] || 0) + offset;
+            p3[2] = (p3[2] || 0) - offset;
+            p4[2] = (p4[2] || 0) - offset;
+            background.graphic.attr({
+                d: path
+            });
+        }
         // Redraw control point to run positioner
         this.controlPoints.forEach((controlPoint) => controlPoint.redraw());
     }

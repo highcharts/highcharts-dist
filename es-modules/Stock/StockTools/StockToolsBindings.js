@@ -685,7 +685,8 @@ const StockToolsBindings = {
                     background: {
                         width: 0,
                         height: 0,
-                        strokeWidth: 10
+                        strokeWidth: 0,
+                        stroke: "#ffffff" /* Palette.backgroundColor */
                     },
                     crosshairX: {
                         strokeWidth: 1,

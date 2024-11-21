@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v11.4.8 (2024-08-29)
+ * @license Highcharts Gantt JS v11.4.8 (2024-11-21)
  *
  * Pathfinder
  *
@@ -1929,13 +1929,18 @@
                                 ganttPointOptions.connect = ganttPointOptions
                                     .dependency;
                             }
-                            const connects = (point.options?.connect &&
-                                splat(point.options.connect));
+                            const connects = point.options?.connect ?
+                                splat(point.options.connect) :
+                                [];
                             let to;
-                            if (point.visible && point.isInside !== false && connects) {
-                                connects.forEach(function (connect) {
-                                    to = chart.get(typeof connect === 'string' ?
-                                        connect : connect.to);
+                            if (point.visible && point.isInside !== false) {
+                                connects.forEach((connect) => {
+                                    const toId = typeof connect === 'string' ?
+                                        connect :
+                                        connect.to;
+                                    if (toId) {
+                                        to = chart.get(toId);
+                                    }
                                     if (to instanceof Point &&
                                         to.series.visible &&
                                         to.visible &&

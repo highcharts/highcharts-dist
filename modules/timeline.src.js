@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.8 (2024-08-29)
+ * @license Highcharts JS v11.4.8 (2024-11-21)
  *
  * Timeline series
  *
@@ -297,7 +297,6 @@
                 distance: void 0,
                 // eslint-disable-next-line jsdoc/require-description
                 /**
-                 * @type    {Highcharts.TimelineDataLabelsFormatterCallbackFunction}
                  * @default function () {
                  *   let format;
                  *
@@ -325,7 +324,7 @@
                     }
                     format += '<span class="highcharts-strong">' +
                         (this.key || '') + '</span><br/>' +
-                        (this.point.label || '');
+                        (this.label || '');
                     return format;
                 },
                 style: {
@@ -660,23 +659,6 @@
                     height: attribs.width
                 } : attribs;
             }
-            processData() {
-                const series = this;
-                let visiblePoints = 0, i;
-                series.visibilityMap = series.getVisibilityMap();
-                // Calculate currently visible points.
-                for (const point of series.visibilityMap) {
-                    if (point) {
-                        visiblePoints++;
-                    }
-                }
-                series.visiblePointsCount = visiblePoints;
-                for (i = 0; i < series.xData.length; i++) {
-                    series.yData[i] = 1;
-                }
-                super.processData.call(this, arguments);
-                return;
-            }
         }
         /* *
          *
@@ -684,6 +666,22 @@
          *
          * */
         TimelineSeries.defaultOptions = merge(LineSeries.defaultOptions, TimelineSeriesDefaults);
+        // Add series-specific properties after data is already processed, #17890
+        addEvent(TimelineSeries, 'afterProcessData', function () {
+            const series = this;
+            let visiblePoints = 0, i;
+            series.visibilityMap = series.getVisibilityMap();
+            // Calculate currently visible points.
+            for (const point of series.visibilityMap) {
+                if (point) {
+                    visiblePoints++;
+                }
+            }
+            series.visiblePointsCount = visiblePoints;
+            for (i = 0; i < series.xData.length; i++) {
+                series.yData[i] = 1;
+            }
+        });
         extend(TimelineSeries.prototype, {
             // Use a group of trackers from TrackerMixin
             drawTracker: ColumnSeries.prototype.drawTracker,
@@ -696,38 +694,6 @@
          *  Default Export
          *
          * */
-        /* *
-         *
-         *  API Declarations
-         *
-         * */
-        /**
-         * Callback JavaScript function to format the data label as a string. Note that
-         * if a `format` is defined, the format takes precedence and the formatter is
-         * ignored.
-         *
-         * @callback Highcharts.TimelineDataLabelsFormatterCallbackFunction
-         *
-         * @param {Highcharts.PointLabelObject|Highcharts.TimelineDataLabelsFormatterContextObject} this
-         *        Data label context to format
-         *
-         * @return {number|string|null|undefined}
-         *         Formatted data label text
-         */
-        /**
-         * @interface Highcharts.TimelineDataLabelsFormatterContextObject
-         * @extends Highcharts.PointLabelObject
-         */ /**
-        * @name Highcharts.TimelineDataLabelsFormatterContextObject#key
-        * @type {string|undefined}
-        */ /**
-        * @name Highcharts.TimelineDataLabelsFormatterContextObject#point
-        * @type {Highcharts.Point}
-        */ /**
-        * @name Highcharts.TimelineDataLabelsFormatterContextObject#series
-        * @type {Highcharts.Series}
-        */
-        ''; // Dettach doclets above
 
         return TimelineSeries;
     });

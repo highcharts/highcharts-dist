@@ -241,7 +241,6 @@
         (function (error) {
             error.messages = [];
         })(error || (error = {}));
-        /* eslint-disable valid-jsdoc */
         /**
          * Utility function to deep merge two or more objects and return a third object.
          * If the first argument is true, the contents of the second object is copied
@@ -250,41 +249,19 @@
          *
          * @function Highcharts.merge<T>
          *
-         * @param {boolean} extend
-         *        Whether to extend the left-side object (a) or return a whole new
-         *        object.
+         * @param {true | T} extendOrSource
+         *        Whether to extend the left-side object,
+         *        or the first object to merge as a deep copy.
          *
-         * @param {T|undefined} a
-         *        The first object to extend. When only this is given, the function
-         *        returns a deep copy.
-         *
-         * @param {...Array<object|undefined>} [n]
-         *        An object to merge into the previous one.
+         * @param {...Array<object|undefined>} [sources]
+         *        Object(s) to merge into the previous one.
          *
          * @return {T}
          *         The merged object. If the first argument is true, the return is the
          *         same as the second argument.
-         */ /**
-        * Utility function to deep merge two or more objects and return a third object.
-        * The merge function can also be used with a single object argument to create a
-        * deep copy of an object.
-        *
-        * @function Highcharts.merge<T>
-        *
-        * @param {T|undefined} a
-        *        The first object to extend. When only this is given, the function
-        *        returns a deep copy.
-        *
-        * @param {...Array<object|undefined>} [n]
-        *        An object to merge into the previous one.
-        *
-        * @return {T}
-        *         The merged object. If the first argument is true, the return is the
-        *         same as the second argument.
-        */
-        function merge() {
-            /* eslint-enable valid-jsdoc */
-            let i, args = arguments, ret = {};
+         */
+        function merge(extendOrSource, ...sources) {
+            let i, args = [extendOrSource, ...sources], ret = {};
             const doCopy = function (copy, original) {
                 // An object is replacing a primitive
                 if (typeof copy !== 'object') {
@@ -310,7 +287,7 @@
             };
             // If first argument is true, copy into the existing object. Used in
             // setOptions.
-            if (args[0] === true) {
+            if (extendOrSource === true) {
                 ret = args[1];
                 args = Array.prototype.slice.call(args, 2);
             }
@@ -1201,6 +1178,17 @@
             return -0.5 * (Math.cos(Math.PI * pos) - 1);
         };
         /**
+         * Convenience function to get the align factor, used several places for
+         * computing positions
+         * @private
+         */
+        const getAlignFactor = (align = '') => ({
+            center: 0.5,
+            right: 1,
+            middle: 0.5,
+            bottom: 1
+        }[align] || 0);
+        /**
          * Find the closest distance between two values of a two-dimensional array
          * @private
          * @function Highcharts.getClosestDistance
@@ -1925,6 +1913,7 @@
             extendClass,
             find,
             fireEvent,
+            getAlignFactor,
             getClosestDistance,
             getMagnitude,
             getNestedProperty,
@@ -2743,8 +2732,11 @@
                  * Decides in what dimensions the user can pan the chart. Can be
                  * one of `x`, `y`, or `xy`.
                  *
-                 * When this option is set to `y` or `xy`, [yAxis.startOnTick](#yAxis.startOnTick)
-                 * and [yAxis.endOnTick](#yAxis.endOnTick) are overwritten to `false`.
+                 * During panning, all axes will behave as if
+                 * [`startOnTick`](#yAxis.startOnTick) and
+                 * [`endOnTick`](#yAxis.endOnTick) were set to `false`. After the
+                 * panning action is finished, the axes will adjust to their actual
+                 * settings.
                  *
                  * @sample {highcharts} highcharts/chart/panning-type
                  *         Zooming and xy panning
@@ -2752,7 +2744,6 @@
                  * @declare    Highcharts.OptionsChartPanningTypeValue
                  * @type       {string}
                  * @validvalue ["x", "y", "xy"]
-                 * @default    {highcharts|highstock} x
                  * @product    highcharts highstock gantt
                  */
                 type: 'x'
@@ -5144,6 +5135,9 @@
                  */
                 style: {
                     color: "#666666" /* Palette.neutralColor60 */,
+                    /**
+                     * @type {number|string}
+                     */
                     fontSize: '0.8em'
                 },
                 /**
@@ -5241,6 +5235,9 @@
                  */
                 style: {
                     color: "#666666" /* Palette.neutralColor60 */,
+                    /**
+                     * @type {number|string}
+                     */
                     fontSize: '0.8em'
                 },
                 /**
@@ -5664,6 +5661,9 @@
                      * @apioption legend.navigation.style
                      */
                     style: {
+                        /**
+                         * @type {number|string}
+                         */
                         fontSize: '0.8em'
                     },
                     /**
@@ -6317,37 +6317,32 @@
                  * attribute, but only text-related CSS, that is shared with SVG, is
                  * handled.
                  *
-                 * The available data in the formatter differ a bit depending on whether
-                 * the tooltip is shared or split, or belongs to a single point. In a
-                 * shared/split tooltip, all properties except `x`, which is common for
-                 * all points, are kept in an array, `this.points`.
+                 * The context of the formatter (since v12) is the
+                 * [Point](https://api.highcharts.com/class-reference/Highcharts.Point)
+                 * instance. If the tooltip is shared or split, an array `this.points`
+                 * contains all points of the hovered x-value.
                  *
-                 * Available data are:
+                 * Common properties from the Point to use in the formatter include:
                  *
-                 * - **this.percentage (not shared) /**
-                 *   **this.points[i].percentage (shared)**:
+                 * - **Point.percentage**:
                  *   Stacked series and pies only. The point's percentage of the total.
                  *
-                 * - **this.point (not shared) / this.points[i].point (shared)**:
-                 *   The point object. The point name, if defined, is available through
-                 *   `this.point.name`.
+                 * - **Point.points**:
+                 *   In a shared or split tooltip, this is an array containing all the
+                 *   hovered points.
                  *
-                 * - **this.points**:
-                 *   In a shared tooltip, this is an array containing all other
-                 *   properties for each point.
-                 *
-                 * - **this.series (not shared) / this.points[i].series (shared)**:
+                 * - **this.series**:
                  *   The series object. The series name is available through
                  *   `this.series.name`.
                  *
-                 * - **this.total (not shared) / this.points[i].total (shared)**:
-                 *   Stacked series only. The total value at this point's x value.
+                 * - **this.total**:
+                 *   The total value at this point's x value in a stacked series, or the
+                 *   sum of all slices in a pie series.
                  *
                  * - **this.x**:
-                 *   The x value. This property is the same regardless of the tooltip
-                 *   being shared or not.
+                 *   The x value.
                  *
-                 * - **this.y (not shared) / this.points[i].y (shared)**:
+                 * - **this.y**:
                  *   The y value.
                  *
                  * @sample {highcharts} highcharts/tooltip/formatter-simple/
@@ -6384,7 +6379,10 @@
                  * inside the chart area. For small charts, this may result in clipping
                  * or overlapping. When `true`, a separate SVG element is created and
                  * overlaid on the page, allowing the tooltip to be aligned inside the
-                 * page itself.
+                 * page itself. Beware that with this option active, CSS classes on the
+                 * chart's target container, with classnames matching the pattern
+                 * 'highcharts-*', will be set on the tooltip as well. This is done to
+                 * support theming for tooltips with this option.
                  *
                  * Defaults to `true` if `chart.scrollablePlotArea` is activated,
                  * otherwise `false`.
@@ -6728,13 +6726,14 @@
                  */
                 snap: isTouchDevice ? 25 : 10,
                 /**
-                 * The HTML of the tooltip header line. Variables are enclosed by
-                 * curly brackets. Available variables are `point.key`, `series.name`,
-                 * `series.color` and other members from the `point` and `series`
-                 * objects. The `point.key` variable contains the category name, x
-                 * value or datetime string depending on the type of axis. For datetime
-                 * axes, the `point.key` date format can be set using
-                 * `tooltip.xDateFormat`.
+                 * The HTML of the tooltip header line. The context is the
+                 * [Point class](https://api.highcharts.com/class-reference/Highcharts.Point).
+                 * Variables are enclosed in curly brackets. Examples of common
+                 * variables to include are `x`, `y`, `series.name` and `series.color`
+                 * and other properties on the same form. The `point.key` variable
+                 * contains the category name, x value or datetime string depending on
+                 * the type of axis. For datetime axes, the `point.key` date format can
+                 * be set using `tooltip.xDateFormat`.
                  *
                  * @sample {highcharts} highcharts/tooltip/footerformat/
                  *         An HTML table in the tooltip
@@ -6758,16 +6757,17 @@
                  * @apioption tooltip.nullFormat
                  */
                 /**
-                 * The HTML of the point's line in the tooltip. Variables are enclosed
-                 * by curly brackets. Available variables are `point.x`, `point.y`,
-                 * `series.name` and `series.color` and other properties on the same
-                 * form. Furthermore, `point.y` can be extended by the
-                 * `tooltip.valuePrefix` and `tooltip.valueSuffix` variables. This can
-                 * also be overridden for each series, which makes it a good hook for
-                 * displaying units.
+                 * The HTML of the point's line in the tooltip. The context is the
+                 * [Point class](https://api.highcharts.com/class-reference/Highcharts.Point).
+                 * Variables are enclosed in curly brackets. Examples of common
+                 * variables to include are `x`, `y`, `series.name` and `series.color`
+                 * and other properties on the same form. Furthermore, `y` can be
+                 * extended by the `tooltip.valuePrefix` and `tooltip.valueSuffix`
+                 * variables. This can also be overridden for each series, which makes
+                 * it a good hook for displaying units.
                  *
-                 * In styled mode, the dot is colored by a class name rather
-                 * than the point color.
+                 * In styled mode, the dot is colored by a class name rather than the
+                 * point color.
                  *
                  * @sample {highcharts} highcharts/tooltip/pointformat/
                  *         A different point format with value suffix
@@ -6871,7 +6871,9 @@
                     color: "#333333" /* Palette.neutralColor80 */,
                     /** @internal */
                     cursor: 'default',
-                    /** @internal */
+                    /**
+                     * @type {number|string}
+                     */
                     fontSize: '0.8em'
                 },
                 /**
@@ -6982,7 +6984,9 @@
                     cursor: 'pointer',
                     /** @internal */
                     color: "#999999" /* Palette.neutralColor40 */,
-                    /** @internal */
+                    /**
+                     * @type {number|string}
+                     */
                     fontSize: '0.6em'
                 },
                 /**
@@ -7221,7 +7225,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { isNumber, merge, pInt } = U;
+        const { isNumber, merge, pInt, defined } = U;
         /* *
          *
          *  Class
@@ -7279,41 +7283,12 @@
                 }
                 else if (typeof input === 'string') {
                     this.input = input = (Color.names[input.toLowerCase()] || input);
-                    // Bitmasking as input[0] is not working for legacy IE.
-                    if (input.charAt(0) === '#') {
-                        const len = input.length, col = parseInt(input.substr(1), 16);
-                        // Handle long-form, e.g. #AABBCC
-                        if (len === 7) {
-                            rgba = [
-                                (col & 0xFF0000) >> 16,
-                                (col & 0xFF00) >> 8,
-                                (col & 0xFF),
-                                1
-                            ];
-                            // Handle short-form, e.g. #ABC
-                            // In short form, the value is assumed to be the same
-                            // for both nibbles for each component. e.g. #ABC = #AABBCC
-                        }
-                        else if (len === 4) {
-                            rgba = [
-                                (((col & 0xF00) >> 4) |
-                                    (col & 0xF00) >> 8),
-                                (((col & 0xF0) >> 4) |
-                                    (col & 0xF0)),
-                                ((col & 0xF) << 4) | (col & 0xF),
-                                1
-                            ];
-                        }
-                    }
-                    // Otherwise, check regex parsers
-                    if (!rgba) {
-                        i = Color.parsers.length;
-                        while (i-- && !rgba) {
-                            parser = Color.parsers[i];
-                            result = parser.regex.exec(input);
-                            if (result) {
-                                rgba = parser.parse(result);
-                            }
+                    i = Color.parsers.length;
+                    while (i-- && !rgba) {
+                        parser = Color.parsers[i];
+                        result = parser.regex.exec(input);
+                        if (result) {
+                            rgba = parser.parse(result);
                         }
                     }
                 }
@@ -7482,6 +7457,33 @@
                 regex: /rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)/,
                 parse: function (result) {
                     return [pInt(result[1]), pInt(result[2]), pInt(result[3]), 1];
+                }
+            }, {
+                // RGBA 3 & 4 digit hex color, e.g. #F0F, #F0FA
+                regex: /^#([a-f0-9])([a-f0-9])([a-f0-9])([a-f0-9])?$/i,
+                parse: function (result) {
+                    // #abcd => #aabbccdd, hence result + result.
+                    return [
+                        (pInt(result[1] + result[1], 16)),
+                        (pInt(result[2] + result[2], 16)),
+                        (pInt(result[3] + result[3], 16)),
+                        !defined(result[4]) ?
+                            1 :
+                            (pInt(result[4] + result[4], 16) / 255)
+                    ];
+                }
+            }, {
+                // RGBA 6 & 8 digit hex color, e.g. #FFCC00, #FFCC00FF
+                regex: /^#([a-f0-9]{2})([a-f0-9]{2})([a-f0-9]{2})([a-f0-9]{2})?$/i,
+                parse: function (result) {
+                    return [
+                        pInt(result[1], 16),
+                        pInt(result[2], 16),
+                        pInt(result[3], 16),
+                        !defined(result[4]) ?
+                            1 :
+                            (pInt(result[4], 16) / 255)
+                    ];
                 }
             }];
         // Must be last static member for init cycle
@@ -8228,15 +8230,6 @@
         const emptyHTML = trustedTypesPolicy ?
             trustedTypesPolicy.createHTML('') :
             '';
-        // IE9 and PhantomJS are only able to parse XML.
-        const hasValidDOMParser = (function () {
-            try {
-                return Boolean(new DOMParser().parseFromString(emptyHTML, 'text/html'));
-            }
-            catch (e) {
-                return false;
-            }
-        }());
         /* *
          *
          *  Class
@@ -8447,12 +8440,20 @@
                     // Make all quotation marks parse correctly to DOM (#17627)
                     .replace(/ style=(["'])/g, ' data-style=$1');
                 let doc;
-                if (hasValidDOMParser) {
+                try {
                     doc = new DOMParser().parseFromString(trustedTypesPolicy ?
                         trustedTypesPolicy.createHTML(markup) :
                         markup, 'text/html');
                 }
-                else {
+                catch (e) {
+                    // There are two cases where this fails:
+                    // 1. IE9 and PhantomJS, where the DOMParser only supports parsing
+                    //    XML
+                    // 2. Due to a Chromium issue where chart redraws are triggered by
+                    //    a `beforeprint` event (#16931),
+                    //    https://issues.chromium.org/issues/40222135
+                }
+                if (!doc) {
                     const body = createElement('div');
                     body.innerHTML = markup;
                     doc = { body };
@@ -8915,7 +8916,7 @@
             while ((match = regex.exec(str)) !== null) {
                 // When a sub expression is found, it is evaluated first, and the
                 // results recursively evaluated until no subexpression exists.
-                const subMatch = subRegex.exec(match[1]);
+                const mainMatch = match, subMatch = subRegex.exec(match[1]);
                 if (subMatch) {
                     match = subMatch;
                     hasSub = true;
@@ -8932,7 +8933,7 @@
                     };
                 }
                 // Identify helpers
-                const fn = match[1].split(' ')[0].replace('#', '');
+                const fn = (currentMatch.isBlock ? mainMatch : match)[1].split(' ')[0].replace('#', '');
                 if (helpers[fn]) {
                     // Block helper, only 0 level is handled
                     if (currentMatch.isBlock && fn === currentMatch.fn) {
@@ -9396,7 +9397,7 @@
          * */
         const { animate, animObject, stop } = A;
         const { deg2rad, doc, svg, SVG_NS, win } = H;
-        const { addEvent, attr, createElement, crisp, css, defined, erase, extend, fireEvent, isArray, isFunction, isObject, isString, merge, objectEach, pick, pInt, pushUnique, replaceNested, syncTimeout, uniqueKey } = U;
+        const { addEvent, attr, createElement, crisp, css, defined, erase, extend, fireEvent, getAlignFactor, isArray, isFunction, isObject, isString, merge, objectEach, pick, pInt, pushUnique, replaceNested, syncTimeout, uniqueKey } = U;
         /* *
          *
          *  Class
@@ -9596,7 +9597,6 @@
              */
             align(alignOptions, alignByTranslate, alignTo, redraw = true) {
                 const attribs = {}, renderer = this.renderer, alignedObjects = renderer.alignedObjects, initialAlignment = Boolean(alignOptions);
-                let x, y, alignFactor, vAlignFactor;
                 // First call on instanciate
                 if (alignOptions) {
                     this.alignOptions = alignOptions;
@@ -9620,36 +9620,16 @@
                     }
                     alignTo = void 0; // Do not use the box
                 }
-                const alignToBox = pick(alignTo, renderer[alignToKey], renderer);
-                // Assign variables
-                const align = alignOptions.align, vAlign = alignOptions.verticalAlign;
+                const alignToBox = pick(alignTo, renderer[alignToKey], renderer), 
                 // Default: left align
-                x = (alignToBox.x || 0) + (alignOptions.x || 0);
+                x = (alignToBox.x || 0) + (alignOptions.x || 0) +
+                    ((alignToBox.width || 0) - (alignOptions.width || 0)) *
+                        getAlignFactor(alignOptions.align), 
                 // Default: top align
-                y = (alignToBox.y || 0) + (alignOptions.y || 0);
-                // Align
-                if (align === 'right') {
-                    alignFactor = 1;
-                }
-                else if (align === 'center') {
-                    alignFactor = 2;
-                }
-                if (alignFactor) {
-                    x += ((alignToBox.width || 0) - (alignOptions.width || 0)) /
-                        alignFactor;
-                }
+                y = (alignToBox.y || 0) + (alignOptions.y || 0) +
+                    ((alignToBox.height || 0) - (alignOptions.height || 0)) *
+                        getAlignFactor(alignOptions.verticalAlign);
                 attribs[alignByTranslate ? 'translateX' : 'x'] = Math.round(x);
-                // Vertical align
-                if (vAlign === 'bottom') {
-                    vAlignFactor = 1;
-                }
-                else if (vAlign === 'middle') {
-                    vAlignFactor = 2;
-                }
-                if (vAlignFactor) {
-                    y += ((alignToBox.height || 0) - (alignOptions.height || 0)) /
-                        vAlignFactor;
-                }
                 attribs[alignByTranslate ? 'translateY' : 'y'] = Math.round(y);
                 // Animate only if already placed
                 if (redraw) {
@@ -10464,10 +10444,7 @@
              * @private
              */
             getRotatedBox(box, rotation) {
-                const { x: boxX, y: boxY, width, height } = box, { alignValue, translateY, rotationOriginX = 0, rotationOriginY = 0 } = this, alignFactor = {
-                    'right': 1,
-                    'center': 0.5
-                }[alignValue || 0] || 0, baseline = Number(this.element.getAttribute('y') || 0) -
+                const { x: boxX, y: boxY, width, height } = box, { alignValue, translateY, rotationOriginX = 0, rotationOriginY = 0 } = this, alignFactor = getAlignFactor(alignValue), baseline = Number(this.element.getAttribute('y') || 0) -
                     (translateY ? 0 : boxY), rad = rotation * deg2rad, rad90 = (rotation - 90) * deg2rad, cosRad = Math.cos(rad), sinRad = Math.sin(rad), wCosRad = width * cosRad, wSinRad = width * sinRad, cosRad90 = Math.cos(rad90), sinRad90 = Math.sin(rad90), [[xOriginCosRad, xOriginSinRad], [yOriginCosRad, yOriginSinRad]] = [
                     rotationOriginX,
                     rotationOriginY
@@ -11289,7 +11266,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { defined, extend, isNumber, merge, pick, removeEvent } = U;
+        const { defined, extend, getAlignFactor, isNumber, merge, pick, removeEvent } = U;
         /* *
          *
          *  Class
@@ -11350,11 +11327,7 @@
              *
              * */
             alignSetter(value) {
-                const alignFactor = ({
-                    left: 0,
-                    center: 0.5,
-                    right: 1
-                })[value];
+                const alignFactor = getAlignFactor(value);
                 if (alignFactor !== this.alignFactor) {
                     this.alignFactor = alignFactor;
                     // Bounding box exists, means we're dynamically changing
@@ -11603,14 +11576,12 @@
                 if (!text.textPath) {
                     this.updateBoxSize();
                     // Determine y based on the baseline
-                    const textY = this.baseline ? 0 : this.baselineOffset;
-                    let textX = pick(this.paddingLeft, this.padding);
-                    // Compensate for alignment
-                    if (defined(this.widthSetting) &&
-                        this.bBox &&
-                        (this.textAlign === 'center' || this.textAlign === 'right')) {
-                        textX += { center: 0.5, right: 1 }[this.textAlign] * (this.widthSetting - this.bBox.width);
-                    }
+                    const textY = this.baseline ? 0 : this.baselineOffset, textX = (this.paddingLeft ?? this.padding) +
+                        // Compensate for alignment
+                        ((defined(this.widthSetting) && this.bBox) ?
+                            getAlignFactor(this.textAlign) *
+                                (this.widthSetting - this.bBox.width) :
+                            0);
                     // Update if anything changed
                     if (textX !== text.x || textY !== text.y) {
                         text.attr('x', textX);
@@ -14250,7 +14221,7 @@
          *
          * */
         const { composed } = H;
-        const { attr, css, createElement, defined, extend, pInt, pushUnique } = U;
+        const { attr, css, createElement, defined, extend, getAlignFactor, isNumber, pInt, pushUnique } = U;
         /**
          * The opacity and visibility properties are set as attributes on the main
          * element and SVG groups, and as identical CSS properties on the HTML element
@@ -14417,6 +14388,11 @@
                     styles.whiteSpace = 'nowrap';
                     styles.overflow = 'hidden';
                 }
+                // SVG natively supports setting font size as numbers. With HTML, the
+                // font size should behave in the same way (#21624).
+                if (isNumber(Number(styles?.fontSize))) {
+                    styles.fontSize = styles.fontSize + 'px';
+                }
                 extend(this.styles, styles);
                 css(element, styles);
                 // Now that all styles are applied, to the transform
@@ -14452,9 +14428,7 @@
                     this.alignOnAdd = true;
                     return;
                 }
-                const { element, renderer, rotation, rotationOriginX, rotationOriginY, styles, textAlign = 'left', textWidth, translateX = 0, translateY = 0, x = 0, y = 0 } = this, alignCorrection = {
-                    left: 0, center: 0.5, right: 1
-                }[textAlign], whiteSpace = styles.whiteSpace;
+                const { element, renderer, rotation, rotationOriginX, rotationOriginY, styles, textAlign = 'left', textWidth, translateX = 0, translateY = 0, x = 0, y = 0 } = this, whiteSpace = styles.whiteSpace;
                 // Get the pixel length of the text
                 const getTextPxLength = () => {
                     if (this.textPxLength) {
@@ -14520,12 +14494,13 @@
                         // Avoid elem.offsetWidth if we can, it affects rendering
                         // time heavily (#7656)
                         ((!defined(rotation) && this.textPxLength) || // #7920
-                            element.offsetWidth), baseline, alignCorrection);
+                            element.offsetWidth), baseline, getAlignFactor(textAlign));
                     }
                     // Apply position with correction and rotation origin
                     const { xCorr = 0, yCorr = 0 } = this, rotOriginX = (rotationOriginX ?? x) - xCorr - x - parentPadding, rotOriginY = (rotationOriginY ?? y) - yCorr - y - parentPadding, styles = {
                         left: `${x + xCorr}px`,
                         top: `${y + yCorr}px`,
+                        textAlign,
                         transformOrigin: `${rotOriginX}px ${rotOriginY}px`
                     };
                     css(element, styles);
@@ -15698,7 +15673,9 @@
                         color: "#333333" /* Palette.neutralColor80 */,
                         /** @internal */
                         cursor: 'default',
-                        /** @internal */
+                        /**
+                         * @type {number|string}
+                         */
                         fontSize: '0.8em'
                     }
                 },
@@ -16566,7 +16543,9 @@
                     style: {
                         /** @internal */
                         color: "#666666" /* Palette.neutralColor60 */,
-                        /** @internal */
+                        /**
+                         * @type {number|string}
+                         */
                         fontSize: '0.8em'
                     }
                 },
@@ -16622,6 +16601,7 @@
                  * @product   highcharts gantt
                  * @type      {boolean}
                  * @default   true
+                 * @apioption xAxis.uniqueNames
                  */
                 /**
                  * Datetime axis only. An array determining what time intervals the
@@ -17636,7 +17616,9 @@
                     style: {
                         /** @internal */
                         color: "#000000" /* Palette.neutralColor100 */,
-                        /** @internal */
+                        /**
+                         * @type {number|string}
+                         */
                         fontSize: '0.7em',
                         /** @internal */
                         fontWeight: 'bold',
@@ -17731,7 +17713,7 @@
          *
          * */
         const { deg2rad } = H;
-        const { clamp, correctFloat, defined, destroyObjectProperties, extend, fireEvent, isNumber, merge, objectEach, pick } = U;
+        const { clamp, correctFloat, defined, destroyObjectProperties, extend, fireEvent, getAlignFactor, isNumber, merge, objectEach, pick } = U;
         /* *
          *
          *  Class
@@ -18100,11 +18082,7 @@
              * @function Highcharts.Tick#handleOverflow
              */
             handleOverflow(xy) {
-                const tick = this, axis = this.axis, labelOptions = axis.options.labels, pxPos = xy.x, chartWidth = axis.chart.chartWidth, spacing = axis.chart.spacing, leftBound = pick(axis.labelLeft, Math.min(axis.pos, spacing[3])), rightBound = pick(axis.labelRight, Math.max(!axis.isRadial ? axis.pos + axis.len : 0, chartWidth - spacing[1])), label = this.label, rotation = this.rotation, factor = {
-                    left: 0,
-                    center: 0.5,
-                    right: 1
-                }[axis.labelAlign || label.attr('align')], labelWidth = label.getBBox().width, slotWidth = axis.getSlotWidth(tick), xCorrection = factor, css = {};
+                const tick = this, axis = this.axis, labelOptions = axis.options.labels, pxPos = xy.x, chartWidth = axis.chart.chartWidth, spacing = axis.chart.spacing, leftBound = pick(axis.labelLeft, Math.min(axis.pos, spacing[3])), rightBound = pick(axis.labelRight, Math.max(!axis.isRadial ? axis.pos + axis.len : 0, chartWidth - spacing[1])), label = this.label, rotation = this.rotation, factor = getAlignFactor(axis.labelAlign || label.attr('align')), labelWidth = label.getBBox().width, slotWidth = axis.getSlotWidth(tick), xCorrection = factor, css = {};
                 let modifiedSlotWidth = slotWidth, goRight = 1, leftPos, rightPos, textWidth;
                 // Check if the label overshoots the chart spacing box. If it does, move
                 // it. If it now overshoots the slotWidth, add ellipsis.
@@ -19163,7 +19141,8 @@
             getMinorTickPositions() {
                 const axis = this, options = axis.options, tickPositions = axis.tickPositions, minorTickInterval = axis.minorTickInterval, pointRangePadding = axis.pointRangePadding || 0, min = (axis.min || 0) - pointRangePadding, // #1498
                 max = (axis.max || 0) + pointRangePadding, // #1498
-                range = max - min;
+                range = axis.brokenAxis?.hasBreaks ?
+                    axis.brokenAxis.unitLength : max - min;
                 let minorTickPositions = [], pos;
                 // If minor ticks get too dense, they are hard to read, and may cause
                 // long running script. So we don't draw them.
@@ -23363,11 +23342,11 @@
              * @private
              * @function Highcharts.Tooltip#bodyFormatter
              */
-            bodyFormatter(items) {
-                return items.map(function (item) {
-                    const tooltipOptions = item.series.tooltipOptions;
-                    return (tooltipOptions[(item.point.formatPrefix || 'point') + 'Formatter'] ||
-                        item.point.tooltipFormatter).call(item.point, tooltipOptions[(item.point.formatPrefix || 'point') + 'Format'] || '');
+            bodyFormatter(points) {
+                return points.map((point) => {
+                    const tooltipOptions = point.series.tooltipOptions, formatPrefix = point.formatPrefix || 'point';
+                    return (tooltipOptions[formatPrefix + 'Formatter'] ||
+                        point.tooltipFormatter).call(point, tooltipOptions[formatPrefix + 'Format'] || '');
                 });
             }
             /**
@@ -23406,14 +23385,14 @@
              * or an array of strings (split tooltip)
              */
             defaultFormatter(tooltip) {
-                const items = this.points || splat(this);
+                const hoverPoints = this.points || splat(this);
                 let s;
                 // Build the header
-                s = [tooltip.tooltipFooterHeaderFormatter(items[0])];
+                s = [tooltip.headerFooterFormatter(hoverPoints[0])];
                 // Build the values
-                s = s.concat(tooltip.bodyFormatter(items));
+                s = s.concat(tooltip.bodyFormatter(hoverPoints));
                 // Footer
-                s.push(tooltip.tooltipFooterHeaderFormatter(items[0], true));
+                s.push(tooltip.headerFooterFormatter(hoverPoints[0], true));
                 return s;
             }
             /**
@@ -23538,7 +23517,7 @@
                 }
                 if (!this.label) {
                     if (this.outside) {
-                        const chartStyle = this.chart.options.chart.style, Renderer = RendererRegistry.getRendererType();
+                        const chart = this.chart, chartStyle = chart.options.chart.style, Renderer = RendererRegistry.getRendererType();
                         /**
                          * Reference to the tooltip's container, when
                          * [Highcharts.Tooltip#outside] is set to true, otherwise
@@ -23548,7 +23527,8 @@
                          * @type {Highcharts.HTMLDOMElement|undefined}
                          */
                         this.container = container = H.doc.createElement('div');
-                        container.className = 'highcharts-tooltip-container';
+                        container.className = ('highcharts-tooltip-container ' +
+                            (chart.renderTo.className.match(/(highcharts[a-zA-Z0-9-]+)\s?/gm) || [].join(' ')));
                         // We need to set pointerEvents = 'none' as otherwise it makes
                         // the area under the tooltip non-hoverable even after the
                         // tooltip disappears, #19035.
@@ -23627,7 +23607,7 @@
                 return {
                     width: outside ?
                         // Subtract distance to prevent scrollbars
-                        Math.max(body.scrollWidth, documentElement.scrollWidth, body.offsetWidth, documentElement.offsetWidth, documentElement.clientWidth) - 2 * distance :
+                        Math.max(body.scrollWidth, documentElement.scrollWidth, body.offsetWidth, documentElement.offsetWidth, documentElement.clientWidth) - (2 * distance) - 2 :
                         chart.chartWidth,
                     height: outside ?
                         Math.max(body.scrollHeight, documentElement.scrollHeight, body.offsetHeight, documentElement.offsetHeight, documentElement.clientHeight) :
@@ -23940,8 +23920,8 @@
              *        used for the tooltip update.
              */
             refresh(pointOrPoints, mouseEvent) {
-                const tooltip = this, { chart, options, pointer, shared } = this, points = splat(pointOrPoints), point = points[0], pointConfig = [], formatString = options.format, formatter = options.formatter || tooltip.defaultFormatter, styledMode = chart.styledMode;
-                let formatterContext = {}, wasShared = tooltip.allowShared;
+                const tooltip = this, { chart, options, pointer, shared } = this, points = splat(pointOrPoints), point = points[0], formatString = options.format, formatter = options.formatter || tooltip.defaultFormatter, styledMode = chart.styledMode;
+                let wasShared = tooltip.allowShared;
                 if (!options.enabled || !point.series) { // #16820
                     return;
                 }
@@ -23959,21 +23939,15 @@
                 if (shared && tooltip.allowShared) {
                     pointer.applyInactiveState(points);
                     // Now set hover state for the chosen ones:
-                    points.forEach(function (item) {
-                        item.setState('hover');
-                        pointConfig.push(item.getLabelConfig());
-                    });
-                    formatterContext = point.getLabelConfig();
-                    formatterContext.points = pointConfig;
-                    // Single point tooltip
+                    points.forEach((item) => item.setState('hover'));
+                    point.points = points;
                 }
-                else {
-                    formatterContext = point.getLabelConfig();
-                }
-                this.len = pointConfig.length; // #6128
+                this.len = points.length; // #6128
                 const text = isString(formatString) ?
-                    format(formatString, formatterContext, chart) :
-                    formatter.call(formatterContext, tooltip);
+                    format(formatString, point, chart) :
+                    formatter.call(point, tooltip);
+                // Reset the preliminary circular references
+                point.points = void 0;
                 // Register the current series
                 const currentSeries = point.series;
                 this.distance = pick(currentSeries.tooltipOptions.distance, 16);
@@ -24434,23 +24408,23 @@
              * #3397: abstraction to enable formatting of footer and header
              *
              * @private
-             * @function Highcharts.Tooltip#tooltipFooterHeaderFormatter
+             * @function Highcharts.Tooltip#headerFooterFormatter
              */
-            tooltipFooterHeaderFormatter(labelConfig, isFooter) {
-                const series = labelConfig.series, tooltipOptions = series.tooltipOptions, xAxis = series.xAxis, dateTime = xAxis && xAxis.dateTime, e = {
-                    isFooter: isFooter,
-                    labelConfig: labelConfig
+            headerFooterFormatter(point, isFooter) {
+                const series = point.series, tooltipOptions = series.tooltipOptions, xAxis = series.xAxis, dateTime = xAxis && xAxis.dateTime, e = {
+                    isFooter,
+                    point
                 };
                 let xDateFormat = tooltipOptions.xDateFormat, formatString = tooltipOptions[isFooter ? 'footerFormat' : 'headerFormat'];
                 fireEvent(this, 'headerFormatter', e, function (e) {
                     // Guess the best date format based on the closest point distance
                     // (#568, #3418)
-                    if (dateTime && !xDateFormat && isNumber(labelConfig.key)) {
-                        xDateFormat = dateTime.getXDateFormat(labelConfig.key, tooltipOptions.dateTimeLabelFormats);
+                    if (dateTime && !xDateFormat && isNumber(point.key)) {
+                        xDateFormat = dateTime.getXDateFormat(point.key, tooltipOptions.dateTimeLabelFormats);
                     }
                     // Insert the footer date format if any
                     if (dateTime && xDateFormat) {
-                        ((labelConfig.point && labelConfig.point.tooltipDateKeys) ||
+                        ((point.point && point.point.tooltipDateKeys) ||
                             ['key']).forEach(function (key) {
                             formatString = formatString.replace('{point.' + key + '}', '{point.' + key + ':' + xDateFormat + '}');
                         });
@@ -24459,12 +24433,9 @@
                     if (series.chart.styledMode) {
                         formatString = this.styledModeFormat(formatString);
                     }
-                    e.text = format(formatString, {
-                        point: labelConfig,
-                        series: series
-                    }, this.chart);
+                    e.text = format(formatString, point, this.chart);
                 });
-                return e.text;
+                return e.text || '';
             }
             /**
              * Updates the tooltip with the provided tooltip options.
@@ -24489,7 +24460,7 @@
             updatePosition(point) {
                 const { chart, container, distance, options, pointer, renderer } = this, { height = 0, width = 0 } = this.getLabel(), 
                 // Needed for outside: true (#11688)
-                { left, top, scaleX, scaleY } = pointer.getChartPosition(), pos = (options.positioner || this.getPosition).call(this, width, height, point);
+                { left, top, scaleX, scaleY } = pointer.getChartPosition(), pos = (options.positioner || this.getPosition).call(this, width, height, point), doc = H.doc;
                 let anchorX = (point.plotX || 0) + chart.plotLeft, anchorY = (point.plotY || 0) + chart.plotTop, pad;
                 // Set the renderer size dynamically to prevent document size to change.
                 // Renderer only exists when tooltip is outside.
@@ -24502,7 +24473,10 @@
                     // Pad it by the border width and distance. Add 2 to make room for
                     // the default shadow (#19314).
                     pad = (options.borderWidth || 0) + 2 * distance + 2;
-                    renderer.setSize(width + pad, height + pad, false);
+                    renderer.setSize(
+                    // Clamp width to keep tooltip in viewport (#21698)
+                    // and subtract one since tooltip container has 'left: 1px;'
+                    clamp(width + pad, 0, doc.documentElement.clientWidth) - 1, height + pad, false);
                     // Anchor and tooltip container need scaling if chart container has
                     // scale transform/css zoom. #11329.
                     if (scaleX !== 1 || scaleY !== 1) {
@@ -24571,14 +24545,15 @@
          * Callback function to format the text of the tooltip from scratch.
          *
          * In case of single or shared tooltips, a string should be returned. In case
-         * of splitted tooltips, it should return an array where the first item is the
+         * of split tooltips, it should return an array where the first item is the
          * header, and subsequent items are mapped to the points. Return `false` to
          * disable tooltip for a specific point on series.
          *
          * @callback Highcharts.TooltipFormatterCallbackFunction
          *
-         * @param {Highcharts.TooltipFormatterContextObject} this
-         * Context to format
+         * @param {Highcharts.Point} this
+         * The formatter's context is the hovered `Point` instance. In case of shared or
+         * split tooltips, all points are available in `this.points`.
          *
          * @param {Highcharts.Tooltip} tooltip
          * The tooltip instance
@@ -24586,16 +24561,6 @@
          * @return {false|string|Array<(string|null|undefined)>|null|undefined}
          * Formatted text or false
          */
-        /**
-         * Configuration for the tooltip formatters.
-         *
-         * @interface Highcharts.TooltipFormatterContextObject
-         * @extends Highcharts.PointLabelObject
-         */ /**
-        * Array of points in shared tooltips.
-        * @name Highcharts.TooltipFormatterContextObject#points
-        * @type {Array<Highcharts.TooltipFormatterContextObject>|undefined}
-        */
         /**
          * A callback function to place the tooltip in a specific position.
          *
@@ -24704,6 +24669,13 @@
              *
              * @name Highcharts.Point#name
              * @type {string}
+             */
+            /**
+             * The point's name if it is defined, or its category in case of a category,
+             * otherwise the x value. Convenient for tooltip and data label formatting.
+             *
+             * @name Highcharts.Point#key
+             * @type {number|string}
              */
             /**
              * The point's options as applied in the initial configuration, or
@@ -25022,28 +24994,6 @@
                 return graphicalProps;
             }
             /**
-             * Return the configuration hash needed for the data label and tooltip
-             * formatters.
-             *
-             * @function Highcharts.Point#getLabelConfig
-             *
-             * @return {Highcharts.PointLabelObject}
-             *         Abstract object used in formatters and formats.
-             */
-            getLabelConfig() {
-                return {
-                    x: this.category,
-                    y: this.y,
-                    color: this.color,
-                    colorIndex: this.colorIndex,
-                    key: this.name || this.category,
-                    series: this.series,
-                    point: this,
-                    percentage: this.percentage,
-                    total: this.total || this.stackTotal
-                };
-            }
-            /**
              * Returns the value of the point property for a given value.
              * @private
              */
@@ -25117,6 +25067,8 @@
             constructor(series, options, x) {
                 this.formatPrefix = 'point';
                 this.visible = true;
+                // For tooltip and data label formatting
+                this.point = this;
                 this.series = series;
                 this.applyOptions(options, x);
                 // Add a unique ID to the point if none is assigned
@@ -25328,25 +25280,22 @@
              */
             tooltipFormatter(pointFormat) {
                 // Insert options for valueDecimals, valuePrefix, and valueSuffix
-                const series = this.series, seriesTooltipOptions = series.tooltipOptions, valueDecimals = pick(seriesTooltipOptions.valueDecimals, ''), valuePrefix = seriesTooltipOptions.valuePrefix || '', valueSuffix = seriesTooltipOptions.valueSuffix || '';
+                const { chart, pointArrayMap = ['y'], tooltipOptions } = this.series, { valueDecimals = '', valuePrefix = '', valueSuffix = '' } = tooltipOptions;
                 // Replace default point style with class name
-                if (series.chart.styledMode) {
-                    pointFormat =
-                        series.chart.tooltip.styledModeFormat(pointFormat);
+                if (chart.styledMode) {
+                    pointFormat = chart.tooltip?.styledModeFormat(pointFormat) ||
+                        pointFormat;
                 }
                 // Loop over the point array map and replace unformatted values with
                 // sprintf formatting markup
-                (series.pointArrayMap || ['y']).forEach(function (key) {
+                pointArrayMap.forEach((key) => {
                     key = '{point.' + key; // Without the closing bracket
                     if (valuePrefix || valueSuffix) {
                         pointFormat = pointFormat.replace(RegExp(key + '}', 'g'), valuePrefix + key + '}' + valueSuffix);
                     }
                     pointFormat = pointFormat.replace(RegExp(key + '}', 'g'), key + ':,.' + valueDecimals + 'f}');
                 });
-                return format(pointFormat, {
-                    point: this,
-                    series: this.series
-                }, series.chart);
+                return format(pointFormat, this, chart);
             }
             /**
              * Update point with new options (typically x/y data) and optionally redraw
@@ -25596,10 +25545,14 @@
                     // removed
                     point.importedUserEvent?.();
                     point.importedUserEvent = addEvent(point, eventType, userEvent);
+                    if (point.hcEvents) {
+                        point.hcEvents[eventType].userEvent = true;
+                    }
                 }
                 else if (point.importedUserEvent &&
                     !userEvent &&
-                    point.hcEvents?.[eventType]) {
+                    point.hcEvents?.[eventType] &&
+                    point.hcEvents?.[eventType].userEvent) {
                     removeEvent(point, eventType);
                     delete point.hcEvents[eventType];
                     if (!Object.keys(point.hcEvents)) {
@@ -25707,7 +25660,7 @@
                                 if (newSymbol) {
                                     series.stateMarkerGraphic = stateMarkerGraphic =
                                         chart.renderer
-                                            .symbol(newSymbol, markerAttribs.x, markerAttribs.y, markerAttribs.width, markerAttribs.height)
+                                            .symbol(newSymbol, markerAttribs.x, markerAttribs.y, markerAttribs.width, markerAttribs.height, merge(markerOptions, markerStateOptions))
                                             .add(series.markerGroup);
                                     stateMarkerGraphic.currentSymbol = newSymbol;
                                 }
@@ -25821,51 +25774,6 @@
         * Clicked point.
         * @name Highcharts.PointClickEventObject#point
         * @type {Highcharts.Point}
-        */
-        /**
-         * Configuration for the data label and tooltip formatters.
-         *
-         * @interface Highcharts.PointLabelObject
-         */ /**
-        * The point's current color.
-        * @name Highcharts.PointLabelObject#color
-        * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject|undefined}
-        */ /**
-        * The point's current color index, used in styled mode instead of `color`. The
-        * color index is inserted in class names used for styling.
-        * @name Highcharts.PointLabelObject#colorIndex
-        * @type {number}
-        */ /**
-        * The name of the related point.
-        * @name Highcharts.PointLabelObject#key
-        * @type {string|undefined}
-        */ /**
-        * The percentage for related points in a stacked series or pies.
-        * @name Highcharts.PointLabelObject#percentage
-        * @type {number}
-        */ /**
-        * The related point. The point name, if defined, is available through
-        * `this.point.name`.
-        * @name Highcharts.PointLabelObject#point
-        * @type {Highcharts.Point}
-        */ /**
-        * The related series. The series name is available through `this.series.name`.
-        * @name Highcharts.PointLabelObject#series
-        * @type {Highcharts.Series}
-        */ /**
-        * The total of values in either a stack for stacked series, or a pie in a pie
-        * series.
-        * @name Highcharts.PointLabelObject#total
-        * @type {number|undefined}
-        */ /**
-        * For categorized axes this property holds the category name for the point. For
-        * other axes it holds the X value.
-        * @name Highcharts.PointLabelObject#x
-        * @type {number|string|undefined}
-        */ /**
-        * The y value of the point.
-        * @name Highcharts.PointLabelObject#y
-        * @type {number|null|undefined}
         */
         /**
          * Gets fired when the mouse leaves the area close to the point.
@@ -26090,9 +25998,8 @@
                 this.eventsToUnbind.forEach((unbind) => unbind());
                 this.eventsToUnbind = [];
                 if (!H.chartCount) {
-                    if (Pointer.unbindDocumentMouseUp) {
-                        Pointer.unbindDocumentMouseUp.forEach((e) => e());
-                    }
+                    Pointer.unbindDocumentMouseUp.forEach((el) => el.unbind());
+                    Pointer.unbindDocumentMouseUp.length = 0;
                     if (Pointer.unbindDocumentTouchEnd) {
                         Pointer.unbindDocumentTouchEnd = (Pointer.unbindDocumentTouchEnd());
                     }
@@ -27280,10 +27187,12 @@
                 container.onmousemove = this.onContainerMouseMove.bind(this);
                 container.onclick = this.onContainerClick.bind(this);
                 this.eventsToUnbind.push(addEvent(container, 'mouseenter', this.onContainerMouseEnter.bind(this)), addEvent(container, 'mouseleave', this.onContainerMouseLeave.bind(this)));
-                if (!Pointer.unbindDocumentMouseUp) {
-                    Pointer.unbindDocumentMouseUp = [];
+                if (!Pointer.unbindDocumentMouseUp.some((el) => el.doc === ownerDoc)) {
+                    Pointer.unbindDocumentMouseUp.push({
+                        doc: ownerDoc,
+                        unbind: addEvent(ownerDoc, 'mouseup', this.onDocumentMouseUp.bind(this))
+                    });
                 }
-                Pointer.unbindDocumentMouseUp.push(addEvent(ownerDoc, 'mouseup', this.onDocumentMouseUp.bind(this)));
                 // In case we are dealing with overflow, reset the chart position when
                 // scrolling parent elements
                 let parent = this.chart.renderTo.parentElement;
@@ -27443,6 +27352,7 @@
                 this.hasZoom = zoomX || zoomY;
             }
         }
+        Pointer.unbindDocumentMouseUp = [];
         /* *
          *
          *  Class Namespace
@@ -27590,6 +27500,10 @@
         * The related browser event.
         * @name Highcharts.SelectEventObject#originalEvent
         * @type {global.Event}
+        */ /**
+        * Prevents the default action for the event, if called.
+        * @name Highcharts.SelectEventObject#preventDefault
+        * @type {Function}
         */ /**
         * Indicates a reset event to restore default state.
         * @name Highcharts.SelectEventObject#resetSelection
@@ -30125,6 +30039,20 @@
              * @apioption plotOptions.series.legendSymbol
              */
             /**
+             * Defines the color of the legend symbol for this series. Defaults to
+             * undefined, in which case the series color is used. Does not work with
+             * styled mode.
+             *
+             * @sample {highcharts|highstock} highcharts/series/legend-symbol-color/
+             *         Change the legend symbol color
+             *
+             * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+             * @default   undefined
+             * @since     next
+             * @product   highcharts highstock highmaps
+             * @apioption plotOptions.series.legendSymbolColor
+             */
+            /**
              * Determines whether the series should look for the nearest point
              * in both dimensions or just the x-dimension when hovering the series.
              * Defaults to `'xy'` for scatter series and `'x'` for most other
@@ -31248,7 +31176,9 @@
              * Force getting extremes of a total series data range.
              */
             getProcessedData(forceExtremesFromAll) {
-                const series = this, xAxis = series.xAxis, options = series.options, cropThreshold = options.cropThreshold, logarithmic = xAxis?.logarithmic, isCartesian = series.isCartesian;
+                const series = this, xAxis = series.xAxis, options = series.options, cropThreshold = options.cropThreshold, getExtremesFromAll = forceExtremesFromAll ||
+                    // X-range series etc, #21003
+                    series.getExtremesFromAll, logarithmic = xAxis?.logarithmic, isCartesian = series.isCartesian;
                 let croppedData, cropped, cropStart = 0, xExtremes, min, max, 
                 // Copied during slice operation:
                 processedXData = series.xData, processedYData = series.yData, updatingNames = false;
@@ -31263,7 +31193,7 @@
                 // Optionally filter out points outside the plot area
                 if (isCartesian &&
                     series.sorted &&
-                    !forceExtremesFromAll &&
+                    !getExtremesFromAll &&
                     (!cropThreshold ||
                         dataLength > cropThreshold ||
                         series.forceCrop)) {
@@ -31377,7 +31307,7 @@
                 const series = this, options = series.options, dataOptions = series.processedData || options.data, processedXData = series.processedXData, processedYData = series.processedYData, PointClass = series.pointClass, processedDataLength = processedXData.length, cropStart = series.cropStart || 0, hasGroupedData = series.hasGroupedData, keys = options.keys, points = [], groupCropStartIndex = (options.dataGrouping &&
                     options.dataGrouping.groupAll ?
                     cropStart :
-                    0);
+                    0), categories = series.xAxis?.categories;
                 let dataLength, cursor, point, i, data = series.data;
                 if (!data && !hasGroupedData) {
                     const arr = [];
@@ -31421,6 +31351,10 @@
                         point.index = hasGroupedData ?
                             (groupCropStartIndex + i) : cursor;
                         points[i] = point;
+                        // Set point properties for convenient access in tooltip and
+                        // data labels
+                        point.category = categories?.[point.x] ?? point.x;
+                        point.key = point.name ?? point.category;
                     }
                 }
                 // Restore keys options (#6590)
@@ -31631,7 +31565,7 @@
                     this.processData();
                 }
                 this.generatePoints();
-                const series = this, options = series.options, stacking = options.stacking, xAxis = series.xAxis, categories = xAxis.categories, enabledDataSorting = series.enabledDataSorting, yAxis = series.yAxis, points = series.points, dataLength = points.length, pointPlacement = series.pointPlacementToXValue(), // #7860
+                const series = this, options = series.options, stacking = options.stacking, xAxis = series.xAxis, enabledDataSorting = series.enabledDataSorting, yAxis = series.yAxis, points = series.points, dataLength = points.length, pointPlacement = series.pointPlacementToXValue(), // #7860
                 dynamicallyPlaced = Boolean(pointPlacement), threshold = options.threshold, stackThreshold = options.startFromThreshold ? threshold : 0;
                 let i, plotX, lastPlotX, stackIndicator, closestPointRangePx = Number.MAX_VALUE;
                 /**
@@ -31744,8 +31678,6 @@
                         plotX; // #1514, #5383, #5518
                     // Negative points #19028
                     point.negative = (point.y || 0) < (threshold || 0);
-                    // Some API data
-                    point.category = pick(categories && categories[point.x], point.x);
                     // Determine auto enabling of markers (#3635, #5099)
                     if (!point.isNull && point.visible !== false) {
                         if (typeof lastPlotX !== 'undefined') {
@@ -33080,6 +33012,7 @@
                     // New type requires new point classes
                     (newType && newType !== this.type) ||
                     // New options affecting how the data points are built
+                    typeof options.keys !== 'undefined' ||
                     typeof options.pointStart !== 'undefined' ||
                     typeof options.pointInterval !== 'undefined' ||
                     typeof options.relativeXValue !== 'undefined' ||
@@ -34159,7 +34092,10 @@
              * Make events official: Fires the event `afterColorizeItem`.
              */
             colorizeItem(item, visible) {
-                const { area, group, label, line, symbol } = item.legendItem || {};
+                const originalColor = item.color, { area, group, label, line, symbol } = item.legendItem || {};
+                if (item instanceof Series || item instanceof Point) {
+                    item.color = item.options?.legendSymbolColor || originalColor;
+                }
                 group?.[visible ? 'removeClass' : 'addClass']('highcharts-legend-item-hidden');
                 if (!this.chart.styledMode) {
                     const { itemHiddenStyle = {} } = this, hiddenColor = itemHiddenStyle.color, { fillColor, fillOpacity, lineColor, marker } = item.options, colorizeHidden = (attr) => {
@@ -34186,6 +34122,7 @@
                         'fill-opacity': fillColor ? 1 : (fillOpacity ?? 0.75)
                     }));
                 }
+                item.color = originalColor;
                 fireEvent(this, 'afterColorizeItem', { item, visible });
             }
             /**
@@ -35938,13 +35875,13 @@
              * Create the Axis instances based on the config options.
              *
              * @private
-             * @function Highcharts.Chart#getAxes
-             * @emits Highcharts.Chart#event:afterGetAxes
-             * @emits Highcharts.Chart#event:getAxes
+             * @function Highcharts.Chart#createAxes
+             * @emits Highcharts.Chart#event:afterCreateAxes
+             * @emits Highcharts.Chart#event:createAxes
              */
-            getAxes() {
+            createAxes() {
                 const options = this.userOptions;
-                fireEvent(this, 'getAxes');
+                fireEvent(this, 'createAxes');
                 for (const coll of ['xAxis', 'yAxis']) {
                     const arr = options[coll] = splat(options[coll] || {});
                     for (const axisOptions of arr) {
@@ -35952,7 +35889,7 @@
                         new Axis(this, axisOptions, coll);
                     }
                 }
-                fireEvent(this, 'afterGetAxes');
+                fireEvent(this, 'afterCreateAxes');
             }
             /**
              * Returns an array of all currently selected points in the chart. Points
@@ -36196,8 +36133,8 @@
              * @function Highcharts.Chart#getChartSize
              */
             getChartSize() {
-                const chart = this, optionsChart = chart.options.chart, widthOption = optionsChart.width, heightOption = optionsChart.height, containerBox = chart.getContainerBox(), enableDefaultHeight = containerBox.height > 1 &&
-                    !( // #21510, prevent infinite reflow
+                const chart = this, optionsChart = chart.options.chart, widthOption = optionsChart.width, heightOption = optionsChart.height, containerBox = chart.getContainerBox(), enableDefaultHeight = containerBox.height <= 1 ||
+                    ( // #21510, prevent infinite reflow
                     !chart.renderTo.parentElement?.style.height &&
                         chart.renderTo.style.height === '100%');
                 /**
@@ -36216,7 +36153,7 @@
                  * @type {number}
                  */
                 chart.chartHeight = Math.max(0, relativeLength(heightOption, chart.chartWidth) ||
-                    (enableDefaultHeight ? containerBox.height : 400));
+                    (enableDefaultHeight ? 400 : containerBox.height));
                 chart.containerBox = containerBox;
             }
             /**
@@ -37205,7 +37142,7 @@
                 // Set the common chart properties (mainly invert) from the given series
                 chart.propFromSeries();
                 // Get axes
-                chart.getAxes();
+                chart.createAxes();
                 // Initialize the series
                 const series = isArray(options.series) ? options.series : [];
                 options.series = []; // Avoid mutation
@@ -38284,7 +38221,7 @@
          */
         const { stop } = A;
         const { composed } = H;
-        const { addEvent, createElement, css, defined, merge, pushUnique } = U;
+        const { addEvent, createElement, css, defined, erase, merge, pushUnique } = U;
         /* *
          *
          *  Functions
@@ -38343,7 +38280,9 @@
                         for (const axis of chart.axes) {
                             // Apply the corrected plot size to the axes of the other
                             // orientation than the scrolling direction
-                            if (axis.horiz === recalculateHoriz) {
+                            if (axis.horiz === recalculateHoriz ||
+                                // Or parallel axes
+                                (chart.hasParallelCoordinates && axis.coll === 'yAxis')) {
                                 axis.setAxisSize();
                                 axis.setAxisTranslation();
                             }
@@ -38508,8 +38447,29 @@
                 else if (scrollablePixelsY && inverted) {
                     axisClass = '.highcharts-yaxis';
                 }
-                if (axisClass) {
-                    fixedSelectors.push(`${axisClass}:not(.highcharts-radial-axis)`, `${axisClass}-labels:not(.highcharts-radial-axis-labels)`);
+                if (axisClass && !(this.chart.hasParallelCoordinates &&
+                    axisClass === '.highcharts-yaxis')) {
+                    // Add if not added yet
+                    for (const className of [
+                        `${axisClass}:not(.highcharts-radial-axis)`,
+                        `${axisClass}-labels:not(.highcharts-radial-axis-labels)`
+                    ]) {
+                        pushUnique(fixedSelectors, className);
+                    }
+                }
+                else {
+                    // Clear all axis related selectors
+                    for (const classBase of [
+                        '.highcharts-xaxis',
+                        '.highcharts-yaxis'
+                    ]) {
+                        for (const className of [
+                            `${classBase}:not(.highcharts-radial-axis)`,
+                            `${classBase}-labels:not(.highcharts-radial-axis-labels)`
+                        ]) {
+                            erase(fixedSelectors, className);
+                        }
+                    }
                 }
                 for (const className of fixedSelectors) {
                     [].forEach.call(container.querySelectorAll(className), (elem) => {
@@ -38632,7 +38592,7 @@
          * */
         const { format } = T;
         const { series: Series } = SeriesRegistry;
-        const { destroyObjectProperties, fireEvent, isNumber, pick } = U;
+        const { destroyObjectProperties, fireEvent, getAlignFactor, isNumber, pick } = U;
         /* *
          *
          *  Class
@@ -38785,11 +38745,8 @@
                         x: label.alignAttr.x,
                         y: label.alignAttr.y,
                         rotation: options.rotation,
-                        rotationOriginX: labelBox.width * {
-                            left: 0,
-                            center: 0.5,
-                            right: 1
-                        }[options.textAlign || 'center'],
+                        rotationOriginX: labelBox.width *
+                            getAlignFactor(options.textAlign || 'center'),
                         rotationOriginY: labelBox.height / 2
                     });
                     // Check if the dataLabel should be visible.
@@ -38812,17 +38769,10 @@
              * @return {{x: number, y: number}} Adjusted BBox position of the stack.
              */
             adjustStackPosition({ labelBox, verticalAlign, textAlign }) {
-                const factorMap = {
-                    bottom: 0,
-                    middle: 1,
-                    top: 2,
-                    right: 1,
-                    center: 0,
-                    left: -1
-                }, verticalAlignFactor = factorMap[verticalAlign], textAlignFactor = factorMap[textAlign];
                 return {
-                    x: labelBox.width / 2 + (labelBox.width / 2) * textAlignFactor,
-                    y: (labelBox.height / 2) * verticalAlignFactor
+                    x: labelBox.width / 2 +
+                        (labelBox.width / 2) * (2 * getAlignFactor(textAlign) - 1),
+                    y: (labelBox.height / 2) * 2 * (1 - getAlignFactor(verticalAlign))
                 };
             }
             /**
@@ -41634,7 +41584,7 @@
                 // tightly, so we allow individual columns to have individual sizes.
                 // When pointPadding is greater, we strive for equal-width columns
                 // (#2694).
-                if (options.pointPadding) {
+                if (options.pointPadding && options.crisp) {
                     seriesBarW = Math.ceil(seriesBarW);
                 }
                 Series.prototype.translate.apply(series);
@@ -41855,11 +41805,18 @@
              */
             drawTracker(points = this.points) {
                 const series = this, chart = series.chart, pointer = chart.pointer, onMouseOver = function (e) {
-                    const point = pointer?.getPointFromEvent(e);
+                    pointer?.normalize(e);
+                    const point = pointer?.getPointFromEvent(e), 
+                    // Run point events only for points inside plot area, #21136
+                    isInsidePlot = chart.scrollablePlotArea ?
+                        chart.isInsidePlot(e.chartX - chart.plotLeft, e.chartY - chart.plotTop, {
+                            visiblePlotOnly: true
+                        }) : true;
                     // Undefined on graph in scatterchart
                     if (pointer &&
                         point &&
-                        series.options.enableMouseTracking) {
+                        series.options.enableMouseTracking &&
+                        isInsidePlot) {
                         pointer.isDirectTouch = true;
                         point.onMouseOver(e);
                     }
@@ -41976,7 +41933,7 @@
          * */
         const { getDeferredAnimation } = A;
         const { format } = F;
-        const { defined, extend, fireEvent, isArray, isString, merge, objectEach, pick, pInt, splat } = U;
+        const { defined, extend, fireEvent, getAlignFactor, isArray, isString, merge, objectEach, pick, pInt, splat } = U;
         /* *
          *
          *  Composition
@@ -42044,13 +42001,7 @@
                             })));
                 const pos = point.pos();
                 if (visible && pos) {
-                    const bBox = dataLabel.getBBox(), unrotatedbBox = dataLabel.getBBox(void 0, 0), alignFactor = {
-                        'right': 1,
-                        'center': 0.5
-                    }[options.align || 0] || 0, verticalAlignFactor = {
-                        'bottom': 1,
-                        'middle': 0.5
-                    }[options.verticalAlign || 0] || 0;
+                    const bBox = dataLabel.getBBox(), unrotatedbBox = dataLabel.getBBox(void 0, 0);
                     // The alignment box is a singular point
                     alignTo = extend({
                         x: pos[0],
@@ -42075,9 +42026,9 @@
                         width: unrotatedbBox.width,
                         height: unrotatedbBox.height
                     }), false, alignTo, false);
-                    dataLabel.alignAttr.x += alignFactor *
+                    dataLabel.alignAttr.x += getAlignFactor(options.align) *
                         (unrotatedbBox.width - bBox.width);
-                    dataLabel.alignAttr.y += verticalAlignFactor *
+                    dataLabel.alignAttr.y += getAlignFactor(options.verticalAlign) *
                         (unrotatedbBox.height - bBox.height);
                     dataLabel[dataLabel.placed ? 'animate' : 'attr']({
                         x: dataLabel.alignAttr.x +
@@ -42248,16 +42199,15 @@
                                 // #2282, #4641, #7112, #10049
                                 (!point.isNull || point.dataLabelOnNull) &&
                                 applyFilter(point, labelOptions)), { backgroundColor, borderColor, distance, style = {} } = labelOptions;
-                            let labelConfig, formatString, labelText, rotation, attr = {}, dataLabel = dataLabels[i], isNew = !dataLabel, labelBgColor;
+                            let formatString, labelText, rotation, attr = {}, dataLabel = dataLabels[i], isNew = !dataLabel, labelBgColor;
                             if (labelEnabled) {
                                 // Create individual options structure that can be
                                 // extended without affecting others
                                 formatString = pick(labelOptions[point.formatPrefix + 'Format'], labelOptions.format);
-                                labelConfig = point.getLabelConfig();
                                 labelText = defined(formatString) ?
-                                    format(formatString, labelConfig, chart) :
+                                    format(formatString, point, chart) :
                                     (labelOptions[point.formatPrefix + 'Formatter'] ||
-                                        labelOptions.formatter).call(labelConfig, labelOptions);
+                                        labelOptions.formatter).call(point, labelOptions);
                                 rotation = labelOptions.rotation;
                                 if (!chart.styledMode) {
                                     // Determine the color
@@ -42553,7 +42503,7 @@
          *
          * @callback Highcharts.DataLabelsFormatterCallbackFunction
          *
-         * @param {Highcharts.PointLabelObject} this
+         * @param {Highcharts.Point} this
          * Data label context to format
          *
          * @param {Highcharts.DataLabelsOptions} options
@@ -42841,7 +42791,8 @@
          *         Scatter plot
          *
          * @extends      plotOptions.line
-         * @excluding    cropThreshold, pointPlacement, shadow, useOhlcData
+         * @excluding    cropThreshold, legendSymbolColor, pointPlacement, shadow,
+         *               useOhlcData
          * @product      highcharts highstock
          * @optionparent plotOptions.scatter
          */
@@ -43164,8 +43115,8 @@
                     innerSize = parseFloat(innerSize);
                 }
                 const positions = [
-                    pick(centerOption[0], '50%'),
-                    pick(centerOption[1], '50%'),
+                    pick(centerOption?.[0], '50%'),
+                    pick(centerOption?.[1], '50%'),
                     // Prevent from negative values
                     pick(size && size < 0 ? void 0 : options.size, '100%'),
                     pick(innerSize && innerSize < 0 ? void 0 : options.innerSize || 0, '0%')
@@ -43430,7 +43381,7 @@
                     ];
                 },
                 crookedLine: function (labelPosition, connectorPosition, options) {
-                    const { breakAt, touchingSliceAt } = connectorPosition, { series } = this, [cx, cy, diameter] = series.center, r = diameter / 2, { plotLeft, plotWidth } = series.chart, leftAligned = labelPosition.alignment === 'left', { x, y } = labelPosition;
+                    const { angle = this.angle || 0, breakAt, touchingSliceAt } = connectorPosition, { series } = this, [cx, cy, diameter] = series.center, r = diameter / 2, { plotLeft, plotWidth } = series.chart, leftAligned = labelPosition.alignment === 'left', { x, y } = labelPosition;
                     let crookX = breakAt.x;
                     if (options.crookDistance) {
                         const crookDistance = relativeLength(// % to fraction
@@ -43445,7 +43396,7 @@
                         // and the extension of the label position.
                     }
                     else {
-                        crookX = cx + (cy - y) * Math.tan((this.angle || 0) - Math.PI / 2);
+                        crookX = cx + (cy - y) * Math.tan(angle - Math.PI / 2);
                     }
                     const path = [['M', x, y]];
                     // The crookedLine formula doesn't make sense if the path overlaps
@@ -43776,7 +43727,7 @@
                  * @default function () { return this.point.isNull ? void 0 : this.point.name; }
                  */
                 formatter: function () {
-                    return this.point.isNull ? void 0 : this.point.name;
+                    return this.isNull ? void 0 : this.name;
                 },
                 /**
                  * Whether to render the connector as a soft arc or a line with a sharp
@@ -44596,7 +44547,24 @@
             ColumnDataLabel.compose = compose;
             /** @private */
             function getDataLabelPosition(point, distance) {
-                const { center, options } = this, r = center[2] / 2, angle = point.angle || 0, cosAngle = Math.cos(angle), sinAngle = Math.sin(angle), x = center[0] + cosAngle * r, y = center[1] + sinAngle * r, finalConnectorOffset = Math.min((options.slicedOffset || 0) + (options.borderWidth || 0), distance / 5); // #1678
+                const halfPI = Math.PI / 2, { start = 0, end = 0 } = point.shapeArgs || {};
+                let angle = point.angle || 0;
+                // If a large slice is crossing the lowest point, prefer rendering it 45
+                // degrees out at either lower right or lower left. That's where there's
+                // most likely to be space available and avoid text being truncated
+                // (#22100). Technically this logic should also apply to the top point,
+                // but that is more of an edge case since the default start angle is at
+                // the top.
+                if (distance > 0 &&
+                    // Crossing the bottom
+                    start < halfPI && end > halfPI &&
+                    // Angle within the bottom quadrant
+                    angle > halfPI / 2 && angle < halfPI * 1.5) {
+                    angle = angle <= halfPI ?
+                        Math.max(halfPI / 2, (start + halfPI) / 2) :
+                        Math.min(halfPI * 1.5, (halfPI + end) / 2);
+                }
+                const { center, options } = this, r = center[2] / 2, cosAngle = Math.cos(angle), sinAngle = Math.sin(angle), x = center[0] + cosAngle * r, y = center[1] + sinAngle * r, finalConnectorOffset = Math.min((options.slicedOffset || 0) + (options.borderWidth || 0), distance / 5); // #1678
                 return {
                     natural: {
                         // Initial position of the data label - it's utilized for
@@ -44613,6 +44581,7 @@
                     // Center - data label overlaps the pie
                     alignment: distance < 0 ? 'center' : point.half ? 'right' : 'left',
                     connectorPosition: {
+                        angle,
                         breakAt: {
                             x: x + cosAngle * finalConnectorOffset,
                             y: y + sinAngle * finalConnectorOffset
@@ -44722,6 +44691,30 @@
                         });
                         distributionLength = bottom + size - top;
                         distribute(positions, distributionLength, distributionLength / 5);
+                        // Uncomment this to visualize the boxes
+                        /*
+                        points.forEach((point): void => {
+                            const box = point.distributeBox;
+                            point.dlBox?.destroy();
+                            if (box?.pos) {
+                                point.dlBox = chart.renderer.rect(
+                                    chart.plotLeft + this.center[0] + (
+                                        halfIdx ?
+                                            -this.center[2] / 2 - 100 :
+                                            this.center[2] / 2
+                                    ),
+                                    chart.plotTop + box.pos,
+                                    100,
+                                    box.size
+                                )
+                                    .attr({
+                                        stroke: 'silver',
+                                        'stroke-width': 1
+                                    })
+                                    .add();
+                            }
+                        });
+                        // */
                     }
                     // Now the used slots are sorted, fill them up sequentially
                     points.forEach((point) => {
@@ -49377,7 +49370,7 @@
                         if (baseSeries) {
                             erase(baseSeries, base); // #21043
                         }
-                        if (this.navigatorSeries) {
+                        if (this.navigatorSeries && navigator.series) {
                             erase(navigator.series, this.navigatorSeries);
                             if (defined(this.navigatorSeries.options)) {
                                 this.navigatorSeries.remove(false);
@@ -49738,6 +49731,9 @@
                 this.boundAxes = [];
                 this.userOptions = userOptions;
                 this.chartOptions = merge(G.getOptions(), standaloneNavigatorDefaults, { navigator: userOptions });
+                if (this.chartOptions.chart && userOptions.height) {
+                    this.chartOptions.chart.height = userOptions.height;
+                }
                 const chart = new Chart(element, this.chartOptions);
                 chart.options = merge(chart.options, { navigator: { enabled: true }, scrollbar: { enabled: true } });
                 if (this.chartOptions.navigator && this.chartOptions.scrollbar) {
@@ -49877,7 +49873,7 @@
              *         specified, the standalone navigator will be redrawn.
              */
             update(newOptions, redraw) {
-                this.chartOptions = merge(this.chartOptions, { navigator: newOptions });
+                this.chartOptions = merge(this.chartOptions, newOptions.height && { chart: { height: newOptions.height } }, { navigator: newOptions });
                 this.navigator.chart.update(this.chartOptions, redraw);
             }
             /**

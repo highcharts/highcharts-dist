@@ -1,5 +1,5 @@
 !/**
- * Highcharts Gantt JS v11.4.8 (2024-08-29)
+ * Highcharts Gantt JS v11.4.8 (2024-11-21)
  *
  * StaticScale
  *

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.8 (2024-08-29)
+ * @license Highcharts JS v11.4.8 (2024-11-21)
  *
  * Exporting module
  *
@@ -780,7 +780,7 @@
                         rows[key].xValues[xAxisIndex] = mockPoint.x;
                         while (j < valueCount) {
                             prop = pointArrayMap[j]; // `y`, `z` etc
-                            val = mockPoint[prop];
+                            val = series.pointClass.prototype.getNestedProperty.apply(mockPoint, [prop]); // Allow values from nested properties (#20470)
                             rows[key][i + j] = pick(
                             // Y axis category if present
                             categoryAndDatetimeMap.categoryMap[prop][val], 

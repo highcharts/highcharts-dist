@@ -100,6 +100,14 @@ declare module "./highcharts" {
      */
     function onAxisAfterInit(): void;
     /**
+     * If a user has defined categories, it is necessary to retroactively hide
+     * any ticks added by the 'onAxisFoundExtremes' function above (#21672).
+     *
+     * Otherwise they can show up on the axis, alongside user-defined
+     * categories.
+     */
+    function onAxisAfterRender(): void;
+    /**
      * Wrap auto label align to avoid setting axis-wide rotation on radial axes.
      * (#4920)
      */
@@ -114,7 +122,7 @@ declare module "./highcharts" {
      */
     function onAxisInitialAxisTranslation(): void;
     function onChartAfterDrawChartBox(): void;
-    function onChartGetAxes(): void;
+    function onChartCreateAxes(): void;
     /**
      * Update default options for radial axes from setOptions method.
      */

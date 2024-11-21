@@ -13,7 +13,7 @@ import H from '../../Globals.js';
 const { composed } = H;
 import SVGElement from '../SVG/SVGElement.js';
 import U from '../../Utilities.js';
-const { attr, css, createElement, defined, extend, pInt, pushUnique } = U;
+const { attr, css, createElement, defined, extend, getAlignFactor, isNumber, pInt, pushUnique } = U;
 /**
  * The opacity and visibility properties are set as attributes on the main
  * element and SVG groups, and as identical CSS properties on the HTML element
@@ -180,6 +180,11 @@ class HTMLElement extends SVGElement {
             styles.whiteSpace = 'nowrap';
             styles.overflow = 'hidden';
         }
+        // SVG natively supports setting font size as numbers. With HTML, the
+        // font size should behave in the same way (#21624).
+        if (isNumber(Number(styles?.fontSize))) {
+            styles.fontSize = styles.fontSize + 'px';
+        }
         extend(this.styles, styles);
         css(element, styles);
         // Now that all styles are applied, to the transform
@@ -215,9 +220,7 @@ class HTMLElement extends SVGElement {
             this.alignOnAdd = true;
             return;
         }
-        const { element, renderer, rotation, rotationOriginX, rotationOriginY, styles, textAlign = 'left', textWidth, translateX = 0, translateY = 0, x = 0, y = 0 } = this, alignCorrection = {
-            left: 0, center: 0.5, right: 1
-        }[textAlign], whiteSpace = styles.whiteSpace;
+        const { element, renderer, rotation, rotationOriginX, rotationOriginY, styles, textAlign = 'left', textWidth, translateX = 0, translateY = 0, x = 0, y = 0 } = this, whiteSpace = styles.whiteSpace;
         // Get the pixel length of the text
         const getTextPxLength = () => {
             if (this.textPxLength) {
@@ -283,12 +286,13 @@ class HTMLElement extends SVGElement {
                 // Avoid elem.offsetWidth if we can, it affects rendering
                 // time heavily (#7656)
                 ((!defined(rotation) && this.textPxLength) || // #7920
-                    element.offsetWidth), baseline, alignCorrection);
+                    element.offsetWidth), baseline, getAlignFactor(textAlign));
             }
             // Apply position with correction and rotation origin
             const { xCorr = 0, yCorr = 0 } = this, rotOriginX = (rotationOriginX ?? x) - xCorr - x - parentPadding, rotOriginY = (rotationOriginY ?? y) - yCorr - y - parentPadding, styles = {
                 left: `${x + xCorr}px`,
                 top: `${y + yCorr}px`,
+                textAlign,
                 transformOrigin: `${rotOriginX}px ${rotOriginY}px`
             };
             css(element, styles);

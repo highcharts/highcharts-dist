@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.4.8 (2024-08-29)
+ * @license Highcharts JS v11.4.8 (2024-11-21)
  *
  * (c) 2009-2024 Torstein Honsi
  *
@@ -140,7 +140,9 @@
              * @type {Highcharts.CSSObject}
              */
             style: {
-                /** @internal */
+                /**
+                 * @type {number|string}
+                 */
                 fontSize: '0.8em',
                 /** @internal */
                 fontWeight: 'bold'
