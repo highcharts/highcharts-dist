@@ -80,9 +80,6 @@ class MapPointSeries extends ScatterSeries {
     }
     translate() {
         const mapView = this.chart.mapView;
-        if (!this.processedXData) {
-            this.processData();
-        }
         this.generatePoints();
         if (this.getProjectedBounds && this.isDirtyData) {
             delete this.bounds;

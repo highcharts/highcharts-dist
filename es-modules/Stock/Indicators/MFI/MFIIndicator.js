@@ -67,7 +67,7 @@ class MFIIndicator extends SMAIndicator {
      *
      * */
     getValues(series, params) {
-        const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, decimals = params.decimals, volumeSeries = series.chart.get(params.volumeSeriesID), yValVolume = (volumeSeries && volumeSeries.yData), MFI = [], xData = [], yData = [], positiveMoneyFlow = [], negativeMoneyFlow = [];
+        const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, decimals = params.decimals, volumeSeries = series.chart.get(params.volumeSeriesID), yValVolume = volumeSeries?.getColumn('y') || [], MFI = [], xData = [], yData = [], positiveMoneyFlow = [], negativeMoneyFlow = [];
         let newTypicalPrice, oldTypicalPrice, rawMoneyFlow, negativeMoneyFlowSum, positiveMoneyFlowSum, moneyFlowRatio, MFIPoint, i, isUp = false, 
         // MFI starts calculations from the second point
         // Cause we need to calculate change between two points

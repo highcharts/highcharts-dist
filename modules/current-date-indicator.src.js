@@ -1,5 +1,7 @@
 /**
- * @license Highcharts Gantt JS v11.4.8 (2024-08-29)
+ * @license Highcharts Gantt JS v12.0.0 (2024-11-27)
+ * @module highcharts/modules/current-date-indicator
+ * @requires highcharts
  *
  * CurrentDateIndicator
  *
@@ -7,176 +9,243 @@
  *
  * License: www.highcharts.com/license
  */
-(function (factory) {
-    if (typeof module === 'object' && module.exports) {
-        factory['default'] = factory;
-        module.exports = factory;
-    } else if (typeof define === 'function' && define.amd) {
-        define('highcharts/modules/current-date-indicator', ['highcharts'], function (Highcharts) {
-            factory(Highcharts);
-            factory.Highcharts = Highcharts;
-            return factory;
-        });
-    } else {
-        factory(typeof Highcharts !== 'undefined' ? Highcharts : undefined);
-    }
-}(function (Highcharts) {
-    'use strict';
-    var _modules = Highcharts ? Highcharts._modules : {};
-    function _registerModule(obj, path, args, fn) {
-        if (!obj.hasOwnProperty(path)) {
-            obj[path] = fn.apply(null, args);
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory(require("highcharts"));
+	else if(typeof define === 'function' && define.amd)
+		define("highcharts/current-date-indicator", [["highcharts/highcharts"]], factory);
+	else if(typeof exports === 'object')
+		exports["highcharts/current-date-indicator"] = factory(require("highcharts"));
+	else
+		root["Highcharts"] = factory(root["Highcharts"]);
+})(this, (__WEBPACK_EXTERNAL_MODULE__944__) => {
+return /******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
 
-            if (typeof CustomEvent === 'function') {
-                Highcharts.win.dispatchEvent(new CustomEvent(
-                    'HighchartsModuleLoaded',
-                    { detail: { path: path, module: obj[path] } }
-                ));
-            }
-        }
-    }
-    _registerModule(_modules, 'Extensions/CurrentDateIndication.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
-        /* *
-         *
-         *  (c) 2016-2024 Highsoft AS
-         *
-         *  Author: Lars A. V. Cabrera
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        const { composed } = H;
-        const { addEvent, merge, pushUnique, wrap } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
+/***/ 944:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, {
+  "default": () => (/* binding */ current_date_indicator_src)
+});
+
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts"],"commonjs":["highcharts"],"commonjs2":["highcharts"],"root":["Highcharts"]}
+var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_ = __webpack_require__(944);
+var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default = /*#__PURE__*/__webpack_require__.n(highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_);
+;// ./code/es-modules/Extensions/CurrentDateIndication.js
+/* *
+ *
+ *  (c) 2016-2024 Highsoft AS
+ *
+ *  Author: Lars A. V. Cabrera
+ *
+ *  License: www.highcharts.com/license
+ *
+ *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+ *
+ * */
+
+
+const { composed } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+
+const { addEvent, merge, pushUnique, wrap } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+/* *
+ *
+ *  Constants
+ *
+ * */
+/**
+ * Show an indicator on the axis for the current date and time. Can be a
+ * boolean or a configuration object similar to
+ * [xAxis.plotLines](#xAxis.plotLines).
+ *
+ * @sample gantt/current-date-indicator/demo
+ *         Current date indicator enabled
+ * @sample gantt/current-date-indicator/object-config
+ *         Current date indicator with custom options
+ *
+ * @declare   Highcharts.CurrentDateIndicatorOptions
+ * @type      {boolean|CurrentDateIndicatorOptions}
+ * @default   true
+ * @extends   xAxis.plotLines
+ * @excluding value
+ * @product   gantt
+ * @apioption xAxis.currentDateIndicator
+ */
+const defaultOptions = {
+    color: "#ccd3ff" /* Palette.highlightColor20 */,
+    width: 2,
+    /**
+     * @declare Highcharts.AxisCurrentDateIndicatorLabelOptions
+     */
+    label: {
         /**
-         * Show an indicator on the axis for the current date and time. Can be a
-         * boolean or a configuration object similar to
-         * [xAxis.plotLines](#xAxis.plotLines).
+         * Format of the label. This options is passed as the first argument to
+         * [dateFormat](/class-reference/Highcharts.Time#dateFormat) function.
          *
-         * @sample gantt/current-date-indicator/demo
-         *         Current date indicator enabled
-         * @sample gantt/current-date-indicator/object-config
-         *         Current date indicator with custom options
-         *
-         * @declare   Highcharts.CurrentDateIndicatorOptions
-         * @type      {boolean|CurrentDateIndicatorOptions}
-         * @default   true
-         * @extends   xAxis.plotLines
-         * @excluding value
+         * @type      {string|Intl.DateTimeFormatOptions}
          * @product   gantt
-         * @apioption xAxis.currentDateIndicator
+         * @apioption xAxis.currentDateIndicator.label.format
          */
-        const defaultOptions = {
-            color: "#ccd3ff" /* Palette.highlightColor20 */,
-            width: 2,
-            /**
-             * @declare Highcharts.AxisCurrentDateIndicatorLabelOptions
-             */
-            label: {
-                /**
-                 * Format of the label. This options is passed as the fist argument to
-                 * [dateFormat](/class-reference/Highcharts.Time#dateFormat) function.
-                 *
-                 * @type      {string}
-                 * @default   %a, %b %d %Y, %H:%M
-                 * @product   gantt
-                 * @apioption xAxis.currentDateIndicator.label.format
-                 */
-                format: '%a, %b %d %Y, %H:%M',
-                formatter: function (value, format) {
-                    return this.axis.chart.time.dateFormat(format || '', value);
-                },
-                rotation: 0,
-                /**
-                 * @type {Highcharts.CSSObject}
-                 */
-                style: {
-                    /** @internal */
-                    fontSize: '0.7em'
-                }
-            }
-        };
-        /* *
-         *
-         *  Functions
-         *
-         * */
+        format: '%[abdYHM]',
+        formatter: function (value, format) {
+            return this.axis.chart.time.dateFormat(format || '', value, true);
+        },
+        rotation: 0,
         /**
-         * @private
+         * @type {Highcharts.CSSObject}
          */
-        function compose(AxisClass, PlotLineOrBandClass) {
-            if (pushUnique(composed, 'CurrentDateIndication')) {
-                addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
-                addEvent(PlotLineOrBandClass, 'render', onPlotLineOrBandRender);
-                wrap(PlotLineOrBandClass.prototype, 'getLabelText', wrapPlotLineOrBandGetLabelText);
-            }
+        style: {
+            /** @internal */
+            fontSize: '0.7em'
         }
-        /**
-         * @private
-         */
-        function onAxisAfterSetOptions() {
-            const options = this.options, cdiOptions = options.currentDateIndicator;
-            if (cdiOptions) {
-                const plotLineOptions = typeof cdiOptions === 'object' ?
-                    merge(defaultOptions, cdiOptions) :
-                    merge(defaultOptions);
-                plotLineOptions.value = Date.now();
-                plotLineOptions.className = 'highcharts-current-date-indicator';
-                if (!options.plotLines) {
-                    options.plotLines = [];
-                }
-                options.plotLines.push(plotLineOptions);
-            }
+    }
+};
+/* *
+ *
+ *  Functions
+ *
+ * */
+/**
+ * @private
+ */
+function compose(AxisClass, PlotLineOrBandClass) {
+    if (pushUnique(composed, 'CurrentDateIndication')) {
+        addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
+        addEvent(PlotLineOrBandClass, 'render', onPlotLineOrBandRender);
+        wrap(PlotLineOrBandClass.prototype, 'getLabelText', wrapPlotLineOrBandGetLabelText);
+    }
+}
+/**
+ * @private
+ */
+function onAxisAfterSetOptions() {
+    const options = this.options, cdiOptions = options.currentDateIndicator;
+    if (cdiOptions) {
+        const plotLineOptions = typeof cdiOptions === 'object' ?
+            merge(defaultOptions, cdiOptions) :
+            merge(defaultOptions);
+        plotLineOptions.value = Date.now();
+        plotLineOptions.className = 'highcharts-current-date-indicator';
+        if (!options.plotLines) {
+            options.plotLines = [];
         }
-        /**
-         * @private
-         */
-        function onPlotLineOrBandRender() {
-            // If the label already exists, update its text
-            if (this.label) {
-                this.label.attr({
-                    text: this.getLabelText(this.options.label)
-                });
-            }
-        }
-        /**
-         * @private
-         */
-        function wrapPlotLineOrBandGetLabelText(defaultMethod, defaultLabelOptions) {
-            const options = this.options;
-            if (options &&
-                options.className &&
-                options.className.indexOf('highcharts-current-date-indicator') !== -1 &&
-                options.label &&
-                typeof options.label.formatter === 'function') {
-                options.value = Date.now();
-                return options.label.formatter
-                    .call(this, options.value, options.label.format);
-            }
-            return defaultMethod.call(this, defaultLabelOptions);
-        }
-        /* *
-         *
-         *  Default Export
-         *
-         * */
-        const CurrentDateIndication = {
-            compose
-        };
+        options.plotLines.push(plotLineOptions);
+    }
+}
+/**
+ * @private
+ */
+function onPlotLineOrBandRender() {
+    // If the label already exists, update its text
+    if (this.label) {
+        this.label.attr({
+            text: this.getLabelText(this.options.label)
+        });
+    }
+}
+/**
+ * @private
+ */
+function wrapPlotLineOrBandGetLabelText(defaultMethod, defaultLabelOptions) {
+    const options = this.options;
+    if (options &&
+        options.className &&
+        options.className.indexOf('highcharts-current-date-indicator') !== -1 &&
+        options.label &&
+        typeof options.label.formatter === 'function') {
+        options.value = Date.now();
+        return options.label.formatter
+            .call(this, options.value, options.label.format);
+    }
+    return defaultMethod.call(this, defaultLabelOptions);
+}
+/* *
+ *
+ *  Default Export
+ *
+ * */
+const CurrentDateIndication = {
+    compose
+};
+/* harmony default export */ const Extensions_CurrentDateIndication = (CurrentDateIndication);
 
-        return CurrentDateIndication;
-    });
-    _registerModule(_modules, 'masters/modules/current-date-indicator.src.js', [_modules['Core/Globals.js'], _modules['Extensions/CurrentDateIndication.js']], function (Highcharts, CurrentDateIndication) {
+;// ./code/es-modules/masters/modules/current-date-indicator.src.js
 
-        const G = Highcharts;
-        CurrentDateIndication.compose(G.Axis, G.PlotLineOrBand);
 
-        return Highcharts;
-    });
-}));
+
+
+const G = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+Extensions_CurrentDateIndication.compose(G.Axis, G.PlotLineOrBand);
+/* harmony default export */ const current_date_indicator_src = ((highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default()));
+
+__webpack_exports__ = __webpack_exports__["default"];
+/******/ 	return __webpack_exports__;
+/******/ })()
+;
+});

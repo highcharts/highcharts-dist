@@ -1,1 +1,2 @@
-import '../../../themes/high-contrast-dark.src';
+import H from '../../Core/Globals.js';
+export default H;

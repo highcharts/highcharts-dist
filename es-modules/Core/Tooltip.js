@@ -13,12 +13,12 @@ const { animObject } = A;
 import F from './Templating.js';
 const { format } = F;
 import H from './Globals.js';
-const { composed, doc, isSafari } = H;
+const { composed, dateFormats, doc, isSafari } = H;
 import R from './Renderer/RendererUtilities.js';
 const { distribute } = R;
 import RendererRegistry from './Renderer/RendererRegistry.js';
 import U from './Utilities.js';
-const { addEvent, clamp, css, discardElement, extend, fireEvent, isArray, isNumber, isString, merge, pick, pushUnique, splat, syncTimeout } = U;
+const { addEvent, clamp, css, discardElement, extend, fireEvent, isArray, isNumber, isObject, isString, merge, pick, pushUnique, splat, syncTimeout } = U;
 /* *
  *
  *  Class
@@ -76,11 +76,11 @@ class Tooltip {
      * @private
      * @function Highcharts.Tooltip#bodyFormatter
      */
-    bodyFormatter(items) {
-        return items.map(function (item) {
-            const tooltipOptions = item.series.tooltipOptions;
-            return (tooltipOptions[(item.point.formatPrefix || 'point') + 'Formatter'] ||
-                item.point.tooltipFormatter).call(item.point, tooltipOptions[(item.point.formatPrefix || 'point') + 'Format'] || '');
+    bodyFormatter(points) {
+        return points.map((point) => {
+            const tooltipOptions = point.series.tooltipOptions, formatPrefix = point.formatPrefix || 'point';
+            return (tooltipOptions[formatPrefix + 'Formatter'] ||
+                point.tooltipFormatter).call(point, tooltipOptions[formatPrefix + 'Format'] || '');
         });
     }
     /**
@@ -119,14 +119,14 @@ class Tooltip {
      * or an array of strings (split tooltip)
      */
     defaultFormatter(tooltip) {
-        const items = this.points || splat(this);
+        const hoverPoints = this.points || splat(this);
         let s;
         // Build the header
-        s = [tooltip.tooltipFooterHeaderFormatter(items[0])];
+        s = [tooltip.headerFooterFormatter(hoverPoints[0])];
         // Build the values
-        s = s.concat(tooltip.bodyFormatter(items));
+        s = s.concat(tooltip.bodyFormatter(hoverPoints));
         // Footer
-        s.push(tooltip.tooltipFooterHeaderFormatter(items[0], true));
+        s.push(tooltip.headerFooterFormatter(hoverPoints[0], true));
         return s;
     }
     /**
@@ -251,7 +251,7 @@ class Tooltip {
         }
         if (!this.label) {
             if (this.outside) {
-                const chartStyle = this.chart.options.chart.style, Renderer = RendererRegistry.getRendererType();
+                const chart = this.chart, chartStyle = chart.options.chart.style, Renderer = RendererRegistry.getRendererType();
                 /**
                  * Reference to the tooltip's container, when
                  * [Highcharts.Tooltip#outside] is set to true, otherwise
@@ -261,7 +261,8 @@ class Tooltip {
                  * @type {Highcharts.HTMLDOMElement|undefined}
                  */
                 this.container = container = H.doc.createElement('div');
-                container.className = 'highcharts-tooltip-container';
+                container.className = ('highcharts-tooltip-container ' +
+                    (chart.renderTo.className.match(/(highcharts[a-zA-Z0-9-]+)\s?/gm) || [].join(' ')));
                 // We need to set pointerEvents = 'none' as otherwise it makes
                 // the area under the tooltip non-hoverable even after the
                 // tooltip disappears, #19035.
@@ -340,7 +341,7 @@ class Tooltip {
         return {
             width: outside ?
                 // Subtract distance to prevent scrollbars
-                Math.max(body.scrollWidth, documentElement.scrollWidth, body.offsetWidth, documentElement.offsetWidth, documentElement.clientWidth) - 2 * distance :
+                Math.max(body.scrollWidth, documentElement.scrollWidth, body.offsetWidth, documentElement.offsetWidth, documentElement.clientWidth) - (2 * distance) - 2 :
                 chart.chartWidth,
             height: outside ?
                 Math.max(body.scrollHeight, documentElement.scrollHeight, body.offsetHeight, documentElement.offsetHeight, documentElement.clientHeight) :
@@ -653,8 +654,8 @@ class Tooltip {
      *        used for the tooltip update.
      */
     refresh(pointOrPoints, mouseEvent) {
-        const tooltip = this, { chart, options, pointer, shared } = this, points = splat(pointOrPoints), point = points[0], pointConfig = [], formatString = options.format, formatter = options.formatter || tooltip.defaultFormatter, styledMode = chart.styledMode;
-        let formatterContext = {}, wasShared = tooltip.allowShared;
+        const tooltip = this, { chart, options, pointer, shared } = this, points = splat(pointOrPoints), point = points[0], formatString = options.format, formatter = options.formatter || tooltip.defaultFormatter, styledMode = chart.styledMode;
+        let wasShared = tooltip.allowShared;
         if (!options.enabled || !point.series) { // #16820
             return;
         }
@@ -672,21 +673,15 @@ class Tooltip {
         if (shared && tooltip.allowShared) {
             pointer.applyInactiveState(points);
             // Now set hover state for the chosen ones:
-            points.forEach(function (item) {
-                item.setState('hover');
-                pointConfig.push(item.getLabelConfig());
-            });
-            formatterContext = point.getLabelConfig();
-            formatterContext.points = pointConfig;
-            // Single point tooltip
+            points.forEach((item) => item.setState('hover'));
+            point.points = points;
         }
-        else {
-            formatterContext = point.getLabelConfig();
-        }
-        this.len = pointConfig.length; // #6128
+        this.len = points.length; // #6128
         const text = isString(formatString) ?
-            format(formatString, formatterContext, chart) :
-            formatter.call(formatterContext, tooltip);
+            format(formatString, point, chart) :
+            formatter.call(point, tooltip);
+        // Reset the preliminary circular references
+        point.points = void 0;
         // Register the current series
         const currentSeries = point.series;
         this.distance = pick(currentSeries.tooltipOptions.distance, 16);
@@ -1147,37 +1142,38 @@ class Tooltip {
      * #3397: abstraction to enable formatting of footer and header
      *
      * @private
-     * @function Highcharts.Tooltip#tooltipFooterHeaderFormatter
+     * @function Highcharts.Tooltip#headerFooterFormatter
      */
-    tooltipFooterHeaderFormatter(labelConfig, isFooter) {
-        const series = labelConfig.series, tooltipOptions = series.tooltipOptions, xAxis = series.xAxis, dateTime = xAxis && xAxis.dateTime, e = {
-            isFooter: isFooter,
-            labelConfig: labelConfig
+    headerFooterFormatter(point, isFooter) {
+        const series = point.series, tooltipOptions = series.tooltipOptions, xAxis = series.xAxis, dateTime = xAxis && xAxis.dateTime, e = {
+            isFooter,
+            point
         };
-        let xDateFormat = tooltipOptions.xDateFormat, formatString = tooltipOptions[isFooter ? 'footerFormat' : 'headerFormat'];
+        let xDateFormat = tooltipOptions.xDateFormat || '', formatString = tooltipOptions[isFooter ? 'footerFormat' : 'headerFormat'];
         fireEvent(this, 'headerFormatter', e, function (e) {
             // Guess the best date format based on the closest point distance
             // (#568, #3418)
-            if (dateTime && !xDateFormat && isNumber(labelConfig.key)) {
-                xDateFormat = dateTime.getXDateFormat(labelConfig.key, tooltipOptions.dateTimeLabelFormats);
+            if (dateTime && !xDateFormat && isNumber(point.key)) {
+                xDateFormat = dateTime.getXDateFormat(point.key, tooltipOptions.dateTimeLabelFormats);
             }
             // Insert the footer date format if any
             if (dateTime && xDateFormat) {
-                ((labelConfig.point && labelConfig.point.tooltipDateKeys) ||
-                    ['key']).forEach(function (key) {
-                    formatString = formatString.replace('{point.' + key + '}', '{point.' + key + ':' + xDateFormat + '}');
+                if (isObject(xDateFormat)) {
+                    const format = xDateFormat;
+                    dateFormats[0] = (timestamp) => series.chart.time.dateFormat(format, timestamp);
+                    xDateFormat = '%0';
+                }
+                (point.tooltipDateKeys || ['key']).forEach((key) => {
+                    formatString = formatString.replace(new RegExp('point\\.' + key + '([ \\)}])', ''), `(point.${key}:${xDateFormat})$1`);
                 });
             }
             // Replace default header style with class name
             if (series.chart.styledMode) {
                 formatString = this.styledModeFormat(formatString);
             }
-            e.text = format(formatString, {
-                point: labelConfig,
-                series: series
-            }, this.chart);
+            e.text = format(formatString, point, this.chart);
         });
-        return e.text;
+        return e.text || '';
     }
     /**
      * Updates the tooltip with the provided tooltip options.
@@ -1202,7 +1198,7 @@ class Tooltip {
     updatePosition(point) {
         const { chart, container, distance, options, pointer, renderer } = this, { height = 0, width = 0 } = this.getLabel(), 
         // Needed for outside: true (#11688)
-        { left, top, scaleX, scaleY } = pointer.getChartPosition(), pos = (options.positioner || this.getPosition).call(this, width, height, point);
+        { left, top, scaleX, scaleY } = pointer.getChartPosition(), pos = (options.positioner || this.getPosition).call(this, width, height, point), doc = H.doc;
         let anchorX = (point.plotX || 0) + chart.plotLeft, anchorY = (point.plotY || 0) + chart.plotTop, pad;
         // Set the renderer size dynamically to prevent document size to change.
         // Renderer only exists when tooltip is outside.
@@ -1215,7 +1211,10 @@ class Tooltip {
             // Pad it by the border width and distance. Add 2 to make room for
             // the default shadow (#19314).
             pad = (options.borderWidth || 0) + 2 * distance + 2;
-            renderer.setSize(width + pad, height + pad, false);
+            renderer.setSize(
+            // Clamp width to keep tooltip in viewport (#21698)
+            // and subtract one since tooltip container has 'left: 1px;'
+            clamp(width + pad, 0, doc.documentElement.clientWidth) - 1, height + pad, false);
             // Anchor and tooltip container need scaling if chart container has
             // scale transform/css zoom. #11329.
             if (scaleX !== 1 || scaleY !== 1) {
@@ -1285,14 +1284,15 @@ export default Tooltip;
  * Callback function to format the text of the tooltip from scratch.
  *
  * In case of single or shared tooltips, a string should be returned. In case
- * of splitted tooltips, it should return an array where the first item is the
+ * of split tooltips, it should return an array where the first item is the
  * header, and subsequent items are mapped to the points. Return `false` to
  * disable tooltip for a specific point on series.
  *
  * @callback Highcharts.TooltipFormatterCallbackFunction
  *
- * @param {Highcharts.TooltipFormatterContextObject} this
- * Context to format
+ * @param {Highcharts.Point} this
+ * The formatter's context is the hovered `Point` instance. In case of shared or
+ * split tooltips, all points are available in `this.points`.
  *
  * @param {Highcharts.Tooltip} tooltip
  * The tooltip instance
@@ -1300,16 +1300,6 @@ export default Tooltip;
  * @return {false|string|Array<(string|null|undefined)>|null|undefined}
  * Formatted text or false
  */
-/**
- * Configuration for the tooltip formatters.
- *
- * @interface Highcharts.TooltipFormatterContextObject
- * @extends Highcharts.PointLabelObject
- */ /**
-* Array of points in shared tooltips.
-* @name Highcharts.TooltipFormatterContextObject#points
-* @type {Array<Highcharts.TooltipFormatterContextObject>|undefined}
-*/
 /**
  * A callback function to place the tooltip in a specific position.
  *

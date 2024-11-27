@@ -12,7 +12,7 @@ import F from '../Templating.js';
 import H from '../Globals.js';
 const { deg2rad } = H;
 import U from '../Utilities.js';
-const { clamp, correctFloat, defined, destroyObjectProperties, extend, fireEvent, isNumber, merge, objectEach, pick } = U;
+const { clamp, correctFloat, defined, destroyObjectProperties, extend, fireEvent, getAlignFactor, isNumber, merge, objectEach, pick } = U;
 /* *
  *
  *  Class
@@ -221,18 +221,22 @@ class Tick {
      * @function Highcharts.Tick#createLabel
      */
     createLabel(str, labelOptions, xy) {
-        const axis = this.axis, chart = axis.chart, label = defined(str) && labelOptions.enabled ?
-            chart.renderer
+        const axis = this.axis, { renderer, styledMode } = axis.chart, label = defined(str) && labelOptions.enabled ?
+            renderer
                 .text(str, xy?.x, xy?.y, labelOptions.useHTML)
                 .add(axis.labelGroup) :
             void 0;
         // Un-rotated length
         if (label) {
+            const whiteSpace = labelOptions.style.whiteSpace || 'normal';
             // Without position absolute, IE export sometimes is wrong
-            if (!chart.styledMode) {
-                label.css(merge(labelOptions.style));
+            if (!styledMode) {
+                label.css(merge(labelOptions.style, { whiteSpace: 'nowrap' }));
             }
             label.textPxLength = label.getBBox().width;
+            if (!styledMode) {
+                label.css({ whiteSpace });
+            }
         }
         return label;
     }
@@ -381,11 +385,7 @@ class Tick {
      * @function Highcharts.Tick#handleOverflow
      */
     handleOverflow(xy) {
-        const tick = this, axis = this.axis, labelOptions = axis.options.labels, pxPos = xy.x, chartWidth = axis.chart.chartWidth, spacing = axis.chart.spacing, leftBound = pick(axis.labelLeft, Math.min(axis.pos, spacing[3])), rightBound = pick(axis.labelRight, Math.max(!axis.isRadial ? axis.pos + axis.len : 0, chartWidth - spacing[1])), label = this.label, rotation = this.rotation, factor = {
-            left: 0,
-            center: 0.5,
-            right: 1
-        }[axis.labelAlign || label.attr('align')], labelWidth = label.getBBox().width, slotWidth = axis.getSlotWidth(tick), xCorrection = factor, css = {};
+        const tick = this, axis = this.axis, labelOptions = axis.options.labels, pxPos = xy.x, chartWidth = axis.chart.chartWidth, spacing = axis.chart.spacing, leftBound = pick(axis.labelLeft, Math.min(axis.pos, spacing[3])), rightBound = pick(axis.labelRight, Math.max(!axis.isRadial ? axis.pos + axis.len : 0, chartWidth - spacing[1])), label = this.label, rotation = this.rotation, factor = getAlignFactor(axis.labelAlign || label.attr('align')), labelWidth = label.getBBox().width, slotWidth = axis.getSlotWidth(tick), xCorrection = factor, css = {};
         let modifiedSlotWidth = slotWidth, goRight = 1, leftPos, rightPos, textWidth;
         // Check if the label overshoots the chart spacing box. If it does, move
         // it. If it now overshoots the slotWidth, add ellipsis.
@@ -428,16 +428,15 @@ class Tick {
             textWidth = Math.round((chartWidth - pxPos) /
                 Math.cos(rotation * deg2rad));
         }
-        if (textWidth) {
+        if (textWidth && label) {
             if (tick.shortenLabel) {
                 tick.shortenLabel();
             }
             else {
-                css.width = Math.floor(textWidth) + 'px';
-                if (!(labelOptions.style || {}).textOverflow) {
-                    css.textOverflow = 'ellipsis';
-                }
-                label.css(css);
+                label.css(extend(css, {
+                    width: Math.floor(textWidth) + 'px',
+                    lineClamp: axis.isRadial ? 0 : 1
+                }));
             }
         }
     }

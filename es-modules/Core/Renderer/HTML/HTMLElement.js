@@ -13,7 +13,7 @@ import H from '../../Globals.js';
 const { composed } = H;
 import SVGElement from '../SVG/SVGElement.js';
 import U from '../../Utilities.js';
-const { attr, css, createElement, defined, extend, pInt, pushUnique } = U;
+const { attr, css, createElement, defined, extend, getAlignFactor, isNumber, pInt, pushUnique } = U;
 /**
  * The opacity and visibility properties are set as attributes on the main
  * element and SVG groups, and as identical CSS properties on the HTML element
@@ -148,8 +148,6 @@ class HTMLElement extends SVGElement {
                 fontSize: renderer.style.fontSize
             })
         });
-        // Keep the whiteSpace style outside the `HTMLElement.styles` collection
-        this.element.style.whiteSpace = 'nowrap';
     }
     /**
      * Get the correction in X and Y positioning as the element is rotated.
@@ -176,9 +174,20 @@ class HTMLElement extends SVGElement {
             this.textWidth = pInt(textWidth) || void 0;
             doTransform = true;
         }
+        // Some properties require other properties to be set
         if (styles?.textOverflow === 'ellipsis') {
-            styles.whiteSpace = 'nowrap';
             styles.overflow = 'hidden';
+        }
+        if (styles?.lineClamp) {
+            styles.display = '-webkit-box';
+            styles.WebkitLineClamp = styles.lineClamp;
+            styles.WebkitBoxOrient = 'vertical';
+            styles.overflow = 'hidden';
+        }
+        // SVG natively supports setting font size as numbers. With HTML, the
+        // font size should behave in the same way (#21624).
+        if (isNumber(Number(styles?.fontSize))) {
+            styles.fontSize = styles.fontSize + 'px';
         }
         extend(this.styles, styles);
         css(element, styles);
@@ -215,9 +224,7 @@ class HTMLElement extends SVGElement {
             this.alignOnAdd = true;
             return;
         }
-        const { element, renderer, rotation, rotationOriginX, rotationOriginY, styles, textAlign = 'left', textWidth, translateX = 0, translateY = 0, x = 0, y = 0 } = this, alignCorrection = {
-            left: 0, center: 0.5, right: 1
-        }[textAlign], whiteSpace = styles.whiteSpace;
+        const { element, renderer, rotation, rotationOriginX, rotationOriginY, scaleX, scaleY, styles, textAlign = 'left', textWidth, translateX = 0, translateY = 0, x = 0, y = 0 } = this, { display = 'block', whiteSpace } = styles;
         // Get the pixel length of the text
         const getTextPxLength = () => {
             if (this.textPxLength) {
@@ -258,10 +265,12 @@ class HTMLElement extends SVGElement {
                 /[ \-]/.test(element.textContent || element.innerText) ||
                     element.style.textOverflow === 'ellipsis')) {
                     css(element, {
-                        width: (textPxLength > textWidthNum) || rotation ?
+                        width: ((textPxLength > textWidthNum) ||
+                            rotation ||
+                            scaleX) ?
                             textWidth + 'px' :
                             'auto', // #16261
-                        display: 'block',
+                        display,
                         whiteSpace: whiteSpace || 'normal' // #3331
                     });
                     this.oldTextWidth = textWidth;
@@ -282,15 +291,21 @@ class HTMLElement extends SVGElement {
                 this.getSpanCorrection(
                 // Avoid elem.offsetWidth if we can, it affects rendering
                 // time heavily (#7656)
-                ((!defined(rotation) && this.textPxLength) || // #7920
-                    element.offsetWidth), baseline, alignCorrection);
+                ((!defined(rotation) &&
+                    !this.textWidth &&
+                    this.textPxLength) || // #7920
+                    element.offsetWidth), baseline, getAlignFactor(textAlign));
             }
             // Apply position with correction and rotation origin
             const { xCorr = 0, yCorr = 0 } = this, rotOriginX = (rotationOriginX ?? x) - xCorr - x - parentPadding, rotOriginY = (rotationOriginY ?? y) - yCorr - y - parentPadding, styles = {
                 left: `${x + xCorr}px`,
                 top: `${y + yCorr}px`,
+                textAlign,
                 transformOrigin: `${rotOriginX}px ${rotOriginY}px`
             };
+            if (scaleX || scaleY) {
+                styles.transform = `scale(${scaleX ?? 1},${scaleY ?? 1})`;
+            }
             css(element, styles);
             // Record current text transform
             this.cTT = currentTextTransform;

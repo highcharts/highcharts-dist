@@ -84,25 +84,22 @@ class XRangePoint extends ColumnPoint {
         }
     }
     /**
+     * Extend applyOptions to handle time strings for x2
+     *
+     * @private
+     */
+    applyOptions(options, x) {
+        super.applyOptions(options, x);
+        this.x2 = this.series.chart.time.parse(this.x2);
+        this.isNull = !this.isValid?.();
+        return this;
+    }
+    /**
      * @private
      */
     setState() {
         super.setState.apply(this, arguments);
         this.series.drawPoint(this, this.series.getAnimationVerb());
-    }
-    /**
-     * Add x2 and yCategory to the available properties for tooltip formats.
-     *
-     * @private
-     */
-    getLabelConfig() {
-        const cfg = super.getLabelConfig.call(this), yCats = this.series.yAxis.categories;
-        cfg.x2 = this.x2;
-        cfg.yCategory = this.yCategory = yCats && yCats[this.y];
-        // Use 'category' as 'key' to ensure tooltip datetime formatting.
-        // Use 'name' only when 'category' is undefined.
-        cfg.key = this.category || this.name;
-        return cfg;
     }
     /**
      * @private
@@ -116,6 +113,11 @@ extend(XRangePoint.prototype, {
     ttBelow: false,
     tooltipDateKeys: ['x', 'x2']
 });
+/* *
+ *
+ *  Class Namespace
+ *
+ * */
 /* *
  *
  *  Default Export
@@ -132,15 +134,6 @@ export default XRangePoint;
  * @name Highcharts.Point#x2
  * @type {number|undefined}
  * @requires modules/xrange
- */
-/**
- * Extend applyOptions so that `colorByPoint` for x-range means that one
- * color is applied per Y axis category.
- *
- * @private
- * @function Highcharts.Point#applyOptions
- *
- * @return {Highcharts.Series}
  */
 /**
  * @interface Highcharts.PointOptionsObject in parts/Point.ts

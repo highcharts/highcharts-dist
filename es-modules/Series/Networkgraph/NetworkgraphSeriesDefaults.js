@@ -125,11 +125,10 @@ const NetworkgraphSeriesDefaults = {
          * Note that if a `format` is defined, the format takes precedence
          * and the formatter is ignored.
          *
-         * @type  {Highcharts.SeriesNetworkgraphDataLabelsFormatterCallbackFunction}
          * @since 7.0.0
          */
         formatter: function () {
-            return this.key;
+            return String(this.key ?? '');
         },
         /**
          * The
@@ -147,13 +146,12 @@ const NetworkgraphSeriesDefaults = {
          * The `linkFormat` option takes precedence over the
          * `linkFormatter`.
          *
-         * @type  {Highcharts.SeriesNetworkgraphDataLabelsFormatterCallbackFunction}
          * @since 7.1.0
          */
         linkFormatter: function () {
-            return (this.point.fromNode.name +
+            return (this.fromNode.name +
                 '<br>' +
-                this.point.toNode.name);
+                this.toNode.name);
         },
         /**
          * Options for a _link_ label text which should follow link

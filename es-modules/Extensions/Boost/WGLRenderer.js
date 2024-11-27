@@ -91,9 +91,11 @@ class WGLRenderer {
         let isStacked, xData, s;
         if (series.boosted) {
             isStacked = !!series.options.stacking;
-            xData = (series.xData ||
+            xData = ((series.getColumn('x').length ?
+                series.getColumn('x') :
+                void 0) ||
                 series.options.xData ||
-                series.processedXData);
+                series.getColumn('x', true));
             s = (isStacked ? series.data : (xData || series.options.data))
                 .length;
             if (series.type === 'treemap') {
@@ -219,8 +221,7 @@ class WGLRenderer {
         const data = this.data, settings = this.settings, vbuffer = this.vbuffer, isRange = (series.pointArrayMap &&
             series.pointArrayMap.join(',') === 'low,high'), { chart, options, sorted, xAxis, yAxis } = series, isStacked = !!options.stacking, rawData = options.data, xExtremes = series.xAxis.getExtremes(), 
         // Taking into account the offset of the min point #19497
-        xMin = xExtremes.min - (series.xAxis.minPointOffset || 0), xMax = xExtremes.max + (series.xAxis.minPointOffset || 0), yExtremes = series.yAxis.getExtremes(), yMin = yExtremes.min - (series.yAxis.minPointOffset || 0), yMax = yExtremes.max + (series.yAxis.minPointOffset || 0), xData = series.xData || options.xData || series.processedXData, yData = series.yData || options.yData || series.processedYData, zData = (series.zData || options.zData ||
-            series.processedZData), useRaw = !xData || xData.length === 0, 
+        xMin = xExtremes.min - (series.xAxis.minPointOffset || 0), xMax = xExtremes.max + (series.xAxis.minPointOffset || 0), yExtremes = series.yAxis.getExtremes(), yMin = yExtremes.min - (series.yAxis.minPointOffset || 0), yMax = yExtremes.max + (series.yAxis.minPointOffset || 0), xData = (series.getColumn('x').length ? series.getColumn('x') : void 0) || options.xData || series.getColumn('x', true), yData = (series.getColumn('y').length ? series.getColumn('y') : void 0) || options.yData || series.getColumn('y', true), zData = (series.getColumn('z').length ? series.getColumn('z') : void 0) || options.zData || series.getColumn('z', true), useRaw = !xData || xData.length === 0, 
         /// threshold = options.threshold,
         // yBottom = chart.yAxis[0].getThreshold(threshold),
         // hasThreshold = isNumber(threshold),
@@ -495,7 +496,7 @@ class WGLRenderer {
             }
             else {
                 x = d;
-                y = yData[i];
+                y = yData?.[i];
                 if (sdata[i + 1]) {
                     nx = sdata[i + 1];
                 }
@@ -526,8 +527,8 @@ class WGLRenderer {
                 if (useRaw) {
                     y = d.slice(1, 3);
                 }
-                low = y[0];
-                y = y[1];
+                low = series.getColumn('low', true)?.[i];
+                y = series.getColumn('high', true)?.[i] || 0;
             }
             else if (isStacked) {
                 x = d.x;
@@ -652,7 +653,7 @@ class WGLRenderer {
                 continue;
             }
             if (drawAsBar) {
-                minVal = low;
+                minVal = low || 0;
                 if (low === false || typeof low === 'undefined') {
                     if (y < 0) {
                         minVal = y;

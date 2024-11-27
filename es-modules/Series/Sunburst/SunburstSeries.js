@@ -84,7 +84,7 @@ function getDlOptions(params) {
         params.level.dataLabels :
         {})[0], options = merge({
         style: {}
-    }, optionsLevel, optionsPoint);
+    }, optionsLevel, optionsPoint), { innerArcLength = 0, outerArcLength = 0 } = point;
     let rotationRad, rotation, rotationMode = options.rotationMode;
     if (!isNumber(options.rotation)) {
         if (rotationMode === 'auto' || rotationMode === 'circular') {
@@ -94,8 +94,8 @@ function getDlOptions(params) {
                 // for HTML labels, see #18953
                 rotationMode = 'auto';
             }
-            if (point.innerArcLength < 1 &&
-                point.outerArcLength > shape.radius) {
+            if (innerArcLength < 1 &&
+                outerArcLength > shape.radius) {
                 rotationRad = 0;
                 // Trigger setTextPath function to get textOutline etc.
                 if (point.dataLabelPath && rotationMode === 'circular') {
@@ -104,8 +104,8 @@ function getDlOptions(params) {
                     };
                 }
             }
-            else if (point.innerArcLength > 1 &&
-                point.outerArcLength > 1.5 * shape.radius) {
+            else if (innerArcLength > 1 &&
+                outerArcLength > 1.5 * shape.radius) {
                 if (rotationMode === 'circular') {
                     options.textPath = {
                         enabled: true,
@@ -120,8 +120,7 @@ function getDlOptions(params) {
             }
             else {
                 // Trigger the destroyTextPath function
-                if (point.dataLabel &&
-                    point.dataLabel.textPath &&
+                if (point.dataLabel?.textPath &&
                     rotationMode === 'circular') {
                     options.textPath = {
                         enabled: false
@@ -140,7 +139,7 @@ function getDlOptions(params) {
                 (shape.end - shape.start) / 2);
         }
         if (rotationMode === 'parallel') {
-            options.style.width = Math.min(shape.radius * 2.5, (point.outerArcLength + point.innerArcLength) / 2);
+            options.style.width = Math.min(shape.radius * 2.5, (outerArcLength + innerArcLength) / 2);
         }
         else {
             if (!defined(options.style.width) &&
@@ -150,13 +149,17 @@ function getDlOptions(params) {
                     shape.radius;
             }
         }
-        if (rotationMode === 'perpendicular' &&
+        if (rotationMode === 'perpendicular') {
             // 16 is the inferred line height. We don't know the real line
             // yet because the label is not rendered. A better approach for this
             // would be to hide the label from the `alignDataLabel` function
             // when the actual line height is known.
-            point.outerArcLength < 16) {
-            options.style.width = 1;
+            if (outerArcLength < 16) {
+                options.style.width = 1;
+            }
+            else {
+                options.style.lineClamp = Math.floor(innerArcLength / 16) || 1;
+            }
         }
         // Apply padding (#8515)
         options.style.width = Math.max(options.style.width - 2 * (options.padding || 0), 1);
@@ -198,6 +201,7 @@ function getDlOptions(params) {
             options.style.width = Math.max((point.outerArcLength +
                 point.innerArcLength) / 2 -
                 2 * (options.padding || 0), 1);
+            options.style.whiteSpace = 'nowrap';
         }
     }
     return options;
@@ -546,9 +550,6 @@ class SunburstSeries extends TreemapSeries {
         rootId = updateRootId(series);
         let mapIdToNode = series.nodeMap, mapOptionsToLevel, nodeRoot = mapIdToNode && mapIdToNode[rootId], nodeIds = {};
         series.shapeRoot = nodeRoot && nodeRoot.shapeArgs;
-        if (!series.processedXData) { // Hidden series
-            series.processData();
-        }
         series.generatePoints();
         fireEvent(series, 'afterTranslate');
         // @todo Only if series.isDirtyData is true

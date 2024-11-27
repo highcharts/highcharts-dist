@@ -15,7 +15,7 @@ import SeriesRegistry from '../../Series/SeriesRegistry.js';
 const { series: { prototype: seriesProto } } = SeriesRegistry;
 import StackItem from './StackItem.js';
 import U from '../../Utilities.js';
-const { addEvent, correctFloat, defined, destroyObjectProperties, fireEvent, isArray, isNumber, objectEach, pick } = U;
+const { addEvent, correctFloat, defined, destroyObjectProperties, fireEvent, isNumber, objectEach, pick } = U;
 /* *
  *
  *  Functions
@@ -104,7 +104,7 @@ function seriesGetStackIndicator(stackIndicator, x, index, key) {
  * @function Highcharts.Series#modifyStacks
  */
 function seriesModifyStacks() {
-    const series = this, yAxis = series.yAxis, stackKey = series.stackKey || '', stacks = yAxis.stacking.stacks, processedXData = series.processedXData, stacking = series.options.stacking, stacker = series[stacking + 'Stacker'];
+    const series = this, yAxis = series.yAxis, stackKey = series.stackKey || '', stacks = yAxis.stacking.stacks, processedXData = series.getColumn('x', true), stacking = series.options.stacking, stacker = series[stacking + 'Stacker'];
     let stackIndicator;
     if (stacker) { // Modifier function exists (Series.percentStacker etc.)
         [stackKey, '-' + stackKey].forEach((key) => {
@@ -149,9 +149,6 @@ function seriesSetGroupedPoints(axis) {
     // applies to resetting (#20221).
     if (this.is('column') || this.is('columnrange')) {
         if (this.options.centerInCategory &&
-            // With stacking enabled, we already have stacks that we can compute
-            // from
-            !this.options.stacking &&
             // With only one series, we don't need to consider centerInCategory
             this.chart.series.length > 1) {
             seriesProto.setStackedPoints.call(this, axis, 'group');
@@ -178,20 +175,19 @@ function seriesSetStackedPoints(axis, stackingParam) {
         ({ group: 'xAxis' }[type] || 'yAxis') !== axis.coll) {
         return;
     }
-    const series = this, xData = series.processedXData, yData = series.processedYData, stackedYData = [], yDataLength = yData.length, seriesOptions = series.options, threshold = seriesOptions.threshold || 0, stackThreshold = seriesOptions.startFromThreshold ? threshold : 0, stackOption = seriesOptions.stack, stackKey = stackingParam ?
+    const series = this, xData = series.getColumn('x', true), yData = series.getColumn(series.pointValKey || 'y', true), stackedYData = [], yDataLength = yData.length, seriesOptions = series.options, threshold = seriesOptions.threshold || 0, stackThreshold = seriesOptions.startFromThreshold ? threshold : 0, stackOption = seriesOptions.stack, stackKey = stackingParam ?
         `${series.type},${type}` : (series.stackKey || ''), negKey = '-' + stackKey, negStacks = series.negStacks, stacking = axis.stacking, stacks = stacking.stacks, oldStacks = stacking.oldStacks;
-    let stackIndicator, isNegative, stack, other, key, pointKey, i, x, y;
+    let stackIndicator, isNegative, stack, other, key, pointKey, i;
     stacking.stacksTouched += 1;
     // Loop over the non-null y values and read them into a local array
     for (i = 0; i < yDataLength; i++) {
-        x = xData[i];
-        y = yData[i];
+        const x = xData[i] || 0, y = yData[i], yNumber = isNumber(y) && y || 0;
         stackIndicator = series.getStackIndicator(stackIndicator, x, series.index);
         pointKey = stackIndicator.key || '';
         // Read stacked values into a stack based on the x value,
         // the sign of y and the stack key. Stacking is also handled for null
         // values (#739)
-        isNegative = negStacks && y < (stackThreshold ? 0 : threshold);
+        isNegative = negStacks && yNumber < (stackThreshold ? 0 : threshold);
         key = isNegative ? negKey : stackKey;
         // Create empty object for this stack if it doesn't exist yet
         if (!stacks[key]) {
@@ -237,34 +233,29 @@ function seriesSetStackedPoints(axis, stackingParam) {
             other = isNegative ? stackKey : negKey;
             if (negStacks && stacks[other]?.[x]) {
                 other = stacks[other][x];
-                total = other.total =
-                    Math.max(other.total || 0, total) +
-                        Math.abs(y) || 0;
+                total = other.total = Math.max(other.total || 0, total) +
+                    Math.abs(yNumber);
                 // Percent stacked areas
             }
             else {
-                total = correctFloat(total + (Math.abs(y) || 0));
+                total = correctFloat(total + Math.abs(yNumber));
             }
         }
         else if (type === 'group') {
-            if (isArray(y)) {
-                y = y[0];
-            }
             // In this stack, the total is the number of valid points
-            if (y !== null) {
+            if (isNumber(y)) {
                 total++;
             }
         }
         else {
-            total = correctFloat(total + (y || 0));
+            total = correctFloat(total + yNumber);
         }
         if (type === 'group') {
             // This point's index within the stack, pushed to stack.points[1]
             stack.cumulative = (total || 1) - 1;
         }
         else {
-            stack.cumulative = correctFloat(pick(stack.cumulative, stackThreshold) +
-                (y || 0));
+            stack.cumulative = correctFloat(pick(stack.cumulative, stackThreshold) + yNumber);
         }
         stack.total = total;
         if (y !== null) {

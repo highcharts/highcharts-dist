@@ -310,7 +310,7 @@ class Axis {
             {
                 labels: {
                     autoRotation: [-45],
-                    padding: 4
+                    padding: 3
                 },
                 margin: 15
             } :
@@ -356,7 +356,7 @@ class Axis {
             ret = `${this.value}`;
         }
         else if (dateTimeLabelFormat) { // Datetime axis
-            ret = time.dateFormat(dateTimeLabelFormat, value);
+            ret = time.dateFormat(dateTimeLabelFormat, value, true);
         }
         else if (i &&
             numericSymbols &&
@@ -421,8 +421,8 @@ class Axis {
                     }
                     // Get dataMin and dataMax for X axes
                     if (axis.isXAxis) {
-                        xData = series.xData;
-                        if (xData && xData.length) {
+                        xData = series.getColumn('x');
+                        if (xData.length) {
                             xData = axis.logarithmic ?
                                 xData.filter((x) => x > 0) :
                                 xData;
@@ -544,8 +544,9 @@ class Axis {
      *
      * @function Highcharts.Axis#toPixels
      *
-     * @param {number} value
-     * A value in terms of axis units.
+     * @param {number|string} value
+     * A value in terms of axis units. For datetime axes, a timestamp or
+     * date/time string is accepted.
      *
      * @param {boolean} [paneCoordinates=false]
      * Whether to return the pixel coordinate relative to the chart or just the
@@ -555,8 +556,7 @@ class Axis {
      * Pixel position of the value on the chart or axis.
      */
     toPixels(value, paneCoordinates) {
-        return this.translate(value, false, !this.horiz, void 0, true) +
-            (paneCoordinates ? 0 : this.pos);
+        return this.translate(this.chart.time.parse(value) ?? NaN, false, !this.horiz, void 0, true) + (paneCoordinates ? 0 : this.pos);
     }
     /**
      * Translate a pixel position along the axis to a value in terms of axis
@@ -727,7 +727,8 @@ class Axis {
     getMinorTickPositions() {
         const axis = this, options = axis.options, tickPositions = axis.tickPositions, minorTickInterval = axis.minorTickInterval, pointRangePadding = axis.pointRangePadding || 0, min = (axis.min || 0) - pointRangePadding, // #1498
         max = (axis.max || 0) + pointRangePadding, // #1498
-        range = max - min;
+        range = axis.brokenAxis?.hasBreaks ?
+            axis.brokenAxis.unitLength : max - min;
         let minorTickPositions = [], pos;
         // If minor ticks get too dense, they are hard to read, and may cause
         // long running script. So we don't draw them.
@@ -772,7 +773,7 @@ class Axis {
      * @function Highcharts.Axis#adjustForMinRange
      */
     adjustForMinRange() {
-        const axis = this, options = axis.options, logarithmic = axis.logarithmic;
+        const axis = this, options = axis.options, logarithmic = axis.logarithmic, time = axis.chart.time;
         let { max, min, minRange } = axis, zoomOffset, spaceAvailable, closestDataRange, minArgs, maxArgs;
         // Set the automatic minimum range based on the closest point distance
         if (axis.isXAxis &&
@@ -790,10 +791,12 @@ class Axis {
                 // Find the closest distance between raw data points, as opposed
                 // to closestPointRange that applies to processed points
                 // (cropped and grouped)
-                closestDataRange = getClosestDistance(axis.series.map((s) => 
-                // If xIncrement, we only need to measure the two first
-                // points to get the distance. Saves processing time.
-                (s.xIncrement ? s.xData?.slice(0, 2) : s.xData) || [])) || 0;
+                closestDataRange = getClosestDistance(axis.series.map((s) => {
+                    const xData = s.getColumn('x');
+                    // If xIncrement, we only need to measure the two first
+                    // points to get the distance. Saves processing time.
+                    return s.xIncrement ? xData.slice(0, 2) : xData;
+                })) || 0;
                 minRange = Math.min(closestDataRange * 5, axis.dataMax - axis.dataMin);
             }
         }
@@ -809,7 +812,7 @@ class Axis {
             // If min and max options have been set, don't go beyond it
             minArgs = [
                 min - zoomOffset,
-                pick(options.min, min - zoomOffset)
+                time.parse(options.min) ?? (min - zoomOffset)
             ];
             // If space is available, stay within the data range
             if (spaceAvailable) {
@@ -820,7 +823,7 @@ class Axis {
             min = arrayMax(minArgs);
             maxArgs = [
                 min + minRange,
-                pick(options.max, min + minRange)
+                time.parse(options.max) ?? (min + minRange)
             ];
             // If space is available, stay within the data range
             if (spaceAvailable) {
@@ -832,7 +835,7 @@ class Axis {
             // Now if the max is adjusted, adjust the min back
             if (max - min < minRange) {
                 minArgs[0] = max - minRange;
-                minArgs[1] = pick(options.min, max - minRange);
+                minArgs[1] = time.parse(options.min) ?? (max - minRange);
                 min = arrayMax(minArgs);
             }
         }
@@ -856,11 +859,11 @@ class Axis {
         else {
             const singleXs = [];
             this.series.forEach(function (series) {
-                const seriesClosest = series.closestPointRange;
-                if (series.xData?.length === 1) {
-                    singleXs.push(series.xData[0]);
+                const seriesClosest = series.closestPointRange, xData = series.getColumn('x');
+                if (xData.length === 1) {
+                    singleXs.push(xData[0]);
                 }
-                else if (!series.noSharedTooltip &&
+                else if (series.sorted &&
                     defined(seriesClosest) &&
                     series.reserveSpace()) {
                     closestDistance = defined(closestDistance) ?
@@ -908,7 +911,7 @@ class Axis {
                 x = names.length;
             }
         }
-        else {
+        else if (isNumber(nameX)) {
             x = nameX;
         }
         // Write the last point's name to the names array
@@ -947,22 +950,23 @@ class Axis {
                     // premature processData. Otherwise this early iteration of
                     // processData will crop the points to axis.max, and the
                     // names array will be too short (#5857).
-                    axis.max = Math.max(axis.max, series.xData.length - 1);
+                    axis.max = Math.max(axis.max || 0, series.dataTable.rowCount - 1);
                     series.processData();
                     series.generatePoints();
                 }
-                series.data.forEach(function (point, i) {
-                    let x;
+                const xData = series.getColumn('x').slice();
+                series.data.forEach((point, i) => {
+                    let x = xData[i];
                     if (point?.options &&
                         typeof point.name !== 'undefined' // #9562
                     ) {
                         x = axis.nameToX(point);
                         if (typeof x !== 'undefined' && x !== point.x) {
-                            point.x = x;
-                            series.xData[i] = x;
+                            xData[i] = point.x = x;
                         }
                     }
                 });
+                series.dataTable.setColumn('x', xData);
             });
         }
     }
@@ -1003,9 +1007,9 @@ class Axis {
                             isXAxis;
                         // The `minPointOffset` is the value padding to the left
                         // of the axis in order to make room for points with a
-                        // pointRange, typically columns. When the
-                        // pointPlacement option is 'between' or 'on', this
-                        // padding does not apply.
+                        // pointRange, typically columns, or line/scatter points
+                        // on a category axis. When the `pointPlacement` option
+                        // is 'between' or 'on', this padding does not apply.
                         minPointOffset = Math.max(minPointOffset, isPointPlacementAxis && isString(pointPlacement) ?
                             0 :
                             seriesPointRange / 2);
@@ -1066,7 +1070,7 @@ class Axis {
      * @emits Highcharts.Axis#event:foundExtremes
      */
     setTickInterval(secondPass) {
-        const axis = this, { categories, chart, dataMax, dataMin, dateTime, isXAxis, logarithmic, options, softThreshold } = axis, threshold = isNumber(axis.threshold) ? axis.threshold : void 0, minRange = axis.minRange || 0, { ceiling, floor, linkedTo, softMax, softMin } = options, linkedParent = isNumber(linkedTo) && chart[axis.coll]?.[linkedTo], tickPixelIntervalOption = options.tickPixelInterval;
+        const axis = this, { categories, chart, dataMax, dataMin, dateTime, isXAxis, logarithmic, options, softThreshold } = axis, time = chart.time, threshold = isNumber(axis.threshold) ? axis.threshold : void 0, minRange = axis.minRange || 0, { ceiling, floor, linkedTo, softMax, softMin } = options, linkedParent = isNumber(linkedTo) && chart[axis.coll]?.[linkedTo], tickPixelIntervalOption = options.tickPixelInterval;
         let maxPadding = options.maxPadding, minPadding = options.minPadding, range = 0, linkedParentExtremes, 
         // Only non-negative tickInterval is valid, #12961
         tickIntervalOption = isNumber(options.tickInterval) && options.tickInterval >= 0 ?
@@ -1075,8 +1079,8 @@ class Axis {
             this.getTickAmount();
         }
         // Min or max set either by zooming/setExtremes or initial options
-        hardMin = pick(axis.userMin, options.min);
-        hardMax = pick(axis.userMax, options.max);
+        hardMin = pick(axis.userMin, time.parse(options.min));
+        hardMax = pick(axis.userMax, time.parse(options.max));
         // Linked axis gets the extremes from the parent axis
         if (linkedParent) {
             axis.linkedParent = linkedParent;
@@ -1260,7 +1264,7 @@ class Axis {
         // In datetime axes, don't go below the data interval, except when
         // there are scatter-like series involved (#13369).
         dateTime &&
-            !axis.series.some((s) => s.noSharedTooltip) ?
+            !axis.series.some((s) => !s.sorted) ?
             axis.closestPointRange : 0);
         if (!tickIntervalOption && axis.tickInterval < minTickInterval) {
             axis.tickInterval = minTickInterval;
@@ -1763,11 +1767,11 @@ class Axis {
      *
      * @function Highcharts.Axis#setExtremes
      *
-     * @param {number} [newMin]
-     * The new minimum value.
+     * @param {number|string} [newMin]
+     * The new minimum value. For datetime axes, date strings are accepted.
      *
-     * @param {number} [newMax]
-     * The new maximum value.
+     * @param {number|string} [newMax]
+     * The new maximum value. For datetime axes, date strings are accepted.
      *
      * @param {boolean} [redraw=true]
      * Whether to redraw the chart or wait for an explicit call to
@@ -1782,9 +1786,12 @@ class Axis {
      * @emits Highcharts.Axis#event:setExtremes
      */
     setExtremes(min, max, redraw = true, animation, eventArguments) {
+        const chart = this.chart;
         this.series.forEach((serie) => {
             delete serie.kdTree;
         });
+        min = chart.time.parse(min);
+        max = chart.time.parse(max);
         // Extend the arguments with min and max
         eventArguments = extend(eventArguments, { min, max });
         // Fire the event
@@ -1793,7 +1800,7 @@ class Axis {
             this.userMax = e.max;
             this.eventArgs = e;
             if (redraw) {
-                this.chart.redraw(animation);
+                chart.redraw(animation);
             }
         });
     }
@@ -2035,7 +2042,7 @@ class Axis {
         if (tick && isNumber(tick.slotWidth)) { // #13221, can be 0
             return tick.slotWidth;
         }
-        if (horiz && labelOptions.step < 2) {
+        if (horiz && labelOptions.step < 2 && !this.isRadial) {
             if (labelOptions.rotation) { // #4415
                 return 0;
             }
@@ -2065,8 +2072,8 @@ class Axis {
         const chart = this.chart, renderer = chart.renderer, tickPositions = this.tickPositions, ticks = this.ticks, labelOptions = this.options.labels, labelStyleOptions = labelOptions.style, horiz = this.horiz, slotWidth = this.getSlotWidth(), innerWidth = Math.max(1, Math.round(slotWidth - (horiz ?
             2 * (labelOptions.padding || 0) :
             labelOptions.distance || 0 // #21172
-        ))), attr = {}, labelMetrics = this.labelMetrics(), textOverflowOption = labelStyleOptions.textOverflow;
-        let commonWidth, commonTextOverflow, maxLabelLength = 0, label, i, pos;
+        ))), attr = {}, labelMetrics = this.labelMetrics(), lineClampOption = labelStyleOptions.lineClamp;
+        let commonWidth, lineClamp = lineClampOption ?? (Math.floor(this.len / (tickPositions.length * labelMetrics.h)) || 1), maxLabelLength = 0;
         // Set rotation option unless it is "auto", like in gauges
         if (!isString(labelOptions.rotation)) {
             // #4443
@@ -2079,10 +2086,9 @@ class Axis {
             if (tick.movedLabel) {
                 tick.replaceMovedLabel();
             }
-            if (tick &&
-                tick.label &&
-                tick.label.textPxLength > maxLabelLength) {
-                maxLabelLength = tick.label.textPxLength;
+            const textPxLength = tick.label?.textPxLength || 0;
+            if (textPxLength > maxLabelLength) {
+                maxLabelLength = textPxLength;
             }
         });
         this.maxLabelLength = maxLabelLength;
@@ -2102,40 +2108,14 @@ class Axis {
         else if (slotWidth) {
             // For word-wrap or ellipsis
             commonWidth = innerWidth;
-            if (!textOverflowOption) {
-                commonTextOverflow = 'clip';
-                // On vertical axis, only allow word wrap if there is room
-                // for more lines.
-                i = tickPositions.length;
-                while (!horiz && i--) {
-                    pos = tickPositions[i];
-                    label = ticks[pos].label;
-                    if (label) {
-                        // Reset ellipsis in order to get the correct
-                        // bounding box (#4070)
-                        if (label.styles.textOverflow === 'ellipsis') {
-                            label.css({ textOverflow: 'clip' });
-                            // Set the correct width in order to read
-                            // the bounding box height (#4678, #5034)
-                        }
-                        else if (label.textPxLength > slotWidth) {
-                            label.css({ width: slotWidth + 'px' });
-                        }
-                        if (label.getBBox().height > (this.len / tickPositions.length -
-                            (labelMetrics.h - labelMetrics.f))) {
-                            label.specificTextOverflow = 'ellipsis';
-                        }
-                    }
-                }
-            }
         }
         // Add ellipsis if the label length is significantly longer than ideal
         if (attr.rotation) {
             commonWidth = (maxLabelLength > chart.chartHeight * 0.5 ?
                 chart.chartHeight * 0.33 :
                 maxLabelLength);
-            if (!textOverflowOption) {
-                commonTextOverflow = 'ellipsis';
+            if (!lineClampOption) {
+                lineClamp = 1;
             }
         }
         // Set the explicit or automatic label alignment
@@ -2160,21 +2140,18 @@ class Axis {
                     labelStyleOptions.whiteSpace !== 'nowrap' &&
                     (
                     // Speed optimizing, #7656
-                    commonWidth < label.textPxLength ||
+                    commonWidth < (label.textPxLength || 0) ||
                         // Resetting CSS, #4928
                         label.element.tagName === 'SPAN')) {
-                    css.width = commonWidth + 'px';
-                    if (!textOverflowOption) {
-                        css.textOverflow = (label.specificTextOverflow ||
-                            commonTextOverflow);
-                    }
-                    label.css(css);
+                    label.css(extend(css, {
+                        width: `${commonWidth}px`,
+                        lineClamp
+                    }));
                     // Reset previously shortened label (#8210)
                 }
                 else if (label.styles.width && !css.width && !widthOption) {
-                    label.css({ width: null });
+                    label.css({ width: 'auto' });
                 }
-                delete label.specificTextOverflow;
                 tick.rotation = attr.rotation;
             }
         }, this);

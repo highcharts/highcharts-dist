@@ -146,7 +146,7 @@ var FocusBorderComposition;
         }
         // Add the border rect
         const bb = this.getBBox(), pad = pick(margin, 3), parent = this.parentGroup, scaleX = this.scaleX || parent && parent.scaleX, scaleY = this.scaleY || parent && parent.scaleY, oneDefined = scaleX ? !scaleY : scaleY, scaleBoth = oneDefined ? Math.abs(scaleX || scaleY || 1) :
-            (Math.abs(scaleX || 1) + Math.abs(scaleY || 1)) / 2;
+            (Math.abs(scaleX || 1) + Math.abs(scaleY || 1)) / 2, lineHeight = this.renderer.fontMetrics(this).h;
         bb.x += this.translateX ? this.translateX : 0;
         bb.y += this.translateY ? this.translateY : 0;
         let borderPosX = bb.x - pad, borderPosY = bb.y - pad, borderWidth = bb.width + 2 * pad, borderHeight = bb.height + 2 * pad;
@@ -184,7 +184,11 @@ var FocusBorderComposition;
                 borderPosX = attrX - (bb.width * correction.x) - pad;
             }
             if (!isNaN(attrY)) {
-                borderPosY = attrY - (bb.height * correction.y) - pad;
+                // Correct by line height if "text-achor" == "start", #19335.
+                const dim = this.attr('text-anchor') === 'start' ?
+                    lineHeight :
+                    bb.height;
+                borderPosY = attrY - (dim * correction.y) - pad;
             }
             if (isLabel && isRotated) {
                 const temp = borderWidth;

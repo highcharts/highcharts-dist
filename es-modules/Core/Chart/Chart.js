@@ -12,7 +12,7 @@ import A from '../Animation/AnimationUtilities.js';
 const { animate, animObject, setAnimation } = A;
 import Axis from '../Axis/Axis.js';
 import D from '../Defaults.js';
-const { defaultOptions, defaultTime } = D;
+const { defaultOptions } = D;
 import Templating from '../Templating.js';
 const { numberFormat } = Templating;
 import Foundation from '../Foundation.js';
@@ -28,7 +28,7 @@ import Time from '../Time.js';
 import U from '../Utilities.js';
 import AST from '../Renderer/HTML/AST.js';
 import Tick from '../Axis/Tick.js';
-const { addEvent, attr, createElement, css, defined, diffObjects, discardElement, erase, error, extend, find, fireEvent, getStyle, isArray, isNumber, isObject, isString, merge, objectEach, pick, pInt, relativeLength, removeEvent, splat, syncTimeout, uniqueKey } = U;
+const { addEvent, attr, createElement, css, defined, diffObjects, discardElement, erase, error, extend, find, fireEvent, getAlignFactor, getStyle, isArray, isNumber, isObject, isString, merge, objectEach, pick, pInt, relativeLength, removeEvent, splat, syncTimeout, uniqueKey } = U;
 /* *
  *
  *  Class
@@ -159,7 +159,7 @@ class Chart {
         // Fire the event with a default function
         fireEvent(this, 'init', { args: arguments }, function () {
             const options = merge(defaultOptions, userOptions), // Do the merge
-            optionsChart = options.chart;
+            optionsChart = options.chart, renderTo = this.renderTo || optionsChart.renderTo;
             /**
              * The original options given to the constructor or a chart factory
              * like {@link Highcharts.chart} and {@link Highcharts.stockChart}.
@@ -177,6 +177,12 @@ class Chart {
              * @type {Highcharts.Options}
              */
             this.userOptions = extend({}, userOptions);
+            if (!(this.renderTo = (isString(renderTo) ?
+                doc.getElementById(renderTo) :
+                renderTo))) {
+                // Display an error if the renderTo is wrong
+                error(13, true, this);
+            }
             this.margin = [];
             this.spacing = [];
             // An array of functions that returns labels that should be
@@ -210,6 +216,8 @@ class Chart {
              * @type {Array<Highcharts.Series>}
              */
             this.series = [];
+            this.locale = options.lang.locale ??
+                this.renderTo.closest('[lang]')?.lang;
             /**
              * The `Time` object associated with the chart. Since v6.0.5,
              * time settings can be applied individually for each chart. If
@@ -219,10 +227,10 @@ class Chart {
              * @name Highcharts.Chart#time
              * @type {Highcharts.Time}
              */
-            this.time =
-                userOptions.time && Object.keys(userOptions.time).length ?
-                    new Time(userOptions.time) :
-                    H.time;
+            this.time = new Time(extend(options.time || {}, {
+                locale: this.locale
+            }));
+            options.time = this.time.options;
             /**
              * Callback function to override the default function that formats
              * all the numbers in the chart. Returns a string with the formatted
@@ -231,7 +239,7 @@ class Chart {
              * @name Highcharts.Chart#numberFormatter
              * @type {Highcharts.NumberFormatterCallbackFunction}
              */
-            this.numberFormatter = optionsChart.numberFormatter || numberFormat;
+            this.numberFormatter = (optionsChart.numberFormatter || numberFormat).bind(this);
             /**
              * Whether the chart is in styled mode, meaning all presentational
              * attributes are avoided.
@@ -620,13 +628,13 @@ class Chart {
      * Create the Axis instances based on the config options.
      *
      * @private
-     * @function Highcharts.Chart#getAxes
-     * @emits Highcharts.Chart#event:afterGetAxes
-     * @emits Highcharts.Chart#event:getAxes
+     * @function Highcharts.Chart#createAxes
+     * @emits Highcharts.Chart#event:afterCreateAxes
+     * @emits Highcharts.Chart#event:createAxes
      */
-    getAxes() {
+    createAxes() {
         const options = this.userOptions;
-        fireEvent(this, 'getAxes');
+        fireEvent(this, 'createAxes');
         for (const coll of ['xAxis', 'yAxis']) {
             const arr = options[coll] = splat(options[coll] || {});
             for (const axisOptions of arr) {
@@ -634,7 +642,7 @@ class Chart {
                 new Axis(this, axisOptions, coll);
             }
         }
-        fireEvent(this, 'afterGetAxes');
+        fireEvent(this, 'afterCreateAxes');
     }
     /**
      * Returns an array of all currently selected points in the chart. Points
@@ -685,9 +693,7 @@ class Chart {
      *         The currently selected series.
      */
     getSelectedSeries() {
-        return this.series.filter(function (serie) {
-            return serie.selected;
-        });
+        return this.series.filter((s) => s.selected);
     }
     /**
      * Set a new title or subtitle for the chart.
@@ -722,39 +728,46 @@ class Chart {
      *
      * @private
      * @function Highcharts.Chart#applyDescription
-     * @param name {string}
+     * @param key {string}
      * Either title, subtitle or caption
      * @param {Highcharts.TitleOptions|Highcharts.SubtitleOptions|Highcharts.CaptionOptions|undefined} explicitOptions
      * The options to set, will be merged with default options.
      */
-    applyDescription(name, explicitOptions) {
+    applyDescription(key, explicitOptions) {
         const chart = this;
         // Merge default options with explicit options
-        const options = this.options[name] = merge(this.options[name], explicitOptions);
-        let elem = this[name];
+        const options = this.options[key] = merge(this.options[key], explicitOptions);
+        let elem = this[key];
         if (elem && explicitOptions) {
-            this[name] = elem = elem.destroy(); // Remove old
+            this[key] = elem = elem.destroy(); // Remove old
         }
         if (options && !elem) {
             elem = this.renderer.text(options.text, 0, 0, options.useHTML)
                 .attr({
                 align: options.align,
-                'class': 'highcharts-' + name,
+                'class': 'highcharts-' + key,
                 zIndex: options.zIndex || 4
+            })
+                .css({
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap'
             })
                 .add();
             // Update methods, relay to `applyDescription`
             elem.update = function (updateOptions, redraw) {
-                chart.applyDescription(name, updateOptions);
+                chart.applyDescription(key, updateOptions);
                 chart.layOutTitles(redraw);
             };
             // Presentational
             if (!this.styledMode) {
-                elem.css(extend(name === 'title' ? {
+                elem.css(extend(key === 'title' ? {
                     // #2944
                     fontSize: this.options.isStock ? '1em' : '1.2em'
                 } : {}, options.style));
             }
+            // Get unwrapped text length and reset
+            elem.textPxLength = elem.getBBox().width;
+            elem.css({ whiteSpace: options.style?.whiteSpace });
             /**
              * The chart title. The title has an `update` method that allows
              * modifying the options directly or indirectly via
@@ -774,7 +787,7 @@ class Chart {
              * @name Highcharts.Chart#subtitle
              * @type {Highcharts.SubtitleObject}
              */
-            this[name] = elem;
+            this[key] = elem;
         }
     }
     /**
@@ -789,48 +802,83 @@ class Chart {
      * @emits Highcharts.Chart#event:afterLayOutTitles
      */
     layOutTitles(redraw = true) {
-        const titleOffset = [0, 0, 0], renderer = this.renderer, spacingBox = this.spacingBox;
-        // Lay out the title and the subtitle respectively
-        ['title', 'subtitle', 'caption'].forEach(function (key) {
-            const title = this[key], titleOptions = (this.options[key]), verticalAlign = titleOptions.verticalAlign || 'top', offset = key === 'title' ?
-                verticalAlign === 'top' ? -3 : 0 :
-                // Floating subtitle (#6574)
-                verticalAlign === 'top' ? titleOffset[0] + 2 : 0;
-            if (title) {
-                title
-                    .css({
-                    width: (titleOptions.width ||
-                        spacingBox.width + (titleOptions.widthAdjust || 0)) + 'px'
-                });
-                const baseline = renderer.fontMetrics(title).b, 
-                // Skip the cache for HTML (#3481, #11666)
-                height = Math.round(title.getBBox(titleOptions.useHTML).height);
-                title.align(extend({
+        const titleOffset = [0, 0, 0], { options, renderer, spacingBox } = this;
+        // Lay out the title, subtitle and caption respectively
+        ['title', 'subtitle', 'caption'].forEach((key) => {
+            const desc = this[key], descOptions = this.options[key], alignTo = merge(spacingBox), textPxLength = desc?.textPxLength || 0;
+            if (desc && descOptions) {
+                // Provide a hook for the exporting button to shift the title
+                fireEvent(this, 'layOutTitle', { alignTo, key, textPxLength });
+                const fontMetrics = renderer.fontMetrics(desc), baseline = fontMetrics.b, lineHeight = fontMetrics.h, verticalAlign = descOptions.verticalAlign || 'top', topAligned = verticalAlign === 'top', 
+                // Use minScale only for top-aligned titles. It is not
+                // likely that we will need scaling for other positions, but
+                // if it is requested, we need to adjust the vertical
+                // position to the scale.
+                minScale = topAligned && descOptions.minScale || 1, offset = key === 'title' ?
+                    topAligned ? -3 : 0 :
+                    // Floating subtitle (#6574)
+                    topAligned ? titleOffset[0] + 2 : 0, uncappedScale = Math.min(alignTo.width / textPxLength, 1), scale = Math.max(minScale, uncappedScale), alignAttr = merge({
                     y: verticalAlign === 'bottom' ?
                         baseline :
-                        offset + baseline,
-                    height
-                }, titleOptions), false, 'spacingBox');
-                if (!titleOptions.floating) {
+                        offset + baseline
+                }, {
+                    align: key === 'title' ?
+                        // Title defaults to center for short titles,
+                        // left for word-wrapped titles
+                        (uncappedScale < minScale ? 'left' : 'center') :
+                        // Subtitle defaults to the title.align
+                        this.title?.alignValue
+                }, descOptions), width = descOptions.width || ((uncappedScale > minScale ?
+                    // One line
+                    this.chartWidth :
+                    // Allow word wrap
+                    alignTo.width) / scale);
+                // No animation when switching alignment
+                if (desc.alignValue !== alignAttr.align) {
+                    desc.placed = false;
+                }
+                // Set the width and read the height
+                const height = Math.round(desc
+                    .css({ width: `${width}px` })
+                    // Skip the cache for HTML (#3481, #11666)
+                    .getBBox(descOptions.useHTML).height);
+                alignAttr.height = height;
+                // Perform scaling and alignment
+                desc
+                    .align(alignAttr, false, alignTo)
+                    .attr({
+                    align: alignAttr.align,
+                    scaleX: scale,
+                    scaleY: scale,
+                    'transform-origin': `${alignTo.x +
+                        textPxLength *
+                            scale *
+                            getAlignFactor(alignAttr.align)} ${lineHeight}`
+                });
+                // Adjust the rendered title offset
+                if (!descOptions.floating) {
+                    const offset = height * (
+                    // When scaling down the title, preserve the offset as
+                    // long as it's only one line, but scale down the offset
+                    // if the title wraps to multiple lines.
+                    height < lineHeight * 1.2 ? 1 : scale);
                     if (verticalAlign === 'top') {
-                        titleOffset[0] = Math.ceil(titleOffset[0] +
-                            height);
+                        titleOffset[0] = Math.ceil(titleOffset[0] + offset);
                     }
                     else if (verticalAlign === 'bottom') {
-                        titleOffset[2] = Math.ceil(titleOffset[2] +
-                            height);
+                        titleOffset[2] = Math.ceil(titleOffset[2] + offset);
                     }
                 }
             }
         }, this);
         // Handle title.margin and caption.margin
         if (titleOffset[0] &&
-            (this.options.title.verticalAlign || 'top') === 'top') {
-            titleOffset[0] += this.options.title.margin;
+            (options.title?.verticalAlign || 'top') === 'top') {
+            titleOffset[0] += options.title?.margin || 0;
         }
         if (titleOffset[2] &&
-            this.options.caption.verticalAlign === 'bottom') {
-            titleOffset[2] += this.options.caption.margin;
+            options.caption?.verticalAlign === 'bottom') {
+            titleOffset[2] += options.caption?.margin || 0;
         }
         const requiresDirtyBox = (!this.titleOffset ||
             this.titleOffset.join(',') !== titleOffset.join(','));
@@ -878,8 +926,8 @@ class Chart {
      * @function Highcharts.Chart#getChartSize
      */
     getChartSize() {
-        const chart = this, optionsChart = chart.options.chart, widthOption = optionsChart.width, heightOption = optionsChart.height, containerBox = chart.getContainerBox(), enableDefaultHeight = containerBox.height > 1 &&
-            !( // #21510, prevent infinite reflow
+        const chart = this, optionsChart = chart.options.chart, widthOption = optionsChart.width, heightOption = optionsChart.height, containerBox = chart.getContainerBox(), enableDefaultHeight = containerBox.height <= 1 ||
+            ( // #21510, prevent infinite reflow
             !chart.renderTo.parentElement?.style.height &&
                 chart.renderTo.style.height === '100%');
         /**
@@ -898,7 +946,7 @@ class Chart {
          * @type {number}
          */
         chart.chartHeight = Math.max(0, relativeLength(heightOption, chart.chartWidth) ||
-            (enableDefaultHeight ? containerBox.height : 400));
+            (enableDefaultHeight ? 400 : containerBox.height));
         chart.containerBox = containerBox;
     }
     /**
@@ -987,20 +1035,8 @@ class Chart {
      * @emits Highcharts.Chart#event:afterGetContainer
      */
     getContainer() {
-        const chart = this, options = chart.options, optionsChart = options.chart, indexAttrName = 'data-highcharts-chart', containerId = uniqueKey();
-        let containerStyle, renderTo = chart.renderTo;
-        if (!renderTo) {
-            chart.renderTo = renderTo =
-                optionsChart.renderTo;
-        }
-        if (isString(renderTo)) {
-            chart.renderTo = renderTo =
-                doc.getElementById(renderTo);
-        }
-        // Display an error if the renderTo is wrong
-        if (!renderTo) {
-            error(13, true, chart);
-        }
+        const chart = this, options = chart.options, optionsChart = options.chart, indexAttrName = 'data-highcharts-chart', containerId = uniqueKey(), renderTo = chart.renderTo;
+        let containerStyle;
         // If the container already holds a chart, destroy it. The check for
         // hasRendered is there because web pages that are saved to disk from
         // the browser, will preserve the data-highcharts-chart attribute and
@@ -1887,7 +1923,7 @@ class Chart {
         // Set the common chart properties (mainly invert) from the given series
         chart.propFromSeries();
         // Get axes
-        chart.getAxes();
+        chart.createAxes();
         // Initialize the series
         const series = isArray(options.series) ? options.series : [];
         options.series = []; // Avoid mutation
@@ -2319,21 +2355,6 @@ class Chart {
         if (!chart.styledMode && options.colors) {
             this.options.colors = options.colors;
         }
-        if (options.time) {
-            // Maintaining legacy global time. If the chart is instantiated
-            // first with global time, then updated with time options, we need
-            // to create a new Time instance to avoid mutating the global time
-            // (#10536).
-            if (this.time === defaultTime) {
-                this.time = new Time(options.time);
-            }
-            // If we're updating, the time class is different from other chart
-            // classes (chart.legend, chart.tooltip etc) in that it doesn't know
-            // about the chart. The other chart[something].update functions also
-            // set the chart.options[something]. For the time class however we
-            // need to update the chart options separately. #14230.
-            merge(true, chart.options.time, options.time);
-        }
         // Some option structures correspond one-to-one to chart objects that
         // have update methods, for example
         // options.credits => chart.credits
@@ -2594,7 +2615,7 @@ class Chart {
      * @function Highcharts.Chart#transform
      */
     transform(params) {
-        const { axes = this.axes, event, from = {}, reset, selection, to = {}, trigger } = params, { inverted } = this;
+        const { axes = this.axes, event, from = {}, reset, selection, to = {}, trigger } = params, { inverted, time } = this;
         let hasZoomed = false, displayButton, isAnyAxisPanning;
         // Remove active points for shared tooltip
         this.hoverPoints?.forEach((point) => point.setState());
@@ -2637,7 +2658,8 @@ class Chart {
                 axis.coll === 'yAxis' &&
                 !allExtremes) {
                 for (const series of axis.series) {
-                    const seriesExtremes = series.getExtremes(series.getProcessedData(true).yData, true);
+                    const seriesExtremes = series.getExtremes(series.getProcessedData(true).modified
+                        .getColumn('y') || [], true);
                     allExtremes ?? (allExtremes = {
                         dataMin: Number.MAX_VALUE,
                         dataMax: -Number.MAX_VALUE
@@ -2650,9 +2672,9 @@ class Chart {
                 }
                 axis.allExtremes = allExtremes;
             }
-            const { dataMin, dataMax, min, max } = extend(axis.getExtremes(), allExtremes || {}), 
+            const { dataMin, dataMax, min, max } = extend(axis.getExtremes(), allExtremes || {}), optionsMin = time.parse(options.min), optionsMax = time.parse(options.max), 
             // For boosted chart where data extremes are skipped
-            safeDataMin = dataMin ?? options.min, safeDataMax = dataMax ?? options.max, range = newMax - newMin, padRange = axis.categories ? 0 : Math.min(range, safeDataMax - safeDataMin), paddedMin = safeDataMin - padRange * (defined(options.min) ? 0 : options.minPadding), paddedMax = safeDataMax + padRange * (defined(options.max) ? 0 : options.maxPadding), 
+            safeDataMin = dataMin ?? optionsMin, safeDataMax = dataMax ?? optionsMax, range = newMax - newMin, padRange = axis.categories ? 0 : Math.min(range, safeDataMax - safeDataMin), paddedMin = safeDataMin - padRange * (defined(optionsMin) ? 0 : options.minPadding), paddedMax = safeDataMax + padRange * (defined(optionsMax) ? 0 : options.maxPadding), 
             // We're allowed to zoom outside the data extremes if we're
             // dealing with a bubble chart, if we're panning, or if we're
             // pinching or mousewheeling in.
@@ -2660,7 +2682,7 @@ class Chart {
                 scale === 1 ||
                 (trigger !== 'zoom' && scale > 1), 
             // Calculate the floor and the ceiling
-            floor = Math.min(options.min ?? paddedMin, paddedMin, allowZoomOutside ? min : paddedMin), ceiling = Math.max(options.max ?? paddedMax, paddedMax, allowZoomOutside ? max : paddedMax);
+            floor = Math.min(optionsMin ?? paddedMin, paddedMin, allowZoomOutside ? min : paddedMin), ceiling = Math.max(optionsMax ?? paddedMax, paddedMax, allowZoomOutside ? max : paddedMax);
             // It is not necessary to calculate extremes on ordinal axis,
             // because they are already calculated, so we don't want to override
             // them.

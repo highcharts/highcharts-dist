@@ -189,7 +189,10 @@ class Legend {
      * Make events official: Fires the event `afterColorizeItem`.
      */
     colorizeItem(item, visible) {
-        const { area, group, label, line, symbol } = item.legendItem || {};
+        const originalColor = item.color, { area, group, label, line, symbol } = item.legendItem || {};
+        if (item instanceof Series || item instanceof Point) {
+            item.color = item.options?.legendSymbolColor || originalColor;
+        }
         group?.[visible ? 'removeClass' : 'addClass']('highcharts-legend-item-hidden');
         if (!this.chart.styledMode) {
             const { itemHiddenStyle = {} } = this, hiddenColor = itemHiddenStyle.color, { fillColor, fillOpacity, lineColor, marker } = item.options, colorizeHidden = (attr) => {
@@ -216,6 +219,7 @@ class Legend {
                 'fill-opacity': fillColor ? 1 : (fillOpacity ?? 0.75)
             }));
         }
+        item.color = originalColor;
         fireEvent(this, 'afterColorizeItem', { item, visible });
     }
     /**

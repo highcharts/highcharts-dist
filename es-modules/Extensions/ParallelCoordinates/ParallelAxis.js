@@ -12,7 +12,7 @@
 'use strict';
 import ParallelCoordinatesDefaults from './ParallelCoordinatesDefaults.js';
 import U from '../../Core/Utilities.js';
-const { addEvent, arrayMax, arrayMin, isNumber, merge, pick, splat } = U;
+const { addEvent, arrayMax, arrayMin, isNumber, merge, pick } = U;
 /* *
  *
  *  Class
@@ -139,12 +139,12 @@ var ParallelAxis;
             const index = parallelCoordinates.position;
             let currentPoints = [];
             axis.series.forEach(function (series) {
-                if (series.yData &&
-                    series.visible &&
-                    isNumber(index)) {
-                    const y = series.yData[index];
-                    // Take into account range series points as well (#15752)
-                    currentPoints.push.apply(currentPoints, splat(y));
+                if (series.visible && isNumber(index)) {
+                    currentPoints = (series.pointArrayMap || ['y'])
+                        .reduce((currentPoints, key) => [
+                        ...currentPoints,
+                        series.getColumn(key)?.[index] ?? null
+                    ], currentPoints);
                 }
             });
             currentPoints = currentPoints.filter(isNumber);

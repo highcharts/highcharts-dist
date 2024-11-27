@@ -76,7 +76,7 @@ class VWAPIndicator extends SMAIndicator {
      * Object contains computed VWAP
      **/
     calculateVWAPValues(isOHLC, xValues, yValues, volumeSeries, period) {
-        const volumeValues = volumeSeries.yData, volumeLength = volumeSeries.xData.length, pointsLength = xValues.length, cumulativePrice = [], cumulativeVolume = [], xData = [], yData = [], VWAP = [];
+        const volumeValues = volumeSeries.getColumn('y'), volumeLength = volumeValues.length, pointsLength = xValues.length, cumulativePrice = [], cumulativeVolume = [], xData = [], yData = [], VWAP = [];
         let commonLength, typicalPrice, cPrice, cVolume, i, j;
         if (pointsLength <= volumeLength) {
             commonLength = pointsLength;

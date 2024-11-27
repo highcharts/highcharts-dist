@@ -22,10 +22,10 @@ const { isNumber } = U;
  *         Split packed bubble chart
  *
  * @extends      plotOptions.bubble
- * @excluding    connectEnds, connectNulls, cropThreshold, dragDrop, jitter,
- *               keys, pointPlacement, sizeByAbsoluteValue, step, xAxis,
- *               yAxis, zMax, zMin, dataSorting, boostThreshold,
- *               boostBlending
+ * @excluding    boostThreshold, boostBlending,connectEnds, connectNulls,
+ *               cropThreshold, dataSorting, dragDrop, jitter,
+ *               legendSymbolColor, keys, pointPlacement, sizeByAbsoluteValue,
+ *               step, xAxis, yAxis, zMax, zMin
  * @product      highcharts
  * @since        7.0.0
  * @requires     highcharts-more
@@ -135,7 +135,6 @@ const PackedBubbleSeriesDefaults = {
          * Note that if a `format` is defined, the format takes precedence
          * and the formatter is ignored.
          *
-         * @type  {Highcharts.SeriesPackedBubbleDataLabelsFormatterCallbackFunction}
          * @since 7.0.0
          */
         formatter: function () {
@@ -150,11 +149,10 @@ const PackedBubbleSeriesDefaults = {
          */
         // eslint-disable-next-line valid-jsdoc
         /**
-         * @type  {Highcharts.SeriesPackedBubbleDataLabelsFormatterCallbackFunction}
          * @since 7.1.0
          */
         parentNodeFormatter: function () {
-            return this.name;
+            return this.name || '';
         },
         /**
          * @sample {highcharts} highcharts/series-packedbubble/packed-dashboard

@@ -82,7 +82,8 @@ function getGroupPixelWidth() {
             groupPixelWidth = Math.max(groupPixelWidth, 
             // Fallback to commonOptions (#9693)
             pick(dgOptions.groupPixelWidth, DataGroupingDefaults.common.groupPixelWidth));
-            dataLength = (series[i].processedXData || series[i].data).length;
+            dataLength = (series[i].dataTable.modified ||
+                series[i].dataTable).rowCount;
             // Execute grouping if the amount of points is greater than the
             // limit defined in groupPixelWidth
             if (series[i].groupPixelWidth ||

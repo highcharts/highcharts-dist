@@ -13,6 +13,8 @@ import H from '../../Globals.js';
 const { doc, SVG_NS, win } = H;
 import U from '../../Utilities.js';
 const { attr, extend, fireEvent, isString, objectEach, pick } = U;
+// Function used to test string length including an ellipsis
+const stringWithEllipsis = (text, currentIndex) => text.substring(0, currentIndex) + '\u2026';
 /* *
  *
  *  Class
@@ -33,6 +35,7 @@ class TextBuilder {
         this.textLineHeight = textStyles && textStyles.lineHeight;
         this.textOutline = textStyles && textStyles.textOutline;
         this.ellipsis = Boolean(textStyles && textStyles.textOverflow === 'ellipsis');
+        this.lineClamp = textStyles?.lineClamp;
         this.noWrap = Boolean(textStyles && textStyles.whiteSpace === 'nowrap');
     }
     /**
@@ -54,6 +57,7 @@ class TextBuilder {
             this.textLineHeight,
             this.textOutline,
             wrapper.getStyle('font-size'),
+            wrapper.styles.lineClamp,
             this.width
         ].join(',');
         if (textCache === wrapper.textCache) {
@@ -160,22 +164,13 @@ class TextBuilder {
                 // .trim()
                 .split(' '); // #1273
             const hasWhiteSpace = !this.noWrap && (words.length > 1 || wrapper.element.childNodes.length > 1);
-            const dy = this.getLineHeight(parentElement);
+            const dy = this.getLineHeight(parentElement), ellipsisWidth = Math.max(0, 
+            // Subtract the font face to make room for
+            // the ellipsis itself
+            width - 0.8 * dy);
             let lineNo = 0;
             let startAt = wrapper.actualWidth;
-            if (this.ellipsis) {
-                if (text) {
-                    this.truncate(textNode, text, void 0, 0, 
-                    // Target width
-                    Math.max(0, 
-                    // Subtract the font face to make room for the
-                    // ellipsis itself
-                    width - 0.8 * dy), 
-                    // Build the text to test for
-                    (text, currentIndex) => text.substring(0, currentIndex) + '\u2026');
-                }
-            }
-            else if (hasWhiteSpace) {
+            if (hasWhiteSpace) {
                 const lines = [];
                 // Remove preceding siblings in order to make the text length
                 // calculation correct in the truncate function
@@ -194,7 +189,7 @@ class TextBuilder {
                     }
                     // For each line, truncate the remaining
                     // words into the line length.
-                    this.truncate(textNode, void 0, words, lineNo === 0 ? (startAt || 0) : 0, width, 
+                    this.truncate(textNode, void 0, words, lineNo === 0 ? (startAt || 0) : 0, width, ellipsisWidth, 
                     // Build the text to test for
                     (t, currentIndex) => words
                         .slice(0, currentIndex)
@@ -202,6 +197,20 @@ class TextBuilder {
                         .replace(/- /g, '-'));
                     startAt = wrapper.actualWidth;
                     lineNo++;
+                    // Line clamp. Break out after n lines and append an
+                    // ellipsis regardless of the text length.
+                    if (this.lineClamp && lineNo >= this.lineClamp) {
+                        // Only if there are remaining words that should have
+                        // been rendered.
+                        if (words.length) {
+                            this.truncate(textNode, textNode.textContent || '', void 0, 0, 
+                            // Target width
+                            width, ellipsisWidth, stringWithEllipsis);
+                            textNode.textContent = textNode.textContent
+                                ?.replace('\u2026', '') + '\u2026';
+                        }
+                        break;
+                    }
                 }
                 // Reinsert the preceding child nodes
                 precedingSiblings.forEach((childNode) => {
@@ -217,6 +226,13 @@ class TextBuilder {
                     attr(br, { dy, x });
                     parentElement.insertBefore(br, textNode);
                 });
+            }
+            else if (this.ellipsis) {
+                if (text) {
+                    this.truncate(textNode, text, void 0, 0, 
+                    // Target width
+                    width, ellipsisWidth, stringWithEllipsis);
+                }
             }
         };
         // Recurse down the DOM tree and handle line breaks for each text node
@@ -241,9 +257,8 @@ class TextBuilder {
     }
     /**
      * Get the rendered line height of a <text>, <tspan> or pure text node.
-     *
+     * @private
      * @param {DOMElementType|Text} node The node to check for
-     *
      * @return {number} The rendered line height
      */
     getLineHeight(node) {
@@ -331,18 +346,21 @@ class TextBuilder {
      * character by character to the given length. If not, the text is
      * word-wrapped line by line.
      */
-    truncate(textNode, text, words, startAt, width, getString) {
+    truncate(textNode, text, words, startAt, width, ellipsisWidth, getString) {
         const svgElement = this.svgElement;
         const { rotation } = svgElement;
         // Cache the lengths to avoid checking the same twice
         const lengths = [];
         // Word wrap cannot be truncated to shorter than one word, ellipsis
         // text can be completely blank.
-        let minIndex = words ? 1 : 0;
+        let minIndex = words && !startAt ? 1 : 0;
         let maxIndex = (text || words || '').length;
         let currentIndex = maxIndex;
         let str;
         let actualWidth;
+        if (!words) {
+            width = ellipsisWidth;
+        }
         const getSubStringLength = function (charEnd, concatenatedEnd) {
             // `charEnd` is used when finding the character-by-character
             // break for ellipsis, concatenatedEnd is used for word-by-word
@@ -357,7 +375,7 @@ class TextBuilder {
                     // is "5" and end is 1.
                     try {
                         lengths[end] = startAt +
-                            parentNode.getSubStringLength(0, words ? end + 1 : end);
+                            parentNode.getSubStringLength(0, words && !startAt ? end + 1 : end);
                     }
                     catch (e) {
                         '';
@@ -403,6 +421,10 @@ class TextBuilder {
             }
             else if (!(text && maxIndex === text.length - 1)) {
                 textNode.textContent = str || getString(text || words, currentIndex);
+            }
+            // Add ellipsis on individual lines
+            if (this.ellipsis && actualWidth > width) {
+                this.truncate(textNode, textNode.textContent || '', void 0, 0, width, ellipsisWidth, stringWithEllipsis);
             }
         }
         // When doing line wrapping, prepare for the next line by removing the

@@ -56,17 +56,15 @@ class CMFIndicator extends SMAIndicator {
     isValid() {
         const chart = this.chart, options = this.options, series = this.linkedParent, volumeSeries = (this.volumeSeries ||
             (this.volumeSeries =
-                chart.get(options.params.volumeSeriesID))), isSeriesOHLC = (series &&
-            series.yData &&
-            series.yData[0].length === 4);
+                chart.get(options.params.volumeSeriesID))), isSeriesOHLC = (series?.pointArrayMap?.length === 4);
         /**
          * @private
          * @param {Highcharts.Series} serie to check length validity on.
          * @return {boolean|undefined} true if length is valid.
          */
         function isLengthValid(serie) {
-            return serie.xData &&
-                serie.xData.length >= options.params.period;
+            return serie.dataTable.rowCount >=
+                options.params.period;
         }
         return !!(series &&
             volumeSeries &&
@@ -86,7 +84,7 @@ class CMFIndicator extends SMAIndicator {
         if (!this.isValid()) {
             return;
         }
-        return this.getMoneyFlow(series.xData, series.yData, this.volumeSeries.yData, params.period);
+        return this.getMoneyFlow(series.xData, series.yData, this.volumeSeries.getColumn('y'), params.period);
     }
     /**
      * @private

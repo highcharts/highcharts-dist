@@ -166,6 +166,7 @@ extend(HLCSeries.prototype, {
     pointClass: HLCPoint,
     animate: null, // Disable animation
     directTouch: false,
+    keysAffectYAxis: ['low', 'high'],
     pointArrayMap: ['high', 'low', 'close'],
     pointAttrToOptions: {
         stroke: 'color',

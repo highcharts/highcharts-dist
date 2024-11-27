@@ -28,7 +28,7 @@ function wrapSeriesGeneratePoints(proceed) {
     if (this.hasGroupedData) {
         return proceed.call(this);
     }
-    const PointClass = this.pointClass, cropStart = this.cropStart || 0, data = this.data || [], points = [], processedXData = this.processedXData, processedYData = this.processedYData;
+    const PointClass = this.pointClass, cropStart = this.cropStart || 0, data = this.data || [], points = [], processedXData = this.getColumn('x', true), processedYData = this.getColumn('y', true);
     let cursor, point;
     for (let i = 0, iEnd = processedXData.length; i < iEnd; ++i) {
         cursor = cropStart + i;

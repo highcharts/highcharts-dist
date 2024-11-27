@@ -8,6 +8,7 @@
  *
  * */
 'use strict';
+import DataTableCore from '../Data/DataTableCore.js';
 import H from '../Core/Globals.js';
 const { composed } = H;
 import Point from '../Core/Series/Point.js';
@@ -86,6 +87,10 @@ var SeriesOnPointComposition;
          * @private
          */
         constructor(series) {
+            /**
+             * @ignore
+             */
+            this.getColumn = bubble.prototype.getColumn;
             /**
              * @ignore
              */
@@ -256,12 +261,17 @@ var SeriesOnPointComposition;
             const zData = [];
             this.series.forEach((series) => {
                 const onPointOpts = series.options.onPoint;
-                zData.push(onPointOpts && onPointOpts.z ? onPointOpts.z : null);
+                zData.push(onPointOpts?.z ?? null);
+            });
+            const dataTable = new DataTableCore({
+                columns: {
+                    z: zData
+                }
             });
             this.series.forEach((series) => {
                 // Save z values of all the series
                 if (series.onPoint) {
-                    series.onPoint.zData = series.zData = zData;
+                    series.onPoint.dataTable = series.dataTable = dataTable;
                 }
             });
         }

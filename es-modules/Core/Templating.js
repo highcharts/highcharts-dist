@@ -10,8 +10,10 @@
 'use strict';
 import D from './Defaults.js';
 const { defaultOptions, defaultTime } = D;
+import G from './Globals.js';
+const { doc } = G;
 import U from './Utilities.js';
-const { extend, getNestedProperty, isArray, isNumber, isObject, pick, pInt } = U;
+const { extend, getNestedProperty, isArray, isNumber, isObject, pick, ucfirst } = U;
 const helpers = {
     // Built-in helpers
     add: (a, b) => a + b,
@@ -37,8 +39,10 @@ const helpers = {
     // eslint-disable-next-line eqeqeq
     ne: (a, b) => a != b,
     subtract: (a, b) => a - b,
+    ucfirst,
     unless: (condition) => !condition
 };
+const numberFormatCache = {};
 /* *
  *
  *  Functions
@@ -85,14 +89,14 @@ const helpers = {
  * @param {number} timestamp
  *        The JavaScript timestamp.
  *
- * @param {boolean} [capitalize=false]
+ * @param {boolean} [upperCaseFirst=false]
  *        Upper case first letter in the return.
  *
  * @return {string}
  *         The formatted date.
  */
-function dateFormat(format, timestamp, capitalize) {
-    return defaultTime.dateFormat(format, timestamp, capitalize);
+function dateFormat(format, timestamp, upperCaseFirst) {
+    return defaultTime.dateFormat(format, timestamp, upperCaseFirst);
 }
 /**
  * Format a string according to a subset of the rules of Python's String.format
@@ -121,11 +125,11 @@ function dateFormat(format, timestamp, capitalize) {
  *         The formatted string.
  */
 function format(str = '', ctx, chart) {
-    const regex = /\{([\w\:\.\,;\-\/<>%@"'’= #\(\)]+)\}/g, 
+    const regex = /\{([\p{L}\d:\.,;\-\/<>\[\]%_@"'’= #\(\)]+)\}/gu, 
     // The sub expression regex is the same as the top expression regex,
     // but except parens and block helpers (#), and surrounded by parens
     // instead of curly brackets.
-    subRegex = /\(([\w\:\.\,;\-\/<>%@"'= ]+)\)/g, matches = [], floatRegex = /f$/, decRegex = /\.(\d)/, lang = defaultOptions.lang, time = chart && chart.time || defaultTime, numberFormatter = chart && chart.numberFormatter || numberFormat;
+    subRegex = /\(([\p{L}\d:\.,;\-\/<>\[\]%_@"'= ]+)\)/gu, matches = [], floatRegex = /f$/, decRegex = /\.(\d)/, lang = chart?.options.lang || defaultOptions.lang, time = chart && chart.time || defaultTime, numberFormatter = chart && chart.numberFormatter || numberFormat;
     /*
      * Get a literal or variable value inside a template expression. May be
      * extended with other types like string or null if needed, but keep it
@@ -143,6 +147,9 @@ function format(str = '', ctx, chart) {
         if ((n = Number(key)).toString() === key) {
             return n;
         }
+        if (/^["'].+["']$/.test(key)) {
+            return key.slice(1, -1);
+        }
         // Variables and constants
         return getNestedProperty(key, ctx);
     };
@@ -151,7 +158,7 @@ function format(str = '', ctx, chart) {
     while ((match = regex.exec(str)) !== null) {
         // When a sub expression is found, it is evaluated first, and the
         // results recursively evaluated until no subexpression exists.
-        const subMatch = subRegex.exec(match[1]);
+        const mainMatch = match, subMatch = subRegex.exec(match[1]);
         if (subMatch) {
             match = subMatch;
             hasSub = true;
@@ -168,7 +175,7 @@ function format(str = '', ctx, chart) {
             };
         }
         // Identify helpers
-        const fn = match[1].split(' ')[0].replace('#', '');
+        const fn = (currentMatch.isBlock ? mainMatch : match)[1].split(' ')[0].replace('#', '');
         if (helpers[fn]) {
             // Block helper, only 0 level is handled
             if (currentMatch.isBlock && fn === currentMatch.fn) {
@@ -222,7 +229,24 @@ function format(str = '', ctx, chart) {
         if (fn) {
             // Pass the helpers the amount of arguments defined by the function,
             // then the match as the last argument.
-            const args = [match], parts = expression.split(' ');
+            const args = [match], parts = [], len = expression.length;
+            let start = 0, startChar;
+            for (i = 0; i <= len; i++) {
+                const char = expression.charAt(i);
+                // Start of string
+                if (!startChar && (char === '"' || char === '\'')) {
+                    startChar = char;
+                    // End of string
+                }
+                else if (startChar === char) {
+                    startChar = '';
+                }
+                if (!startChar &&
+                    (char === ' ' || i === len)) {
+                    parts.push(expression.substr(start, i - start));
+                    start = i + 1;
+                }
+            }
             i = helpers[fn].length;
             while (i--) {
                 args.unshift(resolveProperty(parts[i + 1]));
@@ -249,6 +273,11 @@ function format(str = '', ctx, chart) {
                 }
                 else {
                     replacement = time.dateFormat(segment, replacement);
+                    // Use string literal in order to be preserved in the outer
+                    // expression
+                    if (hasSub) {
+                        replacement = `"${replacement}"`;
+                    }
                 }
             }
         }
@@ -285,8 +314,10 @@ function format(str = '', ctx, chart) {
 function numberFormat(number, decimals, decimalPoint, thousandsSep) {
     number = +number || 0;
     decimals = +decimals;
-    let ret, fractionDigits;
-    const lang = defaultOptions.lang, origDec = (number.toString().split('.')[1] || '').split('e')[0].length, exponent = number.toString().split('e'), firstDecimals = decimals;
+    let ret, fractionDigits, [mantissa, exp] = number.toString().split('e').map(Number);
+    const lang = this?.options?.lang || defaultOptions.lang, origDec = (number.toString().split('.')[1] || '').split('e')[0].length, firstDecimals = decimals, options = {};
+    decimalPoint ?? (decimalPoint = lang.decimalPoint);
+    thousandsSep ?? (thousandsSep = lang.thousandsSep);
     if (decimals === -1) {
         // Preserve decimals. Not huge numbers (#3793).
         decimals = Math.min(origDec, 20);
@@ -294,65 +325,61 @@ function numberFormat(number, decimals, decimalPoint, thousandsSep) {
     else if (!isNumber(decimals)) {
         decimals = 2;
     }
-    else if (decimals && exponent[1] && exponent[1] < 0) {
+    else if (decimals && exp < 0) {
         // Expose decimals from exponential notation (#7042)
-        fractionDigits = decimals + +exponent[1];
+        fractionDigits = decimals + exp;
         if (fractionDigits >= 0) {
             // Remove too small part of the number while keeping the notation
-            exponent[0] = (+exponent[0]).toExponential(fractionDigits)
-                .split('e')[0];
+            mantissa = +mantissa.toExponential(fractionDigits).split('e')[0];
             decimals = fractionDigits;
         }
         else {
             // `fractionDigits < 0`
-            exponent[0] = exponent[0].split('.')[0] || 0;
+            mantissa = Math.floor(mantissa);
             if (decimals < 20) {
                 // Use number instead of exponential notation (#7405)
-                number = (exponent[0] * Math.pow(10, exponent[1]))
-                    .toFixed(decimals);
+                number = +(mantissa * Math.pow(10, exp)).toFixed(decimals);
             }
             else {
                 // Or zero
                 number = 0;
             }
-            exponent[1] = 0;
+            exp = 0;
         }
     }
-    // Add another decimal to avoid rounding errors of float numbers. (#4573)
-    // Then use toFixed to handle rounding.
-    const roundedNumber = (Math.abs(exponent[1] ? exponent[0] : number) +
-        Math.pow(10, -Math.max(decimals, origDec) - 1)).toFixed(decimals);
-    // A string containing the positive integer component of the number
-    const strinteger = String(pInt(roundedNumber));
-    // Leftover after grouping into thousands. Can be 0, 1 or 2.
-    const thousands = strinteger.length > 3 ? strinteger.length % 3 : 0;
-    // Language
-    decimalPoint = pick(decimalPoint, lang.decimalPoint);
-    thousandsSep = pick(thousandsSep, lang.thousandsSep);
-    // Start building the return
-    ret = number < 0 ? '-' : '';
-    // Add the leftover after grouping into thousands. For example, in the
-    // number 42 000 000, this line adds 42.
-    ret += thousands ? strinteger.substr(0, thousands) + thousandsSep : '';
-    if (+exponent[1] < 0 && !firstDecimals) {
+    if (exp) {
+        decimals ?? (decimals = 2);
+        number = mantissa;
+    }
+    if (isNumber(decimals) && decimals >= 0) {
+        options.minimumFractionDigits = decimals;
+        options.maximumFractionDigits = decimals;
+    }
+    if (thousandsSep === '') {
+        options.useGrouping = false;
+    }
+    const hasSeparators = thousandsSep || decimalPoint, locale = hasSeparators ?
+        'en' :
+        (this?.locale ||
+            lang.locale ||
+            doc.body.closest('[lang]')?.lang), cacheKey = JSON.stringify(options) + locale, nf = numberFormatCache[cacheKey] ?? (numberFormatCache[cacheKey] = new Intl.NumberFormat(locale, options));
+    ret = nf.format(number);
+    // If thousandsSep or decimalPoint are set, fall back to using English
+    // format with string replacement for the separators.
+    if (hasSeparators) {
+        ret = ret
+            .replace(/\,/g, thousandsSep ?? ',')
+            .replace('.', decimalPoint ?? '.');
+    }
+    if (
+    // Remove signed zero (#20564)
+    (!decimals && +ret === 0) ||
+        // Small numbers, no decimals (#14023)
+        (exp < 0 && !firstDecimals)) {
         ret = '0';
     }
-    else {
-        // Add the remaining thousands groups, joined by the thousands separator
-        ret += strinteger
-            .substr(thousands)
-            .replace(/(\d{3})(?=\d)/g, '$1' + thousandsSep);
-    }
-    // Add the decimal point and the decimal component
-    if (decimals) {
-        // Get the decimal component
-        ret += decimalPoint + roundedNumber.slice(-decimals);
-    }
-    else if (+ret === 0) { // Remove signed minus #20564
-        ret = '0';
-    }
-    if (exponent[1] && +ret !== 0) {
-        ret += 'e' + exponent[1];
+    if (exp && +ret !== 0) {
+        ret += 'e' + (exp < 0 ? '' : '+') + exp;
     }
     return ret;
 }

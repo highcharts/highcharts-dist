@@ -29,9 +29,7 @@ var Globals;
         {}), // eslint-disable-line node/no-unsupported-features/es-builtins
     Globals.doc = Globals.win.document, Globals.svg = (Globals.doc &&
         Globals.doc.createElementNS &&
-        !!Globals.doc.createElementNS(Globals.SVG_NS, 'svg').createSVGRect), Globals.userAgent = (Globals.win.navigator && Globals.win.navigator.userAgent) || '', Globals.isChrome = Globals.win.chrome, Globals.isFirefox = Globals.userAgent.indexOf('Firefox') !== -1, Globals.isMS = /(edge|msie|trident)/i.test(Globals.userAgent) && !Globals.win.opera, Globals.isSafari = !Globals.isChrome && Globals.userAgent.indexOf('Safari') !== -1, Globals.isTouchDevice = /(Mobile|Android|Windows Phone)/.test(Globals.userAgent), Globals.isWebKit = Globals.userAgent.indexOf('AppleWebKit') !== -1, Globals.deg2rad = Math.PI * 2 / 360, Globals.hasBidiBug = (Globals.isFirefox &&
-        parseInt(Globals.userAgent.split('Firefox/')[1], 10) < 4 // Issue #38
-    ), Globals.marginNames = [
+        !!Globals.doc.createElementNS(Globals.SVG_NS, 'svg').createSVGRect), Globals.userAgent = (Globals.win.navigator && Globals.win.navigator.userAgent) || '', Globals.isChrome = Globals.win.chrome, Globals.isFirefox = Globals.userAgent.indexOf('Firefox') !== -1, Globals.isMS = /(edge|msie|trident)/i.test(Globals.userAgent) && !Globals.win.opera, Globals.isSafari = !Globals.isChrome && Globals.userAgent.indexOf('Safari') !== -1, Globals.isTouchDevice = /(Mobile|Android|Windows Phone)/.test(Globals.userAgent), Globals.isWebKit = Globals.userAgent.indexOf('AppleWebKit') !== -1, Globals.deg2rad = Math.PI * 2 / 360, Globals.marginNames = [
         'plotTop',
         'marginRight',
         'marginBottom',
@@ -76,8 +74,15 @@ var Globals;
      * value. This function returns the formatted portion of the
      * date.
      *
+     * Using `dateFormats` is also a convenient way to define new keys for
+     * complex locale-aware date formats compatible with the
+     * [Intl.DateTimeFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat)
+     * browser API, whenever the built-in formats are not sufficient.
+     *
      * @sample highcharts/global/dateformats/
      *         Adding support for week number
+     * @sample highcharts/global/dateformats-object/
+     *         A locale-aware date format using `Intl.DateTimeFormat`
      *
      * @name Highcharts.dateFormats
      * @type {Record<string, Highcharts.TimeFormatCallbackFunction>}

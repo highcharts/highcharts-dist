@@ -105,17 +105,15 @@ class TimelineSeries extends LineSeries {
     }
     generatePoints() {
         super.generatePoints();
-        const series = this, points = series.points;
+        const series = this, points = series.points, xData = series.getColumn('x');
         for (let i = 0, iEnd = points.length; i < iEnd; ++i) {
             points[i].applyOptions({
-                x: series.xData[i]
-            }, series.xData[i]);
+                x: xData[i]
+            }, xData[i]);
         }
     }
     getVisibilityMap() {
-        const series = this, map = (series.data.length ?
-            series.data :
-            series.userOptions.data || []).map((point) => (point && point.visible !== false && !point.isNull ?
+        const series = this, map = ((series.data.length ? series.data : series.options.data) || []).map((point) => (point && point.visible !== false && !point.isNull ?
             point :
             false));
         return map;
@@ -226,23 +224,6 @@ class TimelineSeries extends LineSeries {
             height: attribs.width
         } : attribs;
     }
-    processData() {
-        const series = this;
-        let visiblePoints = 0, i;
-        series.visibilityMap = series.getVisibilityMap();
-        // Calculate currently visible points.
-        for (const point of series.visibilityMap) {
-            if (point) {
-                visiblePoints++;
-            }
-        }
-        series.visiblePointsCount = visiblePoints;
-        for (i = 0; i < series.xData.length; i++) {
-            series.yData[i] = 1;
-        }
-        super.processData.call(this, arguments);
-        return;
-    }
 }
 /* *
  *
@@ -250,6 +231,20 @@ class TimelineSeries extends LineSeries {
  *
  * */
 TimelineSeries.defaultOptions = merge(LineSeries.defaultOptions, TimelineSeriesDefaults);
+// Add series-specific properties after data is already processed, #17890
+addEvent(TimelineSeries, 'afterProcessData', function () {
+    const series = this, xData = series.getColumn('x');
+    let visiblePoints = 0;
+    series.visibilityMap = series.getVisibilityMap();
+    // Calculate currently visible points.
+    for (const point of series.visibilityMap) {
+        if (point) {
+            visiblePoints++;
+        }
+    }
+    series.visiblePointsCount = visiblePoints;
+    this.dataTable.setColumn('y', new Array(xData.length).fill(1));
+});
 extend(TimelineSeries.prototype, {
     // Use a group of trackers from TrackerMixin
     drawTracker: ColumnSeries.prototype.drawTracker,
@@ -263,35 +258,3 @@ SeriesRegistry.registerSeriesType('timeline', TimelineSeries);
  *
  * */
 export default TimelineSeries;
-/* *
- *
- *  API Declarations
- *
- * */
-/**
- * Callback JavaScript function to format the data label as a string. Note that
- * if a `format` is defined, the format takes precedence and the formatter is
- * ignored.
- *
- * @callback Highcharts.TimelineDataLabelsFormatterCallbackFunction
- *
- * @param {Highcharts.PointLabelObject|Highcharts.TimelineDataLabelsFormatterContextObject} this
- *        Data label context to format
- *
- * @return {number|string|null|undefined}
- *         Formatted data label text
- */
-/**
- * @interface Highcharts.TimelineDataLabelsFormatterContextObject
- * @extends Highcharts.PointLabelObject
- */ /**
-* @name Highcharts.TimelineDataLabelsFormatterContextObject#key
-* @type {string|undefined}
-*/ /**
-* @name Highcharts.TimelineDataLabelsFormatterContextObject#point
-* @type {Highcharts.Point}
-*/ /**
-* @name Highcharts.TimelineDataLabelsFormatterContextObject#series
-* @type {Highcharts.Series}
-*/
-''; // Dettach doclets above

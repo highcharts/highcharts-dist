@@ -50,13 +50,6 @@ class MapBubbleSeries extends BubbleSeries {
         this.getRadii();
         this.translateBubble();
     }
-    updateParallelArrays(point, i, iArgs) {
-        super.updateParallelArrays.call(this, point, i, iArgs);
-        const processedXData = this.processedXData, xData = this.xData;
-        if (processedXData && xData) {
-            processedXData.length = xData.length;
-        }
-    }
 }
 /**
  * A map bubble series is a bubble series laid out on top of a map

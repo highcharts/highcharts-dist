@@ -64,6 +64,13 @@ class Point {
      * @type {string}
      */
     /**
+     * The point's name if it is defined, or its category in case of a category,
+     * otherwise the x value. Convenient for tooltip and data label formatting.
+     *
+     * @name Highcharts.Point#key
+     * @type {number|string}
+     */
+    /**
      * The point's options as applied in the initial configuration, or
      * extended through `Point.update`.
      *
@@ -211,6 +218,13 @@ class Point {
         }
         else if (isNumber(options.x) && series.options.relativeXValue) {
             point.x = series.autoIncrement(options.x);
+            // If x is a string, try to parse it to a datetime
+        }
+        else if (typeof point.x === 'string') {
+            x ?? (x = series.chart.time.parse(point.x));
+            if (isNumber(x)) {
+                point.x = x;
+            }
         }
         point.isNull = this.isValid && !this.isValid();
         point.formatPrefix = point.isNull ? 'null' : 'point'; // #9233, #10874
@@ -380,28 +394,6 @@ class Point {
         return graphicalProps;
     }
     /**
-     * Return the configuration hash needed for the data label and tooltip
-     * formatters.
-     *
-     * @function Highcharts.Point#getLabelConfig
-     *
-     * @return {Highcharts.PointLabelObject}
-     *         Abstract object used in formatters and formats.
-     */
-    getLabelConfig() {
-        return {
-            x: this.category,
-            y: this.y,
-            color: this.color,
-            colorIndex: this.colorIndex,
-            key: this.name || this.category,
-            series: this.series,
-            point: this,
-            percentage: this.percentage,
-            total: this.total || this.stackTotal
-        };
-    }
-    /**
      * Returns the value of the point property for a given value.
      * @private
      */
@@ -475,6 +467,8 @@ class Point {
     constructor(series, options, x) {
         this.formatPrefix = 'point';
         this.visible = true;
+        // For tooltip and data label formatting
+        this.point = this;
         this.series = series;
         this.applyOptions(options, x);
         // Add a unique ID to the point if none is assigned
@@ -500,7 +494,6 @@ class Point {
      * transformed to `{ y: 10 }`, and an array config like `[1, 10]` in a
      * scatter series will be transformed to `{ x: 1, y: 10 }`.
      *
-     * @deprecated
      * @function Highcharts.Point#optionsToObject
      *
      * @param {Highcharts.PointOptionsType} options
@@ -520,7 +513,12 @@ class Point {
             if (!keys && options.length > valueCount) {
                 firstItemType = typeof options[0];
                 if (firstItemType === 'string') {
-                    ret.name = options[0];
+                    if (series.xAxis?.dateTime) {
+                        ret.x = series.chart.time.parse(options[0]);
+                    }
+                    else {
+                        ret.name = options[0];
+                    }
                 }
                 else if (firstItemType === 'number') {
                     ret.x = options[0];
@@ -686,25 +684,22 @@ class Point {
      */
     tooltipFormatter(pointFormat) {
         // Insert options for valueDecimals, valuePrefix, and valueSuffix
-        const series = this.series, seriesTooltipOptions = series.tooltipOptions, valueDecimals = pick(seriesTooltipOptions.valueDecimals, ''), valuePrefix = seriesTooltipOptions.valuePrefix || '', valueSuffix = seriesTooltipOptions.valueSuffix || '';
+        const { chart, pointArrayMap = ['y'], tooltipOptions } = this.series, { valueDecimals = '', valuePrefix = '', valueSuffix = '' } = tooltipOptions;
         // Replace default point style with class name
-        if (series.chart.styledMode) {
-            pointFormat =
-                series.chart.tooltip.styledModeFormat(pointFormat);
+        if (chart.styledMode) {
+            pointFormat = chart.tooltip?.styledModeFormat(pointFormat) ||
+                pointFormat;
         }
         // Loop over the point array map and replace unformatted values with
         // sprintf formatting markup
-        (series.pointArrayMap || ['y']).forEach(function (key) {
+        pointArrayMap.forEach((key) => {
             key = '{point.' + key; // Without the closing bracket
             if (valuePrefix || valueSuffix) {
                 pointFormat = pointFormat.replace(RegExp(key + '}', 'g'), valuePrefix + key + '}' + valueSuffix);
             }
             pointFormat = pointFormat.replace(RegExp(key + '}', 'g'), key + ':,.' + valueDecimals + 'f}');
         });
-        return format(pointFormat, {
-            point: this,
-            series: this.series
-        }, series.chart);
+        return format(pointFormat, this, chart);
     }
     /**
      * Update point with new options (typically x/y data) and optionally redraw
@@ -771,9 +766,13 @@ class Point {
                     point.dataLabel = point.dataLabel.destroy(); // #2468
                 }
             }
-            // Record changes in the parallel arrays
+            // Record changes in the data table
             i = point.index;
-            series.updateParallelArrays(point, i);
+            const row = {};
+            for (const key of series.dataColumnKeys()) {
+                row[key] = point[key];
+            }
+            series.dataTable.setRow(row, i);
             // Record the options to options.data. If the old or the new config
             // is an object, use point options, otherwise use raw options
             // (#4701, #4916).
@@ -954,10 +953,14 @@ class Point {
             // removed
             point.importedUserEvent?.();
             point.importedUserEvent = addEvent(point, eventType, userEvent);
+            if (point.hcEvents) {
+                point.hcEvents[eventType].userEvent = true;
+            }
         }
         else if (point.importedUserEvent &&
             !userEvent &&
-            point.hcEvents?.[eventType]) {
+            point.hcEvents?.[eventType] &&
+            point.hcEvents?.[eventType].userEvent) {
             removeEvent(point, eventType);
             delete point.hcEvents[eventType];
             if (!Object.keys(point.hcEvents)) {
@@ -1065,7 +1068,7 @@ class Point {
                         if (newSymbol) {
                             series.stateMarkerGraphic = stateMarkerGraphic =
                                 chart.renderer
-                                    .symbol(newSymbol, markerAttribs.x, markerAttribs.y, markerAttribs.width, markerAttribs.height)
+                                    .symbol(newSymbol, markerAttribs.x, markerAttribs.y, markerAttribs.width, markerAttribs.height, merge(markerOptions, markerStateOptions))
                                     .add(series.markerGroup);
                             stateMarkerGraphic.currentSymbol = newSymbol;
                         }
@@ -1180,51 +1183,6 @@ export default Point;
 * Clicked point.
 * @name Highcharts.PointClickEventObject#point
 * @type {Highcharts.Point}
-*/
-/**
- * Configuration for the data label and tooltip formatters.
- *
- * @interface Highcharts.PointLabelObject
- */ /**
-* The point's current color.
-* @name Highcharts.PointLabelObject#color
-* @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject|undefined}
-*/ /**
-* The point's current color index, used in styled mode instead of `color`. The
-* color index is inserted in class names used for styling.
-* @name Highcharts.PointLabelObject#colorIndex
-* @type {number}
-*/ /**
-* The name of the related point.
-* @name Highcharts.PointLabelObject#key
-* @type {string|undefined}
-*/ /**
-* The percentage for related points in a stacked series or pies.
-* @name Highcharts.PointLabelObject#percentage
-* @type {number}
-*/ /**
-* The related point. The point name, if defined, is available through
-* `this.point.name`.
-* @name Highcharts.PointLabelObject#point
-* @type {Highcharts.Point}
-*/ /**
-* The related series. The series name is available through `this.series.name`.
-* @name Highcharts.PointLabelObject#series
-* @type {Highcharts.Series}
-*/ /**
-* The total of values in either a stack for stacked series, or a pie in a pie
-* series.
-* @name Highcharts.PointLabelObject#total
-* @type {number|undefined}
-*/ /**
-* For categorized axes this property holds the category name for the point. For
-* other axes it holds the X value.
-* @name Highcharts.PointLabelObject#x
-* @type {number|string|undefined}
-*/ /**
-* The y value of the point.
-* @name Highcharts.PointLabelObject#y
-* @type {number|null|undefined}
 */
 /**
  * Gets fired when the mouse leaves the area close to the point.

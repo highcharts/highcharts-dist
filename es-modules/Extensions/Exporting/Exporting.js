@@ -319,6 +319,7 @@ var Exporting;
             chartProto.renderExporting = renderExporting;
             chartProto.callbacks.push(chartCallback);
             addEvent(ChartClass, 'init', onChartInit);
+            addEvent(ChartClass, 'layOutTitle', onChartLayOutTitle);
             if (G.isSafari) {
                 win.matchMedia('print').addListener(function (mqlEvent) {
                     if (!printingChart) {
@@ -609,8 +610,8 @@ var Exporting;
      *
      * @requires modules/exporting
      */
-    function getChartHTML() {
-        if (this.styledMode) {
+    function getChartHTML(applyStyleSheets) {
+        if (applyStyleSheets) {
             this.inlineStyles();
         }
         return this.container.innerHTML;
@@ -768,7 +769,8 @@ var Exporting;
             }
         });
         // Get the SVG from the container's innerHTML
-        svg = chartCopy.getChartHTML();
+        svg = chartCopy.getChartHTML(chart.styledMode ||
+            options.exporting?.applyStyleSheets);
         fireEvent(this, 'getSVG', { chartCopy: chartCopy });
         svg = chart.sanitizeSVG(svg, options);
         // Free up memory
@@ -1034,6 +1036,27 @@ var Exporting;
             .addUpdate((options, redraw) => {
             update('navigation', options, redraw);
         });
+    }
+    /**
+     * On layout of titles (title, subtitle and caption), adjust the `alignTo``
+     * box to avoid the context menu button.
+     * @private
+     */
+    function onChartLayOutTitle({ alignTo, key, textPxLength }) {
+        const exportingOptions = this.options.exporting, { align, buttonSpacing = 0, verticalAlign, width = 0 } = merge(this.options.navigation?.buttonOptions, exportingOptions?.buttons?.contextButton), space = alignTo.width - textPxLength, widthAdjust = width + buttonSpacing;
+        if ((exportingOptions?.enabled ?? true) &&
+            key === 'title' &&
+            align === 'right' &&
+            verticalAlign === 'top') {
+            if (space < 2 * widthAdjust) {
+                if (space < widthAdjust) {
+                    alignTo.width -= widthAdjust;
+                }
+                else if (this.title?.alignValue !== 'left') {
+                    alignTo.x -= widthAdjust - space / 2;
+                }
+            }
+        }
     }
     /**
      * Exporting module required. Clears away other elements in the page and

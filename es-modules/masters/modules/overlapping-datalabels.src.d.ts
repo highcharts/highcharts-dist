@@ -1,1 +1,2 @@
-import '../../../modules/overlapping-datalabels.src';
+import Highcharts from '../../Core/Globals.js';
+export default Highcharts;

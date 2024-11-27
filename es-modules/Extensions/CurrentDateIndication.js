@@ -45,17 +45,16 @@ const defaultOptions = {
      */
     label: {
         /**
-         * Format of the label. This options is passed as the fist argument to
+         * Format of the label. This options is passed as the first argument to
          * [dateFormat](/class-reference/Highcharts.Time#dateFormat) function.
          *
-         * @type      {string}
-         * @default   %a, %b %d %Y, %H:%M
+         * @type      {string|Intl.DateTimeFormatOptions}
          * @product   gantt
          * @apioption xAxis.currentDateIndicator.label.format
          */
-        format: '%a, %b %d %Y, %H:%M',
+        format: '%[abdYHM]',
         formatter: function (value, format) {
-            return this.axis.chart.time.dateFormat(format || '', value);
+            return this.axis.chart.time.dateFormat(format || '', value, true);
         },
         rotation: 0,
         /**

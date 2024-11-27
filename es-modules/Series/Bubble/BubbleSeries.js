@@ -28,7 +28,7 @@ const { addEvent, arrayMax, arrayMin, clamp, extend, isNumber, merge, pick, push
  * bubbles to overflow.
  */
 function onAxisFoundExtremes() {
-    const axisLength = this.len, { coll, isXAxis, min } = this, dataKey = isXAxis ? 'xData' : 'yData', range = (this.max || 0) - (min || 0);
+    const axisLength = this.len, { coll, isXAxis, min } = this, range = (this.max || 0) - (min || 0);
     let pxMin = 0, pxMax = axisLength, transA = axisLength / range, hasActiveSeries;
     if (coll !== 'xAxis' && coll !== 'yAxis') {
         return;
@@ -39,7 +39,7 @@ function onAxisFoundExtremes() {
             // Correction for #1673
             this.allowZoomOutside = true;
             hasActiveSeries = true;
-            const data = series[dataKey];
+            const data = series.getColumn(isXAxis ? 'x' : 'y');
             if (isXAxis) {
                 (series.onPoint || series).getRadii(0, 0, series);
                 if (series.onPoint) {
@@ -76,6 +76,25 @@ function onAxisFoundExtremes() {
         });
     }
 }
+/**
+ * If a user has defined categories, it is necessary to retroactively hide any
+ * ticks added by the 'onAxisFoundExtremes' function above (#21672).
+ *
+ * Otherwise they can show up on the axis, alongside user-defined categories.
+ */
+function onAxisAfterRender() {
+    const { ticks, tickPositions, dataMin = 0, dataMax = 0, categories } = this, type = this.options.type;
+    if ((categories?.length || type === 'category') &&
+        this.series.find((s) => s.bubblePadding)) {
+        let tickCount = tickPositions.length;
+        while (tickCount--) {
+            const tick = ticks[tickPositions[tickCount]], pos = tick.pos || 0;
+            if (pos > dataMax || pos < dataMin) {
+                tick.label?.hide();
+            }
+        }
+    }
+}
 /* *
  *
  *  Class
@@ -91,6 +110,7 @@ class BubbleSeries extends ScatterSeries {
         BubbleLegendComposition.compose(ChartClass, LegendClass);
         if (pushUnique(composed, 'Series.Bubble')) {
             addEvent(AxisClass, 'foundExtremes', onAxisFoundExtremes);
+            addEvent(AxisClass, 'afterRender', onAxisAfterRender);
         }
     }
     /* *
@@ -130,7 +150,7 @@ class BubbleSeries extends ScatterSeries {
      * @private
      */
     getRadii() {
-        const zData = this.zData, yData = this.yData, radii = [];
+        const zData = this.getColumn('z'), yData = this.getColumn('y'), radii = [];
         let len, i, value, zExtremes = this.chart.bubbleZExtremes;
         const { minPxSize, maxPxSize } = this.getPxExtremes();
         // Get the collective Z extremes of all bubblish series. The chart-level
@@ -208,7 +228,7 @@ class BubbleSeries extends ScatterSeries {
      * @private
      */
     hasData() {
-        return !!this.processedXData.length; // != 0
+        return !!this.dataTable.rowCount;
     }
     /**
      * @private
@@ -294,7 +314,7 @@ class BubbleSeries extends ScatterSeries {
         return { minPxSize, maxPxSize };
     }
     getZExtremes() {
-        const options = this.options, zData = (this.zData || []).filter(isNumber);
+        const options = this.options, zData = this.getColumn('z').filter(isNumber);
         if (zData.length) {
             const zMin = pick(options.zMin, clamp(arrayMin(zData), options.displayNegative === false ?
                 (options.zThreshold || 0) :
@@ -551,6 +571,7 @@ extend(BubbleSeries.prototype, {
     applyZones: noop,
     bubblePadding: true,
     isBubble: true,
+    keysAffectYAxis: ['y'],
     pointArrayMap: ['y', 'z'],
     pointClass: BubblePoint,
     parallelArrays: ['x', 'y', 'z'],
@@ -592,7 +613,7 @@ export default BubbleSeries;
  * not specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.bubble
- * @excluding dataParser, dataURL, stack
+ * @excluding dataParser, dataURL, legendSymbolColor, stack
  * @product   highcharts highstock
  * @requires  highcharts-more
  * @apioption series.bubble

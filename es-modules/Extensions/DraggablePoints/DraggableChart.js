@@ -18,7 +18,7 @@ import DragDropDefaults from './DragDropDefaults.js';
 import H from '../../Core/Globals.js';
 const { doc } = H;
 import U from '../../Core/Utilities.js';
-const { addEvent, merge, pick } = U;
+const { addEvent, isArray, merge, pick } = U;
 /* *
  *
  *  Functions
@@ -217,7 +217,7 @@ function flipResizeSide(side) {
 function getGroupedPoints(point) {
     const series = point.series, data = series.options.data || [], groupKey = series.options.dragDrop.groupBy;
     let points = [];
-    if (series.boosted) { // #11156
+    if (series.boosted && isArray(data)) { // #11156
         for (let i = 0, iEnd = data.length; i < iEnd; ++i) {
             points.push(new series.pointClass(// eslint-disable-line new-cap
             series, data[i]));

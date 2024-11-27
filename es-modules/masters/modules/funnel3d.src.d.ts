@@ -1,1 +1,2 @@
-import '../../../modules/funnel3d.src';
+import Highcharts from '../../Core/Globals.js';
+export default Highcharts;

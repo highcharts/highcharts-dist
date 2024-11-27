@@ -244,7 +244,7 @@ var BoostCanvas;
             timeRendering: activeBoostSettings.timeRendering || false,
             timeSeriesProcessing: activeBoostSettings.timeSeriesProcessing || false,
             timeSetup: activeBoostSettings.timeSetup || false
-        }, xData = series.processedXData, yData = series.processedYData, rawData = options.data, xExtremes = xAxis.getExtremes(), xMin = xExtremes.min, xMax = xExtremes.max, yExtremes = yAxis.getExtremes(), yMin = yExtremes.min, yMax = yExtremes.max, pointTaken = {}, sampling = !!series.sampling, r = options.marker && options.marker.radius, strokeBatch = series.cvsStrokeBatch || 1000, enableMouseTracking = options.enableMouseTracking, threshold = options.threshold, hasThreshold = isNumber(threshold), translatedThreshold = yAxis.getThreshold(threshold), doFill = series.fill, isRange = (series.pointArrayMap &&
+        }, xData = series.getColumn('x', true), yData = series.getColumn('y', true), rawData = options.data, xExtremes = xAxis.getExtremes(), xMin = xExtremes.min, xMax = xExtremes.max, yExtremes = yAxis.getExtremes(), yMin = yExtremes.min, yMax = yExtremes.max, pointTaken = {}, sampling = !!series.sampling, r = options.marker && options.marker.radius, strokeBatch = series.cvsStrokeBatch || 1000, enableMouseTracking = options.enableMouseTracking, threshold = options.threshold, hasThreshold = isNumber(threshold), translatedThreshold = yAxis.getThreshold(threshold), doFill = series.fill, isRange = (series.pointArrayMap &&
             series.pointArrayMap.join(',') === 'low,high'), isStacked = !!options.stacking, cropStart = series.cropStart || 0, loadingOptions = chart.options.loading, requireSorting = series.requireSorting, connectNulls = options.connectNulls, useRaw = !xData, sdata = (isStacked ?
             series.data :
             (xData || rawData)), fillColor = (series.fillOpacity ?
@@ -364,10 +364,11 @@ var BoostCanvas;
                 plotY: plotY,
                 yBottom: yBottom
             };
-        }, xDataFull = (this.xData ||
+        }, xDataFull = ((this.getColumn('x').length ? this.getColumn('x') : void 0) ||
             this.options.xData ||
-            this.processedXData ||
-            false), 
+            (this.getColumn('x', true).length ?
+                this.getColumn('x', true) :
+                false)), 
         //
         addKDPoint = function (clientX, plotY, i) {
             // Shaves off about 60ms compared to repeated concatenation

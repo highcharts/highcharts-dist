@@ -1,1 +1,2 @@
-import '../../../themes/dark-green.src';
+import H from '../../Core/Globals.js';
+export default H;

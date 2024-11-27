@@ -27,12 +27,8 @@ const { addEvent, extend, merge, objectEach, pick, pushUnique } = U;
  */
 function stopEvent(e) {
     if (e) {
-        if (e.preventDefault) {
-            e.preventDefault();
-        }
-        if (e.stopPropagation) {
-            e.stopPropagation();
-        }
+        e.preventDefault?.();
+        e.stopPropagation?.();
         e.cancelBubble = true;
     }
 }
@@ -109,7 +105,7 @@ class MapNavigation {
         }
         // Destroy buttons in case of dynamic update
         while (navButtons.length) {
-            navButtons.pop().destroy();
+            navButtons.pop()?.destroy();
         }
         if (!chart.renderer.forExport &&
             pick(navOptions.enableButtons, navOptions.enabled)) {
@@ -200,7 +196,7 @@ class MapNavigation {
             // Check the mapNavigation buttons collision with exporting button
             // and translate the mapNavigation button if they overlap.
             const adjustMapNavBtn = function () {
-                const expBtnBBox = chart.exportingGroup && chart.exportingGroup.getBBox();
+                const expBtnBBox = chart.exportingGroup?.getBBox();
                 if (expBtnBBox) {
                     const navBtnsBBox = mapNav.navButtonsGroup.getBBox();
                     // If buttons overlap
@@ -259,10 +255,13 @@ class MapNavigation {
                 // Prevent scrolling when the pointer is over the element
                 // with that class, for example anotation popup #12100.
                 if (!chart.pointer.inClass(e.target, 'highcharts-no-mousewheel')) {
+                    const initialZoom = chart.mapView?.zoom;
                     chart.pointer.onContainerMouseWheel(e);
-                    // Issue #5011, returning false from non-jQuery event
-                    // does not prevent default
-                    stopEvent(e);
+                    // If the zoom level changed, prevent the default action
+                    // which is to scroll the page
+                    if (initialZoom !== chart.mapView?.zoom) {
+                        stopEvent(e);
+                    }
                 }
                 return false;
             });

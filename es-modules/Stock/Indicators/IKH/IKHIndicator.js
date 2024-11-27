@@ -406,7 +406,7 @@ class IKHIndicator extends SMAIndicator {
         return path;
     }
     getValues(series, params) {
-        const period = params.period, periodTenkan = params.periodTenkan, periodSenkouSpanB = params.periodSenkouSpanB, xVal = series.xData, yVal = series.yData, xAxis = series.xAxis, yValLen = (yVal && yVal.length) || 0, closestPointRange = getClosestDistance(xAxis.series.map((s) => s.xData || [])), IKH = [], xData = [];
+        const period = params.period, periodTenkan = params.periodTenkan, periodSenkouSpanB = params.periodSenkouSpanB, xVal = series.xData, yVal = series.yData, xAxis = series.xAxis, yValLen = (yVal && yVal.length) || 0, closestPointRange = getClosestDistance(xAxis.series.map((s) => s.getColumn('x'))), IKH = [], xData = [];
         let date, slicedTSY, slicedKSY, slicedSSBY, pointTS, pointKS, pointSSB, i, TS, KS, CS, SSA, SSB;
         // Ikh requires close value
         if (xVal.length <= period ||

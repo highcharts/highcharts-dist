@@ -35,7 +35,7 @@ class OBVIndicator extends SMAIndicator {
         let OBVPoint = [], i = 1, previousOBV = 0, curentOBV = 0, previousClose = 0, curentClose = 0, volume;
         // Checks if volume series exists.
         if (volumeSeries) {
-            volume = volumeSeries.yData;
+            volume = volumeSeries.getColumn('y');
             // Add first point and get close value.
             OBVPoint = [xVal[0], previousOBV];
             previousClose = hasOHLC ?

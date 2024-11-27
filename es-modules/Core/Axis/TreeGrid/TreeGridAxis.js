@@ -16,7 +16,7 @@ import TreeGridTick from './TreeGridTick.js';
 import TU from '../../../Series/TreeUtilities.js';
 const { getLevelOptions } = TU;
 import U from '../../Utilities.js';
-const { addEvent, find, fireEvent, isArray, isObject, isString, merge, pick, removeEvent, wrap } = U;
+const { addEvent, isArray, splat, find, fireEvent, isObject, isString, merge, pick, removeEvent, wrap } = U;
 /* *
  *
  *  Variables
@@ -200,7 +200,7 @@ function getTreeGridFromData(data, uniqueNames, numberOfSeries) {
 function onBeforeRender(e) {
     const chart = e.target, axes = chart.axes;
     axes.filter((axis) => axis.type === 'treegrid').forEach(function (axis) {
-        const options = axis.options || {}, labelOptions = options.labels, uniqueNames = axis.uniqueNames, max = options.max, 
+        const options = axis.options || {}, labelOptions = options.labels, uniqueNames = axis.uniqueNames, max = chart.time.parse(options.max), 
         // Check whether any of series is rendering for the first
         // time, visibility has changed, or its data is dirty, and
         // only then update. #10570, #10580. Also check if
@@ -213,23 +213,32 @@ function onBeforeRender(e) {
             }));
         let numberOfSeries = 0, data, treeGrid;
         if (isDirty) {
+            const seriesHasPrimitivePoints = [];
             // Concatenate data from all series assigned to this axis.
             data = axis.series.reduce(function (arr, s) {
+                const seriesData = (s.options.data || []), firstPoint = seriesData[0], 
+                // Check if the first point is a simple array of values.
+                // If so we assume that this is the case for all points.
+                foundPrimitivePoint = (Array.isArray(firstPoint) &&
+                    !firstPoint.find((value) => (typeof value === 'object')));
+                seriesHasPrimitivePoints.push(foundPrimitivePoint);
                 if (s.visible) {
                     // Push all data to array
-                    (s.options.data || []).forEach(function (data) {
-                        // For using keys - rebuild the data structure
-                        if (s.options.keys && s.options.keys.length) {
-                            data = s.pointClass.prototype
+                    seriesData.forEach(function (pointOptions) {
+                        // For using keys, or when using primitive points,
+                        // rebuild the data structure
+                        if (foundPrimitivePoint ||
+                            (s.options.keys && s.options.keys.length)) {
+                            pointOptions = s.pointClass.prototype
                                 .optionsToObject
-                                .call({ series: s }, data);
-                            s.pointClass.setGanttPointAliases(data);
+                                .call({ series: s }, pointOptions);
+                            s.pointClass.setGanttPointAliases(pointOptions, chart);
                         }
-                        if (isObject(data, true)) {
+                        if (isObject(pointOptions, true)) {
                             // Set series index on data. Removed again
                             // after use.
-                            data.seriesIndex = (numberOfSeries);
-                            arr.push(data);
+                            pointOptions.seriesIndex = (numberOfSeries);
+                            arr.push(pointOptions);
                         }
                     });
                     // Increment series index
@@ -259,16 +268,18 @@ function onBeforeRender(e) {
             axis.hasNames = true;
             axis.treeGrid.tree = treeGrid.tree;
             // Update yData now that we have calculated the y values
-            axis.series.forEach(function (series) {
+            axis.series.forEach(function (series, index) {
                 const axisData = (series.options.data || []).map(function (d) {
-                    if (isArray(d) &&
-                        series.options.keys &&
-                        series.options.keys.length) {
+                    if (seriesHasPrimitivePoints[index] ||
+                        (isArray(d) &&
+                            series.options.keys &&
+                            series.options.keys.length)) {
                         // Get the axisData from the data array used to
                         // build the treeGrid where has been modified
                         data.forEach(function (point) {
-                            if (d.indexOf(point.x) >= 0 &&
-                                d.indexOf(point.x2) >= 0) {
+                            const toArray = splat(d);
+                            if (toArray.indexOf(point.x || 0) >= 0 &&
+                                toArray.indexOf(point.x2 || 0) >= 0) {
                                 d = point;
                             }
                         });
@@ -486,12 +497,12 @@ function wrapInit(proceed, chart, userOptions, coll) {
  * The original setTickInterval function.
  */
 function wrapSetTickInterval(proceed) {
-    const axis = this, options = axis.options, linkedParent = typeof options.linkedTo === 'number' ?
+    const axis = this, options = axis.options, time = axis.chart.time, linkedParent = typeof options.linkedTo === 'number' ?
         this.chart[axis.coll]?.[options.linkedTo] :
         void 0, isTreeGrid = axis.type === 'treegrid';
     if (isTreeGrid) {
-        axis.min = pick(axis.userMin, options.min, axis.dataMin);
-        axis.max = pick(axis.userMax, options.max, axis.dataMax);
+        axis.min = axis.userMin ?? time.parse(options.min) ?? axis.dataMin;
+        axis.max = axis.userMax ?? time.parse(options.max) ?? axis.dataMax;
         fireEvent(axis, 'foundExtremes');
         // `setAxisTranslation` modifies the min and max according to axis
         // breaks.

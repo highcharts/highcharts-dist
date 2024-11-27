@@ -28,7 +28,7 @@ function chartAddZAxis(options) {
  * Get the Z axis in addition to the default X and Y.
  * @private
  */
-function onChartAfterGetAxes() {
+function onChartAfterCreateAxes() {
     const zAxisOptions = this.options.zAxis = splat(this.options.zAxis || {});
     if (!this.is3d()) {
         return;
@@ -67,7 +67,7 @@ class ZAxis extends Axis {
             chartProto.addZAxis = chartAddZAxis;
             chartProto.collectionsWithInit.zAxis = [chartProto.addZAxis];
             chartProto.collectionsWithUpdate.push('zAxis');
-            addEvent(ChartClass, 'afterGetAxes', onChartAfterGetAxes);
+            addEvent(ChartClass, 'afterCreateAxes', onChartAfterCreateAxes);
         }
     }
     /* *
@@ -101,7 +101,7 @@ class ZAxis extends Axis {
                 if (this.positiveValuesOnly && threshold <= 0) {
                     threshold = void 0;
                 }
-                const zData = series.zData;
+                const zData = series.getColumn('z');
                 if (zData.length) {
                     this.dataMin = Math.min(pick(this.dataMin, zData[0]), Math.min.apply(null, zData));
                     this.dataMax = Math.max(pick(this.dataMax, zData[0]), Math.max.apply(null, zData));

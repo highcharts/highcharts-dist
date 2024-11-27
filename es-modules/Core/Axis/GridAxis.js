@@ -491,16 +491,16 @@ function onAfterSetOptions(e) {
             className: ('highcharts-grid-axis ' + (userOptions.className || '')),
             dateTimeLabelFormats: {
                 hour: {
-                    list: ['%H:%M', '%H']
+                    list: ['%[HM]', '%[H]']
                 },
                 day: {
-                    list: ['%A, %e. %B', '%a, %e. %b', '%E']
+                    list: ['%[AeB]', '%[aeb]', '%[E]']
                 },
                 week: {
                     list: ['Week %W', 'W%W']
                 },
                 month: {
-                    list: ['%B', '%b', '%o']
+                    list: ['%[B]', '%[b]', '%o']
                 }
             },
             grid: {
@@ -802,7 +802,7 @@ function onTickLabelFormat(ctx) {
             // to do not change the original point
             pointCopy = merge(point);
             H.seriesTypes.gantt.prototype.pointClass
-                .setGanttPointAliases(pointCopy);
+                .setGanttPointAliases(pointCopy, axis.chart);
         }
         // Make additional properties available for the
         // formatter
@@ -965,20 +965,16 @@ dateFormats.E = function (timestamp) {
 };
 // Adds week date format
 dateFormats.W = function (timestamp) {
-    const time = this, d = new this.Date(timestamp), unitsToOmit = ['Hours', 'Milliseconds', 'Minutes', 'Seconds'];
-    unitsToOmit.forEach(function (format) {
-        time.set(format, d, 0);
-    });
-    const firstDay = (this.get('Day', d) + 6) % 7;
-    const thursday = new this.Date(d.valueOf());
-    this.set('Date', thursday, this.get('Date', d) - firstDay + 3);
-    const firstThursday = new this.Date(this.get('FullYear', thursday), 0, 1);
-    if (this.get('Day', firstThursday) !== 4) {
-        this.set('Month', d, 0);
-        this.set('Date', d, 1 + (11 - this.get('Day', firstThursday)) % 7);
+    const d = this.toParts(timestamp), firstDay = (d[7] + 6) % 7, thursday = d.slice(0);
+    thursday[2] = d[2] - firstDay + 3;
+    const firstThursday = this.toParts(this.makeTime(thursday[0], 0, 1));
+    if (firstThursday[7] !== 4) {
+        d[1] = 0; // Set month to January
+        d[2] = 1 + (11 - firstThursday[7]) % 7;
     }
+    const thursdayTS = this.makeTime(thursday[0], thursday[1], thursday[2]), firstThursdayTS = this.makeTime(firstThursday[0], firstThursday[1], firstThursday[2]);
     return (1 +
-        Math.floor((thursday.valueOf() - firstThursday.valueOf()) / 604800000)).toString();
+        Math.floor((thursdayTS - firstThursdayTS) / 604800000)).toString();
 };
 /* *
  *

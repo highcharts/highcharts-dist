@@ -39,15 +39,16 @@ class VariwideSeries extends ColumnSeries {
         this.totalZ = 0;
         this.relZ = [];
         SeriesRegistry.seriesTypes.column.prototype.processData.call(this, force);
+        const zData = this.getColumn('z');
         (this.xAxis.reversed ?
-            this.zData.slice().reverse() :
-            this.zData).forEach(function (z, i) {
+            zData.slice().reverse() :
+            zData).forEach(function (z, i) {
             this.relZ[i] = this.totalZ;
             this.totalZ += z;
         }, this);
         if (this.xAxis.categories) {
             this.xAxis.variwide = true;
-            this.xAxis.zData = this.zData; // Used for label rank
+            this.xAxis.zData = zData; // Used for label rank
         }
         return;
     }
@@ -171,6 +172,7 @@ addEvent(VariwideSeries, 'afterColumnTranslate', function () {
 }, { order: 2 });
 extend(VariwideSeries.prototype, {
     irregularWidths: true,
+    keysAffectYAxis: ['y'],
     pointArrayMap: ['y', 'z'],
     parallelArrays: ['x', 'y', 'z'],
     pointClass: VariwidePoint

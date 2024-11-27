@@ -198,7 +198,7 @@ function drawSeriesLabels(chart) {
         if (!labelOptions || (!series.xAxis && !series.yAxis)) {
             return;
         }
-        const colorClass = ('highcharts-color-' + pick(series.colorIndex, 'none')), isNew = !series.labelBySeries, minFontSize = labelOptions.minFontSize, maxFontSize = labelOptions.maxFontSize, inverted = chart.inverted, paneLeft = (inverted ? series.yAxis.pos : series.xAxis.pos), paneTop = (inverted ? series.xAxis.pos : series.yAxis.pos), paneWidth = chart.inverted ? series.yAxis.len : series.xAxis.len, paneHeight = chart.inverted ? series.xAxis.len : series.yAxis.len, points = series.interpolatedPoints, onArea = pick(labelOptions.onArea, !!series.area), results = [], xData = series.xData || [];
+        const colorClass = ('highcharts-color-' + pick(series.colorIndex, 'none')), isNew = !series.labelBySeries, minFontSize = labelOptions.minFontSize, maxFontSize = labelOptions.maxFontSize, inverted = chart.inverted, paneLeft = (inverted ? series.yAxis.pos : series.xAxis.pos), paneTop = (inverted ? series.xAxis.pos : series.yAxis.pos), paneWidth = chart.inverted ? series.yAxis.len : series.xAxis.len, paneHeight = chart.inverted ? series.xAxis.len : series.yAxis.len, points = series.interpolatedPoints, onArea = pick(labelOptions.onArea, !!series.area), results = [], xData = series.getColumn('x');
         let bBox, x, y, clearPoint, i, best, label = series.labelBySeries, dataExtremes, areaMin, areaMax;
         // Stay within the area data bounds (#10038)
         if (onArea && !inverted) {
@@ -505,7 +505,7 @@ function getPointsOnGraph(series) {
                     deltaX = Math.abs(ctlPoint.chartX - last.chartX);
                     deltaY = Math.abs(ctlPoint.chartY - last.chartY);
                     delta = Math.max(deltaX, deltaY);
-                    if (delta > distance) {
+                    if (delta > distance && delta < 999) {
                         n = Math.ceil(delta / distance);
                         for (j = 1; j < n; j += 1) {
                             pushDiscrete({
@@ -565,7 +565,7 @@ function onChartRedraw(e) {
         }
         // Which series should have labels
         chart.series.forEach(function (series) {
-            const seriesLabelOptions = series.options.label || {}, label = series.labelBySeries, closest = label && label.closest;
+            const seriesLabelOptions = series.options.label || {}, label = series.labelBySeries, closest = label && label.closest, yData = series.getColumn('y');
             if (seriesLabelOptions.enabled &&
                 series.visible &&
                 (series.graph || series.area) &&
@@ -574,8 +574,8 @@ function onChartRedraw(e) {
                 chart.labelSeries.push(series);
                 if (seriesLabelOptions.minFontSize &&
                     seriesLabelOptions.maxFontSize &&
-                    series.yData) {
-                    series.sum = series.yData.reduce((pv, cv) => (pv || 0) + (cv || 0), 0);
+                    yData.length) {
+                    series.sum = yData.reduce((pv, cv) => (pv || 0) + (cv || 0), 0);
                     chart.labelSeriesMaxSum = Math.max(chart.labelSeriesMaxSum || 0, series.sum || 0);
                 }
                 // The labels are processing heavy, wait until the animation is

@@ -10,12 +10,13 @@
 'use strict';
 import ApproximationRegistry from './ApproximationRegistry.js';
 import DataGroupingDefaults from './DataGroupingDefaults.js';
+import DataTableCore from '../../Data/DataTableCore.js';
 import DateTimeAxis from '../../Core/Axis/DateTimeAxis.js';
 import D from '../../Core/Defaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: { prototype: seriesProto } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-const { addEvent, defined, error, extend, isNumber, merge, pick } = U;
+const { addEvent, defined, error, extend, isNumber, merge, pick, splat } = U;
 /* *
  *
  *  Constants
@@ -62,9 +63,9 @@ function adjustExtremes(xAxis, groupedXData) {
  * @private
  */
 function anchorPoints(series, groupedXData, xMax) {
-    const options = series.options, dataGroupingOptions = options.dataGrouping, totalRange = (series.currentDataGrouping && series.currentDataGrouping.gapSize);
+    const options = series.options, dataGroupingOptions = options.dataGrouping, totalRange = (series.currentDataGrouping && series.currentDataGrouping.gapSize), xData = series.getColumn('x');
     if (!(dataGroupingOptions &&
-        series.xData &&
+        xData.length &&
         totalRange &&
         series.groupMap)) {
         return;
@@ -73,7 +74,7 @@ function anchorPoints(series, groupedXData, xMax) {
     let anchorIndexIterator = groupedXData.length - 1, anchorFirstIndex = 0;
     // Change the first point position, but only when it is
     // the first point in the data set not in the current zoom.
-    if (firstAnchor && series.xData[0] >= groupedXData[0]) {
+    if (firstAnchor && xData[0] >= groupedXData[0]) {
         anchorFirstIndex++;
         const groupStart = series.groupMap[0].start, groupLength = series.groupMap[0].length;
         let firstGroupEnd;
@@ -84,8 +85,8 @@ function anchorPoints(series, groupedXData, xMax) {
             start: groupedXData[0],
             middle: groupedXData[0] + 0.5 * totalRange,
             end: groupedXData[0] + totalRange,
-            firstPoint: series.xData[0],
-            lastPoint: firstGroupEnd && series.xData[firstGroupEnd]
+            firstPoint: xData[0],
+            lastPoint: firstGroupEnd && xData[firstGroupEnd]
         }[firstAnchor];
     }
     // Change the last point position but only when it is
@@ -101,8 +102,8 @@ function anchorPoints(series, groupedXData, xMax) {
             start: groupedXData[groupedDataLastIndex],
             middle: groupedXData[groupedDataLastIndex] + 0.5 * totalRange,
             end: groupedXData[groupedDataLastIndex] + totalRange,
-            firstPoint: lastGroupStart && series.xData[lastGroupStart],
-            lastPoint: series.xData[series.xData.length - 1]
+            firstPoint: lastGroupStart && xData[lastGroupStart],
+            lastPoint: xData[xData.length - 1]
         }[lastAnchor];
     }
     if (anchor && anchor !== 'start') {
@@ -141,40 +142,37 @@ function applyGrouping(hasExtremesChanged) {
         return;
     }
     series.destroyGroupedData();
-    const processedXData = dataGroupingOptions.groupAll ?
-        series.xData :
-        series.processedXData, processedYData = dataGroupingOptions.groupAll ?
-        series.yData :
-        series.processedYData, plotSizeX = chart.plotSizeX, xAxis = series.xAxis, ordinal = xAxis.options.ordinal, groupPixelWidth = series.groupPixelWidth;
+    const table = dataGroupingOptions.groupAll ?
+        series.dataTable :
+        series.dataTable.modified || series.dataTable, processedXData = series.getColumn('x', !dataGroupingOptions.groupAll), xData = processedXData, plotSizeX = chart.plotSizeX, xAxis = series.xAxis, extremes = xAxis.getExtremes(), ordinal = xAxis.options.ordinal, groupPixelWidth = series.groupPixelWidth;
     let i, hasGroupedData;
     // Execute grouping if the amount of points is greater than the limit
     // defined in groupPixelWidth
     if (groupPixelWidth &&
-        processedXData &&
-        processedXData.length &&
-        plotSizeX) {
+        xData &&
+        table.rowCount &&
+        plotSizeX &&
+        isNumber(extremes.min)) {
         hasGroupedData = true;
         // Force recreation of point instances in series.translate, #5699
         series.isDirty = true;
         series.points = null; // #6709
-        const extremes = xAxis.getExtremes(), xMin = extremes.min, xMax = extremes.max, groupIntervalFactor = (ordinal &&
+        const xMin = extremes.min, xMax = extremes.max, groupIntervalFactor = (ordinal &&
             xAxis.ordinal &&
             xAxis.ordinal.getGroupIntervalFactor(xMin, xMax, series)) || 1, interval = (groupPixelWidth * (xMax - xMin) / plotSizeX) *
             groupIntervalFactor, groupPositions = xAxis.getTimeTicks(DateTimeAxis.Additions.prototype.normalizeTimeTickInterval(interval, dataGroupingOptions.units ||
             DataGroupingDefaults.units), 
         // Processed data may extend beyond axis (#4907)
-        Math.min(xMin, processedXData[0]), Math.max(xMax, processedXData[processedXData.length - 1]), xAxis.options.startOfWeek, processedXData, series.closestPointRange), groupedData = seriesProto.groupData.apply(series, [
-            processedXData,
-            processedYData,
+        Math.min(xMin, xData[0]), Math.max(xMax, xData[xData.length - 1]), xAxis.options.startOfWeek, processedXData, series.closestPointRange), groupedData = seriesProto.groupData.apply(series, [
+            table,
             groupPositions,
             dataGroupingOptions.approximation
         ]);
-        let groupedXData = groupedData.groupedXData, groupedYData = groupedData.groupedYData, gapSize = 0;
+        let modified = groupedData.modified, groupedXData = modified.getColumn('x', true), gapSize = 0;
         // The smoothed option is deprecated, instead, there is a fallback
         // to the new anchoring mechanism. #12455.
-        if (dataGroupingOptions &&
-            dataGroupingOptions.smoothed &&
-            groupedXData.length) {
+        if (dataGroupingOptions?.smoothed &&
+            modified.rowCount) {
             dataGroupingOptions.firstAnchor = 'firstPoint';
             dataGroupingOptions.anchor = 'middle';
             dataGroupingOptions.lastAnchor = 'lastPoint';
@@ -198,27 +196,26 @@ function applyGrouping(hasExtremesChanged) {
         series.closestPointRange = groupPositions.info.totalRange;
         series.groupMap = groupedData.groupMap;
         series.currentDataGrouping = currentDataGrouping;
-        anchorPoints(series, groupedXData, xMax);
-        if (reserveSpace) {
+        anchorPoints(series, groupedXData || [], xMax);
+        if (reserveSpace && groupedXData) {
             adjustExtremes(xAxis, groupedXData);
         }
-        // We calculated all group positions but we should render
-        // only the ones within the visible range
+        // We calculated all group positions but we should render only the ones
+        // within the visible range
         if (dataGroupingOptions.groupAll) {
-            // Keep the reference to all grouped points
-            // for further calculation (eg. heikinashi).
-            series.allGroupedData = groupedYData;
-            croppedData = series.cropData(groupedXData, groupedYData, xAxis.min, xAxis.max);
-            groupedXData = croppedData.xData;
-            groupedYData = croppedData.yData;
+            // Keep the reference to all grouped points for further calculation,
+            // used in Heikin-Ashi and hollow candlestick series.
+            series.allGroupedTable = modified;
+            croppedData = series.cropData(modified, xAxis.min || 0, xAxis.max || 0);
+            modified = croppedData.modified;
+            groupedXData = modified.getColumn('x');
             series.cropStart = croppedData.start; // #15005
         }
-        // Set series props
-        series.processedXData = groupedXData;
-        series.processedYData = groupedYData;
+        // Set the modified table
+        series.dataTable.modified = modified;
     }
     else {
-        series.groupMap = null;
+        series.groupMap = void 0;
         series.currentDataGrouping = void 0;
     }
     series.hasGroupedData = hasGroupedData;
@@ -270,7 +267,7 @@ function destroyGroupedData() {
         // - `this.points`
         // - `preserve` object in series.update()
         this.groupedData.length = 0;
-        delete this.allGroupedData; // #19892
+        delete this.allGroupedTable;
     }
 }
 /**
@@ -316,10 +313,8 @@ function getDGApproximation() {
  * @product highstock
  *
  * @function Highcharts.Series#groupData
- * @param {Array<number>} xData
- *        Parallel array of x data.
- * @param {Array<(number|null|undefined)>|Array<Array<(number|null|undefined)>>} yData
- *        Parallel array of y data.
+ * @param {Highcharts.DataTable} table
+ *        The series data table.
  * @param {Array<number>} groupPositions
  *        Group positions.
  * @param {string|Function} [approximation]
@@ -327,11 +322,13 @@ function getDGApproximation() {
  * @return {Highcharts.DataGroupingResultObject}
  *         Mapped groups.
  */
-function groupData(xData, yData, groupPositions, approximation) {
-    const series = this, data = series.data, dataOptions = series.options && series.options.data, groupedXData = [], groupedYData = [], groupMap = [], dataLength = xData.length, 
+function groupData(table, groupPositions, approximation) {
+    const xData = table.getColumn('x', true) || [], yData = table.getColumn('y', true), series = this, data = series.data, dataOptions = series.options && series.options.data, groupedXData = [], modified = new DataTableCore(), groupMap = [], dataLength = table.rowCount, 
     // When grouping the fake extended axis for panning, we don't need to
     // consider y
-    handleYData = !!yData, values = [], pointArrayMap = series.pointArrayMap, pointArrayMapLength = pointArrayMap && pointArrayMap.length, extendedPointArrayMap = ['x'].concat(pointArrayMap || ['y']), groupAll = (this.options.dataGrouping &&
+    handleYData = !!yData, values = [], pointArrayMap = series.pointArrayMap, pointArrayMapLength = pointArrayMap && pointArrayMap.length, extendedPointArrayMap = ['x'].concat(pointArrayMap || ['y']), 
+    // Data columns to be applied to the modified data table at the end
+    valueColumns = (pointArrayMap || ['y']).map(() => []), groupAll = (this.options.dataGrouping &&
         this.options.dataGrouping.groupAll);
     let pointX, pointY, groupedY, pos = 0, start = 0;
     const approximationFn = (typeof approximation === 'function' ?
@@ -387,7 +384,11 @@ function groupData(xData, yData, groupPositions, approximation) {
             // Push the grouped data
             if (typeof groupedY !== 'undefined') {
                 groupedXData.push(pointX);
-                groupedYData.push(groupedY);
+                // Push the grouped values to the parallel columns
+                const groupedValuesArr = splat(groupedY);
+                for (let j = 0; j < groupedValuesArr.length; j++) {
+                    valueColumns[j].push(groupedValuesArr[j]);
+                }
                 groupMap.push(series.dataGroupInfo);
             }
             // Reset the aggregate arrays
@@ -410,9 +411,7 @@ function groupData(xData, yData, groupPositions, approximation) {
         // For each raw data point, push it to an array that contains all values
         // for this specific group
         if (pointArrayMap) {
-            const index = (series.options.dataGrouping &&
-                series.options.dataGrouping.groupAll ?
-                i : series.cropStart + i), point = (data && data[index]) ||
+            const index = groupAll ? i : series.cropStart + i, point = (data && data[index]) ||
                 series.pointClass.prototype.applyOptions.apply({
                     series: series
                 }, [dataOptions[index]]);
@@ -437,10 +436,16 @@ function groupData(xData, yData, groupPositions, approximation) {
             }
         }
     }
+    const columns = {
+        x: groupedXData
+    };
+    (pointArrayMap || ['y']).forEach((key, i) => {
+        columns[key] = valueColumns[i];
+    });
+    modified.setColumns(columns);
     return {
-        groupedXData,
-        groupedYData,
-        groupMap
+        groupMap,
+        modified
     };
 }
 /**

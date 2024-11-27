@@ -76,7 +76,7 @@ class BellcurveSeries extends AreaSplineSeries {
     }
     setDerivedData() {
         const series = this;
-        if (series.baseSeries?.yData?.length || 0 > 1) {
+        if (series.baseSeries?.getColumn('y').length || 0 > 1) {
             series.setMean();
             series.setStandardDeviation();
             series.setData(series.derivedData(series.mean || 0, series.standardDeviation || 0), false, void 0, false);
@@ -85,11 +85,11 @@ class BellcurveSeries extends AreaSplineSeries {
     }
     setMean() {
         const series = this;
-        series.mean = correctFloat(BellcurveSeries.mean(series.baseSeries.yData));
+        series.mean = correctFloat(BellcurveSeries.mean(series.baseSeries?.getColumn('y') || []));
     }
     setStandardDeviation() {
         const series = this;
-        series.standardDeviation = correctFloat(BellcurveSeries.standardDeviation(series.baseSeries.yData, series.mean));
+        series.standardDeviation = correctFloat(BellcurveSeries.standardDeviation(series.baseSeries?.getColumn('y') || [], series.mean));
     }
 }
 /* *

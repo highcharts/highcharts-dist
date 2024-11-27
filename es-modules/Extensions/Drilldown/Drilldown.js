@@ -459,7 +459,8 @@ class ChartAdditions {
                         }
                     }
                 }
-                oldSeries.xData = []; // Overcome problems with minRange (#2898)
+                // Overcome problems with minRange (#2898)
+                oldSeries.dataTable.setColumn('x', []);
                 // Reset the names to start new series from the beginning.
                 // Do it once to preserve names when multiple
                 // series are added for the same axis, #16135.
@@ -722,7 +723,7 @@ var Drilldown;
         (this.xAxis || []).forEach((axis) => {
             axis.ddPoints = {};
             axis.series.forEach((series) => {
-                const xData = series.xData || [], points = series.points;
+                const xData = series.getColumn('x'), points = series.points;
                 for (let i = 0, iEnd = xData.length, p; i < iEnd; i++) {
                     p = series.options.data[i];
                     // The `drilldown` property can only be set on an array or an

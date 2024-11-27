@@ -53,8 +53,9 @@ class WaterfallSeries extends ColumnSeries {
     generatePoints() {
         // Parent call:
         ColumnSeries.prototype.generatePoints.apply(this);
+        const processedYData = this.getColumn('y', true);
         for (let i = 0, len = this.points.length; i < len; i++) {
-            const point = this.points[i], y = this.processedYData[i];
+            const point = this.points[i], y = processedYData[i];
             // Override point value for sums. #3710 Update point does not
             // propagate to sum
             if (isNumber(y) && (point.isIntermediateSum || point.isSum)) {
@@ -65,14 +66,14 @@ class WaterfallSeries extends ColumnSeries {
     // Call default processData then override yData to reflect waterfall's
     // extremes on yAxis
     processData(force) {
-        const series = this, options = series.options, yData = series.yData, 
+        const series = this, options = series.options, yData = series.getColumn('y'), 
         // #3710 Update point does not propagate to sum
         points = options.data, dataLength = yData.length, threshold = options.threshold || 0;
         let point, subSum, sum, dataMin, dataMax, y;
         sum = subSum = dataMin = dataMax = 0;
         for (let i = 0; i < dataLength; i++) {
             y = yData[i];
-            point = points && points[i] ? points[i] : {};
+            point = points?.[i] || {};
             if (y === 'sum' || point.isSum) {
                 yData[i] = correctFloat(sum);
             }
@@ -105,13 +106,6 @@ class WaterfallSeries extends ColumnSeries {
             return 'intermediateSum';
         }
         return pt.y;
-    }
-    updateParallelArrays(point, i) {
-        super.updateParallelArrays.call(this, point, i);
-        // Prevent initial sums from triggering an error (#3245, #7559)
-        if (this.yData[0] === 'sum' || this.yData[0] === 'intermediateSum') {
-            this.yData[0] = null;
-        }
     }
     // Postprocess mapping between options and SVG attributes
     pointAttribs(point, state) {
@@ -202,7 +196,7 @@ class WaterfallSeries extends ColumnSeries {
     }
     // Waterfall has stacking along the x-values too.
     setStackedPoints(axis) {
-        const series = this, options = series.options, waterfallStacks = axis.waterfall?.stacks, seriesThreshold = options.threshold || 0, stackKey = series.stackKey, xData = series.xData, xLength = xData.length;
+        const series = this, options = series.options, waterfallStacks = axis.waterfall?.stacks, seriesThreshold = options.threshold || 0, stackKey = series.stackKey, xData = series.getColumn('x'), yData = series.getColumn('y'), xLength = xData.length;
         let stackThreshold = seriesThreshold, interSum = stackThreshold, actualStackX, totalYVal = 0, actualSum = 0, prevSum = 0, statesLen, posTotal, negTotal, xPoint, yVal, x, alreadyChanged, changed;
         // Function responsible for calculating correct values for stackState
         // array of each stack item. The arguments are: firstS - the value for
@@ -259,7 +253,7 @@ class WaterfallSeries extends ColumnSeries {
                             };
                         }
                         actualStackX = actualStack[x];
-                        yVal = series.yData[i];
+                        yVal = yData[i];
                         if (yVal >= 0) {
                             actualStackX.posTotal += yVal;
                         }
@@ -360,10 +354,10 @@ extend(WaterfallSeries.prototype, {
 });
 // Translate data points from raw values
 addEvent(WaterfallSeries, 'afterColumnTranslate', function () {
-    const series = this, { options, points, yAxis } = series, minPointLength = pick(options.minPointLength, 5), halfMinPointLength = minPointLength / 2, threshold = options.threshold || 0, stacking = options.stacking, actualStack = yAxis.waterfall.stacks[series.stackKey];
+    const series = this, { options, points, yAxis } = series, minPointLength = pick(options.minPointLength, 5), halfMinPointLength = minPointLength / 2, threshold = options.threshold || 0, stacking = options.stacking, actualStack = yAxis.waterfall.stacks[series.stackKey], processedYData = series.getColumn('y', true);
     let previousIntermediate = threshold, previousY = threshold, y, total, yPos, hPos;
     for (let i = 0; i < points.length; i++) {
-        const point = points[i], yValue = series.processedYData[i], shapeArgs = point.shapeArgs, box = extend({
+        const point = points[i], yValue = processedYData[i], shapeArgs = point.shapeArgs, box = extend({
             x: 0,
             y: 0,
             width: 0,

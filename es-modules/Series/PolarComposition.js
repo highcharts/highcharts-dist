@@ -156,11 +156,11 @@ function onChartAfterInit(event) {
 /**
  *
  */
-function onChartGetAxes() {
+function onChartCreateAxes() {
     if (!this.pane) {
         this.pane = [];
     }
-    this.options.pane = splat(this.options.pane);
+    this.options.pane = splat(this.options.pane || {});
     this.options.pane.forEach((paneOptions) => {
         new Pane(// eslint-disable-line no-new
         paneOptions, this);
@@ -911,7 +911,7 @@ class PolarAdditions {
         if (pushUnique(composed, 'Polar')) {
             const chartProto = ChartClass.prototype, pointProto = PointClass.prototype, pointerProto = PointerClass.prototype, seriesProto = SeriesClass.prototype;
             addEvent(ChartClass, 'afterDrawChartBox', onChartAfterDrawChartBox);
-            addEvent(ChartClass, 'getAxes', onChartGetAxes);
+            addEvent(ChartClass, 'createAxes', onChartCreateAxes);
             addEvent(ChartClass, 'init', onChartAfterInit);
             wrap(chartProto, 'get', wrapChartGet);
             wrap(pointerProto, 'getCoordinates', wrapPointerGetCoordinates);

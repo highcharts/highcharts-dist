@@ -161,6 +161,7 @@ class NetworkgraphSeries extends Series {
             node = this.nodes[i];
             node.degree = node.getDegree();
             node.radius = pick(node.marker && node.marker.radius, this.options.marker && this.options.marker.radius, 0);
+            node.key = node.name;
             // If node exists, but it's not available in nodeLookup,
             // then it's leftover from previous runs (e.g. setData)
             if (!this.nodeLookup[node.id]) {
@@ -313,9 +314,6 @@ class NetworkgraphSeries extends Series {
      * @private
      */
     translate() {
-        if (!this.processedXData) {
-            this.processData();
-        }
         this.generatePoints();
         this.deferLayout();
         this.nodes.forEach(function (node) {
@@ -363,41 +361,6 @@ export default NetworkgraphSeries;
  *  API Declarations
  *
  * */
-/**
- * Formatter callback function.
- *
- * @callback Highcharts.SeriesNetworkgraphDataLabelsFormatterCallbackFunction
- *
- * @param {Highcharts.SeriesNetworkgraphDataLabelsFormatterContextObject|Highcharts.PointLabelObject} this
- *        Data label context to format
- *
- * @return {string}
- *         Formatted data label text
- */
-/**
- * Context for the formatter function.
- *
- * @interface Highcharts.SeriesNetworkgraphDataLabelsFormatterContextObject
- * @extends Highcharts.PointLabelObject
- * @since 7.0.0
- */ /**
-* The color of the node.
-* @name Highcharts.SeriesNetworkgraphDataLabelsFormatterContextObject#color
-* @type {Highcharts.ColorString}
-* @since 7.0.0
-*/ /**
-* The point (node) object. The node name, if defined, is available through
-* `this.point.name`. Arrays: `this.point.linksFrom` and `this.point.linksTo`
-* contains all nodes connected to this point.
-* @name Highcharts.SeriesNetworkgraphDataLabelsFormatterContextObject#point
-* @type {Highcharts.Point}
-* @since 7.0.0
-*/ /**
-* The ID of the node.
-* @name Highcharts.SeriesNetworkgraphDataLabelsFormatterContextObject#key
-* @type {string}
-* @since 7.0.0
-*/
 /**
  * Callback that fires after the end of Networkgraph series simulation
  * when the layout is stable.

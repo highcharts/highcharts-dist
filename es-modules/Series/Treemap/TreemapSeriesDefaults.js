@@ -469,7 +469,7 @@ const TreemapSeriesDefaults = {
      * @sample {highcharts} highcharts/plotoptions/treemap-traverse-to-leaf/
      *         Traverse to leaf enabled
      *
-     * @since   @next
+     * @since   11.4.4
      *
      * @product highcharts
      */

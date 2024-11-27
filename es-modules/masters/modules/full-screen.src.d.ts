@@ -1,1 +1,2 @@
-import '../../../modules/full-screen.src';
+import Highcharts from '../../Core/Globals.js';
+export default Highcharts;

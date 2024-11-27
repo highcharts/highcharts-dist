@@ -50,19 +50,14 @@ function chartDrawChartBox(proceed, options, callback) {
         // Calculate margins after first rendering the bubble legend
         if (!bubbleLegendOptions.placed) {
             chart.getMargins();
-            chart.axes.forEach(function (axis) {
-                if (axis.visible) { // #11448
-                    axis.render();
-                }
-                if (!bubbleLegendOptions.placed) {
-                    axis.setScale();
-                    axis.updateNames();
-                    // Disable axis animation on init
-                    objectEach(axis.ticks, function (tick) {
-                        tick.isNew = true;
-                        tick.isNewLabel = true;
-                    });
-                }
+            chart.axes.forEach((axis) => {
+                axis.setScale();
+                axis.updateNames();
+                // Disable axis animation on init
+                objectEach(axis.ticks, function (tick) {
+                    tick.isNew = true;
+                    tick.isNewLabel = true;
+                });
             });
             chart.getMargins();
         }
@@ -123,7 +118,7 @@ function getVisibleBubbleSeriesIndex(chart) {
         if (series[i] &&
             series[i].isBubble &&
             series[i].visible &&
-            series[i].zData.length) {
+            series[i].dataTable.rowCount) {
             return i;
         }
         i++;

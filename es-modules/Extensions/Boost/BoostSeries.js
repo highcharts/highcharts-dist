@@ -406,6 +406,7 @@ function enterBoost(series) {
     }
     // Destroy existing points after zoom out
     if (series.is('scatter') &&
+        !series.is('treemap') &&
         series.data.length) {
         for (const point of series.data) {
             point?.destroy?.();
@@ -455,8 +456,8 @@ function exitBoost(series) {
  * @function Highcharts.Series#hasExtremes
  */
 function hasExtremes(series, checkX) {
-    const options = series.options, data = options.data, xAxis = series.xAxis && series.xAxis.options, yAxis = series.yAxis && series.yAxis.options, colorAxis = series.colorAxis && series.colorAxis.options;
-    return data.length > (options.boostThreshold || Number.MAX_VALUE) &&
+    const options = series.options, dataLength = series.dataTable.modified.rowCount, xAxis = series.xAxis && series.xAxis.options, yAxis = series.yAxis && series.yAxis.options, colorAxis = series.colorAxis && series.colorAxis.options;
+    return dataLength > (options.boostThreshold || Number.MAX_VALUE) &&
         // Defined yAxis extremes
         isNumber(yAxis.min) &&
         isNumber(yAxis.max) &&
@@ -546,14 +547,15 @@ function getPoint(series, boostPoint) {
     if (boostPoint instanceof PointClass) {
         return boostPoint;
     }
-    const xData = (series.xData ||
+    const xData = ((series.getColumn('x').length ? series.getColumn('x') : void 0) ||
         seriesOptions.xData ||
-        series.processedXData ||
-        false), point = new PointClass(series, (series.options.data || [])[boostPoint.i], xData ? xData[boostPoint.i] : void 0);
+        series.getColumn('x', true) ||
+        false), point = new PointClass(series, (isArray(series.options.data) ? series.options.data : [])[boostPoint.i], xData ? xData[boostPoint.i] : void 0);
     point.category = pick(xAxis.categories ?
         xAxis.categories[point.x] :
         point.x, // @todo simplify
     point.x);
+    point.key = point.name ?? point.category;
     point.dist = boostPoint.dist;
     point.distX = boostPoint.distX;
     point.plotX = boostPoint.plotX;
@@ -579,7 +581,7 @@ function scatterProcessData(force) {
     // Required to get tick-based zoom ranges that take options into account
     // like `minPadding`, `maxPadding`, `startOnTick`, `endOnTick`.
     series.yAxis.setTickInterval();
-    const boostThreshold = options.boostThreshold || 0, cropThreshold = options.cropThreshold, data = options.data || series.data, xData = series.xData, xExtremes = xAxis.getExtremes(), xMax = xExtremes.max ?? Number.MAX_VALUE, xMin = xExtremes.min ?? -Number.MAX_VALUE, yData = series.yData, yExtremes = yAxis.getExtremes(), yMax = yExtremes.max ?? Number.MAX_VALUE, yMin = yExtremes.min ?? -Number.MAX_VALUE;
+    const boostThreshold = options.boostThreshold || 0, cropThreshold = options.cropThreshold, xData = series.getColumn('x'), xExtremes = xAxis.getExtremes(), xMax = xExtremes.max ?? Number.MAX_VALUE, xMin = xExtremes.min ?? -Number.MAX_VALUE, yData = series.getColumn('y'), yExtremes = yAxis.getExtremes(), yMax = yExtremes.max ?? Number.MAX_VALUE, yMin = yExtremes.min ?? -Number.MAX_VALUE;
     // Skip processing in non-boost zoom
     if (!series.boosted &&
         xAxis.old &&
@@ -588,28 +590,33 @@ function scatterProcessData(force) {
         xMax <= (xAxis.old.max ?? Number.MAX_VALUE) &&
         yMin >= (yAxis.old.min ?? -Number.MAX_VALUE) &&
         yMax <= (yAxis.old.max ?? Number.MAX_VALUE)) {
-        series.processedXData ?? (series.processedXData = xData);
-        series.processedYData ?? (series.processedYData = yData);
+        series.dataTable.modified.setColumns({
+            x: xData,
+            y: yData
+        });
         return true;
     }
     // Without thresholds just assign data
+    const dataLength = series.dataTable.rowCount;
     if (!boostThreshold ||
-        data.length < boostThreshold ||
+        dataLength < boostThreshold ||
         (cropThreshold &&
             !series.forceCrop &&
             !series.getExtremesFromAll &&
             !options.getExtremesFromAll &&
-            data.length < cropThreshold)) {
-        series.processedXData = xData;
-        series.processedYData = yData;
+            dataLength < cropThreshold)) {
+        series.dataTable.modified.setColumns({
+            x: xData,
+            y: yData
+        });
         return true;
     }
     // Filter unsorted scatter data for ranges
     const processedData = [], processedXData = [], processedYData = [], xRangeNeeded = !(isNumber(xExtremes.max) || isNumber(xExtremes.min)), yRangeNeeded = !(isNumber(yExtremes.max) || isNumber(yExtremes.min));
-    let cropped = false, x, xDataMax = xData[0], xDataMin = xData[0], y, yDataMax = yData[0], yDataMin = yData[0];
+    let cropped = false, x, xDataMax = xData[0], xDataMin = xData[0], y, yDataMax = yData?.[0], yDataMin = yData?.[0];
     for (let i = 0, iEnd = xData.length; i < iEnd; ++i) {
         x = xData[i];
-        y = yData[i];
+        y = yData?.[i];
         if (x >= xMin && x <= xMax &&
             y >= yMin && y <= yMax) {
             processedData.push({ x, y });
@@ -639,8 +646,11 @@ function scatterProcessData(force) {
     // Set properties as base processData
     series.cropped = cropped;
     series.cropStart = 0;
-    series.processedXData = processedXData; // For boosted points rendering
-    series.processedYData = processedYData;
+    // For boosted points rendering
+    series.dataTable.modified.setColumns({
+        x: processedXData,
+        y: processedYData
+    });
     if (!getSeriesBoosting(series, processedXData)) {
         series.processedData = processedData; // For un-boosted points rendering
     }
@@ -651,13 +661,14 @@ function scatterProcessData(force) {
  * @function Highcharts.Series#renderCanvas
  */
 function seriesRenderCanvas() {
-    const options = this.options || {}, chart = this.chart, chartBoost = chart.boost, seriesBoost = this.boost, xAxis = this.xAxis, yAxis = this.yAxis, xData = options.xData || this.processedXData, yData = options.yData || this.processedYData, rawData = this.processedData || options.data, xExtremes = xAxis.getExtremes(), 
+    const options = this.options || {}, chart = this.chart, chartBoost = chart.boost, seriesBoost = this.boost, xAxis = this.xAxis, yAxis = this.yAxis, xData = options.xData || this.getColumn('x', true), yData = options.yData || this.getColumn('y', true), lowData = this.getColumn('low', true), highData = this.getColumn('high', true), rawData = this.processedData || options.data, xExtremes = xAxis.getExtremes(), 
     // Taking into account the offset of the min point #19497
     xMin = xExtremes.min - (xAxis.minPointOffset || 0), xMax = xExtremes.max + (xAxis.minPointOffset || 0), yExtremes = yAxis.getExtremes(), yMin = yExtremes.min - (yAxis.minPointOffset || 0), yMax = yExtremes.max + (yAxis.minPointOffset || 0), pointTaken = {}, sampling = !!this.sampling, enableMouseTracking = options.enableMouseTracking, threshold = options.threshold, isRange = this.pointArrayMap &&
-        this.pointArrayMap.join(',') === 'low,high', isStacked = !!options.stacking, cropStart = this.cropStart || 0, requireSorting = this.requireSorting, useRaw = !xData, compareX = options.findNearestPointBy === 'x', xDataFull = (this.xData ||
+        this.pointArrayMap.join(',') === 'low,high', isStacked = !!options.stacking, cropStart = this.cropStart || 0, requireSorting = this.requireSorting, useRaw = !xData, compareX = options.findNearestPointBy === 'x', xDataFull = ((this.getColumn('x', true).length ?
+        this.getColumn('x', true) :
+        void 0) ||
         this.options.xData ||
-        this.processedXData ||
-        false), lineWidth = pick(options.lineWidth, 1);
+        this.getColumn('x', true)), lineWidth = pick(options.lineWidth, 1);
     let renderer = false, lastClientX, yBottom = yAxis.getThreshold(threshold), minVal, maxVal, minI, maxI;
     // When touch-zooming or mouse-panning, re-rendering the canvas would not
     // perform fast enough. Instead, let the axes redraw, but not the series.
@@ -789,15 +800,15 @@ function seriesRenderCanvas() {
             }
             else {
                 x = d;
-                y = yData[i];
+                y = yData?.[i];
             }
             // Resolve low and high for range series
             if (isRange) {
                 if (useRaw) {
                     y = d.slice(1, 3);
                 }
-                low = y[0];
-                y = y[1];
+                low = lowData[i];
+                y = highData[i];
             }
             else if (isStacked) {
                 x = d.x;
@@ -875,7 +886,9 @@ function seriesRenderCanvas() {
         if (boostOptions.debug.timeKDTree) {
             console.time('kd tree building'); // eslint-disable-line no-console
         }
-        eachAsync(isStacked ? this.data.slice(cropStart) : (xData || rawData), processPoint, doneProcessing);
+        eachAsync(isStacked ?
+            this.data.slice(cropStart) :
+            (xData || rawData), processPoint, doneProcessing);
     }
 }
 /**
@@ -973,8 +986,12 @@ function wrapSeriesGetExtremes(proceed) {
 function wrapSeriesProcessData(proceed) {
     let dataToMeasure = this.options.data;
     if (boostEnabled(this.chart) && BoostableMap[this.type]) {
-        const series = this, isScatter = series.is('scatter') &&
+        const series = this, 
+        // Flag for code that should run for ScatterSeries and its
+        // subclasses, apart from the enlisted exceptions.
+        isScatter = series.is('scatter') &&
             !series.is('bubble') &&
+            !series.is('treemap') &&
             !series.is('heatmap');
         // If there are no extremes given in the options, we also need to
         // process the data to read the data extremes. If this is a heatmap,
@@ -983,6 +1000,7 @@ function wrapSeriesProcessData(proceed) {
         // First pass with options.data:
         !getSeriesBoosting(series, dataToMeasure) ||
             isScatter ||
+            series.is('treemap') ||
             // Use processedYData for the stack (#7481):
             series.options.stacking ||
             !hasExtremes(series, true)) {
@@ -997,7 +1015,7 @@ function wrapSeriesProcessData(proceed) {
             else {
                 proceed.apply(series, [].slice.call(arguments, 1));
             }
-            dataToMeasure = series.processedXData;
+            dataToMeasure = series.getColumn('x', true);
         }
         // Set the isBoosting flag, second pass with processedXData to
         // see if we have zoomed.
@@ -1006,10 +1024,11 @@ function wrapSeriesProcessData(proceed) {
         if (series.boosted) {
             // Force turbo-mode:
             let firstPoint;
-            if (series.options.data &&
-                series.options.data.length) {
+            if (series.options.data?.length) {
                 firstPoint = series.getFirstValidPoint(series.options.data);
-                if (!isNumber(firstPoint) && !isArray(firstPoint)) {
+                if (!isNumber(firstPoint) &&
+                    !isArray(firstPoint) &&
+                    !series.is('treemap')) {
                     error(12, false, series.chart);
                 }
             }

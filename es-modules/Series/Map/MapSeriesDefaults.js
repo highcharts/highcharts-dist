@@ -50,7 +50,7 @@ const MapSeriesDefaults = {
             const { value } = this.point;
             return isNumber(value) ?
                 numberFormatter(value, -1) :
-                this.point.name; // #20231
+                (this.point.name || ''); // #20231
         },
         inside: true, // For the color
         overflow: false,

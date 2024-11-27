@@ -34,9 +34,11 @@ function onAxisAfterGetSeriesExtremes() {
     if (this.isXAxis) {
         dataMax = pick(this.dataMax, -Number.MAX_VALUE);
         for (const series of this.series) {
-            if (series.x2Data) {
-                for (const val of series.x2Data) {
-                    if (val && val > dataMax) {
+            const column = (series.dataTable.getColumn('x2', true) ||
+                series.dataTable.getColumn('end', true));
+            if (column) {
+                for (const val of column) {
+                    if (isNumber(val) && val > dataMax) {
                         dataMax = val;
                         modMax = true;
                     }
@@ -106,12 +108,14 @@ class XRangeSeries extends ColumnSeries {
      * but one of them is inside.
      * @private
      */
-    cropData(xData, yData, min, max) {
+    cropData(table, min, max) {
         // Replace xData with x2Data to find the appropriate cropStart
-        const crop = super.cropData(this.x2Data, yData, min, max);
+        const xData = table.getColumn('x') || [], x2Data = table.getColumn('x2');
+        table.setColumn('x', x2Data, void 0, { silent: true });
+        const croppedData = super.cropData(table, min, max);
         // Re-insert the cropped xData
-        crop.xData = xData.slice(crop.start, crop.end);
-        return crop;
+        table.setColumn('x', xData.slice(croppedData.start, croppedData.end), void 0, { silent: true });
+        return croppedData;
     }
     /**
      * Finds the index of an existing point that matches the given point
@@ -266,6 +270,11 @@ class XRangeSeries extends ColumnSeries {
                 height: shapeArgs.height
             };
         }
+        // Add formatting keys for tooltip and data labels. Use 'category' as
+        // 'key' to ensure tooltip datetime formatting. Use 'name' only when
+        // 'category' is undefined.
+        point.key = point.category || point.name;
+        point.yCategory = yAxis.categories?.[point.y ?? -1];
     }
     /**
      * @private
@@ -400,6 +409,7 @@ extend(XRangeSeries.prototype, {
     pointClass: XRangePoint,
     pointArrayMap: ['x2', 'y'],
     getExtremesFromAll: true,
+    keysAffectYAxis: ['y'],
     parallelArrays: ['x', 'x2', 'y'],
     requireSorting: false,
     type: 'xrange',

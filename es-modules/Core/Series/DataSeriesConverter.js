@@ -186,7 +186,7 @@ class DataSeriesConverter {
                     rowIndex = table.getRowIndexBy('id', id);
                     if (!rowIndex) {
                         columns.id = id;
-                        table.setRows([columns], void 0, eventDetail);
+                        table.setRows([columns], void 0, void 0, eventDetail);
                     }
                     else if (columns[y]) {
                         table.setCell(y, rowIndex, columns[y], eventDetail);

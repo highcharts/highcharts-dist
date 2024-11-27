@@ -136,7 +136,7 @@ function isChartSeriesBoosting(chart) {
         if (BoostableMap[series.type]) {
             ++canBoostCount;
         }
-        if (patientMax(series.processedXData, seriesOptions.data, 
+        if (patientMax(series.getColumn('x', true), seriesOptions.data, 
         /// series.xData,
         series.points) >= (seriesOptions.boostThreshold || Number.MAX_VALUE)) {
             ++needBoostCount;
@@ -237,11 +237,10 @@ function onChartCallback(chart) {
  */
 function patientMax(...args) {
     let r = -Number.MAX_VALUE;
-    args.forEach(function (t) {
+    args.forEach((t) => {
         if (typeof t !== 'undefined' &&
             t !== null &&
             typeof t.length !== 'undefined') {
-            /// r = r < t.length ? t.length : r;
             if (t.length > 0) {
                 r = t.length;
                 return true;

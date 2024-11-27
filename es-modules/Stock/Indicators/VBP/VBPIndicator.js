@@ -253,7 +253,7 @@ class VBPIndicator extends SMAIndicator {
         return ret;
     }
     getValues(series, params) {
-        const indicator = this, xValues = series.processedXData, yValues = series.processedYData, chart = indicator.chart, ranges = params.ranges, VBP = [], xData = [], yData = [], volumeSeries = chart.get(params.volumeSeriesID);
+        const indicator = this, xValues = series.getColumn('x', true), yValues = series.processedYData, chart = indicator.chart, ranges = params.ranges, VBP = [], xData = [], yData = [], volumeSeries = chart.get(params.volumeSeriesID);
         // Checks if base series exists
         if (!series.chart) {
             error('Base series not found! In case it has been removed, add ' +
@@ -262,8 +262,9 @@ class VBPIndicator extends SMAIndicator {
         }
         // Checks if volume series exists and if it has data
         if (!volumeSeries ||
-            !volumeSeries.processedXData.length) {
-            const errorMessage = volumeSeries && !volumeSeries.processedXData.length ?
+            !volumeSeries.getColumn('x', true).length) {
+            const errorMessage = volumeSeries &&
+                !volumeSeries.getColumn('x', true).length ?
                 ' does not contain any data.' :
                 ' not found! Check `volumeSeriesID`.';
             error('Series ' +
@@ -339,7 +340,7 @@ class VBPIndicator extends SMAIndicator {
     }
     // Calculating sum of volume values for a specific zone
     volumePerZone(isOHLC, priceZones, volumeSeries, xValues, yValues) {
-        const indicator = this, volumeXData = volumeSeries.processedXData, volumeYData = volumeSeries.processedYData, lastZoneIndex = priceZones.length - 1, baseSeriesLength = yValues.length, volumeSeriesLength = volumeYData.length;
+        const indicator = this, volumeXData = volumeSeries.getColumn('x', true), volumeYData = volumeSeries.getColumn('y', true), lastZoneIndex = priceZones.length - 1, baseSeriesLength = yValues.length, volumeSeriesLength = volumeYData.length;
         let previousValue, startFlag, endFlag, value, i;
         // Checks if each point has a corresponding volume value
         if (abs(baseSeriesLength - volumeSeriesLength)) {

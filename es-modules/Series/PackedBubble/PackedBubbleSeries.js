@@ -72,16 +72,15 @@ class PackedBubbleSeries extends BubbleSeries {
      */
     accumulateAllPoints() {
         const chart = this.chart, allDataPoints = [];
-        let yData;
         for (const series of chart.series) {
             if (series.is('packedbubble') && // #13574
                 series.reserveSpace()) {
-                yData = series.yData || [];
+                const valueData = series.getColumn('value');
                 // Add data to array only if series is visible
-                for (let j = 0; j < yData.length; j++) {
+                for (let j = 0; j < valueData.length; j++) {
                     allDataPoints.push([
                         null, null,
-                        yData[j],
+                        valueData[j],
                         series.index,
                         j,
                         {
@@ -174,10 +173,9 @@ class PackedBubbleSeries extends BubbleSeries {
         if (zMin && zMax) {
             return [zMin, zMax];
         }
-        // It is needed to deal with null
-        // and undefined values
+        // It is needed to deal with null and undefined values
         allSeries.forEach((series) => {
-            series.yData.forEach((y) => {
+            series.getColumn('value').forEach((y) => {
                 if (defined(y)) {
                     if (y > valMax) {
                         valMax = y;
@@ -760,7 +758,6 @@ class PackedBubbleSeries extends BubbleSeries {
     translate() {
         const chart = this.chart, data = this.data, index = this.index, useSimulation = this.options.useSimulation;
         let point, radius, positions;
-        this.processedXData = this.xData;
         this.generatePoints();
         // Merged data is an array with all of the data from all series
         if (!defined(chart.allDataPoints)) {
@@ -834,44 +831,3 @@ SeriesRegistry.registerSeriesType('packedbubble', PackedBubbleSeries);
  *
  * */
 export default PackedBubbleSeries;
-/* *
- *
- *  API Declarations
- *
- * */
-/**
- * Formatter callback function.
- *
- * @callback Highcharts.SeriesPackedBubbleDataLabelsFormatterCallbackFunction
- *
- * @param {Highcharts.SeriesPackedBubbleDataLabelsFormatterContextObject} this
- *        Data label context to format
- *
- * @return {string}
- *         Formatted data label text
- */
-/**
- * Context for the formatter function.
- *
- * @interface Highcharts.SeriesPackedBubbleDataLabelsFormatterContextObject
- * @extends Highcharts.PointLabelObject
- * @since 7.0.0
- */ /**
-* The color of the node.
-* @name Highcharts.SeriesPackedBubbleDataLabelsFormatterContextObject#color
-* @type {Highcharts.ColorString}
-* @since 7.0.0
-*/ /**
-* The point (node) object. The node name, if defined, is available through
-* `this.point.name`. Arrays: `this.point.linksFrom` and `this.point.linksTo`
-* contains all nodes connected to this point.
-* @name Highcharts.SeriesPackedBubbleDataLabelsFormatterContextObject#point
-* @type {Highcharts.Point}
-* @since 7.0.0
-*/ /**
-* The ID of the node.
-* @name Highcharts.SeriesPackedBubbleDataLabelsFormatterContextObject#key
-* @type {string}
-* @since 7.0.0
-*/
-''; // Detach doclets above

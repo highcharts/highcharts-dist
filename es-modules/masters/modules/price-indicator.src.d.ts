@@ -1,1 +1,2 @@
-import '../../../modules/price-indicator.src';
+import Highcharts from '../../Core/Globals.js';
+export default Highcharts;

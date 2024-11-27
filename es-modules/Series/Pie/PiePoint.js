@@ -179,7 +179,7 @@ extend(PiePoint.prototype, {
             ];
         },
         crookedLine: function (labelPosition, connectorPosition, options) {
-            const { breakAt, touchingSliceAt } = connectorPosition, { series } = this, [cx, cy, diameter] = series.center, r = diameter / 2, { plotLeft, plotWidth } = series.chart, leftAligned = labelPosition.alignment === 'left', { x, y } = labelPosition;
+            const { angle = this.angle || 0, breakAt, touchingSliceAt } = connectorPosition, { series } = this, [cx, cy, diameter] = series.center, r = diameter / 2, { plotLeft, plotWidth } = series.chart, leftAligned = labelPosition.alignment === 'left', { x, y } = labelPosition;
             let crookX = breakAt.x;
             if (options.crookDistance) {
                 const crookDistance = relativeLength(// % to fraction
@@ -194,7 +194,7 @@ extend(PiePoint.prototype, {
                 // and the extension of the label position.
             }
             else {
-                crookX = cx + (cy - y) * Math.tan((this.angle || 0) - Math.PI / 2);
+                crookX = cx + (cy - y) * Math.tan(angle - Math.PI / 2);
             }
             const path = [['M', x, y]];
             // The crookedLine formula doesn't make sense if the path overlaps

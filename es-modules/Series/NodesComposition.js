@@ -216,7 +216,7 @@ var NodesComposition;
      * @private
      */
     function updateNode(options, redraw, animation, runEvent) {
-        const nodes = this.series.options.nodes, data = this.series.options.data, dataLength = data && data.length || 0, linkConfig = data && data[this.index];
+        const nodes = this.series.options.nodes, data = this.series.options.data, dataLength = data?.length || 0, linkConfig = data?.[this.index];
         pointProto.update.call(this, options, this.isNode ? false : redraw, // Hold the redraw for nodes
         animation, runEvent);
         if (this.isNode) {
@@ -226,7 +226,7 @@ var NodesComposition;
             (prevIndex, n, index) => (this.id === n.id ? index : prevIndex), -1), 
             // Merge old config with new config. New config is stored in
             // options.data, because of default logic in point.update()
-            nodeConfig = merge(nodes && nodes[nodeIndex] || {}, data && data[this.index] || {});
+            nodeConfig = merge(nodes && nodes[nodeIndex] || {}, data?.[this.index] || {});
             // Restore link config
             if (data) {
                 if (linkConfig) {

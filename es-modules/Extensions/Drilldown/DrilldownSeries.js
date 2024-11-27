@@ -231,8 +231,6 @@ function mapAnimateDrilldown(init) {
                     series.options.enableMouseTracking =
                         pick((series.userOptions &&
                             series.userOptions.enableMouseTracking), true);
-                    series.isDirty = true;
-                    chart.redraw();
                 }
             });
             if (chart.drilldown) {

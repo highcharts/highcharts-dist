@@ -49,7 +49,7 @@ class KlingerIndicator extends SMAIndicator {
                 ' not found! Check `volumeSeriesID`.', true, series.chart);
         }
         const isLengthValid = [series, volumeSeries].every(function (series) {
-            return series && series.xData && series.xData.length >=
+            return series && series.dataTable.rowCount >=
                 options.params.slowAvgPeriod;
         });
         return !!(isLengthValid && isSeriesOHLC);
@@ -75,7 +75,7 @@ class KlingerIndicator extends SMAIndicator {
             // it's filltered out in the getCM method in else statement,
             // (in this iteration, previousCM can be raplaced with the DM).
             CM = this.getCM(previousCM, DM, trend, previousTrend, previousDM);
-            force = this.volumeSeries.yData[i] *
+            force = this.volumeSeries.getColumn('y')[i] *
                 trend * Math.abs(2 * ((DM / CM) - 1)) * 100;
             volumeForce.push([force]);
             // Before next iteration, assign the current as the previous.

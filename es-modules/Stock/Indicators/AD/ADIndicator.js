@@ -43,7 +43,7 @@ class ADIndicator extends SMAIndicator {
      *
      * */
     getValues(series, params) {
-        const period = params.period, xVal = series.xData, yVal = series.yData, volumeSeriesID = params.volumeSeriesID, volumeSeries = series.chart.get(volumeSeriesID), yValVolume = volumeSeries && volumeSeries.yData, yValLen = yVal ? yVal.length : 0, AD = [], xData = [], yData = [];
+        const period = params.period, xVal = series.xData, yVal = series.yData, volumeSeriesID = params.volumeSeriesID, volumeSeries = series.chart.get(volumeSeriesID), yValVolume = volumeSeries?.getColumn('y'), yValLen = yVal ? yVal.length : 0, AD = [], xData = [], yData = [];
         let len, i, ADPoint;
         if (xVal.length <= period &&
             yValLen &&

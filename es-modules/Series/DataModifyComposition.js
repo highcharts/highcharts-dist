@@ -211,21 +211,18 @@ var DataModifyComposition;
      * @function Highcharts.Series#processData
      */
     function afterProcessData() {
-        const series = this;
+        const series = this, 
+        // For series with more than one value (range, OHLC etc), compare
+        // against close or the pointValKey (#4922, #3112, #9854)
+        compareColumn = this.getColumn((series.pointArrayMap &&
+            (series.options.pointValKey || series.pointValKey)) || 'y', true);
         if (series.xAxis && // Not pies
-            series.processedYData &&
+            compareColumn.length &&
             series.dataModify) {
-            const processedXData = series.processedXData, processedYData = series.processedYData, length = processedYData.length, compareStart = series.options.compareStart === true ? 0 : 1;
-            let keyIndex = -1, i;
-            // For series with more than one value (range, OHLC etc), compare
-            // against close or the pointValKey (#4922, #3112, #9854)
-            if (series.pointArrayMap) {
-                keyIndex = series.pointArrayMap.indexOf(series.options.pointValKey || series.pointValKey || 'y');
-            }
+            const processedXData = series.getColumn('x', true), length = series.dataTable.rowCount, compareStart = series.options.compareStart === true ? 0 : 1;
             // Find the first value for comparison
-            for (i = 0; i < length - compareStart; i++) {
-                const compareValue = processedYData[i] && keyIndex > -1 ?
-                    processedYData[i][keyIndex] : processedYData[i];
+            for (let i = 0; i < length - compareStart; i++) {
+                const compareValue = compareColumn[i];
                 if (isNumber(compareValue) &&
                     compareValue !== 0 &&
                     processedXData[i + compareStart] >= (series.xAxis.min || 0)) {

@@ -1034,13 +1034,13 @@ class Navigator {
      * @function Highcharts.Navigator#getUnionExtremes
      */
     getUnionExtremes(returnFalseOnNoBaseSeries) {
-        const baseAxis = this.chart.xAxis[0], navAxis = this.xAxis, navAxisOptions = navAxis.options, baseAxisOptions = baseAxis.options;
+        const baseAxis = this.chart.xAxis[0], time = this.chart.time, navAxis = this.xAxis, navAxisOptions = navAxis.options, baseAxisOptions = baseAxis.options;
         let ret;
         if (!returnFalseOnNoBaseSeries || baseAxis.dataMin !== null) {
             ret = {
                 dataMin: pick(// #4053
-                navAxisOptions && navAxisOptions.min, numExt('min', baseAxisOptions.min, baseAxis.dataMin, navAxis.dataMin, navAxis.min)),
-                dataMax: pick(navAxisOptions && navAxisOptions.max, numExt('max', baseAxisOptions.max, baseAxis.dataMax, navAxis.dataMax, navAxis.max))
+                time.parse(navAxisOptions?.min), numExt('min', time.parse(baseAxisOptions.min), baseAxis.dataMin, navAxis.dataMin, navAxis.min)),
+                dataMax: pick(time.parse(navAxisOptions?.max), numExt('max', time.parse(baseAxisOptions.max), baseAxis.dataMax, navAxis.dataMax, navAxis.max))
             };
         }
         return ret;
@@ -1165,9 +1165,8 @@ class Navigator {
                 const navigatorSeriesData = baseNavigatorOptions.data || userNavOptions.data;
                 navigator.hasNavigatorData =
                     navigator.hasNavigatorData || !!navigatorSeriesData;
-                mergedNavSeriesOptions.data =
-                    navigatorSeriesData ||
-                        baseOptions.data && baseOptions.data.slice(0);
+                mergedNavSeriesOptions.data = (navigatorSeriesData ||
+                    baseOptions.data?.slice(0));
                 // Update or add the series
                 if (linkedNavSeries && linkedNavSeries.options) {
                     linkedNavSeries.update(mergedNavSeriesOptions, redraw);
@@ -1258,7 +1257,7 @@ class Navigator {
                 if (baseSeries) {
                     erase(baseSeries, base); // #21043
                 }
-                if (this.navigatorSeries) {
+                if (this.navigatorSeries && navigator.series) {
                     erase(navigator.series, this.navigatorSeries);
                     if (defined(this.navigatorSeries.options)) {
                         this.navigatorSeries.remove(false);
@@ -1278,9 +1277,8 @@ class Navigator {
      */
     getBaseSeriesMin(currentSeriesMin) {
         return this.baseSeries.reduce(function (min, series) {
-            // (#10193)
-            return Math.min(min, series.xData && series.xData.length ?
-                series.xData[0] : min);
+            // #10193
+            return Math.min(min, series.getColumn('x')[0] ?? min);
         }, currentSeriesMin);
     }
     /**
@@ -1367,7 +1365,7 @@ class Navigator {
         navigator.stickToMin = navigator.shouldStickToMin(baseSeries, navigator);
         // Set the navigator series data to the new data of the base series
         if (navigatorSeries && !navigator.hasNavigatorData) {
-            navigatorSeries.options.pointStart = baseSeries.xData[0];
+            navigatorSeries.options.pointStart = baseSeries.getColumn('x')[0];
             navigatorSeries.setData(baseSeries.options.data, false, null, false); // #5414
         }
     }
@@ -1378,7 +1376,7 @@ class Navigator {
      * @function Highcharts.Navigator#shouldStickToMin
      */
     shouldStickToMin(baseSeries, navigator) {
-        const xDataMin = navigator.getBaseSeriesMin(baseSeries.xData[0]), xAxis = baseSeries.xAxis, max = xAxis.max, min = xAxis.min, range = xAxis.options.range;
+        const xDataMin = navigator.getBaseSeriesMin(baseSeries.getColumn('x')[0]), xAxis = baseSeries.xAxis, max = xAxis.max, min = xAxis.min, range = xAxis.options.range;
         let stickToMin = true;
         if (isNumber(max) && isNumber(min)) {
             // If range declared, stick to the minimum only if the range

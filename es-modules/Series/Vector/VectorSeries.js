@@ -159,7 +159,7 @@ class VectorSeries extends ScatterSeries {
      */
     translate() {
         Series.prototype.translate.call(this);
-        this.lengthMax = arrayMax(this.lengthData);
+        this.lengthMax = arrayMax(this.getColumn('length'));
     }
 }
 /* *

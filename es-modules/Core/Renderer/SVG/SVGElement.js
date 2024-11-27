@@ -14,7 +14,7 @@ import Color from '../../Color/Color.js';
 import H from '../../Globals.js';
 const { deg2rad, doc, svg, SVG_NS, win } = H;
 import U from '../../Utilities.js';
-const { addEvent, attr, createElement, crisp, css, defined, erase, extend, fireEvent, isArray, isFunction, isObject, isString, merge, objectEach, pick, pInt, pushUnique, replaceNested, syncTimeout, uniqueKey } = U;
+const { addEvent, attr, createElement, crisp, css, defined, erase, extend, fireEvent, getAlignFactor, isArray, isFunction, isObject, isString, merge, objectEach, pick, pInt, pushUnique, replaceNested, syncTimeout, uniqueKey } = U;
 /* *
  *
  *  Class
@@ -214,7 +214,6 @@ class SVGElement {
      */
     align(alignOptions, alignByTranslate, alignTo, redraw = true) {
         const attribs = {}, renderer = this.renderer, alignedObjects = renderer.alignedObjects, initialAlignment = Boolean(alignOptions);
-        let x, y, alignFactor, vAlignFactor;
         // First call on instanciate
         if (alignOptions) {
             this.alignOptions = alignOptions;
@@ -238,36 +237,16 @@ class SVGElement {
             }
             alignTo = void 0; // Do not use the box
         }
-        const alignToBox = pick(alignTo, renderer[alignToKey], renderer);
-        // Assign variables
-        const align = alignOptions.align, vAlign = alignOptions.verticalAlign;
+        const alignToBox = pick(alignTo, renderer[alignToKey], renderer), 
         // Default: left align
-        x = (alignToBox.x || 0) + (alignOptions.x || 0);
+        x = (alignToBox.x || 0) + (alignOptions.x || 0) +
+            ((alignToBox.width || 0) - (alignOptions.width || 0)) *
+                getAlignFactor(alignOptions.align), 
         // Default: top align
-        y = (alignToBox.y || 0) + (alignOptions.y || 0);
-        // Align
-        if (align === 'right') {
-            alignFactor = 1;
-        }
-        else if (align === 'center') {
-            alignFactor = 2;
-        }
-        if (alignFactor) {
-            x += ((alignToBox.width || 0) - (alignOptions.width || 0)) /
-                alignFactor;
-        }
+        y = (alignToBox.y || 0) + (alignOptions.y || 0) +
+            ((alignToBox.height || 0) - (alignOptions.height || 0)) *
+                getAlignFactor(alignOptions.verticalAlign);
         attribs[alignByTranslate ? 'translateX' : 'x'] = Math.round(x);
-        // Vertical align
-        if (vAlign === 'bottom') {
-            vAlignFactor = 1;
-        }
-        else if (vAlign === 'middle') {
-            vAlignFactor = 2;
-        }
-        if (vAlignFactor) {
-            y += ((alignToBox.height || 0) - (alignOptions.height || 0)) /
-                vAlignFactor;
-        }
         attribs[alignByTranslate ? 'translateY' : 'y'] = Math.round(y);
         // Animate only if already placed
         if (redraw) {
@@ -757,7 +736,7 @@ class SVGElement {
                 // renderer, but are not supported by SVG and should not be
                 // added to the DOM. In styled mode, no CSS should find its way
                 // to the DOM whatsoever (#6173, #6474).
-                ['textOutline', 'textOverflow', 'width'].forEach((key) => (stylesToApply &&
+                ['textOutline', 'textOverflow', 'whiteSpace', 'width'].forEach((key) => (stylesToApply &&
                     delete stylesToApply[key]));
                 // SVG requires fill for text
                 if (stylesToApply.color) {
@@ -980,6 +959,7 @@ class SVGElement {
                 rotation,
                 wrapper.textWidth, // #7874, also useHTML
                 alignValue,
+                styles.lineClamp,
                 styles.textOverflow, // #5968
                 styles.fontWeight // #12163
             ].join(',');
@@ -1082,10 +1062,7 @@ class SVGElement {
      * @private
      */
     getRotatedBox(box, rotation) {
-        const { x: boxX, y: boxY, width, height } = box, { alignValue, translateY, rotationOriginX = 0, rotationOriginY = 0 } = this, alignFactor = {
-            'right': 1,
-            'center': 0.5
-        }[alignValue || 0] || 0, baseline = Number(this.element.getAttribute('y') || 0) -
+        const { x: boxX, y: boxY, width, height } = box, { alignValue, translateY, rotationOriginX = 0, rotationOriginY = 0 } = this, alignFactor = getAlignFactor(alignValue), baseline = Number(this.element.getAttribute('y') || 0) -
             (translateY ? 0 : boxY), rad = rotation * deg2rad, rad90 = (rotation - 90) * deg2rad, cosRad = Math.cos(rad), sinRad = Math.sin(rad), wCosRad = width * cosRad, wSinRad = width * sinRad, cosRad90 = Math.cos(rad90), sinRad90 = Math.sin(rad90), [[xOriginCosRad, xOriginSinRad], [yOriginCosRad, yOriginSinRad]] = [
             rotationOriginX,
             rotationOriginY

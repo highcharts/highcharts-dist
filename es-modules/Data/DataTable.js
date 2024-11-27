@@ -14,8 +14,9 @@
  *
  * */
 'use strict';
+import DataTableCore from './DataTableCore.js';
 import U from '../Core/Utilities.js';
-const { addEvent, defined, fireEvent, uniqueKey } = U;
+const { addEvent, defined, fireEvent, extend, uniqueKey } = U;
 /* *
  *
  *  Class
@@ -32,7 +33,7 @@ const { addEvent, defined, fireEvent, uniqueKey } = U;
  * @param {Highcharts.DataTableOptions} [options]
  * Options to initialize the new DataTable instance.
  */
-class DataTable {
+class DataTable extends DataTableCore {
     /* *
      *
      *  Static Functions
@@ -89,43 +90,9 @@ class DataTable {
      *  Constructor
      *
      * */
-    /**
-     * Constructs an instance of the DataTable class.
-     *
-     * @param {Highcharts.DataTableOptions} [options]
-     * Options to initialize the new DataTable instance.
-     */
     constructor(options = {}) {
-        /**
-         * Whether the ID was automatic generated or given in the constructor.
-         *
-         * @name Highcharts.DataTable#autoId
-         * @type {boolean}
-         */
-        this.autoId = !options.id;
-        this.columns = {};
-        /**
-         * ID of the table for identification purposes.
-         *
-         * @name Highcharts.DataTable#id
-         * @type {string}
-         */
-        this.id = (options.id || uniqueKey());
+        super(options);
         this.modified = this;
-        this.rowCount = 0;
-        this.versionTag = uniqueKey();
-        const columns = options.columns || {}, columnNames = Object.keys(columns), thisColumns = this.columns;
-        let rowCount = 0;
-        for (let i = 0, iEnd = columnNames.length, column, columnName; i < iEnd; ++i) {
-            columnName = columnNames[i];
-            column = columns[columnName].slice();
-            thisColumns[columnName] = column;
-            rowCount = Math.max(rowCount, column.length);
-        }
-        for (let i = 0, iEnd = columnNames.length; i < iEnd; ++i) {
-            thisColumns[columnNames[i]].length = rowCount;
-        }
-        this.rowCount = rowCount;
     }
     /* *
      *
@@ -306,18 +273,16 @@ class DataTable {
      * Event object with event information.
      */
     emit(e) {
-        const table = this;
-        switch (e.type) {
-            case 'afterDeleteColumns':
-            case 'afterDeleteRows':
-            case 'afterSetCell':
-            case 'afterSetColumns':
-            case 'afterSetRows':
-                table.versionTag = uniqueKey();
-                break;
-            default:
+        if ([
+            'afterDeleteColumns',
+            'afterDeleteRows',
+            'afterSetCell',
+            'afterSetColumns',
+            'afterSetRows'
+        ].includes(e.type)) {
+            this.versionTag = uniqueKey();
         }
-        fireEvent(table, e.type, e);
+        fireEvent(this, e.type, e);
     }
     /**
      * Fetches a single cell value.
@@ -840,29 +805,6 @@ class DataTable {
         });
     }
     /**
-     * Sets cell values for a column. Will insert a new column, if not found.
-     *
-     * @function Highcharts.DataTable#setColumn
-     *
-     * @param {string} columnName
-     * Column name to set.
-     *
-     * @param {Highcharts.DataTableColumn} [column]
-     * Values to set in the column.
-     *
-     * @param {number} [rowIndex=0]
-     * Index of the first row to change. (Default: 0)
-     *
-     * @param {Highcharts.DataTableEventDetail} [eventDetail]
-     * Custom information for pending events.
-     *
-     * @emits #setColumns
-     * @emits #afterSetColumns
-     */
-    setColumn(columnName, column = [], rowIndex = 0, eventDetail) {
-        this.setColumns({ [columnName]: column }, rowIndex, eventDetail);
-    }
-    /**
      * Sets cell values for multiple columns. Will insert new columns, if not
      * found.
      *
@@ -881,7 +823,8 @@ class DataTable {
      * @emits #afterSetColumns
      */
     setColumns(columns, rowIndex, eventDetail) {
-        const table = this, tableColumns = table.columns, tableModifier = table.modifier, reset = (typeof rowIndex === 'undefined'), columnNames = Object.keys(columns);
+        const table = this, tableColumns = table.columns, tableModifier = table.modifier, columnNames = Object.keys(columns);
+        let rowCount = table.rowCount;
         table.emit({
             type: 'setColumns',
             columns,
@@ -889,29 +832,25 @@ class DataTable {
             detail: eventDetail,
             rowIndex
         });
-        for (let i = 0, iEnd = columnNames.length, column, columnName; i < iEnd; ++i) {
-            columnName = columnNames[i];
-            column = columns[columnName];
-            if (reset) {
-                tableColumns[columnName] = column.slice();
-                table.rowCount = column.length;
-            }
-            else {
+        if (typeof rowIndex === 'undefined') {
+            super.setColumns(columns, rowIndex, extend(eventDetail, { silent: true }));
+        }
+        else {
+            for (let i = 0, iEnd = columnNames.length, column, columnName; i < iEnd; ++i) {
+                columnName = columnNames[i];
+                column = columns[columnName];
                 const tableColumn = (tableColumns[columnName] ?
                     tableColumns[columnName] :
                     tableColumns[columnName] = new Array(table.rowCount));
                 for (let i = (rowIndex || 0), iEnd = column.length; i < iEnd; ++i) {
                     tableColumn[i] = column[i];
                 }
-                table.rowCount = Math.max(table.rowCount, tableColumn.length);
+                rowCount = Math.max(rowCount, tableColumn.length);
             }
-        }
-        const tableColumnNames = Object.keys(tableColumns);
-        for (let i = 0, iEnd = tableColumnNames.length; i < iEnd; ++i) {
-            tableColumns[tableColumnNames[i]].length = table.rowCount;
+            this.applyRowCount(rowCount);
         }
         if (tableModifier) {
-            tableModifier.modifyColumns(table, columns, (rowIndex || 0));
+            tableModifier.modifyColumns(table, columns, rowIndex || 0);
         }
         table.emit({
             type: 'afterSetColumns',
@@ -1010,14 +949,17 @@ class DataTable {
      * @param {number} [rowIndex]
      * Index of the row to set. Leave `undefind` to add as a new row.
      *
+     * @param {boolean} [insert]
+     * Whether to insert the row at the given index, or to overwrite the row.
+     *
      * @param {Highcharts.DataTableEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @emits #setRows
      * @emits #afterSetRows
      */
-    setRow(row, rowIndex, eventDetail) {
-        this.setRows([row], rowIndex, eventDetail);
+    setRow(row, rowIndex, insert, eventDetail) {
+        this.setRows([row], rowIndex, insert, eventDetail);
     }
     /**
      * Sets cell values for multiple rows. Will insert new rows, if no index was
@@ -1032,13 +974,16 @@ class DataTable {
      * @param {number} [rowIndex]
      * Index of the first row to set. Leave `undefined` to add as new rows.
      *
+     * @param {boolean} [insert]
+     * Whether to insert the row at the given index, or to overwrite the row.
+     *
      * @param {Highcharts.DataTableEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @emits #setRows
      * @emits #afterSetRows
      */
-    setRows(rows, rowIndex = this.rowCount, eventDetail) {
+    setRows(rows, rowIndex = this.rowCount, insert, eventDetail) {
         const table = this, columns = table.columns, columnNames = Object.keys(columns), modifier = table.modifier, rowCount = rows.length;
         table.emit({
             type: 'setRows',
@@ -1051,7 +996,12 @@ class DataTable {
             row = rows[i];
             if (row === DataTable.NULL) {
                 for (let j = 0, jEnd = columnNames.length; j < jEnd; ++j) {
-                    columns[columnNames[j]][i2] = null;
+                    if (insert) {
+                        columns[columnNames[j]].splice(i2, 0, null);
+                    }
+                    else {
+                        columns[columnNames[j]][i2] = null;
+                    }
                 }
             }
             else if (row instanceof Array) {
@@ -1060,17 +1010,12 @@ class DataTable {
                 }
             }
             else {
-                const rowColumnNames = Object.keys(row);
-                for (let j = 0, jEnd = rowColumnNames.length, rowColumnName; j < jEnd; ++j) {
-                    rowColumnName = rowColumnNames[j];
-                    if (!columns[rowColumnName]) {
-                        columns[rowColumnName] = new Array(i2 + 1);
-                    }
-                    columns[rowColumnName][i2] = row[rowColumnName];
-                }
+                super.setRow(row, i2, void 0, { silent: true });
             }
         }
-        const indexRowCount = (rowIndex + rowCount);
+        const indexRowCount = insert ?
+            rowCount + rows.length :
+            rowIndex + rowCount;
         if (indexRowCount > table.rowCount) {
             table.rowCount = indexRowCount;
             for (let i = 0, iEnd = columnNames.length; i < iEnd; ++i) {

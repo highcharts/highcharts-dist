@@ -1,1 +1,2 @@
-import '../../../themes/sunset.src';
+import H from '../../Core/Globals.js';
+export default H;

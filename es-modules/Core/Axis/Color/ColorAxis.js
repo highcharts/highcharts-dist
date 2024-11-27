@@ -270,31 +270,19 @@ class ColorAxis extends Axis {
     getSeriesExtremes() {
         const axis = this;
         const series = axis.series;
-        let colorValArray, colorKey, colorValIndex, pointArrayMap, calculatedExtremes, cSeries, i = series.length, yData, j;
+        let colorValArray, colorKey, calculatedExtremes, cSeries, i = series.length;
         this.dataMin = Infinity;
         this.dataMax = -Infinity;
         while (i--) { // X, y, value, other
             cSeries = series[i];
             colorKey = cSeries.colorKey = pick(cSeries.options.colorKey, cSeries.colorKey, cSeries.pointValKey, cSeries.zoneAxis, 'y');
-            pointArrayMap = cSeries.pointArrayMap;
             calculatedExtremes = cSeries[colorKey + 'Min'] &&
                 cSeries[colorKey + 'Max'];
-            if (cSeries[colorKey + 'Data']) {
-                colorValArray = cSeries[colorKey + 'Data'];
-            }
-            else {
-                if (!pointArrayMap) {
-                    colorValArray = cSeries.yData;
-                }
-                else {
-                    colorValArray = [];
-                    colorValIndex = pointArrayMap.indexOf(colorKey);
-                    yData = cSeries.yData;
-                    if (colorValIndex >= 0 && yData) {
-                        for (j = 0; j < yData.length; j++) {
-                            colorValArray.push(pick(yData[j][colorValIndex], yData[j]));
-                        }
-                    }
+            // Find the first column that has values
+            for (const key of [colorKey, 'value', 'y']) {
+                colorValArray = cSeries.getColumn(key);
+                if (colorValArray.length) {
+                    break;
                 }
             }
             // If color key extremes are already calculated, use them.

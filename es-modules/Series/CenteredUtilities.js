@@ -46,8 +46,8 @@ var CenteredUtilities;
             innerSize = parseFloat(innerSize);
         }
         const positions = [
-            pick(centerOption[0], '50%'),
-            pick(centerOption[1], '50%'),
+            pick(centerOption?.[0], '50%'),
+            pick(centerOption?.[1], '50%'),
             // Prevent from negative values
             pick(size && size < 0 ? void 0 : options.size, '100%'),
             pick(innerSize && innerSize < 0 ? void 0 : options.innerSize || 0, '0%')

@@ -17,7 +17,7 @@ const { initDragDrop } = DraggableChart;
 import DragDropDefaults from './DragDropDefaults.js';
 import DragDropProps from './DragDropProps.js';
 import U from '../../Core/Utilities.js';
-const { addEvent, clamp, isNumber, merge, pick } = U;
+const { addEvent, clamp, isNumber, merge } = U;
 /* *
  *
  *  Functions
@@ -290,9 +290,11 @@ function pointGetDropValues(origin, newPos, updateProps) {
      * @return {number}
      *         Limited value
      */
-    const limitToRange = (val, direction) => {
-        const defaultPrecision = series[direction.toLowerCase() + 'Axis']
-            .categories ? 1 : 0, precision = pick(options['dragPrecision' + direction], defaultPrecision), min = pick(options['dragMin' + direction], -Infinity), max = pick(options['dragMax' + direction], Infinity);
+    const limitToRange = (val, dir) => {
+        const direction = dir.toUpperCase(), time = series.chart.time, defaultPrecision = series[`${dir}Axis`].categories ? 1 : 0, precision = options[`dragPrecision${direction}`] ??
+            defaultPrecision, min = time.parse(options[`dragMin${direction}`]) ??
+            -Infinity, max = time.parse(options[`dragMax${direction}`]) ??
+            Infinity;
         let res = val;
         if (precision) {
             res = Math.round(res / precision) * precision;
@@ -312,18 +314,20 @@ function pointGetDropValues(origin, newPos, updateProps) {
      * @return {number | undefined}
      *         Limited value
      */
-    const limitToMapRange = (newPos, direction, key) => {
+    const limitToMapRange = (newPos, dir, key) => {
         if (mapView) {
-            const precision = pick(options['dragPrecision' + direction], 0), lonLatMin = mapView.pixelsToLonLat({
+            const direction = dir.toUpperCase(), precision = options[`dragPrecision${direction}`] ?? 0, lonLatMin = mapView.pixelsToLonLat({
                 x: 0,
                 y: 0
             }), lonLatMax = mapView.pixelsToLonLat({
                 x: chart.plotBox.width,
                 y: chart.plotBox.height
             });
-            let min = pick(options['dragMin' + direction], lonLatMin &&
-                lonLatMin[key], -Infinity), max = pick(options['dragMax' + direction], lonLatMax &&
-                lonLatMax[key], Infinity), res = newPos[key];
+            let min = options[`dragMin${direction}`] ??
+                lonLatMin?.[key] ??
+                -Infinity, max = options[`dragMax${direction}`] ??
+                lonLatMax?.[key] ??
+                Infinity, res = newPos[key];
             if (mapView.projection.options.name === 'Orthographic') {
                 return res;
             }
@@ -360,9 +364,9 @@ function pointGetDropValues(origin, newPos, updateProps) {
     // it within min/max ranges.
     for (const key of Object.keys(updateProps)) {
         const val = updateProps[key], oldVal = pointOrigin.point[key], axis = series[val.axis + 'Axis'], newVal = mapView ?
-            limitToMapRange(newPos, val.axis.toUpperCase(), key) :
+            limitToMapRange(newPos, val.axis, key) :
             limitToRange(axis.toValue((axis.horiz ? newPos.chartX : newPos.chartY) +
-                pointOrigin[key + 'Offset']), val.axis.toUpperCase());
+                pointOrigin[key + 'Offset']), val.axis);
         // If we are updating a single prop, and it has a validation function
         // for the prop, run it. If it fails, don't update the value.
         if (isNumber(newVal) &&

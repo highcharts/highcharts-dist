@@ -306,7 +306,7 @@ const PieSeriesDefaults = {
          * @default function () { return this.point.isNull ? void 0 : this.point.name; }
          */
         formatter: function () {
-            return this.point.isNull ? void 0 : this.point.name;
+            return this.isNull ? void 0 : this.name;
         },
         /**
          * Whether to render the connector as a soft arc or a line with a sharp

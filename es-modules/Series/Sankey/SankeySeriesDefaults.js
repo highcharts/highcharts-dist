@@ -29,14 +29,14 @@
  * @extends      plotOptions.column
  * @since        6.0.0
  * @product      highcharts
- * @excluding    animationLimit, boostThreshold, borderRadius,
- *               crisp, cropThreshold, colorAxis, colorKey, depth, dragDrop,
- *               edgeColor, edgeWidth, findNearestPointBy, grouping,
- *               groupPadding, groupZPadding, maxPointWidth, negativeColor,
- *               pointInterval, pointIntervalUnit, pointPadding,
- *               pointPlacement, pointRange, pointStart, pointWidth,
- *               shadow, softThreshold, stacking, threshold, zoneAxis,
- *               zones, minPointLength, dataSorting, boostBlending
+ * @excluding    animationLimit, boostBlending, boostThreshold, borderRadius,
+ *               crisp, cropThreshold, colorAxis, colorKey, dataSorting, depth,
+ *               dragDrop, edgeColor, edgeWidth, findNearestPointBy, grouping,
+ *               groupPadding, groupZPadding, legendSymbolColor, maxPointWidth,
+ *               minPointLength, negativeColor, pointInterval,
+ *               pointIntervalUnit, pointPadding, pointPlacement, pointRange,
+ *               pointStart, pointWidth, shadow, softThreshold, stacking,
+ *               threshold, zoneAxis, zones
  * @requires     modules/sankey
  * @optionparent plotOptions.sankey
  *

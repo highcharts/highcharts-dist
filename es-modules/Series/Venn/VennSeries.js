@@ -349,7 +349,7 @@ class VennSeries extends ScatterSeries {
     }
     translate() {
         const chart = this.chart;
-        this.processedXData = this.xData;
+        this.dataTable.modified = this.dataTable;
         this.generatePoints();
         // Process the data before passing it into the layout function.
         const relations = VennUtils.processVennData(this.options.data, VennSeries.splitter);

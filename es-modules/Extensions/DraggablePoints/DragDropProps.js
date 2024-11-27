@@ -340,7 +340,7 @@ const waterfall = {
     y: merge(column.y, {
         handleFormatter: (point) => (point.isSum || point.isIntermediateSum ?
             null :
-            column.y.handleFormatter(point))
+            column?.y?.handleFormatter?.(point) || null)
     })
 };
 // Columnrange series - move x, resize or move low/high

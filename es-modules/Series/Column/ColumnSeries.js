@@ -56,7 +56,7 @@ class ColumnSeries extends Series {
         let translateStart, translatedThreshold;
         if (init && clipOffset) {
             attr.scaleY = 0.001;
-            translatedThreshold = clamp(yAxis.toPixels(options.threshold), yAxisPos, yAxisPos + yAxis.len);
+            translatedThreshold = clamp(yAxis.toPixels(options.threshold || 0), yAxisPos, yAxisPos + yAxis.len);
             if (inverted) {
                 // Make sure the columns don't cover the axis line during
                 // entrance animation
@@ -238,30 +238,48 @@ class ColumnSeries extends Series {
             // grouping of points in each category. This is done in the
             // `setGroupedPoints` function.
             objectEach(this.xAxis.stacking?.stacks, (stack) => {
-                if (typeof point.x === 'number') {
-                    const stackItem = stack[point.x.toString()];
-                    if (stackItem) {
-                        const pointValues = stackItem.points[this.index];
-                        // Look for the index
-                        if (isArray(pointValues)) {
-                            // If there are multiple points with the same X
-                            // then gather all series in category, and
-                            // assign index
-                            const seriesIndexes = Object
-                                .keys(stackItem.points)
-                                .filter((pointKey) => 
-                            // Filter out duplicate X's
-                            !pointKey.match(',') &&
-                                // Filter out null points
-                                stackItem.points[pointKey] &&
-                                stackItem.points[pointKey].length > 1)
-                                .map(parseFloat)
-                                .filter((index) => visibleSeries.indexOf(index) !== -1)
-                                .sort((a, b) => b - a);
-                            indexInCategory = seriesIndexes.indexOf(this.index);
-                            totalInCategory = seriesIndexes.length;
+                const points = typeof point.x === 'number' ?
+                    stack[point.x.toString()]?.points :
+                    void 0, pointValues = points?.[this.index], yStackMap = {};
+                // Look for the index
+                if (points && isArray(pointValues)) {
+                    let baseIndex = this.index;
+                    // If there are multiple points with the same X then
+                    // gather all series in category, and assign index
+                    const seriesIndexes = Object
+                        .keys(points)
+                        .filter((pointKey) => 
+                    // Filter out duplicate X's
+                    !pointKey.match(',') &&
+                        // Filter out null points
+                        points[pointKey] &&
+                        points[pointKey].length > 1)
+                        .map(parseFloat)
+                        .filter((index) => visibleSeries.indexOf(index) !== -1)
+                        // When the series `stack` option is defined, assign
+                        // all subsequent column of the same stack to the
+                        // same index as the base column of the stack, then
+                        // filter out the original series index so that
+                        // `seriesIndexes` is shortened to the amount of
+                        // stacks, not the amount of series (#20550).
+                        .filter((index) => {
+                        const otherOptions = this.chart.series[index]
+                            .options, yStack = otherOptions.stacking &&
+                            otherOptions.stack;
+                        if (defined(yStack)) {
+                            if (isNumber(yStackMap[yStack])) {
+                                if (baseIndex === index) {
+                                    baseIndex = yStackMap[yStack];
+                                }
+                                return false;
+                            }
+                            yStackMap[yStack] = index;
                         }
-                    }
+                        return true;
+                    })
+                        .sort((a, b) => b - a);
+                    indexInCategory = seriesIndexes.indexOf(baseIndex);
+                    totalInCategory = seriesIndexes.length;
                 }
             });
             indexInCategory = this.xAxis.reversed ?
@@ -293,7 +311,7 @@ class ColumnSeries extends Series {
         // tightly, so we allow individual columns to have individual sizes.
         // When pointPadding is greater, we strive for equal-width columns
         // (#2694).
-        if (options.pointPadding) {
+        if (options.pointPadding && options.crisp) {
             seriesBarW = Math.ceil(seriesBarW);
         }
         Series.prototype.translate.apply(series);
@@ -340,7 +358,7 @@ class ColumnSeries extends Series {
                 barX -= Math.round((pointWidth - seriesPointWidth) / 2);
             }
             // Adjust for null or missing points
-            if (options.centerInCategory && !options.stacking) {
+            if (options.centerInCategory) {
                 barX = series.adjustForMissingColumns(barX, pointWidth, point, metrics);
             }
             // Cache for access in polar
@@ -514,11 +532,18 @@ class ColumnSeries extends Series {
      */
     drawTracker(points = this.points) {
         const series = this, chart = series.chart, pointer = chart.pointer, onMouseOver = function (e) {
-            const point = pointer?.getPointFromEvent(e);
+            pointer?.normalize(e);
+            const point = pointer?.getPointFromEvent(e), 
+            // Run point events only for points inside plot area, #21136
+            isInsidePlot = chart.scrollablePlotArea ?
+                chart.isInsidePlot(e.chartX - chart.plotLeft, e.chartY - chart.plotTop, {
+                    visiblePlotOnly: true
+                }) : true;
             // Undefined on graph in scatterchart
             if (pointer &&
                 point &&
-                series.options.enableMouseTracking) {
+                series.options.enableMouseTracking &&
+                isInsidePlot) {
                 pointer.isDirectTouch = true;
                 point.onMouseOver(e);
             }

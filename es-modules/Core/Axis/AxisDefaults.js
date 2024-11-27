@@ -116,9 +116,10 @@ var AxisDefaults;
          * @apioption xAxis.breaks.breakSize
          */
         /**
-         * The point where the break starts.
+         * The axis value where the break starts. On datetime axes, this may be
+         * a date string.
          *
-         * @type      {number}
+         * @type      {number|string}
          * @since     4.1.0
          * @product   highcharts highstock gantt
          * @apioption xAxis.breaks.from
@@ -134,9 +135,10 @@ var AxisDefaults;
          * @apioption xAxis.breaks.repeat
          */
         /**
-         * The point where the break ends.
+         * The axis value where the break ends. On datetime axes, this may be
+         * a date string.
          *
-         * @type      {number}
+         * @type      {number|string}
          * @since     4.1.0
          * @product   highcharts highstock gantt
          * @apioption xAxis.breaks.to
@@ -443,25 +445,27 @@ var AxisDefaults;
          * on midnight and `hour` unit be used for intermediate values on the
          * same axis.
          *
-         * For an overview of the replacement codes, see
+         * For an overview of the string or object configuration, see
          * [dateFormat](/class-reference/Highcharts.Time#dateFormat).
          *
          * Defaults to:
          * ```js
          * {
-         *     millisecond: '%H:%M:%S.%L',
-         *     second: '%H:%M:%S',
-         *     minute: '%H:%M',
-         *     hour: '%H:%M',
-         *     day: '%e. %b',
-         *     week: '%e. %b',
-         *     month: '%b \'%y',
+         *     millisecond: '%[HMSL]',
+         *     second: '%[HMS]',
+         *     minute: '%[HM]',
+         *     hour: '%[HM]',
+         *     day: '%[eb]',
+         *     week: '%[eb]',
+         *     month: '%[bY]',
          *     year: '%Y'
          * }
          * ```
          *
+         * @sample {highcharts} highcharts/xaxis/datetimelabelformats-object/
+         *         Object day format on X axis
          * @sample {highcharts} highcharts/xaxis/datetimelabelformats/
-         *         Different day format on X axis
+         *         String day format on X axis
          * @sample {highstock} stock/xaxis/datetimelabelformats/
          *         More information in x axis labels
          *
@@ -475,14 +479,15 @@ var AxisDefaults;
              */
             millisecond: {
                 /**
-                 * @type {Array<string>}
+                 * @type {Array<string|Highcharts.DateTimeFormatOptions>}
                  * @default undefined
                  * @apioption xAxis.dateTimeLabelFormats.millisecond.list
                  */
                 /**
+                 * @type {string|Highcharts.DateTimeFormatOptions}
                  * @apioption xAxis.dateTimeLabelFormats.millisecond.main
                  */
-                main: '%H:%M:%S.%L',
+                main: '%[HMSL]',
                 range: false
             },
             /**
@@ -491,14 +496,15 @@ var AxisDefaults;
              */
             second: {
                 /**
-                 * @type {Array<string>}
+                 * @type {Array<string|Highcharts.DateTimeFormatOptions>}
                  * @default undefined
                  * @apioption xAxis.dateTimeLabelFormats.second.list
                  */
                 /**
+                 * @type {string|Highcharts.DateTimeFormatOptions}
                  * @apioption xAxis.dateTimeLabelFormats.second.main
                  */
-                main: '%H:%M:%S',
+                main: '%[HMS]',
                 range: false
             },
             /**
@@ -507,14 +513,15 @@ var AxisDefaults;
              */
             minute: {
                 /**
-                 * @type {Array<string>}
+                 * @type {Array<string|Highcharts.DateTimeFormatOptions>}
                  * @default undefined
                  * @apioption xAxis.dateTimeLabelFormats.minute.list
                  */
                 /**
+                 * @type {string|Highcharts.DateTimeFormatOptions}
                  * @apioption xAxis.dateTimeLabelFormats.minute.main
                  */
-                main: '%H:%M',
+                main: '%[HM]',
                 range: false
             },
             /**
@@ -523,14 +530,15 @@ var AxisDefaults;
              */
             hour: {
                 /**
-                 * @type {Array<string>}
+                 * @type {Array<string|Highcharts.DateTimeFormatOptions>}
                  * @default undefined
                  * @apioption xAxis.dateTimeLabelFormats.hour.list
                  */
                 /**
+                 * @type {string|Highcharts.DateTimeFormatOptions}
                  * @apioption xAxis.dateTimeLabelFormats.hour.main
                  */
-                main: '%H:%M',
+                main: '%[HM]',
                 range: false
             },
             /**
@@ -539,14 +547,15 @@ var AxisDefaults;
              */
             day: {
                 /**
-                 * @type {Array<string>}
+                 * @type {Array<string|Highcharts.DateTimeFormatOptions>}
                  * @default undefined
                  * @apioption xAxis.dateTimeLabelFormats.day.list
                  */
                 /**
+                 * @type {string|Highcharts.DateTimeFormatOptions}
                  * @apioption xAxis.dateTimeLabelFormats.day.main
                  */
-                main: '%e %b'
+                main: '%[eb]'
             },
             /**
              * @declare Highcharts.AxisDateTimeLabelFormatsOptionsObject
@@ -554,14 +563,15 @@ var AxisDefaults;
              */
             week: {
                 /**
-                 * @type {Array<string>}
+                 * @type {Array<string|Highcharts.DateTimeFormatOptions>}
                  * @default undefined
                  * @apioption xAxis.dateTimeLabelFormats.week.list
                  */
                 /**
+                 * @type {string|Highcharts.DateTimeFormatOptions}
                  * @apioption xAxis.dateTimeLabelFormats.week.main
                  */
-                main: '%e %b'
+                main: '%[eb]'
             },
             /**
              * @declare Highcharts.AxisDateTimeLabelFormatsOptionsObject
@@ -569,14 +579,15 @@ var AxisDefaults;
              */
             month: {
                 /**
-                 * @type {Array<string>}
+                 * @type {Array<string|Highcharts.DateTimeFormatOptions>}
                  * @default undefined
                  * @apioption xAxis.dateTimeLabelFormats.month.list
                  */
                 /**
+                 * @type {string|Highcharts.DateTimeFormatOptions}
                  * @apioption xAxis.dateTimeLabelFormats.month.main
                  */
-                main: '%b \'%y'
+                main: '%[bY]'
             },
             /**
              * @declare Highcharts.AxisDateTimeLabelFormatsOptionsObject
@@ -584,11 +595,12 @@ var AxisDefaults;
              */
             year: {
                 /**
-                 * @type {Array<string>}
+                 * @type {Array<string|Highcharts.DateTimeFormatOptions>}
                  * @default undefined
                  * @apioption xAxis.dateTimeLabelFormats.year.list
                  */
                 /**
+                 * @type {string|Highcharts.DateTimeFormatOptions}
                  * @apioption xAxis.dateTimeLabelFormats.year.main
                  */
                 main: '%Y'
@@ -1048,9 +1060,9 @@ var AxisDefaults;
              */
             zIndex: 7,
             /**
-             * CSS styles for the label. Use `whiteSpace: 'nowrap'` to prevent
-             * wrapping of category labels. Use `textOverflow: 'none'` to
-             * prevent ellipsis (dots).
+             * CSS styles for the label. Use `lineClamp` to control wrapping of
+             * category labels. Use `textOverflow: 'none'` to prevent ellipsis
+             * (dots).
              *
              * In styled mode, the labels are styled with the
              * `.highcharts-axis-labels` class.
@@ -1065,8 +1077,12 @@ var AxisDefaults;
                 color: "#333333" /* Palette.neutralColor80 */,
                 /** @internal */
                 cursor: 'default',
+                /**
+                 * @type {number|string}
+                 */
+                fontSize: '0.8em',
                 /** @internal */
-                fontSize: '0.8em'
+                textOverflow: 'ellipsis'
             }
         },
         /**
@@ -1116,8 +1132,11 @@ var AxisDefaults;
          * @apioption xAxis.linkedTo
          */
         /**
-         * The maximum value of the axis. If `null`, the max value is
+         * The maximum value of the axis. If `undefined`, the max value is
          * automatically calculated.
+         *
+         * If a datetime string is passed, it is parsed into epoch time
+         * according to the time zone given in [time.timezone](#time.timezone).
          *
          * If the [endOnTick](#yAxis.endOnTick) option is true, the `max` value
          * might be rounded up.
@@ -1134,7 +1153,7 @@ var AxisDefaults;
          * @sample {highstock} stock/xaxis/min-max/
          *         Fixed min and max on X axis
          *
-         * @type      {number|null}
+         * @type      {number|string|null}
          * @apioption xAxis.max
          */
         /**
@@ -1169,8 +1188,11 @@ var AxisDefaults;
          * @apioption xAxis.maxZoom
          */
         /**
-         * The minimum value of the axis. If `null` the min value is
+         * The minimum value of the axis. If `undefined`, the min value is
          * automatically calculated.
+         *
+         * If a datetime string is passed, it is parsed into epoch time
+         * according to the time zone given in [time.timezone](#time.timezone).
          *
          * If the [startOnTick](#yAxis.startOnTick) option is true (default),
          * the `min` value might be rounded down.
@@ -1188,7 +1210,7 @@ var AxisDefaults;
          * @sample {highstock} stock/xaxis/min-max/
          *         Set min and max on X axis
          *
-         * @type      {number|null}
+         * @type      {number|string|null}
          * @apioption xAxis.min
          */
         /**
@@ -1917,8 +1939,8 @@ var AxisDefaults;
             /**
              * CSS styles for the title. If the title text is longer than the
              * axis length, it will wrap to multiple lines by default. This can
-             * be customized by setting `textOverflow: 'ellipsis'`, by
-             * setting a specific `width` or by setting `whiteSpace: 'nowrap'`.
+             * be customized by setting the `lineClamp` property, by setting a
+             * specific `width` or by setting `whiteSpace: 'nowrap'`.
              *
              * In styled mode, the stroke width is given in the
              * `.highcharts-axis-title` class.
@@ -1933,7 +1955,9 @@ var AxisDefaults;
             style: {
                 /** @internal */
                 color: "#666666" /* Palette.neutralColor60 */,
-                /** @internal */
+                /**
+                 * @type {number|string}
+                 */
                 fontSize: '0.8em'
             }
         },
@@ -1989,6 +2013,7 @@ var AxisDefaults;
          * @product   highcharts gantt
          * @type      {boolean}
          * @default   true
+         * @apioption xAxis.uniqueNames
          */
         /**
          * Datetime axis only. An array determining what time intervals the
@@ -3003,7 +3028,9 @@ var AxisDefaults;
             style: {
                 /** @internal */
                 color: "#000000" /* Palette.neutralColor100 */,
-                /** @internal */
+                /**
+                 * @type {number|string}
+                 */
                 fontSize: '0.7em',
                 /** @internal */
                 fontWeight: 'bold',

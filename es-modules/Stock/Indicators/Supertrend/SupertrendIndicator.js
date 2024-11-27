@@ -9,7 +9,7 @@
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 const { atr: ATRIndicator, sma: SMAIndicator } = SeriesRegistry.seriesTypes;
 import U from '../../../Core/Utilities.js';
-const { addEvent, correctFloat, isArray, extend, merge, objectEach } = U;
+const { addEvent, correctFloat, isArray, isNumber, extend, merge, objectEach } = U;
 /* *
  *
  *  Functions
@@ -19,11 +19,11 @@ const { addEvent, correctFloat, isArray, extend, merge, objectEach } = U;
 /**
  * @private
  */
-function createPointObj(mainSeries, index, close) {
+function createPointObj(mainSeries, index) {
     return {
-        index: index,
-        close: mainSeries.yData[index][close],
-        x: mainSeries.xData[index]
+        index,
+        close: mainSeries.getColumn('close')[index],
+        x: mainSeries.getColumn('x')[index]
     };
 }
 /* *
@@ -69,7 +69,7 @@ class SupertrendIndicator extends SMAIndicator {
     drawGraph() {
         const indicator = this, indicOptions = indicator.options, 
         // Series that indicator is linked to
-        mainSeries = indicator.linkedParent, mainLinePoints = (mainSeries ? mainSeries.points : []), indicPoints = indicator.points, indicPath = indicator.graph, 
+        mainSeries = indicator.linkedParent, mainXData = mainSeries.getColumn('x'), mainLinePoints = (mainSeries ? mainSeries.points : []), indicPoints = indicator.points, indicPath = indicator.graph, 
         // Points offset between lines
         tempOffset = mainLinePoints.length - indicPoints.length, offset = tempOffset > 0 ? tempOffset : 0, 
         // @todo: fix when ichi-moku indicator is merged to master.
@@ -103,7 +103,7 @@ class SupertrendIndicator extends SMAIndicator {
                 }
             },
             intersect: indicOptions.changeTrendLine
-        }, close = 3;
+        };
         let // Supertrend line point
         point, 
         // Supertrend line next point (has smaller x pos than point)
@@ -135,23 +135,27 @@ class SupertrendIndicator extends SMAIndicator {
             // When mainPoint is the last one (left plot area edge)
             // but supertrend has additional one
             if (!nextMainPoint &&
-                mainPoint && mainSeries.yData[mainPoint.index - 1]) {
-                nextMainPoint = createPointObj(mainSeries, mainPoint.index - 1, close);
+                mainPoint &&
+                isNumber(mainXData[mainPoint.index - 1])) {
+                nextMainPoint = createPointObj(mainSeries, mainPoint.index - 1);
             }
             // When prevMainPoint is the last one (right plot area edge)
             // but supertrend has additional one (and points are shifted)
             if (!prevPrevMainPoint &&
-                prevMainPoint && mainSeries.yData[prevMainPoint.index + 1]) {
-                prevPrevMainPoint = createPointObj(mainSeries, prevMainPoint.index + 1, close);
+                prevMainPoint &&
+                isNumber(mainXData[prevMainPoint.index + 1])) {
+                prevPrevMainPoint = createPointObj(mainSeries, prevMainPoint.index + 1);
             }
             // When points are shifted (right or left plot area edge)
             if (!mainPoint &&
-                nextMainPoint && mainSeries.yData[nextMainPoint.index + 1]) {
-                mainPoint = createPointObj(mainSeries, nextMainPoint.index + 1, close);
+                nextMainPoint &&
+                isNumber(mainXData[nextMainPoint.index + 1])) {
+                mainPoint = createPointObj(mainSeries, nextMainPoint.index + 1);
             }
             else if (!mainPoint &&
-                prevMainPoint && mainSeries.yData[prevMainPoint.index - 1]) {
-                mainPoint = createPointObj(mainSeries, prevMainPoint.index - 1, close);
+                prevMainPoint &&
+                isNumber(mainXData[prevMainPoint.index - 1])) {
+                mainPoint = createPointObj(mainSeries, prevMainPoint.index - 1);
             }
             // Check if points are shifted relative to each other
             if (point &&
@@ -166,8 +170,8 @@ class SupertrendIndicator extends SMAIndicator {
                 else if (point.x === nextMainPoint.x) {
                     mainPoint = nextMainPoint;
                     nextMainPoint = {
-                        close: mainSeries.yData[mainPoint.index - 1][close],
-                        x: mainSeries.xData[mainPoint.index - 1]
+                        close: mainSeries.getColumn('close')[mainPoint.index - 1],
+                        x: mainXData[mainPoint.index - 1]
                     };
                 }
                 else if (prevPrevMainPoint && point.x === prevPrevMainPoint.x) {

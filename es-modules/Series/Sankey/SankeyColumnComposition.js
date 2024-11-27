@@ -11,7 +11,7 @@
  * */
 'use strict';
 import U from '../../Core/Utilities.js';
-const { defined, relativeLength } = U;
+const { defined, getAlignFactor, relativeLength } = U;
 /* *
  *
  *  Composition
@@ -129,11 +129,7 @@ var SankeyColumnComposition;
                 return height;
             }, 0);
             // Node alignment option handling #19096
-            return {
-                top: 0,
-                center: 0.5,
-                bottom: 1
-            }[series.options.nodeAlignment || 'center'] * ((series.chart.plotSizeY || 0) - height);
+            return getAlignFactor(series.options.nodeAlignment || 'center') * ((series.chart.plotSizeY || 0) - height);
         }
         /**
          * Get the left position of the column in pixels

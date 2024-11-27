@@ -162,7 +162,7 @@ class PieSeries extends Series {
      * @private
      */
     hasData() {
-        return !!this.processedXData.length; // != 0
+        return !!this.dataTable.rowCount;
     }
     /**
      * Draw the data points

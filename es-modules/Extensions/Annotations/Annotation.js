@@ -52,12 +52,10 @@ function adjustVisibility(item) {
 function getLabelsAndShapesOptions(baseOptions, newOptions) {
     const mergedOptions = {};
     ['labels', 'shapes'].forEach((name) => {
-        const someBaseOptions = baseOptions[name];
+        const someBaseOptions = baseOptions[name], newOptionsValue = newOptions[name];
         if (someBaseOptions) {
-            if (newOptions[name]) {
-                mergedOptions[name] = splat(newOptions[name]).map(function (basicOptions, i) {
-                    return merge(someBaseOptions[i], basicOptions);
-                });
+            if (newOptionsValue) {
+                mergedOptions[name] = splat(newOptionsValue).map((basicOptions, i) => merge(someBaseOptions[i], basicOptions));
             }
             else {
                 mergedOptions[name] = baseOptions[name];

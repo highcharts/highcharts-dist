@@ -1,1 +1,2 @@
-import '../../../modules/series-label.src';
+import Highcharts from '../../Core/Globals.js';
+export default Highcharts;

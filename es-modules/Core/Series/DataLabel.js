@@ -13,7 +13,7 @@ const { getDeferredAnimation } = A;
 import F from '../Templating.js';
 const { format } = F;
 import U from '../Utilities.js';
-const { defined, extend, fireEvent, isArray, isString, merge, objectEach, pick, pInt, splat } = U;
+const { defined, extend, fireEvent, getAlignFactor, isArray, isString, merge, objectEach, pick, pInt, splat } = U;
 /* *
  *
  *  Composition
@@ -81,13 +81,7 @@ var DataLabel;
                     })));
         const pos = point.pos();
         if (visible && pos) {
-            const bBox = dataLabel.getBBox(), unrotatedbBox = dataLabel.getBBox(void 0, 0), alignFactor = {
-                'right': 1,
-                'center': 0.5
-            }[options.align || 0] || 0, verticalAlignFactor = {
-                'bottom': 1,
-                'middle': 0.5
-            }[options.verticalAlign || 0] || 0;
+            const bBox = dataLabel.getBBox(), unrotatedbBox = dataLabel.getBBox(void 0, 0);
             // The alignment box is a singular point
             alignTo = extend({
                 x: pos[0],
@@ -112,9 +106,9 @@ var DataLabel;
                 width: unrotatedbBox.width,
                 height: unrotatedbBox.height
             }), false, alignTo, false);
-            dataLabel.alignAttr.x += alignFactor *
+            dataLabel.alignAttr.x += getAlignFactor(options.align) *
                 (unrotatedbBox.width - bBox.width);
-            dataLabel.alignAttr.y += verticalAlignFactor *
+            dataLabel.alignAttr.y += getAlignFactor(options.verticalAlign) *
                 (unrotatedbBox.height - bBox.height);
             dataLabel[dataLabel.placed ? 'animate' : 'attr']({
                 x: dataLabel.alignAttr.x +
@@ -285,16 +279,15 @@ var DataLabel;
                         // #2282, #4641, #7112, #10049
                         (!point.isNull || point.dataLabelOnNull) &&
                         applyFilter(point, labelOptions)), { backgroundColor, borderColor, distance, style = {} } = labelOptions;
-                    let labelConfig, formatString, labelText, rotation, attr = {}, dataLabel = dataLabels[i], isNew = !dataLabel, labelBgColor;
+                    let formatString, labelText, rotation, attr = {}, dataLabel = dataLabels[i], isNew = !dataLabel, labelBgColor;
                     if (labelEnabled) {
                         // Create individual options structure that can be
                         // extended without affecting others
                         formatString = pick(labelOptions[point.formatPrefix + 'Format'], labelOptions.format);
-                        labelConfig = point.getLabelConfig();
                         labelText = defined(formatString) ?
-                            format(formatString, labelConfig, chart) :
+                            format(formatString, point, chart) :
                             (labelOptions[point.formatPrefix + 'Formatter'] ||
-                                labelOptions.formatter).call(labelConfig, labelOptions);
+                                labelOptions.formatter).call(point, labelOptions);
                         rotation = labelOptions.rotation;
                         if (!chart.styledMode) {
                             // Determine the color
@@ -390,10 +383,13 @@ var DataLabel;
                             else if (style.width) {
                                 // In styled mode with a width property set,
                                 // the width should be applied to the
-                                // dataLabel. (#20499)
+                                // dataLabel. (#20499). These properties affect
+                                // layout and must be applied also in styled
+                                // mode.
                                 dataLabel.css({
                                     width: style.width,
-                                    textOverflow: style.textOverflow
+                                    textOverflow: style.textOverflow,
+                                    whiteSpace: style.whiteSpace
                                 });
                             }
                             fireEvent(dataLabel, 'beforeAddingDataLabel', { labelOptions, point });
@@ -591,7 +587,7 @@ export default DataLabel;
  *
  * @callback Highcharts.DataLabelsFormatterCallbackFunction
  *
- * @param {Highcharts.PointLabelObject} this
+ * @param {Highcharts.Point} this
  * Data label context to format
  *
  * @param {Highcharts.DataLabelsOptions} options

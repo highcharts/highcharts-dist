@@ -86,7 +86,7 @@ class ParetoSeries extends LineSeries {
      * @requires modules/pareto
      */
     setDerivedData() {
-        const xValues = this.baseSeries.xData, yValues = this.baseSeries.yData, sum = this.sumPointsPercents(yValues, xValues, null, true);
+        const xValues = this.baseSeries?.getColumn('x') || [], yValues = this.baseSeries?.getColumn('y') || [], sum = this.sumPointsPercents(yValues, xValues, null, true);
         this.setData(this.sumPointsPercents(yValues, xValues, sum, false), false);
     }
 }

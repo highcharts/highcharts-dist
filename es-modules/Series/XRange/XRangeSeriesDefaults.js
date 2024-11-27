@@ -76,7 +76,7 @@ const XRangeSeriesDefaults = {
     colorByPoint: true,
     dataLabels: {
         formatter: function () {
-            let amount = this.point.partialFill;
+            let amount = this.partialFill;
             if (isObject(amount)) {
                 amount = amount.amount;
             }
@@ -91,7 +91,7 @@ const XRangeSeriesDefaults = {
         }
     },
     tooltip: {
-        headerFormat: '<span style="font-size: 0.8em">{point.x} - {point.x2}</span><br/>',
+        headerFormat: '<span style="font-size: 0.8em">{ucfirst point.x} - {point.x2}</span><br/>',
         pointFormat: '<span style="color:{point.color}">\u25CF</span> {series.name}: <b>{point.yCategory}</b><br/>'
     },
     borderRadius: 3,

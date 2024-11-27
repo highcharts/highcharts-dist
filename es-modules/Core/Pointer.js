@@ -93,9 +93,8 @@ class Pointer {
         this.eventsToUnbind.forEach((unbind) => unbind());
         this.eventsToUnbind = [];
         if (!H.chartCount) {
-            if (Pointer.unbindDocumentMouseUp) {
-                Pointer.unbindDocumentMouseUp.forEach((e) => e());
-            }
+            Pointer.unbindDocumentMouseUp.forEach((el) => el.unbind());
+            Pointer.unbindDocumentMouseUp.length = 0;
             if (Pointer.unbindDocumentTouchEnd) {
                 Pointer.unbindDocumentTouchEnd = (Pointer.unbindDocumentTouchEnd());
             }
@@ -1283,10 +1282,12 @@ class Pointer {
         container.onmousemove = this.onContainerMouseMove.bind(this);
         container.onclick = this.onContainerClick.bind(this);
         this.eventsToUnbind.push(addEvent(container, 'mouseenter', this.onContainerMouseEnter.bind(this)), addEvent(container, 'mouseleave', this.onContainerMouseLeave.bind(this)));
-        if (!Pointer.unbindDocumentMouseUp) {
-            Pointer.unbindDocumentMouseUp = [];
+        if (!Pointer.unbindDocumentMouseUp.some((el) => el.doc === ownerDoc)) {
+            Pointer.unbindDocumentMouseUp.push({
+                doc: ownerDoc,
+                unbind: addEvent(ownerDoc, 'mouseup', this.onDocumentMouseUp.bind(this))
+            });
         }
-        Pointer.unbindDocumentMouseUp.push(addEvent(ownerDoc, 'mouseup', this.onDocumentMouseUp.bind(this)));
         // In case we are dealing with overflow, reset the chart position when
         // scrolling parent elements
         let parent = this.chart.renderTo.parentElement;
@@ -1446,6 +1447,7 @@ class Pointer {
         this.hasZoom = zoomX || zoomY;
     }
 }
+Pointer.unbindDocumentMouseUp = [];
 /* *
  *
  *  Class Namespace
@@ -1594,6 +1596,10 @@ export default Pointer;
 * The related browser event.
 * @name Highcharts.SelectEventObject#originalEvent
 * @type {global.Event}
+*/ /**
+* Prevents the default action for the event, if called.
+* @name Highcharts.SelectEventObject#preventDefault
+* @type {Function}
 */ /**
 * Indicates a reset event to restore default state.
 * @name Highcharts.SelectEventObject#resetSelection

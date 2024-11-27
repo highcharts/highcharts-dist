@@ -1,1 +1,2 @@
-import '../../../modules/boost-canvas.src';
+import Highcharts from '../../Core/Globals.js';
+export default Highcharts;

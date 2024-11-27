@@ -289,7 +289,7 @@ class BubbleLegendItem {
     formatLabel(range) {
         const options = this.options, formatter = options.labels.formatter, format = options.labels.format;
         const { numberFormatter } = this.chart;
-        return format ? F.format(format, range) :
+        return format ? F.format(format, range, this.chart) :
             formatter ? formatter.call(range) :
                 numberFormatter(range.value, 1);
     }
@@ -327,7 +327,7 @@ class BubbleLegendItem {
         series.forEach(function (s) {
             // Find the min and max Z, like in bubble series
             if (s.isBubble && !s.ignoreSeries) {
-                zData = s.zData.filter(isNumber);
+                zData = s.getColumn('z').filter(isNumber);
                 if (zData.length) {
                     minZ = pick(s.options.zMin, Math.min(minZ, Math.max(arrayMin(zData), s.options.displayNegative === false ?
                         s.options.zThreshold :

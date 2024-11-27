@@ -11,7 +11,7 @@
 import H from '../Core/Globals.js';
 const { composed } = H;
 import U from '../Core/Utilities.js';
-const { addEvent, isArray, merge, pushUnique } = U;
+const { addEvent, merge, pushUnique } = U;
 /* *
  *
  *  Composition
@@ -28,7 +28,8 @@ function onSeriesAfterRender() {
     const series = this, seriesOptions = series.options, lastVisiblePrice = seriesOptions.lastVisiblePrice, lastPrice = seriesOptions.lastPrice;
     if ((lastVisiblePrice || lastPrice) &&
         seriesOptions.id !== 'highcharts-navigator-series') {
-        const xAxis = series.xAxis, yAxis = series.yAxis, origOptions = yAxis.crosshair, origGraphic = yAxis.cross, origLabel = yAxis.crossLabel, points = series.points, yLength = series.yData.length, pLength = points.length, x = series.xData[series.xData.length - 1], y = series.yData[yLength - 1];
+        const xAxis = series.xAxis, yAxis = series.yAxis, origOptions = yAxis.crosshair, origGraphic = yAxis.cross, origLabel = yAxis.crossLabel, points = series.points, pLength = points.length, dataLength = series.dataTable.rowCount, x = series.getColumn('x')[dataLength - 1], y = series.getColumn('y')[dataLength - 1] ??
+            series.getColumn('close')[dataLength - 1];
         let yValue;
         if (lastPrice && lastPrice.enabled) {
             yAxis.crosshair = yAxis.options.crosshair = seriesOptions.lastPrice;
@@ -41,7 +42,7 @@ function onSeriesAfterRender() {
                     seriesOptions.lastPrice.color || series.color;
             }
             yAxis.cross = series.lastPrice;
-            yValue = isArray(y) ? y[3] : y;
+            yValue = y;
             if (series.lastPriceLabel) {
                 series.lastPriceLabel.destroy();
             }

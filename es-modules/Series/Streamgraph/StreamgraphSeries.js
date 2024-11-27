@@ -14,7 +14,7 @@ import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { areaspline: AreaSplineSeries } = SeriesRegistry.seriesTypes;
 import StreamgraphSeriesDefaults from './StreamgraphSeriesDefaults.js';
 import U from '../../Core/Utilities.js';
-const { merge, extend } = U;
+const { addEvent, merge, extend } = U;
 /**
  * Streamgraph series type
  *
@@ -37,8 +37,12 @@ class StreamgraphSeries extends AreaSplineSeries {
         pointExtremes[0] -= stack.total / 2;
         // Y value
         pointExtremes[1] -= stack.total / 2;
-        // Record the Y data for use when getting axis extremes
-        this.stackedYData[i] = pointExtremes;
+        // Record the Y data for use when getting axis extremes. Register only
+        // the max. This is picked up in the `afterGetExtremes` event, and the
+        // dataMin property is reflected.
+        if (this.stackedYData) {
+            this.stackedYData[i] = Math.max.apply(0, pointExtremes);
+        }
     }
 }
 /* *
@@ -47,6 +51,10 @@ class StreamgraphSeries extends AreaSplineSeries {
  *
  * */
 StreamgraphSeries.defaultOptions = merge(AreaSplineSeries.defaultOptions, StreamgraphSeriesDefaults);
+// Reflect the dataMin property, as only dataMax is registered above
+addEvent(StreamgraphSeries, 'afterGetExtremes', (e) => {
+    e.dataExtremes.dataMin = -e.dataExtremes.dataMax;
+});
 extend(StreamgraphSeries.prototype, {
     negStacks: false
 });

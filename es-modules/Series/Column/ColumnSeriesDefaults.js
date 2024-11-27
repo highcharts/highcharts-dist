@@ -84,6 +84,8 @@ const ColumnSeriesDefaults = {
      *
      * @sample {highcharts} highcharts/series-column/centerincategory/
      *         Center in category
+     * @sample {highcharts} highcharts/series/stack-centerincategory/
+     *         Center in category, stacked and grouped
      *
      * @since   8.0.1
      * @product highcharts highstock gantt
