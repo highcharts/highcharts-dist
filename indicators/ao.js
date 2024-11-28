@@ -1,0 +1,12 @@
+!/**
+ * Highstock JS v12.0.1 (2024-11-28)
+ * @module highcharts/indicators/ao
+ * @requires highcharts
+ * @requires highcharts/modules/stock
+ *
+ * Indicator series type for Highcharts Stock
+ *
+ * (c) 2010-2024 Wojciech Chmiel
+ *
+ * License: www.highcharts.com/license
+ */function(e,r){"object"==typeof exports&&"object"==typeof module?module.exports=r(require("highcharts"),require("highcharts").SeriesRegistry):"function"==typeof define&&define.amd?define("highcharts/ao",[["highcharts/highcharts"],["highcharts/highcharts","SeriesRegistry"]],r):"object"==typeof exports?exports["highcharts/ao"]=r(require("highcharts"),require("highcharts").SeriesRegistry):e.Highcharts=r(e.Highcharts,e.Highcharts.SeriesRegistry)}(this,(e,r)=>(()=>{"use strict";var t={512:e=>{e.exports=r},944:r=>{r.exports=e}},o={};function s(e){var r=o[e];if(void 0!==r)return r.exports;var a=o[e]={exports:{}};return t[e](a,a.exports,s),a.exports}s.n=e=>{var r=e&&e.__esModule?()=>e.default:()=>e;return s.d(r,{a:r}),r},s.d=(e,r)=>{for(var t in r)s.o(r,t)&&!s.o(e,t)&&Object.defineProperty(e,t,{enumerable:!0,get:r[t]})},s.o=(e,r)=>Object.prototype.hasOwnProperty.call(e,r);var a={};s.d(a,{default:()=>m});var i=s(944),h=/*#__PURE__*/s.n(i),n=s(512),l=/*#__PURE__*/s.n(n);let{noop:p}=h(),{column:{prototype:c},sma:u}=l().seriesTypes,{extend:d,merge:g,correctFloat:f,isArray:y}=h();class x extends u{drawGraph(){let e;let r=this.options,t=this.points,o=this.userOptions.color,s=r.greaterBarColor,a=r.lowerBarColor,i=t[0];if(!o&&i)for(e=1,i.color=s;e<t.length;e++)t[e].y>t[e-1].y?t[e].color=s:t[e].y<t[e-1].y?t[e].color=a:t[e].color=t[e-1].color}getValues(e){let r=e.xData||[],t=e.yData||[],o=t.length,s=[],a=[],i=[],h,n,l,p,c,u,d=0,g=0;if(!(r.length<=34)&&y(t[0])&&4===t[0].length){for(c=0;c<33;c++)p=(t[c][1]+t[c][2])/2,c>=29&&(g=f(g+p)),d=f(d+p);for(u=33;u<o;u++)g=f(g+(p=(t[u][1]+t[u][2])/2)),d=f(d+p),h=f(g/5-d/34),s.push([r[u],h]),a.push(r[u]),i.push(h),n=u+1-5,l=u+1-34,g=f(g-(t[n][1]+t[n][2])/2),d=f(d-(t[l][1]+t[l][2])/2);return{values:s,xData:a,yData:i}}}}x.defaultOptions=g(u.defaultOptions,{params:{index:void 0,period:void 0},greaterBarColor:"#06b535",lowerBarColor:"#f21313",threshold:0,groupPadding:.2,pointPadding:.2,crisp:!1,states:{hover:{halo:{size:0}}}}),d(x.prototype,{nameBase:"AO",nameComponents:void 0,markerAttribs:p,getColumnMetrics:c.getColumnMetrics,crispCol:c.crispCol,translate:c.translate,drawPoints:c.drawPoints}),l().registerSeriesType("ao",x);let m=h();return a.default})());

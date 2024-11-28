@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v12.0.0 (2024-11-27)
+ * @license Highcharts Gantt JS v12.0.1 (2024-11-28)
  * @module highcharts/modules/pathfinder
  * @requires highcharts
  *
@@ -10509,7 +10509,7 @@ const StaticScale = {
 
 ;// ./code/es-modules/masters/modules/static-scale.src.js
 /**
- * @license Highcharts Gantt JS v12.0.0 (2024-11-27)
+ * @license Highcharts Gantt JS v12.0.1 (2024-11-28)
  * @module highcharts/modules/static-scale
  * @requires highcharts
  *
@@ -11320,7 +11320,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 ;// ./code/es-modules/masters/modules/xrange.src.js
 /**
- * @license Highcharts JS v12.0.0 (2024-11-27)
+ * @license Highcharts JS v12.0.1 (2024-11-28)
  * @module highcharts/modules/xrange
  * @requires highcharts
  *
@@ -14871,7 +14871,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 ;// ./code/es-modules/masters/modules/gantt.src.js
 /**
- * @license Highcharts Gantt JS v12.0.0 (2024-11-27)
+ * @license Highcharts Gantt JS v12.0.1 (2024-11-28)
  * @module highcharts/modules/gantt
  * @requires highcharts
  *

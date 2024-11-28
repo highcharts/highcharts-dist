@@ -1,0 +1,12 @@
+!/**
+ * Highstock JS v12.0.1 (2024-11-28)
+ * @module highcharts/indicators/tema
+ * @requires highcharts
+ * @requires highcharts/modules/stock
+ *
+ * Indicator series type for Highcharts Stock
+ *
+ * (c) 2010-2024 Rafal Sebestjanski
+ *
+ * License: www.highcharts.com/license
+ */function(e,t){"object"==typeof exports&&"object"==typeof module?module.exports=t(require("highcharts"),require("highcharts").SeriesRegistry):"function"==typeof define&&define.amd?define("highcharts/tema",[["highcharts/highcharts"],["highcharts/highcharts","SeriesRegistry"]],t):"object"==typeof exports?exports["highcharts/tema"]=t(require("highcharts"),require("highcharts").SeriesRegistry):e.Highcharts=t(e.Highcharts,e.Highcharts.SeriesRegistry)}(this,(e,t)=>(()=>{"use strict";var r={512:e=>{e.exports=t},944:t=>{t.exports=e}},l={};function s(e){var t=l[e];if(void 0!==t)return t.exports;var i=l[e]={exports:{}};return r[e](i,i.exports,s),i.exports}s.n=e=>{var t=e&&e.__esModule?()=>e.default:()=>e;return s.d(t,{a:t}),t},s.d=(e,t)=>{for(var r in t)s.o(t,r)&&!s.o(e,r)&&Object.defineProperty(e,r,{enumerable:!0,get:t[r]})},s.o=(e,t)=>Object.prototype.hasOwnProperty.call(e,t);var i={};s.d(i,{default:()=>d});var a=s(944),h=/*#__PURE__*/s.n(a),o=s(512),u=/*#__PURE__*/s.n(o);let{ema:v}=u().seriesTypes,{correctFloat:p,isArray:n,merge:c}=h();class g extends v{getEMA(e,t,r,l,s,i){return super.calculateEma(i||[],e,void 0===s?1:s,this.EMApercent,t,void 0===l?-1:l,r)}getTemaPoint(e,t,r,l){return[e[l-3],p(3*r.level1-3*r.level2+r.level3)]}getValues(e,t){let r=t.period,l=2*r,s=3*r,i=e.xData,a=e.yData,h=a?a.length:0,o=[],u=[],v=[],p=[],c=[],g={},d=-1,f=0,x=0,y,m,E,M;if(this.EMApercent=2/(r+1),!(h<3*r-2)){for(n(a[0])&&(d=t.index?t.index:0),x=(f=super.accumulatePeriodPoints(r,d,a))/r,f=0,E=r;E<h+3;E++)E<h+1&&(g.level1=this.getEMA(a,y,x,d,E)[1],p.push(g.level1)),y=g.level1,E<l?f+=g.level1:(E===l&&(x=f/r,f=0),g.level1=p[E-r-1],g.level2=this.getEMA([g.level1],m,x)[1],c.push(g.level2),m=g.level2,E<s?f+=g.level2:(E===s&&(x=f/r),E===h+1&&(g.level1=p[E-r-1],g.level2=this.getEMA([g.level1],m,x)[1],c.push(g.level2)),g.level1=p[E-r-2],g.level2=c[E-2*r-1],g.level3=this.getEMA([g.level2],g.prevLevel3,x)[1],(M=this.getTemaPoint(i,s,g,E))&&(o.push(M),u.push(M[0]),v.push(M[1])),g.prevLevel3=g.level3));return{values:o,xData:u,yData:v}}}}g.defaultOptions=c(v.defaultOptions),u().registerSeriesType("tema",g);let d=h();return i.default})());

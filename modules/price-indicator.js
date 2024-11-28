@@ -1,0 +1,13 @@
+!/**
+ * Highstock JS v12.0.1 (2024-11-28)
+ * @module highcharts/modules/price-indicator
+ * @requires highcharts
+ * @requires highcharts/modules/stock
+ *
+ * Advanced Highcharts Stock tools
+ *
+ * (c) 2010-2024 Highsoft AS
+ * Author: Torstein Honsi
+ *
+ * License: www.highcharts.com/license
+ */function(s,e){"object"==typeof exports&&"object"==typeof module?module.exports=e(require("highcharts")):"function"==typeof define&&define.amd?define("highcharts/price-indicator",[["highcharts/highcharts"]],e):"object"==typeof exports?exports["highcharts/price-indicator"]=e(require("highcharts")):s.Highcharts=e(s.Highcharts)}(this,s=>(()=>{"use strict";var e={944:e=>{e.exports=s}},r={};function i(s){var t=r[s];if(void 0!==t)return t.exports;var o=r[s]={exports:{}};return e[s](o,o.exports,i),o.exports}i.n=s=>{var e=s&&s.__esModule?()=>s.default:()=>s;return i.d(e,{a:e}),e},i.d=(s,e)=>{for(var r in e)i.o(e,r)&&!i.o(s,r)&&Object.defineProperty(s,r,{enumerable:!0,get:e[r]})},i.o=(s,e)=>Object.prototype.hasOwnProperty.call(s,e);var t={};i.d(t,{default:()=>p});var o=i(944),a=/*#__PURE__*/i.n(o);let{composed:c}=a(),{addEvent:l,merge:h,pushUnique:n}=a();function d(){let s=this.options,e=s.lastVisiblePrice,r=s.lastPrice;if((e||r)&&"highcharts-navigator-series"!==s.id){let i=this.xAxis,t=this.yAxis,o=t.crosshair,a=t.cross,c=t.crossLabel,l=this.points,n=l.length,d=this.dataTable.rowCount,p=this.getColumn("x")[d-1],b=this.getColumn("y")[d-1]??this.getColumn("close")[d-1];if(r&&r.enabled&&(t.crosshair=t.options.crosshair=s.lastPrice,!this.chart.styledMode&&t.crosshair&&t.options.crosshair&&s.lastPrice&&(t.crosshair.color=t.options.crosshair.color=s.lastPrice.color||this.color),t.cross=this.lastPrice,this.lastPriceLabel&&this.lastPriceLabel.destroy(),delete t.crossLabel,t.drawCrosshair(null,{x:p,y:b,plotX:i.toPixels(p,!0),plotY:t.toPixels(b,!0)}),this.yAxis.cross&&(this.lastPrice=this.yAxis.cross,this.lastPrice.addClass("highcharts-color-"+this.colorIndex),this.lastPrice.y=b),this.lastPriceLabel=t.crossLabel),e&&e.enabled&&n>0){t.crosshair=t.options.crosshair=h({color:"transparent"},s.lastVisiblePrice),t.cross=this.lastVisiblePrice;let e=l[n-1].isInside?l[n-1]:l[n-2];this.lastVisiblePriceLabel&&this.lastVisiblePriceLabel.destroy(),delete t.crossLabel,t.drawCrosshair(null,e),t.cross&&(this.lastVisiblePrice=t.cross,e&&"number"==typeof e.y&&(this.lastVisiblePrice.y=e.y)),this.lastVisiblePriceLabel=t.crossLabel}t.crosshair=t.options.crosshair=o,t.cross=a,t.crossLabel=c}}({compose:function(s){n(c,"PriceIndication")&&l(s,"afterRender",d)}}).compose(a().Series);let p=a();return t.default})());

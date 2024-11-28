@@ -1,0 +1,12 @@
+!/**
+ * Highstock JS v12.0.1 (2024-11-28)
+ * @module highcharts/indicators/disparity-index
+ * @requires highcharts
+ * @requires highcharts/modules/stock
+ *
+ * Indicator series type for Highstock
+ *
+ * (c) 2010-2024 Rafal Sebestjanski
+ *
+ * License: www.highcharts.com/license
+ */function(e,t){"object"==typeof exports&&"object"==typeof module?module.exports=t(require("highcharts"),require("highcharts").SeriesRegistry):"function"==typeof define&&define.amd?define("highcharts/disparity-index",[["highcharts/highcharts"],["highcharts/highcharts","SeriesRegistry"]],t):"object"==typeof exports?exports["highcharts/disparity-index"]=t(require("highcharts"),require("highcharts").SeriesRegistry):e.Highcharts=t(e.Highcharts,e.Highcharts.SeriesRegistry)}(this,(e,t)=>(()=>{"use strict";var r={512:e=>{e.exports=t},944:t=>{t.exports=e}},a={};function i(e){var t=a[e];if(void 0!==t)return t.exports;var s=a[e]={exports:{}};return r[e](s,s.exports,i),s.exports}i.n=e=>{var t=e&&e.__esModule?()=>e.default:()=>e;return i.d(t,{a:t}),t},i.d=(e,t)=>{for(var r in t)i.o(t,r)&&!i.o(e,r)&&Object.defineProperty(e,r,{enumerable:!0,get:t[r]})},i.o=(e,t)=>Object.prototype.hasOwnProperty.call(e,t);var s={};i.d(s,{default:()=>f});var o=i(944),h=/*#__PURE__*/i.n(o),n=i(512),p=/*#__PURE__*/i.n(n);let{sma:d}=p().seriesTypes,{correctFloat:g,defined:u,extend:c,isArray:l,merge:y}=h();class x extends d{init(){let e=arguments,t=e[1].params,r=t&&t.average?t.average:void 0;this.averageIndicator=p().seriesTypes[r]||d,this.averageIndicator.prototype.init.apply(this,e)}calculateDisparityIndex(e,t){return g(e-t)/t*100}getValues(e,t){let r=t.index,a=e.xData,i=e.yData,s=i?i.length:0,o=[],h=[],n=[],p=this.averageIndicator,d=l(i[0]),g=p.prototype.getValues(e,t),c=g.yData,y=a.indexOf(g.xData[0]);if(c&&0!==c.length&&u(r)&&!(i.length<=y)){for(let e=y;e<s;e++){let t=this.calculateDisparityIndex(d?i[e][r]:i[e],c[e-y]);o.push([a[e],t]),h.push(a[e]),n.push(t)}return{values:o,xData:h,yData:n}}}}x.defaultOptions=y(d.defaultOptions,{params:{average:"sma",index:3},marker:{enabled:!1},dataGrouping:{approximation:"averages"}}),c(x.prototype,{nameBase:"Disparity Index",nameComponents:["period","average"]}),p().registerSeriesType("disparityindex",x);let f=h();return s.default})());

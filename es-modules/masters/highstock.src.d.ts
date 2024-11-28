@@ -1,3 +1,2 @@
-import Highcharts from './highcharts.src.js';
-import './modules/stock.src.js';
+import * as Highcharts from '../../highstock.src';
 export default Highcharts;

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.0.0 (2024-11-27)
+ * @license Highcharts JS v12.0.1 (2024-11-28)
  * @module highcharts/highcharts
  *
  * (c) 2009-2024 Torstein Honsi
@@ -74,7 +74,7 @@ var Globals;
      *  Constants
      *
      * */
-    Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '12.0.0', Globals.win = (typeof window !== 'undefined' ?
+    Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '12.0.1', Globals.win = (typeof window !== 'undefined' ?
         window :
         {}), // eslint-disable-line node/no-unsupported-features/es-builtins
     Globals.doc = Globals.win.document, Globals.svg = (Globals.doc &&
@@ -12631,7 +12631,7 @@ class SVGRenderer {
         this.url = this.getReferenceURL();
         // Add description
         const desc = this.createElement('desc').add();
-        desc.element.appendChild(SVGRenderer_doc.createTextNode('Created with Highcharts 12.0.0'));
+        desc.element.appendChild(SVGRenderer_doc.createTextNode('Created with Highcharts 12.0.1'));
         this.defs = this.createElement('defs').add();
         this.allowHTML = allowHTML;
         this.forExport = forExport;
@@ -57640,7 +57640,7 @@ var BrokenAxis;
 
 ;// ./code/es-modules/masters/modules/broken-axis.src.js
 /**
- * @license Highcharts JS v12.0.0 (2024-11-27)
+ * @license Highcharts JS v12.0.1 (2024-11-28)
  * @module highcharts/modules/broken-axis
  * @requires highcharts
  *
@@ -59132,7 +59132,7 @@ const DataGroupingComposition = {
 
 ;// ./code/es-modules/masters/modules/datagrouping.src.js
 /**
- * @license Highstock JS v12.0.0 (2024-11-27)
+ * @license Highstock JS v12.0.1 (2024-11-28)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *
@@ -59454,7 +59454,7 @@ const MouseWheelZoomComposition = {
 
 ;// ./code/es-modules/masters/modules/mouse-wheel-zoom.src.js
 /**
- * @license Highcharts JS v12.0.0 (2024-11-27)
+ * @license Highcharts JS v12.0.1 (2024-11-28)
  * @module highcharts/modules/mouse-wheel-zoom
  * @requires highcharts
  *
@@ -59474,7 +59474,7 @@ mouse_wheel_zoom_src_G.MouseWheelZoom.compose(mouse_wheel_zoom_src_G.Chart);
 
 ;// ./code/es-modules/masters/modules/stock.src.js
 /**
- * @license Highstock JS v12.0.0 (2024-11-27)
+ * @license Highstock JS v12.0.1 (2024-11-28)
  * @module highcharts/modules/stock
  * @requires highcharts
  *
@@ -59522,7 +59522,7 @@ stock_src_G.StockChart.compose(stock_src_G.Chart, stock_src_G.Axis, stock_src_G.
 
 ;// ./code/es-modules/masters/highstock.src.js
 /**
- * @license Highstock JS v12.0.0 (2024-11-27)
+ * @license Highstock JS v12.0.1 (2024-11-28)
  * @module highcharts/highstock
  *
  * (c) 2009-2024 Torstein Honsi

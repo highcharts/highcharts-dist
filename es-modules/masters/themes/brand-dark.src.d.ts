@@ -1,2 +1,1 @@
-import H from '../../Core/Globals.js';
-export default H;
+import '../../../themes/brand-dark.src';

@@ -1,3 +1,2 @@
-import Highcharts from './highcharts.src.js';
-import './modules/map.src.js';
+import * as Highcharts from '../../highmaps.src';
 export default Highcharts;

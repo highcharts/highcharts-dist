@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.0.0 (2024-11-27)
+ * @license Highcharts JS v12.0.1 (2024-11-28)
  * @module highcharts/highcharts
  *
  * (c) 2009-2024 Torstein Honsi
@@ -74,7 +74,7 @@ var Globals;
      *  Constants
      *
      * */
-    Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '12.0.0', Globals.win = (typeof window !== 'undefined' ?
+    Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '12.0.1', Globals.win = (typeof window !== 'undefined' ?
         window :
         {}), // eslint-disable-line node/no-unsupported-features/es-builtins
     Globals.doc = Globals.win.document, Globals.svg = (Globals.doc &&
@@ -12631,7 +12631,7 @@ class SVGRenderer {
         this.url = this.getReferenceURL();
         // Add description
         const desc = this.createElement('desc').add();
-        desc.element.appendChild(SVGRenderer_doc.createTextNode('Created with Highcharts 12.0.0'));
+        desc.element.appendChild(SVGRenderer_doc.createTextNode('Created with Highcharts 12.0.1'));
         this.defs = this.createElement('defs').add();
         this.allowHTML = allowHTML;
         this.forExport = forExport;
@@ -48162,7 +48162,7 @@ Array.prototype.push.apply(Axis_Axis.keepProps, ColorAxis.keepProps);
 
 ;// ./code/es-modules/masters/modules/coloraxis.src.js
 /**
- * @license Highcharts JS v12.0.0 (2024-11-27)
+ * @license Highcharts JS v12.0.1 (2024-11-28)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -57700,7 +57700,7 @@ Series_SeriesRegistry.registerSeriesType('heatmap', HeatmapSeries);
 
 ;// ./code/es-modules/masters/modules/map.src.js
 /**
- * @license Highmaps JS v12.0.0 (2024-11-27)
+ * @license Highmaps JS v12.0.1 (2024-11-28)
  * @module highcharts/modules/map
  * @requires highcharts
  *
@@ -57746,7 +57746,7 @@ Maps_MapView.compose(Chart_MapChart);
 
 ;// ./code/es-modules/masters/highmaps.src.js
 /**
- * @license Highmaps JS v12.0.0 (2024-11-27)
+ * @license Highmaps JS v12.0.1 (2024-11-28)
  * @module highcharts/highmaps
  *
  * (c) 2011-2024 Torstein Honsi

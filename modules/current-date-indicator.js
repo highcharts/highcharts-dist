@@ -1,0 +1,11 @@
+!/**
+ * Highcharts Gantt JS v12.0.1 (2024-11-28)
+ * @module highcharts/modules/current-date-indicator
+ * @requires highcharts
+ *
+ * CurrentDateIndicator
+ *
+ * (c) 2010-2024 Lars A. V. Cabrera
+ *
+ * License: www.highcharts.com/license
+ */function(t,e){"object"==typeof exports&&"object"==typeof module?module.exports=e(require("highcharts")):"function"==typeof define&&define.amd?define("highcharts/current-date-indicator",[["highcharts/highcharts"]],e):"object"==typeof exports?exports["highcharts/current-date-indicator"]=e(require("highcharts")):t.Highcharts=e(t.Highcharts)}(this,t=>(()=>{"use strict";var e={944:e=>{e.exports=t}},r={};function o(t){var a=r[t];if(void 0!==a)return a.exports;var i=r[t]={exports:{}};return e[t](i,i.exports,o),i.exports}o.n=t=>{var e=t&&t.__esModule?()=>t.default:()=>t;return o.d(e,{a:e}),e},o.d=(t,e)=>{for(var r in e)o.o(e,r)&&!o.o(t,r)&&Object.defineProperty(t,r,{enumerable:!0,get:e[r]})},o.o=(t,e)=>Object.prototype.hasOwnProperty.call(t,e);var a={};o.d(a,{default:()=>x});var i=o(944),n=/*#__PURE__*/o.n(i);let{composed:s}=n(),{addEvent:c,merge:l,pushUnique:h,wrap:f}=n(),u={color:"#ccd3ff",width:2,label:{format:"%[abdYHM]",formatter:function(t,e){return this.axis.chart.time.dateFormat(e||"",t,!0)},rotation:0,style:{fontSize:"0.7em"}}};function d(){let t=this.options,e=t.currentDateIndicator;if(e){let r="object"==typeof e?l(u,e):l(u);r.value=Date.now(),r.className="highcharts-current-date-indicator",t.plotLines||(t.plotLines=[]),t.plotLines.push(r)}}function p(){this.label&&this.label.attr({text:this.getLabelText(this.options.label)})}function b(t,e){let r=this.options;return r&&r.className&&-1!==r.className.indexOf("highcharts-current-date-indicator")&&r.label&&"function"==typeof r.label.formatter?(r.value=Date.now(),r.label.formatter.call(this,r.value,r.label.format)):t.call(this,e)}let m=n();({compose:function(t,e){h(s,"CurrentDateIndication")&&(c(t,"afterSetOptions",d),c(e,"render",p),f(e.prototype,"getLabelText",b))}}).compose(m.Axis,m.PlotLineOrBand);let x=n();return a.default})());

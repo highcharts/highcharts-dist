@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.0.0 (2024-11-27)
+ * @license Highcharts JS v12.0.1 (2024-11-28)
  * @module highcharts/modules/navigator
  * @requires highcharts
  *

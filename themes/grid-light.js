@@ -1,0 +1,9 @@
+!/**
+ * Highcharts JS v12.0.1 (2024-11-28)
+ * @module highcharts/themes/grid-light
+ * @requires highcharts
+ *
+ * (c) 2009-2024 Torstein Honsi
+ *
+ * License: www.highcharts.com/license
+ */function(e,t){"object"==typeof exports&&"object"==typeof module?module.exports=t(require("highcharts")):"function"==typeof define&&define.amd?define("highcharts/grid-light",[["highcharts/highcharts"]],t):"object"==typeof exports?exports["highcharts/grid-light"]=t(require("highcharts")):e.Highcharts=t(e.Highcharts)}(this,e=>(()=>{"use strict";var t,o={944:t=>{t.exports=e}},r={};function i(e){var t=r[e];if(void 0!==t)return t.exports;var s=r[e]={exports:{}};return o[e](s,s.exports,i),s.exports}i.n=e=>{var t=e&&e.__esModule?()=>e.default:()=>e;return i.d(t,{a:t}),t},i.d=(e,t)=>{for(var o in t)i.o(t,o)&&!i.o(e,o)&&Object.defineProperty(e,o,{enumerable:!0,get:t[o]})},i.o=(e,t)=>Object.prototype.hasOwnProperty.call(e,t);var s={};i.d(s,{default:()=>h});var a=i(944),l=/*#__PURE__*/i.n(a);let{setOptions:n}=l(),{createElement:p}=l();!function(e){e.options={colors:["#7cb5ec","#f7a35c","#90ee7e","#7798BF","#aaeeee","#ff0066","#eeaaee","#55BF3B","#DF5353","#7798BF","#aaeeee"],chart:{backgroundColor:null,style:{fontFamily:"Dosis, sans-serif"}},title:{style:{fontSize:"16px",fontWeight:"bold",textTransform:"uppercase"}},tooltip:{borderWidth:0,backgroundColor:"rgba(219,219,216,0.8)",shadow:!1},legend:{backgroundColor:"#F0F0EA",itemStyle:{fontWeight:"bold",fontSize:"13px"}},xAxis:{gridLineWidth:1,labels:{style:{fontSize:"12px"}}},yAxis:{minorTickInterval:"auto",title:{style:{textTransform:"uppercase"}},labels:{style:{fontSize:"12px"}}},plotOptions:{candlestick:{lineColor:"#404048"}}},e.apply=function(){p("link",{href:"https://fonts.googleapis.com/css?family=Dosis:400,600",rel:"stylesheet",type:"text/css"},null,document.getElementsByTagName("head")[0]),n(e.options)}}(t||(t={}));let c=t;l().theme=c.options,c.apply();let h=l();return s.default})());
