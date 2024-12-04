@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.0.1 (2024-11-28)
+ * @license Highcharts JS v12.0.2 (2024-12-04)
  * @module highcharts/modules/drilldown
  * @requires highcharts
  *
@@ -11,14 +11,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("highcharts"), require("highcharts")["Templating"], require("highcharts")["Color"]);
+		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Templating"], root["_Highcharts"]["Color"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/drilldown", [["highcharts/highcharts"], ["highcharts/highcharts","Templating"], ["highcharts/highcharts","Color"]], factory);
+		define("highcharts/modules/drilldown", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Templating"],amd1["Color"]);});
 	else if(typeof exports === 'object')
-		exports["highcharts/drilldown"] = factory(require("highcharts"), require("highcharts")["Templating"], require("highcharts")["Color"]);
+		exports["highcharts/modules/drilldown"] = factory(root["_Highcharts"], root["_Highcharts"]["Templating"], root["_Highcharts"]["Color"]);
 	else
 		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Templating"], root["Highcharts"]["Color"]);
-})(this, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__984__, __WEBPACK_EXTERNAL_MODULE__620__) => {
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__984__, __WEBPACK_EXTERNAL_MODULE__620__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -2073,7 +2073,7 @@ class ChartAdditions {
         const chart = (this.chart ||
             this), oldSeries = point.series, xAxis = oldSeries.xAxis, yAxis = oldSeries.yAxis, colorProp = chart.styledMode ?
             { colorIndex: Drilldown_pick(point.colorIndex, oldSeries.colorIndex) } :
-            { color: point.color || oldSeries.color }, levelNumber = oldSeries.options._levelNumber || 0, pointIndex = oldSeries.points.indexOf(point);
+            { color: point.color || oldSeries.color }, levelNumber = oldSeries.options._levelNumber || 0;
         if (!chart.drilldownLevels) {
             chart.drilldownLevels = [];
         }
@@ -2124,8 +2124,8 @@ class ChartAdditions {
                 highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_default().parse(colorProp.color).setOpacity(0).get() :
                 colorProp.color,
             lowerSeriesOptions: ddOptions,
-            pointOptions: oldSeries.options.data[pointIndex],
-            pointIndex: pointIndex,
+            pointOptions: point.options,
+            pointIndex: point.index,
             oldExtremes: {
                 xMin: xAxis && xAxis.userMin,
                 xMax: xAxis && xAxis.userMax,

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.0.1 (2024-11-28)
+ * @license Highcharts JS v12.0.2 (2024-12-04)
  * @module highcharts/modules/pictorial
  * @requires highcharts
  *
@@ -11,14 +11,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("highcharts"), require("highcharts")["Series"]["types"]["column"], require("highcharts")["Chart"], require("highcharts")["SeriesRegistry"], require("highcharts")["Series"], require("highcharts")["StackItem"], require("highcharts")["SVGRenderer"]);
+		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Chart"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["Series"], root["_Highcharts"]["StackItem"], root["_Highcharts"]["SVGRenderer"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/pictorial", [["highcharts/highcharts"], ["highcharts/highcharts","Series","types","column"], ["highcharts/highcharts","Chart"], ["highcharts/highcharts","SeriesRegistry"], ["highcharts/highcharts","Series"], ["highcharts/highcharts","StackItem"], ["highcharts/highcharts","SVGRenderer"]], factory);
+		define("highcharts/modules/pictorial", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Series"],["types"],["column"],amd1["Chart"],amd1["SeriesRegistry"],amd1["Series"],amd1["StackItem"],amd1["SVGRenderer"]);});
 	else if(typeof exports === 'object')
-		exports["highcharts/pictorial"] = factory(require("highcharts"), require("highcharts")["Series"]["types"]["column"], require("highcharts")["Chart"], require("highcharts")["SeriesRegistry"], require("highcharts")["Series"], require("highcharts")["StackItem"], require("highcharts")["SVGRenderer"]);
+		exports["highcharts/modules/pictorial"] = factory(root["_Highcharts"], root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Chart"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["Series"], root["_Highcharts"]["StackItem"], root["_Highcharts"]["SVGRenderer"]);
 	else
 		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Series"]["types"]["column"], root["Highcharts"]["Chart"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["Series"], root["Highcharts"]["StackItem"], root["Highcharts"]["SVGRenderer"]);
-})(this, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__448__, __WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__184__, __WEBPACK_EXTERNAL_MODULE__540__) => {
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__448__, __WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__184__, __WEBPACK_EXTERNAL_MODULE__540__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({

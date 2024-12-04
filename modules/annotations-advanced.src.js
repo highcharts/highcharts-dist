@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.0.1 (2024-11-28)
+ * @license Highcharts JS v12.0.2 (2024-12-04)
  * @module highcharts/modules/annotations
  * @requires highcharts
  *
@@ -11,14 +11,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("highcharts"), require("highcharts")["SeriesRegistry"], require("highcharts")["Templating"], require("highcharts")["AST"]);
+		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["Templating"], root["_Highcharts"]["AST"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/annotations-advanced", [["highcharts/highcharts"], ["highcharts/highcharts","SeriesRegistry"], ["highcharts/highcharts","Templating"], ["highcharts/highcharts","AST"]], factory);
+		define("highcharts/modules/annotations-advanced", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["SeriesRegistry"],amd1["Templating"],amd1["AST"]);});
 	else if(typeof exports === 'object')
-		exports["highcharts/annotations-advanced"] = factory(require("highcharts"), require("highcharts")["SeriesRegistry"], require("highcharts")["Templating"], require("highcharts")["AST"]);
+		exports["highcharts/modules/annotations-advanced"] = factory(root["_Highcharts"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["Templating"], root["_Highcharts"]["AST"]);
 	else
 		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["Templating"], root["Highcharts"]["AST"]);
-})(this, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__984__, __WEBPACK_EXTERNAL_MODULE__660__) => {
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__984__, __WEBPACK_EXTERNAL_MODULE__660__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -5052,7 +5052,7 @@ function onNavigationBindingsShowPopup(config) {
         this.popup = new Popup_Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
             (this.chart.options.stockTools &&
                 this.chart.options.stockTools.gui.iconsURL) ||
-            'https://code.highcharts.com/12.0.1/gfx/stock-icons/'), this.chart);
+            'https://code.highcharts.com/12.0.2/gfx/stock-icons/'), this.chart);
     }
     this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
 }
@@ -6234,7 +6234,7 @@ const navigation = {
      * from a different server.
      *
      * @type      {string}
-     * @default   https://code.highcharts.com/12.0.1/gfx/stock-icons/
+     * @default   https://code.highcharts.com/12.0.2/gfx/stock-icons/
      * @since     7.1.3
      * @apioption navigation.iconsURL
      */
@@ -9698,7 +9698,7 @@ Annotations_Annotation.types.measure = Measure;
 
 ;// ./code/es-modules/masters/modules/annotations-advanced.src.js
 /**
- * @license Highcharts JS v12.0.1 (2024-11-28)
+ * @license Highcharts JS v12.0.2 (2024-12-04)
  * @module highcharts/modules/annotations-advanced
  * @requires highcharts
  *

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.0.1 (2024-11-28)
+ * @license Highcharts JS v12.0.2 (2024-12-04)
  * @module highcharts/modules/series-on-point
  * @requires highcharts
  *
@@ -12,14 +12,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("highcharts"), require("highcharts")["Point"], require("highcharts")["Series"], require("highcharts")["SeriesRegistry"], require("highcharts")["SVGRenderer"]);
+		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Point"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["SVGRenderer"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/series-on-point", [["highcharts/highcharts"], ["highcharts/highcharts","Point"], ["highcharts/highcharts","Series"], ["highcharts/highcharts","SeriesRegistry"], ["highcharts/highcharts","SVGRenderer"]], factory);
+		define("highcharts/modules/series-on-point", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Point"],amd1["Series"],amd1["SeriesRegistry"],amd1["SVGRenderer"]);});
 	else if(typeof exports === 'object')
-		exports["highcharts/series-on-point"] = factory(require("highcharts"), require("highcharts")["Point"], require("highcharts")["Series"], require("highcharts")["SeriesRegistry"], require("highcharts")["SVGRenderer"]);
+		exports["highcharts/modules/series-on-point"] = factory(root["_Highcharts"], root["_Highcharts"]["Point"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["SVGRenderer"]);
 	else
 		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Point"], root["Highcharts"]["Series"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["SVGRenderer"]);
-})(this, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__540__) => {
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__540__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({

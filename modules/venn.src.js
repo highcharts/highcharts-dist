@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.0.1 (2024-11-28)
+ * @license Highcharts JS v12.0.2 (2024-12-04)
  * @module highcharts/modules/venn
  * @requires highcharts
  *
@@ -10,14 +10,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("highcharts"), require("highcharts")["Color"], require("highcharts")["SeriesRegistry"]);
+		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/venn", [["highcharts/highcharts"], ["highcharts/highcharts","Color"], ["highcharts/highcharts","SeriesRegistry"]], factory);
+		define("highcharts/modules/venn", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Color"],amd1["SeriesRegistry"]);});
 	else if(typeof exports === 'object')
-		exports["highcharts/venn"] = factory(require("highcharts"), require("highcharts")["Color"], require("highcharts")["SeriesRegistry"]);
+		exports["highcharts/modules/venn"] = factory(root["_Highcharts"], root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"]);
 	else
 		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Color"], root["Highcharts"]["SeriesRegistry"]);
-})(this, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__512__) => {
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__512__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({

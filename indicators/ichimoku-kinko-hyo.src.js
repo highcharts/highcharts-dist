@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v12.0.1 (2024-11-28)
+ * @license Highstock JS v12.0.2 (2024-12-04)
  * @module highcharts/indicators/ichimoku-kinko-hyo
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -12,14 +12,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("highcharts"), require("highcharts")["dataGrouping"]["approximations"], require("highcharts")["Color"], require("highcharts")["SeriesRegistry"]);
+		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["dataGrouping"]["approximations"], root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/ichimoku-kinko-hyo", [["highcharts/highcharts"], ["highcharts/highcharts","dataGrouping","approximations"], ["highcharts/highcharts","Color"], ["highcharts/highcharts","SeriesRegistry"]], factory);
+		define("highcharts/indicators/ichimoku-kinko-hyo", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["dataGrouping"],["approximations"],amd1["Color"],amd1["SeriesRegistry"]);});
 	else if(typeof exports === 'object')
-		exports["highcharts/ichimoku-kinko-hyo"] = factory(require("highcharts"), require("highcharts")["dataGrouping"]["approximations"], require("highcharts")["Color"], require("highcharts")["SeriesRegistry"]);
+		exports["highcharts/indicators/ichimoku-kinko-hyo"] = factory(root["_Highcharts"], root["_Highcharts"]["dataGrouping"]["approximations"], root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"]);
 	else
 		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["dataGrouping"]["approximations"], root["Highcharts"]["Color"], root["Highcharts"]["SeriesRegistry"]);
-})(this, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__956__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__512__) => {
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__956__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__512__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({

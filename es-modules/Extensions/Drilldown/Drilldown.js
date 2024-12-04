@@ -217,7 +217,7 @@ class ChartAdditions {
         const chart = (this.chart ||
             this), oldSeries = point.series, xAxis = oldSeries.xAxis, yAxis = oldSeries.yAxis, colorProp = chart.styledMode ?
             { colorIndex: pick(point.colorIndex, oldSeries.colorIndex) } :
-            { color: point.color || oldSeries.color }, levelNumber = oldSeries.options._levelNumber || 0, pointIndex = oldSeries.points.indexOf(point);
+            { color: point.color || oldSeries.color }, levelNumber = oldSeries.options._levelNumber || 0;
         if (!chart.drilldownLevels) {
             chart.drilldownLevels = [];
         }
@@ -268,8 +268,8 @@ class ChartAdditions {
                 Color.parse(colorProp.color).setOpacity(0).get() :
                 colorProp.color,
             lowerSeriesOptions: ddOptions,
-            pointOptions: oldSeries.options.data[pointIndex],
-            pointIndex: pointIndex,
+            pointOptions: point.options,
+            pointIndex: point.index,
             oldExtremes: {
                 xMin: xAxis && xAxis.userMin,
                 xMax: xAxis && xAxis.userMax,

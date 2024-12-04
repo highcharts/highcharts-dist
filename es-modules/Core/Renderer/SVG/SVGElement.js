@@ -12,9 +12,9 @@ import A from '../../Animation/AnimationUtilities.js';
 const { animate, animObject, stop } = A;
 import Color from '../../Color/Color.js';
 import H from '../../Globals.js';
-const { deg2rad, doc, svg, SVG_NS, win } = H;
+const { deg2rad, doc, svg, SVG_NS, win, isFirefox } = H;
 import U from '../../Utilities.js';
-const { addEvent, attr, createElement, crisp, css, defined, erase, extend, fireEvent, getAlignFactor, isArray, isFunction, isObject, isString, merge, objectEach, pick, pInt, pushUnique, replaceNested, syncTimeout, uniqueKey } = U;
+const { addEvent, attr, createElement, crisp, css, defined, erase, extend, fireEvent, getAlignFactor, isArray, isFunction, isNumber, isObject, isString, merge, objectEach, pick, pInt, pushUnique, replaceNested, syncTimeout, uniqueKey } = U;
 /* *
  *
  *  Class
@@ -729,6 +729,12 @@ class SVGElement {
             extend(this.styles, styles);
             if (textWidth && (!svg && this.renderer.forExport)) {
                 delete styles.width;
+            }
+            const fontSize = isFirefox && styles.fontSize || null;
+            // Necessary in firefox to be able to set font-size, #22124
+            if (fontSize && (isNumber(fontSize) ||
+                /^\d+$/.test(fontSize))) {
+                styles.fontSize += 'px';
             }
             const stylesToApply = merge(styles);
             if (elem.namespaceURI === this.SVG_NS) {

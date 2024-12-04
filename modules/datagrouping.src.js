@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v12.0.1 (2024-11-28)
+ * @license Highstock JS v12.0.2 (2024-12-04)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *
@@ -11,14 +11,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("highcharts"), require("highcharts")["SeriesRegistry"], require("highcharts")["Templating"]);
+		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["Templating"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/datagrouping", [["highcharts/highcharts"], ["highcharts/highcharts","SeriesRegistry"], ["highcharts/highcharts","Templating"]], factory);
+		define("highcharts/modules/datagrouping", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["SeriesRegistry"],amd1["Templating"]);});
 	else if(typeof exports === 'object')
-		exports["highcharts/datagrouping"] = factory(require("highcharts"), require("highcharts")["SeriesRegistry"], require("highcharts")["Templating"]);
+		exports["highcharts/modules/datagrouping"] = factory(root["_Highcharts"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["Templating"]);
 	else
 		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["Templating"]);
-})(this, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__984__) => {
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__984__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({

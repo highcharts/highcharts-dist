@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.0.1 (2024-11-28)
+ * @license Highcharts JS v12.0.2 (2024-12-04)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -11,14 +11,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("highcharts"), require("highcharts")["Axis"], require("highcharts")["Color"], require("highcharts")["LegendSymbol"], require("highcharts")["SeriesRegistry"], require("highcharts")["SVGElement"], require("highcharts")["SVGRenderer"]);
+		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Color"], root["_Highcharts"]["LegendSymbol"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["SVGRenderer"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/heatmap", [["highcharts/highcharts"], ["highcharts/highcharts","Axis"], ["highcharts/highcharts","Color"], ["highcharts/highcharts","LegendSymbol"], ["highcharts/highcharts","SeriesRegistry"], ["highcharts/highcharts","SVGElement"], ["highcharts/highcharts","SVGRenderer"]], factory);
+		define("highcharts/modules/heatmap", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Axis"],amd1["Color"],amd1["LegendSymbol"],amd1["SeriesRegistry"],amd1["SVGElement"],amd1["SVGRenderer"]);});
 	else if(typeof exports === 'object')
-		exports["highcharts/heatmap"] = factory(require("highcharts"), require("highcharts")["Axis"], require("highcharts")["Color"], require("highcharts")["LegendSymbol"], require("highcharts")["SeriesRegistry"], require("highcharts")["SVGElement"], require("highcharts")["SVGRenderer"]);
+		exports["highcharts/modules/heatmap"] = factory(root["_Highcharts"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Color"], root["_Highcharts"]["LegendSymbol"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["SVGRenderer"]);
 	else
 		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Axis"], root["Highcharts"]["Color"], root["Highcharts"]["LegendSymbol"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["SVGElement"], root["Highcharts"]["SVGRenderer"]);
-})(this, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__532__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__500__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__540__) => {
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__532__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__500__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__540__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -2914,7 +2914,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 ;// ./code/es-modules/masters/modules/heatmap.src.js
 /**
- * @license Highmaps JS v12.0.1 (2024-11-28)
+ * @license Highmaps JS v12.0.2 (2024-12-04)
  * @module highcharts/modules/heatmap
  * @requires highcharts
  *

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v12.0.1 (2024-11-28)
+ * @license Highcharts Gantt JS v12.0.2 (2024-12-04)
  * @module highcharts/modules/treegrid
  * @requires highcharts
  *
@@ -11,14 +11,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("highcharts"), require("highcharts")["StackItem"], require("highcharts")["Axis"], require("highcharts")["Color"]);
+		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["StackItem"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Color"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/treegrid", [["highcharts/highcharts"], ["highcharts/highcharts","StackItem"], ["highcharts/highcharts","Axis"], ["highcharts/highcharts","Color"]], factory);
+		define("highcharts/modules/treegrid", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["StackItem"],amd1["Axis"],amd1["Color"]);});
 	else if(typeof exports === 'object')
-		exports["highcharts/treegrid"] = factory(require("highcharts"), require("highcharts")["StackItem"], require("highcharts")["Axis"], require("highcharts")["Color"]);
+		exports["highcharts/modules/treegrid"] = factory(root["_Highcharts"], root["_Highcharts"]["StackItem"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Color"]);
 	else
 		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["StackItem"], root["Highcharts"]["Axis"], root["Highcharts"]["Color"]);
-})(this, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__184__, __WEBPACK_EXTERNAL_MODULE__532__, __WEBPACK_EXTERNAL_MODULE__620__) => {
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__184__, __WEBPACK_EXTERNAL_MODULE__532__, __WEBPACK_EXTERNAL_MODULE__620__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({

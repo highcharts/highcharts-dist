@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.0.1 (2024-11-28)
+ * @license Highcharts JS v12.0.2 (2024-12-04)
  * Treegraph chart series type
  * @module highcharts/modules/treegraph
  * @requires highcharts
@@ -11,14 +11,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("highcharts"), require("highcharts")["SeriesRegistry"], require("highcharts")["SVGRenderer"], require("highcharts")["Point"], require("highcharts")["Color"], require("highcharts")["SVGElement"]);
+		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Point"], root["_Highcharts"]["Color"], root["_Highcharts"]["SVGElement"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/treegraph", [["highcharts/highcharts"], ["highcharts/highcharts","SeriesRegistry"], ["highcharts/highcharts","SVGRenderer"], ["highcharts/highcharts","Point"], ["highcharts/highcharts","Color"], ["highcharts/highcharts","SVGElement"]], factory);
+		define("highcharts/modules/treegraph", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["SeriesRegistry"],amd1["SVGRenderer"],amd1["Point"],amd1["Color"],amd1["SVGElement"]);});
 	else if(typeof exports === 'object')
-		exports["highcharts/treegraph"] = factory(require("highcharts"), require("highcharts")["SeriesRegistry"], require("highcharts")["SVGRenderer"], require("highcharts")["Point"], require("highcharts")["Color"], require("highcharts")["SVGElement"]);
+		exports["highcharts/modules/treegraph"] = factory(root["_Highcharts"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Point"], root["_Highcharts"]["Color"], root["_Highcharts"]["SVGElement"]);
 	else
 		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["SVGRenderer"], root["Highcharts"]["Point"], root["Highcharts"]["Color"], root["Highcharts"]["SVGElement"]);
-})(this, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__28__) => {
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__28__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({

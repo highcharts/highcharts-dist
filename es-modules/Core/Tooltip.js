@@ -730,7 +730,8 @@ class Tooltip {
                     if (this.outside) {
                         label.attr({
                             x: clamp(label.x || 0, 0, this.getPlayingField().width -
-                                (label.width || 0))
+                                (label.width || 0) -
+                                1)
                         });
                     }
                     if (!styledMode) {

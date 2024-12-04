@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v12.0.1 (2024-11-28)
+ * @license Highstock JS v12.0.2 (2024-12-04)
  * @module highcharts/modules/full-screen
  * @requires highcharts
  *
@@ -12,14 +12,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("highcharts"), require("highcharts")["AST"]);
+		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["AST"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/full-screen", [["highcharts/highcharts"], ["highcharts/highcharts","AST"]], factory);
+		define("highcharts/modules/full-screen", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["AST"]);});
 	else if(typeof exports === 'object')
-		exports["highcharts/full-screen"] = factory(require("highcharts"), require("highcharts")["AST"]);
+		exports["highcharts/modules/full-screen"] = factory(root["_Highcharts"], root["_Highcharts"]["AST"]);
 	else
 		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["AST"]);
-})(this, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__660__) => {
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__660__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({

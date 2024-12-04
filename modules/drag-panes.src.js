@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v12.0.1 (2024-11-28)
+ * @license Highstock JS v12.0.2 (2024-12-04)
  * @module highcharts/modules/drag-panes
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -13,14 +13,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("highcharts"));
+		module.exports = factory(root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/drag-panes", [["highcharts/highcharts"]], factory);
+		define("highcharts/modules/drag-panes", ["highcharts/highcharts"], function (amd1) {return factory(amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/drag-panes"] = factory(require("highcharts"));
+		exports["highcharts/modules/drag-panes"] = factory(root["_Highcharts"]);
 	else
 		root["Highcharts"] = factory(root["Highcharts"]);
-})(this, (__WEBPACK_EXTERNAL_MODULE__944__) => {
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({

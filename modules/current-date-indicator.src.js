@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v12.0.1 (2024-11-28)
+ * @license Highcharts Gantt JS v12.0.2 (2024-12-04)
  * @module highcharts/modules/current-date-indicator
  * @requires highcharts
  *
@@ -11,14 +11,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("highcharts"));
+		module.exports = factory(root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/current-date-indicator", [["highcharts/highcharts"]], factory);
+		define("highcharts/modules/current-date-indicator", ["highcharts/highcharts"], function (amd1) {return factory(amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/current-date-indicator"] = factory(require("highcharts"));
+		exports["highcharts/modules/current-date-indicator"] = factory(root["_Highcharts"]);
 	else
 		root["Highcharts"] = factory(root["Highcharts"]);
-})(this, (__WEBPACK_EXTERNAL_MODULE__944__) => {
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({

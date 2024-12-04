@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v12.0.1 (2024-11-28)
+ * @license Highcharts Gantt JS v12.0.2 (2024-12-04)
  * @module highcharts/modules/pathfinder
  * @requires highcharts
  *
@@ -11,14 +11,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("highcharts"), require("highcharts")["Point"]);
+		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Point"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/pathfinder", [["highcharts/highcharts"], ["highcharts/highcharts","Point"]], factory);
+		define("highcharts/modules/pathfinder", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Point"]);});
 	else if(typeof exports === 'object')
-		exports["highcharts/pathfinder"] = factory(require("highcharts"), require("highcharts")["Point"]);
+		exports["highcharts/modules/pathfinder"] = factory(root["_Highcharts"], root["_Highcharts"]["Point"]);
 	else
 		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Point"]);
-})(this, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__260__) => {
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__260__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({

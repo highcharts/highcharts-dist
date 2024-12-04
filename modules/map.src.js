@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.0.1 (2024-11-28)
+ * @license Highcharts JS v12.0.2 (2024-12-04)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -11,14 +11,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("highcharts"), require("highcharts")["Axis"], require("highcharts")["Color"], require("highcharts")["LegendSymbol"], require("highcharts")["SeriesRegistry"], require("highcharts")["SVGElement"], require("highcharts")["Series"], require("highcharts")["Chart"], require("highcharts")["SVGRenderer"], require("highcharts")["Templating"], require("highcharts")["Series"]["types"]["scatter"], require("highcharts")["Point"]);
+		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Color"], root["_Highcharts"]["LegendSymbol"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Series"], root["_Highcharts"]["Chart"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Templating"], root["_Highcharts"]["Series"]["types"]["scatter"], root["_Highcharts"]["Point"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/map", [["highcharts/highcharts"], ["highcharts/highcharts","Axis"], ["highcharts/highcharts","Color"], ["highcharts/highcharts","LegendSymbol"], ["highcharts/highcharts","SeriesRegistry"], ["highcharts/highcharts","SVGElement"], ["highcharts/highcharts","Series"], ["highcharts/highcharts","Chart"], ["highcharts/highcharts","SVGRenderer"], ["highcharts/highcharts","Templating"], ["highcharts/highcharts","Series","types","scatter"], ["highcharts/highcharts","Point"]], factory);
+		define("highcharts/modules/map", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Axis"],amd1["Color"],amd1["LegendSymbol"],amd1["SeriesRegistry"],amd1["SVGElement"],amd1["Series"],amd1["Chart"],amd1["SVGRenderer"],amd1["Templating"],amd1["Series"],["types"],["scatter"],amd1["Point"]);});
 	else if(typeof exports === 'object')
-		exports["highcharts/map"] = factory(require("highcharts"), require("highcharts")["Axis"], require("highcharts")["Color"], require("highcharts")["LegendSymbol"], require("highcharts")["SeriesRegistry"], require("highcharts")["SVGElement"], require("highcharts")["Series"], require("highcharts")["Chart"], require("highcharts")["SVGRenderer"], require("highcharts")["Templating"], require("highcharts")["Series"]["types"]["scatter"], require("highcharts")["Point"]);
+		exports["highcharts/modules/map"] = factory(root["_Highcharts"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Color"], root["_Highcharts"]["LegendSymbol"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Series"], root["_Highcharts"]["Chart"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Templating"], root["_Highcharts"]["Series"]["types"]["scatter"], root["_Highcharts"]["Point"]);
 	else
 		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Axis"], root["Highcharts"]["Color"], root["Highcharts"]["LegendSymbol"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["SVGElement"], root["Highcharts"]["Series"], root["Highcharts"]["Chart"], root["Highcharts"]["SVGRenderer"], root["Highcharts"]["Templating"], root["Highcharts"]["Series"]["types"]["scatter"], root["Highcharts"]["Point"]);
-})(this, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__532__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__500__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__984__, __WEBPACK_EXTERNAL_MODULE__632__, __WEBPACK_EXTERNAL_MODULE__260__) => {
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__532__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__500__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__984__, __WEBPACK_EXTERNAL_MODULE__632__, __WEBPACK_EXTERNAL_MODULE__260__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -11434,7 +11434,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 ;// ./code/es-modules/masters/modules/map.src.js
 /**
- * @license Highmaps JS v12.0.1 (2024-11-28)
+ * @license Highmaps JS v12.0.2 (2024-12-04)
  * @module highcharts/modules/map
  * @requires highcharts
  *

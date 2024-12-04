@@ -556,7 +556,7 @@ class Axis {
      * Pixel position of the value on the chart or axis.
      */
     toPixels(value, paneCoordinates) {
-        return this.translate(this.chart.time.parse(value) ?? NaN, false, !this.horiz, void 0, true) + (paneCoordinates ? 0 : this.pos);
+        return this.translate(this.chart?.time.parse(value) ?? NaN, false, !this.horiz, void 0, true) + (paneCoordinates ? 0 : this.pos);
     }
     /**
      * Translate a pixel position along the axis to a value in terms of axis

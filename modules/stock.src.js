@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.0.1 (2024-11-28)
+ * @license Highcharts JS v12.0.2 (2024-12-04)
  * @module highcharts/modules/broken-axis
  * @requires highcharts
  *
@@ -9,14 +9,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("highcharts"), require("highcharts")["Axis"], require("highcharts")["Point"], require("highcharts")["Series"], require("highcharts")["Color"], require("highcharts")["SeriesRegistry"], require("highcharts")["RendererRegistry"], require("highcharts")["SVGRenderer"], require("highcharts")["SVGElement"], require("highcharts")["Chart"], require("highcharts")["Templating"], require("highcharts")["Series"]["types"]["column"], require("highcharts")["StackItem"]);
+		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Point"], root["_Highcharts"]["Series"], root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["RendererRegistry"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Chart"], root["_Highcharts"]["Templating"], root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["StackItem"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/stock", [["highcharts/highcharts"], ["highcharts/highcharts","Axis"], ["highcharts/highcharts","Point"], ["highcharts/highcharts","Series"], ["highcharts/highcharts","Color"], ["highcharts/highcharts","SeriesRegistry"], ["highcharts/highcharts","RendererRegistry"], ["highcharts/highcharts","SVGRenderer"], ["highcharts/highcharts","SVGElement"], ["highcharts/highcharts","Chart"], ["highcharts/highcharts","Templating"], ["highcharts/highcharts","Series","types","column"], ["highcharts/highcharts","StackItem"]], factory);
+		define("highcharts/modules/stock", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Axis"],amd1["Point"],amd1["Series"],amd1["Color"],amd1["SeriesRegistry"],amd1["RendererRegistry"],amd1["SVGRenderer"],amd1["SVGElement"],amd1["Chart"],amd1["Templating"],amd1["Series"],["types"],["column"],amd1["StackItem"]);});
 	else if(typeof exports === 'object')
-		exports["highcharts/stock"] = factory(require("highcharts"), require("highcharts")["Axis"], require("highcharts")["Point"], require("highcharts")["Series"], require("highcharts")["Color"], require("highcharts")["SeriesRegistry"], require("highcharts")["RendererRegistry"], require("highcharts")["SVGRenderer"], require("highcharts")["SVGElement"], require("highcharts")["Chart"], require("highcharts")["Templating"], require("highcharts")["Series"]["types"]["column"], require("highcharts")["StackItem"]);
+		exports["highcharts/modules/stock"] = factory(root["_Highcharts"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Point"], root["_Highcharts"]["Series"], root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["RendererRegistry"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Chart"], root["_Highcharts"]["Templating"], root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["StackItem"]);
 	else
 		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Axis"], root["Highcharts"]["Point"], root["Highcharts"]["Series"], root["Highcharts"]["Color"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["RendererRegistry"], root["Highcharts"]["SVGRenderer"], root["Highcharts"]["SVGElement"], root["Highcharts"]["Chart"], root["Highcharts"]["Templating"], root["Highcharts"]["Series"]["types"]["column"], root["Highcharts"]["StackItem"]);
-})(this, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__532__, __WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__608__, __WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__984__, __WEBPACK_EXTERNAL_MODULE__448__, __WEBPACK_EXTERNAL_MODULE__184__) => {
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__532__, __WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__608__, __WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__984__, __WEBPACK_EXTERNAL_MODULE__448__, __WEBPACK_EXTERNAL_MODULE__184__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -7792,8 +7792,8 @@ class RangeSelector {
                 }, true, chart.spacingBox);
                 // Skip animation
                 inputGroup.placed = chart.hasLoaded;
-                this.handleCollision(xOffsetForExportButton);
             }
+            this.handleCollision(xOffsetForExportButton);
             // Vertical align
             group.align({
                 verticalAlign
@@ -13346,7 +13346,7 @@ const DataGroupingComposition = {
 
 ;// ./code/es-modules/masters/modules/datagrouping.src.js
 /**
- * @license Highstock JS v12.0.1 (2024-11-28)
+ * @license Highstock JS v12.0.2 (2024-12-04)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *
@@ -13668,7 +13668,7 @@ const MouseWheelZoomComposition = {
 
 ;// ./code/es-modules/masters/modules/mouse-wheel-zoom.src.js
 /**
- * @license Highcharts JS v12.0.1 (2024-11-28)
+ * @license Highcharts JS v12.0.2 (2024-12-04)
  * @module highcharts/modules/mouse-wheel-zoom
  * @requires highcharts
  *
@@ -13688,7 +13688,7 @@ mouse_wheel_zoom_src_G.MouseWheelZoom.compose(mouse_wheel_zoom_src_G.Chart);
 
 ;// ./code/es-modules/masters/modules/stock.src.js
 /**
- * @license Highstock JS v12.0.1 (2024-11-28)
+ * @license Highstock JS v12.0.2 (2024-12-04)
  * @module highcharts/modules/stock
  * @requires highcharts
  *

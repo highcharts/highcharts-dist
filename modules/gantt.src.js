@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v12.0.1 (2024-11-28)
+ * @license Highcharts Gantt JS v12.0.2 (2024-12-04)
  * @module highcharts/modules/pathfinder
  * @requires highcharts
  *
@@ -11,14 +11,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("highcharts"), require("highcharts")["Chart"], require("highcharts")["Axis"], require("highcharts")["Color"], require("highcharts")["SeriesRegistry"], require("highcharts")["RendererRegistry"], require("highcharts")["SVGRenderer"], require("highcharts")["SVGElement"], require("highcharts")["Point"], require("highcharts")["StackItem"]);
+		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Chart"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["RendererRegistry"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Point"], root["_Highcharts"]["StackItem"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/gantt", [["highcharts/highcharts"], ["highcharts/highcharts","Chart"], ["highcharts/highcharts","Axis"], ["highcharts/highcharts","Color"], ["highcharts/highcharts","SeriesRegistry"], ["highcharts/highcharts","RendererRegistry"], ["highcharts/highcharts","SVGRenderer"], ["highcharts/highcharts","SVGElement"], ["highcharts/highcharts","Point"], ["highcharts/highcharts","StackItem"]], factory);
+		define("highcharts/modules/gantt", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Chart"],amd1["Axis"],amd1["Color"],amd1["SeriesRegistry"],amd1["RendererRegistry"],amd1["SVGRenderer"],amd1["SVGElement"],amd1["Point"],amd1["StackItem"]);});
 	else if(typeof exports === 'object')
-		exports["highcharts/gantt"] = factory(require("highcharts"), require("highcharts")["Chart"], require("highcharts")["Axis"], require("highcharts")["Color"], require("highcharts")["SeriesRegistry"], require("highcharts")["RendererRegistry"], require("highcharts")["SVGRenderer"], require("highcharts")["SVGElement"], require("highcharts")["Point"], require("highcharts")["StackItem"]);
+		exports["highcharts/modules/gantt"] = factory(root["_Highcharts"], root["_Highcharts"]["Chart"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["RendererRegistry"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Point"], root["_Highcharts"]["StackItem"]);
 	else
 		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Chart"], root["Highcharts"]["Axis"], root["Highcharts"]["Color"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["RendererRegistry"], root["Highcharts"]["SVGRenderer"], root["Highcharts"]["SVGElement"], root["Highcharts"]["Point"], root["Highcharts"]["StackItem"]);
-})(this, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__532__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__608__, __WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__184__) => {
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__532__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__608__, __WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__184__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -8076,8 +8076,8 @@ class RangeSelector {
                 }, true, chart.spacingBox);
                 // Skip animation
                 inputGroup.placed = chart.hasLoaded;
-                this.handleCollision(xOffsetForExportButton);
             }
+            this.handleCollision(xOffsetForExportButton);
             // Vertical align
             group.align({
                 verticalAlign
@@ -10509,7 +10509,7 @@ const StaticScale = {
 
 ;// ./code/es-modules/masters/modules/static-scale.src.js
 /**
- * @license Highcharts Gantt JS v12.0.1 (2024-11-28)
+ * @license Highcharts Gantt JS v12.0.2 (2024-12-04)
  * @module highcharts/modules/static-scale
  * @requires highcharts
  *
@@ -11320,7 +11320,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 ;// ./code/es-modules/masters/modules/xrange.src.js
 /**
- * @license Highcharts JS v12.0.1 (2024-11-28)
+ * @license Highcharts JS v12.0.2 (2024-12-04)
  * @module highcharts/modules/xrange
  * @requires highcharts
  *
@@ -14871,7 +14871,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 ;// ./code/es-modules/masters/modules/gantt.src.js
 /**
- * @license Highcharts Gantt JS v12.0.1 (2024-11-28)
+ * @license Highcharts Gantt JS v12.0.2 (2024-12-04)
  * @module highcharts/modules/gantt
  * @requires highcharts
  *

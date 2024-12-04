@@ -90,10 +90,8 @@ class LineSeries extends Series {
                         attribs['stroke-linejoin'] = 'round';
                 }
                 graph[verb](attribs)
-                    // Add shadow to normal series (0) or to first
-                    // zone (1) #3932
-                    .shadow((i < 2) &&
-                    options.shadow &&
+                    // Add shadow to normal series as well as zones
+                    .shadow(options.shadow &&
                     // If shadow is defined, call function with
                     // `filterUnits: 'userSpaceOnUse'` to avoid known
                     // SVG filter bug (#19093)

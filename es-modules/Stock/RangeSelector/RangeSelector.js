@@ -1065,8 +1065,8 @@ class RangeSelector {
                 }, true, chart.spacingBox);
                 // Skip animation
                 inputGroup.placed = chart.hasLoaded;
-                this.handleCollision(xOffsetForExportButton);
             }
+            this.handleCollision(xOffsetForExportButton);
             // Vertical align
             group.align({
                 verticalAlign

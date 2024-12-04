@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.0.1 (2024-11-28)
+ * @license Highcharts JS v12.0.2 (2024-12-04)
  * @module modules/arc-diagram
  * @requires highcharts/modules/sankey
  *
@@ -11,14 +11,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("highcharts"), require("highcharts")["SeriesRegistry"], require("highcharts")["Series"], require("highcharts")["SVGRenderer"], require("highcharts")["SVGElement"]);
+		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["Series"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["SVGElement"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/arc-diagram", [["highcharts/highcharts"], ["highcharts/highcharts","SeriesRegistry"], ["highcharts/highcharts","Series"], ["highcharts/highcharts","SVGRenderer"], ["highcharts/highcharts","SVGElement"]], factory);
+		define("highcharts/modules/arc-diagram", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["SeriesRegistry"],amd1["Series"],amd1["SVGRenderer"],amd1["SVGElement"]);});
 	else if(typeof exports === 'object')
-		exports["highcharts/arc-diagram"] = factory(require("highcharts"), require("highcharts")["SeriesRegistry"], require("highcharts")["Series"], require("highcharts")["SVGRenderer"], require("highcharts")["SVGElement"]);
+		exports["highcharts/modules/arc-diagram"] = factory(root["_Highcharts"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["Series"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["SVGElement"]);
 	else
 		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["Series"], root["Highcharts"]["SVGRenderer"], root["Highcharts"]["SVGElement"]);
-})(this, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__28__) => {
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__28__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({

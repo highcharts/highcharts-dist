@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v12.0.1 (2024-11-28)
+ * @license Highstock JS v12.0.2 (2024-12-04)
  * @module highcharts/indicators/indicators-all
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -12,14 +12,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("highcharts"), require("highcharts")["Chart"], require("highcharts")["SeriesRegistry"], require("highcharts")["dataGrouping"]["approximations"], require("highcharts")["Color"]);
+		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Chart"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["dataGrouping"]["approximations"], root["_Highcharts"]["Color"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/indicators-all", [["highcharts/highcharts"], ["highcharts/highcharts","Chart"], ["highcharts/highcharts","SeriesRegistry"], ["highcharts/highcharts","dataGrouping","approximations"], ["highcharts/highcharts","Color"]], factory);
+		define("highcharts/indicators/indicators-all", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Chart"],amd1["SeriesRegistry"],amd1["dataGrouping"],["approximations"],amd1["Color"]);});
 	else if(typeof exports === 'object')
-		exports["highcharts/indicators-all"] = factory(require("highcharts"), require("highcharts")["Chart"], require("highcharts")["SeriesRegistry"], require("highcharts")["dataGrouping"]["approximations"], require("highcharts")["Color"]);
+		exports["highcharts/indicators/indicators-all"] = factory(root["_Highcharts"], root["_Highcharts"]["Chart"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["dataGrouping"]["approximations"], root["_Highcharts"]["Color"]);
 	else
 		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Chart"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["dataGrouping"]["approximations"], root["Highcharts"]["Color"]);
-})(this, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__956__, __WEBPACK_EXTERNAL_MODULE__620__) => {
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__956__, __WEBPACK_EXTERNAL_MODULE__620__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({

@@ -375,7 +375,7 @@ class TextBuilder {
                     // is "5" and end is 1.
                     try {
                         lengths[end] = startAt +
-                            parentNode.getSubStringLength(0, words && !startAt ? end + 1 : end);
+                            parentNode.getSubStringLength(0, words ? end + 1 : end);
                     }
                     catch (e) {
                         '';

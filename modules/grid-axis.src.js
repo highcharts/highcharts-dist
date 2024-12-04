@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v12.0.1 (2024-11-28)
+ * @license Highcharts Gantt JS v12.0.2 (2024-12-04)
  * @module highcharts/modules/grid-axis
  * @requires highcharts
  *
@@ -11,14 +11,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("highcharts"), require("highcharts")["Axis"]);
+		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Axis"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/grid-axis", [["highcharts/highcharts"], ["highcharts/highcharts","Axis"]], factory);
+		define("highcharts/modules/grid-axis", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Axis"]);});
 	else if(typeof exports === 'object')
-		exports["highcharts/grid-axis"] = factory(require("highcharts"), require("highcharts")["Axis"]);
+		exports["highcharts/modules/grid-axis"] = factory(root["_Highcharts"], root["_Highcharts"]["Axis"]);
 	else
 		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Axis"]);
-})(this, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__532__) => {
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__532__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({

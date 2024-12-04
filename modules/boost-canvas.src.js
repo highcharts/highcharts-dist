@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.0.1 (2024-11-28)
+ * @license Highcharts JS v12.0.2 (2024-12-04)
  * @module highcharts/modules/boost-canvas
  * @requires highcharts
  *
@@ -12,14 +12,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("highcharts"), require("highcharts")["Color"]);
+		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Color"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/boost-canvas", [["highcharts/highcharts"], ["highcharts/highcharts","Color"]], factory);
+		define("highcharts/modules/boost-canvas", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Color"]);});
 	else if(typeof exports === 'object')
-		exports["highcharts/boost-canvas"] = factory(require("highcharts"), require("highcharts")["Color"]);
+		exports["highcharts/modules/boost-canvas"] = factory(root["_Highcharts"], root["_Highcharts"]["Color"]);
 	else
 		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Color"]);
-})(this, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__620__) => {
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__620__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -1262,7 +1262,10 @@ class WGLRenderer {
      *
      * */
     constructor(postRenderCallback) {
-        // The data to render - array of coordinates
+        /**
+         * The data to render - array of coordinates.
+         * Repeating sequence of [x, y, checkThreshold, pointSize].
+         */
         this.data = [];
         // Height of our viewport in pixels
         this.height = 0;
@@ -1686,6 +1689,10 @@ class WGLRenderer {
                 typeof yMax !== 'undefined') {
                 isYInside = y >= yMin && y <= yMax;
             }
+            // Do not render points outside the zoomed range (#19701)
+            if (!sorted && !isYInside) {
+                continue;
+            }
             if (x > xMax && closestRight.x < xMax) {
                 closestRight.x = x;
                 closestRight.y = y;
@@ -1704,9 +1711,10 @@ class WGLRenderer {
             }
             // The first point before and first after extremes should be
             // rendered (#9962, 19701)
-            if (sorted &&
-                (nx >= xMin || x >= xMin) &&
-                (px <= xMax || x <= xMax)) {
+            // Make sure series with a single point are rendered (#21897)
+            if (sorted && ((nx >= xMin || x >= xMin) &&
+                (px <= xMax || x <= xMax)) ||
+                !sorted && ((x >= xMin) && (x <= xMax))) {
                 isXInside = true;
             }
             if (!isXInside && !nextInside && !prevInside) {
@@ -2908,7 +2916,10 @@ function getPoint(series, boostPoint) {
  * @private
  */
 function scatterProcessData(force) {
-    var _a, _b, _c, _d;
+    var _a,
+        _b,
+        _c,
+        _d;
     const series = this, { options, xAxis, yAxis } = series;
     // Process only on changes
     if (!series.isDirty &&

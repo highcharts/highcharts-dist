@@ -1,13 +1,13 @@
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("highcharts"));
+		module.exports = factory(root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/ema", [["highcharts/highcharts"]], factory);
+		define("highcharts/indicators/ema", ["highcharts/highcharts"], function (amd1) {return factory(amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/ema"] = factory(require("highcharts"));
+		exports["highcharts/indicators/ema"] = factory(root["_Highcharts"]);
 	else
 		root["Highcharts"] = factory(root["Highcharts"]);
-})(this, (__WEBPACK_EXTERNAL_MODULE__944__) => {
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v12.0.1 (2024-11-28)
+ * @license Highstock JS v12.0.2 (2024-12-04)
  * @module highcharts/modules/stock-tools
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -13,14 +13,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("highcharts"), require("highcharts")["Templating"], require("highcharts")["Series"], require("highcharts")["AST"]);
+		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Templating"], root["_Highcharts"]["Series"], root["_Highcharts"]["AST"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/stock-tools", [["highcharts/highcharts"], ["highcharts/highcharts","Templating"], ["highcharts/highcharts","Series"], ["highcharts/highcharts","AST"]], factory);
+		define("highcharts/modules/stock-tools", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Templating"],amd1["Series"],amd1["AST"]);});
 	else if(typeof exports === 'object')
-		exports["highcharts/stock-tools"] = factory(require("highcharts"), require("highcharts")["Templating"], require("highcharts")["Series"], require("highcharts")["AST"]);
+		exports["highcharts/modules/stock-tools"] = factory(root["_Highcharts"], root["_Highcharts"]["Templating"], root["_Highcharts"]["Series"], root["_Highcharts"]["AST"]);
 	else
 		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Templating"], root["Highcharts"]["Series"], root["Highcharts"]["AST"]);
-})(this, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__984__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__660__) => {
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__984__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__660__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -637,7 +637,7 @@ const navigation = {
      * from a different server.
      *
      * @type      {string}
-     * @default   https://code.highcharts.com/12.0.1/gfx/stock-icons/
+     * @default   https://code.highcharts.com/12.0.2/gfx/stock-icons/
      * @since     7.1.3
      * @apioption navigation.iconsURL
      */
@@ -5524,7 +5524,7 @@ class Toolbar {
     getIconsURL() {
         return this.chart.options.navigation.iconsURL ||
             this.options.iconsURL ||
-            'https://code.highcharts.com/12.0.1/gfx/stock-icons/';
+            'https://code.highcharts.com/12.0.2/gfx/stock-icons/';
     }
 }
 Toolbar.prototype.classMapping = {

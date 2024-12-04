@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.0.1 (2024-11-28)
+ * @license Highcharts JS v12.0.2 (2024-12-04)
  * @module highcharts/highcharts
  *
  * (c) 2009-2024 Torstein Honsi
@@ -8,14 +8,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory();
+		(root["_Highcharts"] = factory(),module.exports = root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
 		define("highcharts/highcharts", [], factory);
 	else if(typeof exports === 'object')
-		exports["highcharts"] = factory();
+		(root["_Highcharts"] = factory(),exports["highcharts"] = root["_Highcharts"]);
 	else
-		(root["Highcharts"] && root["Highcharts"].error(16, true)) || (root["Highcharts"] = factory());
-})(this, () => {
+		((root["Highcharts"] && root["Highcharts"].error(16, true)), root["Highcharts"] = factory());
+})(typeof window === 'undefined' ? this : window, () => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	// The require scope
@@ -74,7 +74,7 @@ var Globals;
      *  Constants
      *
      * */
-    Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '12.0.1', Globals.win = (typeof window !== 'undefined' ?
+    Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '12.0.2', Globals.win = (typeof window !== 'undefined' ?
         window :
         {}), // eslint-disable-line node/no-unsupported-features/es-builtins
     Globals.doc = Globals.win.document, Globals.svg = (Globals.doc &&
@@ -9490,9 +9490,9 @@ var RendererUtilities;
 const { animate: SVGElement_animate, animObject: SVGElement_animObject, stop: SVGElement_stop } = AnimationUtilities;
 
 
-const { deg2rad, doc: SVGElement_doc, svg, SVG_NS: SVGElement_SVG_NS, win: SVGElement_win } = Core_Globals;
+const { deg2rad, doc: SVGElement_doc, svg, SVG_NS: SVGElement_SVG_NS, win: SVGElement_win, isFirefox } = Core_Globals;
 
-const { addEvent: SVGElement_addEvent, attr: SVGElement_attr, createElement: SVGElement_createElement, crisp: SVGElement_crisp, css: SVGElement_css, defined: SVGElement_defined, erase: SVGElement_erase, extend: SVGElement_extend, fireEvent: SVGElement_fireEvent, getAlignFactor: SVGElement_getAlignFactor, isArray: SVGElement_isArray, isFunction: SVGElement_isFunction, isObject: SVGElement_isObject, isString: SVGElement_isString, merge: SVGElement_merge, objectEach: SVGElement_objectEach, pick: SVGElement_pick, pInt: SVGElement_pInt, pushUnique: SVGElement_pushUnique, replaceNested: SVGElement_replaceNested, syncTimeout: SVGElement_syncTimeout, uniqueKey: SVGElement_uniqueKey } = Core_Utilities;
+const { addEvent: SVGElement_addEvent, attr: SVGElement_attr, createElement: SVGElement_createElement, crisp: SVGElement_crisp, css: SVGElement_css, defined: SVGElement_defined, erase: SVGElement_erase, extend: SVGElement_extend, fireEvent: SVGElement_fireEvent, getAlignFactor: SVGElement_getAlignFactor, isArray: SVGElement_isArray, isFunction: SVGElement_isFunction, isNumber: SVGElement_isNumber, isObject: SVGElement_isObject, isString: SVGElement_isString, merge: SVGElement_merge, objectEach: SVGElement_objectEach, pick: SVGElement_pick, pInt: SVGElement_pInt, pushUnique: SVGElement_pushUnique, replaceNested: SVGElement_replaceNested, syncTimeout: SVGElement_syncTimeout, uniqueKey: SVGElement_uniqueKey } = Core_Utilities;
 /* *
  *
  *  Class
@@ -10207,6 +10207,12 @@ class SVGElement {
             SVGElement_extend(this.styles, styles);
             if (textWidth && (!svg && this.renderer.forExport)) {
                 delete styles.width;
+            }
+            const fontSize = isFirefox && styles.fontSize || null;
+            // Necessary in firefox to be able to set font-size, #22124
+            if (fontSize && (SVGElement_isNumber(fontSize) ||
+                /^\d+$/.test(fontSize))) {
+                styles.fontSize += 'px';
             }
             const stylesToApply = SVGElement_merge(styles);
             if (elem.namespaceURI === this.SVG_NS) {
@@ -12378,7 +12384,7 @@ class TextBuilder {
                     // is "5" and end is 1.
                     try {
                         lengths[end] = startAt +
-                            parentNode.getSubStringLength(0, words && !startAt ? end + 1 : end);
+                            parentNode.getSubStringLength(0, words ? end + 1 : end);
                     }
                     catch (e) {
                         '';
@@ -12475,7 +12481,7 @@ class TextBuilder {
 const { defaultOptions: SVGRenderer_defaultOptions } = Defaults;
 
 
-const { charts: SVGRenderer_charts, deg2rad: SVGRenderer_deg2rad, doc: SVGRenderer_doc, isFirefox, isMS, isWebKit, noop, SVG_NS: SVGRenderer_SVG_NS, symbolSizes, win: SVGRenderer_win } = Core_Globals;
+const { charts: SVGRenderer_charts, deg2rad: SVGRenderer_deg2rad, doc: SVGRenderer_doc, isFirefox: SVGRenderer_isFirefox, isMS, isWebKit, noop, SVG_NS: SVGRenderer_SVG_NS, symbolSizes, win: SVGRenderer_win } = Core_Globals;
 
 
 
@@ -12631,7 +12637,7 @@ class SVGRenderer {
         this.url = this.getReferenceURL();
         // Add description
         const desc = this.createElement('desc').add();
-        desc.element.appendChild(SVGRenderer_doc.createTextNode('Created with Highcharts 12.0.1'));
+        desc.element.appendChild(SVGRenderer_doc.createTextNode('Created with Highcharts 12.0.2'));
         this.defs = this.createElement('defs').add();
         this.allowHTML = allowHTML;
         this.forExport = forExport;
@@ -12650,7 +12656,7 @@ class SVGRenderer {
         // for. This doesn't seem to work inside iframes though (like in
         // jsFiddle).
         let subPixelFix, rect;
-        if (isFirefox && container.getBoundingClientRect) {
+        if (SVGRenderer_isFirefox && container.getBoundingClientRect) {
             subPixelFix = function () {
                 SVGRenderer_css(container, { left: 0, top: 0 });
                 rect = container.getBoundingClientRect();
@@ -12713,7 +12719,7 @@ class SVGRenderer {
      * The prefix to use. An empty string for modern browsers.
      */
     getReferenceURL() {
-        if ((isFirefox || isWebKit) &&
+        if ((SVGRenderer_isFirefox || isWebKit) &&
             SVGRenderer_doc.getElementsByTagName('base').length) {
             // Detect if a clip path is taking effect by performing a hit test
             // outside the clipped area. If the hit element is the rectangle
@@ -19155,7 +19161,7 @@ class Axis {
      * Pixel position of the value on the chart or axis.
      */
     toPixels(value, paneCoordinates) {
-        return this.translate(this.chart.time.parse(value) ?? NaN, false, !this.horiz, void 0, true) + (paneCoordinates ? 0 : this.pos);
+        return this.translate(this.chart?.time.parse(value) ?? NaN, false, !this.horiz, void 0, true) + (paneCoordinates ? 0 : this.pos);
     }
     /**
      * Translate a pixel position along the axis to a value in terms of axis
@@ -24174,7 +24180,8 @@ class Tooltip {
                     if (this.outside) {
                         label.attr({
                             x: Tooltip_clamp(label.x || 0, 0, this.getPlayingField().width -
-                                (label.width || 0))
+                                (label.width || 0) -
+                                1)
                         });
                     }
                     if (!styledMode) {
@@ -39932,10 +39939,8 @@ class LineSeries extends Series_Series {
                         attribs['stroke-linejoin'] = 'round';
                 }
                 graph[verb](attribs)
-                    // Add shadow to normal series (0) or to first
-                    // zone (1) #3932
-                    .shadow((i < 2) &&
-                    options.shadow &&
+                    // Add shadow to normal series as well as zones
+                    .shadow(options.shadow &&
                     // If shadow is defined, call function with
                     // `filterUnits: 'userSpaceOnUse'` to avoid known
                     // SVG filter bug (#19093)

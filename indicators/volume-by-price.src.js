@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v12.0.1 (2024-11-28)
+ * @license Highstock JS v12.0.2 (2024-12-04)
  * @module highcharts/indicators/volume-by-price
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -12,14 +12,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("highcharts"), require("highcharts")["SeriesRegistry"]);
+		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["SeriesRegistry"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/volume-by-price", [["highcharts/highcharts"], ["highcharts/highcharts","SeriesRegistry"]], factory);
+		define("highcharts/indicators/volume-by-price", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["SeriesRegistry"]);});
 	else if(typeof exports === 'object')
-		exports["highcharts/volume-by-price"] = factory(require("highcharts"), require("highcharts")["SeriesRegistry"]);
+		exports["highcharts/indicators/volume-by-price"] = factory(root["_Highcharts"], root["_Highcharts"]["SeriesRegistry"]);
 	else
 		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["SeriesRegistry"]);
-})(this, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__512__) => {
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__512__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({

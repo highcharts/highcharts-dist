@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.0.1 (2024-11-28)
+ * @license Highcharts JS v12.0.2 (2024-12-04)
  * @module highcharts/modules/data
  * @requires highcharts
  *
@@ -11,14 +11,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("highcharts"), require("highcharts")["Axis"], require("highcharts")["Chart"], require("highcharts")["Point"], require("highcharts")["SeriesRegistry"]);
+		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Chart"], root["_Highcharts"]["Point"], root["_Highcharts"]["SeriesRegistry"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/data", [["highcharts/highcharts"], ["highcharts/highcharts","Axis"], ["highcharts/highcharts","Chart"], ["highcharts/highcharts","Point"], ["highcharts/highcharts","SeriesRegistry"]], factory);
+		define("highcharts/modules/data", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Axis"],amd1["Chart"],amd1["Point"],amd1["SeriesRegistry"]);});
 	else if(typeof exports === 'object')
-		exports["highcharts/data"] = factory(require("highcharts"), require("highcharts")["Axis"], require("highcharts")["Chart"], require("highcharts")["Point"], require("highcharts")["SeriesRegistry"]);
+		exports["highcharts/modules/data"] = factory(root["_Highcharts"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Chart"], root["_Highcharts"]["Point"], root["_Highcharts"]["SeriesRegistry"]);
 	else
 		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Axis"], root["Highcharts"]["Chart"], root["Highcharts"]["Point"], root["Highcharts"]["SeriesRegistry"]);
-})(this, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__532__, __WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__512__) => {
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__532__, __WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__512__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({

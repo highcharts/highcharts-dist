@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.0.1 (2024-11-28)
+ * @license Highcharts JS v12.0.2 (2024-12-04)
  * @module highcharts/modules/pattern-fill
  * @requires highcharts
  *
@@ -12,14 +12,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("highcharts"));
+		module.exports = factory(root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/pattern-fill", [["highcharts/highcharts"]], factory);
+		define("highcharts/modules/pattern-fill", ["highcharts/highcharts"], function (amd1) {return factory(amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/pattern-fill"] = factory(require("highcharts"));
+		exports["highcharts/modules/pattern-fill"] = factory(root["_Highcharts"]);
 	else
 		root["Highcharts"] = factory(root["Highcharts"]);
-})(this, (__WEBPACK_EXTERNAL_MODULE__944__) => {
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({

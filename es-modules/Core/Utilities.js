@@ -45,7 +45,7 @@ const { charts, doc, win } = H;
  *
  * @return {void}
  */
-export function error(code, stop, chart, params) {
+function error(code, stop, chart, params) {
     const severity = stop ? 'Highcharts error' : 'Highcharts warning';
     if (code === 32) {
         code = `${severity}: Deprecated member`;
@@ -103,7 +103,7 @@ export function error(code, stop, chart, params) {
  *         The merged object. If the first argument is true, the return is the
  *         same as the second argument.
  */
-export function merge(extendOrSource, ...sources) {
+function merge(extendOrSource, ...sources) {
     let i, args = [extendOrSource, ...sources], ret = {};
     const doCopy = function (copy, original) {
         // An object is replacing a primitive
@@ -150,7 +150,7 @@ export function merge(extendOrSource, ...sources) {
  * @param {number} max The upper threshold
  * @return {number} Returns a number value within min and max.
  */
-export function clamp(value, min, max) {
+function clamp(value, min, max) {
     return value > min ? value < max ? value : max : min;
 }
 /**
@@ -164,7 +164,7 @@ export function clamp(value, min, max) {
  *                             is flipped (scaleY is -1)
  * @return {number}            The pixel position to use for a crisp display
  */
-export function crisp(value, lineWidth = 0, inverted) {
+function crisp(value, lineWidth = 0, inverted) {
     const mod = lineWidth % 2 / 2, inverter = inverted ? -1 : 1;
     return (Math.round(value * inverter - mod) + mod) * inverter;
 }
@@ -174,7 +174,7 @@ export function crisp(value, lineWidth = 0, inverted) {
  * properties, or optionally return the old values of new properties.
  * @private
  */
-export function diffObjects(newer, older, keepOlder, collectionsWithUpdate) {
+function diffObjects(newer, older, keepOlder, collectionsWithUpdate) {
     const ret = {};
     /**
      * Recurse over a set of options and its current values, and store the
@@ -250,7 +250,7 @@ export function diffObjects(newer, older, keepOlder, collectionsWithUpdate) {
  * @return {number}
  *         number
  */
-export function pInt(s, mag) {
+function pInt(s, mag) {
     return parseInt(s, mag || 10);
 }
 /**
@@ -264,7 +264,7 @@ export function pInt(s, mag) {
  * @return {boolean}
  *         True if the argument is a string.
  */
-export function isString(s) {
+function isString(s) {
     return typeof s === 'string';
 }
 /**
@@ -278,7 +278,7 @@ export function isString(s) {
  * @return {boolean}
  *         True if the argument is an array.
  */
-export function isArray(obj) {
+function isArray(obj) {
     const str = Object.prototype.toString.call(obj);
     return str === '[object Array]' || str === '[object Array Iterator]';
 }
@@ -296,7 +296,7 @@ export function isArray(obj) {
  * @return {boolean}
  *         True if the argument is an object.
  */
-export function isObject(obj, strict) {
+function isObject(obj, strict) {
     return (!!obj &&
         typeof obj === 'object' &&
         (!strict || !isArray(obj))); // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -312,7 +312,7 @@ export function isObject(obj, strict) {
  * @return {boolean}
  *         True if the argument is a HTML Element.
  */
-export function isDOMElement(obj) {
+function isDOMElement(obj) {
     return isObject(obj) && typeof obj.nodeType === 'number';
 }
 /**
@@ -326,7 +326,7 @@ export function isDOMElement(obj) {
  * @return {boolean}
  *         True if the argument is a class.
  */
-export function isClass(obj) {
+function isClass(obj) {
     const c = obj && obj.constructor;
     return !!(isObject(obj, true) &&
         !isDOMElement(obj) &&
@@ -344,7 +344,7 @@ export function isClass(obj) {
  * @return {boolean}
  *         True if the item is a finite number
  */
-export function isNumber(n) {
+function isNumber(n) {
     return typeof n === 'number' && !isNaN(n) && n < Infinity && n > -Infinity;
 }
 /**
@@ -360,7 +360,7 @@ export function isNumber(n) {
  *
  * @return {void}
  */
-export function erase(arr, item) {
+function erase(arr, item) {
     let i = arr.length;
     while (i--) {
         if (arr[i] === item) {
@@ -383,7 +383,7 @@ export function erase(arr, item) {
  *         A collection of items, like `chart.series` or `xAxis.series`.
  * @return {number} The index of the series in the collection.
  */
-export function insertItem(item, collection) {
+function insertItem(item, collection) {
     const indexOption = item.options.index, length = collection.length;
     let i;
     for (
@@ -419,7 +419,7 @@ export function insertItem(item, collection) {
  * @return {boolean}
  * Returns true, if the item was not present and has been added.
  */
-export function pushUnique(array, item) {
+function pushUnique(array, item) {
     return array.indexOf(item) < 0 && !!array.push(item);
 }
 /**
@@ -433,7 +433,7 @@ export function pushUnique(array, item) {
  * @return {boolean}
  *         False if the object is null or undefined, otherwise true.
  */
-export function defined(obj) {
+function defined(obj) {
     return typeof obj !== 'undefined' && obj !== null;
 }
 /**
@@ -459,7 +459,7 @@ export function defined(obj) {
  * @return {string|null|undefined}
  *         When used as a getter, return the value.
  */
-export function attr(elem, keyOrAttribs, value) {
+function attr(elem, keyOrAttribs, value) {
     const isGetter = isString(keyOrAttribs) && !defined(value);
     let ret;
     const attrSingle = (value, key) => {
@@ -501,7 +501,7 @@ export function attr(elem, keyOrAttribs, value) {
  * @return {Array}
  *         The produced or original array.
  */
-export function splat(obj) {
+function splat(obj) {
     return isArray(obj) ? obj : [obj];
 }
 /**
@@ -523,7 +523,7 @@ export function splat(obj) {
  *         An identifier for the timeout that can later be cleared with
  *         Highcharts.clearTimeout. Returns -1 if there is no timeout.
  */
-export function syncTimeout(fn, delay, context) {
+function syncTimeout(fn, delay, context) {
     if (delay > 0) {
         return setTimeout(fn, delay, context);
     }
@@ -540,7 +540,7 @@ export function syncTimeout(fn, delay, context) {
  * @param {number|undefined} id
  * Id of a timeout.
  */
-export function internalClearTimeout(id) {
+function internalClearTimeout(id) {
     if (defined(id)) {
         clearTimeout(id);
     }
@@ -560,7 +560,7 @@ export function internalClearTimeout(id) {
  * @return {T}
  *         Object a, the original object.
  */
-export function extend(a, b) {
+function extend(a, b) {
     /* eslint-enable valid-jsdoc */
     let n;
     if (!a) {
@@ -583,7 +583,7 @@ export function extend(a, b) {
  * @return {T}
  *         The value of the first argument that is not null or undefined.
  */
-export function pick() {
+function pick() {
     const args = arguments;
     const length = args.length;
     for (let i = 0; i < length; i++) {
@@ -606,7 +606,7 @@ export function pick() {
  *
  * @return {void}
  */
-export function css(el, styles) {
+function css(el, styles) {
     extend(el.style, styles);
 }
 /**
@@ -632,7 +632,7 @@ export function css(el, styles) {
  * @return {Highcharts.HTMLDOMElement}
  *         The created DOM element.
  */
-export function createElement(tag, attribs, styles, parent, nopad) {
+function createElement(tag, attribs, styles, parent, nopad) {
     const el = doc.createElement(tag);
     if (attribs) {
         extend(el, attribs);
@@ -665,7 +665,7 @@ export function createElement(tag, attribs, styles, parent, nopad) {
  * @return {Highcharts.Class<T>}
  *         A new prototype.
  */
-export function extendClass(parent, members) {
+function extendClass(parent, members) {
     const obj = (function () { });
     obj.prototype = new parent(); // eslint-disable-line new-cap
     extend(obj.prototype, members);
@@ -688,7 +688,7 @@ export function extendClass(parent, members) {
  * @return {string}
  *         The padded string.
  */
-export function pad(number, length, padder) {
+function pad(number, length, padder) {
     return new Array((length || 2) +
         1 -
         String(number)
@@ -713,7 +713,7 @@ export function pad(number, length, padder) {
  * @return {number}
  *         The computed length.
  */
-export function relativeLength(value, base, offset) {
+function relativeLength(value, base, offset) {
     return (/%$/).test(value) ?
         (base * parseFloat(value) / 100) + (offset || 0) :
         parseFloat(value);
@@ -734,7 +734,7 @@ export function relativeLength(value, base, offset) {
  * @return {string}
  * Text with replacements.
  */
-export function replaceNested(text, ...replacements) {
+function replaceNested(text, ...replacements) {
     let previous, replacement;
     do {
         previous = text;
@@ -761,7 +761,7 @@ export function replaceNested(text, ...replacements) {
  *        arguments as the original function, except that the original function
  *        is unshifted and passed as the first argument.
  */
-export function wrap(obj, method, func) {
+function wrap(obj, method, func) {
     const proceed = obj[method];
     obj[method] = function () {
         const outerArgs = arguments, scope = this;
@@ -783,7 +783,7 @@ export function wrap(obj, method, func) {
  * @return {number}
  *         The magnitude, where 1-9 are magnitude 1, 10-99 magnitude 2 etc.
  */
-export function getMagnitude(num) {
+function getMagnitude(num) {
     return Math.pow(10, Math.floor(Math.log(num) / Math.LN10));
 }
 /**
@@ -815,7 +815,7 @@ export function getMagnitude(num) {
  * Move this function to the Axis prototype. It is here only for historical
  * reasons.
  */
-export function normalizeTickInterval(interval, multiples, magnitude, allowDecimals, hasTickAmount) {
+function normalizeTickInterval(interval, multiples, magnitude, allowDecimals, hasTickAmount) {
     let i, retInterval = interval;
     // Round to a tenfold of 1, 2, 2.5 or 5
     magnitude = pick(magnitude, getMagnitude(interval));
@@ -870,7 +870,7 @@ export function normalizeTickInterval(interval, multiples, magnitude, allowDecim
  * @param {Function} sortFunction
  *        The function to sort it with, like with regular Array.prototype.sort.
  */
-export function stableSort(arr, sortFunction) {
+function stableSort(arr, sortFunction) {
     // @todo It seems like Chrome since v70 sorts in a stable way internally,
     // plus all other browsers do it, so over time we may be able to remove this
     // function
@@ -902,7 +902,7 @@ export function stableSort(arr, sortFunction) {
  * @return {number}
  *         The lowest number.
  */
-export function arrayMin(data) {
+function arrayMin(data) {
     let i = data.length, min = data[0];
     while (i--) {
         if (data[i] < min) {
@@ -924,7 +924,7 @@ export function arrayMin(data) {
  * @return {number}
  *         The highest number.
  */
-export function arrayMax(data) {
+function arrayMax(data) {
     let i = data.length, max = data[0];
     while (i--) {
         if (data[i] > max) {
@@ -946,7 +946,7 @@ export function arrayMax(data) {
  * @param {*} [except]
  *        Exception, do not destroy this property, only delete it.
  */
-export function destroyObjectProperties(obj, except, destructablesOnly) {
+function destroyObjectProperties(obj, except, destructablesOnly) {
     objectEach(obj, function (val, n) {
         // If the object is non-null and destroy is defined
         if (val !== except && val?.destroy) {
@@ -967,7 +967,7 @@ export function destroyObjectProperties(obj, except, destructablesOnly) {
  * @param {Highcharts.HTMLDOMElement} element
  *        The HTML node to discard.
  */
-export function discardElement(element) {
+function discardElement(element) {
     if (element && element.parentElement) {
         element.parentElement.removeChild(element);
     }
@@ -986,7 +986,7 @@ export function discardElement(element) {
  * @return {number}
  *         The corrected float number.
  */
-export function correctFloat(num, prec) {
+function correctFloat(num, prec) {
     // When the number is higher than 1e14 use the number (#16275)
     return num > 1e14 ? num : parseFloat(num.toPrecision(prec || 14));
 }
@@ -995,7 +995,7 @@ export function correctFloat(num, prec) {
  *
  * @ignore
  */
-export const timeUnits = {
+const timeUnits = {
     millisecond: 1,
     second: 1000,
     minute: 60000,
@@ -1042,7 +1042,7 @@ const getAlignFactor = (align = '') => ({
  * @return {number | undefined}
  *          The closest distance between values
  */
-export function getClosestDistance(arrays, onError) {
+function getClosestDistance(arrays, onError) {
     const allowNegative = !onError;
     let closest, loopLength, distance, i;
     arrays.forEach((xData) => {
@@ -1078,7 +1078,7 @@ export function getClosestDistance(arrays, onError) {
  * @return {unknown}
  * The unknown property value.
  */
-export function getNestedProperty(path, parent) {
+function getNestedProperty(path, parent) {
     const pathElements = path.split('.');
     while (pathElements.length && defined(parent)) {
         const pathElement = pathElements.shift();
@@ -1126,7 +1126,7 @@ export function getNestedProperty(path, parent) {
  * @return {number|string|undefined}
  * The style value.
  */
-export function getStyle(el, prop, toInt) {
+function getStyle(el, prop, toInt) {
     let style;
     // For width and height, return the actual inner pixel size (#4913)
     if (prop === 'width') {
@@ -1179,7 +1179,7 @@ export function getStyle(el, prop, toInt) {
  * @return {T|undefined}
  *         The value of the element.
  */
-export const find = Array.prototype.find ?
+const find = Array.prototype.find ?
     function (arr, callback) {
         return arr.find(callback);
     } :
@@ -1205,7 +1205,7 @@ export const find = Array.prototype.find ?
  *         An object containing `left` and `top` properties for the position in
  *         the page.
  */
-export function offset(el) {
+function offset(el) {
     const docElem = doc.documentElement, box = (el.parentElement || el.parentNode) ?
         el.getBoundingClientRect() :
         { top: 0, left: 0, width: 0, height: 0 };
@@ -1236,7 +1236,7 @@ export function offset(el) {
  * @param {T} [ctx]
  *        The context.
  */
-export function objectEach(obj, fn, ctx) {
+function objectEach(obj, fn, ctx) {
     /* eslint-enable valid-jsdoc */
     for (const key in obj) {
         if (Object.hasOwnProperty.call(obj, key)) {
@@ -1269,7 +1269,7 @@ export function objectEach(obj, fn, ctx) {
  * @return {Function}
  *         A callback function to remove the added event.
  */
-export function addEvent(el, type, fn, options = {}) {
+function addEvent(el, type, fn, options = {}) {
     /* eslint-enable valid-jsdoc */
     // Add hcEvents to either the prototype (in case we're running addEvent on a
     // class) or the instance. If hasOwnProperty('hcEvents') is false, it is
@@ -1333,7 +1333,7 @@ export function addEvent(el, type, fn, options = {}) {
  *
  * @return {void}
  */
-export function removeEvent(el, type, fn) {
+function removeEvent(el, type, fn) {
     /* eslint-enable valid-jsdoc */
     /**
      * @private
@@ -1413,7 +1413,7 @@ export function removeEvent(el, type, fn) {
  *
  * @return {void}
  */
-export function fireEvent(el, type, eventArguments, defaultFunction) {
+function fireEvent(el, type, eventArguments, defaultFunction) {
     /* eslint-enable valid-jsdoc */
     eventArguments = eventArguments || {};
     if (doc.createEvent &&
@@ -1485,7 +1485,7 @@ export function fireEvent(el, type, eventArguments, defaultFunction) {
         defaultFunction.call(el, eventArguments);
     }
 }
-export let serialMode;
+let serialMode;
 /**
  * Get a unique key for using in internal element id's and pointers. The key is
  * composed of a random hash specific to this Highcharts instance, and a
@@ -1499,7 +1499,7 @@ export let serialMode;
  * @return {string}
  * A unique key.
  */
-export const uniqueKey = (function () {
+const uniqueKey = (function () {
     const hash = Math.random().toString(36).substring(2, 9) + '-';
     let id = 0;
     return function () {
@@ -1530,13 +1530,13 @@ export const uniqueKey = (function () {
  * @return {boolean|undefined}
  * State of the serial mode.
  */
-export function useSerialIds(mode) {
+function useSerialIds(mode) {
     return (serialMode = pick(mode, serialMode));
 }
-export function isFunction(obj) {
+function isFunction(obj) {
     return typeof obj === 'function';
 }
-export function ucfirst(s) {
+function ucfirst(s) {
     return ((isString(s) ?
         s.substring(0, 1).toUpperCase() + s.substring(1) :
         String(s)));
@@ -1604,7 +1604,7 @@ if (win.jQuery) {
  *
  * */
 // TODO use named exports when supported.
-export const Utilities = {
+const Utilities = {
     addEvent,
     arrayMax,
     arrayMin,
