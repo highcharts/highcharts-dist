@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.0.2 (2024-12-04)
+ * @license Highcharts JS v12.0.2 (2024-12-12)
  * @module highcharts/highcharts
  *
  * (c) 2009-2024 Torstein Honsi
@@ -3582,7 +3582,9 @@ class Time {
          *  Properties
          *
          * */
-        this.options = {};
+        this.options = {
+            timezone: 'UTC'
+        };
         this.variableTimezone = false;
         this.Date = Time_win.Date;
         this.update(options);
@@ -3604,12 +3606,13 @@ class Time {
      *
      */
     update(options = {}) {
-        let timezone = options.timezone ?? 'UTC';
         this.dTLCache = {};
         this.options = options = Time_merge(true, this.options, options);
         const { timezoneOffset, useUTC } = options;
         // Allow using a different Date class
         this.Date = options.Date || Time_win.Date || Date;
+        // Assign the time zone. Handle the legacy, deprecated `useUTC` option.
+        let timezone = options.timezone;
         if (Time_defined(useUTC)) {
             timezone = useUTC ? 'UTC' : void 0;
         }
@@ -4052,7 +4055,7 @@ class Time {
         }
         else if (Time_isObject(format)) {
             const tzHours = (this.getTimezoneOffset(timestamp) || 0) /
-                (60000 * 60), timeZone = this.options.timezone || ('Etc/GMT' + (tzHours >= 0 ? '+' : '') + tzHours), { prefix = '', suffix = '' } = format;
+                (60000 * 60), timeZone = this.timezone || ('Etc/GMT' + (tzHours >= 0 ? '+' : '') + tzHours), { prefix = '', suffix = '' } = format;
             format = prefix + this.dateTimeFormat(Time_extend({ timeZone }, format), timestamp) + suffix;
         }
         // Optionally sentence-case the string and return
@@ -33086,9 +33089,14 @@ class Series {
      * @private
      * @function Highcharts.Series#searchKDTree
      */
-    searchKDTree(point, compareX, e) {
+    searchKDTree(point, compareX, e, suppliedPointEvaluator, suppliedBSideCheckEvaluator) {
         const series = this, [kdX, kdY] = this.kdAxisArray, kdComparer = compareX ? 'distX' : 'dist', kdDimensions = (series.options.findNearestPointBy || '')
-            .indexOf('y') > -1 ? 2 : 1, useRadius = !!series.isBubble;
+            .indexOf('y') > -1 ? 2 : 1, useRadius = !!series.isBubble, pointEvaluator = suppliedPointEvaluator || ((p1, p2, comparisonProp) => [
+            (p1[comparisonProp] || 0) < (p2[comparisonProp] || 0) ?
+                p1 :
+                p2,
+            false
+        ]), bSideCheckEvaluator = suppliedBSideCheckEvaluator || ((a, b) => a < b);
         /**
          * Set the one and two dimensional distance on the point object.
          * @private
@@ -33103,28 +33111,21 @@ class Series {
          */
         function doSearch(search, tree, depth, dimensions) {
             const point = tree.point, axis = series.kdAxisArray[depth % dimensions];
-            let nPoint1, nPoint2, ret = point;
+            let ret = point, flip = false;
             setDistance(search, point);
             // Pick side based on distance to splitting point
             const tdist = (search[axis] || 0) - (point[axis] || 0) +
                 (useRadius ? (point.marker?.radius || 0) : 0), sideA = tdist < 0 ? 'left' : 'right', sideB = tdist < 0 ? 'right' : 'left';
             // End of tree
             if (tree[sideA]) {
-                nPoint1 = doSearch(search, tree[sideA], depth + 1, dimensions);
-                ret = (nPoint1[kdComparer] <
-                    ret[kdComparer] ?
-                    nPoint1 :
-                    point);
+                [ret, flip] = pointEvaluator(point, doSearch(search, tree[sideA], depth + 1, dimensions), kdComparer);
             }
             if (tree[sideB]) {
+                const sqrtTDist = Math.sqrt(tdist * tdist), retDist = ret[kdComparer];
                 // Compare distance to current best to splitting point to decide
-                // whether to check side B or not
-                if (Math.sqrt(tdist * tdist) < ret[kdComparer]) {
-                    nPoint2 = doSearch(search, tree[sideB], depth + 1, dimensions);
-                    ret = (nPoint2[kdComparer] <
-                        ret[kdComparer] ?
-                        nPoint2 :
-                        ret);
+                // whether to check side B or no
+                if (bSideCheckEvaluator(sqrtTDist, retDist, flip)) {
+                    ret = pointEvaluator(ret, doSearch(search, tree[sideB], depth + 1, dimensions), kdComparer)[0];
                 }
             }
             return ret;
@@ -48167,7 +48168,7 @@ Array.prototype.push.apply(Axis_Axis.keepProps, ColorAxis.keepProps);
 
 ;// ./code/es-modules/masters/modules/coloraxis.src.js
 /**
- * @license Highcharts JS v12.0.2 (2024-12-04)
+ * @license Highcharts JS v12.0.2 (2024-12-12)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -55801,6 +55802,30 @@ class BubbleSeries extends BubbleSeries_ScatterSeries {
             }
         }
     }
+    /**
+     * @private
+     * @function Highcharts.Series#searchKDTree
+     */
+    searchKDTree(point, compareX, e, suppliedPointEvaluator = BubbleSeries_noop, suppliedBSideCheckEvaluator = BubbleSeries_noop) {
+        suppliedPointEvaluator = (p1, p2, comparisonProp) => {
+            const p1Dist = p1[comparisonProp] || 0;
+            const p2Dist = p2[comparisonProp] || 0;
+            let ret, flip = false;
+            if (p1Dist < 0 && p2Dist < 0) {
+                ret = (p1Dist - (p1.marker?.radius || 0) >=
+                    p2Dist - (p2.marker?.radius || 0)) ?
+                    p1 :
+                    p2;
+                flip = true;
+            }
+            else {
+                ret = p1Dist < p2Dist ? p1 : p2;
+            }
+            return [ret, flip];
+        };
+        suppliedBSideCheckEvaluator = (a, b, flip) => !flip && (a > b) || (a < b);
+        return super.searchKDTree(point, compareX, e, suppliedPointEvaluator, suppliedBSideCheckEvaluator);
+    }
 }
 /* *
  *
@@ -57705,7 +57730,7 @@ Series_SeriesRegistry.registerSeriesType('heatmap', HeatmapSeries);
 
 ;// ./code/es-modules/masters/modules/map.src.js
 /**
- * @license Highmaps JS v12.0.2 (2024-12-04)
+ * @license Highmaps JS v12.0.2 (2024-12-12)
  * @module highcharts/modules/map
  * @requires highcharts
  *
@@ -57751,7 +57776,7 @@ Maps_MapView.compose(Chart_MapChart);
 
 ;// ./code/es-modules/masters/highmaps.src.js
 /**
- * @license Highmaps JS v12.0.2 (2024-12-04)
+ * @license Highmaps JS v12.0.2 (2024-12-12)
  * @module highcharts/highmaps
  *
  * (c) 2011-2024 Torstein Honsi

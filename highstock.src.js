@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.0.2 (2024-12-04)
+ * @license Highcharts JS v12.0.2 (2024-12-12)
  * @module highcharts/highcharts
  *
  * (c) 2009-2024 Torstein Honsi
@@ -3582,7 +3582,9 @@ class Time {
          *  Properties
          *
          * */
-        this.options = {};
+        this.options = {
+            timezone: 'UTC'
+        };
         this.variableTimezone = false;
         this.Date = Time_win.Date;
         this.update(options);
@@ -3604,12 +3606,13 @@ class Time {
      *
      */
     update(options = {}) {
-        let timezone = options.timezone ?? 'UTC';
         this.dTLCache = {};
         this.options = options = Time_merge(true, this.options, options);
         const { timezoneOffset, useUTC } = options;
         // Allow using a different Date class
         this.Date = options.Date || Time_win.Date || Date;
+        // Assign the time zone. Handle the legacy, deprecated `useUTC` option.
+        let timezone = options.timezone;
         if (Time_defined(useUTC)) {
             timezone = useUTC ? 'UTC' : void 0;
         }
@@ -4052,7 +4055,7 @@ class Time {
         }
         else if (Time_isObject(format)) {
             const tzHours = (this.getTimezoneOffset(timestamp) || 0) /
-                (60000 * 60), timeZone = this.options.timezone || ('Etc/GMT' + (tzHours >= 0 ? '+' : '') + tzHours), { prefix = '', suffix = '' } = format;
+                (60000 * 60), timeZone = this.timezone || ('Etc/GMT' + (tzHours >= 0 ? '+' : '') + tzHours), { prefix = '', suffix = '' } = format;
             format = prefix + this.dateTimeFormat(Time_extend({ timeZone }, format), timestamp) + suffix;
         }
         // Optionally sentence-case the string and return
@@ -33086,9 +33089,14 @@ class Series {
      * @private
      * @function Highcharts.Series#searchKDTree
      */
-    searchKDTree(point, compareX, e) {
+    searchKDTree(point, compareX, e, suppliedPointEvaluator, suppliedBSideCheckEvaluator) {
         const series = this, [kdX, kdY] = this.kdAxisArray, kdComparer = compareX ? 'distX' : 'dist', kdDimensions = (series.options.findNearestPointBy || '')
-            .indexOf('y') > -1 ? 2 : 1, useRadius = !!series.isBubble;
+            .indexOf('y') > -1 ? 2 : 1, useRadius = !!series.isBubble, pointEvaluator = suppliedPointEvaluator || ((p1, p2, comparisonProp) => [
+            (p1[comparisonProp] || 0) < (p2[comparisonProp] || 0) ?
+                p1 :
+                p2,
+            false
+        ]), bSideCheckEvaluator = suppliedBSideCheckEvaluator || ((a, b) => a < b);
         /**
          * Set the one and two dimensional distance on the point object.
          * @private
@@ -33103,28 +33111,21 @@ class Series {
          */
         function doSearch(search, tree, depth, dimensions) {
             const point = tree.point, axis = series.kdAxisArray[depth % dimensions];
-            let nPoint1, nPoint2, ret = point;
+            let ret = point, flip = false;
             setDistance(search, point);
             // Pick side based on distance to splitting point
             const tdist = (search[axis] || 0) - (point[axis] || 0) +
                 (useRadius ? (point.marker?.radius || 0) : 0), sideA = tdist < 0 ? 'left' : 'right', sideB = tdist < 0 ? 'right' : 'left';
             // End of tree
             if (tree[sideA]) {
-                nPoint1 = doSearch(search, tree[sideA], depth + 1, dimensions);
-                ret = (nPoint1[kdComparer] <
-                    ret[kdComparer] ?
-                    nPoint1 :
-                    point);
+                [ret, flip] = pointEvaluator(point, doSearch(search, tree[sideA], depth + 1, dimensions), kdComparer);
             }
             if (tree[sideB]) {
+                const sqrtTDist = Math.sqrt(tdist * tdist), retDist = ret[kdComparer];
                 // Compare distance to current best to splitting point to decide
-                // whether to check side B or not
-                if (Math.sqrt(tdist * tdist) < ret[kdComparer]) {
-                    nPoint2 = doSearch(search, tree[sideB], depth + 1, dimensions);
-                    ret = (nPoint2[kdComparer] <
-                        ret[kdComparer] ?
-                        nPoint2 :
-                        ret);
+                // whether to check side B or no
+                if (bSideCheckEvaluator(sqrtTDist, retDist, flip)) {
+                    ret = pointEvaluator(ret, doSearch(search, tree[sideB], depth + 1, dimensions), kdComparer)[0];
                 }
             }
             return ret;
@@ -52335,8 +52336,11 @@ const rangeSelector = {
          * The alignment of the input box. Allowed properties are `left`,
          * `center`, `right`.
          *
-         * @sample {highstock} stock/rangeselector/input-button-position/
-         *         Alignment
+         * @sample {highstock} stock/rangeselector/input-button-opposite-alignment/
+         *         Opposite alignment
+         *
+         * @sample {highstock} stock/rangeselector/input-button-same-alignment/
+         *         Same alignment for buttons and input
          *
          * @type  {Highcharts.AlignValue}
          * @since 6.0.0
@@ -52376,8 +52380,11 @@ const rangeSelector = {
          * The alignment of the input box. Allowed properties are `left`,
          * `center`, `right`.
          *
-         * @sample {highstock} stock/rangeselector/input-button-position/
-         *         Alignment
+         * @sample {highstock} stock/rangeselector/input-button-opposite-alignment/
+         *         Opposite alignment
+         *
+         * @sample {highstock} stock/rangeselector/input-button-same-alignment/
+         *         Same alignment for buttons and input
          *
          * @type  {Highcharts.AlignValue}
          * @since 6.0.0
@@ -52801,6 +52808,16 @@ class RangeSelector {
         this.isDirty = false;
         this.buttonOptions = RangeSelector.prototype.defaultButtons;
         this.initialButtonGroupWidth = 0;
+        this.maxButtonWidth = () => {
+            let buttonWidth = 0;
+            this.buttons.forEach((button) => {
+                const bBox = button.getBBox();
+                if (bBox.width > buttonWidth) {
+                    buttonWidth = bBox.width;
+                }
+            });
+            return buttonWidth;
+        };
         this.init(chart);
     }
     /* *
@@ -53094,9 +53111,15 @@ class RangeSelector {
         if (selectedIndex !== null) {
             buttonStates[selectedIndex] = 2;
             rangeSelector.setSelected(selectedIndex);
+            if (this.dropdown) {
+                this.dropdown.selectedIndex = selectedIndex + 1;
+            }
         }
         else {
             rangeSelector.setSelected();
+            if (this.dropdown) {
+                this.dropdown.selectedIndex = -1;
+            }
             if (dropdownLabel) {
                 dropdownLabel.setState(0);
                 dropdownLabel.attr({
@@ -53715,11 +53738,11 @@ class RangeSelector {
         const { buttonPosition, inputPosition, verticalAlign } = options;
         // Get the X offset required to avoid overlapping with the exporting
         // button. This is used both by the buttonGroup and the inputGroup.
-        const getXOffsetForExportButton = (group, position) => {
+        const getXOffsetForExportButton = (group, position, rightAligned) => {
             if (navButtonOptions &&
                 this.titleCollision(chart) &&
                 verticalAlign === 'top' &&
-                position.align === 'right' && ((position.y -
+                rightAligned && ((position.y -
                 group.getBBox().height - 12) <
                 ((navButtonOptions.y || 0) +
                     (navButtonOptions.height || 0) +
@@ -53748,7 +53771,8 @@ class RangeSelector {
                 }
                 plotLeft -= chart.spacing[3];
                 // Detect collision between button group and exporting
-                const xOffsetForExportButton = getXOffsetForExportButton(buttonGroup, buttonPosition);
+                const xOffsetForExportButton = getXOffsetForExportButton(buttonGroup, buttonPosition, buttonPosition.align === 'right' ||
+                    inputPosition.align === 'right');
                 this.alignButtonGroup(xOffsetForExportButton);
                 if (this.buttonGroup?.translateY) {
                     this.dropdownLabel
@@ -53760,7 +53784,8 @@ class RangeSelector {
             let xOffsetForExportButton = 0;
             if (options.inputEnabled && inputGroup) {
                 // Detect collision between the input group and exporting button
-                xOffsetForExportButton = getXOffsetForExportButton(inputGroup, inputPosition);
+                xOffsetForExportButton = getXOffsetForExportButton(inputGroup, inputPosition, buttonPosition.align === 'right' ||
+                    inputPosition.align === 'right');
                 if (inputPosition.align === 'left') {
                     translateX = plotLeft;
                 }
@@ -53913,16 +53938,35 @@ class RangeSelector {
      * @param {number} [width]
      */
     alignButtonGroup(xOffsetForExportButton, width) {
-        const { chart, options, buttonGroup } = this;
+        const { chart, options, buttonGroup, dropdown, dropdownLabel } = this;
         const { buttonPosition } = options;
         const plotLeft = chart.plotLeft - chart.spacing[3];
         let translateX = buttonPosition.x - chart.spacing[3];
+        let dropdownTranslateX = chart.plotLeft;
         if (buttonPosition.align === 'right') {
             translateX += xOffsetForExportButton - plotLeft; // #13014
+            if (this.hasVisibleDropdown) {
+                dropdownTranslateX = chart.chartWidth +
+                    xOffsetForExportButton -
+                    this.maxButtonWidth() - 20;
+            }
         }
         else if (buttonPosition.align === 'center') {
             translateX -= plotLeft / 2;
+            if (this.hasVisibleDropdown) {
+                dropdownTranslateX = chart.chartWidth / 2 -
+                    this.maxButtonWidth();
+            }
         }
+        if (dropdown) {
+            RangeSelector_css(dropdown, {
+                left: dropdownTranslateX + 'px',
+                top: buttonGroup?.translateY + 'px'
+            });
+        }
+        dropdownLabel?.attr({
+            x: dropdownTranslateX
+        });
         if (buttonGroup) {
             // Align button group
             buttonGroup.align({
@@ -53976,36 +54020,6 @@ class RangeSelector {
     handleCollision(xOffsetForExportButton) {
         const { chart, buttonGroup, inputGroup } = this;
         const { buttonPosition, dropdown, inputPosition } = this.options;
-        const maxButtonWidth = () => {
-            let buttonWidth = 0;
-            this.buttons.forEach((button) => {
-                const bBox = button.getBBox();
-                if (bBox.width > buttonWidth) {
-                    buttonWidth = bBox.width;
-                }
-            });
-            return buttonWidth;
-        };
-        const groupsOverlap = (buttonGroupWidth) => {
-            if (inputGroup?.alignOptions && buttonGroup) {
-                const inputGroupX = (inputGroup.alignAttr.translateX +
-                    inputGroup.alignOptions.x -
-                    xOffsetForExportButton +
-                    // `getBBox` for detecing left margin
-                    inputGroup.getBBox().x +
-                    // 2px padding to not overlap input and label
-                    2);
-                const inputGroupWidth = inputGroup.alignOptions.width || 0;
-                const buttonGroupX = buttonGroup.alignAttr.translateX +
-                    buttonGroup.getBBox().x;
-                return (buttonGroupX + buttonGroupWidth > inputGroupX) &&
-                    (inputGroupX + inputGroupWidth > buttonGroupX) &&
-                    (buttonPosition.y <
-                        (inputPosition.y +
-                            inputGroup.getBBox().height));
-            }
-            return false;
-        };
         const moveInputsDown = () => {
             if (inputGroup && buttonGroup) {
                 inputGroup.attr({
@@ -54017,47 +54031,43 @@ class RangeSelector {
                 });
             }
         };
-        if (buttonGroup) {
-            if (dropdown === 'always') {
-                this.collapseButtons();
-                if (groupsOverlap(maxButtonWidth())) {
-                    // Move the inputs down if there is still a collision
-                    // after collapsing the buttons
-                    moveInputsDown();
-                }
-                return;
-            }
-            if (dropdown === 'never') {
-                this.expandButtons();
-            }
-        }
         // Detect collision
         if (inputGroup && buttonGroup) {
-            if ((inputPosition.align === buttonPosition.align) ||
-                // 20 is minimal spacing between elements
-                groupsOverlap(this.initialButtonGroupWidth + 20)) {
+            if (inputPosition.align === buttonPosition.align) {
+                moveInputsDown();
+                if (this.initialButtonGroupWidth >
+                    chart.plotWidth + xOffsetForExportButton - 20) {
+                    this.collapseButtons();
+                }
+                else {
+                    this.expandButtons();
+                }
+            }
+            else if (this.initialButtonGroupWidth -
+                xOffsetForExportButton +
+                inputGroup.getBBox().width >
+                chart.plotWidth) {
                 if (dropdown === 'responsive') {
                     this.collapseButtons();
-                    if (groupsOverlap(maxButtonWidth())) {
-                        moveInputsDown();
-                    }
                 }
                 else {
                     moveInputsDown();
                 }
             }
-            else if (dropdown === 'responsive') {
-                this.expandButtons();
-            }
-        }
-        else if (buttonGroup && dropdown === 'responsive') {
-            if (this.initialButtonGroupWidth > chart.plotWidth) {
-                this.collapseButtons();
-            }
             else {
                 this.expandButtons();
             }
         }
+        // Forced states
+        if (buttonGroup) {
+            if (dropdown === 'always') {
+                this.collapseButtons();
+            }
+            if (dropdown === 'never') {
+                this.expandButtons();
+            }
+        }
+        this.alignButtonGroup(xOffsetForExportButton);
     }
     /**
      * Collapse the buttons and show the select element.
@@ -54100,17 +54110,10 @@ class RangeSelector {
      * @function Highcharts.RangeSelector#showDropdown
      */
     showDropdown() {
-        const { buttonGroup, chart, dropdownLabel, dropdown } = this;
+        const { buttonGroup, dropdownLabel, dropdown } = this;
         if (buttonGroup && dropdown) {
-            const { translateX = 0, translateY = 0 } = buttonGroup, left = chart.plotLeft + translateX, top = translateY;
-            dropdownLabel
-                .attr({ x: left, y: top })
-                .show();
-            RangeSelector_css(dropdown, {
-                left: left + 'px',
-                top: top + 'px',
-                visibility: 'inherit'
-            });
+            dropdownLabel.show();
+            RangeSelector_css(dropdown, { visibility: 'inherit' });
             this.hasVisibleDropdown = true;
         }
     }
@@ -57645,7 +57648,7 @@ var BrokenAxis;
 
 ;// ./code/es-modules/masters/modules/broken-axis.src.js
 /**
- * @license Highcharts JS v12.0.2 (2024-12-04)
+ * @license Highcharts JS v12.0.2 (2024-12-12)
  * @module highcharts/modules/broken-axis
  * @requires highcharts
  *
@@ -59137,7 +59140,7 @@ const DataGroupingComposition = {
 
 ;// ./code/es-modules/masters/modules/datagrouping.src.js
 /**
- * @license Highstock JS v12.0.2 (2024-12-04)
+ * @license Highstock JS v12.0.2 (2024-12-12)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *
@@ -59459,7 +59462,7 @@ const MouseWheelZoomComposition = {
 
 ;// ./code/es-modules/masters/modules/mouse-wheel-zoom.src.js
 /**
- * @license Highcharts JS v12.0.2 (2024-12-04)
+ * @license Highcharts JS v12.0.2 (2024-12-12)
  * @module highcharts/modules/mouse-wheel-zoom
  * @requires highcharts
  *
@@ -59479,7 +59482,7 @@ mouse_wheel_zoom_src_G.MouseWheelZoom.compose(mouse_wheel_zoom_src_G.Chart);
 
 ;// ./code/es-modules/masters/modules/stock.src.js
 /**
- * @license Highstock JS v12.0.2 (2024-12-04)
+ * @license Highstock JS v12.0.2 (2024-12-12)
  * @module highcharts/modules/stock
  * @requires highcharts
  *
@@ -59527,7 +59530,7 @@ stock_src_G.StockChart.compose(stock_src_G.Chart, stock_src_G.Axis, stock_src_G.
 
 ;// ./code/es-modules/masters/highstock.src.js
 /**
- * @license Highstock JS v12.0.2 (2024-12-04)
+ * @license Highstock JS v12.0.2 (2024-12-12)
  * @module highcharts/highstock
  *
  * (c) 2009-2024 Torstein Honsi

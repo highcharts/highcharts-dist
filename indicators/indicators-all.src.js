@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v12.0.2 (2024-12-04)
+ * @license Highstock JS v12.0.2 (2024-12-12)
  * @module highcharts/indicators/indicators-all
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -10634,6 +10634,10 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 
 
+
+const G = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+G.MultipleLinesComposition =
+    G.MultipleLinesComposition || Indicators_MultipleLinesComposition;
 /* harmony default export */ const indicators_all_src = ((highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default()));
 
 __webpack_exports__ = __webpack_exports__["default"];

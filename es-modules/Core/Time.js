@@ -91,7 +91,9 @@ class Time {
          *  Properties
          *
          * */
-        this.options = {};
+        this.options = {
+            timezone: 'UTC'
+        };
         this.variableTimezone = false;
         this.Date = win.Date;
         this.update(options);
@@ -113,12 +115,13 @@ class Time {
      *
      */
     update(options = {}) {
-        let timezone = options.timezone ?? 'UTC';
         this.dTLCache = {};
         this.options = options = merge(true, this.options, options);
         const { timezoneOffset, useUTC } = options;
         // Allow using a different Date class
         this.Date = options.Date || win.Date || Date;
+        // Assign the time zone. Handle the legacy, deprecated `useUTC` option.
+        let timezone = options.timezone;
         if (defined(useUTC)) {
             timezone = useUTC ? 'UTC' : void 0;
         }
@@ -561,7 +564,7 @@ class Time {
         }
         else if (isObject(format)) {
             const tzHours = (this.getTimezoneOffset(timestamp) || 0) /
-                (60000 * 60), timeZone = this.options.timezone || ('Etc/GMT' + (tzHours >= 0 ? '+' : '') + tzHours), { prefix = '', suffix = '' } = format;
+                (60000 * 60), timeZone = this.timezone || ('Etc/GMT' + (tzHours >= 0 ? '+' : '') + tzHours), { prefix = '', suffix = '' } = format;
             format = prefix + this.dateTimeFormat(extend({ timeZone }, format), timestamp) + suffix;
         }
         // Optionally sentence-case the string and return

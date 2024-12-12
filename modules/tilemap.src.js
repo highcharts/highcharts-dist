@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v12.0.2 (2024-12-04)
+ * @license Highmaps JS v12.0.2 (2024-12-12)
  * @module highcharts/modules/tilemap
  * @requires highcharts
  * @requires highcharts/modules/map

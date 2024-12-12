@@ -60,4 +60,8 @@ import '../../Stock/Indicators/LinearRegressionAngle/LinearRegressionAngleIndica
 import '../../Stock/Indicators/ABands/ABandsIndicator.js';
 import '../../Stock/Indicators/TrendLine/TrendLineIndicator.js';
 import '../../Stock/Indicators/DisparityIndex/DisparityIndexIndicator.js';
+import MultipleLinesComposition from '../../Stock/Indicators/MultipleLinesComposition.js';
+const G = Highcharts;
+G.MultipleLinesComposition =
+    G.MultipleLinesComposition || MultipleLinesComposition;
 export default Highcharts;
