@@ -192,18 +192,11 @@ class Color {
         }
         // Check for has alpha, because rgba colors perform worse due to
         // lack of support in WebKit.
-        const hasAlpha = (toRgba[3] !== 1 || fromRgba[3] !== 1);
-        return (hasAlpha ? 'rgba(' : 'rgb(') +
-            Math.round(toRgba[0] + (fromRgba[0] - toRgba[0]) * (1 - pos)) +
-            ',' +
-            Math.round(toRgba[1] + (fromRgba[1] - toRgba[1]) * (1 - pos)) +
-            ',' +
-            Math.round(toRgba[2] + (fromRgba[2] - toRgba[2]) * (1 - pos)) +
-            (hasAlpha ?
-                (',' +
-                    (toRgba[3] + (fromRgba[3] - toRgba[3]) * (1 - pos))) :
-                '') +
-            ')';
+        const hasAlpha = (toRgba[3] !== 1 || fromRgba[3] !== 1), channel = (to, i) => to + (fromRgba[i] - to) * (1 - pos), rgba = toRgba.slice(0, 3).map(channel).map(Math.round);
+        if (hasAlpha) {
+            rgba.push(channel(toRgba[3], 3));
+        }
+        return (hasAlpha ? 'rgba(' : 'rgb(') + rgba.join(',') + ')';
     }
 }
 /* *

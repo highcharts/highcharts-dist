@@ -251,7 +251,7 @@ class HTMLElement extends SVGElement {
                 textWidth,
                 this.textAlign
             ].join(','), parentPadding = (this.parentGroup?.padding * -1) || 0;
-            let baseline, hasBoxWidthChanged = false;
+            let baseline;
             // Update textWidth. Use the memoized textPxLength if possible, to
             // avoid the getTextPxLength function using elem.offsetWidth.
             // Calling offsetWidth affects rendering time as it forces layout
@@ -274,10 +274,8 @@ class HTMLElement extends SVGElement {
                         whiteSpace: whiteSpace || 'normal' // #3331
                     });
                     this.oldTextWidth = textWidth;
-                    hasBoxWidthChanged = true; // #8159
                 }
             }
-            this.hasBoxWidthChanged = hasBoxWidthChanged; // #8159
             // Do the calculations and DOM access only if properties changed
             if (currentTextTransform !== this.cTT) {
                 baseline = renderer.fontMetrics(element).b;

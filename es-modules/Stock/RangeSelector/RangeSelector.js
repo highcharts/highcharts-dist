@@ -29,6 +29,7 @@ const { addEvent, createElement, css, defined, destroyObjectProperties, diffObje
  * @function preferredInputType
  */
 function preferredInputType(format) {
+    const hasTimeKey = (char) => new RegExp(`%[[a-zA-Z]*${char}`).test(format);
     const ms = isString(format) ?
         format.indexOf('%L') !== -1 :
         // Implemented but not typed as of 2024
@@ -38,11 +39,10 @@ function preferredInputType(format) {
     }
     const date = isString(format) ?
         ['a', 'A', 'd', 'e', 'w', 'b', 'B', 'm', 'o', 'y', 'Y']
-            .some((char) => format.indexOf('%' + char) !== -1) :
+            .some(hasTimeKey) :
         format.dateStyle || format.day || format.month || format.year;
     const time = isString(format) ?
-        ['H', 'k', 'I', 'l', 'M', 'S']
-            .some((char) => format.indexOf('%' + char) !== -1) :
+        ['H', 'k', 'I', 'l', 'M', 'S'].some(hasTimeKey) :
         format.timeStyle || format.hour || format.minute || format.second;
     if (date && time) {
         return 'datetime-local';
@@ -89,6 +89,16 @@ class RangeSelector {
         this.isDirty = false;
         this.buttonOptions = RangeSelector.prototype.defaultButtons;
         this.initialButtonGroupWidth = 0;
+        this.maxButtonWidth = () => {
+            let buttonWidth = 0;
+            this.buttons.forEach((button) => {
+                const bBox = button.getBBox();
+                if (bBox.width > buttonWidth) {
+                    buttonWidth = bBox.width;
+                }
+            });
+            return buttonWidth;
+        };
         this.init(chart);
     }
     /* *
@@ -382,9 +392,15 @@ class RangeSelector {
         if (selectedIndex !== null) {
             buttonStates[selectedIndex] = 2;
             rangeSelector.setSelected(selectedIndex);
+            if (this.dropdown) {
+                this.dropdown.selectedIndex = selectedIndex + 1;
+            }
         }
         else {
             rangeSelector.setSelected();
+            if (this.dropdown) {
+                this.dropdown.selectedIndex = -1;
+            }
             if (dropdownLabel) {
                 dropdownLabel.setState(0);
                 dropdownLabel.attr({
@@ -1003,11 +1019,11 @@ class RangeSelector {
         const { buttonPosition, inputPosition, verticalAlign } = options;
         // Get the X offset required to avoid overlapping with the exporting
         // button. This is used both by the buttonGroup and the inputGroup.
-        const getXOffsetForExportButton = (group, position) => {
+        const getXOffsetForExportButton = (group, position, rightAligned) => {
             if (navButtonOptions &&
                 this.titleCollision(chart) &&
                 verticalAlign === 'top' &&
-                position.align === 'right' && ((position.y -
+                rightAligned && ((position.y -
                 group.getBBox().height - 12) <
                 ((navButtonOptions.y || 0) +
                     (navButtonOptions.height || 0) +
@@ -1036,7 +1052,8 @@ class RangeSelector {
                 }
                 plotLeft -= chart.spacing[3];
                 // Detect collision between button group and exporting
-                const xOffsetForExportButton = getXOffsetForExportButton(buttonGroup, buttonPosition);
+                const xOffsetForExportButton = getXOffsetForExportButton(buttonGroup, buttonPosition, buttonPosition.align === 'right' ||
+                    inputPosition.align === 'right');
                 this.alignButtonGroup(xOffsetForExportButton);
                 if (this.buttonGroup?.translateY) {
                     this.dropdownLabel
@@ -1048,7 +1065,8 @@ class RangeSelector {
             let xOffsetForExportButton = 0;
             if (options.inputEnabled && inputGroup) {
                 // Detect collision between the input group and exporting button
-                xOffsetForExportButton = getXOffsetForExportButton(inputGroup, inputPosition);
+                xOffsetForExportButton = getXOffsetForExportButton(inputGroup, inputPosition, buttonPosition.align === 'right' ||
+                    inputPosition.align === 'right');
                 if (inputPosition.align === 'left') {
                     translateX = plotLeft;
                 }
@@ -1201,16 +1219,35 @@ class RangeSelector {
      * @param {number} [width]
      */
     alignButtonGroup(xOffsetForExportButton, width) {
-        const { chart, options, buttonGroup } = this;
+        const { chart, options, buttonGroup, dropdown, dropdownLabel } = this;
         const { buttonPosition } = options;
         const plotLeft = chart.plotLeft - chart.spacing[3];
         let translateX = buttonPosition.x - chart.spacing[3];
+        let dropdownTranslateX = chart.plotLeft;
         if (buttonPosition.align === 'right') {
             translateX += xOffsetForExportButton - plotLeft; // #13014
+            if (this.hasVisibleDropdown) {
+                dropdownTranslateX = chart.chartWidth +
+                    xOffsetForExportButton -
+                    this.maxButtonWidth() - 20;
+            }
         }
         else if (buttonPosition.align === 'center') {
             translateX -= plotLeft / 2;
+            if (this.hasVisibleDropdown) {
+                dropdownTranslateX = chart.chartWidth / 2 -
+                    this.maxButtonWidth();
+            }
         }
+        if (dropdown) {
+            css(dropdown, {
+                left: dropdownTranslateX + 'px',
+                top: buttonGroup?.translateY + 'px'
+            });
+        }
+        dropdownLabel?.attr({
+            x: dropdownTranslateX
+        });
         if (buttonGroup) {
             // Align button group
             buttonGroup.align({
@@ -1264,36 +1301,6 @@ class RangeSelector {
     handleCollision(xOffsetForExportButton) {
         const { chart, buttonGroup, inputGroup } = this;
         const { buttonPosition, dropdown, inputPosition } = this.options;
-        const maxButtonWidth = () => {
-            let buttonWidth = 0;
-            this.buttons.forEach((button) => {
-                const bBox = button.getBBox();
-                if (bBox.width > buttonWidth) {
-                    buttonWidth = bBox.width;
-                }
-            });
-            return buttonWidth;
-        };
-        const groupsOverlap = (buttonGroupWidth) => {
-            if (inputGroup?.alignOptions && buttonGroup) {
-                const inputGroupX = (inputGroup.alignAttr.translateX +
-                    inputGroup.alignOptions.x -
-                    xOffsetForExportButton +
-                    // `getBBox` for detecing left margin
-                    inputGroup.getBBox().x +
-                    // 2px padding to not overlap input and label
-                    2);
-                const inputGroupWidth = inputGroup.alignOptions.width || 0;
-                const buttonGroupX = buttonGroup.alignAttr.translateX +
-                    buttonGroup.getBBox().x;
-                return (buttonGroupX + buttonGroupWidth > inputGroupX) &&
-                    (inputGroupX + inputGroupWidth > buttonGroupX) &&
-                    (buttonPosition.y <
-                        (inputPosition.y +
-                            inputGroup.getBBox().height));
-            }
-            return false;
-        };
         const moveInputsDown = () => {
             if (inputGroup && buttonGroup) {
                 inputGroup.attr({
@@ -1305,47 +1312,43 @@ class RangeSelector {
                 });
             }
         };
-        if (buttonGroup) {
-            if (dropdown === 'always') {
-                this.collapseButtons();
-                if (groupsOverlap(maxButtonWidth())) {
-                    // Move the inputs down if there is still a collision
-                    // after collapsing the buttons
-                    moveInputsDown();
-                }
-                return;
-            }
-            if (dropdown === 'never') {
-                this.expandButtons();
-            }
-        }
         // Detect collision
         if (inputGroup && buttonGroup) {
-            if ((inputPosition.align === buttonPosition.align) ||
-                // 20 is minimal spacing between elements
-                groupsOverlap(this.initialButtonGroupWidth + 20)) {
+            if (inputPosition.align === buttonPosition.align) {
+                moveInputsDown();
+                if (this.initialButtonGroupWidth >
+                    chart.plotWidth + xOffsetForExportButton - 20) {
+                    this.collapseButtons();
+                }
+                else {
+                    this.expandButtons();
+                }
+            }
+            else if (this.initialButtonGroupWidth -
+                xOffsetForExportButton +
+                inputGroup.getBBox().width >
+                chart.plotWidth) {
                 if (dropdown === 'responsive') {
                     this.collapseButtons();
-                    if (groupsOverlap(maxButtonWidth())) {
-                        moveInputsDown();
-                    }
                 }
                 else {
                     moveInputsDown();
                 }
             }
-            else if (dropdown === 'responsive') {
-                this.expandButtons();
-            }
-        }
-        else if (buttonGroup && dropdown === 'responsive') {
-            if (this.initialButtonGroupWidth > chart.plotWidth) {
-                this.collapseButtons();
-            }
             else {
                 this.expandButtons();
             }
         }
+        // Forced states
+        if (buttonGroup) {
+            if (dropdown === 'always') {
+                this.collapseButtons();
+            }
+            if (dropdown === 'never') {
+                this.expandButtons();
+            }
+        }
+        this.alignButtonGroup(xOffsetForExportButton);
     }
     /**
      * Collapse the buttons and show the select element.
@@ -1388,17 +1391,10 @@ class RangeSelector {
      * @function Highcharts.RangeSelector#showDropdown
      */
     showDropdown() {
-        const { buttonGroup, chart, dropdownLabel, dropdown } = this;
+        const { buttonGroup, dropdownLabel, dropdown } = this;
         if (buttonGroup && dropdown) {
-            const { translateX = 0, translateY = 0 } = buttonGroup, left = chart.plotLeft + translateX, top = translateY;
-            dropdownLabel
-                .attr({ x: left, y: top })
-                .show();
-            css(dropdown, {
-                left: left + 'px',
-                top: top + 'px',
-                visibility: 'inherit'
-            });
+            dropdownLabel.show();
+            css(dropdown, { visibility: 'inherit' });
             this.hasVisibleDropdown = true;
         }
     }

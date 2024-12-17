@@ -102,7 +102,7 @@ declare module "../highcharts" {
          * as given with the inside option. Can be one of `left`, `center` or
          * `right`.
          */
-        align?: (Highcharts.AlignValue|null);
+        align?: string;
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
          * labels. If set to `plotEdges`, the labels are aligned within the plot

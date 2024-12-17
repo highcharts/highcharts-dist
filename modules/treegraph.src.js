@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.0.2 (2024-12-04)
+ * @license Highcharts JS v12.1.0 (2024-12-17)
  * Treegraph chart series type
  * @module highcharts/modules/treegraph
  * @requires highcharts
@@ -1300,7 +1300,7 @@ class TreegraphLayout {
  *               alternateStartingDirection, borderRadius, breadcrumbs,
  *               interactByLeaf, layoutStartingDirection, levelIsConstant,
  *               lineWidth, negativeColor, nodes, sortIndex, zoneAxis,
- *               zones
+ *               zones, cluster
  *
  * @product      highcharts
  * @since 10.3.0
@@ -1442,6 +1442,7 @@ const TreegraphSeriesDefaults = {
     fillSpace: false,
     /**
      * @extends plotOptions.series.tooltip
+     * @excluding clusterFormat
      */
     tooltip: {
         /**
@@ -1502,6 +1503,7 @@ const TreegraphSeriesDefaults = {
         },
         enabled: true,
         linkFormatter: () => '',
+        padding: 5,
         style: {
             textOverflow: 'none'
         }

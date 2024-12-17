@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v12.0.2 (2024-12-04)
+ * @license Highstock JS v12.1.0 (2024-12-17)
  * @module highcharts/indicators/volume-by-price
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -684,6 +684,7 @@ VBPIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
         enabled: false
     },
     dataLabels: {
+        align: 'left',
         allowOverlap: true,
         enabled: true,
         format: 'P: {point.volumePos:.2f} | N: {point.volumeNeg:.2f}',

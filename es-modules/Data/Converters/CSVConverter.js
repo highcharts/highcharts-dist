@@ -432,6 +432,7 @@ CSVConverter.defaultOptions = {
     ...DataConverter.defaultOptions,
     lineDelimiter: '\n'
 };
+DataConverter.registerType('CSV', CSVConverter);
 /* *
  *
  *  Default Export

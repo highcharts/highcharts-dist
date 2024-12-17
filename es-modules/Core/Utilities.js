@@ -1094,7 +1094,7 @@ function getNestedProperty(path, parent) {
             }
             return thisProp ?? parent;
         }
-        const child = parent[pathElement];
+        const child = parent[pathElement.replace(/[\\'"]/g, '')];
         // Filter on the child
         if (!defined(child) ||
             typeof child === 'function' ||

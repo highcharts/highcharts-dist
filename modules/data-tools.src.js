@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.0.2 (2024-12-04)
+ * @license Highcharts JS v12.1.0 (2024-12-17)
  * @module highcharts/modules/data-tools
  * @requires highcharts
  *
@@ -2021,6 +2021,7 @@ class DataConnector {
  *  - Gøran Slettemark
  *  - Torstein Hønsi
  *  - Wojciech Chmiel
+ *  - Jomar Hønsi
  *
  * */
 
@@ -2571,9 +2572,39 @@ DataConverter.defaultOptions = {
      * */
     /* *
      *
+     *  Constants
+     *
+     * */
+    /**
+     * Registry as a record object with connector names and their class.
+     */
+    DataConverter.types = {};
+    /* *
+     *
      *  Functions
      *
      * */
+    /**
+     * Adds a converter class to the registry.
+     *
+     * @private
+     *
+     * @param {string} key
+     * Registry key of the converter class.
+     *
+     * @param {DataConverterTypes} DataConverterClass
+     * Connector class (aka class constructor) to register.
+     *
+     * @return {boolean}
+     * Returns true, if the registration was successful. False is returned, if
+     * their is already a converter registered with this key.
+     */
+    function registerType(key, DataConverterClass) {
+        return (!!key &&
+            !DataConverter.types[key] &&
+            !!(DataConverter.types[key] = DataConverterClass));
+    }
+    DataConverter.registerType = registerType;
     /**
      * Converts an array of columns to a table instance. Second dimension of the
      * array are the row cells.
@@ -6180,6 +6211,7 @@ CSVConverter.defaultOptions = {
     ...Converters_DataConverter.defaultOptions,
     lineDelimiter: '\n'
 };
+Converters_DataConverter.registerType('CSV', CSVConverter);
 /* *
  *
  *  Default Export
@@ -6491,6 +6523,7 @@ JSONConverter.defaultOptions = {
     data: [],
     orientation: 'rows'
 };
+Converters_DataConverter.registerType('JSON', JSONConverter);
 /* *
  *
  *  Default Export
@@ -6751,6 +6784,7 @@ class GoogleSheetsConverter extends Converters_DataConverter {
 GoogleSheetsConverter.defaultOptions = {
     ...Converters_DataConverter.defaultOptions
 };
+Converters_DataConverter.registerType('GoogleSheets', GoogleSheetsConverter);
 /* *
  *
  *  Default Export
@@ -7320,6 +7354,7 @@ HTMLTableConverter.defaultOptions = {
     useRowspanHeaders: true,
     useMultiLevelHeaders: true
 };
+Converters_DataConverter.registerType('HTMLTable', HTMLTableConverter);
 /* *
  *
  *  Default Export

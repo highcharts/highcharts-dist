@@ -28,6 +28,7 @@ class TreemapPoint extends ScatterPoint {
          *
          * */
         super(...arguments);
+        this.groupedPointsAmount = 0;
         this.shapeType = 'rect';
     }
     /* *
@@ -46,11 +47,15 @@ class TreemapPoint extends ScatterPoint {
             this.node.children.length) {
             className += ' highcharts-above-level';
         }
-        else if (!this.node.isLeaf &&
+        else if (!this.node.isGroup &&
+            !this.node.isLeaf &&
+            !series.nodeMap[series.rootNode].isGroup &&
             !pick(options.interactByLeaf, !options.allowTraversingTree)) {
             className += ' highcharts-internal-node-interactive';
         }
-        else if (!this.node.isLeaf) {
+        else if (!this.node.isGroup &&
+            !this.node.isLeaf &&
+            !series.nodeMap[series.rootNode].isGroup) {
             className += ' highcharts-internal-node';
         }
         return className;

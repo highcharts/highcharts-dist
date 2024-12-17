@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.0.2 (2024-12-04)
+ * @license Highcharts JS v12.1.0 (2024-12-17)
  * Organization chart series type
  * @module highcharts/modules/organization
  * @requires highcharts
@@ -443,7 +443,9 @@ const OrganizationSeriesDefaults = {
             /** @internal */
             fontWeight: 'normal',
             /** @internal */
-            fontSize: '0.9em'
+            fontSize: '0.9em',
+            /** @internal */
+            textAlign: 'left'
         },
         useHTML: true,
         linkTextPath: {

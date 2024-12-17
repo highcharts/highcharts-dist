@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.0.2 (2024-12-04)
+ * @license Highcharts JS v12.1.0 (2024-12-17)
  * @module highcharts/highcharts-more
  * @requires highcharts
  *
@@ -3775,6 +3775,30 @@ class BubbleSeries extends ScatterSeries {
                 return { zMin, zMax };
             }
         }
+    }
+    /**
+     * @private
+     * @function Highcharts.Series#searchKDTree
+     */
+    searchKDTree(point, compareX, e, suppliedPointEvaluator = BubbleSeries_noop, suppliedBSideCheckEvaluator = BubbleSeries_noop) {
+        suppliedPointEvaluator = (p1, p2, comparisonProp) => {
+            const p1Dist = p1[comparisonProp] || 0;
+            const p2Dist = p2[comparisonProp] || 0;
+            let ret, flip = false;
+            if (p1Dist < 0 && p2Dist < 0) {
+                ret = (p1Dist - (p1.marker?.radius || 0) >=
+                    p2Dist - (p2.marker?.radius || 0)) ?
+                    p1 :
+                    p2;
+                flip = true;
+            }
+            else {
+                ret = p1Dist < p2Dist ? p1 : p2;
+            }
+            return [ret, flip];
+        };
+        suppliedBSideCheckEvaluator = (a, b, flip) => !flip && (a > b) || (a < b);
+        return super.searchKDTree(point, compareX, e, suppliedPointEvaluator, suppliedBSideCheckEvaluator);
     }
 }
 /* *

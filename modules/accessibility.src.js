@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.0.2 (2024-12-04)
+ * @license Highcharts JS v12.1.0 (2024-12-17)
  * @module highcharts/modules/accessibility
  * @requires highcharts
  *
@@ -11939,6 +11939,8 @@ const Options = {
             /**
              * When a series contains more points than this, we no longer expose
              * information about individual points to screen readers.
+             * Note that the keyboard navigation remains functional, but points
+             * won't have accessible descriptions unless handled separately.
              *
              * Set to `false` to disable.
              *

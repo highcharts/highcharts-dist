@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.0.2 (2024-12-04)
+ * @license Highcharts JS v12.1.0 (2024-12-17)
  * @module highcharts/highcharts
  *
  * (c) 2009-2024 Torstein Honsi
@@ -74,7 +74,7 @@ var Globals;
      *  Constants
      *
      * */
-    Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '12.0.2', Globals.win = (typeof window !== 'undefined' ?
+    Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '12.1.0', Globals.win = (typeof window !== 'undefined' ?
         window :
         {}), // eslint-disable-line node/no-unsupported-features/es-builtins
     Globals.doc = Globals.win.document, Globals.svg = (Globals.doc &&
@@ -1275,7 +1275,7 @@ function getNestedProperty(path, parent) {
             }
             return thisProp ?? parent;
         }
-        const child = parent[pathElement];
+        const child = parent[pathElement.replace(/[\\'"]/g, '')];
         // Filter on the child
         if (!defined(child) ||
             typeof child === 'function' ||
@@ -3582,7 +3582,9 @@ class Time {
          *  Properties
          *
          * */
-        this.options = {};
+        this.options = {
+            timezone: 'UTC'
+        };
         this.variableTimezone = false;
         this.Date = Time_win.Date;
         this.update(options);
@@ -3604,12 +3606,13 @@ class Time {
      *
      */
     update(options = {}) {
-        let timezone = options.timezone ?? 'UTC';
         this.dTLCache = {};
         this.options = options = Time_merge(true, this.options, options);
         const { timezoneOffset, useUTC } = options;
         // Allow using a different Date class
         this.Date = options.Date || Time_win.Date || Date;
+        // Assign the time zone. Handle the legacy, deprecated `useUTC` option.
+        let timezone = options.timezone;
         if (Time_defined(useUTC)) {
             timezone = useUTC ? 'UTC' : void 0;
         }
@@ -4052,7 +4055,7 @@ class Time {
         }
         else if (Time_isObject(format)) {
             const tzHours = (this.getTimezoneOffset(timestamp) || 0) /
-                (60000 * 60), timeZone = this.options.timezone || ('Etc/GMT' + (tzHours >= 0 ? '+' : '') + tzHours), { prefix = '', suffix = '' } = format;
+                (60000 * 60), timeZone = this.timezone || ('Etc/GMT' + (tzHours >= 0 ? '+' : '') + tzHours), { prefix = '', suffix = '' } = format;
             format = prefix + this.dateTimeFormat(Time_extend({ timeZone }, format), timestamp) + suffix;
         }
         // Optionally sentence-case the string and return
@@ -7460,18 +7463,11 @@ class Color {
         }
         // Check for has alpha, because rgba colors perform worse due to
         // lack of support in WebKit.
-        const hasAlpha = (toRgba[3] !== 1 || fromRgba[3] !== 1);
-        return (hasAlpha ? 'rgba(' : 'rgb(') +
-            Math.round(toRgba[0] + (fromRgba[0] - toRgba[0]) * (1 - pos)) +
-            ',' +
-            Math.round(toRgba[1] + (fromRgba[1] - toRgba[1]) * (1 - pos)) +
-            ',' +
-            Math.round(toRgba[2] + (fromRgba[2] - toRgba[2]) * (1 - pos)) +
-            (hasAlpha ?
-                (',' +
-                    (toRgba[3] + (fromRgba[3] - toRgba[3]) * (1 - pos))) :
-                '') +
-            ')';
+        const hasAlpha = (toRgba[3] !== 1 || fromRgba[3] !== 1), channel = (to, i) => to + (fromRgba[i] - to) * (1 - pos), rgba = toRgba.slice(0, 3).map(channel).map(Math.round);
+        if (hasAlpha) {
+            rgba.push(channel(toRgba[3], 3));
+        }
+        return (hasAlpha ? 'rgba(' : 'rgb(') + rgba.join(',') + ')';
     }
 }
 /* *
@@ -8840,7 +8836,7 @@ const { defaultOptions: Templating_defaultOptions, defaultTime: Templating_defau
 
 const { doc: Templating_doc } = Core_Globals;
 
-const { extend: Templating_extend, getNestedProperty: Templating_getNestedProperty, isArray: Templating_isArray, isNumber: Templating_isNumber, isObject: Templating_isObject, pick: Templating_pick, ucfirst: Templating_ucfirst } = Core_Utilities;
+const { extend: Templating_extend, getNestedProperty: Templating_getNestedProperty, isArray: Templating_isArray, isNumber: Templating_isNumber, isObject: Templating_isObject, isString: Templating_isString, pick: Templating_pick, ucfirst: Templating_ucfirst } = Core_Utilities;
 const helpers = {
     // Built-in helpers
     add: (a, b) => a + b,
@@ -8875,6 +8871,8 @@ const numberFormatCache = {};
  *  Functions
  *
  * */
+// Internal convenience function
+const isQuotedString = (str) => /^["'].+["']$/.test(str);
 /**
  * Formats a JavaScript date timestamp (milliseconds since Jan 1st 1970) into a
  * human readable date string. The format is a subset of the formats for PHP's
@@ -8952,11 +8950,11 @@ function dateFormat(format, timestamp, upperCaseFirst) {
  *         The formatted string.
  */
 function format(str = '', ctx, chart) {
-    const regex = /\{([\p{L}\d:\.,;\-\/<>\[\]%_@"'’= #\(\)]+)\}/gu, 
+    const regex = /\{([\p{L}\d:\.,;\-\/<>\[\]%_@+"'’= #\(\)]+)\}/gu, 
     // The sub expression regex is the same as the top expression regex,
     // but except parens and block helpers (#), and surrounded by parens
     // instead of curly brackets.
-    subRegex = /\(([\p{L}\d:\.,;\-\/<>\[\]%_@"'= ]+)\)/gu, matches = [], floatRegex = /f$/, decRegex = /\.(\d)/, lang = chart?.options.lang || Templating_defaultOptions.lang, time = chart && chart.time || Templating_defaultTime, numberFormatter = chart && chart.numberFormatter || numberFormat;
+    subRegex = /\(([\p{L}\d:\.,;\-\/<>\[\]%_@+"'= ]+)\)/gu, matches = [], floatRegex = /f$/, decRegex = /\.(\d)/, lang = chart?.options.lang || Templating_defaultOptions.lang, time = chart && chart.time || Templating_defaultTime, numberFormatter = chart && chart.numberFormatter || numberFormat;
     /*
      * Get a literal or variable value inside a template expression. May be
      * extended with other types like string or null if needed, but keep it
@@ -8974,7 +8972,7 @@ function format(str = '', ctx, chart) {
         if ((n = Number(key)).toString() === key) {
             return n;
         }
-        if (/^["'].+["']$/.test(key)) {
+        if (isQuotedString(key)) {
             return key.slice(1, -1);
         }
         // Variables and constants
@@ -9087,7 +9085,8 @@ function format(str = '', ctx, chart) {
             // Simple variable replacement
         }
         else {
-            const valueAndFormat = expression.split(':');
+            const valueAndFormat = isQuotedString(expression) ?
+                [expression] : expression.split(':');
             replacement = resolveProperty(valueAndFormat.shift() || '');
             // Format the replacement
             if (valueAndFormat.length && typeof replacement === 'number') {
@@ -9100,12 +9099,13 @@ function format(str = '', ctx, chart) {
                 }
                 else {
                     replacement = time.dateFormat(segment, replacement);
-                    // Use string literal in order to be preserved in the outer
-                    // expression
-                    if (hasSub) {
-                        replacement = `"${replacement}"`;
-                    }
                 }
+            }
+            // Use string literal in order to be preserved in the outer
+            // expression
+            subRegex.lastIndex = 0;
+            if (subRegex.test(match.find) && Templating_isString(replacement)) {
+                replacement = `"${replacement}"`;
             }
         }
         str = str.replace(match.find, Templating_pick(replacement, ''));
@@ -9691,7 +9691,9 @@ class SVGElement {
      * @return {Highcharts.SVGElement} Returns the SVGElement for chaining.
      */
     align(alignOptions, alignByTranslate, alignTo, redraw = true) {
-        const attribs = {}, renderer = this.renderer, alignedObjects = renderer.alignedObjects, initialAlignment = Boolean(alignOptions);
+        const attribs = {
+            'text-align': alignOptions?.align
+        }, renderer = this.renderer, alignedObjects = renderer.alignedObjects, initialAlignment = Boolean(alignOptions);
         // First call on instanciate
         if (alignOptions) {
             this.alignOptions = alignOptions;
@@ -11431,6 +11433,7 @@ class SVGLabel extends SVG_SVGElement {
      * */
     alignSetter(value) {
         const alignFactor = SVGLabel_getAlignFactor(value);
+        this.textAlign = value;
         if (alignFactor !== this.alignFactor) {
             this.alignFactor = alignFactor;
             // Bounding box exists, means we're dynamically changing
@@ -11606,6 +11609,7 @@ class SVGLabel extends SVG_SVGElement {
     }
     'text-alignSetter'(value) {
         this.textAlign = value;
+        this.updateTextPadding();
     }
     textSetter(text) {
         if (typeof text !== 'undefined') {
@@ -11675,24 +11679,19 @@ class SVGLabel extends SVG_SVGElement {
      * is changed.
      */
     updateTextPadding() {
-        const text = this.text;
+        const text = this.text, textAlign = text.styles.textAlign || this.textAlign;
         if (!text.textPath) {
             this.updateBoxSize();
             // Determine y based on the baseline
             const textY = this.baseline ? 0 : this.baselineOffset, textX = (this.paddingLeft ?? this.padding) +
                 // Compensate for alignment
-                ((SVGLabel_defined(this.widthSetting) && this.bBox) ?
-                    SVGLabel_getAlignFactor(this.textAlign) *
-                        (this.widthSetting - this.bBox.width) :
-                    0);
+                SVGLabel_getAlignFactor(textAlign) * (this.widthSetting ?? this.bBox.width);
             // Update if anything changed
             if (textX !== text.x || textY !== text.y) {
-                text.attr('x', textX);
-                // #8159 - prevent misplaced data labels in treemap
-                // (useHTML: true)
-                if (text.hasBoxWidthChanged) {
-                    this.bBox = text.getBBox(true);
-                }
+                text.attr({
+                    align: textAlign,
+                    x: textX
+                });
                 if (typeof textY !== 'undefined') {
                     text.attr('y', textY);
                 }
@@ -12637,7 +12636,7 @@ class SVGRenderer {
         this.url = this.getReferenceURL();
         // Add description
         const desc = this.createElement('desc').add();
-        desc.element.appendChild(SVGRenderer_doc.createTextNode('Created with Highcharts 12.0.2'));
+        desc.element.appendChild(SVGRenderer_doc.createTextNode('Created with Highcharts 12.1.0'));
         this.defs = this.createElement('defs').add();
         this.allowHTML = allowHTML;
         this.forExport = forExport;
@@ -14604,7 +14603,7 @@ class HTMLElement extends SVG_SVGElement {
                 textWidth,
                 this.textAlign
             ].join(','), parentPadding = (this.parentGroup?.padding * -1) || 0;
-            let baseline, hasBoxWidthChanged = false;
+            let baseline;
             // Update textWidth. Use the memoized textPxLength if possible, to
             // avoid the getTextPxLength function using elem.offsetWidth.
             // Calling offsetWidth affects rendering time as it forces layout
@@ -14627,10 +14626,8 @@ class HTMLElement extends SVG_SVGElement {
                         whiteSpace: whiteSpace || 'normal' // #3331
                     });
                     this.oldTextWidth = textWidth;
-                    hasBoxWidthChanged = true; // #8159
                 }
             }
-            this.hasBoxWidthChanged = hasBoxWidthChanged; // #8159
             // Do the calculations and DOM access only if properties changed
             if (currentTextTransform !== this.cTT) {
                 baseline = renderer.fontMetrics(element).b;
@@ -33086,9 +33083,14 @@ class Series {
      * @private
      * @function Highcharts.Series#searchKDTree
      */
-    searchKDTree(point, compareX, e) {
+    searchKDTree(point, compareX, e, suppliedPointEvaluator, suppliedBSideCheckEvaluator) {
         const series = this, [kdX, kdY] = this.kdAxisArray, kdComparer = compareX ? 'distX' : 'dist', kdDimensions = (series.options.findNearestPointBy || '')
-            .indexOf('y') > -1 ? 2 : 1, useRadius = !!series.isBubble;
+            .indexOf('y') > -1 ? 2 : 1, useRadius = !!series.isBubble, pointEvaluator = suppliedPointEvaluator || ((p1, p2, comparisonProp) => [
+            (p1[comparisonProp] || 0) < (p2[comparisonProp] || 0) ?
+                p1 :
+                p2,
+            false
+        ]), bSideCheckEvaluator = suppliedBSideCheckEvaluator || ((a, b) => a < b);
         /**
          * Set the one and two dimensional distance on the point object.
          * @private
@@ -33103,28 +33105,21 @@ class Series {
          */
         function doSearch(search, tree, depth, dimensions) {
             const point = tree.point, axis = series.kdAxisArray[depth % dimensions];
-            let nPoint1, nPoint2, ret = point;
+            let ret = point, flip = false;
             setDistance(search, point);
             // Pick side based on distance to splitting point
             const tdist = (search[axis] || 0) - (point[axis] || 0) +
                 (useRadius ? (point.marker?.radius || 0) : 0), sideA = tdist < 0 ? 'left' : 'right', sideB = tdist < 0 ? 'right' : 'left';
             // End of tree
             if (tree[sideA]) {
-                nPoint1 = doSearch(search, tree[sideA], depth + 1, dimensions);
-                ret = (nPoint1[kdComparer] <
-                    ret[kdComparer] ?
-                    nPoint1 :
-                    point);
+                [ret, flip] = pointEvaluator(point, doSearch(search, tree[sideA], depth + 1, dimensions), kdComparer);
             }
             if (tree[sideB]) {
+                const sqrtTDist = Math.sqrt(tdist * tdist), retDist = ret[kdComparer];
                 // Compare distance to current best to splitting point to decide
-                // whether to check side B or not
-                if (Math.sqrt(tdist * tdist) < ret[kdComparer]) {
-                    nPoint2 = doSearch(search, tree[sideB], depth + 1, dimensions);
-                    ret = (nPoint2[kdComparer] <
-                        ret[kdComparer] ?
-                        nPoint2 :
-                        ret);
+                // whether to check side B or no
+                if (bSideCheckEvaluator(sqrtTDist, retDist, flip)) {
+                    ret = pointEvaluator(ret, doSearch(search, tree[sideB], depth + 1, dimensions), kdComparer)[0];
                 }
             }
             return ret;
@@ -42632,7 +42627,9 @@ var DataLabel;
                 (unrotatedbBox.width - bBox.width);
             dataLabel.alignAttr.y += DataLabel_getAlignFactor(options.verticalAlign) *
                 (unrotatedbBox.height - bBox.height);
-            dataLabel[dataLabel.placed ? 'animate' : 'attr']({
+            dataLabel.attr({
+                'text-align': dataLabel.alignAttr['text-align'] || 'center'
+            })[dataLabel.placed ? 'animate' : 'attr']({
                 x: dataLabel.alignAttr.x +
                     (bBox.width - unrotatedbBox.width) / 2,
                 y: dataLabel.alignAttr.y +
@@ -51613,8 +51610,11 @@ const rangeSelector = {
          * The alignment of the input box. Allowed properties are `left`,
          * `center`, `right`.
          *
-         * @sample {highstock} stock/rangeselector/input-button-position/
-         *         Alignment
+         * @sample {highstock} stock/rangeselector/input-button-opposite-alignment/
+         *         Opposite alignment
+         *
+         * @sample {highstock} stock/rangeselector/input-button-same-alignment/
+         *         Same alignment for buttons and input
          *
          * @type  {Highcharts.AlignValue}
          * @since 6.0.0
@@ -51654,8 +51654,11 @@ const rangeSelector = {
          * The alignment of the input box. Allowed properties are `left`,
          * `center`, `right`.
          *
-         * @sample {highstock} stock/rangeselector/input-button-position/
-         *         Alignment
+         * @sample {highstock} stock/rangeselector/input-button-opposite-alignment/
+         *         Opposite alignment
+         *
+         * @sample {highstock} stock/rangeselector/input-button-same-alignment/
+         *         Same alignment for buttons and input
          *
          * @type  {Highcharts.AlignValue}
          * @since 6.0.0
@@ -53047,6 +53050,7 @@ const { addEvent: RangeSelector_addEvent, createElement: RangeSelector_createEle
  * @function preferredInputType
  */
 function preferredInputType(format) {
+    const hasTimeKey = (char) => new RegExp(`%[[a-zA-Z]*${char}`).test(format);
     const ms = RangeSelector_isString(format) ?
         format.indexOf('%L') !== -1 :
         // Implemented but not typed as of 2024
@@ -53056,11 +53060,10 @@ function preferredInputType(format) {
     }
     const date = RangeSelector_isString(format) ?
         ['a', 'A', 'd', 'e', 'w', 'b', 'B', 'm', 'o', 'y', 'Y']
-            .some((char) => format.indexOf('%' + char) !== -1) :
+            .some(hasTimeKey) :
         format.dateStyle || format.day || format.month || format.year;
     const time = RangeSelector_isString(format) ?
-        ['H', 'k', 'I', 'l', 'M', 'S']
-            .some((char) => format.indexOf('%' + char) !== -1) :
+        ['H', 'k', 'I', 'l', 'M', 'S'].some(hasTimeKey) :
         format.timeStyle || format.hour || format.minute || format.second;
     if (date && time) {
         return 'datetime-local';
@@ -53107,6 +53110,16 @@ class RangeSelector {
         this.isDirty = false;
         this.buttonOptions = RangeSelector.prototype.defaultButtons;
         this.initialButtonGroupWidth = 0;
+        this.maxButtonWidth = () => {
+            let buttonWidth = 0;
+            this.buttons.forEach((button) => {
+                const bBox = button.getBBox();
+                if (bBox.width > buttonWidth) {
+                    buttonWidth = bBox.width;
+                }
+            });
+            return buttonWidth;
+        };
         this.init(chart);
     }
     /* *
@@ -53400,9 +53413,15 @@ class RangeSelector {
         if (selectedIndex !== null) {
             buttonStates[selectedIndex] = 2;
             rangeSelector.setSelected(selectedIndex);
+            if (this.dropdown) {
+                this.dropdown.selectedIndex = selectedIndex + 1;
+            }
         }
         else {
             rangeSelector.setSelected();
+            if (this.dropdown) {
+                this.dropdown.selectedIndex = -1;
+            }
             if (dropdownLabel) {
                 dropdownLabel.setState(0);
                 dropdownLabel.attr({
@@ -54021,11 +54040,11 @@ class RangeSelector {
         const { buttonPosition, inputPosition, verticalAlign } = options;
         // Get the X offset required to avoid overlapping with the exporting
         // button. This is used both by the buttonGroup and the inputGroup.
-        const getXOffsetForExportButton = (group, position) => {
+        const getXOffsetForExportButton = (group, position, rightAligned) => {
             if (navButtonOptions &&
                 this.titleCollision(chart) &&
                 verticalAlign === 'top' &&
-                position.align === 'right' && ((position.y -
+                rightAligned && ((position.y -
                 group.getBBox().height - 12) <
                 ((navButtonOptions.y || 0) +
                     (navButtonOptions.height || 0) +
@@ -54054,7 +54073,8 @@ class RangeSelector {
                 }
                 plotLeft -= chart.spacing[3];
                 // Detect collision between button group and exporting
-                const xOffsetForExportButton = getXOffsetForExportButton(buttonGroup, buttonPosition);
+                const xOffsetForExportButton = getXOffsetForExportButton(buttonGroup, buttonPosition, buttonPosition.align === 'right' ||
+                    inputPosition.align === 'right');
                 this.alignButtonGroup(xOffsetForExportButton);
                 if (this.buttonGroup?.translateY) {
                     this.dropdownLabel
@@ -54066,7 +54086,8 @@ class RangeSelector {
             let xOffsetForExportButton = 0;
             if (options.inputEnabled && inputGroup) {
                 // Detect collision between the input group and exporting button
-                xOffsetForExportButton = getXOffsetForExportButton(inputGroup, inputPosition);
+                xOffsetForExportButton = getXOffsetForExportButton(inputGroup, inputPosition, buttonPosition.align === 'right' ||
+                    inputPosition.align === 'right');
                 if (inputPosition.align === 'left') {
                     translateX = plotLeft;
                 }
@@ -54219,16 +54240,35 @@ class RangeSelector {
      * @param {number} [width]
      */
     alignButtonGroup(xOffsetForExportButton, width) {
-        const { chart, options, buttonGroup } = this;
+        const { chart, options, buttonGroup, dropdown, dropdownLabel } = this;
         const { buttonPosition } = options;
         const plotLeft = chart.plotLeft - chart.spacing[3];
         let translateX = buttonPosition.x - chart.spacing[3];
+        let dropdownTranslateX = chart.plotLeft;
         if (buttonPosition.align === 'right') {
             translateX += xOffsetForExportButton - plotLeft; // #13014
+            if (this.hasVisibleDropdown) {
+                dropdownTranslateX = chart.chartWidth +
+                    xOffsetForExportButton -
+                    this.maxButtonWidth() - 20;
+            }
         }
         else if (buttonPosition.align === 'center') {
             translateX -= plotLeft / 2;
+            if (this.hasVisibleDropdown) {
+                dropdownTranslateX = chart.chartWidth / 2 -
+                    this.maxButtonWidth();
+            }
         }
+        if (dropdown) {
+            RangeSelector_css(dropdown, {
+                left: dropdownTranslateX + 'px',
+                top: buttonGroup?.translateY + 'px'
+            });
+        }
+        dropdownLabel?.attr({
+            x: dropdownTranslateX
+        });
         if (buttonGroup) {
             // Align button group
             buttonGroup.align({
@@ -54282,36 +54322,6 @@ class RangeSelector {
     handleCollision(xOffsetForExportButton) {
         const { chart, buttonGroup, inputGroup } = this;
         const { buttonPosition, dropdown, inputPosition } = this.options;
-        const maxButtonWidth = () => {
-            let buttonWidth = 0;
-            this.buttons.forEach((button) => {
-                const bBox = button.getBBox();
-                if (bBox.width > buttonWidth) {
-                    buttonWidth = bBox.width;
-                }
-            });
-            return buttonWidth;
-        };
-        const groupsOverlap = (buttonGroupWidth) => {
-            if (inputGroup?.alignOptions && buttonGroup) {
-                const inputGroupX = (inputGroup.alignAttr.translateX +
-                    inputGroup.alignOptions.x -
-                    xOffsetForExportButton +
-                    // `getBBox` for detecing left margin
-                    inputGroup.getBBox().x +
-                    // 2px padding to not overlap input and label
-                    2);
-                const inputGroupWidth = inputGroup.alignOptions.width || 0;
-                const buttonGroupX = buttonGroup.alignAttr.translateX +
-                    buttonGroup.getBBox().x;
-                return (buttonGroupX + buttonGroupWidth > inputGroupX) &&
-                    (inputGroupX + inputGroupWidth > buttonGroupX) &&
-                    (buttonPosition.y <
-                        (inputPosition.y +
-                            inputGroup.getBBox().height));
-            }
-            return false;
-        };
         const moveInputsDown = () => {
             if (inputGroup && buttonGroup) {
                 inputGroup.attr({
@@ -54323,47 +54333,43 @@ class RangeSelector {
                 });
             }
         };
-        if (buttonGroup) {
-            if (dropdown === 'always') {
-                this.collapseButtons();
-                if (groupsOverlap(maxButtonWidth())) {
-                    // Move the inputs down if there is still a collision
-                    // after collapsing the buttons
-                    moveInputsDown();
-                }
-                return;
-            }
-            if (dropdown === 'never') {
-                this.expandButtons();
-            }
-        }
         // Detect collision
         if (inputGroup && buttonGroup) {
-            if ((inputPosition.align === buttonPosition.align) ||
-                // 20 is minimal spacing between elements
-                groupsOverlap(this.initialButtonGroupWidth + 20)) {
+            if (inputPosition.align === buttonPosition.align) {
+                moveInputsDown();
+                if (this.initialButtonGroupWidth >
+                    chart.plotWidth + xOffsetForExportButton - 20) {
+                    this.collapseButtons();
+                }
+                else {
+                    this.expandButtons();
+                }
+            }
+            else if (this.initialButtonGroupWidth -
+                xOffsetForExportButton +
+                inputGroup.getBBox().width >
+                chart.plotWidth) {
                 if (dropdown === 'responsive') {
                     this.collapseButtons();
-                    if (groupsOverlap(maxButtonWidth())) {
-                        moveInputsDown();
-                    }
                 }
                 else {
                     moveInputsDown();
                 }
             }
-            else if (dropdown === 'responsive') {
-                this.expandButtons();
-            }
-        }
-        else if (buttonGroup && dropdown === 'responsive') {
-            if (this.initialButtonGroupWidth > chart.plotWidth) {
-                this.collapseButtons();
-            }
             else {
                 this.expandButtons();
             }
         }
+        // Forced states
+        if (buttonGroup) {
+            if (dropdown === 'always') {
+                this.collapseButtons();
+            }
+            if (dropdown === 'never') {
+                this.expandButtons();
+            }
+        }
+        this.alignButtonGroup(xOffsetForExportButton);
     }
     /**
      * Collapse the buttons and show the select element.
@@ -54406,17 +54412,10 @@ class RangeSelector {
      * @function Highcharts.RangeSelector#showDropdown
      */
     showDropdown() {
-        const { buttonGroup, chart, dropdownLabel, dropdown } = this;
+        const { buttonGroup, dropdownLabel, dropdown } = this;
         if (buttonGroup && dropdown) {
-            const { translateX = 0, translateY = 0 } = buttonGroup, left = chart.plotLeft + translateX, top = translateY;
-            dropdownLabel
-                .attr({ x: left, y: top })
-                .show();
-            RangeSelector_css(dropdown, {
-                left: left + 'px',
-                top: top + 'px',
-                visibility: 'inherit'
-            });
+            dropdownLabel.show();
+            RangeSelector_css(dropdown, { visibility: 'inherit' });
             this.hasVisibleDropdown = true;
         }
     }
@@ -56395,7 +56394,7 @@ Pathfinder.prototype.algorithms = PathfinderAlgorithms;
 
 ;// ./code/es-modules/masters/modules/pathfinder.src.js
 /**
- * @license Highcharts Gantt JS v12.0.2 (2024-12-04)
+ * @license Highcharts Gantt JS v12.1.0 (2024-12-17)
  * @module highcharts/modules/pathfinder
  * @requires highcharts
  *
@@ -56523,7 +56522,7 @@ const StaticScale = {
 
 ;// ./code/es-modules/masters/modules/static-scale.src.js
 /**
- * @license Highcharts Gantt JS v12.0.2 (2024-12-04)
+ * @license Highcharts Gantt JS v12.1.0 (2024-12-17)
  * @module highcharts/modules/static-scale
  * @requires highcharts
  *
@@ -57334,7 +57333,7 @@ Series_SeriesRegistry.registerSeriesType('xrange', XRangeSeries);
 
 ;// ./code/es-modules/masters/modules/xrange.src.js
 /**
- * @license Highcharts JS v12.0.2 (2024-12-04)
+ * @license Highcharts JS v12.1.0 (2024-12-17)
  * @module highcharts/modules/xrange
  * @requires highcharts
  *
@@ -60882,7 +60881,7 @@ Series_SeriesRegistry.registerSeriesType('gantt', GanttSeries);
 
 ;// ./code/es-modules/masters/modules/gantt.src.js
 /**
- * @license Highcharts Gantt JS v12.0.2 (2024-12-04)
+ * @license Highcharts Gantt JS v12.1.0 (2024-12-17)
  * @module highcharts/modules/gantt
  * @requires highcharts
  *
@@ -60926,7 +60925,7 @@ gantt_src_G.Scrollbar.compose(gantt_src_G.Axis);
 
 ;// ./code/es-modules/masters/highcharts-gantt.src.js
 /**
- * @license Highcharts Gantt JS v12.0.2 (2024-12-04)
+ * @license Highcharts Gantt JS v12.1.0 (2024-12-17)
  * @module highcharts/highcharts-gantt
  *
  * (c) 2017-2024 Lars Cabrera, Torstein Honsi, Jon Arild Nygard & Oystein Moseng

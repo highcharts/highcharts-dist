@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.0.2 (2024-12-04)
+ * @license Highcharts JS v12.1.0 (2024-12-17)
  * @module highcharts/modules/timeline
  * @requires highcharts
  *
@@ -419,7 +419,9 @@ const TimelineSeriesDefaults = {
             /** @internal */
             fontWeight: 'normal',
             /** @internal */
-            fontSize: '0.8em'
+            fontSize: '0.8em',
+            /** @internal */
+            textAlign: 'left'
         },
         /**
          * Shadow options for the data label.

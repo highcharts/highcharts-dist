@@ -79,7 +79,9 @@ const SeriesLabelDefaults = {
      * small areas get a smaller font size. The default applies this
      * effect to area-like series but not line-like series.
      *
-     * @type {number|null}
+     * @sample highcharts/demo/streamgraph
+     *         Min and max font size on a streamgraph
+     * @type   {number|null}
      */
     minFontSize: null,
     /**
@@ -87,7 +89,10 @@ const SeriesLabelDefaults = {
      * small areas get a smaller font size. The default applies this
      * effect to area-like series but not line-like series.
      *
-     * @type {number|null}
+     * @sample highcharts/demo/streamgraph
+     *         Min and max font size on a streamgraph
+     *
+     * @type   {number|null}
      */
     maxFontSize: null,
     /**

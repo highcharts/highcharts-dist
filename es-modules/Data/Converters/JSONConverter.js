@@ -173,6 +173,7 @@ JSONConverter.defaultOptions = {
     data: [],
     orientation: 'rows'
 };
+DataConverter.registerType('JSON', JSONConverter);
 /* *
  *
  *  Default Export

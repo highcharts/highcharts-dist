@@ -352,6 +352,7 @@ HTMLTableConverter.defaultOptions = {
     useRowspanHeaders: true,
     useMultiLevelHeaders: true
 };
+DataConverter.registerType('HTMLTable', HTMLTableConverter);
 /* *
  *
  *  Default Export

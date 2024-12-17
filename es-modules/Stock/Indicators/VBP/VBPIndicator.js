@@ -535,6 +535,7 @@ VBPIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
         enabled: false
     },
     dataLabels: {
+        align: 'left',
         allowOverlap: true,
         enabled: true,
         format: 'P: {point.volumePos:.2f} | N: {point.volumeNeg:.2f}',

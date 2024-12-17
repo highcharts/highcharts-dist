@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.0.2 (2024-12-04)
+ * @license Highcharts JS v12.1.0 (2024-12-17)
  * @module highcharts/modules/series-label
  * @requires highcharts
  *
@@ -187,7 +187,9 @@ const SeriesLabelDefaults = {
      * small areas get a smaller font size. The default applies this
      * effect to area-like series but not line-like series.
      *
-     * @type {number|null}
+     * @sample highcharts/demo/streamgraph
+     *         Min and max font size on a streamgraph
+     * @type   {number|null}
      */
     minFontSize: null,
     /**
@@ -195,7 +197,10 @@ const SeriesLabelDefaults = {
      * small areas get a smaller font size. The default applies this
      * effect to area-like series but not line-like series.
      *
-     * @type {number|null}
+     * @sample highcharts/demo/streamgraph
+     *         Min and max font size on a streamgraph
+     *
+     * @type   {number|null}
      */
     maxFontSize: null,
     /**

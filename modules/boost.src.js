@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.0.2 (2024-12-04)
+ * @license Highcharts JS v12.1.0 (2024-12-17)
  * @module highcharts/modules/boost
  * @requires highcharts
  *
@@ -2895,10 +2895,17 @@ function getPoint(series, boostPoint) {
     if (boostPoint instanceof PointClass) {
         return boostPoint;
     }
-    const xData = ((series.getColumn('x').length ? series.getColumn('x') : void 0) ||
+    const isScatter = series.is('scatter'), xData = ((isScatter && series.getColumn('x', true).length ?
+        series.getColumn('x', true) :
+        void 0) ||
+        (series.getColumn('x').length ? series.getColumn('x') : void 0) ||
         seriesOptions.xData ||
         series.getColumn('x', true) ||
-        false), point = new PointClass(series, (isArray(series.options.data) ? series.options.data : [])[boostPoint.i], xData ? xData[boostPoint.i] : void 0);
+        false), yData = (series.getColumn('y', true) ||
+        seriesOptions.yData ||
+        false), point = new PointClass(series, (isScatter && xData && yData) ?
+        [xData[boostPoint.i], yData[boostPoint.i]] :
+        (isArray(series.options.data) ? series.options.data : [])[boostPoint.i], xData ? xData[boostPoint.i] : void 0);
     point.category = BoostSeries_pick(xAxis.categories ?
         xAxis.categories[point.x] :
         point.x, // @todo simplify
@@ -2917,10 +2924,6 @@ function getPoint(series, boostPoint) {
  * @private
  */
 function scatterProcessData(force) {
-    var _a,
-        _b,
-        _c,
-        _d;
     const series = this, { options, xAxis, yAxis } = series;
     // Process only on changes
     if (!series.isDirty &&
@@ -2987,12 +2990,12 @@ function scatterProcessData(force) {
         }
     }
     if (xRangeNeeded) {
-        (_a = xAxis.options).max ?? (_a.max = xDataMax);
-        (_b = xAxis.options).min ?? (_b.min = xDataMin);
+        xAxis.dataMax = Math.max(xDataMax, xAxis.dataMax || 0);
+        xAxis.dataMin = Math.min(xDataMin, xAxis.dataMin || 0);
     }
     if (yRangeNeeded) {
-        (_c = yAxis.options).max ?? (_c.max = yDataMax);
-        (_d = yAxis.options).min ?? (_d.min = yDataMin);
+        yAxis.dataMax = Math.max(yDataMax, yAxis.dataMax || 0);
+        yAxis.dataMin = Math.min(yDataMin, yAxis.dataMin || 0);
     }
     // Set properties as base processData
     series.cropped = cropped;

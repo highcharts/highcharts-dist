@@ -71,6 +71,7 @@ class SVGLabel extends SVGElement {
      * */
     alignSetter(value) {
         const alignFactor = getAlignFactor(value);
+        this.textAlign = value;
         if (alignFactor !== this.alignFactor) {
             this.alignFactor = alignFactor;
             // Bounding box exists, means we're dynamically changing
@@ -246,6 +247,7 @@ class SVGLabel extends SVGElement {
     }
     'text-alignSetter'(value) {
         this.textAlign = value;
+        this.updateTextPadding();
     }
     textSetter(text) {
         if (typeof text !== 'undefined') {
@@ -315,24 +317,19 @@ class SVGLabel extends SVGElement {
      * is changed.
      */
     updateTextPadding() {
-        const text = this.text;
+        const text = this.text, textAlign = text.styles.textAlign || this.textAlign;
         if (!text.textPath) {
             this.updateBoxSize();
             // Determine y based on the baseline
             const textY = this.baseline ? 0 : this.baselineOffset, textX = (this.paddingLeft ?? this.padding) +
                 // Compensate for alignment
-                ((defined(this.widthSetting) && this.bBox) ?
-                    getAlignFactor(this.textAlign) *
-                        (this.widthSetting - this.bBox.width) :
-                    0);
+                getAlignFactor(textAlign) * (this.widthSetting ?? this.bBox.width);
             // Update if anything changed
             if (textX !== text.x || textY !== text.y) {
-                text.attr('x', textX);
-                // #8159 - prevent misplaced data labels in treemap
-                // (useHTML: true)
-                if (text.hasBoxWidthChanged) {
-                    this.bBox = text.getBBox(true);
-                }
+                text.attr({
+                    align: textAlign,
+                    x: textX
+                });
                 if (typeof textY !== 'undefined') {
                     text.attr('y', textY);
                 }

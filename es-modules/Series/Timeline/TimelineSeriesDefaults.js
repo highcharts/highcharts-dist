@@ -150,7 +150,9 @@ const TimelineSeriesDefaults = {
             /** @internal */
             fontWeight: 'normal',
             /** @internal */
-            fontSize: '0.8em'
+            fontSize: '0.8em',
+            /** @internal */
+            textAlign: 'left'
         },
         /**
          * Shadow options for the data label.

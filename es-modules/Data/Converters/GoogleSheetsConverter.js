@@ -127,6 +127,7 @@ class GoogleSheetsConverter extends DataConverter {
 GoogleSheetsConverter.defaultOptions = {
     ...DataConverter.defaultOptions
 };
+DataConverter.registerType('GoogleSheets', GoogleSheetsConverter);
 /* *
  *
  *  Default Export
