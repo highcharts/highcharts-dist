@@ -246,7 +246,9 @@ class SVGLabel extends SVGElement {
         this.boxAttr(key, value);
     }
     'text-alignSetter'(value) {
-        this.textAlign = value;
+        // The text-align variety is for the pre-animation getter. The code
+        // should be unified to either textAlign or text-align.
+        this.textAlign = this['text-align'] = value;
         this.updateTextPadding();
     }
     textSetter(text) {

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.1.0 (2024-12-17)
+ * @license Highcharts JS v12.1.0 (2024-12-19)
  * @module highcharts/highcharts
  *
  * (c) 2009-2024 Torstein Honsi
@@ -9195,8 +9195,10 @@ function numberFormat(number, decimals, decimalPoint, thousandsSep) {
     // format with string replacement for the separators.
     if (hasSeparators) {
         ret = ret
-            .replace(/\,/g, thousandsSep ?? ',')
-            .replace('.', decimalPoint ?? '.');
+            // Preliminary step to avoid re-swapping (#22402)
+            .replace(/([,\.])/g, '_$1')
+            .replace(/_\,/g, thousandsSep ?? ',')
+            .replace('_.', decimalPoint ?? '.');
     }
     if (
     // Remove signed zero (#20564)
@@ -9691,9 +9693,7 @@ class SVGElement {
      * @return {Highcharts.SVGElement} Returns the SVGElement for chaining.
      */
     align(alignOptions, alignByTranslate, alignTo, redraw = true) {
-        const attribs = {
-            'text-align': alignOptions?.align
-        }, renderer = this.renderer, alignedObjects = renderer.alignedObjects, initialAlignment = Boolean(alignOptions);
+        const renderer = this.renderer, alignedObjects = renderer.alignedObjects, initialAlignment = Boolean(alignOptions);
         // First call on instanciate
         if (alignOptions) {
             this.alignOptions = alignOptions;
@@ -9725,7 +9725,9 @@ class SVGElement {
         // Default: top align
         y = (alignToBox.y || 0) + (alignOptions.y || 0) +
             ((alignToBox.height || 0) - (alignOptions.height || 0)) *
-                SVGElement_getAlignFactor(alignOptions.verticalAlign);
+                SVGElement_getAlignFactor(alignOptions.verticalAlign), attribs = {
+            'text-align': alignOptions?.align
+        };
         attribs[alignByTranslate ? 'translateX' : 'x'] = Math.round(x);
         attribs[alignByTranslate ? 'translateY' : 'y'] = Math.round(y);
         // Animate only if already placed
@@ -11608,7 +11610,9 @@ class SVGLabel extends SVG_SVGElement {
         this.boxAttr(key, value);
     }
     'text-alignSetter'(value) {
-        this.textAlign = value;
+        // The text-align variety is for the pre-animation getter. The code
+        // should be unified to either textAlign or text-align.
+        this.textAlign = this['text-align'] = value;
         this.updateTextPadding();
     }
     textSetter(text) {
@@ -27477,7 +27481,9 @@ class Pointer {
             hoverChart !== chart) {
             const relatedTargetObj = { relatedTarget: chart.container };
             if (e && !e?.relatedTarget) {
-                e = { ...relatedTargetObj, ...e };
+                // #17192, Non-enumerable properties of "e" are dropped with
+                // spreading (...e). Using Object.assign ensures integrity.
+                Object.assign({}, e, relatedTargetObj);
             }
             hoverChart.pointer?.onContainerMouseLeave(e || relatedTargetObj);
         }
@@ -42627,9 +42633,8 @@ var DataLabel;
                 (unrotatedbBox.width - bBox.width);
             dataLabel.alignAttr.y += DataLabel_getAlignFactor(options.verticalAlign) *
                 (unrotatedbBox.height - bBox.height);
-            dataLabel.attr({
-                'text-align': dataLabel.alignAttr['text-align'] || 'center'
-            })[dataLabel.placed ? 'animate' : 'attr']({
+            dataLabel[dataLabel.placed ? 'animate' : 'attr']({
+                'text-align': dataLabel.alignAttr['text-align'] || 'center',
                 x: dataLabel.alignAttr.x +
                     (bBox.width - unrotatedbBox.width) / 2,
                 y: dataLabel.alignAttr.y +

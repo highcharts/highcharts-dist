@@ -1,5 +1,5 @@
 !/**
- * Highcharts JS v12.1.0 (2024-12-17)
+ * Highcharts JS v12.1.0 (2024-12-19)
  * @module highcharts/modules/funnel3d
  * @requires highcharts
  * @requires highcharts/highcharts-3d

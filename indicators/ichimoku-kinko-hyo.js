@@ -1,5 +1,5 @@
 !/**
- * Highstock JS v12.1.0 (2024-12-17)
+ * Highstock JS v12.1.0 (2024-12-19)
  * @module highcharts/indicators/ichimoku-kinko-hyo
  * @requires highcharts
  * @requires highcharts/modules/stock

@@ -213,9 +213,7 @@ class SVGElement {
      * @return {Highcharts.SVGElement} Returns the SVGElement for chaining.
      */
     align(alignOptions, alignByTranslate, alignTo, redraw = true) {
-        const attribs = {
-            'text-align': alignOptions?.align
-        }, renderer = this.renderer, alignedObjects = renderer.alignedObjects, initialAlignment = Boolean(alignOptions);
+        const renderer = this.renderer, alignedObjects = renderer.alignedObjects, initialAlignment = Boolean(alignOptions);
         // First call on instanciate
         if (alignOptions) {
             this.alignOptions = alignOptions;
@@ -247,7 +245,9 @@ class SVGElement {
         // Default: top align
         y = (alignToBox.y || 0) + (alignOptions.y || 0) +
             ((alignToBox.height || 0) - (alignOptions.height || 0)) *
-                getAlignFactor(alignOptions.verticalAlign);
+                getAlignFactor(alignOptions.verticalAlign), attribs = {
+            'text-align': alignOptions?.align
+        };
         attribs[alignByTranslate ? 'translateX' : 'x'] = Math.round(x);
         attribs[alignByTranslate ? 'translateY' : 'y'] = Math.round(y);
         // Animate only if already placed
