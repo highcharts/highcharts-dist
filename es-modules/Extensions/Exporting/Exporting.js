@@ -22,7 +22,7 @@ import G from '../../Core/Globals.js';
 const { doc, SVG_NS, win } = G;
 import HU from '../../Core/HttpUtilities.js';
 import U from '../../Core/Utilities.js';
-const { addEvent, css, createElement, discardElement, extend, find, fireEvent, isObject, merge, objectEach, pick, removeEvent, uniqueKey } = U;
+const { addEvent, css, createElement, discardElement, extend, find, fireEvent, isObject, merge, objectEach, pick, removeEvent, splat, uniqueKey } = U;
 /* *
  *
  *  Composition
@@ -757,15 +757,23 @@ var Exporting;
         }
         // Reflect axis extremes in the export (#5924)
         chart.axes.forEach(function (axis) {
-            const axisCopy = find(chartCopy.axes, function (copy) {
-                return copy.options.internalKey ===
-                    axis.userOptions.internalKey;
-            }), extremes = axis.getExtremes(), userMin = extremes.userMin, userMax = extremes.userMax;
-            if (axisCopy &&
-                ((typeof userMin !== 'undefined' &&
+            const axisCopy = find(chartCopy.axes, (copy) => copy.options.internalKey === axis.userOptions.internalKey);
+            if (axisCopy) {
+                const extremes = axis.getExtremes(), 
+                // Make sure min and max overrides in the
+                // `exporting.chartOptions.xAxis` settings are reflected.
+                // These should override user-set extremes via zooming,
+                // scrollbar etc (#7873).
+                exportOverride = splat(chartOptions?.[axis.coll] || {})[0], userMin = 'min' in exportOverride ?
+                    exportOverride.min :
+                    extremes.userMin, userMax = 'max' in exportOverride ?
+                    exportOverride.max :
+                    extremes.userMax;
+                if (((typeof userMin !== 'undefined' &&
                     userMin !== axisCopy.min) || (typeof userMax !== 'undefined' &&
                     userMax !== axisCopy.max))) {
-                axisCopy.setExtremes(userMin, userMax, true, false);
+                    axisCopy.setExtremes(userMin ?? void 0, userMax ?? void 0, true, false);
+                }
             }
         });
         // Get the SVG from the container's innerHTML

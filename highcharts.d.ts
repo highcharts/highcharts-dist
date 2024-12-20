@@ -97913,7 +97913,15 @@ export class Tick {
  * options set.
  *
  * The Time object is available from Highcharts.Chart#time, which refers to
- * `Highcharts.time` if no individual time settings are applied.
+ * `Highcharts.time` unless individual time settings are applied for each chart.
+ *
+ * When configuring time settings for individual chart instances, be aware that
+ * using `Highcharts.dateFormat` or `Highcharts.time.dateFormat` within
+ * formatter callbacks relies on the global time object, which applies the
+ * global language and time zone settings. To ensure charts with local time
+ * settings function correctly, use `chart.time.dateFormat? instead. However,
+ * the recommended best practice is to use `setOptions` to define global time
+ * settings unless specific configurations are needed for each chart.
  */
 export class Time {
     /**
@@ -97922,7 +97930,17 @@ export class Time {
      * time options set.
      *
      * The Time object is available from Highcharts.Chart#time, which refers to
-     * `Highcharts.time` if no individual time settings are applied.
+     * `Highcharts.time` unless individual time settings are applied for each
+     * chart.
+     *
+     * When configuring time settings for individual chart instances, be aware
+     * that using `Highcharts.dateFormat` or `Highcharts.time.dateFormat` within
+     * formatter callbacks relies on the global time object, which applies the
+     * global language and time zone settings. To ensure charts with local time
+     * settings function correctly, use `chart.time.dateFormat? instead.
+     * However, the recommended best practice is to use `setOptions` to define
+     * global time settings unless specific configurations are needed for each
+     * chart.
      *
      * @param options
      *        Time options as defined in chart.options.time.

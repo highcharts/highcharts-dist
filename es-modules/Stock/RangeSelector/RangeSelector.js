@@ -1299,7 +1299,7 @@ class RangeSelector {
      *                  exporting button
      */
     handleCollision(xOffsetForExportButton) {
-        const { chart, buttonGroup, inputGroup } = this;
+        const { chart, buttonGroup, inputGroup, initialButtonGroupWidth } = this;
         const { buttonPosition, dropdown, inputPosition } = this.options;
         const moveInputsDown = () => {
             if (inputGroup && buttonGroup) {
@@ -1316,7 +1316,7 @@ class RangeSelector {
         if (inputGroup && buttonGroup) {
             if (inputPosition.align === buttonPosition.align) {
                 moveInputsDown();
-                if (this.initialButtonGroupWidth >
+                if (initialButtonGroupWidth >
                     chart.plotWidth + xOffsetForExportButton - 20) {
                     this.collapseButtons();
                 }
@@ -1324,7 +1324,7 @@ class RangeSelector {
                     this.expandButtons();
                 }
             }
-            else if (this.initialButtonGroupWidth -
+            else if (initialButtonGroupWidth -
                 xOffsetForExportButton +
                 inputGroup.getBBox().width >
                 chart.plotWidth) {
@@ -1334,6 +1334,14 @@ class RangeSelector {
                 else {
                     moveInputsDown();
                 }
+            }
+            else {
+                this.expandButtons();
+            }
+        }
+        else if (buttonGroup && dropdown === 'responsive') {
+            if (initialButtonGroupWidth > chart.plotWidth) {
+                this.collapseButtons();
             }
             else {
                 this.expandButtons();

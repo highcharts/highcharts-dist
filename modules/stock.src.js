@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.1.0 (2024-12-17)
+ * @license Highcharts JS v12.1.1 (2024-12-20)
  * @module highcharts/modules/broken-axis
  * @requires highcharts
  *
@@ -8032,7 +8032,7 @@ class RangeSelector {
      *                  exporting button
      */
     handleCollision(xOffsetForExportButton) {
-        const { chart, buttonGroup, inputGroup } = this;
+        const { chart, buttonGroup, inputGroup, initialButtonGroupWidth } = this;
         const { buttonPosition, dropdown, inputPosition } = this.options;
         const moveInputsDown = () => {
             if (inputGroup && buttonGroup) {
@@ -8049,7 +8049,7 @@ class RangeSelector {
         if (inputGroup && buttonGroup) {
             if (inputPosition.align === buttonPosition.align) {
                 moveInputsDown();
-                if (this.initialButtonGroupWidth >
+                if (initialButtonGroupWidth >
                     chart.plotWidth + xOffsetForExportButton - 20) {
                     this.collapseButtons();
                 }
@@ -8057,7 +8057,7 @@ class RangeSelector {
                     this.expandButtons();
                 }
             }
-            else if (this.initialButtonGroupWidth -
+            else if (initialButtonGroupWidth -
                 xOffsetForExportButton +
                 inputGroup.getBBox().width >
                 chart.plotWidth) {
@@ -8067,6 +8067,14 @@ class RangeSelector {
                 else {
                     moveInputsDown();
                 }
+            }
+            else {
+                this.expandButtons();
+            }
+        }
+        else if (buttonGroup && dropdown === 'responsive') {
+            if (initialButtonGroupWidth > chart.plotWidth) {
+                this.collapseButtons();
             }
             else {
                 this.expandButtons();
@@ -13348,7 +13356,7 @@ const DataGroupingComposition = {
 
 ;// ./code/es-modules/masters/modules/datagrouping.src.js
 /**
- * @license Highstock JS v12.1.0 (2024-12-17)
+ * @license Highstock JS v12.1.1 (2024-12-20)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *
@@ -13670,7 +13678,7 @@ const MouseWheelZoomComposition = {
 
 ;// ./code/es-modules/masters/modules/mouse-wheel-zoom.src.js
 /**
- * @license Highcharts JS v12.1.0 (2024-12-17)
+ * @license Highcharts JS v12.1.1 (2024-12-20)
  * @module highcharts/modules/mouse-wheel-zoom
  * @requires highcharts
  *
@@ -13690,7 +13698,7 @@ mouse_wheel_zoom_src_G.MouseWheelZoom.compose(mouse_wheel_zoom_src_G.Chart);
 
 ;// ./code/es-modules/masters/modules/stock.src.js
 /**
- * @license Highstock JS v12.1.0 (2024-12-17)
+ * @license Highstock JS v12.1.1 (2024-12-20)
  * @module highcharts/modules/stock
  * @requires highcharts
  *

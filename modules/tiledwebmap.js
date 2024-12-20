@@ -1,5 +1,5 @@
 !/**
- * Highcharts JS v12.1.0 (2024-12-17)
+ * Highcharts JS v12.1.1 (2024-12-20)
  * @module highcharts/modules/tiledwebmap
  * @requires highcharts
  *

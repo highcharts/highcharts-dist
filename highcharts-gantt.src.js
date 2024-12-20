@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.1.0 (2024-12-17)
+ * @license Highcharts JS v12.1.1 (2024-12-20)
  * @module highcharts/highcharts
  *
  * (c) 2009-2024 Torstein Honsi
@@ -74,12 +74,12 @@ var Globals;
      *  Constants
      *
      * */
-    Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '12.1.0', Globals.win = (typeof window !== 'undefined' ?
+    Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '12.1.1', Globals.win = (typeof window !== 'undefined' ?
         window :
         {}), // eslint-disable-line node/no-unsupported-features/es-builtins
     Globals.doc = Globals.win.document, Globals.svg = (Globals.doc &&
         Globals.doc.createElementNS &&
-        !!Globals.doc.createElementNS(Globals.SVG_NS, 'svg').createSVGRect), Globals.userAgent = (Globals.win.navigator && Globals.win.navigator.userAgent) || '', Globals.isChrome = Globals.win.chrome, Globals.isFirefox = Globals.userAgent.indexOf('Firefox') !== -1, Globals.isMS = /(edge|msie|trident)/i.test(Globals.userAgent) && !Globals.win.opera, Globals.isSafari = !Globals.isChrome && Globals.userAgent.indexOf('Safari') !== -1, Globals.isTouchDevice = /(Mobile|Android|Windows Phone)/.test(Globals.userAgent), Globals.isWebKit = Globals.userAgent.indexOf('AppleWebKit') !== -1, Globals.deg2rad = Math.PI * 2 / 360, Globals.marginNames = [
+        !!Globals.doc.createElementNS(Globals.SVG_NS, 'svg').createSVGRect), Globals.pageLang = Globals.doc?.body.closest('[lang]')?.lang, Globals.userAgent = (Globals.win.navigator && Globals.win.navigator.userAgent) || '', Globals.isChrome = Globals.win.chrome, Globals.isFirefox = Globals.userAgent.indexOf('Firefox') !== -1, Globals.isMS = /(edge|msie|trident)/i.test(Globals.userAgent) && !Globals.win.opera, Globals.isSafari = !Globals.isChrome && Globals.userAgent.indexOf('Safari') !== -1, Globals.isTouchDevice = /(Mobile|Android|Windows Phone)/.test(Globals.userAgent), Globals.isWebKit = Globals.userAgent.indexOf('AppleWebKit') !== -1, Globals.deg2rad = Math.PI * 2 / 360, Globals.marginNames = [
         'plotTop',
         'marginRight',
         'marginBottom',
@@ -3500,7 +3500,7 @@ const SeriesPalettes = {
  * */
 
 
-const { win: Time_win } = Core_Globals;
+const { pageLang, win: Time_win } = Core_Globals;
 
 const { defined: Time_defined, error: Time_error, extend: Time_extend, isNumber: Time_isNumber, isObject: Time_isObject, isString: Time_isString, merge: Time_merge, objectEach: Time_objectEach, pad: Time_pad, splat: Time_splat, timeUnits: Time_timeUnits, ucfirst: Time_ucfirst } = Core_Utilities;
 /* *
@@ -3527,9 +3527,17 @@ const spanishWeekdayIndex = (weekday) => ['D', 'L', 'M', 'X', 'J', 'V', 'S'].ind
  * `Highcharts.setOptions`, or individually for each Chart item through the
  * [time](https://api.highcharts.com/highcharts/time) options set.
  *
- * The Time object is available from {@link Highcharts.Chart#time},
- * which refers to  `Highcharts.time` if no individual time settings are
- * applied.
+ * The Time object is available from {@link Highcharts.Chart#time}, which refers
+ * to  `Highcharts.time` unless individual time settings are applied for each
+ * chart.
+ *
+ * When configuring time settings for individual chart instances, be aware that
+ * using `Highcharts.dateFormat` or `Highcharts.time.dateFormat` within
+ * formatter callbacks relies on the global time object, which applies the
+ * global language and time zone settings. To ensure charts with local time
+ * settings function correctly, use `chart.time.dateFormat? instead. However,
+ * the recommended best practice is to use `setOptions` to define global time
+ * settings unless specific configurations are needed for each chart.
  *
  * @example
  * // Apply time settings globally
@@ -3567,8 +3575,8 @@ const spanishWeekdayIndex = (weekday) => ['D', 'L', 'M', 'X', 'J', 'V', 'S'].ind
  * @class
  * @name Highcharts.Time
  *
- * @param {Highcharts.TimeOptions} [options]
- * Time options as defined in [chart.options.time](/highcharts/time).
+ * @param {Highcharts.TimeOptions} [options] Time options as defined in
+ * [chart.options.time](/highcharts/time).
  */
 class Time {
     /* *
@@ -3688,7 +3696,7 @@ class Time {
     /**
      * Shorthand to get a cached `Intl.DateTimeFormat` instance.
      */
-    dateTimeFormat(options, timestamp, locale = this.options.locale) {
+    dateTimeFormat(options, timestamp, locale = this.options.locale || pageLang) {
         const cacheKey = JSON.stringify(options) + locale;
         if (Time_isString(options)) {
             options = this.str2dtf(options);
@@ -7066,14 +7074,6 @@ const defaultOptions = {
         text: 'Highcharts.com'
     }
 };
-/* eslint-disable spaced-comment */
-/*= if (!build.classic) { =*/
-// Legacy build for styled mode, set the styledMode option to true by default.
-defaultOptions.chart.styledMode = true;
-/*= } else { =*/
-defaultOptions.chart.styledMode = false;
-/*= } =*/
-'';
 const defaultTime = new Core_Time(defaultOptions.time);
 /**
  * Get the updated default options. Until 3.0.7, merely exposing defaultOptions
@@ -8834,7 +8834,7 @@ AST.bypassHTMLFiltering = false;
 
 const { defaultOptions: Templating_defaultOptions, defaultTime: Templating_defaultTime } = Defaults;
 
-const { doc: Templating_doc } = Core_Globals;
+const { pageLang: Templating_pageLang } = Core_Globals;
 
 const { extend: Templating_extend, getNestedProperty: Templating_getNestedProperty, isArray: Templating_isArray, isNumber: Templating_isNumber, isObject: Templating_isObject, isString: Templating_isString, pick: Templating_pick, ucfirst: Templating_ucfirst } = Core_Utilities;
 const helpers = {
@@ -9187,16 +9187,16 @@ function numberFormat(number, decimals, decimalPoint, thousandsSep) {
     }
     const hasSeparators = thousandsSep || decimalPoint, locale = hasSeparators ?
         'en' :
-        (this?.locale ||
-            lang.locale ||
-            Templating_doc.body.closest('[lang]')?.lang), cacheKey = JSON.stringify(options) + locale, nf = numberFormatCache[cacheKey] ?? (numberFormatCache[cacheKey] = new Intl.NumberFormat(locale, options));
+        (this?.locale || lang.locale || Templating_pageLang), cacheKey = JSON.stringify(options) + locale, nf = numberFormatCache[cacheKey] ?? (numberFormatCache[cacheKey] = new Intl.NumberFormat(locale, options));
     ret = nf.format(number);
     // If thousandsSep or decimalPoint are set, fall back to using English
     // format with string replacement for the separators.
     if (hasSeparators) {
         ret = ret
-            .replace(/\,/g, thousandsSep ?? ',')
-            .replace('.', decimalPoint ?? '.');
+            // Preliminary step to avoid re-swapping (#22402)
+            .replace(/([,\.])/g, '_$1')
+            .replace(/_\,/g, thousandsSep ?? ',')
+            .replace('_.', decimalPoint ?? '.');
     }
     if (
     // Remove signed zero (#20564)
@@ -9691,9 +9691,7 @@ class SVGElement {
      * @return {Highcharts.SVGElement} Returns the SVGElement for chaining.
      */
     align(alignOptions, alignByTranslate, alignTo, redraw = true) {
-        const attribs = {
-            'text-align': alignOptions?.align
-        }, renderer = this.renderer, alignedObjects = renderer.alignedObjects, initialAlignment = Boolean(alignOptions);
+        const renderer = this.renderer, alignedObjects = renderer.alignedObjects, initialAlignment = Boolean(alignOptions);
         // First call on instanciate
         if (alignOptions) {
             this.alignOptions = alignOptions;
@@ -9725,7 +9723,9 @@ class SVGElement {
         // Default: top align
         y = (alignToBox.y || 0) + (alignOptions.y || 0) +
             ((alignToBox.height || 0) - (alignOptions.height || 0)) *
-                SVGElement_getAlignFactor(alignOptions.verticalAlign);
+                SVGElement_getAlignFactor(alignOptions.verticalAlign), attribs = {
+            'text-align': alignOptions?.align
+        };
         attribs[alignByTranslate ? 'translateX' : 'x'] = Math.round(x);
         attribs[alignByTranslate ? 'translateY' : 'y'] = Math.round(y);
         // Animate only if already placed
@@ -11608,7 +11608,9 @@ class SVGLabel extends SVG_SVGElement {
         this.boxAttr(key, value);
     }
     'text-alignSetter'(value) {
-        this.textAlign = value;
+        // The text-align variety is for the pre-animation getter. The code
+        // should be unified to either textAlign or text-align.
+        this.textAlign = this['text-align'] = value;
         this.updateTextPadding();
     }
     textSetter(text) {
@@ -12636,7 +12638,7 @@ class SVGRenderer {
         this.url = this.getReferenceURL();
         // Add description
         const desc = this.createElement('desc').add();
-        desc.element.appendChild(SVGRenderer_doc.createTextNode('Created with Highcharts 12.1.0'));
+        desc.element.appendChild(SVGRenderer_doc.createTextNode('Created with Highcharts 12.1.1'));
         this.defs = this.createElement('defs').add();
         this.allowHTML = allowHTML;
         this.forExport = forExport;
@@ -27477,7 +27479,9 @@ class Pointer {
             hoverChart !== chart) {
             const relatedTargetObj = { relatedTarget: chart.container };
             if (e && !e?.relatedTarget) {
-                e = { ...relatedTargetObj, ...e };
+                // #17192, Non-enumerable properties of "e" are dropped with
+                // spreading (...e). Using Object.assign ensures integrity.
+                Object.assign({}, e, relatedTargetObj);
             }
             hoverChart.pointer?.onContainerMouseLeave(e || relatedTargetObj);
         }
@@ -42627,9 +42631,8 @@ var DataLabel;
                 (unrotatedbBox.width - bBox.width);
             dataLabel.alignAttr.y += DataLabel_getAlignFactor(options.verticalAlign) *
                 (unrotatedbBox.height - bBox.height);
-            dataLabel.attr({
-                'text-align': dataLabel.alignAttr['text-align'] || 'center'
-            })[dataLabel.placed ? 'animate' : 'attr']({
+            dataLabel[dataLabel.placed ? 'animate' : 'attr']({
+                'text-align': dataLabel.alignAttr['text-align'] || 'center',
                 x: dataLabel.alignAttr.x +
                     (bBox.width - unrotatedbBox.width) / 2,
                 y: dataLabel.alignAttr.y +
@@ -54320,7 +54323,7 @@ class RangeSelector {
      *                  exporting button
      */
     handleCollision(xOffsetForExportButton) {
-        const { chart, buttonGroup, inputGroup } = this;
+        const { chart, buttonGroup, inputGroup, initialButtonGroupWidth } = this;
         const { buttonPosition, dropdown, inputPosition } = this.options;
         const moveInputsDown = () => {
             if (inputGroup && buttonGroup) {
@@ -54337,7 +54340,7 @@ class RangeSelector {
         if (inputGroup && buttonGroup) {
             if (inputPosition.align === buttonPosition.align) {
                 moveInputsDown();
-                if (this.initialButtonGroupWidth >
+                if (initialButtonGroupWidth >
                     chart.plotWidth + xOffsetForExportButton - 20) {
                     this.collapseButtons();
                 }
@@ -54345,7 +54348,7 @@ class RangeSelector {
                     this.expandButtons();
                 }
             }
-            else if (this.initialButtonGroupWidth -
+            else if (initialButtonGroupWidth -
                 xOffsetForExportButton +
                 inputGroup.getBBox().width >
                 chart.plotWidth) {
@@ -54355,6 +54358,14 @@ class RangeSelector {
                 else {
                     moveInputsDown();
                 }
+            }
+            else {
+                this.expandButtons();
+            }
+        }
+        else if (buttonGroup && dropdown === 'responsive') {
+            if (initialButtonGroupWidth > chart.plotWidth) {
+                this.collapseButtons();
             }
             else {
                 this.expandButtons();
@@ -56394,7 +56405,7 @@ Pathfinder.prototype.algorithms = PathfinderAlgorithms;
 
 ;// ./code/es-modules/masters/modules/pathfinder.src.js
 /**
- * @license Highcharts Gantt JS v12.1.0 (2024-12-17)
+ * @license Highcharts Gantt JS v12.1.1 (2024-12-20)
  * @module highcharts/modules/pathfinder
  * @requires highcharts
  *
@@ -56522,7 +56533,7 @@ const StaticScale = {
 
 ;// ./code/es-modules/masters/modules/static-scale.src.js
 /**
- * @license Highcharts Gantt JS v12.1.0 (2024-12-17)
+ * @license Highcharts Gantt JS v12.1.1 (2024-12-20)
  * @module highcharts/modules/static-scale
  * @requires highcharts
  *
@@ -57333,7 +57344,7 @@ Series_SeriesRegistry.registerSeriesType('xrange', XRangeSeries);
 
 ;// ./code/es-modules/masters/modules/xrange.src.js
 /**
- * @license Highcharts JS v12.1.0 (2024-12-17)
+ * @license Highcharts JS v12.1.1 (2024-12-20)
  * @module highcharts/modules/xrange
  * @requires highcharts
  *
@@ -60881,7 +60892,7 @@ Series_SeriesRegistry.registerSeriesType('gantt', GanttSeries);
 
 ;// ./code/es-modules/masters/modules/gantt.src.js
 /**
- * @license Highcharts Gantt JS v12.1.0 (2024-12-17)
+ * @license Highcharts Gantt JS v12.1.1 (2024-12-20)
  * @module highcharts/modules/gantt
  * @requires highcharts
  *
@@ -60925,7 +60936,7 @@ gantt_src_G.Scrollbar.compose(gantt_src_G.Axis);
 
 ;// ./code/es-modules/masters/highcharts-gantt.src.js
 /**
- * @license Highcharts Gantt JS v12.1.0 (2024-12-17)
+ * @license Highcharts Gantt JS v12.1.1 (2024-12-20)
  * @module highcharts/highcharts-gantt
  *
  * (c) 2017-2024 Lars Cabrera, Torstein Honsi, Jon Arild Nygard & Oystein Moseng

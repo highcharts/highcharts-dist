@@ -2621,14 +2621,6 @@ const defaultOptions = {
         text: 'Highcharts.com'
     }
 };
-/* eslint-disable spaced-comment */
-/*= if (!build.classic) { =*/
-// Legacy build for styled mode, set the styledMode option to true by default.
-defaultOptions.chart.styledMode = true;
-/*= } else { =*/
-defaultOptions.chart.styledMode = false;
-/*= } =*/
-'';
 const defaultTime = new Time(defaultOptions.time);
 /**
  * Get the updated default options. Until 3.0.7, merely exposing defaultOptions

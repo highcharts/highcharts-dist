@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v12.1.0 (2024-12-17)
+ * @license Highcharts Gantt JS v12.1.1 (2024-12-20)
  * @module highcharts/modules/pathfinder
  * @requires highcharts
  *
@@ -8316,7 +8316,7 @@ class RangeSelector {
      *                  exporting button
      */
     handleCollision(xOffsetForExportButton) {
-        const { chart, buttonGroup, inputGroup } = this;
+        const { chart, buttonGroup, inputGroup, initialButtonGroupWidth } = this;
         const { buttonPosition, dropdown, inputPosition } = this.options;
         const moveInputsDown = () => {
             if (inputGroup && buttonGroup) {
@@ -8333,7 +8333,7 @@ class RangeSelector {
         if (inputGroup && buttonGroup) {
             if (inputPosition.align === buttonPosition.align) {
                 moveInputsDown();
-                if (this.initialButtonGroupWidth >
+                if (initialButtonGroupWidth >
                     chart.plotWidth + xOffsetForExportButton - 20) {
                     this.collapseButtons();
                 }
@@ -8341,7 +8341,7 @@ class RangeSelector {
                     this.expandButtons();
                 }
             }
-            else if (this.initialButtonGroupWidth -
+            else if (initialButtonGroupWidth -
                 xOffsetForExportButton +
                 inputGroup.getBBox().width >
                 chart.plotWidth) {
@@ -8351,6 +8351,14 @@ class RangeSelector {
                 else {
                     moveInputsDown();
                 }
+            }
+            else {
+                this.expandButtons();
+            }
+        }
+        else if (buttonGroup && dropdown === 'responsive') {
+            if (initialButtonGroupWidth > chart.plotWidth) {
+                this.collapseButtons();
             }
             else {
                 this.expandButtons();
@@ -10511,7 +10519,7 @@ const StaticScale = {
 
 ;// ./code/es-modules/masters/modules/static-scale.src.js
 /**
- * @license Highcharts Gantt JS v12.1.0 (2024-12-17)
+ * @license Highcharts Gantt JS v12.1.1 (2024-12-20)
  * @module highcharts/modules/static-scale
  * @requires highcharts
  *
@@ -11322,7 +11330,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 ;// ./code/es-modules/masters/modules/xrange.src.js
 /**
- * @license Highcharts JS v12.1.0 (2024-12-17)
+ * @license Highcharts JS v12.1.1 (2024-12-20)
  * @module highcharts/modules/xrange
  * @requires highcharts
  *
@@ -14873,7 +14881,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 ;// ./code/es-modules/masters/modules/gantt.src.js
 /**
- * @license Highcharts Gantt JS v12.1.0 (2024-12-17)
+ * @license Highcharts Gantt JS v12.1.1 (2024-12-20)
  * @module highcharts/modules/gantt
  * @requires highcharts
  *

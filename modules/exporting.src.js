@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.1.0 (2024-12-17)
+ * @license Highcharts JS v12.1.1 (2024-12-20)
  * @module highcharts/modules/exporting
  * @requires highcharts
  *
@@ -1743,7 +1743,7 @@ const { defaultOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_
 const { doc, SVG_NS, win: Exporting_win } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 
-const { addEvent: Exporting_addEvent, css, createElement, discardElement: Exporting_discardElement, extend, find, fireEvent: Exporting_fireEvent, isObject, merge, objectEach: Exporting_objectEach, pick, removeEvent, uniqueKey } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { addEvent: Exporting_addEvent, css, createElement, discardElement: Exporting_discardElement, extend, find, fireEvent: Exporting_fireEvent, isObject, merge, objectEach: Exporting_objectEach, pick, removeEvent, splat, uniqueKey } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
  *  Composition
@@ -2478,15 +2478,23 @@ var Exporting;
         }
         // Reflect axis extremes in the export (#5924)
         chart.axes.forEach(function (axis) {
-            const axisCopy = find(chartCopy.axes, function (copy) {
-                return copy.options.internalKey ===
-                    axis.userOptions.internalKey;
-            }), extremes = axis.getExtremes(), userMin = extremes.userMin, userMax = extremes.userMax;
-            if (axisCopy &&
-                ((typeof userMin !== 'undefined' &&
+            const axisCopy = find(chartCopy.axes, (copy) => copy.options.internalKey === axis.userOptions.internalKey);
+            if (axisCopy) {
+                const extremes = axis.getExtremes(), 
+                // Make sure min and max overrides in the
+                // `exporting.chartOptions.xAxis` settings are reflected.
+                // These should override user-set extremes via zooming,
+                // scrollbar etc (#7873).
+                exportOverride = splat(chartOptions?.[axis.coll] || {})[0], userMin = 'min' in exportOverride ?
+                    exportOverride.min :
+                    extremes.userMin, userMax = 'max' in exportOverride ?
+                    exportOverride.max :
+                    extremes.userMax;
+                if (((typeof userMin !== 'undefined' &&
                     userMin !== axisCopy.min) || (typeof userMax !== 'undefined' &&
                     userMax !== axisCopy.max))) {
-                axisCopy.setExtremes(userMin, userMax, true, false);
+                    axisCopy.setExtremes(userMin ?? void 0, userMax ?? void 0, true, false);
+                }
             }
         });
         // Get the SVG from the container's innerHTML

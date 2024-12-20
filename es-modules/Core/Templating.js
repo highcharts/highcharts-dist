@@ -11,7 +11,7 @@
 import D from './Defaults.js';
 const { defaultOptions, defaultTime } = D;
 import G from './Globals.js';
-const { doc } = G;
+const { pageLang } = G;
 import U from './Utilities.js';
 const { extend, getNestedProperty, isArray, isNumber, isObject, isString, pick, ucfirst } = U;
 const helpers = {
@@ -364,16 +364,16 @@ function numberFormat(number, decimals, decimalPoint, thousandsSep) {
     }
     const hasSeparators = thousandsSep || decimalPoint, locale = hasSeparators ?
         'en' :
-        (this?.locale ||
-            lang.locale ||
-            doc.body.closest('[lang]')?.lang), cacheKey = JSON.stringify(options) + locale, nf = numberFormatCache[cacheKey] ?? (numberFormatCache[cacheKey] = new Intl.NumberFormat(locale, options));
+        (this?.locale || lang.locale || pageLang), cacheKey = JSON.stringify(options) + locale, nf = numberFormatCache[cacheKey] ?? (numberFormatCache[cacheKey] = new Intl.NumberFormat(locale, options));
     ret = nf.format(number);
     // If thousandsSep or decimalPoint are set, fall back to using English
     // format with string replacement for the separators.
     if (hasSeparators) {
         ret = ret
-            .replace(/\,/g, thousandsSep ?? ',')
-            .replace('.', decimalPoint ?? '.');
+            // Preliminary step to avoid re-swapping (#22402)
+            .replace(/([,\.])/g, '_$1')
+            .replace(/_\,/g, thousandsSep ?? ',')
+            .replace('_.', decimalPoint ?? '.');
     }
     if (
     // Remove signed zero (#20564)
