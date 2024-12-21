@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.1.1 (2024-12-20)
+ * @license Highcharts JS v12.1.1 (2024-12-21)
  * @module highcharts/highcharts
  *
  * (c) 2009-2024 Torstein Honsi
@@ -56405,7 +56405,7 @@ Pathfinder.prototype.algorithms = PathfinderAlgorithms;
 
 ;// ./code/es-modules/masters/modules/pathfinder.src.js
 /**
- * @license Highcharts Gantt JS v12.1.1 (2024-12-20)
+ * @license Highcharts Gantt JS v12.1.1 (2024-12-21)
  * @module highcharts/modules/pathfinder
  * @requires highcharts
  *
@@ -56533,7 +56533,7 @@ const StaticScale = {
 
 ;// ./code/es-modules/masters/modules/static-scale.src.js
 /**
- * @license Highcharts Gantt JS v12.1.1 (2024-12-20)
+ * @license Highcharts Gantt JS v12.1.1 (2024-12-21)
  * @module highcharts/modules/static-scale
  * @requires highcharts
  *
@@ -57344,7 +57344,7 @@ Series_SeriesRegistry.registerSeriesType('xrange', XRangeSeries);
 
 ;// ./code/es-modules/masters/modules/xrange.src.js
 /**
- * @license Highcharts JS v12.1.1 (2024-12-20)
+ * @license Highcharts JS v12.1.1 (2024-12-21)
  * @module highcharts/modules/xrange
  * @requires highcharts
  *
@@ -60892,7 +60892,7 @@ Series_SeriesRegistry.registerSeriesType('gantt', GanttSeries);
 
 ;// ./code/es-modules/masters/modules/gantt.src.js
 /**
- * @license Highcharts Gantt JS v12.1.1 (2024-12-20)
+ * @license Highcharts Gantt JS v12.1.1 (2024-12-21)
  * @module highcharts/modules/gantt
  * @requires highcharts
  *
@@ -60936,7 +60936,7 @@ gantt_src_G.Scrollbar.compose(gantt_src_G.Axis);
 
 ;// ./code/es-modules/masters/highcharts-gantt.src.js
 /**
- * @license Highcharts Gantt JS v12.1.1 (2024-12-20)
+ * @license Highcharts Gantt JS v12.1.1 (2024-12-21)
  * @module highcharts/highcharts-gantt
  *
  * (c) 2017-2024 Lars Cabrera, Torstein Honsi, Jon Arild Nygard & Oystein Moseng

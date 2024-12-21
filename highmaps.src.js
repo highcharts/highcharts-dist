@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.1.1 (2024-12-20)
+ * @license Highcharts JS v12.1.1 (2024-12-21)
  * @module highcharts/highcharts
  *
  * (c) 2009-2024 Torstein Honsi
@@ -48167,7 +48167,7 @@ Array.prototype.push.apply(Axis_Axis.keepProps, ColorAxis.keepProps);
 
 ;// ./code/es-modules/masters/modules/coloraxis.src.js
 /**
- * @license Highcharts JS v12.1.1 (2024-12-20)
+ * @license Highcharts JS v12.1.1 (2024-12-21)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -57729,7 +57729,7 @@ Series_SeriesRegistry.registerSeriesType('heatmap', HeatmapSeries);
 
 ;// ./code/es-modules/masters/modules/map.src.js
 /**
- * @license Highmaps JS v12.1.1 (2024-12-20)
+ * @license Highmaps JS v12.1.1 (2024-12-21)
  * @module highcharts/modules/map
  * @requires highcharts
  *
@@ -57775,7 +57775,7 @@ Maps_MapView.compose(Chart_MapChart);
 
 ;// ./code/es-modules/masters/highmaps.src.js
 /**
- * @license Highmaps JS v12.1.1 (2024-12-20)
+ * @license Highmaps JS v12.1.1 (2024-12-21)
  * @module highcharts/highmaps
  *
  * (c) 2011-2024 Torstein Honsi

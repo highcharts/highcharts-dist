@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.1.1 (2024-12-20)
+ * @license Highcharts JS v12.1.1 (2024-12-21)
  * @module highcharts/modules/annotations
  * @requires highcharts
  *
@@ -9698,7 +9698,7 @@ Annotations_Annotation.types.measure = Measure;
 
 ;// ./code/es-modules/masters/modules/annotations-advanced.src.js
 /**
- * @license Highcharts JS v12.1.1 (2024-12-20)
+ * @license Highcharts JS v12.1.1 (2024-12-21)
  * @module highcharts/modules/annotations-advanced
  * @requires highcharts
  *

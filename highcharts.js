@@ -1,5 +1,5 @@
 !/**
- * Highcharts JS v12.1.1 (2024-12-20)
+ * Highcharts JS v12.1.1 (2024-12-21)
  * @module highcharts/highcharts
  *
  * (c) 2009-2024 Torstein Honsi
