@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.1.1 (2024-12-20)
+ * @license Highcharts JS v12.1.2 (2024-12-21)
  * @module highcharts/modules/offline-exporting
  * @requires highcharts
  * @requires highcharts/modules/exporting
@@ -2962,7 +2962,7 @@ var Exporting;
  *
  * */
 const OfflineExportingDefaults = {
-    libURL: 'https://code.highcharts.com/12.1.1/lib/',
+    libURL: 'https://code.highcharts.com/12.1.2/lib/',
     // When offline-exporting is loaded, redefine the menu item definitions
     // related to download.
     menuItemDefinitions: {

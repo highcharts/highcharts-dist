@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.1.1 (2024-12-20)
+ * @license Highcharts JS v12.1.2 (2024-12-21)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -2914,7 +2914,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 ;// ./code/es-modules/masters/modules/heatmap.src.js
 /**
- * @license Highmaps JS v12.1.1 (2024-12-20)
+ * @license Highmaps JS v12.1.2 (2024-12-21)
  * @module highcharts/modules/heatmap
  * @requires highcharts
  *

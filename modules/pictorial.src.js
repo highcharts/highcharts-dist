@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.1.1 (2024-12-20)
+ * @license Highcharts JS v12.1.2 (2024-12-21)
  * @module highcharts/modules/pictorial
  * @requires highcharts
  *
