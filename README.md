@@ -42,13 +42,13 @@ bower install highcharts
 ```
 
 ## Load Highcharts as a CommonJS module
-Highcharts uses a UMD (Universal Module Definition) module pattern, which provides support for CommonJS. However, starting from version 12, the module system has been simplified.
+Highcharts uses a UMD (Universal Module Definition) module pattern, which provides support for CommonJS. The module system is simplified, making it easier to load modules.
 *The following examples presumes you are using npm to install Highcharts, see [Download and install Highcharts](#download-and-install-highcharts) for more details.*
 ```js
 // Load Highcharts
 const Highcharts = require('highcharts');
 
-// Load the exporting module (no need to initialize explicitly from v12)
+// Load the exporting module (note that in v11 and prior it had to be initialized explicitly)
 require('highcharts/modules/exporting');
 
 // Generate the chart
@@ -58,7 +58,7 @@ Highcharts.chart('container', {
 ```
 
 ## Load Highcharts as an ES6 module
-Since Highcharts supports CommonJS, it can be loaded as an ES6 module with the use of transpilers. Two common transpilers are [Babel](https://babeljs.io/) and [TypeScript](https://www.typescriptlang.org/). These have different interpretations of a CommonJS module, which affects your syntax. With Highcharts v12, ES6 modules are supported out of the box without the need to initialize module factories.
+Since Highcharts supports CommonJS, it can be loaded as an ES6 module with the use of transpilers. Two common transpilers are [Babel](https://babeljs.io/) and [TypeScript](https://www.typescriptlang.org/). These have different interpretations of a CommonJS module, which affects your syntax. Prior to Highcharts v12, ES6 modules were not supported out of the box, and module factories had to be initialized explicitly.
 *The following examples presumes you are using npm to install Highcharts, see [Download and install Highcharts](#download-and-install-highcharts) for more details.*
 ### Babel
 ```js
