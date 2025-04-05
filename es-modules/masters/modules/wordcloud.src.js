@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v@product.version@ (@product.date@)
+ * @license Highcharts JS v12.1.2-modified (2025-04-05)
  * @module highcharts/modules/wordcloud
  * @requires highcharts
  *
- * (c) 2016-2024 Highsoft AS
+ * (c) 2016-2025 Highsoft AS
  * Authors: Jon Arild Nygard
  *
  * License: www.highcharts.com/license

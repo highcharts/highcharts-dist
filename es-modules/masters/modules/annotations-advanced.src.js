@@ -1,11 +1,11 @@
 /**
- * @license Highcharts JS v@product.version@ (@product.date@)
+ * @license Highcharts JS v12.1.2-modified (2025-04-05)
  * @module highcharts/modules/annotations-advanced
  * @requires highcharts
  *
  * Annotations module
  *
- * (c) 2009-2024 Torstein Honsi
+ * (c) 2009-2025 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */

@@ -1,1 +1,2 @@
-import '../../../options/hlc.src';
+import * as Highcharts from '../../../options/hlc.src';
+export default Highcharts;

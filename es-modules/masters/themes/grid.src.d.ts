@@ -1,1 +1,2 @@
-import '../../../themes/grid.src';
+import H from '../../Core/Globals.js';
+export default H;

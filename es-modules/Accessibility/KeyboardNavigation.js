@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Main keyboard navigation handling.
  *
@@ -405,7 +405,9 @@ class KeyboardNavigation {
         const chartProto = ChartClass.prototype;
         if (!chartProto.dismissPopupContent) {
             chartProto.dismissPopupContent = chartDismissPopupContent;
-            addEvent(doc, 'keydown', documentOnKeydown);
+            if (doc) {
+                addEvent(doc, 'keydown', documentOnKeydown);
+            }
         }
         return ChartClass;
     }

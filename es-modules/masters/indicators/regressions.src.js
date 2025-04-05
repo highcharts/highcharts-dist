@@ -1,12 +1,12 @@
 /**
- * @license Highstock JS v@product.version@ (@product.date@)
+ * @license Highstock JS v12.1.2-modified (2025-04-05)
  * @module highcharts/indicators/regressions
  * @requires highcharts
  * @requires highcharts/modules/stock
  *
  * Indicator series type for Highcharts Stock
  *
- * (c) 2010-2024 Kamil Kulig
+ * (c) 2010-2025 Kamil Kulig
  *
  * License: www.highcharts.com/license
  */

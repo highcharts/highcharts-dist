@@ -1,1 +1,2 @@
-import '../../../options/errorbar.src';
+import * as Highcharts from '../../../options/errorbar.src';
+export default Highcharts;

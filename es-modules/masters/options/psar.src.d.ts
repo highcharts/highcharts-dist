@@ -1,1 +1,2 @@
-import '../../../options/psar.src';
+import * as Highcharts from '../../../options/psar.src';
+export default Highcharts;

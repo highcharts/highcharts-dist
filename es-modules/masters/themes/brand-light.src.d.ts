@@ -1,1 +1,2 @@
-import '../../../themes/brand-light.src';
+import * as Highcharts from '../../../themes/brand-light.src';
+export default Highcharts;

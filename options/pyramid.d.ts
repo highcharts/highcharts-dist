@@ -435,6 +435,15 @@ declare module "../highcharts" {
          */
         negativeColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
         /**
+         * (Highcharts, Highstock) Whether or not data-points with the value of
+         * `null` should be interactive. When this is set to `true`, tooltips
+         * may highlight these points, and this option also enables keyboard
+         * navigation for such points. Format options for such points include
+         * `nullFormat` and `nullFormater`. Works for these series: `line`,
+         * `spline`, `area`, `area-spline`, `column`, `bar`, and* `timeline`.
+         */
+        nullInteraction?: (boolean|undefined);
+        /**
          * (Highcharts) Options for the _Series on point_ feature. Only `pie`
          * and `sunburst` series are supported at this moment.
          */
@@ -712,451 +721,164 @@ declare module "../highcharts" {
         zones?: Array<Highcharts.SeriesZonesOptionsObject>;
     }
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable the initial
-     * animation when a series is displayed for the `dataLabels`. The animation
-     * can also be set as a configuration object. Please note that this option
-     * only applies to the initial animation.
-     *
-     * For other animations, see chart.animation and the animation parameter
-     * under the API methods. The following properties are supported:
-     *
-     * - `defer`: The animation delay time in milliseconds.
+     * (Highcharts) Point accessibility options for a series.
      */
-    interface PlotPyramidDataLabelsAnimationOptions {
+    interface PlotPyramidAccessibilityPointOptions {
         /**
-         * (Highcharts, Highstock, Highmaps, Gantt) The animation delay time in
-         * milliseconds. Set to `0` to render the data labels immediately. As
-         * `undefined` inherits defer time from the series.animation.defer.
+         * (Highcharts) Date format to use for points on datetime axes when
+         * describing them to screen reader users.
+         *
+         * Defaults to the same format as in tooltip.
+         *
+         * For an overview of the replacement codes, see dateFormat.
          */
-        defer?: number;
+        dateFormat?: string;
+        /**
+         * (Highcharts) Formatter function to determine the date/time format
+         * used with points on datetime axes when describing them to screen
+         * reader users. Receives one argument, `point`, referring to the point
+         * to describe. Should return a date format string compatible with
+         * dateFormat.
+         */
+        dateFormatter?: Highcharts.ScreenReaderFormatterCallbackFunction<Highcharts.Point>;
+        /**
+         * (Highcharts) Whether or not to describe points with the value `null`
+         * to assistive technology, such as screen readers.
+         */
+        describeNull?: boolean;
+        /**
+         * (Highcharts) A format string to use instead of the default for point
+         * descriptions.
+         *
+         * The context of the format string is the point instance.
+         *
+         * As opposed to accessibility.point.valueDescriptionFormat, this option
+         * replaces the whole description.
+         */
+        descriptionFormat?: string;
+        /**
+         * (Highcharts) Formatter function to use instead of the default for
+         * point descriptions. Same as
+         * `accessibility.point.descriptionFormatter`, but applies to a series
+         * instead of the whole chart.
+         *
+         * Note: Prefer using accessibility.point.valueDescriptionFormat instead
+         * if possible, as default functionality such as describing annotations
+         * will be preserved.
+         */
+        descriptionFormatter?: Highcharts.ScreenReaderFormatterCallbackFunction<Highcharts.Point>;
+        /**
+         * (Highcharts) Decimals to use for the values in the point
+         * descriptions. Uses tooltip.valueDecimals if not defined.
+         */
+        valueDecimals?: number;
+        /**
+         * (Highcharts) Format to use for describing the values of data points
+         * to assistive technology - including screen readers. The point context
+         * is available as `{point}`.
+         *
+         * Other available context variables include `{index}`, `{value}`, and
+         * `{xDescription}`.
+         *
+         * Additionally, the series name, annotation info, and description added
+         * in `point.accessibility.description` is added by default if relevant.
+         * To override this, use the accessibility.point.descriptionFormatter
+         * option.
+         */
+        valueDescriptionFormat?: string;
+        /**
+         * (Highcharts) Prefix to add to the values in the point descriptions.
+         * Uses tooltip.valuePrefix if not defined.
+         */
+        valuePrefix?: string;
+        /**
+         * (Highcharts) Suffix to add to the values in the point descriptions.
+         * Uses tooltip.valueSuffix if not defined.
+         */
+        valueSuffix?: string;
     }
     /**
-     * (Highcharts) Options for the _Series on point_ feature. Only `pie` and
-     * `sunburst` series are supported at this moment.
+     * (Highcharts) Options for the connector in the _Series on point_ feature.
+     *
+     * In styled mode, the connector can be styled with the
+     * `.highcharts-connector-seriesonpoint` class name.
      */
-    interface PlotPyramidOnPointOptions {
+    interface PlotPyramidOnPointConnectorOptions {
         /**
-         * (Highcharts) Options for the connector in the _Series on point_
-         * feature.
-         *
-         * In styled mode, the connector can be styled with the
-         * `.highcharts-connector-seriesonpoint` class name.
+         * (Highcharts) A name for the dash style to use for the connector.
          */
-        connectorOptions?: (Highcharts.PlotPyramidOnPointConnectorOptions|Highcharts.SVGAttributes);
+        dashstyle?: string;
         /**
-         * (Highcharts) The `id` of the point that we connect the series to.
-         * Only points with a given `plotX` and `plotY` values and map points
-         * are valid.
+         * (Highcharts) Color of the connector line. By default it's the series'
+         * color.
          */
-        id?: string;
+        stroke?: string;
         /**
-         * (Highcharts) Options allowing to set a position and an offset of the
-         * series in the _Series on point_ feature.
+         * (Highcharts) Pixel width of the connector line.
          */
-        position?: (object|Highcharts.PlotPyramidOnPointPositionOptions);
+        width?: number;
     }
     /**
-     * (Highcharts) A pyramid series is a special type of funnel, without neck
-     * and reversed by default.
-     *
-     * Configuration options for the series are given in three levels:
-     *
-     * 1. Options for all series in a chart are defined in the
-     * plotOptions.series object.
-     *
-     * 2. Options for all `pyramid` series are defined in plotOptions.pyramid.
-     *
-     * 3. Options for one single series are given in the series instance array.
-     * (see online documentation for example)
-     *
-     * **TypeScript:**
-     *
-     * - the type option must always be set.
-     *
-     * - when accessing an array of series, the combined set of all series types
-     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
-     * specific type can be done by checking the `type` property. (see online
-     * documentation for example)
+     * (Highcharts) Options allowing to set a position and an offset of the
+     * series in the _Series on point_ feature.
      */
-    interface PlotPyramidOptions {
+    interface PlotPyramidOnPointPositionOptions {
         /**
-         * (Highcharts) Accessibility options for a series.
+         * (Highcharts) Series center offset from the original x position. If
+         * defined, the connector line is drawn connecting original position
+         * with new position.
          */
-        accessibility?: Highcharts.SeriesAccessibilityOptionsObject;
+        offsetX?: number;
         /**
-         * (Highcharts) Allow this series' points to be selected by clicking on
-         * the graphic (columns, point markers, pie slices, map areas etc).
+         * (Highcharts) Series center offset from the original y position. If
+         * defined, the connector line is drawn from original position to a new
+         * position.
+         */
+        offsetY?: number;
+        /**
+         * (Highcharts) X position of the series center. By default, the series
+         * is displayed on the point that it is connected to.
+         */
+        x?: number;
+        /**
+         * (Highcharts) Y position of the series center. By default, the series
+         * is displayed on the point that it is connected to.
+         */
+        y?: number;
+    }
+    /**
+     * (Highcharts) Positioning options for fixed tooltip, taking effect only
+     * when tooltip.fixed is `true`.
+     */
+    interface PlotPyramidTooltipPositionOptions {
+        /**
+         * (Highcharts) The horizontal alignment of the fixed tooltip.
+         */
+        align?: Highcharts.AlignValue;
+        /**
+         * (Highcharts) What the fixed tooltip alignment should be relative to.
          *
-         * The selected points can be handled by point select and unselect
-         * events, or collectively by the getSelectedPoints function.
-         *
-         * And alternative way of selecting points is through dragging.
+         * The default, `pane`, means that it is aligned within the plot area
+         * for that given series. If the tooltip is split (as default in Stock
+         * charts), each partial tooltip is aligned within the series' pane.
          */
-        allowPointSelect?: boolean;
+        relativeTo?: Highcharts.OptionsRelativeToValue;
         /**
-         * (Highcharts) Initial animation is by default disabled for the funnel
-         * chart.
+         * (Highcharts) The vertical alignment of the fixed tooltip.
          */
-        animation?: boolean;
+        verticalAlign?: Highcharts.VerticalAlignValue;
         /**
-         * (Highcharts, Highmaps) The color of the border surrounding each
-         * slice. When `null`, the border takes the same color as the slice
-         * fill. This can be used together with a `borderWidth` to fill drawing
-         * gaps created by antialiazing artefacts in borderless pies.
-         *
-         * In styled mode, the border stroke is given in the `.highcharts-point`
-         * class.
+         * (Highcharts) X pixel offset from the given position. Can be used to
+         * shy away from axis lines, grid lines etc to avoid the tooltip
+         * overlapping other elements.
          */
-        borderColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        x?: number;
         /**
-         * (Highcharts) The corner radius of the border surrounding all points
-         * or series. A number signifies pixels. A percentage string, like for
-         * example `50%`, signifies a size relative to the series width.
+         * (Highcharts) Y pixel offset from the given position. Can be used to
+         * shy away from axis lines, grid lines etc to avoid the tooltip
+         * overlapping other elements.
          */
-        borderRadius?: number;
-        /**
-         * (Highcharts, Highmaps) The width of the border surrounding each
-         * slice.
-         *
-         * When setting the border width to 0, there may be small gaps between
-         * the slices due to SVG antialiasing artefacts. To work around this,
-         * keep the border width at 0.5 or 1, but set the `borderColor` to
-         * `null` instead.
-         *
-         * In styled mode, the border stroke width is given in the
-         * `.highcharts-point` class.
-         */
-        borderWidth?: number;
-        /**
-         * (Highcharts, Highmaps) The center of the series. By default, it is
-         * centered in the middle of the plot area, so it fills the plot area
-         * height.
-         */
-        center?: Array<(number|string)>;
-        /**
-         * (Highcharts) An additional class name to apply to the series'
-         * graphical elements. This option does not replace default class names
-         * of the graphical element. Changes to the series' color will also be
-         * reflected in a chart's legend and tooltip.
-         */
-        className?: string;
-        /**
-         * (Highcharts) Disable this option to allow series rendering in the
-         * whole plotting area.
-         *
-         * **Note:** Clipping should be always enabled when chart.zoomType is
-         * set
-         */
-        clip?: boolean;
-        /**
-         * (Highcharts) The color of the pie series. A pie series is represented
-         * as an empty circle if the total sum of its values is 0. Use this
-         * property to define the color of its border.
-         *
-         * In styled mode, the color can be defined by the colorIndex option.
-         * Also, the series color can be set with the `.highcharts-series`,
-         * `.highcharts-color-{n}`, `.highcharts-{type}-series` or
-         * `.highcharts-series-{n}` class, or individual classes given by the
-         * `className` option.
-         */
-        color?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
-        /**
-         * (Highcharts, Highstock, Highmaps) When using dual or multiple color
-         * axes, this number defines which colorAxis the particular series is
-         * connected to. It refers to either the axis id or the index of the
-         * axis in the colorAxis array, with 0 being the first. Set this option
-         * to false to prevent a series from connecting to the default color
-         * axis.
-         *
-         * Since v7.2.0 the option can also be an axis id or an axis index
-         * instead of a boolean flag.
-         */
-        colorAxis?: (boolean|number|string);
-        /**
-         * (Highcharts) Styled mode only. A specific color index to use for the
-         * series, so its graphic representations are given the class name
-         * `highcharts-color-{n}`.
-         *
-         * Since v11, CSS variables on the form `--highcharts-color-{n}` make
-         * changing the color scheme very convenient.
-         */
-        colorIndex?: number;
-        /**
-         * (Highcharts, Highstock, Highmaps) Determines what data value should
-         * be used to calculate point color if `colorAxis` is used. Requires to
-         * set `min` and `max` if some custom point property is used or if
-         * approximation for data grouping is set to `'sum'`.
-         */
-        colorKey?: string;
-        /**
-         * (Highcharts, Highmaps) A series specific or series type specific
-         * color set to use instead of the global colors.
-         */
-        colors?: Array<(Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject)>;
-        /**
-         * (Highcharts, Highstock, Gantt) When true, each point or column edge
-         * is rounded to its nearest pixel in order to render sharp on screen.
-         * In some cases, when there are a lot of densely packed columns, this
-         * leads to visible difference in column widths or distance between
-         * columns. In these cases, setting `crisp` to `false` may look better,
-         * even though each column is rendered blurry.
-         */
-        crisp?: boolean;
-        /**
-         * (Highcharts) You can set the cursor to "pointer" if you have click
-         * events attached to the series, to signal to the user that the points
-         * and lines can be clicked.
-         *
-         * In styled mode, the series cursor can be set with the same classes as
-         * listed under series.color.
-         */
-        cursor?: (string|Highcharts.CursorValue);
-        /**
-         * (Highcharts) A reserved subspace to store options and values for
-         * customized functionality. Here you can add additional data for your
-         * own event callbacks and formatter callbacks.
-         */
-        custom?: Highcharts.Dictionary<any>;
-        /**
-         * (Highcharts, Highstock, Highmaps, Gantt) Options for the series data
-         * labels, appearing next to each data point.
-         *
-         * Since v6.2.0, multiple data labels can be applied to each single
-         * point by defining them as an array of configs.
-         *
-         * In styled mode, the data labels can be styled with the
-         * `.highcharts-data-label-box` and `.highcharts-data-label` class names
-         * (see example).
-         */
-        dataLabels?: (Highcharts.SeriesPieDataLabelsOptionsObject|Array<Highcharts.SeriesPieDataLabelsOptionsObject>);
-        /**
-         * (Highcharts) The thickness of a 3D pie.
-         */
-        depth?: number;
-        /**
-         * (Highcharts) A description of the series to add to the screen reader
-         * information about the series.
-         */
-        description?: string;
-        /**
-         * (Highcharts) Enable or disable the mouse tracking for a specific
-         * series. This includes point tooltips and click events on graphs and
-         * points. For large datasets it improves performance.
-         */
-        enableMouseTracking?: boolean;
-        /**
-         * (Highcharts, Highmaps) The end angle of the pie in degrees where 0 is
-         * top and 90 is right. Defaults to `startAngle` plus 360.
-         */
-        endAngle?: number;
-        /**
-         * (Highcharts) General event handlers for the series items. These event
-         * hooks can also be attached to the series at run time using the
-         * `Highcharts.addEvent` function.
-         */
-        events?: Highcharts.SeriesEventsOptionsObject;
-        /**
-         * (Highcharts) If the total sum of the pie's values is 0, the series is
-         * represented as an empty circle . The `fillColor` option defines the
-         * color of that circle. Use pie.borderWidth to set the border
-         * thickness.
-         */
-        fillColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
-        /**
-         * (Highcharts) The height of the funnel or pyramid. If it is a number
-         * it defines the pixel height, if it is a percentage string it is the
-         * percentage of the plot area height.
-         */
-        height?: (number|string);
-        /**
-         * (Highcharts, Highmaps) Equivalent to chart.ignoreHiddenSeries, this
-         * option tells whether the series shall be redrawn as if the hidden
-         * point were `null`.
-         *
-         * The default value changed from `false` to `true` with Highcharts 3.0.
-         */
-        ignoreHiddenPoint?: boolean;
-        /**
-         * (Highcharts) Highlight only the hovered point and fade the remaining
-         * points.
-         *
-         * Scatter-type series require enabling the 'inactive' marker state and
-         * adjusting opacity. Note that this approach could affect performance
-         * with large datasets.
-         */
-        inactiveOtherPoints?: boolean;
-        /**
-         * (Highcharts) When set to `false` will prevent the series data from
-         * being included in any form of data export.
-         *
-         * Since version 6.0.0 until 7.1.0 the option was existing undocumented
-         * as `includeInCSVExport`.
-         */
-        includeInDataExport?: boolean;
-        /**
-         * (Highcharts) An array specifying which option maps to which key in
-         * the data point array. This makes it convenient to work with
-         * unstructured data arrays from different sources.
-         */
-        keys?: Array<string>;
-        /**
-         * (Highcharts) What type of legend symbol to render for this series.
-         * Can be one of `areaMarker`, `lineMarker` or `rectangle`.
-         */
-        legendSymbol?: Highcharts.OptionsLegendSymbolValue;
-        /**
-         * (Highcharts, Highstock, Highmaps) Defines the color of the legend
-         * symbol for this series. Defaults to undefined, in which case the
-         * series color is used. Does not work with styled mode.
-         */
-        legendSymbolColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
-        /**
-         * (Highcharts, Highstock) The SVG value used for the `stroke-linecap`
-         * and `stroke-linejoin` of a line graph. Round means that lines are
-         * rounded in the ends and bends.
-         */
-        linecap?: Highcharts.SeriesLinecapValue;
-        /**
-         * (Highcharts, Highmaps) The minimum size for a pie in response to auto
-         * margins. The pie will try to shrink to make room for data labels in
-         * side the plot area, but only to this size.
-         */
-        minSize?: (number|string);
-        /**
-         * (Highcharts) The height of the neck, the lower part of the funnel. A
-         * number defines pixel width, a percentage string defines a percentage
-         * of the plot area height.
-         */
-        neckHeight?: (number|string);
-        /**
-         * (Highcharts) The width of the neck, the lower part of the funnel. A
-         * number defines pixel width, a percentage string defines a percentage
-         * of the plot area width.
-         */
-        neckWidth?: (number|string);
-        /**
-         * (Highcharts) Options for the _Series on point_ feature. Only `pie`
-         * and `sunburst` series are supported at this moment.
-         */
-        onPoint?: (object|Highcharts.PlotPyramidOnPointOptions);
-        /**
-         * (Highcharts) Opacity of a series parts: line, fill (e.g. area) and
-         * dataLabels.
-         */
-        opacity?: number;
-        /**
-         * (Highcharts) Properties for each single point.
-         */
-        point?: Highcharts.PlotSeriesPointOptions;
-        /**
-         * (Highcharts) Same as accessibility.point.descriptionFormat, but for
-         * an individual series. Overrides the chart wide configuration.
-         */
-        pointDescriptionFormat?: Function;
-        /**
-         * (Highcharts) Same as accessibility.series.descriptionFormatter, but
-         * for an individual series. Overrides the chart wide configuration.
-         */
-        pointDescriptionFormatter?: Function;
-        /**
-         * (Highcharts, Highstock) When true, X values in the data set are
-         * relative to the current `pointStart`, `pointInterval` and
-         * `pointIntervalUnit` settings. This allows compression of the data for
-         * datasets with irregular X values.
-         *
-         * The real X values are computed on the formula `f(x) = ax + b`, where
-         * `a` is the `pointInterval` (optionally with a time unit given by
-         * `pointIntervalUnit`), and `b` is the `pointStart`.
-         */
-        relativeXValue?: boolean;
-        /**
-         * (Highcharts) A reversed funnel has the widest area down. A reversed
-         * funnel with no neck width and neck height is a pyramid.
-         */
-        reversed?: boolean;
-        /**
-         * (Highcharts) Whether to select the series initially. If
-         * `showCheckbox` is true, the checkbox next to the series name in the
-         * legend will be checked for a selected series.
-         */
-        selected?: boolean;
-        /**
-         * (Highcharts) Whether to apply a drop shadow to the graph line. Since
-         * 2.3 the shadow can be an object configuration containing `color`,
-         * `offsetX`, `offsetY`, `opacity` and `width`.
-         *
-         * Note that in some cases, like stacked columns or other dense layouts,
-         * the series may cast shadows on each other. In that case, the
-         * `chart.seriesGroupShadow` allows applying a common drop shadow to the
-         * whole series group.
-         */
-        shadow?: (boolean|Highcharts.ShadowOptionsObject);
-        /**
-         * (Highcharts) If true, a checkbox is displayed next to the legend item
-         * to allow selecting the series. The state of the checkbox is
-         * determined by the `selected` option.
-         */
-        showCheckbox?: boolean;
-        /**
-         * (Highcharts, Highmaps) Whether to display this particular series or
-         * series type in the legend. Since 2.1, pies are not shown in the
-         * legend by default.
-         */
-        showInLegend?: boolean;
-        /**
-         * (Highcharts) If set to `true`, the accessibility module will skip
-         * past the points in this series for keyboard navigation.
-         */
-        skipKeyboardNavigation?: boolean;
-        /**
-         * (Highcharts, Highmaps) If a point is sliced, moved out from the
-         * center, how many pixels should it be moved?.
-         */
-        slicedOffset?: number;
-        /**
-         * (Highcharts) Sonification/audio chart options for a series.
-         */
-        sonification?: Highcharts.SeriesSonificationOptions;
-        /**
-         * (Highcharts, Highmaps) The start angle of the pie slices in degrees
-         * where 0 is top and 90 right.
-         */
-        startAngle?: number;
-        /**
-         * (Highcharts) Options for the series states.
-         */
-        states?: Highcharts.SeriesStatesOptionsObject;
-        /**
-         * (Highcharts, Highmaps) Sticky tracking of mouse events. When true,
-         * the `mouseOut` event on a series isn't triggered until the mouse
-         * moves over another series, or out of the plot area. When false, the
-         * `mouseOut` event on a series is triggered when the mouse leaves the
-         * area around the series' graph or markers. This also implies the
-         * tooltip. When `stickyTracking` is false and `tooltip.shared` is
-         * false, the tooltip will be hidden when moving the mouse between
-         * series.
-         */
-        stickyTracking?: boolean;
-        /**
-         * (Highcharts) Thickness describing the ring size for a donut type
-         * chart, overriding innerSize.
-         */
-        thickness?: number;
-        /**
-         * (Highcharts) A configuration object for the tooltip rendering of each
-         * single series. Properties are inherited from tooltip, but only the
-         * following properties can be defined on a series level.
-         */
-        tooltip?: Highcharts.SeriesTooltipOptionsObject;
-        /**
-         * (Highcharts) Set the initial visibility of the series.
-         */
-        visible?: boolean;
-        /**
-         * (Highcharts) The width of the funnel compared to the width of the
-         * plot area, or the pixel width if it is a number.
-         */
-        width?: (number|string);
+        y?: number;
     }
     /**
      * (Highcharts) A `pyramid3d` series. If the type option is not specified,

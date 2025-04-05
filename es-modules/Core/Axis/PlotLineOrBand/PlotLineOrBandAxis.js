@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -229,7 +229,7 @@ var PlotLineOrBandAxis;
             ]).forEach(function (arr) {
                 i = arr.length;
                 while (i--) {
-                    if ((arr[i] || {}).id === id) {
+                    if (arr[i]?.id === id) {
                         erase(arr, arr[i]);
                     }
                 }

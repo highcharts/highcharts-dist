@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Utility functions for accessibility module.
  *
@@ -68,7 +68,7 @@ function cloneMouseEvent(e) {
         return new win.MouseEvent(e.type, e);
     }
     // No MouseEvent support, try using initMouseEvent
-    if (doc.createEvent) {
+    if (doc?.createEvent) {
         const evt = doc.createEvent('MouseEvent');
         if (evt.initMouseEvent) {
             evt.initMouseEvent(e.type, e.bubbles, // #10561, #12161
@@ -166,7 +166,7 @@ function getFakeMouseEvent(type, position, relatedTarget) {
         });
     }
     // No MouseEvent support, try using initMouseEvent
-    if (doc.createEvent) {
+    if (doc?.createEvent) {
         const evt = doc.createEvent('MouseEvent');
         if (evt.initMouseEvent) {
             evt.initMouseEvent(type, true, // Bubble

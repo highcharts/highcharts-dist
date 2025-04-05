@@ -1,1 +1,2 @@
-import '../../../modules/textpath.src';
+import * as Highcharts from '../../../modules/textpath.src';
+export default Highcharts;

@@ -1,1 +1,2 @@
-import '../../../options/columnpyramid.src';
+import * as Highcharts from '../../../options/columnpyramid.src';
+export default Highcharts;

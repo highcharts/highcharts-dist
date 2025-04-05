@@ -1,1 +1,2 @@
-import '../../../modules/arrow-symbols.src';
+import * as Highcharts from '../../../modules/arrow-symbols.src';
+export default Highcharts;

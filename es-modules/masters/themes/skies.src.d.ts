@@ -1,1 +1,2 @@
-import '../../../themes/skies.src';
+import * as Highcharts from '../../../themes/skies.src';
+export default Highcharts;

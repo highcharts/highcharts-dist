@@ -1,1 +1,2 @@
-import '../../../options/areasplinerange.src';
+import * as Highcharts from '../../../options/areasplinerange.src';
+export default Highcharts;

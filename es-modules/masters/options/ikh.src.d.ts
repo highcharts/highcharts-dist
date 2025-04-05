@@ -1,1 +1,2 @@
-import '../../../options/ikh.src';
+import * as Highcharts from '../../../options/ikh.src';
+export default Highcharts;

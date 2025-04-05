@@ -1,1 +1,2 @@
-import '../../../modules/organization.src';
+import * as Highcharts from '../../../modules/organization.src';
+export default Highcharts;

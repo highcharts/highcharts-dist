@@ -610,6 +610,15 @@ declare module "../highcharts.src" {
          */
         navigatorOptions?: Highcharts.PlotSeriesOptions;
         /**
+         * (Highcharts, Highstock) Whether or not data-points with the value of
+         * `null` should be interactive. When this is set to `true`, tooltips
+         * may highlight these points, and this option also enables keyboard
+         * navigation for such points. Format options for such points include
+         * `nullFormat` and `nullFormater`. Works for these series: `line`,
+         * `spline`, `area`, `area-spline`, `column`, `bar`, and* `timeline`.
+         */
+        nullInteraction?: (boolean|undefined);
+        /**
          * (Highcharts, Highstock) Options for the _Series on point_ feature.
          * Only `pie` and `sunburst` series are supported at this moment.
          */

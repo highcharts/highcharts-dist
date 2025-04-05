@@ -1,1 +1,2 @@
-import '../../../options/ad.src';
+import * as Highcharts from '../../../options/ad.src';
+export default Highcharts;

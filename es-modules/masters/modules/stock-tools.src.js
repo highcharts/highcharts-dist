@@ -1,12 +1,12 @@
 /**
- * @license Highstock JS v@product.version@ (@product.date@)
+ * @license Highstock JS v12.1.2-modified (2025-04-05)
  * @module highcharts/modules/stock-tools
  * @requires highcharts
  * @requires highcharts/modules/stock
  *
  * Advanced Highcharts Stock tools
  *
- * (c) 2010-2024 Highsoft AS
+ * (c) 2010-2025 Highsoft AS
  * Author: Torstein Honsi
  *
  * License: www.highcharts.com/license

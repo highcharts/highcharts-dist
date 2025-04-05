@@ -1,1 +1,2 @@
-import '../../../options/flowmap.src';
+import * as Highcharts from '../../../options/flowmap.src';
+export default Highcharts;

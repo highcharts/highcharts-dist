@@ -1,11 +1,11 @@
 /**
- * @license Highcharts Gantt JS v@product.version@ (@product.date@)
+ * @license Highcharts Gantt JS v12.1.2-modified (2025-04-05)
  * @module highcharts/modules/static-scale
  * @requires highcharts
  *
  * StaticScale
  *
- * (c) 2016-2024 Torstein Honsi, Lars A. V. Cabrera
+ * (c) 2016-2025 Torstein Honsi, Lars A. V. Cabrera
  *
  * License: www.highcharts.com/license
  */

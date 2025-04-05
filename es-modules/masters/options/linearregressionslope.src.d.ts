@@ -1,1 +1,2 @@
-import '../../../options/linearregressionslope.src';
+import * as Highcharts from '../../../options/linearregressionslope.src';
+export default Highcharts;

@@ -95,6 +95,40 @@ declare module "../highcharts" {
         y?: number;
     }
     /**
+     * (Highcharts) Positioning options for fixed tooltip, taking effect only
+     * when tooltip.fixed is `true`.
+     */
+    interface PlotParetoTooltipPositionOptions {
+        /**
+         * (Highcharts) The horizontal alignment of the fixed tooltip.
+         */
+        align?: Highcharts.AlignValue;
+        /**
+         * (Highcharts) What the fixed tooltip alignment should be relative to.
+         *
+         * The default, `pane`, means that it is aligned within the plot area
+         * for that given series. If the tooltip is split (as default in Stock
+         * charts), each partial tooltip is aligned within the series' pane.
+         */
+        relativeTo?: Highcharts.OptionsRelativeToValue;
+        /**
+         * (Highcharts) The vertical alignment of the fixed tooltip.
+         */
+        verticalAlign?: Highcharts.VerticalAlignValue;
+        /**
+         * (Highcharts) X pixel offset from the given position. Can be used to
+         * shy away from axis lines, grid lines etc to avoid the tooltip
+         * overlapping other elements.
+         */
+        x?: number;
+        /**
+         * (Highcharts) Y pixel offset from the given position. Can be used to
+         * shy away from axis lines, grid lines etc to avoid the tooltip
+         * overlapping other elements.
+         */
+        y?: number;
+    }
+    /**
      * (Highcharts) A `pareto` series. If the type option is not specified, it
      * is inherited from chart.type.
      *

@@ -1,1 +1,2 @@
-import '../../../options/pie.src';
+import * as Highcharts from '../../../options/pie.src';
+export default Highcharts;

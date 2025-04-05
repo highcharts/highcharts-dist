@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2024 Mateusz Bernacik
+ *  (c) 2010-2025 Mateusz Bernacik
  *
  *  License: www.highcharts.com/license
  *
@@ -71,7 +71,7 @@ class StandaloneNavigator {
     constructor(element, userOptions) {
         this.boundAxes = [];
         this.userOptions = userOptions;
-        this.chartOptions = merge(G.getOptions(), standaloneNavigatorDefaults, { navigator: userOptions });
+        this.chartOptions = merge(G.getOptions(), standaloneNavigatorDefaults, userOptions.chart, { navigator: userOptions });
         if (this.chartOptions.chart && userOptions.height) {
             this.chartOptions.chart.height = userOptions.height;
         }
@@ -118,8 +118,8 @@ class StandaloneNavigator {
             const removeSetExtremesEvent = addEvent(axis, 'setExtremes', (e) => {
                 if (e.trigger === 'pan' ||
                     e.trigger === 'zoom' ||
-                    e.trigger === 'mouseWheelZoom') {
-                    nav.setRange(e.min, e.max, true, e.trigger !== 'pan', { trigger: axis });
+                    e.trigger === 'mousewheel') {
+                    nav.setRange(e.min, e.max, true, e.trigger !== 'pan' && e.trigger !== 'mousewheel', { trigger: axis });
                 }
             });
             removeEventCallbacks.push(removeSetExtremesEvent);
@@ -214,7 +214,7 @@ class StandaloneNavigator {
      *         specified, the standalone navigator will be redrawn.
      */
     update(newOptions, redraw) {
-        this.chartOptions = merge(this.chartOptions, newOptions.height && { chart: { height: newOptions.height } }, { navigator: newOptions });
+        this.chartOptions = merge(this.chartOptions, newOptions.height && { chart: { height: newOptions.height } }, newOptions.chart, { navigator: newOptions });
         this.navigator.chart.update(this.chartOptions, redraw);
     }
     /**

@@ -1,1 +1,2 @@
-import '../../../options/ema.src';
+import * as Highcharts from '../../../options/ema.src';
+export default Highcharts;

@@ -1,8 +1,8 @@
 /**
- * @license Highcharts JS v@product.version@ (@product.date@)
+ * @license Highcharts JS v12.1.2-modified (2025-04-05)
  * @module highcharts/highcharts
  *
- * (c) 2009-2024 Torstein Honsi
+ * (c) 2009-2025 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -47,7 +47,7 @@ import '../Series/Scatter/ScatterSeries.js';
 import '../Series/Pie/PieSeries.js';
 import PieDataLabel from '../Series/Pie/PieDataLabel.js';
 import DataLabel from '../Core/Series/DataLabel.js';
-import OverlappingDataLabels from '../Extensions/OverlappingDataLabels.js';
+import OverlappingDataLabels from '../Core/Series/OverlappingDataLabels.js';
 import BorderRadius from '../Extensions/BorderRadius.js';
 import Responsive from '../Core/Responsive.js';
 import Color from '../Core/Color/Color.js';

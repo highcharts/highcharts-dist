@@ -1,11 +1,11 @@
 /**
- * @license Highcharts JS v@product.version@ (@product.date@)
+ * @license Highcharts JS v12.1.2-modified (2025-04-05)
  * @module highcharts/modules/navigator
  * @requires highcharts
  *
  * Standalone navigator module
  *
- * (c) 2009-2024 Mateusz Bernacik
+ * (c) 2009-2025 Mateusz Bernacik
  *
  * License: www.highcharts.com/license
  */

@@ -1,1 +1,2 @@
-import '../../../options/xrange.src';
+import * as Highcharts from '../../../options/xrange.src';
+export default Highcharts;

@@ -1,1 +1,2 @@
-import '../../../modules/pareto.src';
+import * as Highcharts from '../../../modules/pareto.src';
+export default Highcharts;

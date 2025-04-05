@@ -224,18 +224,23 @@ declare module "../highcharts" {
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) Format for points with the
          * value of null. Works analogously to format. `nullFormat` can be
-         * applied only to series which support displaying null points i.e
-         * `heatmap` or `tilemap`. Does not work with series that don't display
-         * null points, like `line`, `column`, `bar` or `pie`.
+         * applied only to series which support displaying null points.
+         * `heatmap` and `tilemap` supports `nullFormat` by default while the
+         * following series requires [#series.nullInteraction] set to `true`:
+         * `line`, `spline`, `area`, `area-spline`, `column`, `bar`, and
+         * `timeline`. Does not work with series that don't display null points,
+         * like `pie`.
          */
         nullFormat?: (boolean|string);
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) Callback JavaScript function
          * that defines formatting for points with the value of null. Works
          * analogously to formatter. `nullFormatter` can be applied only to
-         * series which support displaying null points i.e `heatmap` or
-         * `tilemap`. Does not work with series that don't display null points,
-         * like `line`, `column`, `bar` or `pie`.
+         * series which support displaying null points. `heatmap` and `tilemap`
+         * supports `nullFormatter` by default while the following series
+         * requires [#series.nullInteraction] set to `true`: `line`, `spline`,
+         * `area`, `area-spline`, `column`, `bar`, and `timeline`. Does not work
+         * with series that don't display null points, like `pie`.
          */
         nullFormatter?: Highcharts.DataLabelsFormatterCallbackFunction;
         /**
@@ -690,6 +695,15 @@ declare module "../highcharts" {
          * zone with value of 0.
          */
         negativeColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        /**
+         * (Highcharts, Highstock) Whether or not data-points with the value of
+         * `null` should be interactive. When this is set to `true`, tooltips
+         * may highlight these points, and this option also enables keyboard
+         * navigation for such points. Format options for such points include
+         * `nullFormat` and `nullFormater`. Works for these series: `line`,
+         * `spline`, `area`, `area-spline`, `column`, `bar`, and* `timeline`.
+         */
+        nullInteraction?: (boolean|undefined);
         /**
          * (Highcharts) Opacity of a series parts: line, fill (e.g. area) and
          * dataLabels.

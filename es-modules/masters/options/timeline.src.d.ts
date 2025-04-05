@@ -1,1 +1,2 @@
-import '../../../options/timeline.src';
+import * as Highcharts from '../../../options/timeline.src';
+export default Highcharts;

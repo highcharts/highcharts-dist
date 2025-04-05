@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -242,6 +242,7 @@ class PlotLineOrBand {
             width: bBoxWidth,
             height: arrayMax(yBounds) - y
         });
+        label.alignAttr.y -= renderer.fontMetrics(label).b;
         if (!label.alignValue ||
             label.alignValue === 'left' ||
             defined(inside)) {

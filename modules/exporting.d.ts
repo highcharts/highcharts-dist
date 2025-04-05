@@ -132,6 +132,10 @@ declare module "../highcharts" {
      *        `Highcharts.ajax` function instead.
      */
     function getJSON(url: string, success: Function): void;
+    /**
+     * Resolve CSS variables into hex colors
+     */
+    function resolveCSSVariables(): void;
 }
 export default factory;
 export let Highcharts: typeof _Highcharts;

@@ -1,1 +1,2 @@
-import '../../../modules/drilldown.src';
+import * as Highcharts from '../../../modules/drilldown.src';
+export default Highcharts;

@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -355,9 +355,8 @@ class SVGElement {
             styles.textOutline = textOutline = textOutline.replace(/contrast/g, this.renderer.getContrast(elem.style.fill));
         }
         // Extract the stroke width and color
-        const parts = textOutline.split(' ');
-        const color = parts[parts.length - 1];
-        let strokeWidth = parts[0];
+        const spacePos = textOutline.indexOf(' '), color = textOutline.substring(spacePos + 1);
+        let strokeWidth = textOutline.substring(0, spacePos);
         if (strokeWidth && strokeWidth !== 'none' && H.svg) {
             this.fakeTS = true; // Fake text shadow
             // Since the stroke is applied on center of the actual outline, we
@@ -749,6 +748,7 @@ class SVGElement {
                 // SVG requires fill for text
                 if (stylesToApply.color) {
                     stylesToApply.fill = stylesToApply.color;
+                    delete stylesToApply.color;
                 }
             }
             css(elem, stylesToApply);
@@ -778,8 +778,8 @@ class SVGElement {
         if (strokeWidth === 'inherit') {
             strokeWidth = 1;
         }
-        value = value && value.toLowerCase();
         if (value) {
+            value = value.toLowerCase();
             const v = value
                 .replace('shortdashdotdot', '3,1,1,1,1,1,')
                 .replace('shortdashdot', '3,1,1,1')
@@ -825,7 +825,6 @@ class SVGElement {
             });
             wrapper.clipPath = clipPath.destroy();
         }
-        wrapper.connector = wrapper.connector?.destroy();
         // Destroy stops in case this is a gradient object @todo old code?
         if (wrapper.stops) {
             for (i = 0; i < wrapper.stops.length; i++) {
@@ -838,8 +837,7 @@ class SVGElement {
         wrapper.safeRemoveChild(element);
         // In case of useHTML, clean up empty containers emulating SVG groups
         // (#1960, #2393, #2697).
-        while (parentToClean &&
-            parentToClean.div &&
+        while (parentToClean?.div &&
             parentToClean.div.childNodes.length === 0) {
             grandParent = parentToClean.parentGroup;
             wrapper.safeRemoveChild(parentToClean.div);
@@ -850,12 +848,13 @@ class SVGElement {
         if (wrapper.alignOptions) {
             erase(renderer.alignedObjects, wrapper);
         }
-        objectEach(wrapper, function (val, key) {
+        objectEach(wrapper, (val, key) => {
+            if (
             // Destroy child elements of a group
-            if (wrapper[key] &&
-                wrapper[key].parentGroup === wrapper &&
-                wrapper[key].destroy) {
-                wrapper[key].destroy();
+            wrapper[key]?.parentGroup === wrapper ||
+                // Destroy own elements
+                ['connector', 'foreignObject'].indexOf(key) !== -1) {
+                wrapper[key]?.destroy?.();
             }
             // Delete all properties
             delete wrapper[key];
@@ -878,7 +877,7 @@ class SVGElement {
             }
             this.pathArray = value;
             value = value.reduce((acc, seg, i) => {
-                if (!seg || !seg.join) {
+                if (!seg?.join) {
                     return (seg || '').toString();
                 }
                 return (i ? acc + ' ' : '') + seg.join(' ');
@@ -1319,11 +1318,11 @@ class SVGElement {
      */
     setRadialReference(coordinates) {
         const existingGradient = (this.element.gradient &&
-            this.renderer.gradients[this.element.gradient]);
+            this.renderer.gradients[this.element.gradient]) || void 0;
         this.element.radialReference = coordinates;
         // On redrawing objects with an existing gradient, the gradient needs
         // to be repositioned (#3801)
-        if (existingGradient && existingGradient.radAttr) {
+        if (existingGradient?.radAttr) {
             existingGradient.animate(this.renderer.getRadialAttr(coordinates, existingGradient.radAttr));
         }
         return this;
@@ -1535,7 +1534,7 @@ class SVGElement {
      * @function Highcharts.SVGElement#updateTransform
      */
     updateTransform(attrib = 'transform') {
-        const { element, matrix, rotation = 0, rotationOriginX, rotationOriginY, scaleX, scaleY, translateX = 0, translateY = 0 } = this;
+        const { element, foreignObject, matrix, padding, rotation = 0, rotationOriginX, rotationOriginY, scaleX, scaleY, text, translateX = 0, translateY = 0 } = this;
         // Apply translate. Nearly all transformed elements have translation,
         // so instead of checking for translate = 0, do it always (#1767,
         // #1846).
@@ -1547,15 +1546,17 @@ class SVGElement {
         // Apply rotation
         if (rotation) {
             transform.push('rotate(' + rotation + ' ' +
-                pick(rotationOriginX, element.getAttribute('x'), 0) +
+                (rotationOriginX ?? element.getAttribute('x') ?? this.x ?? 0) +
                 ' ' +
-                pick(rotationOriginY, element.getAttribute('y') || 0) + ')');
+                (rotationOriginY ?? element.getAttribute('y') ?? this.y ?? 0) +
+                ')');
             // HTML labels rotation (#20685)
-            if (this.text?.element.tagName === 'SPAN') {
-                this.text.attr({
+            if (text?.element.tagName === 'SPAN' &&
+                !text?.foreignObject) {
+                text.attr({
                     rotation,
-                    rotationOriginX: (rotationOriginX || 0) - this.padding,
-                    rotationOriginY: (rotationOriginY || 0) - this.padding
+                    rotationOriginX: (rotationOriginX || 0) - padding,
+                    rotationOriginY: (rotationOriginY || 0) - padding
                 });
             }
         }
@@ -1563,8 +1564,9 @@ class SVGElement {
         if (defined(scaleX) || defined(scaleY)) {
             transform.push('scale(' + pick(scaleX, 1) + ' ' + pick(scaleY, 1) + ')');
         }
-        if (transform.length && !(this.text || this).textPath) {
-            element.setAttribute(attrib, transform.join(' '));
+        if (transform.length && !(text || this).textPath) {
+            (foreignObject?.element || element)
+                .setAttribute(attrib, transform.join(' '));
         }
     }
     /**

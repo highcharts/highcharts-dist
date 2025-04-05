@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2024 Grzegorz Blachlinski, Sebastian Bochan
+ *  (c) 2010-2025 Grzegorz Blachlinski, Sebastian Bochan
  *
  *  License: www.highcharts.com/license
  *
@@ -250,6 +250,7 @@ class PackedBubbleSeries extends BubbleSeries {
                     isParentNode: true,
                     seriesIndex: this.index
                 });
+                this.chart.allParentNodes.push(parentNode);
             }
             if (this.parentNode) {
                 parentNode.plotX = this.parentNode.plotX;
@@ -440,7 +441,9 @@ class PackedBubbleSeries extends BubbleSeries {
         if (point.fixedPosition && !point.removed) {
             const layout = this.layout, parentNodeLayout = this.parentNodeLayout;
             let distanceXY, distanceR;
-            if (parentNodeLayout && layout.options.dragBetweenSeries) {
+            if (!point.isParentNode &&
+                parentNodeLayout &&
+                layout.options.dragBetweenSeries) {
                 parentNodeLayout.nodes.forEach((node) => {
                     if (point && point.marker &&
                         node !== point.series.parentNode) {

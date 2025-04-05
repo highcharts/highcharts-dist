@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -423,8 +423,7 @@ var ColumnDataLabel;
                         dataLabel.css({
                             width: (Math.max(dataLabel.getBBox().width -
                                 labelPosition.sideOverflow, 0)) + 'px',
-                            textOverflow: ((dataLabel.options?.style || {})
-                                .textOverflow ||
+                            textOverflow: (dataLabel.options?.style?.textOverflow ||
                                 'ellipsis')
                         });
                         dataLabel.shortened = true;

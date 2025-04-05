@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -211,6 +211,7 @@ var DataLabel;
             seriesProto.alignDataLabel = alignDataLabel;
             seriesProto.drawDataLabels = drawDataLabels;
             seriesProto.justifyDataLabel = justifyDataLabel;
+            seriesProto.mergeArrays = mergeArrays;
             seriesProto.setDataLabelStartPos = setDataLabelStartPos;
             seriesProto.hasDataLabels = hasDataLabels;
         }
@@ -265,7 +266,7 @@ var DataLabel;
             dataLabelsGroup = this.initDataLabels(animationConfig);
             // Make the labels for each point
             points.forEach((point) => {
-                const dataLabels = point.dataLabels || [];
+                const dataLabels = point.dataLabels || [], pointColor = point.color || series.color;
                 // Merge in series options for the point.
                 // @note dataLabelAttribs (like pointAttribs) would eradicate
                 // the need for dlOptions, and simplify the section below.
@@ -298,8 +299,10 @@ var DataLabel;
                                 if (backgroundColor !== 'none') {
                                     labelBgColor = backgroundColor;
                                 }
-                                point.contrastColor = renderer.getContrast(labelBgColor !== 'auto' && labelBgColor ||
-                                    (point.color || series.color));
+                                point.contrastColor = renderer.getContrast((labelBgColor !== 'auto' &&
+                                    isString(labelBgColor) &&
+                                    labelBgColor) ||
+                                    (isString(pointColor) ? pointColor : ''));
                                 style.color = (labelBgColor || // #20007
                                     (!defined(distance) &&
                                         labelOptions.inside) ||
@@ -342,7 +345,9 @@ var DataLabel;
                     // build a new one below. #678, #820.
                     if (dataLabel && (!labelEnabled ||
                         !defined(labelText) ||
-                        !!dataLabel.div !== !!labelOptions.useHTML ||
+                        // Changed useHTML value
+                        !!(dataLabel.div ||
+                            dataLabel.text?.foreignObject) !== !!labelOptions.useHTML ||
                         (
                         // Change from no rotation to rotation and
                         // vice versa. Don't use defined() because
@@ -413,7 +418,7 @@ var DataLabel;
                 while (j--) {
                     // The item can be undefined if a disabled data label is
                     // succeeded by an enabled one (#19457)
-                    if (!dataLabels[j] || !dataLabels[j].isActive) {
+                    if (!dataLabels[j]?.isActive) {
                         dataLabels[j]?.destroy();
                         dataLabels.splice(j, 1);
                     }

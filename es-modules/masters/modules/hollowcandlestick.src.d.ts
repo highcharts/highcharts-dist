@@ -1,1 +1,2 @@
-import '../../../modules/hollowcandlestick.src';
+import * as Highcharts from '../../../modules/hollowcandlestick.src';
+export default Highcharts;

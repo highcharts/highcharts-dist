@@ -1,1 +1,2 @@
-import '../../../options/bubble.src';
+import * as Highcharts from '../../../options/bubble.src';
+export default Highcharts;

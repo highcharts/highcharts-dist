@@ -1,1 +1,2 @@
-import '../../../options/pivotpoints.src';
+import * as Highcharts from '../../../options/pivotpoints.src';
+export default Highcharts;

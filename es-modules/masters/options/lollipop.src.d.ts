@@ -1,1 +1,2 @@
-import '../../../options/lollipop.src';
+import * as Highcharts from '../../../options/lollipop.src';
+export default Highcharts;

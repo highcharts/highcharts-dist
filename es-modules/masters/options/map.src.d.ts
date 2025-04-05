@@ -1,1 +1,2 @@
-import '../../../options/map.src';
+import * as Highcharts from '../../../options/map.src';
+export default Highcharts;

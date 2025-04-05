@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -229,7 +229,7 @@ class Chart {
              */
             this.time = new Time(extend(options.time || {}, {
                 locale: this.locale
-            }));
+            }), options.lang);
             options.time = this.time.options;
             /**
              * Callback function to override the default function that formats
@@ -383,6 +383,39 @@ class Chart {
                 }
             }
         }
+    }
+    /**
+     * Get the clipping for a series. Could be called for a series to initialate
+     * animating the clip or to set the final clip (only width and x).
+     *
+     * @private
+     * @function Highcharts.Chart#getClipBox
+     */
+    getClipBox(series, chartCoords) {
+        const inverted = this.inverted, { xAxis, yAxis } = series || {};
+        // If no axes on the series, or series undefined, use global clipBox
+        let { x, y, width, height } = merge(this.clipBox);
+        if (series) {
+            // Otherwise, use clipBox.width which is corrected for
+            // plotBorderWidth and clipOffset
+            if (xAxis && xAxis.len !== this.plotSizeX) {
+                width = xAxis.len;
+            }
+            if (yAxis && yAxis.len !== this.plotSizeY) {
+                height = yAxis.len;
+            }
+            // If the chart is inverted and the series is not invertible, the
+            // chart clip box should be inverted, but not the series clip box
+            // (#20264)
+            if (inverted && !series.invertible) {
+                [width, height] = [height, width];
+            }
+        }
+        if (chartCoords) {
+            x += (inverted ? yAxis : xAxis)?.pos ?? this.plotLeft;
+            y += (inverted ? xAxis : yAxis)?.pos ?? this.plotTop;
+        }
+        return { x, y, width, height };
     }
     /**
      * Check whether a given point is within the plot area.
@@ -828,18 +861,18 @@ class Chart {
                         (uncappedScale < minScale ? 'left' : 'center') :
                         // Subtitle defaults to the title.align
                         this.title?.alignValue
-                }, descOptions), width = descOptions.width || ((uncappedScale > minScale ?
+                }, descOptions), width = (descOptions.width || ((uncappedScale > minScale ?
                     // One line
                     this.chartWidth :
                     // Allow word wrap
-                    alignTo.width) / scale);
+                    alignTo.width) / scale)) + 'px';
                 // No animation when switching alignment
                 if (desc.alignValue !== alignAttr.align) {
                     desc.placed = false;
                 }
                 // Set the width and read the height
                 const height = Math.round(desc
-                    .css({ width: `${width}px` })
+                    .css({ width })
                     // Skip the cache for HTML (#3481, #11666)
                     .getBBox(descOptions.useHTML).height);
                 alignAttr.height = height;
@@ -964,7 +997,7 @@ class Chart {
     temporaryDisplay(revert) {
         let node = this.renderTo, tempStyle;
         if (!revert) {
-            while (node && node.style) {
+            while (node?.style) {
                 // When rendering to a detached node, it needs to be temporarily
                 // attached in order to read styling and bounding boxes (#5783,
                 // #7024).
@@ -1001,7 +1034,7 @@ class Chart {
             }
         }
         else {
-            while (node && node.style) {
+            while (node?.style) {
                 if (node.hcOrigStyle) {
                     css(node, node.hcOrigStyle);
                     delete node.hcOrigStyle;
@@ -1122,7 +1155,7 @@ class Chart {
          * @name Highcharts.Chart#renderer
          * @type {Highcharts.SVGRenderer}
          */
-        chart.renderer = new Renderer(container, chartWidth, chartHeight, void 0, optionsChart.forExport, options.exporting && options.exporting.allowHTML, chart.styledMode);
+        chart.renderer = new Renderer(container, chartWidth, chartHeight, void 0, optionsChart.forExport, options.exporting?.allowHTML, chart.styledMode);
         // Set the initial animation from the options
         setAnimation(void 0, chart);
         chart.setClassName(optionsChart.className);
@@ -1159,7 +1192,7 @@ class Chart {
             this.marginBottom = Math.max(this.marginBottom, titleOffset[2] + spacing[2]);
         }
         // Adjust for legend
-        if (this.legend && this.legend.display) {
+        if (this.legend?.display) {
             this.legend.adjustMargins(margin, spacing);
         }
         fireEvent(this, 'getMargins');
@@ -1185,7 +1218,7 @@ class Chart {
         if (chart.hasCartesianSeries) {
             getOffset(chart.axes);
         }
-        else if (colorAxis && colorAxis.length) {
+        else if (colorAxis?.length) {
             getOffset(colorAxis);
         }
         // Add the axis offsets
@@ -1395,14 +1428,14 @@ class Chart {
          * @name Highcharts.Chart#plotWidth
          * @type {number}
          */
-        chart.plotWidth = plotWidth = Math.max(0, Math.round(chartWidth - plotLeft - chart.marginRight));
+        chart.plotWidth = plotWidth = Math.max(0, Math.round(chartWidth - plotLeft - (chart.marginRight ?? 0)));
         /**
          * The current height of the plot area in pixels.
          *
          * @name Highcharts.Chart#plotHeight
          * @type {number}
          */
-        chart.plotHeight = plotHeight = Math.max(0, Math.round(chartHeight - plotTop - chart.marginBottom));
+        chart.plotHeight = plotHeight = Math.max(0, Math.round(chartHeight - plotTop - (chart.marginBottom ?? 0)));
         chart.plotSizeX = inverted ? plotHeight : plotWidth;
         chart.plotSizeY = inverted ? plotWidth : plotHeight;
         // Set boxes used for alignment
@@ -1444,7 +1477,7 @@ class Chart {
      */
     resetMargins() {
         fireEvent(this, 'resetMargins');
-        const chart = this, chartOptions = chart.options.chart, plotBorderWidth = chartOptions.plotBorderWidth || 0, halfWidth = plotBorderWidth / 2;
+        const chart = this, chartOptions = chart.options.chart, plotBorderWidth = chartOptions.plotBorderWidth || 0, halfWidth = Math.round(plotBorderWidth) / 2;
         // Create margin and spacing array
         ['margin', 'spacing'].forEach(function splashArrays(target) {
             const value = chartOptions[target], values = isObject(value) ? value : [value, value, value, value];
@@ -1572,13 +1605,10 @@ class Chart {
                 fill: 'none'
             });
         }
-        plotBorder[verb](plotBorder.crisp({
-            x: plotLeft,
-            y: plotTop,
-            width: plotWidth,
-            height: plotHeight
-        }, -plotBorder.strokeWidth())); // #3282 plotBorder should be negative;
-        // reset
+        plotBorder[verb](plotBorder.crisp(plotBox, 
+        // #3282 plotBorder should be negative
+        -plotBorder.strokeWidth()));
+        // Reset
         chart.isDirtyBox = false;
         fireEvent(this, 'afterDrawChartBox');
     }
@@ -1610,7 +1640,7 @@ class Chart {
                     (klass && klass.prototype[key]);
             // Requires it
             // 4. Check if any the chart's series require it
-            i = seriesOptions && seriesOptions.length;
+            i = seriesOptions?.length;
             while (!value && i--) {
                 klass = seriesTypes[seriesOptions[i].type];
                 if (klass && klass.prototype[key]) {
@@ -1770,7 +1800,7 @@ class Chart {
         if (chart.hasCartesianSeries) {
             renderAxes(axes);
         }
-        else if (colorAxis && colorAxis.length) {
+        else if (colorAxis?.length) {
             renderAxes(colorAxis);
         }
         // The series
@@ -1851,7 +1881,7 @@ class Chart {
      * @emits Highcharts.Chart#event:destroy
      */
     destroy() {
-        const chart = this, axes = chart.axes, series = chart.series, container = chart.container, parentNode = container && container.parentNode;
+        const chart = this, axes = chart.axes, series = chart.series, container = chart.container, parentNode = container?.parentNode;
         let i;
         // Fire the chart.destroy event
         fireEvent(chart, 'destroy');
@@ -1873,9 +1903,7 @@ class Chart {
             axes[i] = axes[i].destroy();
         }
         // Destroy scroller & scroller series before destroying base series
-        if (this.scroller && this.scroller.destroy) {
-            this.scroller.destroy();
-        }
+        this.scroller?.destroy?.();
         // Destroy each series
         i = series.length;
         while (i--) {
@@ -1887,11 +1915,8 @@ class Chart {
             'plotBGImage', 'plotBorder', 'seriesGroup', 'clipRect', 'credits',
             'pointer', 'rangeSelector', 'legend', 'resetZoomButton', 'tooltip',
             'renderer'
-        ].forEach(function (name) {
-            const prop = chart[name];
-            if (prop && prop.destroy) {
-                chart[name] = prop.destroy();
-            }
+        ].forEach((name) => {
+            chart[name] = chart[name]?.destroy?.();
         });
         // Remove container and all SVG, check container as it can break in IE
         // when destroyed before finished loading
@@ -1987,7 +2012,7 @@ class Chart {
             // Make chart behave as an image with the title as alt text
             this.renderer.boxWrapper.attr({
                 role: 'img',
-                'aria-label': ((title && title.element.textContent) || ''
+                'aria-label': (title?.element.textContent || ''
                 // #17753, < is not allowed in SVG attributes
                 ).replace(/</g, '&lt;')
             });
@@ -2464,7 +2489,7 @@ class Chart {
             }, this);
         }
         // Update size. Redraw is forced.
-        const newWidth = optionsChart && optionsChart.width;
+        const newWidth = optionsChart?.width;
         const newHeight = optionsChart && (isString(optionsChart.height) ?
             relativeLength(optionsChart.height, newWidth || chart.chartWidth) :
             optionsChart.height);

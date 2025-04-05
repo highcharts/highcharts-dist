@@ -2,7 +2,7 @@
  *
  *  Organization chart module
  *
- *  (c) 2018-2024 Torstein Honsi
+ *  (c) 2018-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -40,7 +40,7 @@ class OrganizationSeries extends SankeySeries {
      * */
     alignDataLabel(point, dataLabel, options) {
         // Align the data label to the point graphic
-        const shapeArgs = point.shapeArgs;
+        const shapeArgs = point.shapeArgs, text = dataLabel.text;
         if (options.useHTML && shapeArgs) {
             const padjust = (this.options.borderWidth +
                 2 * this.options.dataLabels.padding);
@@ -51,22 +51,26 @@ class OrganizationSeries extends SankeySeries {
             }
             height -= padjust;
             width -= padjust;
-            // Set the size of the surrounding div emulating `g`
-            const text = dataLabel.text;
-            if (text) {
-                css(text.element.parentNode, {
-                    width: width + 'px',
-                    height: height + 'px'
-                });
-                // Set properties for the span emulating `text`
-                css(text.element, {
-                    left: 0,
-                    top: 0,
-                    width: '100%',
-                    height: '100%',
-                    overflow: 'hidden'
-                });
-            }
+            text.foreignObject?.attr({
+                x: 0,
+                y: 0,
+                width,
+                height
+            });
+            // When foreign object, the parent node is the body. When parallel
+            // HTML, it is the surrounding div emulating `g`
+            css(text.element.parentNode, {
+                width: width + 'px',
+                height: height + 'px'
+            });
+            // Set properties for the span emulating `text`
+            css(text.element, {
+                left: 0,
+                top: 0,
+                width: '100%',
+                height: '100%',
+                overflow: 'hidden'
+            });
             // The getBBox function is used in `alignDataLabel` to align
             // inside the box
             dataLabel.getBBox = () => ({ width, height, x: 0, y: 0 });

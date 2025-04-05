@@ -1,1 +1,2 @@
-import '../../../options/mapline.src';
+import * as Highcharts from '../../../options/mapline.src';
+export default Highcharts;

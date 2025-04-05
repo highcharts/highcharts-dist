@@ -1,1 +1,2 @@
-import '../../../modules/bullet.src';
+import * as Highcharts from '../../../modules/bullet.src';
+export default Highcharts;

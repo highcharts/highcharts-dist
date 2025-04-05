@@ -1,1 +1,2 @@
-import '../../../options/tilemap.src';
+import * as Highcharts from '../../../options/tilemap.src';
+export default Highcharts;

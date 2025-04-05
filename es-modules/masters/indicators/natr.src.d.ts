@@ -1,1 +1,2 @@
-import '../../../indicators/natr.src';
+import * as Highcharts from '../../../indicators/natr.src';
+export default Highcharts;

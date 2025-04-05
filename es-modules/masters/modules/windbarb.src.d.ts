@@ -1,1 +1,2 @@
-import '../../../modules/windbarb.src';
+import * as Highcharts from '../../../modules/windbarb.src';
+export default Highcharts;

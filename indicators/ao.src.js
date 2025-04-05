@@ -1,12 +1,12 @@
 /**
- * @license Highstock JS v12.1.2 (2024-12-21)
+ * @license Highstock JS v12.1.2-modified (2025-04-05)
  * @module highcharts/indicators/ao
  * @requires highcharts
  * @requires highcharts/modules/stock
  *
  * Indicator series type for Highcharts Stock
  *
- * (c) 2010-2024 Wojciech Chmiel
+ * (c) 2010-2025 Wojciech Chmiel
  *
  * License: www.highcharts.com/license
  */

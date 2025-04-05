@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2024 Highsoft AS
+ *  (c) 2009-2025 Highsoft AS
  *
  *  License: www.highcharts.com/license
  *
@@ -186,8 +186,11 @@ class InvertModifier extends DataModifier {
         modifier.emit({ type: 'modify', detail: eventDetail, table });
         const modified = table.modified;
         if (table.hasColumns(['columnNames'])) { // Inverted table
-            const columnNames = ((table.deleteColumns(['columnNames']) || {})
-                .columnNames || []).map((column) => `${column}`), columns = {};
+            const columnNamesColumn = ((table.deleteColumns(['columnNames']) || {})
+                .columnNames || []), columns = {}, columnNames = [];
+            for (let i = 0, iEnd = columnNamesColumn.length; i < iEnd; ++i) {
+                columnNames.push('' + columnNamesColumn[i]);
+            }
             for (let i = 0, iEnd = table.getRowCount(), row; i < iEnd; ++i) {
                 row = table.getRow(i);
                 if (row) {

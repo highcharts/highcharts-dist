@@ -1,1 +1,2 @@
-import '../../../indicators/ichimoku-kinko-hyo.src';
+import * as Highcharts from '../../../indicators/ichimoku-kinko-hyo.src';
+export default Highcharts;

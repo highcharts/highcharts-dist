@@ -1,1 +1,2 @@
-import '../../../indicators/aroon.src';
+import * as Highcharts from '../../../indicators/aroon.src';
+export default Highcharts;

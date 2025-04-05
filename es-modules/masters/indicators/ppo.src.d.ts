@@ -1,1 +1,2 @@
-import '../../../indicators/ppo.src';
+import * as Highcharts from '../../../indicators/ppo.src';
+export default Highcharts;

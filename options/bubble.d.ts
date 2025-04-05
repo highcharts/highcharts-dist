@@ -224,18 +224,23 @@ declare module "../highcharts" {
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) Format for points with the
          * value of null. Works analogously to format. `nullFormat` can be
-         * applied only to series which support displaying null points i.e
-         * `heatmap` or `tilemap`. Does not work with series that don't display
-         * null points, like `line`, `column`, `bar` or `pie`.
+         * applied only to series which support displaying null points.
+         * `heatmap` and `tilemap` supports `nullFormat` by default while the
+         * following series requires [#series.nullInteraction] set to `true`:
+         * `line`, `spline`, `area`, `area-spline`, `column`, `bar`, and
+         * `timeline`. Does not work with series that don't display null points,
+         * like `pie`.
          */
         nullFormat?: (boolean|string);
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) Callback JavaScript function
          * that defines formatting for points with the value of null. Works
          * analogously to formatter. `nullFormatter` can be applied only to
-         * series which support displaying null points i.e `heatmap` or
-         * `tilemap`. Does not work with series that don't display null points,
-         * like `line`, `column`, `bar` or `pie`.
+         * series which support displaying null points. `heatmap` and `tilemap`
+         * supports `nullFormatter` by default while the following series
+         * requires [#series.nullInteraction] set to `true`: `line`, `spline`,
+         * `area`, `area-spline`, `column`, `bar`, and `timeline`. Does not work
+         * with series that don't display null points, like `pie`.
          */
         nullFormatter?: Highcharts.DataLabelsFormatterCallbackFunction;
         /**
@@ -415,6 +420,43 @@ declare module "../highcharts" {
         /**
          * (Highcharts, Highstock) Y position of the series center. By default,
          * the series is displayed on the point that it is connected to.
+         */
+        y?: number;
+    }
+    /**
+     * (Highcharts, Highstock, Highmaps) Positioning options for fixed tooltip,
+     * taking effect only when tooltip.fixed is `true`.
+     */
+    interface PlotBubbleTooltipPositionOptions {
+        /**
+         * (Highcharts, Highstock, Highmaps) The horizontal alignment of the
+         * fixed tooltip.
+         */
+        align?: Highcharts.AlignValue;
+        /**
+         * (Highcharts, Highstock, Highmaps) What the fixed tooltip alignment
+         * should be relative to.
+         *
+         * The default, `pane`, means that it is aligned within the plot area
+         * for that given series. If the tooltip is split (as default in Stock
+         * charts), each partial tooltip is aligned within the series' pane.
+         */
+        relativeTo?: Highcharts.OptionsRelativeToValue;
+        /**
+         * (Highcharts, Highstock, Highmaps) The vertical alignment of the fixed
+         * tooltip.
+         */
+        verticalAlign?: Highcharts.VerticalAlignValue;
+        /**
+         * (Highcharts, Highstock, Highmaps) X pixel offset from the given
+         * position. Can be used to shy away from axis lines, grid lines etc to
+         * avoid the tooltip overlapping other elements.
+         */
+        x?: number;
+        /**
+         * (Highcharts, Highstock, Highmaps) Y pixel offset from the given
+         * position. Can be used to shy away from axis lines, grid lines etc to
+         * avoid the tooltip overlapping other elements.
          */
         y?: number;
     }

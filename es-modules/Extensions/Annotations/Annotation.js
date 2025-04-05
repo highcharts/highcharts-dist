@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2024 Highsoft, Black Label
+ *  (c) 2009-2025 Highsoft, Black Label
  *
  *  License: www.highcharts.com/license
  *
@@ -165,7 +165,7 @@ class Annotation extends EventEmitter {
         this.options.labels = labelsAndShapes.labels;
         this.options.shapes = labelsAndShapes.shapes;
         /**
-         * The callback that reports to the overlapping-labels module which
+         * The callback that reports to the overlapping labels logic which
          * labels it should account for.
          * @private
          * @name Highcharts.Annotation#labelCollector

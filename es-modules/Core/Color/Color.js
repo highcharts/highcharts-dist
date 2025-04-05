@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -9,8 +9,16 @@
  * */
 'use strict';
 import H from '../Globals.js';
+const { win } = H;
 import U from '../Utilities.js';
-const { isNumber, merge, pInt, defined } = U;
+const { isNumber, isString, merge, pInt, defined } = U;
+/* *
+ *
+ *  Helpers
+ *
+ * */
+const colorMix = (color1, color2, weight) => `color-mix(in srgb,${color1},${color2} ${weight * 100}%)`;
+const isStringColor = (color) => isString(color) && !!color && color !== 'none';
 /* *
  *
  *  Class
@@ -99,6 +107,9 @@ class Color {
      */
     get(format) {
         const input = this.input, rgba = this.rgba;
+        if (this.output) {
+            return this.output;
+        }
         if (typeof input === 'object' &&
             typeof this.stops !== 'undefined') {
             const ret = merge(input);
@@ -142,14 +153,19 @@ class Color {
             });
         }
         else if (isNumber(alpha) && alpha !== 0) {
-            for (let i = 0; i < 3; i++) {
-                rgba[i] += pInt(alpha * 255);
-                if (rgba[i] < 0) {
-                    rgba[i] = 0;
+            if (isNumber(rgba[0])) {
+                for (let i = 0; i < 3; i++) {
+                    rgba[i] += pInt(alpha * 255);
+                    if (rgba[i] < 0) {
+                        rgba[i] = 0;
+                    }
+                    if (rgba[i] > 255) {
+                        rgba[i] = 255;
+                    }
                 }
-                if (rgba[i] > 255) {
-                    rgba[i] = 255;
-                }
+            }
+            else if (Color.useColorMix && isStringColor(this.input)) {
+                this.output = colorMix(this.input, alpha > 0 ? 'white' : 'black', Math.abs(alpha));
             }
         }
         return this;
@@ -188,6 +204,12 @@ class Color {
         const fromRgba = this.rgba, toRgba = to.rgba;
         // Unsupported color, return to-color (#3920, #7034)
         if (!isNumber(fromRgba[0]) || !isNumber(toRgba[0])) {
+            if (Color.useColorMix &&
+                isStringColor(this.input) &&
+                isStringColor(to.input) &&
+                pos < 0.99) {
+                return colorMix(this.input, to.input, pos);
+            }
             return to.input || 'none';
         }
         // Check for has alpha, because rgba colors perform worse due to
@@ -264,6 +286,12 @@ Color.parsers = [{
             ];
         }
     }];
+/**
+ * Whether to use CSS `color-mix` for color handling (brightening,
+ * tweening). This can be disabled from the outside.
+ * @private
+ */
+Color.useColorMix = win.CSS?.supports('color', 'color-mix(in srgb,red,blue 9%)');
 // Must be last static member for init cycle
 Color.None = new Color('');
 /* *

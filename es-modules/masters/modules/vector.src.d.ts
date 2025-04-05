@@ -1,1 +1,2 @@
-import '../../../modules/vector.src';
+import * as Highcharts from '../../../modules/vector.src';
+export default Highcharts;

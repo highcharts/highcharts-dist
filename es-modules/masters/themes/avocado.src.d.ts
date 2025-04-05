@@ -1,1 +1,2 @@
-import '../../../themes/avocado.src';
+import * as Highcharts from '../../../themes/avocado.src';
+export default Highcharts;

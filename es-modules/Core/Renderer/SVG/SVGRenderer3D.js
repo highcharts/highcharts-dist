@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  Extensions to the SVGRenderer class to enable 3D shapes
  *
@@ -223,7 +223,7 @@ var SVGRenderer3D;
             return elementProto.attr.apply(this, arguments);
         };
         result.animate = function (params, duration, complete) {
-            if (params && params.faces) {
+            if (params?.faces) {
                 while (result.faces.length > params.faces.length) {
                     result.faces.pop().destroy();
                 }

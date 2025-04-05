@@ -1,1 +1,2 @@
-import '../../../options/supertrend.src';
+import * as Highcharts from '../../../options/supertrend.src';
+export default Highcharts;

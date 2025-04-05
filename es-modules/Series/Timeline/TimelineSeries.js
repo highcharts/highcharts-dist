@@ -2,7 +2,7 @@
  *
  *  Timeline Series.
  *
- *  (c) 2010-2024 Highsoft AS
+ *  (c) 2010-2025 Highsoft AS
  *
  *  Author: Daniel Studencki
  *
@@ -105,15 +105,16 @@ class TimelineSeries extends LineSeries {
     }
     generatePoints() {
         super.generatePoints();
-        const series = this, points = series.points, xData = series.getColumn('x');
-        for (let i = 0, iEnd = points.length; i < iEnd; ++i) {
-            points[i].applyOptions({
-                x: xData[i]
-            }, xData[i]);
+        const series = this, points = series.points, pointsLen = points.length, xData = series.getColumn('x');
+        for (let i = 0, iEnd = pointsLen; i < iEnd; ++i) {
+            const x = xData[i];
+            points[i].applyOptions({ x: x }, x);
         }
     }
     getVisibilityMap() {
-        const series = this, map = ((series.data.length ? series.data : series.options.data) || []).map((point) => (point && point.visible !== false && !point.isNull ?
+        const series = this, nullInteraction = series.options.nullInteraction, map = ((series.data.length ? series.data : series.options.data) || []).map((point) => (point &&
+            point.visible !== false &&
+            (!point.isNull || nullInteraction) ?
             point :
             false));
         return map;
@@ -138,7 +139,8 @@ class TimelineSeries extends LineSeries {
                 point.isInside = point.isInside && point.visible;
                 // New way of calculating closestPointRangePx value, which
                 // respects the real point visibility is needed.
-                if (point.visible && !point.isNull) {
+                if (point.visible && (!point.isNull ||
+                    series.options.nullInteraction)) {
                     if (defined(lastPlotX)) {
                         closestPointRangePx = Math.min(closestPointRangePx, Math.abs(point.plotX - lastPlotX));
                     }

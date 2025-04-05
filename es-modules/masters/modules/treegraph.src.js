@@ -1,11 +1,11 @@
 /**
- * @license Highcharts JS v@product.version@ (@product.date@)
+ * @license Highcharts JS v12.1.2-modified (2025-04-05)
  * Treegraph chart series type
  * @module highcharts/modules/treegraph
  * @requires highcharts
  * @requires highcharts/modules/treemap
  *
- *  (c) 2010-2024 Pawel Lysy Grzegorz Blachlinski
+ *  (c) 2010-2025 Pawel Lysy Grzegorz Blachlinski
  *
  * License: www.highcharts.com/license
  */
