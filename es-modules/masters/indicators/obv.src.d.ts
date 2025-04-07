@@ -1,1 +1,2 @@
-import '../../../indicators/obv.src';
+import * as Highcharts from '../../../indicators/obv.src';
+export default Highcharts;

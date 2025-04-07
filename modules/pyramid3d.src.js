@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.1.2 (2024-12-21)
+ * @license Highcharts JS v12.2.0 (2025-04-07)
  * @module highcharts/modules/pyramid3d
  * @requires highcharts
  * @requires highcharts/highcharts-3d
@@ -8,7 +8,7 @@
  *
  * Highcharts 3D funnel module
  *
- * (c) 2010-2024 Kacper Madej
+ * (c) 2010-2025 Kacper Madej
  *
  * License: www.highcharts.com/license
  */
@@ -112,7 +112,7 @@ var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default 
  *
  *  Highcharts pyramid3d series module
  *
- *  (c) 2010-2024 Highsoft AS
+ *  (c) 2010-2025 Highsoft AS
  *  Author: Kacper Madej
  *
  *  License: www.highcharts.com/license
@@ -237,7 +237,7 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  *
  *  Highcharts pyramid3d series module
  *
- *  (c) 2010-2024 Highsoft AS
+ *  (c) 2010-2025 Highsoft AS
  *  Author: Kacper Madej
  *
  *  License: www.highcharts.com/license

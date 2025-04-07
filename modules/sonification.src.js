@@ -1,11 +1,11 @@
 /**
- * @license Highcharts JS v12.1.2 (2024-12-21)
+ * @license Highcharts JS v12.2.0 (2025-04-07)
  * @module highcharts/modules/sonification
  * @requires highcharts
  *
  * Sonification module
  *
- * (c) 2010-2024 Highsoft AS
+ * (c) 2010-2025 Highsoft AS
  * Author: Øystein Moseng
  *
  * License: www.highcharts.com/license
@@ -24,17 +24,17 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 984:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__984__;
-
-/***/ }),
-
 /***/ 944:
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
+
+/***/ }),
+
+/***/ 984:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__984__;
 
 /***/ })
 
@@ -108,7 +108,7 @@ var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default 
 ;// ./code/es-modules/Extensions/Sonification/Options.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Default options for sonification.
  *
@@ -1156,7 +1156,7 @@ const Options = {
 ;// ./code/es-modules/Extensions/Sonification/SynthPatch.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Class representing a Synth Patch, used by Instruments in the
  *  sonification.js module.
@@ -1849,7 +1849,7 @@ SynthPatch.stopRampTime = 0.012; // Ramp time to 0 when stopping sound
 ;// ./code/es-modules/Extensions/Sonification/InstrumentPresets.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Presets for SynthPatch.
  *
@@ -2725,7 +2725,7 @@ const InstrumentPresets = {
 ;// ./code/es-modules/Extensions/Sonification/SonificationInstrument.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Class representing an Instrument with mappable parameters for sonification.
  *
@@ -3093,7 +3093,7 @@ SonificationInstrument.rampTime = Sonification_SynthPatch.stopRampTime / 4;
 ;// ./code/es-modules/Extensions/Sonification/SonificationSpeaker.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Class representing a speech synthesis voice.
  *
@@ -3263,7 +3263,7 @@ class SonificationSpeaker {
 ;// ./code/es-modules/Extensions/Sonification/TimelineChannel.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Class representing a TimelineChannel with sonification events to play.
  *
@@ -3359,7 +3359,7 @@ class TimelineChannel {
 ;// ./code/es-modules/Extensions/Sonification/MIDI.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Small MIDI file writer for sonification export.
  *
@@ -3507,7 +3507,7 @@ function toMIDI(channels) {
 ;// ./code/es-modules/Extensions/DownloadURL.js
 /* *
  *
- *  (c) 2015-2024 Oystein Moseng
+ *  (c) 2015-2025 Oystein Moseng
  *
  *  License: www.highcharts.com/license
  *
@@ -3637,7 +3637,7 @@ const DownloadURL = {
 ;// ./code/es-modules/Extensions/Sonification/SonificationTimeline.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Class representing a Timeline with sonification events to play.
  *
@@ -4118,7 +4118,7 @@ var highcharts_Templating_commonjs_highcharts_Templating_commonjs2_highcharts_Te
 ;// ./code/es-modules/Extensions/Sonification/TimelineFromChart.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Build a timeline from a chart.
  *
@@ -4857,7 +4857,7 @@ function timelineFromChart(audioContext, destinationNode, chart) {
 ;// ./code/es-modules/Extensions/Sonification/Sonification.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Sonification module.
  *
@@ -5514,7 +5514,7 @@ Sonification_merge(true, defaultOptions, Sonification_Options);
 ;// ./code/es-modules/Extensions/Sonification/Scales.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Musical scales for sonification.
  *

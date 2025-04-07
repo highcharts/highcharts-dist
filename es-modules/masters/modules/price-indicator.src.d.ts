@@ -1,1 +1,2 @@
-import '../../../modules/price-indicator.src';
+import * as Highcharts from '../../../modules/price-indicator.src';
+export default Highcharts;

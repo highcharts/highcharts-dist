@@ -1,11 +1,11 @@
 /**
- * @license Highcharts Gantt JS v12.1.2 (2024-12-21)
+ * @license Highcharts Gantt JS v12.2.0 (2025-04-07)
  * @module highcharts/modules/pathfinder
  * @requires highcharts
  *
  * Pathfinder
  *
- * (c) 2016-2024 Øystein Moseng
+ * (c) 2016-2025 Øystein Moseng
  *
  * License: www.highcharts.com/license
  */
@@ -461,7 +461,7 @@ class Connection {
 ;// ./code/es-modules/Series/PathUtilities.js
 /* *
  *
- *  (c) 2010-2024 Pawel Lysy
+ *  (c) 2010-2025 Pawel Lysy
  *
  *  License: www.highcharts.com/license
  *

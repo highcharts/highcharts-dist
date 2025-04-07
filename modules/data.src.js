@@ -1,11 +1,11 @@
 /**
- * @license Highcharts JS v12.1.2 (2024-12-21)
+ * @license Highcharts JS v12.2.0 (2025-04-07)
  * @module highcharts/modules/data
  * @requires highcharts
  *
  * Data module
  *
- * (c) 2012-2024 Torstein Honsi
+ * (c) 2012-2025 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -23,20 +23,6 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 532:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__532__;
-
-/***/ }),
-
-/***/ 960:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__960__;
-
-/***/ }),
-
 /***/ 260:
 /***/ ((module) => {
 
@@ -51,10 +37,24 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
 
 /***/ }),
 
+/***/ 532:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__532__;
+
+/***/ }),
+
 /***/ 944:
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
+
+/***/ }),
+
+/***/ 960:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__960__;
 
 /***/ })
 
@@ -128,7 +128,7 @@ var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default 
 ;// ./code/es-modules/Core/HttpUtilities.js
 /* *
  *
- *  (c) 2010-2024 Christer Vasseng, Torstein Honsi
+ *  (c) 2010-2025 Christer Vasseng, Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -183,7 +183,7 @@ function ajax(settings) {
         return false;
     }
     r.open((settings.type || 'get').toUpperCase(), settings.url, true);
-    if (!settings.headers || !settings.headers['Content-Type']) {
+    if (!settings.headers?.['Content-Type']) {
         r.setRequestHeader('Content-Type', headers[settings.dataType || 'json'] || headers.text);
     }
     objectEach(settings.headers, function (val, key) {
@@ -210,7 +210,7 @@ function ajax(settings) {
                         }
                     }
                 }
-                return settings.success && settings.success(res, r);
+                return settings.success?.(res, r);
             }
             handleError(r, r.responseText);
         }
@@ -351,7 +351,7 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  *
  *  Data module
  *
- *  (c) 2012-2024 Torstein Honsi
+ *  (c) 2012-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *

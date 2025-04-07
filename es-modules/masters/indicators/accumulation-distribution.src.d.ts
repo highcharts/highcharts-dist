@@ -1,1 +1,2 @@
-import '../../../indicators/accumulation-distribution.src';
+import * as Highcharts from '../../../indicators/accumulation-distribution.src';
+export default Highcharts;

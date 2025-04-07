@@ -429,6 +429,12 @@ declare module "../highcharts.src" {
          */
         getExtremesFromAll?: boolean;
         /**
+         * (Highcharts) Group padding for parent elements in terms of pixels.
+         * See also the `nodeSizeBy` option that controls how the leaf nodes'
+         * size is affected by the padding.
+         */
+        groupPadding?: number;
+        /**
          * (Highcharts) Highlight only the hovered point and fade the remaining
          * points.
          *
@@ -514,6 +520,14 @@ declare module "../highcharts.src" {
          */
         nodeDistance?: (number|string);
         /**
+         * (Highcharts) Experimental. How to set the size of child nodes when a
+         * header or padding is present. When `leaf`, the group is expanded to
+         * make room for headers and padding in order to preserve the relative
+         * sizes between leaves. When `group`, the leaves are naïvely fit into
+         * the remaining area after the header and padding are subtracted.
+         */
+        nodeSizeBy?: Highcharts.OptionsNodeSizeByValue;
+        /**
          * (Highcharts) The pixel width of each node in a, or the height in case
          * the chart is inverted. For tree graphs, the node width is only
          * applied if the marker symbol is `rect`, otherwise the `marker` sizing
@@ -525,13 +539,23 @@ declare module "../highcharts.src" {
          */
         nodeWidth?: (number|string);
         /**
+         * (Highcharts, Highstock) Whether or not data-points with the value of
+         * `null` should be interactive. When this is set to `true`, tooltips
+         * may highlight these points, and this option also enables keyboard
+         * navigation for such points. Format options for such points include
+         * `nullFormat` and `nullFormater`. Works for these series: `line`,
+         * `spline`, `area`, `area-spline`, `column`, `bar`, and* `timeline`.
+         */
+        nullInteraction?: (boolean|undefined);
+        /**
          * (Highcharts) Options for the _Series on point_ feature. Only `pie`
          * and `sunburst` series are supported at this moment.
          */
         onPoint?: (object|Highcharts.PlotTreegraphOnPointOptions);
         /**
-         * (Highcharts) The opacity of a point in treemap. When a point has
-         * children, the visibility of the children is determined by the
+         * (Highcharts) The opacity of grouped points in treemap. When a point
+         * has children, the group point is covering the children, and is given
+         * this opacity. The visibility of the children is determined by the
          * opacity.
          */
         opacity?: number;
@@ -793,6 +817,10 @@ declare module "../highcharts.src" {
          * 'Category2', }] ```
          */
         data?: Array<Highcharts.PointOptionsObject>;
+        /**
+         * Not available
+         */
+        headers?: undefined;
         /**
          * Not available
          */

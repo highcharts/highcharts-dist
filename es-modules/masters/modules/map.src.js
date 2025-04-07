@@ -1,11 +1,11 @@
 /**
- * @license Highmaps JS v@product.version@ (@product.date@)
+ * @license Highmaps JS v12.2.0 (2025-04-07)
  * @module highcharts/modules/map
  * @requires highcharts
  *
  * Highmaps as a plugin for Highcharts or Highcharts Stock.
  *
- * (c) 2011-2024 Torstein Honsi
+ * (c) 2011-2025 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */

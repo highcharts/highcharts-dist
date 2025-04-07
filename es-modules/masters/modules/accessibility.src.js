@@ -1,11 +1,11 @@
 /**
- * @license Highcharts JS v@product.version@ (@product.date@)
+ * @license Highcharts JS v12.2.0 (2025-04-07)
  * @module highcharts/modules/accessibility
  * @requires highcharts
  *
  * Accessibility module
  *
- * (c) 2010-2024 Highsoft AS
+ * (c) 2010-2025 Highsoft AS
  * Author: Oystein Moseng
  *
  * License: www.highcharts.com/license

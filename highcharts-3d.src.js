@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.1.2 (2024-12-21)
+ * @license Highcharts JS v12.2.0 (2025-04-07)
  * @module highcharts/highcharts-3d
  * @requires highcharts
  *
@@ -21,6 +21,20 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
+/***/ 184:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__184__;
+
+/***/ }),
+
+/***/ 512:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
+
+/***/ }),
+
 /***/ 532:
 /***/ ((module) => {
 
@@ -28,17 +42,17 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__532__;
 
 /***/ }),
 
-/***/ 620:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__620__;
-
-/***/ }),
-
 /***/ 608:
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__608__;
+
+/***/ }),
+
+/***/ 620:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__620__;
 
 /***/ }),
 
@@ -53,20 +67,6 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__632__;
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__820__;
-
-/***/ }),
-
-/***/ 512:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
-
-/***/ }),
-
-/***/ 184:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__184__;
 
 /***/ }),
 
@@ -150,7 +150,7 @@ var highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_H
 ;// ./code/es-modules/Core/Math3D.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -402,7 +402,7 @@ const Math3D = {
 ;// ./code/es-modules/Core/Chart/Chart3D.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  Extension for 3D charts
  *
@@ -2093,7 +2093,7 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
 ;// ./code/es-modules/Series/Area3D/Area3DSeries.js
 /* *
  *
- *  (c) 2010-2024 Grzegorz Blachliński
+ *  (c) 2010-2025 Grzegorz Blachliński
  *
  *  License: www.highcharts.com/license
  *
@@ -2189,7 +2189,7 @@ const Area3DSeries = {
 ;// ./code/es-modules/Core/Axis/Axis3DDefaults.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  Extension for 3d axes
  *
@@ -2321,7 +2321,7 @@ const Axis3DDefaults = {
 ;// ./code/es-modules/Core/Axis/Tick3DComposition.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  Extension for 3d axes
  *
@@ -2389,7 +2389,7 @@ const Tick3DAdditions = {
 ;// ./code/es-modules/Core/Axis/Axis3DComposition.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  Extension for 3d axes
  *
@@ -2419,7 +2419,7 @@ const { addEvent: Axis3DComposition_addEvent, merge: Axis3DComposition_merge, pi
  */
 function onAxisAfterSetOptions() {
     const axis = this, chart = axis.chart, options = axis.options;
-    if (chart.is3d && chart.is3d() && axis.coll !== 'colorAxis') {
+    if (chart.is3d?.() && axis.coll !== 'colorAxis') {
         options.tickWidth = Axis3DComposition_pick(options.tickWidth, 0);
         options.gridLineWidth = Axis3DComposition_pick(options.gridLineWidth, 1);
     }
@@ -2584,7 +2584,7 @@ function wrapAxisGetSlotWidth(proceed, tick) {
         }
         // If next label position is defined, then recalculate its position
         // basing on the perspective.
-        if (nextTick && nextTick.label && nextTick.label.xy) {
+        if (nextTick?.label?.xy) {
             nextLabelPos = Axis3DComposition_perspective3D({
                 x: nextTick.label.xy.x,
                 y: nextTick.label.xy.y,
@@ -2889,7 +2889,7 @@ var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_roo
 ;// ./code/es-modules/Core/Series/Series3D.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  Extension to the Series object in 3D charts.
  *
@@ -2946,7 +2946,7 @@ class Series3D extends (highcharts_Series_commonjs_highcharts_Series_commonjs2_h
         series.zPadding = stack *
             (seriesOptions.depth || 0 + (seriesOptions.groupZPadding || 1));
         series.data.forEach((rawPoint) => {
-            if (zAxis && zAxis.translate) {
+            if (zAxis?.translate) {
                 zValue = zAxis.logarithmic && zAxis.val2lin ?
                     zAxis.val2lin(rawPoint.z) :
                     rawPoint.z; // #4562
@@ -2998,7 +2998,7 @@ var highcharts_StackItem_commonjs_highcharts_StackItem_commonjs2_highcharts_Stac
 ;// ./code/es-modules/Core/Renderer/SVG/SVGElement3D.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  Extensions to the SVGRenderer class to enable 3D shapes
  *
@@ -3076,7 +3076,7 @@ class SVGElement3D extends SVGElement {
      * @private
      */
     singleSetterForParts(prop, val, values, verb, duration, complete) {
-        const elem3d = this, newAttr = {}, optionsToApply = [null, null, (verb || 'attr'), duration, complete], hasZIndexes = values && values.zIndexes;
+        const elem3d = this, newAttr = {}, optionsToApply = [null, null, (verb || 'attr'), duration, complete], hasZIndexes = values?.zIndexes;
         if (!values) {
             newAttr[prop] = val;
             optionsToApply[0] = newAttr;
@@ -3084,7 +3084,7 @@ class SVGElement3D extends SVGElement {
         else {
             // It is needed to deal with the whole group zIndexing
             // in case of graph rotation
-            if (hasZIndexes && hasZIndexes.group) {
+            if (hasZIndexes?.group) {
                 elem3d.attr({
                     zIndex: hasZIndexes.group
                 });
@@ -3188,7 +3188,7 @@ SVGElement3D.types = {
 ;// ./code/es-modules/Core/Renderer/SVG/SVGRenderer3D.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  Extensions to the SVGRenderer class to enable 3D shapes
  *
@@ -3411,7 +3411,7 @@ var SVGRenderer3D;
             return elementProto.attr.apply(this, arguments);
         };
         result.animate = function (params, duration, complete) {
-            if (params && params.faces) {
+            if (params?.faces) {
                 while (result.faces.length > params.faces.length) {
                     result.faces.pop().destroy();
                 }
@@ -4020,7 +4020,7 @@ var highcharts_Axis_commonjs_highcharts_Axis_commonjs2_highcharts_Axis_root_High
 ;// ./code/es-modules/Core/Axis/ZAxis.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -4135,8 +4135,7 @@ class ZAxis extends (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_highchar
     setAxisSize() {
         const chart = this.chart;
         super.setAxisSize();
-        this.width = this.len = (chart.options.chart.options3d &&
-            chart.options.chart.options3d.depth) || 0;
+        this.width = this.len = chart.options.chart.options3d?.depth || 0;
         this.right = chart.chartWidth - this.width - this.left;
     }
 }
@@ -4150,7 +4149,7 @@ class ZAxis extends (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_highchar
 ;// ./code/es-modules/Series/Column3D/Column3DComposition.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -4634,7 +4633,7 @@ const Column3DComposition = {
 ;// ./code/es-modules/Series/Pie3D/Pie3DPoint.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  3D pie series
  *
@@ -4675,7 +4674,7 @@ class Pie3DPoint extends PiePoint {
 ;// ./code/es-modules/Series/Pie3D/Pie3DSeries.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  3D pie series
  *
@@ -4890,7 +4889,7 @@ var highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_com
 ;// ./code/es-modules/Series/Scatter3D/Scatter3DPoint.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  Scatter 3D series.
  *
@@ -4933,7 +4932,7 @@ class Scatter3DPoint extends ScatterPoint {
 ;// ./code/es-modules/Series/Scatter3D/Scatter3DSeriesDefaults.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  Scatter 3D series.
  *
@@ -5053,7 +5052,7 @@ const Scatter3DSeriesDefaults = {
 ;// ./code/es-modules/Series/Scatter3D/Scatter3DSeries.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  Scatter 3D series.
  *
@@ -5139,7 +5138,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 const G = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 // Compositions
-Area3D_Area3DSeries.compose(G.seriesTypes.area);
+Area3D_Area3DSeries.compose(G.Series.types.area);
 Axis3DComposition.compose(G.Axis, G.Tick);
 Chart_Chart3D.compose(G.Chart, G.Fx);
 Column3D_Column3DComposition.compose(G.Series, (highcharts_StackItem_commonjs_highcharts_StackItem_commonjs2_highcharts_StackItem_root_Highcharts_StackItem_default()));

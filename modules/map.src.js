@@ -1,11 +1,11 @@
 /**
- * @license Highcharts JS v12.1.2 (2024-12-21)
+ * @license Highcharts JS v12.2.0 (2025-04-07)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
  * ColorAxis module
  *
- * (c) 2012-2024 Pawel Potaczek
+ * (c) 2012-2025 Pawel Potaczek
  *
  * License: www.highcharts.com/license
  */
@@ -23,31 +23,10 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 532:
+/***/ 28:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE__532__;
-
-/***/ }),
-
-/***/ 960:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__960__;
-
-/***/ }),
-
-/***/ 620:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__620__;
-
-/***/ }),
-
-/***/ 500:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__500__;
+module.exports = __WEBPACK_EXTERNAL_MODULE__28__;
 
 /***/ }),
 
@@ -58,10 +37,24 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__260__;
 
 /***/ }),
 
-/***/ 28:
+/***/ 500:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE__28__;
+module.exports = __WEBPACK_EXTERNAL_MODULE__500__;
+
+/***/ }),
+
+/***/ 512:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
+
+/***/ }),
+
+/***/ 532:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__532__;
 
 /***/ }),
 
@@ -69,6 +62,13 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__28__;
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__540__;
+
+/***/ }),
+
+/***/ 620:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__620__;
 
 /***/ }),
 
@@ -86,10 +86,17 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__820__;
 
 /***/ }),
 
-/***/ 512:
+/***/ 944:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
+module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
+
+/***/ }),
+
+/***/ 960:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__960__;
 
 /***/ }),
 
@@ -97,13 +104,6 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__984__;
-
-/***/ }),
-
-/***/ 944:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 
 /***/ })
 
@@ -183,7 +183,7 @@ var highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_H
 ;// ./code/es-modules/Core/Axis/Color/ColorAxisComposition.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -279,7 +279,7 @@ var ColorAxisComposition;
         let colorAxisItems = [], options, i;
         colorAxes.forEach(function (colorAxis) {
             options = colorAxis.options;
-            if (options && options.showInLegend) {
+            if (options?.showInLegend) {
                 // Data classes
                 if (options.dataClasses && options.visible) {
                     colorAxisItems = colorAxisItems.concat(colorAxis.getDataClassLegendSymbols());
@@ -334,8 +334,7 @@ var ColorAxisComposition;
      * @private
      */
     function onSeriesAfterTranslate() {
-        if (this.chart.colorAxis &&
-            this.chart.colorAxis.length ||
+        if (this.chart.colorAxis?.length ||
             this.colorAttribs) {
             this.translateColors();
         }
@@ -450,7 +449,7 @@ var ColorAxisComposition;
 ;// ./code/es-modules/Core/Axis/Color/ColorAxisDefaults.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -924,7 +923,7 @@ const colorAxisDefaults = {
 ;// ./code/es-modules/Core/Axis/Color/ColorAxisLike.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -1076,7 +1075,7 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
 ;// ./code/es-modules/Core/Axis/Color/ColorAxis.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -1399,7 +1398,7 @@ class ColorAxis extends (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_high
      * @emits Highcharts.ColorAxis#event:drawCrosshair
      */
     drawCrosshair(e, point) {
-        const axis = this, legendItem = axis.legendItem || {}, plotX = point && point.plotX, plotY = point && point.plotY, axisPos = axis.pos, axisLen = axis.len;
+        const axis = this, legendItem = axis.legendItem || {}, plotX = point?.plotX, plotY = point?.plotY, axisPos = axis.pos, axisLen = axis.len;
         let crossPos;
         if (point) {
             crossPos = axis.toPixels(point.getNestedProperty(point.series.colorKey));
@@ -1478,7 +1477,7 @@ class ColorAxis extends (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_high
             axis.destroyItems();
         }
         super.update(newOptions, redraw);
-        if (axis.legendItem && axis.legendItem.label) {
+        if (axis.legendItem?.label) {
             axis.setLegendColor();
             legend.colorizeItem(this, true);
         }
@@ -1654,7 +1653,7 @@ G.ColorAxis.compose(G.Chart, G.Fx, G.Legend, G.Series);
 ;// ./code/es-modules/Maps/MapNavigationDefaults.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -1919,7 +1918,7 @@ const mapNavigationDefaults = {
 ;// ./code/es-modules/Maps/MapPointer.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -2057,7 +2056,7 @@ var MapPointer;
 ;// ./code/es-modules/Maps/MapSymbols.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -2118,7 +2117,7 @@ const MapSymbols = {
 ;// ./code/es-modules/Maps/MapNavigation.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -2403,7 +2402,7 @@ var highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_highcharts_SV
 ;// ./code/es-modules/Series/ColorMapComposition.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -2534,7 +2533,7 @@ var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_roo
 ;// ./code/es-modules/Series/CenteredUtilities.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -2676,7 +2675,7 @@ var highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_
 ;// ./code/es-modules/Core/Chart/MapChart.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -2910,7 +2909,7 @@ class MapChart extends (highcharts_Chart_commonjs_highcharts_Chart_commonjs2_hig
 ;// ./code/es-modules/Maps/MapUtilities.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -2949,7 +2948,7 @@ const MapUtilities = {
 ;// ./code/es-modules/Series/Map/MapPoint.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -3030,14 +3029,14 @@ class MapPoint extends ScatterPoint {
         if (bounds) {
             // Cache point bounding box for use to position data labels, bubbles
             // etc
-            const propMiddleLon = properties && properties['hc-middle-lon'], propMiddleLat = properties && properties['hc-middle-lat'];
+            const propMiddleLon = properties?.['hc-middle-lon'], propMiddleLat = properties?.['hc-middle-lat'];
             if (mapView && MapPoint_isNumber(propMiddleLon) && MapPoint_isNumber(propMiddleLat)) {
                 const projectedPoint = projection.forward([propMiddleLon, propMiddleLat]);
                 bounds.midX = projectedPoint[0];
                 bounds.midY = projectedPoint[1];
             }
             else {
-                const propMiddleX = properties && properties['hc-middle-x'], propMiddleY = properties && properties['hc-middle-y'];
+                const propMiddleX = properties?.['hc-middle-x'], propMiddleY = properties?.['hc-middle-y'];
                 bounds.midX = (bounds.x1 + (bounds.x2 - bounds.x1) * MapPoint_pick(this.middleX, MapPoint_isNumber(propMiddleX) ? propMiddleX : 0.5));
                 let middleYFraction = MapPoint_pick(this.middleY, MapPoint_isNumber(propMiddleY) ? propMiddleY : 0.5);
                 // No geographic geometry, only path given => flip
@@ -3143,7 +3142,7 @@ MapPoint_extend(MapPoint.prototype, {
 ;// ./code/es-modules/Series/Map/MapSeriesDefaults.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -3702,7 +3701,7 @@ const MapSeriesDefaults = {
 ;// ./code/es-modules/Maps/MapViewDefaults.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -4010,7 +4009,7 @@ var highcharts_Templating_commonjs_highcharts_Templating_commonjs2_highcharts_Te
 ;// ./code/es-modules/Maps/GeoJSONComposition.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -4521,7 +4520,7 @@ var GeoJSONComposition;
 ;// ./code/es-modules/Core/Geometry/GeometryUtilities.js
 /* *
  *
- *  (c) 2010-2024 Highsoft AS
+ *  (c) 2010-2025 Highsoft AS
  *
  *  License: www.highcharts.com/license
  *
@@ -4628,7 +4627,7 @@ var GeometryUtilities;
 ;// ./code/es-modules/Core/Geometry/PolygonClip.js
 /* *
  *
- *  (c) 2010-2024 Highsoft AS
+ *  (c) 2010-2025 Highsoft AS
  *
  *  License: www.highcharts.com/license
  *
@@ -5681,7 +5680,7 @@ Projection.registry = ProjectionRegistry;
 ;// ./code/es-modules/Maps/MapView.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -6789,7 +6788,7 @@ class MapViewInset extends MapView {
 ;// ./code/es-modules/Series/Map/MapSeries.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -6946,7 +6945,7 @@ class MapSeries extends ScatterSeries {
                             'highcharts-name-' +
                                 point.name.replace(/ /g, '-').toLowerCase();
                     }
-                    if (point.properties && point.properties['hc-key']) {
+                    if (point.properties?.['hc-key']) {
                         className +=
                             ' highcharts-key-' +
                                 point.properties['hc-key'].toString().toLowerCase();
@@ -6973,8 +6972,7 @@ class MapSeries extends ScatterSeries {
                         if (animateIn || animateOut) {
                             const strokeWidth = MapSeries_pick(series.getStrokeWidth(series.options), 1 // Styled mode
                             ), inheritedStrokeWidth = (strokeWidth /
-                                (chart.mapView &&
-                                    chart.mapView.getScale() ||
+                                (chart.mapView?.getScale() ||
                                     1));
                             // For animating from undefined, .attr() reads the
                             // property as the starting point
@@ -7022,8 +7020,7 @@ class MapSeries extends ScatterSeries {
                 (series.points || []).forEach((point) => {
                     const graphic = point.graphic;
                     let strokeWidth;
-                    if (graphic &&
-                        graphic['stroke-width'] &&
+                    if (graphic?.['stroke-width'] &&
                         (strokeWidth = this.getStrokeWidth(point.options))) {
                         graphic.attr({
                             'stroke-width': strokeWidth / scale
@@ -7146,8 +7143,7 @@ class MapSeries extends ScatterSeries {
      */
     getStrokeWidth(options) {
         const pointAttrToOptions = this.pointAttrToOptions;
-        return options[pointAttrToOptions &&
-            pointAttrToOptions['stroke-width'] || 'borderWidth'];
+        return options[pointAttrToOptions?.['stroke-width'] || 'borderWidth'];
     }
     /**
      * Define hasData function for non-cartesian series. Returns true if the
@@ -7247,7 +7243,7 @@ class MapSeries extends ScatterSeries {
         // Pick up transform definitions for chart
         mapTransforms = chart.mapTransforms =
             chartOptions.mapTransforms ||
-                mapDataObject && mapDataObject['hc-transform'] ||
+                mapDataObject?.['hc-transform'] ||
                 chart.mapTransforms;
         let mapPoint, props;
         // Cache cos/sin of transform rotation angle
@@ -7397,7 +7393,7 @@ class MapSeries extends ScatterSeries {
      * @private
      */
     translate() {
-        const series = this, doFullTranslate = series.doFullTranslate(), mapView = this.chart.mapView, projection = mapView && mapView.projection;
+        const series = this, doFullTranslate = series.doFullTranslate(), mapView = this.chart.mapView, projection = mapView?.projection;
         // Recalculate box on updated data
         if (this.chart.hasRendered && (this.isDirtyData || !this.hasRendered)) {
             this.processData();
@@ -7510,7 +7506,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 ;// ./code/es-modules/Series/MapLine/MapLineSeriesDefaults.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -7648,7 +7644,7 @@ const MapLineSeriesDefaults = {
 ;// ./code/es-modules/Series/MapLine/MapLineSeries.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -7717,7 +7713,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 ;// ./code/es-modules/Series/MapPoint/MapPointPoint.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -7756,7 +7752,7 @@ class MapPointPoint extends MapPointPoint_ScatterSeries.prototype.pointClass {
 ;// ./code/es-modules/Series/MapPoint/MapPointSeriesDefaults.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -7964,7 +7960,7 @@ var highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_com
 ;// ./code/es-modules/Series/MapPoint/MapPointSeries.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -8163,7 +8159,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 ;// ./code/es-modules/Series/Bubble/BubbleLegendDefaults.js
 /* *
  *
- *  (c) 2010-2024 Highsoft AS
+ *  (c) 2010-2025 Highsoft AS
  *
  *  Author: Paweł Potaczek
  *
@@ -8431,7 +8427,7 @@ const BubbleLegendDefaults = {
 ;// ./code/es-modules/Series/Bubble/BubbleLegendItem.js
 /* *
  *
- *  (c) 2010-2024 Highsoft AS
+ *  (c) 2010-2025 Highsoft AS
  *
  *  Author: Paweł Potaczek
  *
@@ -8441,8 +8437,6 @@ const BubbleLegendDefaults = {
  *
  * */
 
-
-const { parse: BubbleLegendItem_color } = (highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_default());
 
 
 const { noop: BubbleLegendItem_noop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
@@ -8559,10 +8553,11 @@ class BubbleLegendItem {
         ranges.forEach(function (range, i) {
             if (!styledMode) {
                 bubbleAttribs.stroke = BubbleLegendItem_pick(range.borderColor, options.borderColor, series.color);
-                bubbleAttribs.fill = BubbleLegendItem_pick(range.color, options.color, fillOpacity !== 1 ?
-                    BubbleLegendItem_color(series.color).setOpacity(fillOpacity)
-                        .get('rgba') :
-                    series.color);
+                bubbleAttribs.fill = range.color || options.color;
+                if (!bubbleAttribs.fill) {
+                    bubbleAttribs.fill = series.color;
+                    bubbleAttribs['fill-opacity'] = fillOpacity ?? 1;
+                }
                 connectorAttribs.stroke = BubbleLegendItem_pick(range.connectorColor, options.connectorColor, series.color);
             }
             // Set options needed for rendering each range
@@ -8876,7 +8871,7 @@ class BubbleLegendItem {
 ;// ./code/es-modules/Series/Bubble/BubbleLegendComposition.js
 /* *
  *
- *  (c) 2010-2024 Highsoft AS
+ *  (c) 2010-2025 Highsoft AS
  *
  *  Author: Paweł Potaczek
  *
@@ -9145,7 +9140,7 @@ var highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_H
 ;// ./code/es-modules/Series/Bubble/BubblePoint.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -9205,7 +9200,7 @@ BubblePoint_extend(BubblePoint.prototype, {
 ;// ./code/es-modules/Series/Bubble/BubbleSeries.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -9215,8 +9210,6 @@ BubblePoint_extend(BubblePoint.prototype, {
 
 
 
-
-const { parse: BubbleSeries_color } = (highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_default());
 
 const { composed: BubbleSeries_composed, noop: BubbleSeries_noop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
@@ -9452,12 +9445,8 @@ class BubbleSeries extends BubbleSeries_ScatterSeries {
      * @private
      */
     pointAttribs(point, state) {
-        const markerOptions = this.options.marker, fillOpacity = markerOptions.fillOpacity, attr = BubbleSeries_Series.prototype.pointAttribs.call(this, point, state);
-        if (fillOpacity !== 1) {
-            attr.fill = BubbleSeries_color(attr.fill)
-                .setOpacity(fillOpacity)
-                .get('rgba');
-        }
+        const markerOptions = this.options.marker, fillOpacity = markerOptions?.fillOpacity, attr = BubbleSeries_Series.prototype.pointAttribs.call(this, point, state);
+        attr['fill-opacity'] = fillOpacity ?? 1;
         return attr;
     }
     /**
@@ -9539,7 +9528,10 @@ class BubbleSeries extends BubbleSeries_ScatterSeries {
             const p1Dist = p1[comparisonProp] || 0;
             const p2Dist = p2[comparisonProp] || 0;
             let ret, flip = false;
-            if (p1Dist < 0 && p2Dist < 0) {
+            if (p1Dist === p2Dist) {
+                ret = p1.index > p2.index ? p1 : p2;
+            }
+            else if (p1Dist < 0 && p2Dist < 0) {
                 ret = (p1Dist - (p1.marker?.radius || 0) >=
                     p2Dist - (p2.marker?.radius || 0)) ?
                     p1 :
@@ -9925,7 +9917,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 ;// ./code/es-modules/Series/MapBubble/MapBubblePoint.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -9972,7 +9964,7 @@ MapBubblePoint_extend(MapBubblePoint.prototype, {
 ;// ./code/es-modules/Series/MapBubble/MapBubbleSeries.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -10297,7 +10289,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 ;// ./code/es-modules/Series/Heatmap/HeatmapPoint.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -10410,7 +10402,7 @@ HeatmapPoint_extend(HeatmapPoint.prototype, {
 ;// ./code/es-modules/Series/Heatmap/HeatmapSeriesDefaults.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -11051,7 +11043,7 @@ const HeatmapSeriesDefaults = {
 ;// ./code/es-modules/Series/InterpolationUtilities.js
 /* *
  *
- *  (c) 2010-2024 Hubert Kozik
+ *  (c) 2010-2025 Hubert Kozik
  *
  *  License: www.highcharts.com/license
  *
@@ -11125,7 +11117,7 @@ const InterpolationUtilities = {
 ;// ./code/es-modules/Series/Heatmap/HeatmapSeries.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -11305,9 +11297,7 @@ class HeatmapSeries extends HeatmapSeries_ScatterSeries {
         // Setting width and height attributes on image does not affect on its
         // dimensions.
         if (state && state !== 'normal') {
-            const pointMarkerOptions = point.options.marker || {}, seriesMarkerOptions = this.options.marker || {}, seriesStateOptions = (seriesMarkerOptions.states &&
-                seriesMarkerOptions.states[state]) || {}, pointStateOptions = (pointMarkerOptions.states &&
-                pointMarkerOptions.states[state]) || {};
+            const pointMarkerOptions = point.options.marker || {}, seriesMarkerOptions = this.options.marker || {}, seriesStateOptions = (seriesMarkerOptions.states?.[state]) || {}, pointStateOptions = (pointMarkerOptions.states?.[state]) || {};
             // Set new width and height basing on state options.
             const width = (pointStateOptions.width ||
                 seriesStateOptions.width ||
@@ -11333,28 +11323,23 @@ class HeatmapSeries extends HeatmapSeries_ScatterSeries {
     pointAttribs(point, state) {
         const series = this, attr = HeatmapSeries_Series.prototype.pointAttribs.call(series, point, state), seriesOptions = series.options || {}, plotOptions = series.chart.options.plotOptions || {}, seriesPlotOptions = plotOptions.series || {}, heatmapPlotOptions = plotOptions.heatmap || {}, 
         // Get old properties in order to keep backward compatibility
-        borderColor = (point && point.options.borderColor) ||
+        borderColor = point?.options.borderColor ||
             seriesOptions.borderColor ||
             heatmapPlotOptions.borderColor ||
-            seriesPlotOptions.borderColor, borderWidth = (point && point.options.borderWidth) ||
+            seriesPlotOptions.borderColor, borderWidth = point?.options.borderWidth ||
             seriesOptions.borderWidth ||
             heatmapPlotOptions.borderWidth ||
             seriesPlotOptions.borderWidth ||
             attr['stroke-width'];
         // Apply lineColor, or set it to default series color.
-        attr.stroke = ((point && point.marker && point.marker.lineColor) ||
-            (seriesOptions.marker && seriesOptions.marker.lineColor) ||
+        attr.stroke = (point?.marker?.lineColor ||
+            seriesOptions.marker?.lineColor ||
             borderColor ||
             this.color);
         // Apply old borderWidth property if exists.
         attr['stroke-width'] = borderWidth;
         if (state && state !== 'normal') {
-            const stateOptions = HeatmapSeries_merge((seriesOptions.states &&
-                seriesOptions.states[state]), (seriesOptions.marker &&
-                seriesOptions.marker.states &&
-                seriesOptions.marker.states[state]), (point &&
-                point.options.states &&
-                point.options.states[state] || {}));
+            const stateOptions = HeatmapSeries_merge(seriesOptions.states?.[state], seriesOptions.marker?.states?.[state], point?.options.states?.[state] || {});
             attr.fill =
                 stateOptions.color ||
                     highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_default().parse(attr.fill).brighten(stateOptions.brightness || 0).get();
@@ -11366,12 +11351,12 @@ class HeatmapSeries extends HeatmapSeries_ScatterSeries {
      * @private
      */
     translate() {
-        const series = this, options = series.options, { borderRadius, marker } = options, symbol = marker && marker.symbol || 'rect', shape = HeatmapSeries_symbols[symbol] ? symbol : 'rect', hasRegularShape = ['circle', 'square'].indexOf(shape) !== -1;
+        const series = this, options = series.options, { borderRadius, marker } = options, symbol = marker?.symbol || 'rect', shape = HeatmapSeries_symbols[symbol] ? symbol : 'rect', hasRegularShape = ['circle', 'square'].indexOf(shape) !== -1;
         series.generatePoints();
         for (const point of series.points) {
             const cellAttr = point.getCellAttributes();
             let x = Math.min(cellAttr.x1, cellAttr.x2), y = Math.min(cellAttr.y1, cellAttr.y2), width = Math.max(Math.abs(cellAttr.x2 - cellAttr.x1), 0), height = Math.max(Math.abs(cellAttr.y2 - cellAttr.y1), 0);
-            point.hasImage = (point.marker && point.marker.symbol || symbol || '').indexOf('url') === 0;
+            point.hasImage = (point.marker?.symbol || symbol || '').indexOf('url') === 0;
             // If marker shape is regular (square), find the shorter cell's
             // side.
             if (hasRegularShape) {
@@ -11458,13 +11443,13 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 ;// ./code/es-modules/masters/modules/map.src.js
 /**
- * @license Highmaps JS v12.1.2 (2024-12-21)
+ * @license Highmaps JS v12.2.0 (2025-04-07)
  * @module highcharts/modules/map
  * @requires highcharts
  *
  * Highmaps as a plugin for Highcharts or Highcharts Stock.
  *
- * (c) 2011-2024 Torstein Honsi
+ * (c) 2011-2025 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */

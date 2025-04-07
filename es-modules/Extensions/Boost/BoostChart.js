@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2019-2024 Highsoft AS
+ *  (c) 2019-2025 Highsoft AS
  *
  *  Boost module: stripped-down renderer for higher performance
  *
@@ -55,9 +55,9 @@ function getBoostClipRect(chart, target) {
         clipBox.height = navigator.top + navigator.height - chart.plotTop;
     }
     // Clipping of individual series (#11906, #19039).
-    if (target.getClipBox) {
+    if (target.is) {
         const { xAxis, yAxis } = target;
-        clipBox = target.getClipBox();
+        clipBox = chart.getClipBox(target);
         if (chart.inverted) {
             const lateral = clipBox.width;
             clipBox.width = clipBox.height;

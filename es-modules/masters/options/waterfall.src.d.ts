@@ -1,1 +1,2 @@
-import '../../../options/waterfall.src';
+import * as Highcharts from '../../../options/waterfall.src';
+export default Highcharts;

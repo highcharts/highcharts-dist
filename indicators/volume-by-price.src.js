@@ -1,12 +1,12 @@
 /**
- * @license Highstock JS v12.1.2 (2024-12-21)
+ * @license Highstock JS v12.2.0 (2025-04-07)
  * @module highcharts/indicators/volume-by-price
  * @requires highcharts
  * @requires highcharts/modules/stock
  *
  * Indicator series type for Highcharts Stock
  *
- * (c) 2010-2024 Paweł Dalek
+ * (c) 2010-2025 Paweł Dalek
  *
  * License: www.highcharts.com/license
  */
@@ -149,7 +149,7 @@ class VBPPoint extends SMAPoint {
 ;// ./code/es-modules/Stock/Indicators/VBP/VBPIndicator.js
 /* *
  *
- *  (c) 2010-2024 Paweł Dalek
+ *  (c) 2010-2025 Paweł Dalek
  *
  *  Volume By Price (VBP) indicator for Highcharts Stock
  *

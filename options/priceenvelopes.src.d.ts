@@ -127,15 +127,10 @@ declare module "../highcharts.src" {
          */
         topBand?: number;
     }
-    interface PlotPriceenvelopesTopLineStylesOptions {
-        /**
-         * (Highstock) Color of the line. If not set, it's inherited from
-         * plotOptions.priceenvelopes.color.
-         */
-        lineColor?: Highcharts.ColorString;
-        /**
-         * (Highstock) Pixel width of the line.
-         */
-        lineWidth?: number;
+    /**
+     * (Highstock) Top line options.
+     */
+    interface PlotPriceenvelopesTopLineOptions {
+        styles?: Highcharts.PlotPriceenvelopesTopLineStylesOptions;
     }
 }

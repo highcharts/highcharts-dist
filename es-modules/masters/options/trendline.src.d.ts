@@ -1,1 +1,2 @@
-import '../../../options/trendline.src';
+import * as Highcharts from '../../../options/trendline.src';
+export default Highcharts;

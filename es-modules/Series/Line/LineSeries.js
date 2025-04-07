@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -128,13 +128,15 @@ class LineSeries extends Series {
             step = 4 - step;
         }
         // Remove invalid points, especially in spline (#5015)
-        points = this.getValidPoints(points, false, !(options.connectNulls && !nullsAsZeroes && !connectCliffs));
+        points = this.getValidPoints(points, false, options.nullInteraction || !(options.connectNulls &&
+            !nullsAsZeroes &&
+            !connectCliffs));
         // Build the line
         points.forEach(function (point, i) {
             const plotX = point.plotX, plotY = point.plotY, lastPoint = points[i - 1], isNull = point.isNull || typeof plotY !== 'number';
             // The path to this point from the previous
             let pathToPoint;
-            if ((point.leftCliff || (lastPoint && lastPoint.rightCliff)) &&
+            if ((point.leftCliff || lastPoint?.rightCliff) &&
                 !connectCliffs) {
                 gap = true; // ... and continue
             }

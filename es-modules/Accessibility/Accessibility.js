@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Accessibility module for Highcharts
  *
@@ -76,7 +76,7 @@ class Accessibility {
     init(chart) {
         this.chart = chart;
         // Abort on old browsers
-        if (!doc.addEventListener) {
+        if (!doc?.addEventListener) {
             this.zombie = true;
             this.components = {};
             chart.renderTo.setAttribute('aria-hidden', true);

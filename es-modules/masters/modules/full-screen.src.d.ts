@@ -1,1 +1,2 @@
-import '../../../modules/full-screen.src';
+import * as Highcharts from '../../../modules/full-screen.src';
+export default Highcharts;

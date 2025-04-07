@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2024 Pawel Lysy
+ *  (c) 2010-2025 Pawel Lysy
  *
  *  License: www.highcharts.com/license
  *
@@ -67,9 +67,9 @@ const HLCSeriesDefaults = {
     tooltip: {
         pointFormat: '<span style="color:{point.color}">\u25CF</span> ' +
             '<b> {series.name}</b><br/>' +
-            'High: {point.high}<br/>' +
-            'Low: {point.low}<br/>' +
-            'Close: {point.close}<br/>'
+            '{series.chart.options.lang.stockHigh}: {point.high}<br/>' +
+            '{series.chart.options.lang.stockLow}: {point.low}<br/>' +
+            '{series.chart.options.lang.stockClose}: {point.close}<br/>'
     },
     /**
      * @type {number|null}

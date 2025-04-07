@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -10,8 +10,6 @@
 'use strict';
 import BubbleLegendComposition from './BubbleLegendComposition.js';
 import BubblePoint from './BubblePoint.js';
-import Color from '../../Core/Color/Color.js';
-const { parse: color } = Color;
 import H from '../../Core/Globals.js';
 const { composed, noop } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
@@ -247,12 +245,8 @@ class BubbleSeries extends ScatterSeries {
      * @private
      */
     pointAttribs(point, state) {
-        const markerOptions = this.options.marker, fillOpacity = markerOptions.fillOpacity, attr = Series.prototype.pointAttribs.call(this, point, state);
-        if (fillOpacity !== 1) {
-            attr.fill = color(attr.fill)
-                .setOpacity(fillOpacity)
-                .get('rgba');
-        }
+        const markerOptions = this.options.marker, fillOpacity = markerOptions?.fillOpacity, attr = Series.prototype.pointAttribs.call(this, point, state);
+        attr['fill-opacity'] = fillOpacity ?? 1;
         return attr;
     }
     /**
@@ -334,7 +328,10 @@ class BubbleSeries extends ScatterSeries {
             const p1Dist = p1[comparisonProp] || 0;
             const p2Dist = p2[comparisonProp] || 0;
             let ret, flip = false;
-            if (p1Dist < 0 && p2Dist < 0) {
+            if (p1Dist === p2Dist) {
+                ret = p1.index > p2.index ? p1 : p2;
+            }
+            else if (p1Dist < 0 && p2Dist < 0) {
                 ret = (p1Dist - (p1.marker?.radius || 0) >=
                     p2Dist - (p2.marker?.radius || 0)) ?
                     p1 :

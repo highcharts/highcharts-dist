@@ -1,12 +1,12 @@
 /**
- * @license Highcharts JS v12.1.2 (2024-12-21)
+ * @license Highcharts JS v12.2.0 (2025-04-07)
  * @module highcharts/modules/cylinder
  * @requires highcharts
  * @requires highcharts/highcharts-3d
  *
  * Highcharts cylinder module
  *
- * (c) 2010-2024 Kacper Madej
+ * (c) 2010-2025 Kacper Madej
  *
  * License: www.highcharts.com/license
  */
@@ -24,10 +24,10 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 620:
+/***/ 512:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE__620__;
+module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
 
 /***/ }),
 
@@ -38,10 +38,10 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__608__;
 
 /***/ }),
 
-/***/ 512:
+/***/ 620:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
+module.exports = __WEBPACK_EXTERNAL_MODULE__620__;
 
 /***/ }),
 
@@ -122,7 +122,7 @@ var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default 
 ;// ./code/es-modules/Core/Math3D.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -382,7 +382,7 @@ var highcharts_RendererRegistry_commonjs_highcharts_RendererRegistry_commonjs2_h
  *
  *  Highcharts cylinder - a 3D series
  *
- *  (c) 2010-2024 Highsoft AS
+ *  (c) 2010-2025 Highsoft AS
  *
  *  Author: Kacper Madej
  *
@@ -441,7 +441,7 @@ class SVGElement3DCylinder extends SVGElement3D {
  *
  *  Highcharts cylinder - a 3D series
  *
- *  (c) 2010-2024 Highsoft AS
+ *  (c) 2010-2025 Highsoft AS
  *
  *  Author: Kacper Madej
  *
@@ -744,7 +744,7 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  *
  *  Highcharts cylinder - a 3D series
  *
- *  (c) 2010-2024 Highsoft AS
+ *  (c) 2010-2025 Highsoft AS
  *
  *  Author: Kacper Madej
  *
@@ -780,7 +780,7 @@ CylinderPoint_extend(CylinderPoint.prototype, {
  *
  *  Highcharts cylinder - a 3D series
  *
- *  (c) 2010-2024 Highsoft AS
+ *  (c) 2010-2025 Highsoft AS
  *
  *  Author: Kacper Madej
  *
@@ -896,7 +896,7 @@ const CylinderSeriesDefaults = {};
  *
  *  Highcharts cylinder - a 3D series
  *
- *  (c) 2010-2024 Highsoft AS
+ *  (c) 2010-2025 Highsoft AS
  *
  *  Author: Kacper Madej
  *

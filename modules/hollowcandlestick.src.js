@@ -1,12 +1,12 @@
 /**
- * @license Highstock JS v12.1.2 (2024-12-21)
+ * @license Highstock JS v12.2.0 (2025-04-07)
  * @module highcharts/modules/hollowcandlestick
  * @requires highcharts
  * @requires highcharts/modules/stock
  *
  * Hollow Candlestick series type for Highcharts Stock
  *
- * (c) 2010-2024 Karol Kolodziej
+ * (c) 2010-2025 Karol Kolodziej
  *
  * License: www.highcharts.com/license
  */
@@ -24,17 +24,17 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 532:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__532__;
-
-/***/ }),
-
 /***/ 512:
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
+
+/***/ }),
+
+/***/ 532:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__532__;
 
 /***/ }),
 
@@ -118,7 +118,7 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
 ;// ./code/es-modules/Series/HollowCandlestick/HollowCandlestickPoint.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -177,7 +177,7 @@ var highcharts_Axis_commonjs_highcharts_Axis_commonjs2_highcharts_Axis_root_High
 ;// ./code/es-modules/Series/HollowCandlestick/HollowCandlestickSeries.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *

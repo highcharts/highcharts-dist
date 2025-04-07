@@ -1,11 +1,11 @@
 /**
- * @license Highcharts JS v12.1.2 (2024-12-21)
+ * @license Highcharts JS v12.2.0 (2025-04-07)
  * @module highcharts/modules/annotations
  * @requires highcharts
  *
  * Annotations module
  *
- * (c) 2009-2024 Torstein Honsi
+ * (c) 2009-2025 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -23,13 +23,6 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 660:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__660__;
-
-/***/ }),
-
 /***/ 512:
 /***/ ((module) => {
 
@@ -37,10 +30,10 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
 
 /***/ }),
 
-/***/ 984:
+/***/ 660:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE__984__;
+module.exports = __WEBPACK_EXTERNAL_MODULE__660__;
 
 /***/ }),
 
@@ -48,6 +41,13 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__984__;
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
+
+/***/ }),
+
+/***/ 984:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__984__;
 
 /***/ })
 
@@ -121,7 +121,7 @@ var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default 
 ;// ./code/es-modules/Extensions/Annotations/AnnotationChart.js
 /* *
  *
- *  (c) 2009-2024 Highsoft, Black Label
+ *  (c) 2009-2025 Highsoft, Black Label
  *
  *  License: www.highcharts.com/license
  *
@@ -1039,7 +1039,7 @@ const AnnotationDefaults = {
 ;// ./code/es-modules/Extensions/Annotations/EventEmitter.js
 /* *
  *
- *  (c) 2009-2024 Highsoft, Black Label
+ *  (c) 2009-2025 Highsoft, Black Label
  *
  *  License: www.highcharts.com/license
  *
@@ -1077,7 +1077,9 @@ class EventEmitter {
         };
         addMouseDownEvent(this.graphic.element);
         (emitter.labels || []).forEach((label) => {
-            if (label.options.useHTML && label.graphic.text) {
+            if (label.options.useHTML &&
+                label.graphic.text &&
+                !label.graphic.text.foreignObject) {
                 // Mousedown event bound to HTML element (#13070).
                 addMouseDownEvent(label.graphic.text.element);
             }
@@ -1110,7 +1112,9 @@ class EventEmitter {
                 };
                 emitter.graphic.css(cssPointer);
                 (emitter.labels || []).forEach((label) => {
-                    if (label.options.useHTML && label.graphic.text) {
+                    if (label.options.useHTML &&
+                        label.graphic.text &&
+                        !label.graphic.text.foreignObject) {
                         label.graphic.text.css(cssPointer);
                     }
                 });
@@ -1374,7 +1378,7 @@ class ControlPoint extends Annotations_EventEmitter {
             .add(chart.controlPointsGroup)
             .css(options.style);
         this.setVisibility(options.visible);
-        // `npm test -- --tests "highcharts/annotations-advanced/*"`
+        // `npm test -- --tests "@highcharts/highcharts/annotations-advanced/*"`
         this.addEvents();
     }
     /**
@@ -3712,7 +3716,7 @@ var highcharts_AST_commonjs_highcharts_AST_commonjs2_highcharts_AST_root_Highcha
 ;// ./code/es-modules/Shared/BaseForm.js
 /* *
  *
- *  (c) 2009-2024 Highsoft AS
+ *  (c) 2009-2025 Highsoft AS
  *
  *  License: www.highcharts.com/license
  *
@@ -3839,7 +3843,7 @@ class BaseForm {
  *
  *  Popup generator for Stock tools
  *
- *  (c) 2009-2024 Sebastian Bochan
+ *  (c) 2009-2025 Sebastian Bochan
  *
  *  License: www.highcharts.com/license
  *
@@ -4020,7 +4024,7 @@ const PopupAnnotations = {
  *
  *  Popup generator for Stock tools
  *
- *  (c) 2009-2024 Sebastian Bochan
+ *  (c) 2009-2025 Sebastian Bochan
  *
  *  License: www.highcharts.com/license
  *
@@ -4633,7 +4637,7 @@ const PopupIndicators = {
  *
  *  Popup generator for Stock tools
  *
- *  (c) 2009-2024 Sebastian Bochan
+ *  (c) 2009-2025 Sebastian Bochan
  *
  *  License: www.highcharts.com/license
  *
@@ -4769,7 +4773,7 @@ const PopupTabs = {
  *
  *  Popup generator for Stock tools
  *
- *  (c) 2009-2024 Sebastian Bochan
+ *  (c) 2009-2025 Sebastian Bochan
  *
  *  License: www.highcharts.com/license
  *
@@ -5007,7 +5011,7 @@ Popup_extend(Popup.prototype, {
  *
  *  Popup generator for Stock tools
  *
- *  (c) 2009-2024 Sebastian Bochan
+ *  (c) 2009-2025 Sebastian Bochan
  *
  *  License: www.highcharts.com/license
  *
@@ -5052,7 +5056,7 @@ function onNavigationBindingsShowPopup(config) {
         this.popup = new Popup_Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
             (this.chart.options.stockTools &&
                 this.chart.options.stockTools.gui.iconsURL) ||
-            'https://code.highcharts.com/12.1.2/gfx/stock-icons/'), this.chart);
+            'https://code.highcharts.com/12.2.0/gfx/stock-icons/'), this.chart);
     }
     this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
 }
@@ -5080,7 +5084,7 @@ const PopupComposition = {
 ;// ./code/es-modules/Extensions/Annotations/Annotation.js
 /* *
  *
- *  (c) 2009-2024 Highsoft, Black Label
+ *  (c) 2009-2025 Highsoft, Black Label
  *
  *  License: www.highcharts.com/license
  *
@@ -5245,7 +5249,7 @@ class Annotation extends Annotations_EventEmitter {
         this.options.labels = labelsAndShapes.labels;
         this.options.shapes = labelsAndShapes.shapes;
         /**
-         * The callback that reports to the overlapping-labels module which
+         * The callback that reports to the overlapping labels logic which
          * labels it should account for.
          * @private
          * @name Highcharts.Annotation#labelCollector
@@ -5723,7 +5727,7 @@ Annotations_ControlTarget.compose(Annotation);
 ;// ./code/es-modules/Core/Chart/ChartNavigationComposition.js
 /**
  *
- *  (c) 2010-2024 Paweł Fus
+ *  (c) 2010-2025 Paweł Fus
  *
  *  License: www.highcharts.com/license
  *
@@ -5815,7 +5819,7 @@ var ChartNavigationComposition;
 ;// ./code/es-modules/Extensions/Annotations/NavigationBindingsUtilities.js
 /* *
  *
- *  (c) 2009-2024 Highsoft, Black Label
+ *  (c) 2009-2025 Highsoft, Black Label
  *
  *  License: www.highcharts.com/license
  *
@@ -5915,7 +5919,7 @@ const NavigationBindingUtilities = {
 ;// ./code/es-modules/Extensions/Annotations/NavigationBindingsDefaults.js
 /* *
  *
- *  (c) 2009-2024 Highsoft, Black Label
+ *  (c) 2009-2025 Highsoft, Black Label
  *
  *  License: www.highcharts.com/license
  *
@@ -6114,7 +6118,7 @@ const navigation = {
                         }
                     ]
                 }, navigation.annotationsOptions, navigation.bindings.ellipseAnnotation
-                    .annotationOptions));
+                    .annotationsOptions));
             },
             steps: [
                 function (e, annotation) {
@@ -6234,7 +6238,7 @@ const navigation = {
      * from a different server.
      *
      * @type      {string}
-     * @default   https://code.highcharts.com/12.1.2/gfx/stock-icons/
+     * @default   https://code.highcharts.com/12.2.0/gfx/stock-icons/
      * @since     7.1.3
      * @apioption navigation.iconsURL
      */
@@ -6313,7 +6317,7 @@ const NavigationBindingDefaults = {
 ;// ./code/es-modules/Extensions/Annotations/NavigationBindings.js
 /* *
  *
- *  (c) 2009-2024 Highsoft, Black Label
+ *  (c) 2009-2025 Highsoft, Black Label
  *
  *  License: www.highcharts.com/license
  *
@@ -8906,36 +8910,52 @@ const { defined: Measure_defined, extend: Measure_extend, isNumber: Measure_isNu
  * @private
  */
 function average() {
-    let average = '';
-    if (this.max !== '' && this.min !== '') {
-        average = (this.max + this.min) / 2;
+    let average = 0, pointsTotal = 0, pointsAmount = 0;
+    const series = this.chart.series, ext = getExtremes(this.xAxisMin, this.xAxisMax, this.yAxisMin, this.yAxisMax);
+    series.forEach((s) => {
+        if (s.visible &&
+            s.options.id !== 'highcharts-navigator-series') {
+            s.points.forEach((point) => {
+                if (isPointWithinExtremes(point, ext) &&
+                    Measure_isNumber(point.y)) {
+                    pointsTotal += point.y;
+                    pointsAmount++;
+                }
+            });
+        }
+    });
+    if (pointsAmount > 0) {
+        average = pointsTotal / pointsAmount;
     }
     return average;
 }
 /**
  * @private
  */
+function isPointWithinExtremes(point, ext) {
+    return (!point.isNull &&
+        Measure_isNumber(point.y) &&
+        point.x > ext.xAxisMin &&
+        point.x <= ext.xAxisMax &&
+        point.y > ext.yAxisMin &&
+        point.y <= ext.yAxisMax);
+}
+/**
+ * @private
+ */
 function bins() {
     const series = this.chart.series, ext = getExtremes(this.xAxisMin, this.xAxisMax, this.yAxisMin, this.yAxisMax);
-    let bins = 0, isCalculated = false; // To avoid Infinity in formatter
-    series.forEach((serie) => {
-        if (serie.visible &&
-            serie.options.id !== 'highcharts-navigator-series') {
-            serie.points.forEach((point) => {
-                if (!point.isNull &&
-                    point.x > ext.xAxisMin &&
-                    point.x <= ext.xAxisMax &&
-                    point.y > ext.yAxisMin &&
-                    point.y <= ext.yAxisMax) {
+    let bins = 0;
+    series.forEach((s) => {
+        if (s.visible &&
+            s.options.id !== 'highcharts-navigator-series') {
+            s.points.forEach((point) => {
+                if (isPointWithinExtremes(point, ext)) {
                     bins++;
-                    isCalculated = true;
                 }
             });
         }
     });
-    if (!isCalculated) {
-        bins = '';
-    }
     return bins;
 }
 /**
@@ -8945,7 +8965,7 @@ function bins() {
 function defaultFormatter() {
     return 'Min: ' + this.min +
         '<br>Max: ' + this.max +
-        '<br>Average: ' + this.average +
+        '<br>Average: ' + this.average.toFixed(2) +
         '<br>Bins: ' + this.bins;
 }
 /**
@@ -8980,7 +9000,7 @@ function getPointPos(axis, value, offset) {
  * @private
  */
 function Measure_init() {
-    const options = this.options.typeOptions, chart = this.chart, inverted = chart.inverted, xAxis = chart.xAxis[options.xAxis], yAxis = chart.yAxis[options.yAxis], bck = options.background, width = inverted ? bck.height : bck.width, height = inverted ? bck.width : bck.height, selectType = options.selectType, top = inverted ? xAxis.left : yAxis.top, // #13664
+    const options = this.options.typeOptions, chart = this.chart, inverted = chart.inverted, xAxis = chart.xAxis[options.xAxis], yAxis = chart.yAxis[options.yAxis], bg = options.background, width = inverted ? bg.height : bg.width, height = inverted ? bg.width : bg.height, selectType = options.selectType, top = inverted ? xAxis.left : yAxis.top, // #13664
     left = inverted ? yAxis.top : xAxis.left; // #13664
     this.startXMin = options.point.x;
     this.startYMin = options.point.y;
@@ -9012,16 +9032,13 @@ function Measure_init() {
 function max() {
     const series = this.chart.series, ext = getExtremes(this.xAxisMin, this.xAxisMax, this.yAxisMin, this.yAxisMax);
     let max = -Infinity, isCalculated = false; // To avoid Infinity in formatter
-    series.forEach((serie) => {
-        if (serie.visible &&
-            serie.options.id !== 'highcharts-navigator-series') {
-            serie.points.forEach((point) => {
-                if (!point.isNull &&
+    series.forEach((s) => {
+        if (s.visible &&
+            s.options.id !== 'highcharts-navigator-series') {
+            s.points.forEach((point) => {
+                if (Measure_isNumber(point.y) &&
                     point.y > max &&
-                    point.x > ext.xAxisMin &&
-                    point.x <= ext.xAxisMax &&
-                    point.y > ext.yAxisMin &&
-                    point.y <= ext.yAxisMax) {
+                    isPointWithinExtremes(point, ext)) {
                     max = point.y;
                     isCalculated = true;
                 }
@@ -9029,7 +9046,7 @@ function max() {
         }
     });
     if (!isCalculated) {
-        max = '';
+        max = 0;
     }
     return max;
 }
@@ -9040,16 +9057,13 @@ function max() {
 function min() {
     const series = this.chart.series, ext = getExtremes(this.xAxisMin, this.xAxisMax, this.yAxisMin, this.yAxisMax);
     let min = Infinity, isCalculated = false; // To avoid Infinity in formatter
-    series.forEach((serie) => {
-        if (serie.visible &&
-            serie.options.id !== 'highcharts-navigator-series') {
-            serie.points.forEach((point) => {
-                if (!point.isNull &&
+    series.forEach((s) => {
+        if (s.visible &&
+            s.options.id !== 'highcharts-navigator-series') {
+            s.points.forEach((point) => {
+                if (Measure_isNumber(point.y) &&
                     point.y < min &&
-                    point.x > ext.xAxisMin &&
-                    point.x <= ext.xAxisMax &&
-                    point.y > ext.yAxisMin &&
-                    point.y <= ext.yAxisMax) {
+                    isPointWithinExtremes(point, ext)) {
                     min = point.y;
                     isCalculated = true;
                 }
@@ -9057,7 +9071,7 @@ function min() {
         }
     });
     if (!isCalculated) {
-        min = '';
+        min = 0;
     }
     return min;
 }
@@ -9170,13 +9184,6 @@ class Measure extends Annotations_Annotation {
         this.clipYAxis = this.chart.yAxis[this.options.typeOptions.yAxis];
     }
     /**
-     * Get measure points configuration objects.
-     * @private
-     */
-    pointsOptions() {
-        return this.options.points;
-    }
-    /**
      * Get points configuration objects for shapes.
      * @private
      */
@@ -9214,8 +9221,7 @@ class Measure extends Annotations_Annotation {
     }
     addControlPoints() {
         const inverted = this.chart.inverted, options = this.options.controlPointOptions, selectType = this.options.typeOptions.selectType;
-        if (!Measure_defined(this.userOptions.controlPointOptions &&
-            this.userOptions.controlPointOptions.style.cursor)) {
+        if (!Measure_defined(this.userOptions.controlPointOptions?.style?.cursor)) {
             if (selectType === 'x') {
                 options.style.cursor = inverted ? 'ns-resize' : 'ew-resize';
             }
@@ -9245,7 +9251,7 @@ class Measure extends Annotations_Annotation {
             return;
         }
         if (this.labels.length > 0) {
-            this.labels[0].text = ((formatter && formatter.call(this)) ||
+            (this.labels[0]).text = ((formatter && formatter.call(this)) ||
                 defaultFormatter.call(this));
         }
         else {
@@ -9698,13 +9704,13 @@ Annotations_Annotation.types.measure = Measure;
 
 ;// ./code/es-modules/masters/modules/annotations-advanced.src.js
 /**
- * @license Highcharts JS v12.1.2 (2024-12-21)
+ * @license Highcharts JS v12.2.0 (2025-04-07)
  * @module highcharts/modules/annotations-advanced
  * @requires highcharts
  *
  * Annotations module
  *
- * (c) 2009-2024 Torstein Honsi
+ * (c) 2009-2025 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */

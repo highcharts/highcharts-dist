@@ -1,11 +1,11 @@
 /**
- * @license Highcharts JS v12.1.2 (2024-12-21)
+ * @license Highcharts JS v12.2.0 (2025-04-07)
  * @module highcharts/modules/exporting
  * @requires highcharts
  *
  * Exporting module
  *
- * (c) 2010-2024 Torstein Honsi
+ * (c) 2010-2025 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -30,17 +30,17 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__660__;
 
 /***/ }),
 
-/***/ 960:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__960__;
-
-/***/ }),
-
 /***/ 944:
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
+
+/***/ }),
+
+/***/ 960:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__960__;
 
 /***/ })
 
@@ -119,7 +119,7 @@ var highcharts_Chart_commonjs_highcharts_Chart_commonjs2_highcharts_Chart_root_H
 ;// ./code/es-modules/Core/Chart/ChartNavigationComposition.js
 /**
  *
- *  (c) 2010-2024 Paweł Fus
+ *  (c) 2010-2025 Paweł Fus
  *
  *  License: www.highcharts.com/license
  *
@@ -211,7 +211,7 @@ var ChartNavigationComposition;
 ;// ./code/es-modules/Extensions/Exporting/ExportingDefaults.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -445,7 +445,7 @@ const exporting = {
      *
      * @since 2.0
      */
-    url: 'https://export-svg.highcharts.com/',
+    url: `https://export-svg.highcharts.com?v=${(highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default()).version}`,
     /**
      * Settings for a custom font for the exported PDF, when using the
      * `offline-exporting` module. This is used for languages containing
@@ -632,8 +632,7 @@ const exporting = {
                 'downloadPNG',
                 'downloadJPEG',
                 'downloadSVG'
-            ],
-            y: -5
+            ]
         }
     },
     /**
@@ -911,16 +910,15 @@ const navigation = {
          */
         /**
          * The vertical offset of the button's position relative to its
-         * `verticalAlign`.
+         * `verticalAlign`. By default adjusted for the chart title alignment.
          *
          * @sample highcharts/navigation/buttonoptions-verticalalign/
          *         Buttons at lower right
          *
-         * @type      {number}
-         * @default   0
          * @since     2.0
          * @apioption navigation.buttonOptions.y
          */
+        y: -5,
         /**
          * The vertical alignment of the buttons. Can be one of `"top"`,
          * `"middle"` or `"bottom"`.
@@ -1097,7 +1095,7 @@ const ExportingDefaults = {
  *
  *  Exporting module
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -1170,7 +1168,7 @@ var ExportingSymbols;
 ;// ./code/es-modules/Extensions/Exporting/Fullscreen.js
 /* *
  *
- *  (c) 2009-2024 Rafal Sebestjanski
+ *  (c) 2009-2025 Rafal Sebestjanski
  *
  *  Full screen for Highcharts
  *
@@ -1512,7 +1510,7 @@ class Fullscreen {
 ;// ./code/es-modules/Core/HttpUtilities.js
 /* *
  *
- *  (c) 2010-2024 Christer Vasseng, Torstein Honsi
+ *  (c) 2010-2025 Christer Vasseng, Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -1567,7 +1565,7 @@ function ajax(settings) {
         return false;
     }
     r.open((settings.type || 'get').toUpperCase(), settings.url, true);
-    if (!settings.headers || !settings.headers['Content-Type']) {
+    if (!settings.headers?.['Content-Type']) {
         r.setRequestHeader('Content-Type', headers[settings.dataType || 'json'] || headers.text);
     }
     objectEach(settings.headers, function (val, key) {
@@ -1594,7 +1592,7 @@ function ajax(settings) {
                         }
                     }
                 }
-                return settings.success && settings.success(res, r);
+                return settings.success?.(res, r);
             }
             handleError(r, r.responseText);
         }
@@ -1723,7 +1721,7 @@ const HttpUtilities = {
  *
  *  Exporting module
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -2038,6 +2036,7 @@ var Exporting;
             chartProto.addButton = addButton;
             chartProto.destroyExport = destroyExport;
             chartProto.renderExporting = renderExporting;
+            chartProto.resolveCSSVariables = resolveCSSVariables;
             chartProto.callbacks.push(chartCallback);
             Exporting_addEvent(ChartClass, 'init', onChartInit);
             Exporting_addEvent(ChartClass, 'layOutTitle', onChartLayOutTitle);
@@ -2335,6 +2334,7 @@ var Exporting;
         if (applyStyleSheets) {
             this.inlineStyles();
         }
+        this.resolveCSSVariables();
         return this.container.innerHTML;
     }
     /**
@@ -2705,6 +2705,20 @@ var Exporting;
         tearDown();
     }
     /**
+     * Resolve CSS variables into hex colors
+     */
+    function resolveCSSVariables() {
+        const svgElements = this.container.querySelectorAll('*'), colorAttributes = ['color', 'fill', 'stop-color', 'stroke'];
+        Array.from(svgElements).forEach((element) => {
+            colorAttributes.forEach((attr) => {
+                const attrValue = element.getAttribute(attr);
+                if (attrValue?.includes('var(')) {
+                    element.setAttribute(attr, getComputedStyle(element).getPropertyValue(attr));
+                }
+            });
+        });
+    }
+    /**
      * Move the chart container(s) to another div.
      *
      * @function Highcharts#moveContainers
@@ -2866,23 +2880,25 @@ var Exporting;
      * @requires modules/exporting
      */
     function sanitizeSVG(svg, options) {
-        const split = svg.indexOf('</svg>') + 6;
+        const split = svg.indexOf('</svg>') + 6, useForeignObject = svg.indexOf('<foreignObject') > -1;
         let html = svg.substr(split);
         // Remove any HTML added to the container after the SVG (#894, #9087)
         svg = svg.substr(0, split);
-        // Move HTML into a foreignObject
-        if (options && options.exporting && options.exporting.allowHTML) {
-            if (html) {
-                html = '<foreignObject x="0" y="0" ' +
-                    'width="' + options.chart.width + '" ' +
-                    'height="' + options.chart.height + '">' +
-                    '<body xmlns="http://www.w3.org/1999/xhtml">' +
-                    // Some tags needs to be closed in xhtml (#13726)
-                    html.replace(/(<(?:img|br).*?(?=\>))>/g, '$1 />') +
-                    '</body>' +
-                    '</foreignObject>';
-                svg = svg.replace('</svg>', html + '</svg>');
-            }
+        if (useForeignObject) {
+            // Some tags needs to be closed in xhtml (#13726)
+            svg = svg.replace(/(<(?:img|br).*?(?=\>))>/g, '$1 />');
+            // Move HTML into a foreignObject
+        }
+        else if (html && options?.exporting?.allowHTML) {
+            html = '<foreignObject x="0" y="0" ' +
+                'width="' + options.chart.width + '" ' +
+                'height="' + options.chart.height + '">' +
+                '<body xmlns="http://www.w3.org/1999/xhtml">' +
+                // Some tags needs to be closed in xhtml (#13726)
+                html.replace(/(<(?:img|br).*?(?=\>))>/g, '$1 />') +
+                '</body>' +
+                '</foreignObject>';
+            svg = svg.replace('</svg>', html + '</svg>');
         }
         svg = svg
             .replace(/zIndex="[^"]+"/g, '')
@@ -2893,9 +2909,6 @@ var Exporting;
             .replace(/<svg /, '<svg xmlns:xlink="http://www.w3.org/1999/xlink" ')
             .replace(/ (NS\d+\:)?href=/g, ' xlink:href=') // #3567
             .replace(/\n+/g, ' ')
-            // Batik doesn't support rgba fills and strokes (#3095)
-            .replace(/(fill|stroke)="rgba\(([ \d]+,[ \d]+,[ \d]+),([ \d\.]+)\)"/g, // eslint-disable-line max-len
-        '$1="rgb($2)" $1-opacity="$3"')
             // Replace HTML entities, issue #347
             .replace(/&nbsp;/g, '\u00A0') // No-break space
             .replace(/&shy;/g, '\u00AD'); // Soft hyphen

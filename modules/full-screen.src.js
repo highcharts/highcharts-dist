@@ -1,11 +1,11 @@
 /**
- * @license Highstock JS v12.1.2 (2024-12-21)
+ * @license Highstock JS v12.2.0 (2025-04-07)
  * @module highcharts/modules/full-screen
  * @requires highcharts
  *
  * Advanced Highcharts Stock tools
  *
- * (c) 2010-2024 Highsoft AS
+ * (c) 2010-2025 Highsoft AS
  * Author: Torstein Honsi
  *
  * License: www.highcharts.com/license
@@ -111,7 +111,7 @@ var highcharts_AST_commonjs_highcharts_AST_commonjs2_highcharts_AST_root_Highcha
 ;// ./code/es-modules/Extensions/Exporting/Fullscreen.js
 /* *
  *
- *  (c) 2009-2024 Rafal Sebestjanski
+ *  (c) 2009-2025 Rafal Sebestjanski
  *
  *  Full screen for Highcharts
  *

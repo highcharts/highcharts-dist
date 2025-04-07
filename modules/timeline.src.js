@@ -1,11 +1,11 @@
 /**
- * @license Highcharts JS v12.1.2 (2024-12-21)
+ * @license Highcharts JS v12.2.0 (2025-04-07)
  * @module highcharts/modules/timeline
  * @requires highcharts
  *
  * Timeline series
  *
- * (c) 2010-2024 Highsoft AS
+ * (c) 2010-2025 Highsoft AS
  * Author: Daniel Studencki
  *
  * License: www.highcharts.com/license
@@ -123,7 +123,7 @@ var highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_H
  *
  *  Timeline Series.
  *
- *  (c) 2010-2024 Highsoft AS
+ *  (c) 2010-2025 Highsoft AS
  *
  *  Author: Daniel Studencki
  *
@@ -230,16 +230,23 @@ class TimelinePoint extends LinePoint {
     }
     constructor(series, options) {
         super(series, options);
-        this.name ?? (this.name = 'Event');
+        this.name ?? (this.name = 
+        // If options is null, we are dealing with a null point
+        ((options && options.y !== null) ||
+            !series.options.nullInteraction) &&
+            'Event' ||
+            'Null');
         this.y = 1;
     }
     isValid() {
-        return this.options.y !== null;
+        return (this.options.y !== null ||
+            this.series.options.nullInteraction ||
+            true);
     }
     setState() {
         const proceed = super.setState;
         // Prevent triggering the setState method on null points.
-        if (!this.isNull) {
+        if (!this.isNull || this.series.options.nullInteraction) {
             proceed.apply(this, arguments);
         }
     }
@@ -254,9 +261,24 @@ class TimelinePoint extends LinePoint {
         }
     }
     applyOptions(options, x) {
-        options = highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_default().prototype.optionsToObject.call(this, options);
+        const isNull = (this.isNull ||
+            options === null ||
+            options.y === null), series = this.series;
+        if (!x && !options?.x) {
+            if (isNumber(this.x)) {
+                x = this.x;
+            }
+            else if (isNumber(series?.xIncrement) || NaN) {
+                x = series.xIncrement || 0;
+                series.autoIncrement();
+            }
+        }
+        options = highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_default().prototype.optionsToObject.call(this, options ?? ((series.options.nullInteraction && { y: 0 }) ||
+            null));
+        const p = super.applyOptions(options, x);
         this.userDLOptions = merge(this.userDLOptions, options.dataLabels);
-        return super.applyOptions(options, x);
+        p.isNull = isNull;
+        return p;
     }
 }
 /* *
@@ -271,7 +293,7 @@ class TimelinePoint extends LinePoint {
  *
  *  Timeline Series.
  *
- *  (c) 2010-2024 Highsoft AS
+ *  (c) 2010-2025 Highsoft AS
  *
  *  Author: Daniel Studencki
  *
@@ -527,7 +549,7 @@ const TimelineSeriesDefaults = {
  *
  *  Timeline Series.
  *
- *  (c) 2010-2024 Highsoft AS
+ *  (c) 2010-2025 Highsoft AS
  *
  *  Author: Daniel Studencki
  *
@@ -630,15 +652,16 @@ class TimelineSeries extends LineSeries {
     }
     generatePoints() {
         super.generatePoints();
-        const series = this, points = series.points, xData = series.getColumn('x');
-        for (let i = 0, iEnd = points.length; i < iEnd; ++i) {
-            points[i].applyOptions({
-                x: xData[i]
-            }, xData[i]);
+        const series = this, points = series.points, pointsLen = points.length, xData = series.getColumn('x');
+        for (let i = 0, iEnd = pointsLen; i < iEnd; ++i) {
+            const x = xData[i];
+            points[i].applyOptions({ x: x }, x);
         }
     }
     getVisibilityMap() {
-        const series = this, map = ((series.data.length ? series.data : series.options.data) || []).map((point) => (point && point.visible !== false && !point.isNull ?
+        const series = this, nullInteraction = series.options.nullInteraction, map = ((series.data.length ? series.data : series.options.data) || []).map((point) => (point &&
+            point.visible !== false &&
+            (!point.isNull || nullInteraction) ?
             point :
             false));
         return map;
@@ -663,7 +686,8 @@ class TimelineSeries extends LineSeries {
                 point.isInside = point.isInside && point.visible;
                 // New way of calculating closestPointRangePx value, which
                 // respects the real point visibility is needed.
-                if (point.visible && !point.isNull) {
+                if (point.visible && (!point.isNull ||
+                    series.options.nullInteraction)) {
                     if (TimelineSeries_defined(lastPlotX)) {
                         closestPointRangePx = Math.min(closestPointRangePx, Math.abs(point.plotX - lastPlotX));
                     }

@@ -1,1 +1,2 @@
-import '../../../options/abands.src';
+import * as Highcharts from '../../../options/abands.src';
+export default Highcharts;

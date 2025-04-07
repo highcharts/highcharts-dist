@@ -1,1 +1,2 @@
-import '../../../indicators/cmo.src';
+import * as Highcharts from '../../../indicators/cmo.src';
+export default Highcharts;

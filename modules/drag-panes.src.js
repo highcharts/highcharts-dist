@@ -1,12 +1,12 @@
 /**
- * @license Highstock JS v12.1.2 (2024-12-21)
+ * @license Highstock JS v12.2.0 (2025-04-07)
  * @module highcharts/modules/drag-panes
  * @requires highcharts
  * @requires highcharts/modules/stock
  *
  * Drag-panes module
  *
- * (c) 2010-2024 Highsoft AS
+ * (c) 2010-2025 Highsoft AS
  * Author: Kacper Madej
  *
  * License: www.highcharts.com/license
@@ -104,7 +104,7 @@ var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default 
  *
  *  Plugin for resizing axes / panes in a chart.
  *
- *  (c) 2010-2024 Highsoft AS
+ *  (c) 2010-2025 Highsoft AS
  *
  *  Author: Kacper Madej
  *
@@ -279,7 +279,7 @@ const AxisResizerDefaults = {
  *
  *  Plugin for resizing axes / panes in a chart.
  *
- *  (c) 2010-2024 Highsoft AS
+ *  (c) 2010-2025 Highsoft AS
  *
  *  Author: Kacper Madej
  *
@@ -593,7 +593,7 @@ AxisResizer.resizerOptions = DragPanes_AxisResizerDefaults;
  *
  *  Plugin for resizing axes / panes in a chart.
  *
- *  (c) 2010-2024 Highsoft AS
+ *  (c) 2010-2025 Highsoft AS
  *
  *  Author: Kacper Madej
  *

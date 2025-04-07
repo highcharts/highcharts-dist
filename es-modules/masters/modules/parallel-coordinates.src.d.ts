@@ -1,1 +1,2 @@
-import '../../../modules/parallel-coordinates.src';
+import * as Highcharts from '../../../modules/parallel-coordinates.src';
+export default Highcharts;

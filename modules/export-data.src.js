@@ -1,12 +1,12 @@
 /**
- * @license Highcharts JS v12.1.2 (2024-12-21)
+ * @license Highcharts JS v12.2.0 (2025-04-07)
  * @module highcharts/modules/export-data
  * @requires highcharts
  * @requires highcharts/modules/exporting
  *
  * Exporting module
  *
- * (c) 2010-2024 Torstein Honsi
+ * (c) 2010-2025 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -108,7 +108,7 @@ var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default 
 ;// ./code/es-modules/Extensions/DownloadURL.js
 /* *
  *
- *  (c) 2015-2024 Oystein Moseng
+ *  (c) 2015-2025 Oystein Moseng
  *
  *  License: www.highcharts.com/license
  *
@@ -243,7 +243,7 @@ var highcharts_AST_commonjs_highcharts_AST_commonjs2_highcharts_AST_root_Highcha
  *
  *  Experimental data export module for Highcharts
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -534,7 +534,7 @@ const ExportDataDefaults = {
  *
  *  Experimental data export module for Highcharts
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -1107,15 +1107,16 @@ function chartGetTableAST(useLocalDecimalPoint) {
         };
     };
     // Add table caption
-    if (options.exporting.tableCaption !== false) {
+    const { tableCaption } = options.exporting || {};
+    if (tableCaption !== false) {
         treeChildren.push({
             tagName: 'caption',
             attributes: {
                 'class': 'highcharts-table-caption'
             },
-            textContent: pick(options.exporting.tableCaption, (options.title.text ?
-                options.title.text :
-                'Chart'))
+            textContent: typeof tableCaption === 'string' ?
+                tableCaption :
+                options.title?.text || options.lang.chartTitle
         });
     }
     // Find longest row

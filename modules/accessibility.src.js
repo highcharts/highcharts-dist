@@ -1,11 +1,11 @@
 /**
- * @license Highcharts JS v12.1.2 (2024-12-21)
+ * @license Highcharts JS v12.2.0 (2025-04-07)
  * @module highcharts/modules/accessibility
  * @requires highcharts
  *
  * Accessibility module
  *
- * (c) 2010-2024 Highsoft AS
+ * (c) 2010-2025 Highsoft AS
  * Author: Oystein Moseng
  *
  * License: www.highcharts.com/license
@@ -24,10 +24,17 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 660:
+/***/ 260:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE__660__;
+module.exports = __WEBPACK_EXTERNAL_MODULE__260__;
+
+/***/ }),
+
+/***/ 512:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
 
 /***/ }),
 
@@ -35,6 +42,20 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__660__;
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__532__;
+
+/***/ }),
+
+/***/ 540:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__540__;
+
+/***/ }),
+
+/***/ 608:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__608__;
 
 /***/ }),
 
@@ -52,24 +73,10 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__632__;
 
 /***/ }),
 
-/***/ 260:
+/***/ 660:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE__260__;
-
-/***/ }),
-
-/***/ 608:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__608__;
-
-/***/ }),
-
-/***/ 540:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__540__;
+module.exports = __WEBPACK_EXTERNAL_MODULE__660__;
 
 /***/ }),
 
@@ -80,10 +87,10 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__820__;
 
 /***/ }),
 
-/***/ 512:
+/***/ 944:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
+module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 
 /***/ }),
 
@@ -91,13 +98,6 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__984__;
-
-/***/ }),
-
-/***/ 944:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 
 /***/ })
 
@@ -171,7 +171,7 @@ var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default 
 ;// ./code/es-modules/Accessibility/Utils/HTMLUtilities.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Utility functions for accessibility module.
  *
@@ -239,7 +239,7 @@ function cloneMouseEvent(e) {
         return new win.MouseEvent(e.type, e);
     }
     // No MouseEvent support, try using initMouseEvent
-    if (doc.createEvent) {
+    if (doc?.createEvent) {
         const evt = doc.createEvent('MouseEvent');
         if (evt.initMouseEvent) {
             evt.initMouseEvent(e.type, e.bubbles, // #10561, #12161
@@ -337,7 +337,7 @@ function getFakeMouseEvent(type, position, relatedTarget) {
         });
     }
     // No MouseEvent support, try using initMouseEvent
-    if (doc.createEvent) {
+    if (doc?.createEvent) {
         const evt = doc.createEvent('MouseEvent');
         if (evt.initMouseEvent) {
             evt.initMouseEvent(type, true, // Bubble
@@ -497,7 +497,7 @@ var highcharts_Templating_commonjs_highcharts_Templating_commonjs2_highcharts_Te
  *
  *  Accessibility module - internationalization support
  *
- *  (c) 2010-2024 Highsoft AS
+ *  (c) 2010-2025 Highsoft AS
  *  Author: Øystein Moseng
  *
  *  License: www.highcharts.com/license
@@ -787,7 +787,7 @@ var A11yI18nComposition;
 ;// ./code/es-modules/Accessibility/Utils/ChartUtilities.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Utils for dealing with charts.
  *
@@ -817,7 +817,7 @@ const { defined, find, fireEvent } = (highcharts_commonjs_highcharts_commonjs2_h
 function fireEventOnWrappedOrUnwrappedElement(el, eventObject) {
     const type = eventObject.type;
     const hcEvents = el.hcEvents;
-    if (!!ChartUtilities_doc.createEvent &&
+    if (!!ChartUtilities_doc?.createEvent &&
         (el.dispatchEvent || el.fireEvent)) {
         if (el.dispatchEvent) {
             el.dispatchEvent(eventObject);
@@ -1087,7 +1087,7 @@ const ChartUtilities = {
 ;// ./code/es-modules/Accessibility/Utils/DOMElementProvider.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Class that can keep track of elements added to DOM and clean them up on
  *  destroy.
@@ -1158,7 +1158,7 @@ class DOMElementProvider {
 ;// ./code/es-modules/Accessibility/Utils/EventProvider.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Class that can keep track of events added, and clean them up on destroy.
  *
@@ -1225,7 +1225,7 @@ class EventProvider {
 ;// ./code/es-modules/Accessibility/AccessibilityComponent.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Accessibility component class definition
  *
@@ -1374,7 +1374,7 @@ class AccessibilityComponent {
 ;// ./code/es-modules/Accessibility/KeyboardNavigationHandler.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Keyboard navigation handler base class definition
  *
@@ -1502,7 +1502,7 @@ class KeyboardNavigationHandler {
 ;// ./code/es-modules/Accessibility/Components/ContainerComponent.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Accessibility component for chart container.
  *
@@ -1646,7 +1646,7 @@ class ContainerComponent extends Accessibility_AccessibilityComponent {
 ;// ./code/es-modules/Accessibility/FocusBorder.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Extend SVG and Chart classes with focus border capabilities.
  *
@@ -1948,7 +1948,7 @@ var highcharts_AST_commonjs_highcharts_AST_commonjs2_highcharts_AST_root_Highcha
 ;// ./code/es-modules/Accessibility/Utils/Announcer.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Create announcer to speak messages to screen readers and other AT.
  *
@@ -2040,7 +2040,7 @@ class Announcer {
 ;// ./code/es-modules/Accessibility/Components/AnnotationsA11y.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Annotations accessibility code.
  *
@@ -2202,7 +2202,7 @@ const AnnotationsA11y = {
 ;// ./code/es-modules/Accessibility/Components/InfoRegionsComponent.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Accessibility component for chart info region and table.
  *
@@ -2759,7 +2759,7 @@ class InfoRegionsComponent extends Accessibility_AccessibilityComponent {
 ;// ./code/es-modules/Accessibility/Components/MenuComponent.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Accessibility component for exporting menu.
  *
@@ -2973,6 +2973,11 @@ class MenuComponent extends Accessibility_AccessibilityComponent {
             // enabled on chart
             validate: function () {
                 return !!chart.exporting &&
+                    chart
+                        .options
+                        .exporting
+                        ?.buttons
+                        ?.contextButton.enabled !== false &&
                     chart.options.exporting.enabled !== false &&
                     chart.options.exporting.accessibility.enabled !==
                         false;
@@ -3183,7 +3188,7 @@ class MenuComponent extends Accessibility_AccessibilityComponent {
 ;// ./code/es-modules/Accessibility/KeyboardNavigation.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Main keyboard navigation handling.
  *
@@ -3588,7 +3593,9 @@ class KeyboardNavigation {
         const chartProto = ChartClass.prototype;
         if (!chartProto.dismissPopupContent) {
             chartProto.dismissPopupContent = chartDismissPopupContent;
-            KeyboardNavigation_addEvent(KeyboardNavigation_doc, 'keydown', documentOnKeydown);
+            if (KeyboardNavigation_doc) {
+                KeyboardNavigation_addEvent(KeyboardNavigation_doc, 'keydown', documentOnKeydown);
+            }
         }
         return ChartClass;
     }
@@ -3636,7 +3643,7 @@ var highcharts_Legend_commonjs_highcharts_Legend_commonjs2_highcharts_Legend_roo
 ;// ./code/es-modules/Accessibility/Components/LegendComponent.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Accessibility component for chart legend.
  *
@@ -4106,7 +4113,7 @@ var highcharts_Axis_commonjs_highcharts_Axis_commonjs2_highcharts_Axis_root_High
 ;// ./code/es-modules/Stock/Navigator/ChartNavigatorComposition.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -4296,7 +4303,7 @@ const ChartNavigatorComposition = {
 ;// ./code/es-modules/Core/Axis/NavigatorAxisComposition.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -4447,7 +4454,7 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
 ;// ./code/es-modules/Stock/Navigator/NavigatorDefaults.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -4534,7 +4541,7 @@ const NavigatorDefaults = {
      * @sample {highstock} stock/navigator/margin/
      *         A margin of 2 draws the navigator closer to the X axis labels
      */
-    margin: 25,
+    margin: 22,
     /**
      * Whether the mask should be inside the range marking the zoomed
      * range, or outside. In Highcharts Stock 1.x it was always `false`.
@@ -4942,7 +4949,7 @@ const NavigatorDefaults = {
         },
         crosshair: false,
         title: {
-            text: null
+            text: void 0
         },
         tickLength: 0,
         tickWidth: 0
@@ -4976,7 +4983,7 @@ const NavigatorDefaults = {
 ;// ./code/es-modules/Core/Renderer/SVG/Symbols.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -4998,15 +5005,21 @@ const { defined: Symbols_defined, isNumber: Symbols_isNumber, pick: Symbols_pick
 function arc(cx, cy, w, h, options) {
     const arc = [];
     if (options) {
-        const start = options.start || 0, rx = Symbols_pick(options.r, w), ry = Symbols_pick(options.r, h || w), 
+        let start = options.start || 0, end = options.end || 0;
+        const rx = Symbols_pick(options.r, w), ry = Symbols_pick(options.r, h || w), 
         // Subtract a small number to prevent cos and sin of start and end
         // from becoming equal on 360 arcs (#1561). The size of the circle
         // affects the constant, therefore the division by `rx`. If the
         // proximity is too small, the arc disappears. If it is too great, a
         // gap appears. This can be seen in the animation of the official
-        // bubble demo (#20586).
-        proximity = 0.0002 / (options.borderRadius ? 1 : Math.max(rx, 1)), fullCircle = (Math.abs((options.end || 0) - start - 2 * Math.PI) <
-            proximity), end = (options.end || 0) - (fullCircle ? proximity : 0), innerRadius = options.innerR, open = Symbols_pick(options.open, fullCircle), cosStart = Math.cos(start), sinStart = Math.sin(start), cosEnd = Math.cos(end), sinEnd = Math.sin(end), 
+        // bubble demo (#20585).
+        proximity = 0.0002 / (options.borderRadius ? 1 : Math.max(rx, 1)), fullCircle = (Math.abs(end - start - 2 * Math.PI) <
+            proximity);
+        if (fullCircle) {
+            start = Math.PI / 2;
+            end = Math.PI * 2.5 - proximity;
+        }
+        const innerRadius = options.innerR, open = Symbols_pick(options.open, fullCircle), cosStart = Math.cos(start), sinStart = Math.sin(start), cosEnd = Math.cos(end), sinEnd = Math.sin(end), 
         // Proximity takes care of rounding errors around PI (#6971)
         longArc = Symbols_pick(options.longArc, end - start - Math.PI < proximity ? 0 : 1);
         let arcSegment = [
@@ -5065,7 +5078,7 @@ function arc(cx, cy, w, h, options) {
  * Callout shape used for default tooltips.
  */
 function callout(x, y, w, h, options) {
-    const arrowLength = 6, halfDistance = 6, r = Math.min((options && options.r) || 0, w, h), safeDistance = r + halfDistance, anchorX = options && options.anchorX, anchorY = options && options.anchorY || 0;
+    const arrowLength = 6, halfDistance = 6, r = Math.min((options?.r) || 0, w, h), safeDistance = r + halfDistance, anchorX = options?.anchorX, anchorY = options?.anchorY || 0;
     const path = roundedRect(x, y, w, h, { r });
     if (!Symbols_isNumber(anchorX)) {
         return path;
@@ -5150,7 +5163,7 @@ function diamond(x, y, w, h) {
  *
  */
 function rect(x, y, w, h, options) {
-    if (options && options.r) {
+    if (options?.r) {
         return roundedRect(x, y, w, h, options);
     }
     return [
@@ -5222,7 +5235,7 @@ const Symbols = {
 ;// ./code/es-modules/Stock/Navigator/NavigatorSymbols.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -5269,7 +5282,7 @@ var highcharts_RendererRegistry_commonjs_highcharts_RendererRegistry_commonjs2_h
 ;// ./code/es-modules/Stock/Utilities/StockUtilities.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -5312,7 +5325,7 @@ const StockUtilities = {
 ;// ./code/es-modules/Stock/Navigator/NavigatorComposition.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -5377,7 +5390,7 @@ const NavigatorComposition = {
 ;// ./code/es-modules/Core/Axis/ScrollbarAxis.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -5429,8 +5442,8 @@ var ScrollbarAxis;
     ScrollbarAxis.compose = compose;
     /** @private */
     function getExtremes(axis) {
-        const axisMin = ScrollbarAxis_pick(axis.options && axis.options.min, axis.min);
-        const axisMax = ScrollbarAxis_pick(axis.options && axis.options.max, axis.max);
+        const axisMin = ScrollbarAxis_pick(axis.options?.min, axis.min);
+        const axisMax = ScrollbarAxis_pick(axis.options?.max, axis.max);
         return {
             axisMin,
             axisMax,
@@ -5459,9 +5472,7 @@ var ScrollbarAxis;
      */
     function onAxisAfterInit() {
         const axis = this;
-        if (axis.options &&
-            axis.options.scrollbar &&
-            axis.options.scrollbar.enabled) {
+        if (axis.options?.scrollbar?.enabled) {
             // Predefined options:
             axis.options.scrollbar.vertical = !axis.horiz;
             axis.options.startOnTick = axis.options.endOnTick = false;
@@ -5595,7 +5606,7 @@ var ScrollbarAxis;
 ;// ./code/es-modules/Stock/Scrollbar/ScrollbarDefaults.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -5687,7 +5698,7 @@ const ScrollbarDefaults = {
     /**
      * The margin between the scrollbar and its axis when the scrollbar is
      * applied directly to an axis, or the navigator in case that is enabled.
-     * Defaults to 10 for axis, 0 for navigator.
+     * Defaults to 10 for axis, 3 for navigator.
      *
      * @type {number|undefined}
      */
@@ -5818,7 +5829,7 @@ const ScrollbarDefaults = {
 ;// ./code/es-modules/Stock/Scrollbar/Scrollbar.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -6483,7 +6494,7 @@ var highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_
 ;// ./code/es-modules/Stock/Navigator/Navigator.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -7478,9 +7489,9 @@ class Navigator {
             navigator.xAxis.navigatorAxis.toFixedRange = (NavigatorAxisComposition.prototype.toFixedRange.bind(navigator.xAxis.navigatorAxis));
         }
         // Initialize the scrollbar
-        if (chart.options.scrollbar.enabled) {
+        if (chart.options.scrollbar?.enabled) {
             const options = Navigator_merge(chart.options.scrollbar, { vertical: chart.inverted });
-            if (!Navigator_isNumber(options.margin) && navigator.navigatorEnabled) {
+            if (!Navigator_isNumber(options.margin)) {
                 options.margin = chart.inverted ? -3 : 3;
             }
             chart.scrollbar = navigator.scrollbar = new Scrollbar_Scrollbar(chart.renderer, options, chart);
@@ -7909,10 +7920,10 @@ class Navigator {
                 marginName = navigator.opposite ?
                     'marginRight' : 'plotLeft';
             }
-            chart[marginName] =
-                (chart[marginName] || 0) + (navigator.navigatorEnabled || !chart.inverted ?
-                    navigator.height + navigator.scrollbarHeight :
-                    0) + navigator.navigatorOptions.margin;
+            chart[marginName] = (chart[marginName] || 0) + (navigator.navigatorEnabled || !chart.inverted ?
+                navigator.height +
+                    (this.scrollbar?.options.margin || 0) +
+                    navigator.scrollbarHeight : 0) + (navigator.navigatorOptions.margin || 0);
         }), Navigator_addEvent(Navigator, 'setRange', function (e) {
             this.chart.xAxis[0].setExtremes(e.min, e.max, e.redraw, e.animation, e.eventArguments);
         }));
@@ -7955,6 +7966,10 @@ class Navigator {
         [this.handles].forEach((coll) => {
             Navigator_destroyObjectProperties(coll);
         });
+        // Clean up linked series
+        this.baseSeries.forEach((s) => {
+            s.navigatorSeries = void 0;
+        });
         this.navigatorEnabled = false;
     }
 }
@@ -7968,7 +7983,7 @@ class Navigator {
 ;// ./code/es-modules/Accessibility/Components/NavigatorComponent.js
 /* *
  *
- *  (c) 2009-2024 Highsoft AS
+ *  (c) 2009-2025 Highsoft AS
  *
  *  Accessibility component for the navigator.
  *
@@ -8201,7 +8216,7 @@ class NavigatorComponent extends Accessibility_AccessibilityComponent {
 ;// ./code/es-modules/Accessibility/Components/SeriesComponent/SeriesDescriber.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Place desriptions on a series and its points.
  *
@@ -8235,10 +8250,11 @@ function findFirstPointWithGraphic(point) {
     if (!point.series || !point.series.data || !SeriesDescriber_defined(sourcePointIndex)) {
         return null;
     }
+    const nullInteraction = point.series.options?.nullInteraction;
     return SeriesDescriber_find(point.series.data, function (p) {
         return !!(p &&
             typeof p.index !== 'undefined' &&
-            p.index > sourcePointIndex &&
+            (nullInteraction || p.index > sourcePointIndex) &&
             p.graphic &&
             p.graphic.element);
     }) || null;
@@ -8617,7 +8633,7 @@ const SeriesDescriber = {
 ;// ./code/es-modules/Accessibility/Components/SeriesComponent/NewDataAnnouncer.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Handle announcing new data for a chart.
  *
@@ -8928,7 +8944,7 @@ class NewDataAnnouncer {
 ;// ./code/es-modules/Accessibility/ProxyElement.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Proxy elements are used to shadow SVG elements in HTML for assistive
  *  technology, such as screen readers or voice input software.
@@ -8943,7 +8959,7 @@ class NewDataAnnouncer {
  * */
 
 
-const { doc: ProxyElement_doc } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { doc: ProxyElement_doc, win: ProxyElement_win } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 const { attr: ProxyElement_attr, css: ProxyElement_css, merge: ProxyElement_merge } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
@@ -9118,10 +9134,13 @@ class ProxyElement {
         const posElement = this.target.visual || clickTargetElement;
         const chartDiv = this.chart.renderTo, pointer = this.chart.pointer;
         if (chartDiv && posElement?.getBoundingClientRect && pointer) {
-            const rectEl = posElement.getBoundingClientRect(), chartPos = pointer.getChartPosition();
+            const scrollTop = ProxyElement_win.scrollY ||
+                ProxyElement_doc.documentElement.scrollTop, rectEl = posElement.getBoundingClientRect(), chartPos = pointer.getChartPosition();
             return {
                 x: (rectEl.left - chartPos.left) / chartPos.scaleX,
-                y: (rectEl.top - chartPos.top) / chartPos.scaleY,
+                // #21994, Add scroll position as "getBoundingClientRect"
+                // returns the position from the viewport, not the document top.
+                y: ((rectEl.top + scrollTop) - chartPos.top) / chartPos.scaleY,
                 width: rectEl.right / chartPos.scaleX -
                     rectEl.left / chartPos.scaleX,
                 height: rectEl.bottom / chartPos.scaleY -
@@ -9150,7 +9169,7 @@ class ProxyElement {
 ;// ./code/es-modules/Accessibility/ProxyProvider.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Proxy elements are used to shadow SVG elements in HTML for assistive
  *  technology, such as screen readers or voice input software.
@@ -9467,7 +9486,7 @@ class ProxyProvider {
 ;// ./code/es-modules/Accessibility/Components/RangeSelectorComponent.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Accessibility component for the range selector.
  *
@@ -9942,7 +9961,7 @@ class RangeSelectorComponent extends Accessibility_AccessibilityComponent {
 ;// ./code/es-modules/Accessibility/Components/SeriesComponent/ForcedMarkers.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Handle forcing series markers.
  *
@@ -10182,7 +10201,7 @@ var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_roo
 ;// ./code/es-modules/Accessibility/Components/SeriesComponent/SeriesKeyboardNavigation.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Handle keyboard navigation for series.
  *
@@ -10256,15 +10275,15 @@ function isSkipSeries(series) {
  * @private
  */
 function isSkipPoint(point) {
-    const a11yOptions = point.series.chart.options.accessibility;
-    const pointA11yDisabled = (point.options.accessibility &&
-        point.options.accessibility.enabled === false);
-    return point.isNull &&
-        a11yOptions.keyboardNavigation.seriesNavigation.skipNullPoints ||
+    const series = point.series, nullInteraction = series.options.nullInteraction, pointOptions = point.options, pointA11yOptions = pointOptions.accessibility, a11yOptions = series.chart.options.accessibility, pointA11yDisabled = pointA11yOptions?.enabled === false;
+    return a11yOptions
+        .keyboardNavigation
+        .seriesNavigation
+        .skipNullPoints ?? (!(!point.isNull || nullInteraction) &&
         point.visible === false ||
         point.isInside === false ||
         pointA11yDisabled ||
-        isSkipSeries(point.series);
+        isSkipSeries(series));
 }
 /**
  * Get the first point that is not a skip point in this series.
@@ -10834,7 +10853,8 @@ class SeriesKeyboardNavigation {
      */
     function pointHighlight(highlightVisually = true) {
         const chart = this.series.chart, tooltipElement = chart.tooltip?.label?.element;
-        if (!this.isNull && highlightVisually) {
+        if ((!this.isNull ||
+            this.series.options?.nullInteraction) && highlightVisually) {
             this.onMouseOver(); // Show the hover marker and tooltip
         }
         else {
@@ -10904,7 +10924,7 @@ class SeriesKeyboardNavigation {
 ;// ./code/es-modules/Accessibility/Components/SeriesComponent/SeriesComponent.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Accessibility component for series and points.
  *
@@ -11036,7 +11056,7 @@ class SeriesComponent extends Accessibility_AccessibilityComponent {
 ;// ./code/es-modules/Accessibility/Components/ZoomComponent.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Accessibility component for chart zoom.
  *
@@ -11352,7 +11372,7 @@ class ZoomComponent extends Accessibility_AccessibilityComponent {
 ;// ./code/es-modules/Accessibility/HighContrastMode.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Handling for Windows High Contrast Mode.
  *
@@ -11459,7 +11479,7 @@ const whcm = {
 ;// ./code/es-modules/Accessibility/HighContrastTheme.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Default theme for Windows High Contrast Mode.
  *
@@ -11673,7 +11693,7 @@ const theme = {
 ;// ./code/es-modules/Accessibility/Options/A11yDefaults.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Default options for accessibility.
  *
@@ -12315,11 +12335,12 @@ const Options = {
                  */
                 /**
                  * Skip null points when navigating through points with the
-                 * keyboard.
+                 * keyboard. By default this is the opposite of
+                 * [series.nullInteraction](https://api.highcharts.com/highcharts/plotOptions.series.nullInteraction).
                  *
                  * @since 8.0.0
                  */
-                skipNullPoints: true,
+                skipNullPoints: void 0,
                 /**
                  * When a series contains more points than this, we no longer
                  * allow keyboard navigation for it.
@@ -12633,7 +12654,7 @@ const Options = {
 ;// ./code/es-modules/Accessibility/Options/LangDefaults.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Default lang/i18n options for accessibility.
  *
@@ -13075,7 +13096,7 @@ const langOptions = {
 ;// ./code/es-modules/Accessibility/Options/DeprecatedOptions.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Default options for accessibility.
  *
@@ -13342,7 +13363,7 @@ function copyDeprecatedOptions(chart) {
 ;// ./code/es-modules/Accessibility/Accessibility.js
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Accessibility module for Highcharts
  *
@@ -13418,7 +13439,7 @@ class Accessibility {
     init(chart) {
         this.chart = chart;
         // Abort on old browsers
-        if (!Accessibility_doc.addEventListener) {
+        if (!Accessibility_doc?.addEventListener) {
             this.zombie = true;
             this.components = {};
             chart.renderTo.setAttribute('aria-hidden', true);

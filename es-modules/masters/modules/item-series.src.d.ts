@@ -1,1 +1,2 @@
-import '../../../modules/item-series.src';
+import * as Highcharts from '../../../modules/item-series.src';
+export default Highcharts;

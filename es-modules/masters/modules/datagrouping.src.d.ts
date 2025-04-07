@@ -1,1 +1,2 @@
-import '../../../modules/datagrouping.src';
+import * as Highcharts from '../../../modules/datagrouping.src';
+export default Highcharts;

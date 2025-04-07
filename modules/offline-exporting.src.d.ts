@@ -112,6 +112,10 @@ declare module "../highcharts.src" {
      *        The callback function in case of success
      */
     function downloadSVGLocal(svg: string, options: ExportingOptions, failCallback: Function, successCallback?: Function): void;
+    /**
+     * Resolve CSS variables into hex colors
+     */
+    function resolveCSSVariables(): void;
 }
 export default factory;
 export let Highcharts: typeof _Highcharts;

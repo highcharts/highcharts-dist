@@ -1,1 +1,2 @@
-import '../../../options/macd.src';
+import * as Highcharts from '../../../options/macd.src';
+export default Highcharts;

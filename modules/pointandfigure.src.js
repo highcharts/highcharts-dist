@@ -1,12 +1,12 @@
 /**
- * @license Highstock JS v12.1.2 (2024-12-21)
+ * @license Highstock JS v12.2.0 (2025-04-07)
  * @module highcharts/modules/pointandfigure
  * @requires highcharts
  * @requires highcharts/modules/stock
  *
  * Point and figure series type for Highcharts Stock
  *
- * (c) 2010-2024 Kamil Musialowski
+ * (c) 2010-2025 Kamil Musialowski
  *
  * License: www.highcharts.com/license
  */
@@ -24,17 +24,17 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 608:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__608__;
-
-/***/ }),
-
 /***/ 512:
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
+
+/***/ }),
+
+/***/ 608:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__608__;
 
 /***/ }),
 
@@ -118,7 +118,7 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
 ;// ./code/es-modules/Series/PointAndFigure/PointAndFigurePoint.js
 /* *
  *
- *  (c) 2010-2024 Kamil Musialowski
+ *  (c) 2010-2025 Kamil Musialowski
  *
  *  License: www.highcharts.com/license
  *
@@ -180,7 +180,7 @@ class PointAndFigurePoint extends ScatterPoint {
 ;// ./code/es-modules/Series/PointAndFigure/PointAndFigureSeriesDefaults.js
 /* *
  *
- *  (c) 2010-2024 Kamil Musialowski
+ *  (c) 2010-2025 Kamil Musialowski
  *
  *  License: www.highcharts.com/license
  *
@@ -389,7 +389,7 @@ var PointAndFigureSymbols;
 ;// ./code/es-modules/Series/PointAndFigure/PointAndFigureSeries.js
 /* *
  *
- *  (c) 2010-2024 Kamil Musialowski
+ *  (c) 2010-2025 Kamil Musialowski
  *
  *  License: www.highcharts.com/license
  *

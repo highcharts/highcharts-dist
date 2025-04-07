@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v12.1.2 (2024-12-21)
+ * @license Highcharts JS v12.2.0 (2025-04-07)
  * @module highcharts/modules/sunburst
  * @requires highcharts
  *
- * (c) 2016-2024 Highsoft AS
+ * (c) 2016-2025 Highsoft AS
  * Authors: Jon Arild Nygard
  *
  * License: www.highcharts.com/license
@@ -22,24 +22,10 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 620:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__620__;
-
-/***/ }),
-
 /***/ 28:
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__28__;
-
-/***/ }),
-
-/***/ 820:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__820__;
 
 /***/ }),
 
@@ -50,10 +36,17 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
 
 /***/ }),
 
-/***/ 984:
+/***/ 620:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE__984__;
+module.exports = __WEBPACK_EXTERNAL_MODULE__620__;
+
+/***/ }),
+
+/***/ 820:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__820__;
 
 /***/ }),
 
@@ -61,6 +54,13 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__984__;
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
+
+/***/ }),
+
+/***/ 984:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__984__;
 
 /***/ })
 
@@ -1014,9 +1014,6 @@ Breadcrumbs.defaultOptions = Breadcrumbs_BreadcrumbsDefaults.options;
  *
  * @callback Highcharts.BreadcrumbsFormatterCallbackFunction
  *
- * @param {Highcharts.Event} event
- * Event.
- *
  * @param {Highcharts.BreadcrumbOptions} options
  * Breadcrumb options.
  *
@@ -1089,7 +1086,7 @@ var highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_highcharts_SV
 ;// ./code/es-modules/Series/ColorMapComposition.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -1214,10 +1211,13 @@ var ColorMapComposition;
  * */
 /* harmony default export */ const Series_ColorMapComposition = (ColorMapComposition);
 
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series"],"commonjs":["highcharts","Series"],"commonjs2":["highcharts","Series"],"root":["Highcharts","Series"]}
+var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_ = __webpack_require__(820);
+var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_);
 ;// ./code/es-modules/Series/Treemap/TreemapAlgorithmGroup.js
 /* *
  *
- *  (c) 2014-2024 Highsoft AS
+ *  (c) 2014-2025 Highsoft AS
  *
  *  Authors: Jon Arild Nygard / Oystein Moseng
  *
@@ -1310,7 +1310,7 @@ class TreemapAlgorithmGroup {
 ;// ./code/es-modules/Series/Treemap/TreemapNode.js
 /* *
  *
- *  (c) 2010-2024 Pawel Lysy
+ *  (c) 2010-2025 Pawel Lysy
  *
  *  License: www.highcharts.com/license
  *
@@ -1442,7 +1442,7 @@ const DrawPointUtilities = {
 ;// ./code/es-modules/Series/Treemap/TreemapPoint.js
 /* *
  *
- *  (c) 2014-2024 Highsoft AS
+ *  (c) 2014-2025 Highsoft AS
  *
  *  Authors: Jon Arild Nygard / Oystein Moseng
  *
@@ -1538,7 +1538,7 @@ TreemapPoint_extend(TreemapPoint.prototype, {
 ;// ./code/es-modules/Series/Treemap/TreemapSeriesDefaults.js
 /* *
  *
- *  (c) 2014-2024 Highsoft AS
+ *  (c) 2014-2025 Highsoft AS
  *
  *  Authors: Jon Arild Nygard / Oystein Moseng
  *
@@ -1706,7 +1706,6 @@ const TreemapSeriesDefaults = {
      * @since 4.1.0
      */
     dataLabels: {
-        defer: false,
         enabled: true,
         formatter: function () {
             const point = this && this.point ?
@@ -1714,6 +1713,17 @@ const TreemapSeriesDefaults = {
                 {}, name = TreemapSeriesDefaults_isString(point.name) ? point.name : '';
             return name;
         },
+        /**
+         * Whether the data label should act as a group-level header. For leaf
+         * nodes, headers are not supported and the data label will be rendered
+         * inside.
+         *
+         * @sample {highcharts} highcharts/series-treemap/headers
+         *         Headers for parent nodes
+         *
+         * @since 12.2.0
+         */
+        headers: false,
         inside: true,
         padding: 2,
         verticalAlign: 'middle',
@@ -1828,6 +1838,18 @@ const TreemapSeriesDefaults = {
         }
     },
     /**
+     * Group padding for parent elements in terms of pixels. See also the
+     * `nodeSizeBy` option that controls how the leaf nodes' size is affected by
+     * the padding.
+     *
+     * @sample    {highcharts} highcharts/series-treemap/grouppadding/
+     *            Group padding
+     * @type      {number}
+     * @since 12.2.0
+     * @product   highcharts
+     * @apioption plotOptions.treemap.groupPadding
+     */
+    /**
      * Set options on specific levels. Takes precedence over series options,
      * but not point options.
      *
@@ -1840,6 +1862,21 @@ const TreemapSeriesDefaults = {
      * @since     4.1.0
      * @product   highcharts
      * @apioption plotOptions.treemap.levels
+     */
+    /**
+     * Experimental. How to set the size of child nodes when a header or padding
+     * is present. When `leaf`, the group is expanded to make room for headers
+     * and padding in order to preserve the relative sizes between leaves. When
+     * `group`, the leaves are naïvely fit into the remaining area after the
+     * header and padding are subtracted.
+     *
+     * @sample    {highcharts} highcharts/series-treemap/nodesizeby/
+     *            Node sizing
+     * @since 12.2.0
+     * @type      {string}
+     * @validvalue ["group", "leaf"]
+     * @default   group
+     * @apioption plotOptions.treemap.nodeSizeBy
      */
     /**
      * Can set a `borderColor` on all points which lies on the same level.
@@ -1968,7 +2005,8 @@ const TreemapSeriesDefaults = {
     borderWidth: 1,
     colorKey: 'colorValue',
     /**
-     * The opacity of a point in treemap. When a point has children, the
+     * The opacity of grouped points in treemap. When a point has children, the
+     * group point is covering the children, and is given this opacity. The
      * visibility of the children is determined by the opacity.
      *
      * @since 4.2.4
@@ -2228,7 +2266,7 @@ const TreemapSeriesDefaults = {
 ;// ./code/es-modules/Series/Treemap/TreemapUtilities.js
 /* *
  *
- *  (c) 2014-2024 Highsoft AS
+ *  (c) 2014-2025 Highsoft AS
  *
  *  Authors: Jon Arild Nygard / Oystein Moseng
  *
@@ -2277,7 +2315,7 @@ var TreemapUtilities;
 ;// ./code/es-modules/Series/TreeUtilities.js
 /* *
  *
- *  (c) 2014-2024 Highsoft AS
+ *  (c) 2014-2025 Highsoft AS
  *
  *  Authors: Jon Arild Nygard / Oystein Moseng
  *
@@ -2493,7 +2531,7 @@ const TreeUtilities = {
 ;// ./code/es-modules/Series/Treemap/TreemapSeries.js
 /* *
  *
- *  (c) 2014-2024 Highsoft AS
+ *  (c) 2014-2025 Highsoft AS
  *
  *  Authors: Jon Arild Nygard / Oystein Moseng
  *
@@ -2510,6 +2548,7 @@ const { parse: color } = (highcharts_Color_commonjs_highcharts_Color_commonjs2_h
 
 const { composed: TreemapSeries_composed, noop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
+
 const { column: ColumnSeries, scatter: ScatterSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
 
 
@@ -2519,7 +2558,8 @@ const { column: ColumnSeries, scatter: ScatterSeries } = (highcharts_SeriesRegis
 
 const { getColor: TreemapSeries_getColor, getLevelOptions: TreemapSeries_getLevelOptions, updateRootId: TreemapSeries_updateRootId } = Series_TreeUtilities;
 
-const { addEvent: TreemapSeries_addEvent, correctFloat, crisp, defined: TreemapSeries_defined, error, extend: TreemapSeries_extend, fireEvent: TreemapSeries_fireEvent, isArray: TreemapSeries_isArray, isObject: TreemapSeries_isObject, isString: TreemapSeries_isString, merge: TreemapSeries_merge, pick: TreemapSeries_pick, pushUnique: TreemapSeries_pushUnique, splat, stableSort } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { addEvent: TreemapSeries_addEvent, arrayMax, clamp, correctFloat, crisp, defined: TreemapSeries_defined, error, extend: TreemapSeries_extend, fireEvent: TreemapSeries_fireEvent, isArray: TreemapSeries_isArray, isNumber: TreemapSeries_isNumber, isObject: TreemapSeries_isObject, isString: TreemapSeries_isString, merge: TreemapSeries_merge, pick: TreemapSeries_pick, pushUnique: TreemapSeries_pushUnique, splat, stableSort } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().keepProps.push('simulation', 'hadOutsideDataLabels');
 /* *
  *
  *  Constants
@@ -2579,6 +2619,16 @@ function onSeriesAfterBindAxes() {
  * @augments Highcharts.Series
  */
 class TreemapSeries extends ScatterSeries {
+    constructor() {
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
+        super(...arguments);
+        this.simulation = 0;
+        /* eslint-enable valid-jsdoc */
+    }
     /* *
      *
      *  Static Functions
@@ -2818,14 +2868,14 @@ class TreemapSeries extends ScatterSeries {
     calculateChildrenAreas(parent, area) {
         const series = this, options = series.options, mapOptionsToLevel = series.mapOptionsToLevel, level = mapOptionsToLevel[parent.level + 1], algorithm = TreemapSeries_pick((level?.layoutAlgorithm &&
             series[level?.layoutAlgorithm] &&
-            level.layoutAlgorithm), series.options.layoutAlgorithm), alternate = options.alternateStartingDirection, 
+            level.layoutAlgorithm), options.layoutAlgorithm), alternate = options.alternateStartingDirection, 
         // Collect all children which should be included
-        children = parent.children.filter((n) => parent.isGroup || !n.ignore);
+        children = parent.children.filter((n) => parent.isGroup || !n.ignore), groupPadding = level?.groupPadding ?? options.groupPadding ?? 0, rootNode = series.nodeMap[series.rootNode];
         if (!algorithm) {
             return;
         }
-        let childrenValues = [];
-        if (level && level.layoutStartingDirection) {
+        let childrenValues = [], axisWidth = rootNode.pointValues?.width || 0, axisHeight = rootNode.pointValues?.height || 0;
+        if (level?.layoutStartingDirection) {
             area.direction = level.layoutStartingDirection === 'vertical' ?
                 0 :
                 1;
@@ -2834,10 +2884,33 @@ class TreemapSeries extends ScatterSeries {
         let i = -1;
         for (const child of children) {
             const values = childrenValues[++i];
+            if (child === rootNode) {
+                axisWidth = axisWidth || values.width;
+                axisHeight = values.height;
+            }
+            const groupPaddingXValues = groupPadding / (series.xAxis.len / axisHeight), groupPaddingYValues = groupPadding / (series.yAxis.len / axisHeight);
             child.values = TreemapSeries_merge(values, {
                 val: child.childrenTotal,
                 direction: (alternate ? 1 - area.direction : area.direction)
             });
+            // Make room for outside data labels
+            if (child.children.length &&
+                child.point.dataLabels?.length) {
+                const dlHeight = arrayMax(child.point.dataLabels.map((dl) => dl.options
+                    ?.headers && dl.height || 0)) / (series.yAxis.len / axisHeight);
+                // Make room for data label unless the group is too small
+                if (dlHeight < child.values.height / 2) {
+                    child.values.y += dlHeight;
+                    child.values.height -= dlHeight;
+                }
+            }
+            if (groupPadding) {
+                const xPad = Math.min(groupPaddingXValues, child.values.width / 4), yPad = Math.min(groupPaddingYValues, child.values.height / 4);
+                child.values.x += xPad;
+                child.values.width -= 2 * xPad;
+                child.values.y += yPad;
+                child.values.height -= 2 * yPad;
+            }
             child.pointValues = TreemapSeries_merge(values, {
                 x: (values.x / series.axisRatio),
                 // Flip y-values to avoid visual regression with csvCoord in
@@ -2848,6 +2921,85 @@ class TreemapSeries extends ScatterSeries {
             // If node has children, then call method recursively
             if (child.children.length) {
                 series.calculateChildrenAreas(child, child.values);
+            }
+        }
+        const getChildrenRecursive = (node, result = [], getLeaves = true) => {
+            node.children.forEach((child) => {
+                if (getLeaves && child.isLeaf) {
+                    result.push(child.point);
+                }
+                else if (!getLeaves && !child.isLeaf) {
+                    result.push(child.point);
+                }
+                if (child.children.length) {
+                    getChildrenRecursive(child, result, getLeaves);
+                }
+            });
+            return result;
+        };
+        // Experimental block to make space for the outside data labels
+        if (options.nodeSizeBy === 'leaf' &&
+            parent === rootNode &&
+            this.hasOutsideDataLabels &&
+            // Sizing by leaf value is not possible if any of the groups have
+            // explicit values
+            !getChildrenRecursive(rootNode, void 0, false)
+                .some((point) => TreemapSeries_isNumber(point.options.value)) &&
+            !TreemapSeries_isNumber(rootNode.point?.options.value)) {
+            const leaves = getChildrenRecursive(rootNode), values = leaves.map((point) => point.options.value || 0), 
+            // Areas in terms of axis units squared
+            areas = leaves.map(({ node: { pointValues } }) => (pointValues ?
+                pointValues.width * pointValues.height :
+                0)), valueSum = values.reduce((sum, value) => sum + value, 0), areaSum = areas.reduce((sum, value) => sum + value, 0), expectedAreaPerValue = areaSum / valueSum;
+            let minMiss = 0, maxMiss = 0;
+            leaves.forEach((point, i) => {
+                const areaPerValue = values[i] ? (areas[i] / values[i]) : 1, 
+                // Less than 1 => rendered too small, greater than 1 =>
+                // rendered too big
+                fit = clamp(areaPerValue / expectedAreaPerValue, 0.8, 1.4);
+                let miss = 1 - fit;
+                if (point.value) {
+                    // Very small areas are more sensitive, and matter less to
+                    // the visual impression. Give them less weight.
+                    if (areas[i] < 20) {
+                        miss *= areas[i] / 20;
+                    }
+                    if (miss > maxMiss) {
+                        maxMiss = miss;
+                    }
+                    if (miss < minMiss) {
+                        minMiss = miss;
+                    }
+                    point.simulatedValue = (point.simulatedValue || point.value) / fit;
+                }
+            });
+            /* /
+            console.log('--- simulation',
+                this.simulation,
+                'worstMiss',
+                minMiss,
+                maxMiss
+            );
+            // */
+            if (
+            // An area error less than 5% is acceptable, the human ability
+            // to assess area size is not that accurate
+            (minMiss < -0.05 || maxMiss > 0.05) &&
+                // In case an eternal loop is brewing, pull the emergency brake
+                this.simulation < 10) {
+                this.simulation++;
+                this.setTreeValues(parent);
+                area.val = parent.val;
+                this.calculateChildrenAreas(parent, area);
+                // Simulation is settled, proceed to rendering. Reset the simulated
+                // values and set the tree values with real data.
+            }
+            else {
+                leaves.forEach((point) => {
+                    delete point.simulatedValue;
+                });
+                this.setTreeValues(parent);
+                this.simulation = 0;
             }
         }
     }
@@ -2901,12 +3053,11 @@ class TreemapSeries extends ScatterSeries {
     drawDataLabels() {
         const series = this, mapOptionsToLevel = series.mapOptionsToLevel, points = series.points.filter(function (n) {
             return n.node.visible || TreemapSeries_defined(n.dataLabel);
-        }), padding = splat(series.options.dataLabels || {})[0]?.padding;
-        let options, level;
+        }), padding = splat(series.options.dataLabels || {})[0]?.padding, positionsAreSet = points.some((p) => TreemapSeries_isNumber(p.plotY));
         for (const point of points) {
-            level = mapOptionsToLevel[point.node.level];
+            const style = {}, 
             // Set options to new object to avoid problems with scope
-            options = { style: {} };
+            options = { style }, level = mapOptionsToLevel[point.node.level];
             // If not a leaf, then label should be disabled as default
             if (!point.node.isLeaf &&
                 !point.node.isGroup ||
@@ -2915,20 +3066,40 @@ class TreemapSeries extends ScatterSeries {
                 options.enabled = false;
             }
             // If options for level exists, include them as well
-            if (level && level.dataLabels) {
-                options = TreemapSeries_merge(options, level.dataLabels);
+            if (level?.dataLabels) {
+                TreemapSeries_merge(true, options, splat(level.dataLabels)[0]);
                 series.hasDataLabels = () => true;
+            }
+            // Headers are always top-aligned. Leaf nodes no not support
+            // headers.
+            if (point.node.isLeaf) {
+                options.inside = true;
+            }
+            else if (options.headers) {
+                options.verticalAlign = 'top';
             }
             // Set dataLabel width to the width of the point shape minus the
             // padding
-            if (point.shapeArgs) {
-                const css = {
-                    width: ((point.shapeArgs.width || 0) -
-                        2 * (options.padding || padding || 0)) + 'px',
-                    lineClamp: Math.floor((point.shapeArgs.height || 0) / 16)
-                };
-                TreemapSeries_extend(options.style, css);
-                point.dataLabel?.css(css);
+            if (point.shapeArgs && positionsAreSet) {
+                const { height = 0, width = 0 } = point.shapeArgs;
+                if (width > 32 && height > 16 && point.shouldDraw()) {
+                    const dataLabelWidth = width -
+                        2 * (options.padding || padding || 0);
+                    style.width = `${dataLabelWidth}px`;
+                    style.lineClamp ?? (style.lineClamp = Math.floor(height / 16));
+                    style.visibility = 'inherit';
+                    // Make the label box itself fill the width
+                    if (options.headers) {
+                        point.dataLabel?.attr({
+                            width: dataLabelWidth
+                        });
+                    }
+                    // Hide labels for shapes that are too small
+                }
+                else {
+                    style.width = `${width}px`;
+                    style.visibility = 'hidden';
+                }
             }
             // Merge custom options with point options
             point.dlOptions = TreemapSeries_merge(options, point.options.dataLabels);
@@ -3003,13 +3174,8 @@ class TreemapSeries extends ScatterSeries {
      * @private
      */
     drillToByGroup(point) {
-        let drillId = false;
-        if ((!point.node.isLeaf ||
-            point.node.isGroup) &&
-            (point.node.level - this.nodeMap[this.rootNode].level) === 1) {
-            drillId = point.id;
-        }
-        return drillId;
+        return (!point.node.isLeaf || point.node.isGroup) ?
+            point.id : false;
     }
     /**
      * Finds the drill id for a leaf node. Returns false if point should not
@@ -3143,6 +3309,7 @@ class TreemapSeries extends ScatterSeries {
     init(chart, options) {
         const series = this, breadcrumbsOptions = TreemapSeries_merge(options.drillUpButton, options.breadcrumbs), setOptionsEvent = TreemapSeries_addEvent(series, 'setOptions', (event) => {
             const options = event.userOptions;
+            // Deprecated options
             if (TreemapSeries_defined(options.allowDrillToNode) &&
                 !TreemapSeries_defined(options.allowTraversingTree)) {
                 options.allowTraversingTree = options.allowDrillToNode;
@@ -3153,6 +3320,12 @@ class TreemapSeries extends ScatterSeries {
                 options.traverseUpButton = options.drillUpButton;
                 delete options.drillUpButton;
             }
+            // Check if we need to reserve space for headers
+            const dataLabels = splat(options.dataLabels || {});
+            options.levels?.forEach((level) => {
+                dataLabels.push.apply(dataLabels, splat(level.dataLabels || {}));
+            });
+            this.hasOutsideDataLabels = dataLabels.some((dl) => dl.headers);
         });
         super.init(chart, options);
         // Treemap's opacity is a different option from other series
@@ -3175,6 +3348,7 @@ class TreemapSeries extends ScatterSeries {
                 if (breadcrumbs && e.options.breadcrumbs) {
                     breadcrumbs.update(e.options.breadcrumbs);
                 }
+                this.hadOutsideDataLabels = this.hasOutsideDataLabels;
             }));
             series.eventsToUnbind.push(TreemapSeries_addEvent(series, 'destroy', function destroyEvents(e) {
                 const chart = this.chart;
@@ -3199,7 +3373,7 @@ class TreemapSeries extends ScatterSeries {
      * @private
      */
     onClickDrillToNode(event) {
-        const series = this, point = event.point, drillId = point && point.drillId;
+        const series = this, point = event.point, drillId = point?.drillId;
         // If a drill id is returned, add click event and cursor.
         if (TreemapSeries_isString(drillId)) {
             point.setState(''); // Remove hover
@@ -3213,7 +3387,7 @@ class TreemapSeries extends ScatterSeries {
     pointAttribs(point, state) {
         const series = this, mapOptionsToLevel = (TreemapSeries_isObject(series.mapOptionsToLevel) ?
             series.mapOptionsToLevel :
-            {}), level = point && mapOptionsToLevel[point.node.level] || {}, options = this.options, stateOptions = state && options.states && options.states[state] || {}, className = (point && point.getClassName()) || '', 
+            {}), level = point && mapOptionsToLevel[point.node.level] || {}, options = this.options, stateOptions = state && options.states && options.states[state] || {}, className = point?.getClassName() || '', 
         // Set attributes by precedence. Point trumps level trumps series.
         // Stroke width uses pick because it can be 0.
         attr = {
@@ -3222,13 +3396,12 @@ class TreemapSeries extends ScatterSeries {
                 stateOptions.borderColor ||
                 options.borderColor,
             'stroke-width': TreemapSeries_pick(point && point.borderWidth, level.borderWidth, stateOptions.borderWidth, options.borderWidth),
-            'dashstyle': (point && point.borderDashStyle) ||
+            'dashstyle': point?.borderDashStyle ||
                 level.borderDashStyle ||
                 stateOptions.borderDashStyle ||
                 options.borderDashStyle,
-            'fill': (point && point.color) || this.color
+            'fill': point?.color || this.color
         };
-        let opacity;
         // Hide levels above the current view
         if (className.indexOf('highcharts-above-level') !== -1) {
             attr.fill = 'none';
@@ -3236,15 +3409,14 @@ class TreemapSeries extends ScatterSeries {
             // Nodes with children that accept interaction
         }
         else if (className.indexOf('highcharts-internal-node-interactive') !== -1) {
-            opacity = TreemapSeries_pick(stateOptions.opacity, options.opacity);
-            attr.fill = color(attr.fill).setOpacity(opacity).get();
+            attr['fill-opacity'] = stateOptions.opacity ?? options.opacity ?? 1;
             attr.cursor = 'pointer';
             // Hide nodes that have children
         }
         else if (className.indexOf('highcharts-internal-node') !== -1) {
             attr.fill = 'none';
         }
-        else if (state) {
+        else if (state && stateOptions.brightness) {
             // Brighten and hoist the hover nodes
             attr.fill = color(attr.fill)
                 .brighten(stateOptions.brightness)
@@ -3257,7 +3429,7 @@ class TreemapSeries extends ScatterSeries {
      * @private
      */
     setColorRecursive(node, parentColor, colorIndex, index, siblings) {
-        const series = this, chart = series && series.chart, colors = chart && chart.options && chart.options.colors;
+        const series = this, chart = series?.chart, colors = chart?.options?.colors;
         if (node) {
             const colorInfo = TreemapSeries_getColor(node, {
                 colors: colors,
@@ -3296,12 +3468,19 @@ class TreemapSeries extends ScatterSeries {
             const { pointValues: values, visible } = point.node;
             // Points which is ignored, have no values.
             if (values && visible) {
-                const { height, width, x, y } = values;
-                const strokeWidth = getStrokeWidth(point);
-                const x1 = crisp(xAxis.toPixels(x, true), strokeWidth, true);
-                const x2 = crisp(xAxis.toPixels(x + width, true), strokeWidth, true);
-                const y1 = crisp(yAxis.toPixels(y, true), strokeWidth, true);
-                const y2 = crisp(yAxis.toPixels(y + height, true), strokeWidth, true);
+                const { height, width, x, y } = values, strokeWidth = getStrokeWidth(point), xValue = xAxis.toPixels(x, true), x2Value = xAxis.toPixels(x + width, true), yValue = yAxis.toPixels(y, true), y2Value = yAxis.toPixels(y + height, true), 
+                // If the edge of a rectangle is on the edge, make sure it
+                // stays within the plot area by adding or substracting half
+                // of the stroke width.
+                x1 = xValue === 0 ?
+                    strokeWidth / 2 :
+                    crisp(xAxis.toPixels(x, true), strokeWidth, true), x2 = x2Value === xAxis.len ?
+                    xAxis.len - strokeWidth / 2 :
+                    crisp(xAxis.toPixels(x + width, true), strokeWidth, true), y1 = yValue === yAxis.len ?
+                    yAxis.len - strokeWidth / 2 :
+                    crisp(yAxis.toPixels(y, true), strokeWidth, true), y2 = y2Value === 0 ?
+                    strokeWidth / 2 :
+                    crisp(yAxis.toPixels(y + height, true), strokeWidth, true);
                 // Set point values
                 const shapeArgs = {
                     x: Math.min(x1, x2),
@@ -3414,7 +3593,7 @@ class TreemapSeries extends ScatterSeries {
         // Sort the children
         stableSort(children, (a, b) => ((a.sortIndex || 0) - (b.sortIndex || 0)));
         // Set the values
-        let val = TreemapSeries_pick(point && point.options.value, childrenTotal);
+        let val = TreemapSeries_pick(point?.simulatedValue, point?.options.value, childrenTotal);
         if (point) {
             point.value = val;
         }
@@ -3428,12 +3607,12 @@ class TreemapSeries extends ScatterSeries {
             children: children,
             childrenTotal: childrenTotal,
             // Ignore this node if point is not visible
-            ignore: !(TreemapSeries_pick(point && point.visible, true) && (val > 0)),
+            ignore: !(TreemapSeries_pick(point?.visible, true) && (val > 0)),
             isLeaf: tree.visible && !childrenTotal,
             isGroup: point?.isGroup,
             levelDynamic: (tree.level - (levelIsConstant ? 0 : nodeRoot.level)),
-            name: TreemapSeries_pick(point && point.name, ''),
-            sortIndex: TreemapSeries_pick(point && point.sortIndex, -val),
+            name: TreemapSeries_pick(point?.name, ''),
+            sortIndex: TreemapSeries_pick(point?.sortIndex, -val),
             val: val
         });
         return tree;
@@ -3520,6 +3699,11 @@ class TreemapSeries extends ScatterSeries {
             direction: (options.layoutStartingDirection === 'vertical' ? 0 : 1),
             val: tree.val
         });
+        // We need to pre-render the data labels in order to measure the height
+        // of data label group
+        if (this.hasOutsideDataLabels || this.hadOutsideDataLabels) {
+            this.drawDataLabels();
+        }
         series.calculateChildrenAreas(tree, seriesArea);
         // Logic for point colors
         if (!series.colorAxis &&
@@ -3527,14 +3711,12 @@ class TreemapSeries extends ScatterSeries {
             series.setColorRecursive(series.tree);
         }
         // Update axis extremes according to the root node.
-        if (options.allowTraversingTree) {
-            if (rootNode.pointValues) {
-                val = rootNode.pointValues;
-                series.xAxis.setExtremes(val.x, val.x + val.width, false);
-                series.yAxis.setExtremes(val.y, val.y + val.height, false);
-                series.xAxis.setScale();
-                series.yAxis.setScale();
-            }
+        if (options.allowTraversingTree && rootNode.pointValues) {
+            val = rootNode.pointValues;
+            series.xAxis.setExtremes(val.x, val.x + val.width, false);
+            series.yAxis.setExtremes(val.y, val.y + val.height, false);
+            series.xAxis.setScale();
+            series.yAxis.setScale();
         }
         // Assign values to points.
         series.setPointValues();
@@ -3543,11 +3725,6 @@ class TreemapSeries extends ScatterSeries {
         }
     }
 }
-/* *
- *
- *  Static Properties
- *
- * */
 TreemapSeries.defaultOptions = TreemapSeries_merge(ScatterSeries.defaultOptions, Treemap_TreemapSeriesDefaults);
 TreemapSeries_extend(TreemapSeries.prototype, {
     buildKDTree: noop,
@@ -3573,13 +3750,10 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 /* harmony default export */ const Treemap_TreemapSeries = ((/* unused pure expression or super */ null && (TreemapSeries)));
 
-// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series"],"commonjs":["highcharts","Series"],"commonjs2":["highcharts","Series"],"root":["Highcharts","Series"]}
-var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_ = __webpack_require__(820);
-var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_);
 ;// ./code/es-modules/Series/CenteredUtilities.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -3717,7 +3891,7 @@ var CenteredUtilities;
  *
  *  This module implements sunburst charts in Highcharts.
  *
- *  (c) 2016-2024 Highsoft AS
+ *  (c) 2016-2025 Highsoft AS
  *
  *  Authors: Jon Arild Nygard
  *
@@ -3808,7 +3982,7 @@ SunburstPoint_extend(SunburstPoint.prototype, {
  *
  *  This module implements sunburst charts in Highcharts.
  *
- *  (c) 2016-2024 Highsoft AS
+ *  (c) 2016-2025 Highsoft AS
  *
  *  Authors: Jon Arild Nygard
  *
@@ -3931,7 +4105,7 @@ const SunburstUtilities = {
 ;// ./code/es-modules/Series/Sunburst/SunburstNode.js
 /* *
  *
- *  (c) 2010-2024 Pawel Lysy
+ *  (c) 2010-2025 Pawel Lysy
  *
  *  License: www.highcharts.com/license
  *
@@ -3959,7 +4133,7 @@ class SunburstNode extends Treemap_TreemapNode {
  *
  *  This module implements sunburst charts in Highcharts.
  *
- *  (c) 2016-2024 Highsoft AS
+ *  (c) 2016-2025 Highsoft AS
  *
  *  Authors: Jon Arild Nygard
  *
@@ -4316,7 +4490,7 @@ const SunburstSeriesDefaults = {
  *
  *  Highcharts module with textPath functionality.
  *
- *  (c) 2009-2024 Torstein Honsi
+ *  (c) 2009-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -4545,7 +4719,7 @@ const TextPath = {
  *
  *  This module implements sunburst charts in Highcharts.
  *
- *  (c) 2016-2024 Highsoft AS
+ *  (c) 2016-2025 Highsoft AS
  *
  *  Authors: Jon Arild Nygard
  *
@@ -4618,17 +4792,16 @@ const getEndPoint = function getEndPoint(x, y, angle, distance) {
 /** @private */
 function getDlOptions(params) {
     // Set options to new object to avoid problems with scope
-    const point = params.point, shape = SunburstSeries_isObject(params.shapeArgs) ? params.shapeArgs : {}, optionsPoint = (SunburstSeries_isObject(params.optionsPoint) ?
+    const point = params.point, shape = SunburstSeries_isObject(params.shapeArgs) ? params.shapeArgs : {}, { end = 0, radius = 0, start = 0 } = shape, optionsPoint = (SunburstSeries_isObject(params.optionsPoint) ?
         params.optionsPoint.dataLabels :
         {}), 
     // The splat was used because levels dataLabels
     // options doesn't work as an array
     optionsLevel = SunburstSeries_splat(SunburstSeries_isObject(params.level) ?
         params.level.dataLabels :
-        {})[0], options = SunburstSeries_merge({
-        style: {}
-    }, optionsLevel, optionsPoint), { innerArcLength = 0, outerArcLength = 0 } = point;
-    let rotationRad, rotation, rotationMode = options.rotationMode;
+        {})[0], options = SunburstSeries_merge(optionsLevel, optionsPoint), style = options.style = options.style || {}, { innerArcLength = 0, outerArcLength = 0 } = point;
+    let rotationRad, rotation, rotationMode = options.rotationMode, width = SunburstSeries_defined(style.width) ?
+        parseInt(style.width || '0', 10) : void 0;
     if (!SunburstSeries_isNumber(options.rotation)) {
         if (rotationMode === 'auto' || rotationMode === 'circular') {
             if (options.useHTML &&
@@ -4637,8 +4810,7 @@ function getDlOptions(params) {
                 // for HTML labels, see #18953
                 rotationMode = 'auto';
             }
-            if (innerArcLength < 1 &&
-                outerArcLength > shape.radius) {
+            if (innerArcLength < 1 && outerArcLength > radius) {
                 rotationRad = 0;
                 // Trigger setTextPath function to get textOutline etc.
                 if (point.dataLabelPath && rotationMode === 'circular') {
@@ -4646,9 +4818,13 @@ function getDlOptions(params) {
                         enabled: true
                     };
                 }
+                // If the slice is less than 180 degrees, set a reasonable width
+                // for fitting into the open slice (#22532)
+                if (end - start < Math.PI) {
+                    width = radius * 0.7;
+                }
             }
-            else if (innerArcLength > 1 &&
-                outerArcLength > 1.5 * shape.radius) {
+            else if (innerArcLength > 1 && outerArcLength > 1.5 * radius) {
                 if (rotationMode === 'circular') {
                     options.textPath = {
                         enabled: true,
@@ -4673,23 +4849,19 @@ function getDlOptions(params) {
             }
         }
         if (rotationMode !== 'auto' && rotationMode !== 'circular') {
-            if (point.dataLabel && point.dataLabel.textPath) {
+            if (point.dataLabel?.textPath) {
                 options.textPath = {
                     enabled: false
                 };
             }
-            rotationRad = (shape.end -
-                (shape.end - shape.start) / 2);
+            rotationRad = end - (end - start) / 2;
         }
         if (rotationMode === 'parallel') {
-            options.style.width = Math.min(shape.radius * 2.5, (outerArcLength + innerArcLength) / 2);
+            width = Math.min(radius * 2.5, (outerArcLength + innerArcLength) / 2);
         }
         else {
-            if (!SunburstSeries_defined(options.style.width) &&
-                shape.radius) {
-                options.style.width = point.node.level === 1 ?
-                    2 * shape.radius :
-                    shape.radius;
+            if (!SunburstSeries_defined(width) && radius) {
+                width = point.node.level === 1 ? 2 * radius : radius;
             }
         }
         if (rotationMode === 'perpendicular') {
@@ -4697,16 +4869,25 @@ function getDlOptions(params) {
             // yet because the label is not rendered. A better approach for this
             // would be to hide the label from the `alignDataLabel` function
             // when the actual line height is known.
-            if (outerArcLength < 16) {
-                options.style.width = 1;
+            const h = 16;
+            if (outerArcLength < h) {
+                width = 1;
             }
-            else {
-                options.style.lineClamp = Math.floor(innerArcLength / 16) || 1;
+            else if (shape.radius) {
+                style.lineClamp = Math.floor(innerArcLength / h) || 1;
+                // When the slice is narrow (< 16px) in the inner end, compute a
+                // safe margin to avoid the label overlapping the border
+                // (#22532)
+                const safeMargin = innerArcLength < h ?
+                    radius * ((h - innerArcLength) /
+                        (outerArcLength - innerArcLength)) :
+                    0;
+                width = radius - safeMargin;
             }
         }
         // Apply padding (#8515)
-        options.style.width = Math.max(options.style.width - 2 * (options.padding || 0), 1);
-        rotation = (rotationRad * rad2deg) % 180;
+        width = Math.max((width || 0) - 2 * (options.padding || 0), 1);
+        rotation = ((rotationRad || 0) * rad2deg) % 180;
         if (rotationMode === 'parallel') {
             rotation -= 90;
         }
@@ -4727,13 +4908,12 @@ function getDlOptions(params) {
             // Center dataLabel - disable textPath
             options.textPath.enabled = false;
             // Setting width and padding
-            options.style.width = Math.max((point.shapeExisting.r * 2) -
+            width = Math.max((point.shapeExisting.r * 2) -
                 2 * (options.padding || 0), 1);
         }
-        else if (point.dlOptions &&
-            point.dlOptions.textPath &&
+        else if (point.dlOptions?.textPath &&
             !point.dlOptions.textPath.enabled &&
-            (rotationMode === 'circular')) {
+            rotationMode === 'circular') {
             // Bring dataLabel back if was a center dataLabel
             options.textPath.enabled = true;
         }
@@ -4741,12 +4921,12 @@ function getDlOptions(params) {
             // Enable rotation to render text
             options.rotation = 0;
             // Setting width and padding
-            options.style.width = Math.max((point.outerArcLength +
-                point.innerArcLength) / 2 -
+            width = Math.max((outerArcLength + innerArcLength) / 2 -
                 2 * (options.padding || 0), 1);
-            options.style.whiteSpace = 'nowrap';
+            style.whiteSpace = 'nowrap';
         }
     }
+    style.width = width + 'px';
     return options;
 }
 /** @private */
@@ -4865,6 +5045,9 @@ class SunburstSeries extends SunburstSeries_TreemapSeries {
         if (labelOptions.textPath && labelOptions.textPath.enabled) {
             return;
         }
+        // In sunburst dataLabel may be placed, but this should be reset to
+        // make sure the dataLabel can be aligned to a new position (#21913)
+        dataLabel.placed = false;
         return super.alignDataLabel.apply(this, arguments);
     }
     /**

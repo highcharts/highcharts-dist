@@ -1,1 +1,2 @@
-import '../../../options/sankey.src';
+import * as Highcharts from '../../../options/sankey.src';
+export default Highcharts;

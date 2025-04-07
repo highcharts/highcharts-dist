@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2024 Highsoft AS
+ *  (c) 2009-2025 Highsoft AS
  *
  *  License: www.highcharts.com/license
  *
@@ -102,7 +102,14 @@ class HTMLTableConverter extends DataConverter {
             // of each column is a subcategory
             if (useMultiLevelHeaders) {
                 for (const name of columnNames) {
-                    const subhead = (columns[name].shift() || '').toString();
+                    let column = columns[name];
+                    if (!Array.isArray(column)) {
+                        // Convert to conventional array from typed array
+                        // if needed
+                        column = Array.from(column);
+                    }
+                    const subhead = (column.shift() || '').toString();
+                    columns[name] = column;
                     subcategories.push(subhead);
                 }
                 tableHead = this.getTableHeaderHTML(columnNames, subcategories, options);

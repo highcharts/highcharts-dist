@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2024 Highsoft AS
+ *  (c) 2010-2025 Highsoft AS
  *
  *  Author: Paweł Potaczek
  *
@@ -10,8 +10,6 @@
  *
  * */
 'use strict';
-import Color from '../../Core/Color/Color.js';
-const { parse: color } = Color;
 import F from '../../Core/Templating.js';
 import H from '../../Core/Globals.js';
 const { noop } = H;
@@ -128,10 +126,11 @@ class BubbleLegendItem {
         ranges.forEach(function (range, i) {
             if (!styledMode) {
                 bubbleAttribs.stroke = pick(range.borderColor, options.borderColor, series.color);
-                bubbleAttribs.fill = pick(range.color, options.color, fillOpacity !== 1 ?
-                    color(series.color).setOpacity(fillOpacity)
-                        .get('rgba') :
-                    series.color);
+                bubbleAttribs.fill = range.color || options.color;
+                if (!bubbleAttribs.fill) {
+                    bubbleAttribs.fill = series.color;
+                    bubbleAttribs['fill-opacity'] = fillOpacity ?? 1;
+                }
                 connectorAttribs.stroke = pick(range.connectorColor, options.connectorColor, series.color);
             }
             // Set options needed for rendering each range

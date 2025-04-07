@@ -1,11 +1,11 @@
 /**
- * @license Highcharts JS v12.1.2 (2024-12-21)
+ * @license Highcharts JS v12.2.0 (2025-04-07)
  * @module highcharts/modules/boost-canvas
  * @requires highcharts
  *
  * Boost module
  *
- * (c) 2010-2024 Highsoft AS
+ * (c) 2010-2025 Highsoft AS
  * Author: Torstein Honsi
  *
  * License: www.highcharts.com/license
@@ -108,7 +108,7 @@ var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default 
 ;// ./code/es-modules/Extensions/Boost/Boostables.js
 /* *
  *
- *  (c) 2019-2024 Highsoft AS
+ *  (c) 2019-2025 Highsoft AS
  *
  *  Boost module: stripped-down renderer for higher performance
  *
@@ -147,7 +147,7 @@ const Boostables = [
 ;// ./code/es-modules/Extensions/Boost/BoostableMap.js
 /* *
  *
- *  (c) 2019-2024 Highsoft AS
+ *  (c) 2019-2025 Highsoft AS
  *
  *  Boost module: stripped-down renderer for higher performance
  *
@@ -183,7 +183,7 @@ Boost_Boostables.forEach((item) => {
 ;// ./code/es-modules/Extensions/Boost/BoostChart.js
 /* *
  *
- *  (c) 2019-2024 Highsoft AS
+ *  (c) 2019-2025 Highsoft AS
  *
  *  Boost module: stripped-down renderer for higher performance
  *
@@ -238,9 +238,9 @@ function getBoostClipRect(chart, target) {
         clipBox.height = navigator.top + navigator.height - chart.plotTop;
     }
     // Clipping of individual series (#11906, #19039).
-    if (target.getClipBox) {
+    if (target.is) {
         const { xAxis, yAxis } = target;
-        clipBox = target.getClipBox();
+        clipBox = chart.getClipBox(target);
         if (chart.inverted) {
             const lateral = clipBox.width;
             clipBox.width = clipBox.height;
@@ -450,7 +450,7 @@ var highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_H
 ;// ./code/es-modules/Extensions/Boost/WGLDrawMode.js
 /* *
  *
- *  (c) 2019-2024 Highsoft AS
+ *  (c) 2019-2025 Highsoft AS
  *
  *  Boost module: stripped-down renderer for higher performance
  *
@@ -488,7 +488,7 @@ const WGLDrawMode = {
 ;// ./code/es-modules/Extensions/Boost/WGLShader.js
 /* *
  *
- *  (c) 2019-2024 Highsoft AS
+ *  (c) 2019-2025 Highsoft AS
  *
  *  Boost module: stripped-down renderer for higher performance
  *
@@ -952,7 +952,7 @@ class WGLShader {
 ;// ./code/es-modules/Extensions/Boost/WGLVertexBuffer.js
 /* *
  *
- *  (c) 2019-2024 Highsoft AS
+ *  (c) 2019-2025 Highsoft AS
  *
  *  Boost module: stripped-down renderer for higher performance
  *
@@ -1145,7 +1145,7 @@ class WGLVertexBuffer {
 ;// ./code/es-modules/Extensions/Boost/WGLRenderer.js
 /* *
  *
- *  (c) 2019-2024 Highsoft AS
+ *  (c) 2019-2025 Highsoft AS
  *
  *  Boost module: stripped-down renderer for higher performance
  *
@@ -1705,7 +1705,10 @@ class WGLRenderer {
                 continue;
             }
             // Cull points outside the extremes
-            if (y === null || (!isYInside && !nextInside && !prevInside)) {
+            // Continue if `sdata` has only one point as `nextInside` asserts
+            // whether the next point exists and will thus be false. (#22194)
+            if (y === null || (!isYInside && sdata.length > 1 &&
+                !nextInside && !prevInside)) {
                 beginSegment();
                 continue;
             }
@@ -2344,10 +2347,434 @@ class WGLRenderer {
  * */
 /* harmony default export */ const Boost_WGLRenderer = (WGLRenderer);
 
+;// ./code/es-modules/Data/ColumnUtils.js
+/* *
+ *
+ *  (c) 2020-2025 Highsoft AS
+ *
+ *  License: www.highcharts.com/license
+ *
+ *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+ *
+ *  Authors:
+ *  - Dawid Dragula
+ *
+ * */
+/**
+ * Utility functions for columns that can be either arrays or typed arrays.
+ * @private
+ */
+var ColumnUtils;
+(function (ColumnUtils) {
+    /* *
+    *
+    *  Declarations
+    *
+    * */
+    /* *
+    *
+    * Functions
+    *
+    * */
+    /**
+     * Sets the length of the column array.
+     *
+     * @param {DataTable.Column} column
+     * Column to be modified.
+     *
+     * @param {number} length
+     * New length of the column.
+     *
+     * @param {boolean} asSubarray
+     * If column is a typed array, return a subarray instead of a new array. It
+     * is faster `O(1)`, but the entire buffer will be kept in memory until all
+     * views to it are destroyed. Default is `false`.
+     *
+     * @return {DataTable.Column}
+     * Modified column.
+     *
+     * @private
+     */
+    function setLength(column, length, asSubarray) {
+        if (Array.isArray(column)) {
+            column.length = length;
+            return column;
+        }
+        return column[asSubarray ? 'subarray' : 'slice'](0, length);
+    }
+    ColumnUtils.setLength = setLength;
+    /**
+     * Splices a column array.
+     *
+     * @param {DataTable.Column} column
+     * Column to be modified.
+     *
+     * @param {number} start
+     * Index at which to start changing the array.
+     *
+     * @param {number} deleteCount
+     * An integer indicating the number of old array elements to remove.
+     *
+     * @param {boolean} removedAsSubarray
+     * If column is a typed array, return a subarray instead of a new array. It
+     * is faster `O(1)`, but the entire buffer will be kept in memory until all
+     * views to it are destroyed. Default is `true`.
+     *
+     * @param {Array<number>|TypedArray} items
+     * The elements to add to the array, beginning at the start index. If you
+     * don't specify any elements, `splice()` will only remove elements from the
+     * array.
+     *
+     * @return {SpliceResult}
+     * Object containing removed elements and the modified column.
+     *
+     * @private
+     */
+    function splice(column, start, deleteCount, removedAsSubarray, items = []) {
+        if (Array.isArray(column)) {
+            if (!Array.isArray(items)) {
+                items = Array.from(items);
+            }
+            return {
+                removed: column.splice(start, deleteCount, ...items),
+                array: column
+            };
+        }
+        const Constructor = Object.getPrototypeOf(column)
+            .constructor;
+        const removed = column[removedAsSubarray ? 'subarray' : 'slice'](start, start + deleteCount);
+        const newLength = column.length - deleteCount + items.length;
+        const result = new Constructor(newLength);
+        result.set(column.subarray(0, start), 0);
+        result.set(items, start);
+        result.set(column.subarray(start + deleteCount), start + items.length);
+        return {
+            removed: removed,
+            array: result
+        };
+    }
+    ColumnUtils.splice = splice;
+})(ColumnUtils || (ColumnUtils = {}));
+/* *
+ *
+ *  Default Export
+ *
+ * */
+/* harmony default export */ const Data_ColumnUtils = (ColumnUtils);
+
+;// ./code/es-modules/Data/DataTableCore.js
+/* *
+ *
+ *  (c) 2009-2025 Highsoft AS
+ *
+ *  License: www.highcharts.com/license
+ *
+ *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+ *
+ *  Authors:
+ *  - Sophie Bremer
+ *  - Gøran Slettemark
+ *  - Torstein Hønsi
+ *
+ * */
+
+
+const { setLength, splice } = Data_ColumnUtils;
+
+const { fireEvent, objectEach: DataTableCore_objectEach, uniqueKey } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+/* *
+ *
+ *  Class
+ *
+ * */
+/**
+ * Class to manage columns and rows in a table structure. It provides methods
+ * to add, remove, and manipulate columns and rows, as well as to retrieve data
+ * from specific cells.
+ *
+ * @class
+ * @name Highcharts.DataTable
+ *
+ * @param {Highcharts.DataTableOptions} [options]
+ * Options to initialize the new DataTable instance.
+ */
+class DataTableCore {
+    /**
+     * Constructs an instance of the DataTable class.
+     *
+     * @example
+     * const dataTable = new Highcharts.DataTableCore({
+     *   columns: {
+     *     year: [2020, 2021, 2022, 2023],
+     *     cost: [11, 13, 12, 14],
+     *     revenue: [12, 15, 14, 18]
+     *   }
+     * });
+
+     *
+     * @param {Highcharts.DataTableOptions} [options]
+     * Options to initialize the new DataTable instance.
+     */
+    constructor(options = {}) {
+        /**
+         * Whether the ID was automatic generated or given in the constructor.
+         *
+         * @name Highcharts.DataTable#autoId
+         * @type {boolean}
+         */
+        this.autoId = !options.id;
+        this.columns = {};
+        /**
+         * ID of the table for identification purposes.
+         *
+         * @name Highcharts.DataTable#id
+         * @type {string}
+         */
+        this.id = (options.id || uniqueKey());
+        this.modified = this;
+        this.rowCount = 0;
+        this.versionTag = uniqueKey();
+        let rowCount = 0;
+        DataTableCore_objectEach(options.columns || {}, (column, columnName) => {
+            this.columns[columnName] = column.slice();
+            rowCount = Math.max(rowCount, column.length);
+        });
+        this.applyRowCount(rowCount);
+    }
+    /* *
+     *
+     *  Functions
+     *
+     * */
+    /**
+     * Applies a row count to the table by setting the `rowCount` property and
+     * adjusting the length of all columns.
+     *
+     * @private
+     * @param {number} rowCount The new row count.
+     */
+    applyRowCount(rowCount) {
+        this.rowCount = rowCount;
+        DataTableCore_objectEach(this.columns, (column, columnName) => {
+            if (column.length !== rowCount) {
+                this.columns[columnName] = setLength(column, rowCount);
+            }
+        });
+    }
+    /**
+     * Delete rows. Simplified version of the full
+     * `DataTable.deleteRows` method.
+     *
+     * @param {number} rowIndex
+     * The start row index
+     *
+     * @param {number} [rowCount=1]
+     * The number of rows to delete
+     *
+     * @return {void}
+     *
+     * @emits #afterDeleteRows
+     */
+    deleteRows(rowIndex, rowCount = 1) {
+        if (rowCount > 0 && rowIndex < this.rowCount) {
+            let length = 0;
+            DataTableCore_objectEach(this.columns, (column, columnName) => {
+                this.columns[columnName] =
+                    splice(column, rowIndex, rowCount).array;
+                length = column.length;
+            });
+            this.rowCount = length;
+        }
+        fireEvent(this, 'afterDeleteRows', { rowIndex, rowCount });
+        this.versionTag = uniqueKey();
+    }
+    /**
+     * Fetches the given column by the canonical column name. Simplified version
+     * of the full `DataTable.getRow` method, always returning by reference.
+     *
+     * @param {string} columnName
+     * Name of the column to get.
+     *
+     * @return {Highcharts.DataTableColumn|undefined}
+     * A copy of the column, or `undefined` if not found.
+     */
+    getColumn(columnName, 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    asReference) {
+        return this.columns[columnName];
+    }
+    /**
+     * Retrieves all or the given columns. Simplified version of the full
+     * `DataTable.getColumns` method, always returning by reference.
+     *
+     * @param {Array<string>} [columnNames]
+     * Column names to retrieve.
+     *
+     * @return {Highcharts.DataTableColumnCollection}
+     * Collection of columns. If a requested column was not found, it is
+     * `undefined`.
+     */
+    getColumns(columnNames, 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    asReference) {
+        return (columnNames || Object.keys(this.columns)).reduce((columns, columnName) => {
+            columns[columnName] = this.columns[columnName];
+            return columns;
+        }, {});
+    }
+    /**
+     * Retrieves the row at a given index.
+     *
+     * @param {number} rowIndex
+     * Row index to retrieve. First row has index 0.
+     *
+     * @param {Array<string>} [columnNames]
+     * Column names to retrieve.
+     *
+     * @return {Record<string, number|string|undefined>|undefined}
+     * Returns the row values, or `undefined` if not found.
+     */
+    getRow(rowIndex, columnNames) {
+        return (columnNames || Object.keys(this.columns)).map((key) => this.columns[key]?.[rowIndex]);
+    }
+    /**
+     * Sets cell values for a column. Will insert a new column, if not found.
+     *
+     * @param {string} columnName
+     * Column name to set.
+     *
+     * @param {Highcharts.DataTableColumn} [column]
+     * Values to set in the column.
+     *
+     * @param {number} [rowIndex]
+     * Index of the first row to change. (Default: 0)
+     *
+     * @param {Record<string, (boolean|number|string|null|undefined)>} [eventDetail]
+     * Custom information for pending events.
+     *
+     * @emits #setColumns
+     * @emits #afterSetColumns
+     */
+    setColumn(columnName, column = [], rowIndex = 0, eventDetail) {
+        this.setColumns({ [columnName]: column }, rowIndex, eventDetail);
+    }
+    /**
+     * Sets cell values for multiple columns. Will insert new columns, if not
+     * found. Simplified version of the full `DataTableCore.setColumns`, limited
+     * to full replacement of the columns (undefined `rowIndex`).
+     *
+     * @param {Highcharts.DataTableColumnCollection} columns
+     * Columns as a collection, where the keys are the column names.
+     *
+     * @param {number} [rowIndex]
+     * Index of the first row to change. Ignored in the `DataTableCore`, as it
+     * always replaces the full column.
+     *
+     * @param {Record<string, (boolean|number|string|null|undefined)>} [eventDetail]
+     * Custom information for pending events.
+     *
+     * @emits #setColumns
+     * @emits #afterSetColumns
+     */
+    setColumns(columns, rowIndex, eventDetail) {
+        let rowCount = this.rowCount;
+        DataTableCore_objectEach(columns, (column, columnName) => {
+            this.columns[columnName] = column.slice();
+            rowCount = column.length;
+        });
+        this.applyRowCount(rowCount);
+        if (!eventDetail?.silent) {
+            fireEvent(this, 'afterSetColumns');
+            this.versionTag = uniqueKey();
+        }
+    }
+    /**
+     * Sets cell values of a row. Will insert a new row if no index was
+     * provided, or if the index is higher than the total number of table rows.
+     * A simplified version of the full `DateTable.setRow`, limited to objects.
+     *
+     * @param {Record<string, number|string|undefined>} row
+     * Cell values to set.
+     *
+     * @param {number} [rowIndex]
+     * Index of the row to set. Leave `undefined` to add as a new row.
+     *
+     * @param {boolean} [insert]
+     * Whether to insert the row at the given index, or to overwrite the row.
+     *
+     * @param {Record<string, (boolean|number|string|null|undefined)>} [eventDetail]
+     * Custom information for pending events.
+     *
+     * @emits #afterSetRows
+     */
+    setRow(row, rowIndex = this.rowCount, insert, eventDetail) {
+        const { columns } = this, indexRowCount = insert ? this.rowCount + 1 : rowIndex + 1;
+        DataTableCore_objectEach(row, (cellValue, columnName) => {
+            let column = columns[columnName] ||
+                eventDetail?.addColumns !== false && new Array(indexRowCount);
+            if (column) {
+                if (insert) {
+                    column = splice(column, rowIndex, 0, true, [cellValue]).array;
+                }
+                else {
+                    column[rowIndex] = cellValue;
+                }
+                columns[columnName] = column;
+            }
+        });
+        if (indexRowCount > this.rowCount) {
+            this.applyRowCount(indexRowCount);
+        }
+        if (!eventDetail?.silent) {
+            fireEvent(this, 'afterSetRows');
+            this.versionTag = uniqueKey();
+        }
+    }
+}
+/* *
+ *
+ *  Default Export
+ *
+ * */
+/* harmony default export */ const Data_DataTableCore = (DataTableCore);
+/* *
+ *
+ *  API Declarations
+ *
+ * */
+/**
+ * A typed array.
+ * @typedef {Int8Array|Uint8Array|Uint8ClampedArray|Int16Array|Uint16Array|Int32Array|Uint32Array|Float32Array|Float64Array} Highcharts.TypedArray
+ * //**
+ * A column of values in a data table.
+ * @typedef {Array<boolean|null|number|string|undefined>|Highcharts.TypedArray} Highcharts.DataTableColumn
+ */ /**
+* A collection of data table columns defined by a object where the key is the
+* column name and the value is an array of the column values.
+* @typedef {Record<string, Highcharts.DataTableColumn>} Highcharts.DataTableColumnCollection
+*/
+/**
+ * Options for the `DataTable` or `DataTableCore` classes.
+ * @interface Highcharts.DataTableOptions
+ */ /**
+* The column options for the data table. The columns are defined by an object
+* where the key is the column ID and the value is an array of the column
+* values.
+*
+* @name Highcharts.DataTableOptions.columns
+* @type {Highcharts.DataTableColumnCollection|undefined}
+*/ /**
+* Custom ID to identify the new DataTable instance.
+*
+* @name Highcharts.DataTableOptions.id
+* @type {string|undefined}
+*/
+(''); // Keeps doclets above in JS file
+
 ;// ./code/es-modules/Extensions/Boost/BoostSeries.js
 /* *
  *
- *  (c) 2019-2024 Highsoft AS
+ *  (c) 2019-2025 Highsoft AS
  *
  *  Boost module: stripped-down renderer for higher performance
  *
@@ -2366,7 +2793,8 @@ const { getOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root
 
 const { composed: BoostSeries_composed, doc: BoostSeries_doc, noop, win: BoostSeries_win } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { addEvent: BoostSeries_addEvent, destroyObjectProperties, error: BoostSeries_error, extend, fireEvent, isArray, isNumber: BoostSeries_isNumber, pick: BoostSeries_pick, pushUnique: BoostSeries_pushUnique, wrap, defined } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { addEvent: BoostSeries_addEvent, destroyObjectProperties, error: BoostSeries_error, extend, fireEvent: BoostSeries_fireEvent, isArray, isNumber: BoostSeries_isNumber, pick: BoostSeries_pick, pushUnique: BoostSeries_pushUnique, wrap, defined } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+
 
 /* *
  *
@@ -2416,7 +2844,7 @@ function boostEnabled(chart) {
 /**
  * @private
  */
-function BoostSeries_compose(SeriesClass, seriesTypes, wglMode) {
+function BoostSeries_compose(SeriesClass, seriesTypes, PointClass, wglMode) {
     if (BoostSeries_pushUnique(BoostSeries_composed, 'Boost.Series')) {
         const plotOptions = getOptions().plotOptions, seriesProto = SeriesClass.prototype;
         BoostSeries_addEvent(SeriesClass, 'destroy', onSeriesDestroy);
@@ -2434,6 +2862,15 @@ function BoostSeries_compose(SeriesClass, seriesTypes, wglMode) {
             'drawPoints',
             'render'
         ].forEach((method) => wrapSeriesFunctions(seriesProto, seriesTypes, method));
+        wrap(PointClass.prototype, 'firePointEvent', function (proceed, type, e) {
+            if (type === 'click' && this.series.boosted) {
+                const point = e.point;
+                if ((point.dist || point.distX) >= (point.series.options.marker?.radius ?? 10)) {
+                    return;
+                }
+            }
+            return proceed.apply(this, [].slice.call(arguments, 1));
+        });
         // Set default options
         Boost_Boostables.forEach((type) => {
             const typePlotOptions = plotOptions[type];
@@ -3000,6 +3437,11 @@ function scatterProcessData(force) {
     series.cropped = cropped;
     series.cropStart = 0;
     // For boosted points rendering
+    if (cropped && series.dataTable.modified === series.dataTable) {
+        // Calling setColumns with cropped data must be done on a new instance
+        // to avoid modification of the original (complete) data
+        series.dataTable.modified = new Data_DataTableCore();
+    }
     series.dataTable.modified.setColumns({
         x: processedXData,
         y: processedYData
@@ -3017,11 +3459,11 @@ function seriesRenderCanvas() {
     const options = this.options || {}, chart = this.chart, chartBoost = chart.boost, seriesBoost = this.boost, xAxis = this.xAxis, yAxis = this.yAxis, xData = options.xData || this.getColumn('x', true), yData = options.yData || this.getColumn('y', true), lowData = this.getColumn('low', true), highData = this.getColumn('high', true), rawData = this.processedData || options.data, xExtremes = xAxis.getExtremes(), 
     // Taking into account the offset of the min point #19497
     xMin = xExtremes.min - (xAxis.minPointOffset || 0), xMax = xExtremes.max + (xAxis.minPointOffset || 0), yExtremes = yAxis.getExtremes(), yMin = yExtremes.min - (yAxis.minPointOffset || 0), yMax = yExtremes.max + (yAxis.minPointOffset || 0), pointTaken = {}, sampling = !!this.sampling, enableMouseTracking = options.enableMouseTracking, threshold = options.threshold, isRange = this.pointArrayMap &&
-        this.pointArrayMap.join(',') === 'low,high', isStacked = !!options.stacking, cropStart = this.cropStart || 0, requireSorting = this.requireSorting, useRaw = !xData, compareX = options.findNearestPointBy === 'x', xDataFull = ((this.getColumn('x', true).length ?
-        this.getColumn('x', true) :
+        this.pointArrayMap.join(',') === 'low,high', isStacked = !!options.stacking, cropStart = this.cropStart || 0, requireSorting = this.requireSorting, useRaw = !xData, compareX = options.findNearestPointBy === 'x', xDataFull = ((this.getColumn('x').length ?
+        this.getColumn('x') :
         void 0) ||
         this.options.xData ||
-        this.getColumn('x', true)), lineWidth = BoostSeries_pick(options.lineWidth, 1);
+        this.getColumn('x', true)), lineWidth = BoostSeries_pick(options.lineWidth, 1), nullYSubstitute = options.nullInteraction && yMin;
     let renderer = false, lastClientX, yBottom = yAxis.getThreshold(threshold), minVal, maxVal, minI, maxI;
     // When touch-zooming or mouse-panning, re-rendering the canvas would not
     // perform fast enough. Instead, let the axes redraw, but not the series.
@@ -3107,7 +3549,7 @@ function seriesRenderCanvas() {
     };
     // Do not start building while drawing
     this.buildKDTree = noop;
-    fireEvent(this, 'renderCanvas');
+    BoostSeries_fireEvent(this, 'renderCanvas');
     if (this.is('line') &&
         lineWidth > 1 &&
         seriesBoost?.target &&
@@ -3153,7 +3595,7 @@ function seriesRenderCanvas() {
             }
             else {
                 x = d;
-                y = yData?.[i];
+                y = yData[i] ?? nullYSubstitute ?? null;
             }
             // Resolve low and high for range series
             if (isRange) {
@@ -3221,7 +3663,7 @@ function seriesRenderCanvas() {
      * @private
      */
     const boostOptions = renderer.settings, doneProcessing = () => {
-        fireEvent(this, 'renderedCanvas');
+        BoostSeries_fireEvent(this, 'renderedCanvas');
         // Go back to prototype, ready to build
         delete this.buildKDTree;
         // Check that options exist, as async processing
@@ -3362,7 +3804,7 @@ function wrapSeriesProcessData(proceed) {
                 return;
             }
             // Extra check for zoomed scatter data
-            if (isScatter && !series.yAxis.treeGrid) {
+            if (isScatter && series.yAxis.type !== 'treegrid') {
                 scatterProcessData.call(series, arguments[1]);
             }
             else {

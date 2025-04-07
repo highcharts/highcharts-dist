@@ -1,11 +1,11 @@
 /**
- * @license Highcharts JS v12.1.2 (2024-12-21)
+ * @license Highcharts JS v12.2.0 (2025-04-07)
  * @module highcharts/modules/bullet
  * @requires highcharts
  *
  * Bullet graph series type for Highcharts
  *
- * (c) 2010-2024 Kacper Madej
+ * (c) 2010-2025 Kacper Madej
  *
  * License: www.highcharts.com/license
  */
@@ -117,7 +117,7 @@ var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commo
 ;// ./code/es-modules/Series/Bullet/BulletPoint.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -348,7 +348,7 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
 ;// ./code/es-modules/Series/Bullet/BulletSeries.js
 /* *
  *
- *  (c) 2010-2024 Kacper Madej
+ *  (c) 2010-2025 Kacper Madej
  *
  *  License: www.highcharts.com/license
  *

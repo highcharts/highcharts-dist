@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2014-2024 Highsoft AS
+ *  (c) 2014-2025 Highsoft AS
  *
  *  Authors: Jon Arild Nygard / Oystein Moseng
  *
@@ -168,7 +168,6 @@ const TreemapSeriesDefaults = {
      * @since 4.1.0
      */
     dataLabels: {
-        defer: false,
         enabled: true,
         formatter: function () {
             const point = this && this.point ?
@@ -176,6 +175,17 @@ const TreemapSeriesDefaults = {
                 {}, name = isString(point.name) ? point.name : '';
             return name;
         },
+        /**
+         * Whether the data label should act as a group-level header. For leaf
+         * nodes, headers are not supported and the data label will be rendered
+         * inside.
+         *
+         * @sample {highcharts} highcharts/series-treemap/headers
+         *         Headers for parent nodes
+         *
+         * @since 12.2.0
+         */
+        headers: false,
         inside: true,
         padding: 2,
         verticalAlign: 'middle',
@@ -290,6 +300,18 @@ const TreemapSeriesDefaults = {
         }
     },
     /**
+     * Group padding for parent elements in terms of pixels. See also the
+     * `nodeSizeBy` option that controls how the leaf nodes' size is affected by
+     * the padding.
+     *
+     * @sample    {highcharts} highcharts/series-treemap/grouppadding/
+     *            Group padding
+     * @type      {number}
+     * @since 12.2.0
+     * @product   highcharts
+     * @apioption plotOptions.treemap.groupPadding
+     */
+    /**
      * Set options on specific levels. Takes precedence over series options,
      * but not point options.
      *
@@ -302,6 +324,21 @@ const TreemapSeriesDefaults = {
      * @since     4.1.0
      * @product   highcharts
      * @apioption plotOptions.treemap.levels
+     */
+    /**
+     * Experimental. How to set the size of child nodes when a header or padding
+     * is present. When `leaf`, the group is expanded to make room for headers
+     * and padding in order to preserve the relative sizes between leaves. When
+     * `group`, the leaves are naïvely fit into the remaining area after the
+     * header and padding are subtracted.
+     *
+     * @sample    {highcharts} highcharts/series-treemap/nodesizeby/
+     *            Node sizing
+     * @since 12.2.0
+     * @type      {string}
+     * @validvalue ["group", "leaf"]
+     * @default   group
+     * @apioption plotOptions.treemap.nodeSizeBy
      */
     /**
      * Can set a `borderColor` on all points which lies on the same level.
@@ -430,7 +467,8 @@ const TreemapSeriesDefaults = {
     borderWidth: 1,
     colorKey: 'colorValue',
     /**
-     * The opacity of a point in treemap. When a point has children, the
+     * The opacity of grouped points in treemap. When a point has children, the
+     * group point is covering the children, and is given this opacity. The
      * visibility of the children is determined by the opacity.
      *
      * @since 4.2.4

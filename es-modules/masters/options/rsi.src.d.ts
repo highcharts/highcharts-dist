@@ -1,1 +1,2 @@
-import '../../../options/rsi.src';
+import * as Highcharts from '../../../options/rsi.src';
+export default Highcharts;

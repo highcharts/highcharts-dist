@@ -1,11 +1,11 @@
 /**
- * @license Highcharts JS v12.1.2 (2024-12-21)
+ * @license Highcharts JS v12.2.0 (2025-04-07)
  * @module highcharts/modules/pareto
  * @requires highcharts
  *
  * Pareto series type for Highcharts
  *
- * (c) 2010-2024 Sebastian Bochan
+ * (c) 2010-2025 Sebastian Bochan
  *
  * License: www.highcharts.com/license
  */
@@ -23,17 +23,17 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 820:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__820__;
-
-/***/ }),
-
 /***/ 512:
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
+
+/***/ }),
+
+/***/ 820:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__820__;
 
 /***/ }),
 
@@ -250,7 +250,7 @@ var DerivedComposition;
 ;// ./code/es-modules/Series/ParetoSeries/ParetoSeriesDefaults.js
 /* *
  *
- *  (c) 2010-2024 Sebastian Bochan
+ *  (c) 2010-2025 Sebastian Bochan
  *
  *  License: www.highcharts.com/license
  *
@@ -334,7 +334,7 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
 ;// ./code/es-modules/Series/ParetoSeries/ParetoSeries.js
 /* *
  *
- *  (c) 2010-2024 Sebastian Bochan
+ *  (c) 2010-2025 Sebastian Bochan
  *
  *  License: www.highcharts.com/license
  *

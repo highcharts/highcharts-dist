@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v12.1.2 (2024-12-21)
+ * @license Highcharts JS v12.2.0 (2025-04-07)
  * @module highcharts/modules/flowmap
  * @requires highcharts
  *
- * (c) 2009-2024
+ * (c) 2009-2025
  *
  * License: www.highcharts.com/license
  */
@@ -108,7 +108,7 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
 ;// ./code/es-modules/Series/FlowMap/FlowMapPoint.js
 /* *
  *
- *  (c) 2010-2024 Askel Eirik Johansson, Piotr Madej
+ *  (c) 2010-2025 Askel Eirik Johansson, Piotr Madej
  *
  *  License: www.highcharts.com/license
  *
@@ -155,7 +155,7 @@ class FlowMapPoint extends MapLinePoint {
 ;// ./code/es-modules/Series/FlowMap/FlowMapSeries.js
 /* *
  *
- *  (c) 2010-2024 Askel Eirik Johansson, Piotr Madej
+ *  (c) 2010-2025 Askel Eirik Johansson, Piotr Madej
  *
  *  License: www.highcharts.com/license
  *

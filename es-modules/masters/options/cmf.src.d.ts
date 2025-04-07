@@ -1,1 +1,2 @@
-import '../../../options/cmf.src';
+import * as Highcharts from '../../../options/cmf.src';
+export default Highcharts;

@@ -1,1 +1,2 @@
-import '../../../options/dema.src';
+import * as Highcharts from '../../../options/dema.src';
+export default Highcharts;

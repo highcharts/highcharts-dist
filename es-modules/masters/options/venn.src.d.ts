@@ -1,1 +1,2 @@
-import '../../../options/venn.src';
+import * as Highcharts from '../../../options/venn.src';
+export default Highcharts;

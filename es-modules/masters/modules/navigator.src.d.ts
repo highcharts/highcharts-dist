@@ -1,1 +1,2 @@
-import '../../../modules/navigator.src';
+import * as Highcharts from '../../../modules/navigator.src';
+export default Highcharts;

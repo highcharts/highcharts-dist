@@ -1,1 +1,2 @@
-import '../../../modules/draggable-points.src';
+import * as Highcharts from '../../../modules/draggable-points.src';
+export default Highcharts;

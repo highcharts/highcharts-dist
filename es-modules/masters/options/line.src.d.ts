@@ -1,1 +1,2 @@
-import '../../../options/line.src';
+import * as Highcharts from '../../../options/line.src';
+export default Highcharts;

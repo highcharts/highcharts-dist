@@ -1,1 +1,2 @@
-import '../../../modules/heikinashi.src';
+import * as Highcharts from '../../../modules/heikinashi.src';
+export default Highcharts;

@@ -1,12 +1,12 @@
 /**
- * @license Highstock JS v12.1.2 (2024-12-21)
+ * @license Highstock JS v12.2.0 (2025-04-07)
  * @module highcharts/indicators/ichimoku-kinko-hyo
  * @requires highcharts
  * @requires highcharts/modules/stock
  *
  * Indicator series type for Highcharts Stock
  *
- * (c) 2010-2024 Sebastian Bochan
+ * (c) 2010-2025 Sebastian Bochan
  *
  * License: www.highcharts.com/license
  */
@@ -24,13 +24,6 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 620:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__620__;
-
-/***/ }),
-
 /***/ 512:
 /***/ ((module) => {
 
@@ -38,10 +31,10 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
 
 /***/ }),
 
-/***/ 956:
+/***/ 620:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE__956__;
+module.exports = __WEBPACK_EXTERNAL_MODULE__620__;
 
 /***/ }),
 
@@ -49,6 +42,13 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__956__;
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
+
+/***/ }),
+
+/***/ 956:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__956__;
 
 /***/ })
 

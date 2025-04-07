@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2024 Øystein Moseng
+ *  (c) 2009-2025 Øystein Moseng
  *
  *  Handle keyboard navigation for series.
  *
@@ -74,15 +74,15 @@ function isSkipSeries(series) {
  * @private
  */
 function isSkipPoint(point) {
-    const a11yOptions = point.series.chart.options.accessibility;
-    const pointA11yDisabled = (point.options.accessibility &&
-        point.options.accessibility.enabled === false);
-    return point.isNull &&
-        a11yOptions.keyboardNavigation.seriesNavigation.skipNullPoints ||
+    const series = point.series, nullInteraction = series.options.nullInteraction, pointOptions = point.options, pointA11yOptions = pointOptions.accessibility, a11yOptions = series.chart.options.accessibility, pointA11yDisabled = pointA11yOptions?.enabled === false;
+    return a11yOptions
+        .keyboardNavigation
+        .seriesNavigation
+        .skipNullPoints ?? (!(!point.isNull || nullInteraction) &&
         point.visible === false ||
         point.isInside === false ||
         pointA11yDisabled ||
-        isSkipSeries(point.series);
+        isSkipSeries(series));
 }
 /**
  * Get the first point that is not a skip point in this series.
@@ -652,7 +652,8 @@ class SeriesKeyboardNavigation {
      */
     function pointHighlight(highlightVisually = true) {
         const chart = this.series.chart, tooltipElement = chart.tooltip?.label?.element;
-        if (!this.isNull && highlightVisually) {
+        if ((!this.isNull ||
+            this.series.options?.nullInteraction) && highlightVisually) {
             this.onMouseOver(); // Show the hover marker and tooltip
         }
         else {

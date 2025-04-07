@@ -1,11 +1,11 @@
 /**
- * @license Highcharts JS v12.1.2 (2024-12-21)
+ * @license Highcharts JS v12.2.0 (2025-04-07)
  * @module highcharts/modules/parallel-coordinates
  * @requires highcharts
  *
  * Support for parallel coordinates in Highcharts
  *
- * (c) 2010-2024 Pawel Fus
+ * (c) 2010-2025 Pawel Fus
  *
  * License: www.highcharts.com/license
  */
@@ -23,17 +23,17 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 984:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__984__;
-
-/***/ }),
-
 /***/ 944:
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
+
+/***/ }),
+
+/***/ 984:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__984__;
 
 /***/ })
 
@@ -109,7 +109,7 @@ var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default 
  *
  *  Parallel coordinates module
  *
- *  (c) 2010-2024 Pawel Fus
+ *  (c) 2010-2025 Pawel Fus
  *
  *  License: www.highcharts.com/license
  *
@@ -253,7 +253,7 @@ const ParallelCoordinatesDefaults = {
  *
  *  Parallel coordinates module
  *
- *  (c) 2010-2024 Pawel Fus
+ *  (c) 2010-2025 Pawel Fus
  *
  *  License: www.highcharts.com/license
  *
@@ -430,7 +430,7 @@ var highcharts_Templating_commonjs_highcharts_Templating_commonjs2_highcharts_Te
  *
  *  Parallel coordinates module
  *
- *  (c) 2010-2024 Pawel Fus
+ *  (c) 2010-2025 Pawel Fus
  *
  *  License: www.highcharts.com/license
  *
@@ -586,7 +586,7 @@ var ParallelSeries;
  *
  *  Parallel coordinates module
  *
- *  (c) 2010-2024 Pawel Fus
+ *  (c) 2010-2025 Pawel Fus
  *
  *  License: www.highcharts.com/license
  *

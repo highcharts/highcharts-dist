@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -91,6 +91,12 @@ class Point {
      *
      * @name Highcharts.Point#percentage
      * @type {number|undefined}
+     */
+    /**
+     * Array of all hovered points when using shared tooltips.
+     *
+     * @name Highcharts.Point#points
+     * @type {Array<Highcharts.Point>|undefined}
      */
     /**
      * The series object associated with the point.
@@ -272,7 +278,7 @@ class Point {
                 point.onMouseOut();
             }
             // Remove properties after animation
-            if (!dataSorting || !dataSorting.enabled) {
+            if (!dataSorting?.enabled) {
                 destroyPoint();
             }
             else {
@@ -297,7 +303,7 @@ class Point {
         });
         props.plural.forEach(function (plural) {
             point[plural].forEach(function (item) {
-                if (item && item.element) {
+                if (item?.element) {
                     item.destroy();
                 }
             });
@@ -355,8 +361,9 @@ class Point {
             (typeof point.colorIndex !== 'undefined' ?
                 ' highcharts-color-' + point.colorIndex : '') +
             (point.options.className ? ' ' + point.options.className : '') +
-            (point.zone && point.zone.className ? ' ' +
-                point.zone.className.replace('highcharts-negative', '') : '');
+            (point.zone?.className ?
+                ' ' + point.zone.className.replace('highcharts-negative', '') :
+                '');
     }
     /**
      * Get props of all existing graphical point elements.
@@ -425,7 +432,7 @@ class Point {
         if (!this.nonZonedColor) {
             this.nonZonedColor = this.color;
         }
-        if (zone && zone.color && !this.options.color) {
+        if (zone?.color && !this.options.color) {
             this.color = zone.color;
         }
         else {
@@ -474,6 +481,7 @@ class Point {
         // Add a unique ID to the point if none is assigned
         this.id ?? (this.id = uniqueKey());
         this.resolveColor();
+        this.dataLabelOnNull ?? (this.dataLabelOnNull = series.options.nullInteraction);
         series.chart.pointCount++;
         fireEvent(this, 'afterInit');
     }
@@ -754,7 +762,7 @@ class Point {
             }
             if (isObject(options, true)) {
                 // Destroy so we can get new elements
-                if (graphic && graphic.element) {
+                if (graphic?.element) {
                     // "null" is also a valid symbol
                     if (options &&
                         options.marker &&
@@ -985,9 +993,8 @@ class Point {
     setState(state, move) {
         const point = this, series = point.series, previousState = point.state, stateOptions = (series.options.states[state || 'normal'] ||
             {}), markerOptions = (defaultOptions.plotOptions[series.type].marker &&
-            series.options.marker), normalDisabled = (markerOptions && markerOptions.enabled === false), markerStateOptions = ((markerOptions &&
-            markerOptions.states &&
-            markerOptions.states[state || 'normal']) || {}), stateDisabled = markerStateOptions.enabled === false, pointMarker = point.marker || {}, chart = series.chart, hasMarkers = (markerOptions && series.markerAttribs);
+            series.options.marker), normalDisabled = (markerOptions && markerOptions.enabled === false), markerStateOptions = markerOptions?.states?.[state || 'normal'] ||
+            {}, stateDisabled = markerStateOptions.enabled === false, pointMarker = point.marker || {}, chart = series.chart, hasMarkers = (markerOptions && series.markerAttribs);
         let halo = series.halo, markerAttribs, pointAttribs, pointAttribsAnimation, stateMarkerGraphic = series.stateMarkerGraphic, newSymbol;
         state = state || ''; // Empty string
         if (
@@ -1095,9 +1102,8 @@ class Point {
         // Show me your halo
         const haloOptions = stateOptions.halo;
         const markerGraphic = (point.graphic || stateMarkerGraphic);
-        const markerVisibility = (markerGraphic && markerGraphic.visibility || 'inherit');
-        if (haloOptions &&
-            haloOptions.size &&
+        const markerVisibility = markerGraphic?.visibility || 'inherit';
+        if (haloOptions?.size &&
             markerGraphic &&
             markerVisibility !== 'hidden' &&
             !point.isCluster) {

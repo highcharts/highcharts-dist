@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2024 Highsoft, Black Label
+ *  (c) 2009-2025 Highsoft, Black Label
  *
  *  License: www.highcharts.com/license
  *
@@ -199,7 +199,7 @@ const navigation = {
                         }
                     ]
                 }, navigation.annotationsOptions, navigation.bindings.ellipseAnnotation
-                    .annotationOptions));
+                    .annotationsOptions));
             },
             steps: [
                 function (e, annotation) {
@@ -319,7 +319,7 @@ const navigation = {
      * from a different server.
      *
      * @type      {string}
-     * @default   https://code.highcharts.com/@product.version@/gfx/stock-icons/
+     * @default   https://code.highcharts.com/12.2.0/gfx/stock-icons/
      * @since     7.1.3
      * @apioption navigation.iconsURL
      */

@@ -1,1 +1,2 @@
-import '../../../indicators/volume-by-price.src';
+import * as Highcharts from '../../../indicators/volume-by-price.src';
+export default Highcharts;

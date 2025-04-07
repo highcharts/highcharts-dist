@@ -13,6 +13,10 @@ import * as _Highcharts from "../highcharts";
  */
 export function factory(highcharts: typeof Highcharts): void;
 declare module "../highcharts" {
+    interface DataTableOptions {
+        columns?: DataTableColumnCollection;
+        id?: string;
+    }
     /**
      * Returns true if the current browser supports WebGL.
      *

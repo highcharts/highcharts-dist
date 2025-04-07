@@ -1,1 +1,2 @@
-import '../../../options/cci.src';
+import * as Highcharts from '../../../options/cci.src';
+export default Highcharts;

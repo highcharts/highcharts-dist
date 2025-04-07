@@ -1,1 +1,2 @@
-import '../../../indicators/mfi.src';
+import * as Highcharts from '../../../indicators/mfi.src';
+export default Highcharts;

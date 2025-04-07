@@ -1,12 +1,12 @@
 /**
- * @license Highstock JS v12.1.2 (2024-12-21)
+ * @license Highstock JS v12.2.0 (2025-04-07)
  * @module highcharts/indicators/indicators
  * @requires highcharts
  * @requires highcharts/modules/stock
  *
  * Indicator series type for Highcharts Stock
  *
- * (c) 2010-2024 Pawel Fus, Sebastian Bochan
+ * (c) 2010-2025 Pawel Fus, Sebastian Bochan
  *
  * License: www.highcharts.com/license
  */
@@ -24,13 +24,6 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 960:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__960__;
-
-/***/ }),
-
 /***/ 512:
 /***/ ((module) => {
 
@@ -42,6 +35,13 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
+
+/***/ }),
+
+/***/ 960:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__960__;
 
 /***/ })
 
@@ -661,7 +661,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 ;// ./code/es-modules/Stock/Indicators/MultipleLinesComposition.js
 /**
  *
- *  (c) 2010-2024 Wojciech Chmiel
+ *  (c) 2010-2025 Wojciech Chmiel
  *
  *  License: www.highcharts.com/license
  *

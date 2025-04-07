@@ -1,1 +1,2 @@
-import '../../../options/dpo.src';
+import * as Highcharts from '../../../options/dpo.src';
+export default Highcharts;

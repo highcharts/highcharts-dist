@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -300,7 +300,13 @@ class ColumnSeries extends Series {
      * @function Highcharts.seriesTypes.column#translate
      */
     translate() {
-        const series = this, chart = series.chart, options = series.options, dense = series.dense =
+        const series = this, chart = series.chart, options = series.options, 
+        // For points whithout graphics (null points) this value is used
+        // to reserve space around the point such that:
+        //      - normal/null points are spaced similarily,
+        //      - focusborders of null points are like those of "0" points
+        // This ensures consistent dimensions between null/normal points.
+        dense = series.dense =
             series.closestPointRange * series.xAxis.transA < 2, borderWidth = series.borderWidth = pick(options.borderWidth, dense ? 0 : 1 // #3635
         ), xAxis = series.xAxis, yAxis = series.yAxis, threshold = options.threshold, minPointLength = pick(options.minPointLength, 5), metrics = series.getColumnMetrics(), seriesPointWidth = metrics.width, seriesXOffset = series.pointXOffset = metrics.offset, dataMin = series.dataMin, dataMax = series.dataMax, translatedThreshold = series.translatedThreshold =
             yAxis.getThreshold(threshold);
@@ -386,7 +392,7 @@ class ColumnSeries extends Series {
             // #3169, drilldown from null must have a position to work from.
             // #6585, dataLabel should be placed on xAxis, not floating in
             // the middle of the chart.
-            point.isNull ? translatedThreshold : barY, barW, point.isNull ? 0 : barH);
+            barY, barW, point.isNull ? 0 : barH);
         });
         // Fire a specific event after column translate. We could instead apply
         // all the column logic in an `afterTranslate` event handler, but there
@@ -417,7 +423,9 @@ class ColumnSeries extends Series {
             options[strokeOption] ||
             fill), dashstyle = (point && point.options.dashStyle) || options.dashStyle, strokeWidth = (point && point[strokeWidthOption]) ||
             options[strokeWidthOption] ||
-            this[strokeWidthOption] || 0, opacity = pick(point && point.opacity, options.opacity, 1);
+            this[strokeWidthOption] || 0, opacity = (point?.isNull && options.nullInteraction) ?
+            0 :
+            (point?.opacity ?? options.opacity ?? 1);
         // Handle zone colors
         if (point && this.zones.length) {
             zone = point.getZone();
@@ -471,14 +479,14 @@ class ColumnSeries extends Series {
      * @function Highcharts.seriesTypes.column#drawPoints
      */
     drawPoints(points = this.points) {
-        const series = this, chart = this.chart, options = series.options, renderer = chart.renderer, animationLimit = options.animationLimit || 250;
+        const series = this, chart = this.chart, options = series.options, nullInteraction = options.nullInteraction, renderer = chart.renderer, animationLimit = options.animationLimit || 250;
         let shapeArgs;
         // Draw the columns
         points.forEach(function (point) {
             const plotY = point.plotY;
             let graphic = point.graphic, hasGraphic = !!graphic, verb = graphic && chart.pointCount < animationLimit ?
                 'animate' : 'attr';
-            if (isNumber(plotY) && point.y !== null) {
+            if (isNumber(plotY) && (point.y !== null || nullInteraction)) {
                 shapeArgs = point.shapeArgs;
                 // When updating a series between 2d and 3d or cartesian and
                 // polar, the shape type changes.
@@ -533,17 +541,17 @@ class ColumnSeries extends Series {
     drawTracker(points = this.points) {
         const series = this, chart = series.chart, pointer = chart.pointer, onMouseOver = function (e) {
             pointer?.normalize(e);
-            const point = pointer?.getPointFromEvent(e), 
-            // Run point events only for points inside plot area, #21136
-            isInsidePlot = chart.scrollablePlotArea ?
-                chart.isInsidePlot(e.chartX - chart.plotLeft, e.chartY - chart.plotTop, {
-                    visiblePlotOnly: true
-                }) : true;
+            const point = pointer?.getPointFromEvent(e);
             // Undefined on graph in scatterchart
             if (pointer &&
                 point &&
                 series.options.enableMouseTracking &&
-                isInsidePlot) {
+                (
+                // Run point events only for points inside plot area, #21136
+                chart.isInsidePlot(e.chartX - chart.plotLeft, e.chartY - chart.plotTop, {
+                    visiblePlotOnly: true
+                }) ||
+                    pointer?.inClass(e.target, 'highcharts-data-label'))) {
                 pointer.isDirectTouch = true;
                 point.onMouseOver(e);
             }

@@ -224,18 +224,23 @@ declare module "../highcharts.src" {
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) Format for points with the
          * value of null. Works analogously to format. `nullFormat` can be
-         * applied only to series which support displaying null points i.e
-         * `heatmap` or `tilemap`. Does not work with series that don't display
-         * null points, like `line`, `column`, `bar` or `pie`.
+         * applied only to series which support displaying null points.
+         * `heatmap` and `tilemap` supports `nullFormat` by default while the
+         * following series requires [#series.nullInteraction] set to `true`:
+         * `line`, `spline`, `area`, `area-spline`, `column`, `bar`, and
+         * `timeline`. Does not work with series that don't display null points,
+         * like `pie`.
          */
         nullFormat?: (boolean|string);
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) Callback JavaScript function
          * that defines formatting for points with the value of null. Works
          * analogously to formatter. `nullFormatter` can be applied only to
-         * series which support displaying null points i.e `heatmap` or
-         * `tilemap`. Does not work with series that don't display null points,
-         * like `line`, `column`, `bar` or `pie`.
+         * series which support displaying null points. `heatmap` and `tilemap`
+         * supports `nullFormatter` by default while the following series
+         * requires [#series.nullInteraction] set to `true`: `line`, `spline`,
+         * `area`, `area-spline`, `column`, `bar`, and `timeline`. Does not work
+         * with series that don't display null points, like `pie`.
          */
         nullFormatter?: Highcharts.DataLabelsFormatterCallbackFunction;
         /**
@@ -797,6 +802,15 @@ declare module "../highcharts.src" {
          */
         negativeColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
         /**
+         * (Highcharts, Highstock) Whether or not data-points with the value of
+         * `null` should be interactive. When this is set to `true`, tooltips
+         * may highlight these points, and this option also enables keyboard
+         * navigation for such points. Format options for such points include
+         * `nullFormat` and `nullFormater`. Works for these series: `line`,
+         * `spline`, `area`, `area-spline`, `column`, `bar`, and* `timeline`.
+         */
+        nullInteraction?: (boolean|undefined);
+        /**
          * (Highstock) Options for the _Series on point_ feature. Only `pie` and
          * `sunburst` series are supported at this moment.
          */
@@ -959,6 +973,40 @@ declare module "../highcharts.src" {
          * option (view live demo).
          */
         zones?: Array<Highcharts.SeriesZonesOptionsObject>;
+    }
+    /**
+     * (Highstock) Positioning options for fixed tooltip, taking effect only
+     * when tooltip.fixed is `true`.
+     */
+    interface PlotCmoTooltipPositionOptions {
+        /**
+         * (Highstock) The horizontal alignment of the fixed tooltip.
+         */
+        align?: Highcharts.AlignValue;
+        /**
+         * (Highstock) What the fixed tooltip alignment should be relative to.
+         *
+         * The default, `pane`, means that it is aligned within the plot area
+         * for that given series. If the tooltip is split (as default in Stock
+         * charts), each partial tooltip is aligned within the series' pane.
+         */
+        relativeTo?: Highcharts.OptionsRelativeToValue;
+        /**
+         * (Highstock) The vertical alignment of the fixed tooltip.
+         */
+        verticalAlign?: Highcharts.VerticalAlignValue;
+        /**
+         * (Highstock) X pixel offset from the given position. Can be used to
+         * shy away from axis lines, grid lines etc to avoid the tooltip
+         * overlapping other elements.
+         */
+        x?: number;
+        /**
+         * (Highstock) Y pixel offset from the given position. Can be used to
+         * shy away from axis lines, grid lines etc to avoid the tooltip
+         * overlapping other elements.
+         */
+        y?: number;
     }
     /**
      * (Highstock) A `CMO` series. If the type option is not specified, it is

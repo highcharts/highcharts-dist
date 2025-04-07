@@ -1,1 +1,2 @@
-import '../../../options/disparityindex.src';
+import * as Highcharts from '../../../options/disparityindex.src';
+export default Highcharts;

@@ -1,12 +1,12 @@
 /**
- * @license Highstock JS v@product.version@ (@product.date@)
+ * @license Highstock JS v12.2.0 (2025-04-07)
  * @module highcharts/indicators/indicators-all
  * @requires highcharts
  * @requires highcharts/modules/stock
  *
  * All technical indicators for Highcharts Stock
  *
- * (c) 2010-2024 Pawel Fus
+ * (c) 2010-2025 Pawel Fus
  *
  * License: www.highcharts.com/license
  */

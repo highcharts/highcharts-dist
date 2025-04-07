@@ -1,12 +1,12 @@
 /**
- * @license Highstock JS v12.1.2 (2024-12-21)
+ * @license Highstock JS v12.2.0 (2025-04-07)
  * @module highcharts/indicators/regressions
  * @requires highcharts
  * @requires highcharts/modules/stock
  *
  * Indicator series type for Highcharts Stock
  *
- * (c) 2010-2024 Kamil Kulig
+ * (c) 2010-2025 Kamil Kulig
  *
  * License: www.highcharts.com/license
  */
@@ -111,7 +111,7 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
 ;// ./code/es-modules/Stock/Indicators/LinearRegression/LinearRegressionIndicator.js
 /**
  *
- *  (c) 2010-2024 Kamil Kulig
+ *  (c) 2010-2025 Kamil Kulig
  *
  *  License: www.highcharts.com/license
  *
@@ -384,7 +384,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 ;// ./code/es-modules/Stock/Indicators/LinearRegressionSlopes/LinearRegressionSlopesIndicator.js
 /**
  *
- *  (c) 2010-2024 Kamil Kulig
+ *  (c) 2010-2025 Kamil Kulig
  *
  *  License: www.highcharts.com/license
  *
@@ -473,7 +473,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 ;// ./code/es-modules/Stock/Indicators/LinearRegressionIntercept/LinearRegressionInterceptIndicator.js
 /**
  *
- *  (c) 2010-2024 Kamil Kulig
+ *  (c) 2010-2025 Kamil Kulig
  *
  *  License: www.highcharts.com/license
  *
@@ -562,7 +562,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 ;// ./code/es-modules/Stock/Indicators/LinearRegressionAngle/LinearRegressionAngleIndicator.js
 /**
  *
- *  (c) 2010-2024 Kamil Kulig
+ *  (c) 2010-2025 Kamil Kulig
  *
  *  License: www.highcharts.com/license
  *

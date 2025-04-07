@@ -1,11 +1,11 @@
 /**
- * @license Highcharts JS v12.1.2 (2024-12-21)
+ * @license Highcharts JS v12.2.0 (2025-04-07)
  * @module highcharts/modules/pictorial
  * @requires highcharts
  *
  * Pictorial graph series type for Highcharts
  *
- * (c) 2010-2024 Torstein Honsi, Magdalena Gut
+ * (c) 2010-2025 Torstein Honsi, Magdalena Gut
  *
  * License: www.highcharts.com/license
  */
@@ -23,17 +23,10 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 960:
+/***/ 184:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE__960__;
-
-/***/ }),
-
-/***/ 540:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__540__;
+module.exports = __WEBPACK_EXTERNAL_MODULE__184__;
 
 /***/ }),
 
@@ -44,13 +37,6 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__448__;
 
 /***/ }),
 
-/***/ 820:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__820__;
-
-/***/ }),
-
 /***/ 512:
 /***/ ((module) => {
 
@@ -58,10 +44,17 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
 
 /***/ }),
 
-/***/ 184:
+/***/ 540:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE__184__;
+module.exports = __WEBPACK_EXTERNAL_MODULE__540__;
+
+/***/ }),
+
+/***/ 820:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__820__;
 
 /***/ }),
 
@@ -69,6 +62,13 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__184__;
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
+
+/***/ }),
+
+/***/ 960:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__960__;
 
 /***/ })
 
@@ -146,7 +146,7 @@ var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commo
  *
  *  Module for using patterns or images as point fills.
  *
- *  (c) 2010-2024 Highsoft AS
+ *  (c) 2010-2025 Highsoft AS
  *  Author: Torstein Hønsi, Øystein Moseng
  *
  *  License: www.highcharts.com/license
@@ -868,7 +868,7 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
 ;// ./code/es-modules/Series/Pictorial/PictorialUtilities.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi, Magdalena Gut
+ *  (c) 2010-2025 Torstein Honsi, Magdalena Gut
  *
  *  License: www.highcharts.com/license
  *
@@ -938,7 +938,7 @@ function invertShadowGroup(shadowGroup, yAxis) {
 ;// ./code/es-modules/Series/Pictorial/PictorialPoint.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi, Magdalena Gut
+ *  (c) 2010-2025 Torstein Honsi, Magdalena Gut
  *
  *  License: www.highcharts.com/license
  *
@@ -990,7 +990,7 @@ var highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_
 ;// ./code/es-modules/Series/Pictorial/PictorialSeries.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi, Magdalena Gut
+ *  (c) 2010-2025 Torstein Honsi, Magdalena Gut
  *
  *  License: www.highcharts.com/license
  *
@@ -1063,7 +1063,7 @@ class PictorialSeries extends ColumnSeries {
         let animationClipRect = chart.sharedClips[animationClipKey];
         // Initialize the animation. Set up the clipping rectangle.
         if (init && group) {
-            const clipBox = this.getClipBox();
+            const clipBox = chart.getClipBox(this);
             // Create temporary animation clips
             if (!animationClipRect) {
                 clipBox.y = clipBox.height;
@@ -1077,7 +1077,7 @@ class PictorialSeries extends ColumnSeries {
         else if (animationClipRect &&
             // Only first series in this pane
             !animationClipRect.hasClass('highcharts-animating')) {
-            const finalBox = this.getClipBox();
+            const finalBox = chart.getClipBox(this);
             animationClipRect
                 .addClass('highcharts-animating')
                 .animate(finalBox, animation);

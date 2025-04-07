@@ -1,11 +1,11 @@
 /**
- * @license Highcharts Gantt JS v12.1.2 (2024-12-21)
+ * @license Highcharts Gantt JS v12.2.0 (2025-04-07)
  * @module highcharts/modules/static-scale
  * @requires highcharts
  *
  * StaticScale
  *
- * (c) 2016-2024 Torstein Honsi, Lars A. V. Cabrera
+ * (c) 2016-2025 Torstein Honsi, Lars A. V. Cabrera
  *
  * License: www.highcharts.com/license
  */
@@ -100,7 +100,7 @@ var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default 
 ;// ./code/es-modules/Extensions/StaticScale.js
 /* *
  *
- *  (c) 2016-2024 Torstein Honsi, Lars Cabrera
+ *  (c) 2016-2025 Torstein Honsi, Lars Cabrera
  *
  *  License: www.highcharts.com/license
  *

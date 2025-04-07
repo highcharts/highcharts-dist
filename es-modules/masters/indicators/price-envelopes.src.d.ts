@@ -1,1 +1,2 @@
-import '../../../indicators/price-envelopes.src';
+import * as Highcharts from '../../../indicators/price-envelopes.src';
+export default Highcharts;

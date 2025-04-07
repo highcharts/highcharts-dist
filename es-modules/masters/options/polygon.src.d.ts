@@ -1,1 +1,2 @@
-import '../../../options/polygon.src';
+import * as Highcharts from '../../../options/polygon.src';
+export default Highcharts;

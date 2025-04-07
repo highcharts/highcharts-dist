@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2024 Highsoft AS
+ *  (c) 2010-2025 Highsoft AS
  *
  *  Authors: Magdalena Gut, Piotr Madej
  *
@@ -20,7 +20,7 @@ const { colorFromPoint, getContext } = IU;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { seriesTypes: { map: MapSeries } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-const { addEvent, extend, isNumber, isObject, merge, pick } = U;
+const { addEvent, error, extend, isNumber, isObject, merge, pick } = U;
 /**
  * Normalize longitute value to -180:180 range.
  * @private
@@ -130,11 +130,11 @@ class GeoHeatmapSeries extends MapSeries {
                 y: series.bounds.y1
             });
             if (canvas && ctx && colorAxis && topLeft && bottomRight) {
-                const dimensions = {
-                    x: topLeft.x,
-                    y: topLeft.y,
-                    width: bottomRight.x - topLeft.x,
-                    height: bottomRight.y - topLeft.y
+                const { x, y } = topLeft, width = bottomRight.x - x, height = bottomRight.y - y, dimensions = {
+                    x,
+                    y,
+                    width,
+                    height
                 };
                 if (
                 // Do not calculate new canvas if not necessary
@@ -143,17 +143,32 @@ class GeoHeatmapSeries extends MapSeries {
                     series.isDirtyData ||
                     // Always calculate new canvas for Orthographic projection
                     mapView.projection.options.name === 'Orthographic') {
+                    const canvasWidth = canvas.width = ~~(360 / colsize) + 1, canvasHeight = canvas.height = ~~(180 / rowsize) + 1, canvasArea = canvasWidth * canvasHeight, pixelData = new Uint8ClampedArray(canvasArea * 4), 
+                    // Guess if we have to round lon/lat with this data
+                    { lat = 0, lon = 0 } = points[0].options, unEvenLon = lon % rowsize !== 0, unEvenLat = lat % colsize !== 0, getAdjustedLon = (unEvenLon ?
+                        (lon) => (Math.round(lon / rowsize) * rowsize) :
+                        (lon) => lon), getAdjustedLat = (unEvenLat ?
+                        (lat) => (Math.round(lat / colsize) * colsize) :
+                        (lat) => lat), pointsLen = points.length;
+                    if (unEvenLon || unEvenLat) {
+                        error('Highcharts Warning: For best performance,' +
+                            ' lon/lat datapoints should spaced by a single ' +
+                            'colsize/rowsize', false, series.chart, {
+                            colsize: String(colsize),
+                            rowsize: String(rowsize)
+                        });
+                    }
+                    // Needed for tooltip
+                    series.directTouch = false;
                     series.isDirtyCanvas = true;
-                    const canvasWidth = canvas.width = ~~(360 / colsize) + 1, canvasHeight = canvas.height = ~~(180 / rowsize) + 1, canvasArea = canvasWidth * canvasHeight, pixelData = new Uint8ClampedArray(canvasArea * 4);
-                    series.directTouch = false; // Needed for tooltip
                     // First pixelData represents the geo coordinates
-                    for (let i = 0; i < points.length; i++) {
-                        const p = points[i], sourceArr = new Uint8ClampedArray(colorFromPoint(p.value, p)), { lon, lat } = p.options;
+                    for (let i = 0; i < pointsLen; i++) {
+                        const p = points[i], { lon, lat } = p.options;
                         if (isNumber(lon) && isNumber(lat)) {
-                            pixelData.set(sourceArr, scaledPointPos(lon, lat, canvasWidth, canvasHeight, colsize, rowsize) * 4);
+                            pixelData.set(colorFromPoint(p.value, p), scaledPointPos(getAdjustedLon(lon), getAdjustedLat(lat), canvasWidth, canvasHeight, colsize, rowsize) * 4);
                         }
                     }
-                    const blur = series.getInterpolation().blur, blurFactor = blur === 0 ? 1 : blur * 11, upscaledWidth = ~~(canvasWidth * blurFactor), upscaledHeight = ~~(canvasHeight * blurFactor), projectedWidth = ~~dimensions.width, projectedHeight = ~~dimensions.height, img = new ImageData(pixelData, canvasWidth, canvasHeight);
+                    const blur = series.getInterpolation().blur, blurFactor = blur === 0 ? 1 : blur * 11, upscaledWidth = ~~(canvasWidth * blurFactor), upscaledHeight = ~~(canvasHeight * blurFactor), projectedWidth = ~~width, projectedHeight = ~~height, img = new ImageData(pixelData, canvasWidth, canvasHeight);
                     canvas.width = upscaledWidth;
                     canvas.height = upscaledHeight;
                     // Next step is to upscale pixelData to big image to get
@@ -166,24 +181,24 @@ class GeoHeatmapSeries extends MapSeries {
                     ctx.globalCompositeOperation = 'copy';
                     // Now we can draw ourself over ourself
                     ctx.drawImage(canvas, 0, 0, img.width, img.height, // Grab the ImageData
-                    0, 0, canvas.width, canvas.height // Scale it
+                    0, 0, upscaledWidth, upscaledHeight // Scale it
                     );
                     // Add projection to upscaled ImageData
-                    const cartesianImageData = ctx.getImageData(0, 0, canvas.width, canvas.height), projectedPixelData = this.getProjectedImageData(mapView, projectedWidth, projectedHeight, cartesianImageData, canvas, dimensions.x, dimensions.y), projectedImg = new ImageData(projectedPixelData, projectedWidth, projectedHeight);
-                    ctx.globalCompositeOperation = 'copy';
+                    const projectedPixelData = this.getProjectedImageData(mapView, projectedWidth, projectedHeight, ctx.getImageData(0, 0, upscaledWidth, upscaledHeight), canvas, x, y);
                     canvas.width = projectedWidth;
                     canvas.height = projectedHeight;
-                    ctx.putImageData(projectedImg, 0, 0);
+                    ctx.putImageData(new ImageData(projectedPixelData, projectedWidth, projectedHeight), 0, 0);
                 }
                 if (image) {
                     if (chart.renderer.globalAnimation && chart.hasRendered) {
                         const startX = Number(image.attr('x')), startY = Number(image.attr('y')), startWidth = Number(image.attr('width')), startHeight = Number(image.attr('height'));
                         const step = (now, fx) => {
+                            const pos = fx.pos;
                             image.attr({
-                                x: (startX + (dimensions.x - startX) * fx.pos),
-                                y: (startY + (dimensions.y - startY) * fx.pos),
-                                width: (startWidth + (dimensions.width - startWidth) * fx.pos),
-                                height: (startHeight + (dimensions.height - startHeight) * fx.pos)
+                                x: (startX + (x - startX) * pos),
+                                y: (startY + (y - startY) * pos),
+                                width: (startWidth + (width - startWidth) * pos),
+                                height: (startHeight + (height - startHeight) * pos)
                             });
                         };
                         const animOptions = merge(animObject(chart.renderer.globalAnimation)), userStep = animOptions.step;

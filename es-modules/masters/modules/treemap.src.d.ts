@@ -1,1 +1,2 @@
-import '../../../modules/treemap.src';
+import * as Highcharts from '../../../modules/treemap.src';
+export default Highcharts;

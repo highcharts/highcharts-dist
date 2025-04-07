@@ -1,12 +1,12 @@
 /**
- * @license Highcharts JS v12.1.2 (2024-12-21)
+ * @license Highcharts JS v12.2.0 (2025-04-07)
  * @module highcharts/modules/dependency-wheel
  * @requires highcharts
  * @requires highcharts/modules/sankey
  *
  * Dependency wheel module
  *
- * (c) 2010-2024 Torstein Honsi
+ * (c) 2010-2025 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -120,7 +120,7 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  *
  *  Dependency wheel module
  *
- *  (c) 2018-2024 Torstein Honsi
+ *  (c) 2018-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -198,7 +198,7 @@ class DependencyWheelPoint extends SankeyPoint {
  *
  *  Dependency wheel module
  *
- *  (c) 2018-2024 Torstein Honsi
+ *  (c) 2018-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -389,7 +389,7 @@ const DependencyWheelSeriesDefaults = {
  *
  *  Sankey diagram module
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -619,7 +619,7 @@ var highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_highcharts_SV
  *
  *  Highcharts module with textPath functionality.
  *
- *  (c) 2009-2024 Torstein Honsi
+ *  (c) 2009-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -848,7 +848,7 @@ const TextPath = {
  *
  *  Dependency wheel module
  *
- *  (c) 2018-2024 Torstein Honsi
+ *  (c) 2018-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *

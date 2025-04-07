@@ -1,1 +1,2 @@
-import '../../../options/cylinder.src';
+import * as Highcharts from '../../../options/cylinder.src';
+export default Highcharts;

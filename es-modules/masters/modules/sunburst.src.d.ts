@@ -1,1 +1,2 @@
-import '../../../modules/sunburst.src';
+import * as Highcharts from '../../../modules/sunburst.src';
+export default Highcharts;

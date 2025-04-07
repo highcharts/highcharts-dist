@@ -1,1 +1,2 @@
-import '../../../indicators/regressions.src';
+import * as Highcharts from '../../../indicators/regressions.src';
+export default Highcharts;

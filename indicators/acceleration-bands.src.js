@@ -1,12 +1,12 @@
 /**
- * @license Highstock JS v12.1.2 (2024-12-21)
+ * @license Highstock JS v12.2.0 (2025-04-07)
  * @module highcharts/indicators/acceleration-bands
  * @requires highcharts
  * @requires highcharts/modules/stock
  *
  * Indicator series type for Highcharts Stock
  *
- * (c) 2010-2024 Daniel Studencki
+ * (c) 2010-2025 Daniel Studencki
  *
  * License: www.highcharts.com/license
  */
@@ -111,7 +111,7 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
 ;// ./code/es-modules/Stock/Indicators/MultipleLinesComposition.js
 /**
  *
- *  (c) 2010-2024 Wojciech Chmiel
+ *  (c) 2010-2025 Wojciech Chmiel
  *
  *  License: www.highcharts.com/license
  *

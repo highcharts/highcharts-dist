@@ -1,11 +1,11 @@
 /**
- * @license Highcharts Gantt JS v@product.version@ (@product.date@)
+ * @license Highcharts Gantt JS v12.2.0 (2025-04-07)
  * @module highcharts/modules/gantt
  * @requires highcharts
  *
  * Gantt series
  *
- * (c) 2016-2024 Lars A. V. Cabrera
+ * (c) 2016-2025 Lars A. V. Cabrera
  *
  * License: www.highcharts.com/license
  */

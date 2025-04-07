@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.1.2 (2024-12-21)
+ * @license Highcharts JS v12.2.0 (2025-04-07)
  * @module highcharts/modules/drilldown
  * @requires highcharts
  *
@@ -11,22 +11,22 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Templating"], root["_Highcharts"]["Color"]);
+		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Templating"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/drilldown", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Templating"],amd1["Color"]);});
+		define("highcharts/modules/drilldown", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Templating"]);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/drilldown"] = factory(root["_Highcharts"], root["_Highcharts"]["Templating"], root["_Highcharts"]["Color"]);
+		exports["highcharts/modules/drilldown"] = factory(root["_Highcharts"], root["_Highcharts"]["Templating"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Templating"], root["Highcharts"]["Color"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__984__, __WEBPACK_EXTERNAL_MODULE__620__) => {
+		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Templating"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__984__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 620:
+/***/ 944:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE__620__;
+module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 
 /***/ }),
 
@@ -34,13 +34,6 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__620__;
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__984__;
-
-/***/ }),
-
-/***/ 944:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 
 /***/ })
 
@@ -994,9 +987,6 @@ Breadcrumbs.defaultOptions = Breadcrumbs_BreadcrumbsDefaults.options;
  *
  * @callback Highcharts.BreadcrumbsFormatterCallbackFunction
  *
- * @param {Highcharts.Event} event
- * Event.
- *
  * @param {Highcharts.BreadcrumbOptions} options
  * Breadcrumb options.
  *
@@ -1057,9 +1047,6 @@ Breadcrumbs.defaultOptions = Breadcrumbs_BreadcrumbsDefaults.options;
  */
 (''); // Keeps doclets above in JS file
 
-// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Color"],"commonjs":["highcharts","Color"],"commonjs2":["highcharts","Color"],"root":["Highcharts","Color"]}
-var highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_ = __webpack_require__(620);
-var highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_default = /*#__PURE__*/__webpack_require__.n(highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_);
 ;// ./code/es-modules/Extensions/Drilldown/DrilldownDefaults.js
 /* *
  *
@@ -1204,13 +1191,12 @@ const DrilldownDefaults = {
         duration: 500
     },
     /**
+     * Drill up button is deprecated since Highcharts v9.3.2. Use
+     * [drilldown.breadcrumbs](#drilldown.breadcrumbs) instead.
      *
      * Options for the drill up button that appears when drilling down on a
      * series. The text for the button is defined in
      * [lang.drillUpText](#lang.drillUpText).
-     *
-     * This option is deprecated since 9.3.2, use `drilldown.breadcrumbs`
-     * instead.
      *
      * @sample highcharts/breadcrumbs/single-button
      *         Breadcrumbs set up like a legacy button
@@ -1220,7 +1206,7 @@ const DrilldownDefaults = {
      * @since   3.0.8
      * @product highcharts highmaps
      *
-     * @deprecated
+     * @deprecated 9.3.2
      */
     drillUpButton: {
         /**
@@ -1368,11 +1354,14 @@ const DrilldownDefaults = {
  * @apioption series.line.data.drilldown
  */
 /**
+ * Drill up button is deprecated since Highcharts v9.3.2. Use
+ * [drilldown.breadcrumbs](#drilldown.breadcrumbs) instead.
+ *
  * The text for the button that appears when drilling down, linking back
  * to the parent series. The parent series' name is inserted for
  * `{series.name}`.
  *
- * @deprecated
+ * @deprecated 9.3.2
  * @since    3.0.8
  * @product  highcharts highmaps
  * @requires modules/drilldown
@@ -1476,7 +1465,7 @@ function columnAnimateDrillupFrom(level) {
     if (removeGroup) {
         delete series.group;
     }
-    this.points.forEach((point) => {
+    (this.points || this.data).forEach((point) => {
         const graphic = point.graphic, animateTo = level.shapeArgs;
         if (graphic && animateTo) {
             const complete = () => {
@@ -1870,7 +1859,6 @@ const DrilldownSeries = {
 const { animObject: Drilldown_animObject } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 
-
 const { noop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 
@@ -2120,9 +2108,7 @@ class ChartAdditions {
             shapeArgs: point.shapeArgs,
             // No graphic in line series with markers disabled
             bBox: point.graphic ? point.graphic.getBBox() : {},
-            color: point.isNull ?
-                highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_default().parse(colorProp.color).setOpacity(0).get() :
-                colorProp.color,
+            color: point.isNull ? 'rgba(0,0,0,0)' : colorProp.color,
             lowerSeriesOptions: ddOptions,
             pointOptions: point.options,
             pointIndex: point.index,
@@ -2435,7 +2421,7 @@ class ChartAdditions {
                 }
             }
         }
-        if (!chart.mapView) {
+        if (!chart.mapView && !isMultipleDrillUp) {
             chart.redraw();
         }
         if (chart.ddDupes) {

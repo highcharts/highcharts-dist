@@ -1,11 +1,11 @@
 /**
- * @license Highcharts JS v12.1.2 (2024-12-21)
+ * @license Highcharts JS v12.2.0 (2025-04-07)
  * @module highcharts/modules/windbarb
  * @requires highcharts
  *
  * Wind barb series module
  *
- * (c) 2010-2024 Torstein Honsi
+ * (c) 2010-2025 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -30,13 +30,6 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__448__;
 
 /***/ }),
 
-/***/ 820:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__820__;
-
-/***/ }),
-
 /***/ 512:
 /***/ ((module) => {
 
@@ -44,10 +37,10 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
 
 /***/ }),
 
-/***/ 956:
+/***/ 820:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE__956__;
+module.exports = __WEBPACK_EXTERNAL_MODULE__820__;
 
 /***/ }),
 
@@ -55,6 +48,13 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__956__;
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
+
+/***/ }),
+
+/***/ 956:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__956__;
 
 /***/ })
 
@@ -137,7 +137,7 @@ var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_roo
 ;// ./code/es-modules/Series/OnSeriesComposition.js
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -356,7 +356,7 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  *
  *  Wind barb series module
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -393,7 +393,7 @@ class WindbarbPoint extends (highcharts_Series_types_column_commonjs_highcharts_
  *
  *  Wind barb series module
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -597,7 +597,7 @@ const WindbarbSeriesDefaults = {
  *
  *  Wind barb series module
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *

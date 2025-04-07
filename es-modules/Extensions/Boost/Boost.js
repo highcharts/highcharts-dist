@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2019-2024 Highsoft AS
+ *  (c) 2019-2025 Highsoft AS
  *
  *  Boost module: stripped-down renderer for higher performance
  *
@@ -36,7 +36,7 @@ const contexts = [
 /**
  * @private
  */
-function compose(ChartClass, AxisClass, SeriesClass, seriesTypes, ColorClass) {
+function compose(ChartClass, AxisClass, SeriesClass, seriesTypes, PointClass, ColorClass) {
     const wglMode = hasWebGLSupport();
     if (!wglMode) {
         if (typeof H.initCanvasBoost !== 'undefined') {
@@ -55,7 +55,7 @@ function compose(ChartClass, AxisClass, SeriesClass, seriesTypes, ColorClass) {
     }
     // WebGL support is alright, and we're good to go.
     BoostChart.compose(ChartClass, wglMode);
-    BoostSeries.compose(SeriesClass, seriesTypes, wglMode);
+    BoostSeries.compose(SeriesClass, seriesTypes, PointClass, wglMode);
     // Handle zooming by touch/pinch or mouse wheel. Assume that boosted charts
     // are too slow for a live preview while dragging. Instead, just scale the
     // div while `isPanning`.

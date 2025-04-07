@@ -2,7 +2,7 @@
  *
  *  GUI generator for Stock tools
  *
- *  (c) 2009-2024 Sebastian Bochan
+ *  (c) 2009-2025 Sebastian Bochan
  *
  *  License: www.highcharts.com/license
  *
@@ -566,7 +566,7 @@ class Toolbar {
     getIconsURL() {
         return this.chart.options.navigation.iconsURL ||
             this.options.iconsURL ||
-            'https://code.highcharts.com/@product.version@/gfx/stock-icons/';
+            'https://code.highcharts.com/12.2.0/gfx/stock-icons/';
     }
 }
 Toolbar.prototype.classMapping = {

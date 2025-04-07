@@ -1,11 +1,11 @@
 /**
- * @license Highcharts JS v12.1.2 (2024-12-21)
+ * @license Highcharts JS v12.2.0 (2025-04-07)
  * @module highcharts/modules/annotations
  * @requires highcharts
  *
  * Annotations module
  *
- * (c) 2009-2024 Torstein Honsi
+ * (c) 2009-2025 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -23,13 +23,6 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 660:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__660__;
-
-/***/ }),
-
 /***/ 512:
 /***/ ((module) => {
 
@@ -37,10 +30,10 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
 
 /***/ }),
 
-/***/ 984:
+/***/ 660:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE__984__;
+module.exports = __WEBPACK_EXTERNAL_MODULE__660__;
 
 /***/ }),
 
@@ -48,6 +41,13 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__984__;
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
+
+/***/ }),
+
+/***/ 984:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__984__;
 
 /***/ })
 
@@ -121,7 +121,7 @@ var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default 
 ;// ./code/es-modules/Extensions/Annotations/AnnotationChart.js
 /* *
  *
- *  (c) 2009-2024 Highsoft, Black Label
+ *  (c) 2009-2025 Highsoft, Black Label
  *
  *  License: www.highcharts.com/license
  *
@@ -1039,7 +1039,7 @@ const AnnotationDefaults = {
 ;// ./code/es-modules/Extensions/Annotations/EventEmitter.js
 /* *
  *
- *  (c) 2009-2024 Highsoft, Black Label
+ *  (c) 2009-2025 Highsoft, Black Label
  *
  *  License: www.highcharts.com/license
  *
@@ -1077,7 +1077,9 @@ class EventEmitter {
         };
         addMouseDownEvent(this.graphic.element);
         (emitter.labels || []).forEach((label) => {
-            if (label.options.useHTML && label.graphic.text) {
+            if (label.options.useHTML &&
+                label.graphic.text &&
+                !label.graphic.text.foreignObject) {
                 // Mousedown event bound to HTML element (#13070).
                 addMouseDownEvent(label.graphic.text.element);
             }
@@ -1110,7 +1112,9 @@ class EventEmitter {
                 };
                 emitter.graphic.css(cssPointer);
                 (emitter.labels || []).forEach((label) => {
-                    if (label.options.useHTML && label.graphic.text) {
+                    if (label.options.useHTML &&
+                        label.graphic.text &&
+                        !label.graphic.text.foreignObject) {
                         label.graphic.text.css(cssPointer);
                     }
                 });
@@ -1374,7 +1378,7 @@ class ControlPoint extends Annotations_EventEmitter {
             .add(chart.controlPointsGroup)
             .css(options.style);
         this.setVisibility(options.visible);
-        // `npm test -- --tests "highcharts/annotations-advanced/*"`
+        // `npm test -- --tests "@highcharts/highcharts/annotations-advanced/*"`
         this.addEvents();
     }
     /**
@@ -3712,7 +3716,7 @@ var highcharts_AST_commonjs_highcharts_AST_commonjs2_highcharts_AST_root_Highcha
 ;// ./code/es-modules/Shared/BaseForm.js
 /* *
  *
- *  (c) 2009-2024 Highsoft AS
+ *  (c) 2009-2025 Highsoft AS
  *
  *  License: www.highcharts.com/license
  *
@@ -3839,7 +3843,7 @@ class BaseForm {
  *
  *  Popup generator for Stock tools
  *
- *  (c) 2009-2024 Sebastian Bochan
+ *  (c) 2009-2025 Sebastian Bochan
  *
  *  License: www.highcharts.com/license
  *
@@ -4020,7 +4024,7 @@ const PopupAnnotations = {
  *
  *  Popup generator for Stock tools
  *
- *  (c) 2009-2024 Sebastian Bochan
+ *  (c) 2009-2025 Sebastian Bochan
  *
  *  License: www.highcharts.com/license
  *
@@ -4633,7 +4637,7 @@ const PopupIndicators = {
  *
  *  Popup generator for Stock tools
  *
- *  (c) 2009-2024 Sebastian Bochan
+ *  (c) 2009-2025 Sebastian Bochan
  *
  *  License: www.highcharts.com/license
  *
@@ -4769,7 +4773,7 @@ const PopupTabs = {
  *
  *  Popup generator for Stock tools
  *
- *  (c) 2009-2024 Sebastian Bochan
+ *  (c) 2009-2025 Sebastian Bochan
  *
  *  License: www.highcharts.com/license
  *
@@ -5007,7 +5011,7 @@ Popup_extend(Popup.prototype, {
  *
  *  Popup generator for Stock tools
  *
- *  (c) 2009-2024 Sebastian Bochan
+ *  (c) 2009-2025 Sebastian Bochan
  *
  *  License: www.highcharts.com/license
  *
@@ -5052,7 +5056,7 @@ function onNavigationBindingsShowPopup(config) {
         this.popup = new Popup_Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
             (this.chart.options.stockTools &&
                 this.chart.options.stockTools.gui.iconsURL) ||
-            'https://code.highcharts.com/12.1.2/gfx/stock-icons/'), this.chart);
+            'https://code.highcharts.com/12.2.0/gfx/stock-icons/'), this.chart);
     }
     this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
 }
@@ -5080,7 +5084,7 @@ const PopupComposition = {
 ;// ./code/es-modules/Extensions/Annotations/Annotation.js
 /* *
  *
- *  (c) 2009-2024 Highsoft, Black Label
+ *  (c) 2009-2025 Highsoft, Black Label
  *
  *  License: www.highcharts.com/license
  *
@@ -5245,7 +5249,7 @@ class Annotation extends Annotations_EventEmitter {
         this.options.labels = labelsAndShapes.labels;
         this.options.shapes = labelsAndShapes.shapes;
         /**
-         * The callback that reports to the overlapping-labels module which
+         * The callback that reports to the overlapping labels logic which
          * labels it should account for.
          * @private
          * @name Highcharts.Annotation#labelCollector
@@ -5723,7 +5727,7 @@ Annotations_ControlTarget.compose(Annotation);
 ;// ./code/es-modules/Core/Chart/ChartNavigationComposition.js
 /**
  *
- *  (c) 2010-2024 Paweł Fus
+ *  (c) 2010-2025 Paweł Fus
  *
  *  License: www.highcharts.com/license
  *
@@ -5815,7 +5819,7 @@ var ChartNavigationComposition;
 ;// ./code/es-modules/Extensions/Annotations/NavigationBindingsUtilities.js
 /* *
  *
- *  (c) 2009-2024 Highsoft, Black Label
+ *  (c) 2009-2025 Highsoft, Black Label
  *
  *  License: www.highcharts.com/license
  *
@@ -5915,7 +5919,7 @@ const NavigationBindingUtilities = {
 ;// ./code/es-modules/Extensions/Annotations/NavigationBindingsDefaults.js
 /* *
  *
- *  (c) 2009-2024 Highsoft, Black Label
+ *  (c) 2009-2025 Highsoft, Black Label
  *
  *  License: www.highcharts.com/license
  *
@@ -6114,7 +6118,7 @@ const navigation = {
                         }
                     ]
                 }, navigation.annotationsOptions, navigation.bindings.ellipseAnnotation
-                    .annotationOptions));
+                    .annotationsOptions));
             },
             steps: [
                 function (e, annotation) {
@@ -6234,7 +6238,7 @@ const navigation = {
      * from a different server.
      *
      * @type      {string}
-     * @default   https://code.highcharts.com/12.1.2/gfx/stock-icons/
+     * @default   https://code.highcharts.com/12.2.0/gfx/stock-icons/
      * @since     7.1.3
      * @apioption navigation.iconsURL
      */
@@ -6313,7 +6317,7 @@ const NavigationBindingDefaults = {
 ;// ./code/es-modules/Extensions/Annotations/NavigationBindings.js
 /* *
  *
- *  (c) 2009-2024 Highsoft, Black Label
+ *  (c) 2009-2025 Highsoft, Black Label
  *
  *  License: www.highcharts.com/license
  *

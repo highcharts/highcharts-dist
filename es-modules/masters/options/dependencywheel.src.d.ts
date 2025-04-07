@@ -1,1 +1,2 @@
-import '../../../options/dependencywheel.src';
+import * as Highcharts from '../../../options/dependencywheel.src';
+export default Highcharts;

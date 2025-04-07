@@ -13,6 +13,10 @@ import * as _Highcharts from "../highcharts.src";
  */
 export function factory(highcharts: typeof Highcharts): void;
 declare module "../highcharts.src" {
+    interface DataTableOptions {
+        columns?: DataTableColumnCollection;
+        id?: string;
+    }
     /**
      * Initialize the canvas boost.
      */

@@ -1,1 +1,2 @@
-import '../../../options/zigzag.src';
+import * as Highcharts from '../../../options/zigzag.src';
+export default Highcharts;

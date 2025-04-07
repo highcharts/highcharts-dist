@@ -1,1 +1,2 @@
-import '../../../themes/dark-blue.src';
+import * as Highcharts from '../../../themes/dark-blue.src';
+export default Highcharts;

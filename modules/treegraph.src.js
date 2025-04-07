@@ -1,11 +1,11 @@
 /**
- * @license Highcharts JS v12.1.2 (2024-12-21)
+ * @license Highcharts JS v12.2.0 (2025-04-07)
  * Treegraph chart series type
  * @module highcharts/modules/treegraph
  * @requires highcharts
  * @requires highcharts/modules/treemap
  *
- *  (c) 2010-2024 Pawel Lysy Grzegorz Blachlinski
+ *  (c) 2010-2025 Pawel Lysy Grzegorz Blachlinski
  *
  * License: www.highcharts.com/license
  */
@@ -23,10 +23,10 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 620:
+/***/ 28:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE__620__;
+module.exports = __WEBPACK_EXTERNAL_MODULE__28__;
 
 /***/ }),
 
@@ -37,10 +37,10 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__260__;
 
 /***/ }),
 
-/***/ 28:
+/***/ 512:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE__28__;
+module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
 
 /***/ }),
 
@@ -51,10 +51,10 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__540__;
 
 /***/ }),
 
-/***/ 512:
+/***/ 620:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
+module.exports = __WEBPACK_EXTERNAL_MODULE__620__;
 
 /***/ }),
 
@@ -135,7 +135,7 @@ var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default 
 ;// ./code/es-modules/Series/PathUtilities.js
 /* *
  *
- *  (c) 2010-2024 Pawel Lysy
+ *  (c) 2010-2025 Pawel Lysy
  *
  *  License: www.highcharts.com/license
  *
@@ -280,7 +280,7 @@ var highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_
 ;// ./code/es-modules/Series/Treegraph/TreegraphNode.js
 /* *
  *
- *  (c) 2010-2024 Pawel Lysy Grzegorz Blachlinski
+ *  (c) 2010-2025 Pawel Lysy Grzegorz Blachlinski
  *
  *  License: www.highcharts.com/license
  *
@@ -472,7 +472,7 @@ var highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_H
 ;// ./code/es-modules/Series/Treegraph/TreegraphPoint.js
 /* *
  *
- *  (c) 2010-2024 Pawel Lysy Grzegorz Blachlinski
+ *  (c) 2010-2025 Pawel Lysy Grzegorz Blachlinski
  *
  *  License: www.highcharts.com/license
  *
@@ -648,7 +648,7 @@ var highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_H
 ;// ./code/es-modules/Series/TreeUtilities.js
 /* *
  *
- *  (c) 2014-2024 Highsoft AS
+ *  (c) 2014-2025 Highsoft AS
  *
  *  Authors: Jon Arild Nygard / Oystein Moseng
  *
@@ -864,7 +864,7 @@ const TreeUtilities = {
 ;// ./code/es-modules/Series/Treegraph/TreegraphLink.js
 /* *
  *
- *  (c) 2010-2024 Pawel Lysy Grzegorz Blachlinski
+ *  (c) 2010-2025 Pawel Lysy Grzegorz Blachlinski
  *
  *  License: www.highcharts.com/license
  *
@@ -941,7 +941,7 @@ class LinkPoint extends ColumnPoint {
 ;// ./code/es-modules/Series/Treegraph/TreegraphLayout.js
 /* *
  *
- *  (c) 2010-2024 Pawel Lysy Grzegorz Blachlinski
+ *  (c) 2010-2025 Pawel Lysy Grzegorz Blachlinski
  *
  *  License: www.highcharts.com/license
  *
@@ -1268,7 +1268,7 @@ class TreegraphLayout {
 ;// ./code/es-modules/Series/Treegraph/TreegraphSeriesDefaults.js
 /* *
  *
- *  (c) 2010-2024 Pawel Lysy Grzegorz Blachlinski
+ *  (c) 2010-2025 Pawel Lysy Grzegorz Blachlinski
  *
  *  License: www.highcharts.com/license
  *
@@ -1561,7 +1561,7 @@ var highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_highcharts_SV
  *
  *  Highcharts module with textPath functionality.
  *
- *  (c) 2009-2024 Torstein Honsi
+ *  (c) 2009-2025 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -1788,7 +1788,7 @@ const TextPath = {
 ;// ./code/es-modules/Series/Treegraph/TreegraphSeries.js
 /* *
  *
- *  (c) 2010-2024 Pawel Lysy Grzegorz Blachlinski
+ *  (c) 2010-2025 Pawel Lysy Grzegorz Blachlinski
  *
  *  License: www.highcharts.com/license
  *
@@ -2257,10 +2257,10 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.treegraph
  * @exclude   allowDrillToNode, boostBlending, boostThreshold, curveFactor,
  * centerInCategory, connectEnds, connectNulls, colorAxis, colorKey,
- * dataSorting, dragDrop, findNearestPointBy, getExtremesFromAll, layout,
- * nodePadding,  pointInterval, pointIntervalUnit, pointPlacement, pointStart,
- * relativeXValue, softThreshold, stack, stacking, step,
- * traverseUpButton, xAxis, yAxis, zoneAxis, zones
+ * dataSorting, dragDrop, findNearestPointBy, getExtremesFromAll, groupPadding,
+ * headers, layout, nodePadding, nodeSizeBy, pointInterval, pointIntervalUnit,
+ * pointPlacement, pointStart, relativeXValue, softThreshold, stack, stacking,
+ * step, traverseUpButton, xAxis, yAxis, zoneAxis, zones
  * @product   highcharts
  * @requires  modules/treemap
  * @requires  modules/treegraph

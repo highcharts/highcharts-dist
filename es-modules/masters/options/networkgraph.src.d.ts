@@ -1,1 +1,2 @@
-import '../../../options/networkgraph.src';
+import * as Highcharts from '../../../options/networkgraph.src';
+export default Highcharts;
