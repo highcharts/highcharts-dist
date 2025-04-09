@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.2.0 (2025-04-07)
+ * @license Highcharts JS v12.2.0-modified (2025-04-09)
  * @module highcharts/modules/cylinder
  * @requires highcharts
  * @requires highcharts/highcharts-3d

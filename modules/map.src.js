@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.2.0 (2025-04-07)
+ * @license Highcharts JS v12.2.0-modified (2025-04-09)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -11443,7 +11443,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 ;// ./code/es-modules/masters/modules/map.src.js
 /**
- * @license Highmaps JS v12.2.0 (2025-04-07)
+ * @license Highmaps JS v12.2.0-modified (2025-04-09)
  * @module highcharts/modules/map
  * @requires highcharts
  *
