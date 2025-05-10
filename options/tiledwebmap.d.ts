@@ -115,5 +115,13 @@ declare module "../highcharts" {
          * (Highmaps) Define the z index of the series.
          */
         zIndex?: number;
+        /**
+         * (Highmaps) Whether to zoom non-cartesian series. If `chart.zooming`
+         * is set, the option allows to disable zooming on an individual
+         * non-cartesian series. By default zooming is enabled for all series.
+         *
+         * Note: This option works only for non-cartesian series.
+         */
+        zoomEnabled?: boolean;
     }
 }

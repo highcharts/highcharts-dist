@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.2.0 (2025-04-07)
+ * @license Highcharts JS v12.2.0-modified (2025-05-10)
  * @module highcharts/modules/data-tools
  * @requires highcharts
  *
@@ -2115,6 +2115,9 @@ class DataConnector {
      */
     startPolling(refreshTime = 1000) {
         const connector = this;
+        // Assign a new abort controller.
+        this.pollingController = new AbortController();
+        // Clear the polling timeout.
         window.clearTimeout(connector._polling);
         connector._polling = window.setTimeout(() => connector
             .load()['catch']((error) => connector.emit({
@@ -2133,6 +2136,9 @@ class DataConnector {
      */
     stopPolling() {
         const connector = this;
+        // Abort the existing request.
+        connector?.pollingController?.abort();
+        // Clear the polling timeout.
         window.clearTimeout(connector._polling);
         delete connector._polling;
     }
@@ -6494,7 +6500,9 @@ class CSVConnector extends Connectors_DataConnector {
         });
         return Promise
             .resolve(csvURL ?
-            fetch(csvURL).then((response) => response.text()) :
+            fetch(csvURL, {
+                signal: connector?.pollingController?.signal
+            }).then((response) => response.text()) :
             csv || '')
             .then((csv) => {
             if (csv) {
@@ -6803,7 +6811,9 @@ class JSONConnector extends Connectors_DataConnector {
         });
         return Promise
             .resolve(dataUrl ?
-            fetch(dataUrl).then((response) => response.json())['catch']((error) => {
+            fetch(dataUrl, {
+                signal: connector?.pollingController?.signal
+            }).then((response) => response.json())['catch']((error) => {
                 connector.emit({
                     type: 'loadError',
                     detail: eventDetail,
@@ -7089,7 +7099,7 @@ class GoogleSheetsConnector extends Connectors_DataConnector {
         if (!URL.canParse(url)) {
             throw new Error('Invalid URL: ' + url);
         }
-        return fetch(url)
+        return fetch(url, { signal: connector?.pollingController?.signal })
             .then((response) => (response.json()))
             .then((json) => {
             if (isGoogleError(json)) {

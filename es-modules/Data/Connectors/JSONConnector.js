@@ -70,7 +70,9 @@ class JSONConnector extends DataConnector {
         });
         return Promise
             .resolve(dataUrl ?
-            fetch(dataUrl).then((response) => response.json())['catch']((error) => {
+            fetch(dataUrl, {
+                signal: connector?.pollingController?.signal
+            }).then((response) => response.json())['catch']((error) => {
                 connector.emit({
                     type: 'loadError',
                     detail: eventDetail,

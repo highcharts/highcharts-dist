@@ -223,7 +223,7 @@ var DataLabel;
      */
     function initDataLabelsGroup() {
         return this.plotGroup('dataLabelsGroup', 'data-labels', this.hasRendered ? 'inherit' : 'hidden', // #5133, #10220
-        this.options.dataLabels.zIndex || 6);
+        this.options.dataLabels.zIndex || 6, this.chart.dataLabelsGroup);
     }
     /**
      * Init the data labels with the correct animation

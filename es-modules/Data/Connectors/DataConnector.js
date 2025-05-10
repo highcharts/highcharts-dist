@@ -189,6 +189,9 @@ class DataConnector {
      */
     startPolling(refreshTime = 1000) {
         const connector = this;
+        // Assign a new abort controller.
+        this.pollingController = new AbortController();
+        // Clear the polling timeout.
         window.clearTimeout(connector._polling);
         connector._polling = window.setTimeout(() => connector
             .load()['catch']((error) => connector.emit({
@@ -207,6 +210,9 @@ class DataConnector {
      */
     stopPolling() {
         const connector = this;
+        // Abort the existing request.
+        connector?.pollingController?.abort();
+        // Clear the polling timeout.
         window.clearTimeout(connector._polling);
         delete connector._polling;
     }

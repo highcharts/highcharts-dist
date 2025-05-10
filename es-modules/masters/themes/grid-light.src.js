@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.2.0 (2025-04-07)
+ * @license Highcharts JS v12.2.0-modified (2025-05-10)
  * @module highcharts/themes/grid-light
  * @requires highcharts
  *

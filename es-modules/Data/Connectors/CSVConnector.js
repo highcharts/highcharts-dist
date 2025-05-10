@@ -73,7 +73,9 @@ class CSVConnector extends DataConnector {
         });
         return Promise
             .resolve(csvURL ?
-            fetch(csvURL).then((response) => response.text()) :
+            fetch(csvURL, {
+                signal: connector?.pollingController?.signal
+            }).then((response) => response.text()) :
             csv || '')
             .then((csv) => {
             if (csv) {

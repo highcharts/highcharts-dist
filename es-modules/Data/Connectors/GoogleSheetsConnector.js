@@ -87,7 +87,7 @@ class GoogleSheetsConnector extends DataConnector {
         if (!URL.canParse(url)) {
             throw new Error('Invalid URL: ' + url);
         }
-        return fetch(url)
+        return fetch(url, { signal: connector?.pollingController?.signal })
             .then((response) => (response.json()))
             .then((json) => {
             if (isGoogleError(json)) {
