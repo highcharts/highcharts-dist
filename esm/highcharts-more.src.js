@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.2.0 (2025-04-07)
+ * @license Highcharts JS v12.2.0-modified (2025-05-17)
  * @module highcharts/highcharts-more
  * @requires highcharts
  *
@@ -3309,8 +3309,8 @@ class BubblePoint extends ScatterPoint {
                 0 :
             0) + size;
         if (this.series.chart.inverted) {
-            const pos = this.pos() || [0, 0], { xAxis, yAxis, chart } = this.series;
-            return chart.renderer.symbols.circle(xAxis.len - pos[1] - computedSize, yAxis.len - pos[0] - computedSize, computedSize * 2, computedSize * 2);
+            const pos = this.pos() || [0, 0], { xAxis, yAxis, chart } = this.series, diameter = computedSize * 2;
+            return chart.renderer.symbols.circle((xAxis?.len || 0) - pos[1] - computedSize, (yAxis?.len || 0) - pos[0] - computedSize, diameter, diameter);
         }
         return external_highcharts_src_js_default_Point_default().prototype.haloPath.call(this, 
         // #6067
@@ -5615,6 +5615,10 @@ function onChartLoad() {
  *        Browser event, before normalization.
  */
 function onMouseDown(point, event) {
+    const { panKey } = this.chart.options.chart, panKeyPressed = panKey && event[`${panKey}Key`];
+    if (panKeyPressed) {
+        return;
+    }
     const normalizedEvent = this.chart.pointer?.normalize(event) || event;
     point.fixedPosition = {
         chartX: normalizedEvent.chartX,
@@ -5806,7 +5810,8 @@ function onChartRender() {
             afterRender = true;
         }
     };
-    if (this.graphLayoutsLookup) {
+    // Don't animate layout when series is dragged
+    if (this.graphLayoutsLookup && !this.pointer?.hasDragged) {
         setAnimation(false, this);
         // Start simulation
         this.graphLayoutsLookup.forEach((layout) => layout.start());
@@ -5899,6 +5904,11 @@ class PackedBubblePoint extends PackedBubblePoint_BubblePoint {
         }
         else {
             external_highcharts_src_js_default_Point_default().prototype.select.apply(this, arguments);
+        }
+    }
+    setState(state, move) {
+        if (this?.graphic?.parentGroup?.element) {
+            super.setState(state, move);
         }
     }
 }

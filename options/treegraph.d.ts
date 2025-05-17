@@ -745,6 +745,14 @@ declare module "../highcharts" {
          * (Highcharts) Set the initial visibility of the series.
          */
         visible?: boolean;
+        /**
+         * (Highcharts) Whether to zoom non-cartesian series. If `chart.zooming`
+         * is set, the option allows to disable zooming on an individual
+         * non-cartesian series. By default zooming is enabled for all series.
+         *
+         * Note: This option works only for non-cartesian series.
+         */
+        zoomEnabled?: boolean;
     }
     /**
      * (Highcharts) Enable or disable the initial animation when a series is

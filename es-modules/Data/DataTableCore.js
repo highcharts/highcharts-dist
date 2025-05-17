@@ -69,6 +69,11 @@ class DataTableCore {
         this.modified = this;
         this.rowCount = 0;
         this.versionTag = uniqueKey();
+        this.columnNames = options.columnNames;
+        this.firstRowAsNames = options.firstRowAsNames;
+        this.orientation = options.orientation;
+        this.dataModifier = options.dataModifier;
+        this.beforeParse = options.beforeParse;
         let rowCount = 0;
         objectEach(options.columns || {}, (column, columnName) => {
             this.columns[columnName] = column.slice();

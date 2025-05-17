@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.2.0 (2025-04-07)
+ * @license Highcharts JS v12.2.0-modified (2025-05-17)
  * @module highcharts/modules/accessibility
  * @requires highcharts
  *
@@ -3924,6 +3924,9 @@ class LegendComponent extends Accessibility_AccessibilityComponent {
      */
     proxyLegendItem(item) {
         const legendItem = item.legendItem || {};
+        const legendItemLabel = item.legendItem?.label;
+        const legendLabelEl = legendItemLabel?.element;
+        const ellipsis = Boolean(legendItem.label?.styles?.textOverflow === 'ellipsis');
         if (!legendItem.label || !legendItem.group) {
             return;
         }
@@ -3935,8 +3938,14 @@ class LegendComponent extends Accessibility_AccessibilityComponent {
         const attribs = {
             tabindex: -1,
             'aria-pressed': item.visible,
-            'aria-label': itemLabel
+            'aria-label': itemLabel,
+            title: ''
         };
+        // Check if label contains an ellipsis character (\u2026) #22397
+        if (ellipsis &&
+            (legendLabelEl.textContent || '').indexOf('\u2026') !== -1) {
+            attribs.title = legendItemLabel?.textStr;
+        }
         // Considers useHTML
         const proxyPositioningElement = legendItem.group.div ?
             legendItem.label :
@@ -5334,7 +5343,7 @@ const StockUtilities = {
  * */
 
 
-const { setOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { defaultOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 const { composed } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
@@ -5364,8 +5373,8 @@ function NavigatorComposition_compose(ChartClass, AxisClass, SeriesClass) {
     if (pushUnique(composed, 'Navigator')) {
         ChartClass.prototype.setFixedRange = NavigatorComposition_setFixedRange;
         extend(getRendererType().prototype.symbols, Navigator_NavigatorSymbols);
+        extend(defaultOptions, { navigator: Navigator_NavigatorDefaults });
         NavigatorComposition_addEvent(SeriesClass, 'afterUpdate', onSeriesAfterUpdate);
-        setOptions({ navigator: Navigator_NavigatorDefaults });
     }
 }
 /**
@@ -5838,12 +5847,13 @@ const ScrollbarDefaults = {
  * */
 
 
-const { defaultOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { defaultOptions: Scrollbar_defaultOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+
+const { composed: Scrollbar_composed } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 
 
-
-const { addEvent: Scrollbar_addEvent, correctFloat: Scrollbar_correctFloat, crisp, defined: Scrollbar_defined, destroyObjectProperties, fireEvent: Scrollbar_fireEvent, merge: Scrollbar_merge, pick: Scrollbar_pick, removeEvent } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { addEvent: Scrollbar_addEvent, correctFloat: Scrollbar_correctFloat, crisp, defined: Scrollbar_defined, destroyObjectProperties, extend: Scrollbar_extend, fireEvent: Scrollbar_fireEvent, merge: Scrollbar_merge, pick: Scrollbar_pick, pushUnique: Scrollbar_pushUnique, removeEvent } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
  *  Constants
@@ -5869,6 +5879,9 @@ class Scrollbar {
      * */
     static compose(AxisClass) {
         Axis_ScrollbarAxis.compose(AxisClass, Scrollbar);
+        if (Scrollbar_pushUnique(Scrollbar_composed, 'Scrollbar')) {
+            Scrollbar_extend(Scrollbar_defaultOptions, { scrollbar: Scrollbar_ScrollbarDefaults });
+        }
     }
     /**
      * When we have vertical scrollbar, rifles and arrow in buttons should be
@@ -6115,7 +6128,7 @@ class Scrollbar {
         scroller.scrollbarButtons = [];
         scroller.renderer = renderer;
         scroller.userOptions = options;
-        scroller.options = Scrollbar_merge(Scrollbar_ScrollbarDefaults, defaultOptions.scrollbar, options);
+        scroller.options = Scrollbar_merge(Scrollbar_ScrollbarDefaults, Scrollbar_defaultOptions.scrollbar, options);
         scroller.options.margin = Scrollbar_pick(scroller.options.margin, 10);
         scroller.chart = chart;
         // Backward compatibility
@@ -6475,12 +6488,6 @@ class Scrollbar {
  *
  * */
 Scrollbar.defaultOptions = Scrollbar_ScrollbarDefaults;
-/* *
- *
- *  Registry
- *
- * */
-defaultOptions.scrollbar = Scrollbar_merge(true, Scrollbar.defaultOptions, defaultOptions.scrollbar);
 /* *
  *
  *  Default Export
@@ -11397,11 +11404,6 @@ const { doc: HighContrastMode_doc, isMS, win: HighContrastMode_win } = (highchar
  * @return {boolean} Returns true if the browser is in High Contrast mode.
  */
 function isHighContrastModeActive() {
-    // Use media query on Edge, but not on IE
-    const isEdge = /(Edg)/.test(HighContrastMode_win.navigator.userAgent);
-    if (HighContrastMode_win.matchMedia && isEdge) {
-        return HighContrastMode_win.matchMedia('(-ms-high-contrast: active)').matches;
-    }
     // Test BG image for IE
     if (isMS && HighContrastMode_win.getComputedStyle) {
         const testDiv = HighContrastMode_doc.createElement('div');

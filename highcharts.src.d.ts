@@ -314,11 +314,7 @@ export type ClipRectElement = SVGElement;
  */
 export type ColorAxisTypeValue = ("linear"|"logarithmic");
 /**
- * A valid color to be parsed and handled by Highcharts. Highcharts internally
- * supports hex colors like `#ffffff`, rgb colors like `rgb(255,255,255)` and
- * rgba colors like `rgba(255,255,255,1)`. Other colors may be supported by the
- * browsers and displayed correctly, but Highcharts is not able to process them
- * and apply concepts like opacity and brightening.
+ * A valid color to be parsed and handled by Highcharts.
  */
 export type ColorString = string;
 /**
@@ -6380,6 +6376,10 @@ export interface ChartPanningOptions {
      * During panning, all axes will behave as if `startOnTick` and `endOnTick`
      * were set to `false`. After the panning action is finished, the axes will
      * adjust to their actual settings.
+     *
+     * **Note:** For non-cartesian series, the only supported panning type is
+     * `xy`, as zooming in a single direction is not applicable due to the
+     * radial nature of the coordinate system.
      */
     type?: OptionsChartPanningTypeValue;
 }
@@ -7079,6 +7079,9 @@ export interface ChartParallelAxesOptions {
      * (Highcharts) An array defining where the ticks are laid out on the axis.
      * This overrides the default behaviour of tickPixelInterval and
      * tickInterval.
+     *
+     * Note: When working with date-time axes, be aware of time zone handling.
+     * See the documentation on time options for best practices.
      */
     tickPositions?: Array<number>;
     /**
@@ -7419,6 +7422,10 @@ export interface ChartZoomingOptions {
     /**
      * (Highcharts, Highstock, Gantt) Decides in what dimensions the user can
      * zoom by dragging the mouse. Can be one of `x`, `y` or `xy`.
+     *
+     * **Note:** For non-cartesian series, the only supported zooming type is
+     * `xy`, as zooming in a single direction is not applicable due to the
+     * radial nature of the coordinate system.
      */
     type?: OptionsChartZoomingTypeValue;
 }
@@ -8214,6 +8221,9 @@ export interface ColorAxisOptions {
      * (Highcharts, Highstock, Highmaps) An array defining where the ticks are
      * laid out on the axis. This overrides the default behaviour of
      * tickPixelInterval and tickInterval.
+     *
+     * Note: When working with date-time axes, be aware of time zone handling.
+     * See the documentation on time options for best practices.
      */
     tickPositions?: Array<number>;
     /**
@@ -8707,7 +8717,7 @@ export interface CurrentDateIndicatorOptions {
      */
     id?: string;
     /**
-     * (Gantt) Text labels for the plot bands
+     * (Gantt) Text labels for the plot lines
      */
     label?: (NavigatorXAxisCurrentDateIndicatorLabelOptions|XAxisCurrentDateIndicatorLabelOptions);
     labels?: (NavigatorXAxisCurrentDateIndicatorLabelsOptions|XAxisCurrentDateIndicatorLabelsOptions);
@@ -15584,7 +15594,7 @@ export interface NavigatorXAxisCurrentDateIndicatorEventsOptions {
     mouseover?: EventCallbackFunction<PlotLineOrBand>;
 }
 /**
- * (Gantt) Text labels for the plot bands
+ * (Gantt) Text labels for the plot lines
  */
 export interface NavigatorXAxisCurrentDateIndicatorLabelOptions {
     /**
@@ -16401,6 +16411,9 @@ export interface NavigatorXAxisOptions {
      * (Highstock, Gantt) An array defining where the ticks are laid out on the
      * axis. This overrides the default behaviour of tickPixelInterval and
      * tickInterval.
+     *
+     * Note: When working with date-time axes, be aware of time zone handling.
+     * See the documentation on time options for best practices.
      */
     tickPositions?: Array<number>;
     /**
@@ -16659,7 +16672,7 @@ export interface NavigatorXAxisPlotLinesEventsOptions {
     mouseover?: EventCallbackFunction<PlotLineOrBand>;
 }
 /**
- * (Highcharts, Highstock, Gantt) Text labels for the plot bands
+ * (Highcharts, Highstock, Gantt) Text labels for the plot lines
  */
 export interface NavigatorXAxisPlotLinesLabelOptions {
     /**
@@ -16764,7 +16777,7 @@ export interface NavigatorXAxisPlotLinesOptions {
      */
     id?: string;
     /**
-     * (Highcharts, Highstock, Gantt) Text labels for the plot bands
+     * (Highcharts, Highstock, Gantt) Text labels for the plot lines
      */
     label?: NavigatorXAxisPlotLinesLabelOptions;
     labels?: NavigatorXAxisPlotLinesLabelsOptions;
@@ -17682,6 +17695,9 @@ export interface NavigatorYAxisOptions {
      * (Highstock, Gantt) An array defining where the ticks are laid out on the
      * axis. This overrides the default behaviour of tickPixelInterval and
      * tickInterval.
+     *
+     * Note: When working with date-time axes, be aware of time zone handling.
+     * See the documentation on time options for best practices.
      */
     tickPositions?: Array<number>;
     /**
@@ -17941,7 +17957,7 @@ export interface NavigatorYAxisPlotLinesEventsOptions {
     mouseover?: EventCallbackFunction<PlotLineOrBand>;
 }
 /**
- * (Highcharts, Highstock, Gantt) Text labels for the plot bands
+ * (Highcharts, Highstock, Gantt) Text labels for the plot lines
  */
 export interface NavigatorYAxisPlotLinesLabelOptions {
     /**
@@ -18046,7 +18062,7 @@ export interface NavigatorYAxisPlotLinesOptions {
      */
     id?: string;
     /**
-     * (Highcharts, Highstock, Gantt) Text labels for the plot bands
+     * (Highcharts, Highstock, Gantt) Text labels for the plot lines
      */
     label?: NavigatorYAxisPlotLinesLabelOptions;
     labels?: NavigatorYAxisPlotLinesLabelsOptions;
@@ -19766,6 +19782,14 @@ export interface PlotAdOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highstock) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Positioning options for fixed tooltip, taking effect only when
@@ -20837,6 +20861,14 @@ export interface PlotApoOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highstock) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Positioning options for fixed tooltip, taking effect only when
@@ -22597,6 +22629,14 @@ export interface PlotAroonoscillatorOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highstock) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Positioning options for fixed tooltip, taking effect only when
@@ -23789,6 +23829,14 @@ export interface PlotBarOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highcharts) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Point accessibility options for a series.
@@ -24760,6 +24808,14 @@ export interface PlotBbOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highstock) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Positioning options for fixed tooltip, taking effect only when
@@ -25834,6 +25890,15 @@ export interface PlotBubbleOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highcharts, Highstock) Whether to zoom non-cartesian series. If
+     * `chart.zooming` is set, the option allows to disable zooming on an
+     * individual non-cartesian series. By default zooming is enabled for all
+     * series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
     /**
      * (Highcharts) When displayNegative is `false`, bubbles with lower Z values
      * are skipped. When `displayNegative` is `true` and a negativeColor is
@@ -27335,6 +27400,14 @@ export interface PlotCandlestickOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highstock) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Point accessibility options for a series.
@@ -28278,6 +28351,14 @@ export interface PlotCciOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highstock) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Positioning options for fixed tooltip, taking effect only when
@@ -29355,6 +29436,14 @@ export interface PlotCmfOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highstock) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Positioning options for fixed tooltip, taking effect only when
@@ -30606,6 +30695,15 @@ export interface PlotColumnOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highcharts, Highstock) Whether to zoom non-cartesian series. If
+     * `chart.zooming` is set, the option allows to disable zooming on an
+     * individual non-cartesian series. By default zooming is enabled for all
+     * series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable the initial
@@ -31832,6 +31930,14 @@ export interface PlotCylinderOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highcharts) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Point accessibility options for a series.
@@ -32762,6 +32868,14 @@ export interface PlotDemaOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highstock) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Positioning options for fixed tooltip, taking effect only when
@@ -33324,6 +33438,14 @@ export interface PlotDependencywheelOptions {
      * (Highcharts) Set the initial visibility of the series.
      */
     visible?: boolean;
+    /**
+     * (Highcharts) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Point accessibility options for a series.
@@ -34268,6 +34390,14 @@ export interface PlotDisparityindexOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highstock) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Positioning options for fixed tooltip, taking effect only when
@@ -35355,6 +35485,14 @@ export interface PlotDpoOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highstock) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Positioning options for fixed tooltip, taking effect only when
@@ -36149,6 +36287,15 @@ export interface PlotDumbbellOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highcharts, Highstock) Whether to zoom non-cartesian series. If
+     * `chart.zooming` is set, the option allows to disable zooming on an
+     * individual non-cartesian series. By default zooming is enabled for all
+     * series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Point accessibility options for a series.
@@ -37092,6 +37239,14 @@ export interface PlotEmaOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highstock) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Positioning options for fixed tooltip, taking effect only when
@@ -37697,6 +37852,14 @@ export interface PlotFlowmapOptions {
      * (Highmaps) Define the z index of the series.
      */
     zIndex?: number;
+    /**
+     * (Highmaps) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highcharts) Point accessibility options for a series.
@@ -38558,6 +38721,14 @@ export interface PlotFunnelOptions {
      * area, or the pixel width if it is a number.
      */
     width?: (number|string);
+    /**
+     * (Highcharts) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Gantt) Point accessibility options for a series.
@@ -39330,6 +39501,14 @@ export interface PlotGanttOptions {
      * (Gantt) Set the initial visibility of the series.
      */
     visible?: boolean;
+    /**
+     * (Gantt) Whether to zoom non-cartesian series. If `chart.zooming` is set,
+     * the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Gantt) Positioning options for fixed tooltip, taking effect only when
@@ -40161,6 +40340,14 @@ export interface PlotGeoheatmapOptions {
      * (Highmaps) Define the z index of the series.
      */
     zIndex?: number;
+    /**
+     * (Highmaps) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highcharts, Highmaps) Point accessibility options for a series.
@@ -40958,6 +41145,15 @@ export interface PlotHeatmapOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highcharts, Highmaps) Whether to zoom non-cartesian series. If
+     * `chart.zooming` is set, the option allows to disable zooming on an
+     * individual non-cartesian series. By default zooming is enabled for all
+     * series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Point accessibility options for a series.
@@ -42035,6 +42231,14 @@ export interface PlotHeikinashiOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highstock) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highcharts) Point accessibility options for a series.
@@ -43006,6 +43210,14 @@ export interface PlotHistogramOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highcharts) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Point accessibility options for a series.
@@ -44053,6 +44265,14 @@ export interface PlotHlcOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highstock) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Point accessibility options for a series.
@@ -45118,6 +45338,14 @@ export interface PlotHollowcandlestickOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highstock) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Point accessibility options for a series.
@@ -46087,6 +46315,14 @@ export interface PlotIkhOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highstock) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) The styles for Senkou Span A line
@@ -47349,6 +47585,14 @@ export interface PlotKlingerOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highstock) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 export interface PlotKlingerSignalLineOptions {
     /**
@@ -48371,6 +48615,14 @@ export interface PlotLinearregressionOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highstock) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Point accessibility options for a series.
@@ -49315,6 +49567,14 @@ export interface PlotLinearregressionslopeOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highstock) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Positioning options for fixed tooltip, taking effect only when
@@ -50225,6 +50485,15 @@ export interface PlotLollipopOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highcharts, Highstock) Whether to zoom non-cartesian series. If
+     * `chart.zooming` is set, the option allows to disable zooming on an
+     * individual non-cartesian series. By default zooming is enabled for all
+     * series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Point accessibility options for a series.
@@ -51190,6 +51459,14 @@ export interface PlotMacdOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highstock) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) The styles for signal line
@@ -51992,6 +52269,14 @@ export interface PlotMapbubbleOptions {
      * (Highmaps) Define the z index of the series.
      */
     zIndex?: number;
+    /**
+     * (Highmaps) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable the initial
@@ -52739,6 +53024,14 @@ export interface PlotMaplineOptions {
      * (Highmaps) Define the z index of the series.
      */
     zIndex?: number;
+    /**
+     * (Highmaps) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highmaps) Options for the connector in the _Series on point_ feature.
@@ -53630,6 +53923,14 @@ export interface PlotMappointOptions {
      * (Highmaps) Define the z index of the series.
      */
     zIndex?: number;
+    /**
+     * (Highmaps) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highcharts, Highstock, Highmaps) Positioning options for fixed tooltip,
@@ -54719,6 +55020,14 @@ export interface PlotMomentumOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highstock) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Positioning options for fixed tooltip, taking effect only when
@@ -55352,6 +55661,14 @@ export interface PlotNetworkgraphOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highcharts) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Point accessibility options for a series.
@@ -56297,6 +56614,14 @@ export interface PlotObvOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highstock) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Positioning options for fixed tooltip, taking effect only when
@@ -59995,6 +60320,14 @@ export interface PlotOrganizationOptions {
      * (Highcharts) Set the initial visibility of the series.
      */
     visible?: boolean;
+    /**
+     * (Highcharts) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highcharts) Point accessibility options for a series.
@@ -61008,6 +61341,14 @@ export interface PlotParetoOptions {
      * (Highcharts) Set the initial visibility of the series.
      */
     visible?: boolean;
+    /**
+     * (Highcharts) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Point accessibility options for a series.
@@ -61955,6 +62296,14 @@ export interface PlotPcOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highstock) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Positioning options for fixed tooltip, taking effect only when
@@ -62547,6 +62896,15 @@ export interface PlotPieOptions {
      * (Highmaps) Define the z index of the series.
      */
     zIndex?: number;
+    /**
+     * (Highcharts, Highmaps) Whether to zoom non-cartesian series. If
+     * `chart.zooming` is set, the option allows to disable zooming on an
+     * individual non-cartesian series. By default zooming is enabled for all
+     * series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Point accessibility options for a series.
@@ -63492,6 +63850,14 @@ export interface PlotPivotpointsOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highstock) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Positioning options for fixed tooltip, taking effect only when
@@ -65098,6 +65464,14 @@ export interface PlotPriceenvelopesOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highstock) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Positioning options for fixed tooltip, taking effect only when
@@ -66123,6 +66497,14 @@ export interface PlotPyramidOptions {
      * area, or the pixel width if it is a number.
      */
     width?: (number|string);
+    /**
+     * (Highcharts) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Point accessibility options for a series.
@@ -67355,6 +67737,14 @@ export interface PlotRsiOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highstock) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Positioning options for fixed tooltip, taking effect only when
@@ -68101,6 +68491,14 @@ export interface PlotScatter3dOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highcharts) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highcharts, Highstock) Point accessibility options for a series.
@@ -69711,6 +70109,14 @@ export interface PlotSlowstochasticOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highstock) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Smoothed line options.
@@ -71588,6 +71994,15 @@ export interface PlotStreamgraphOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highcharts, Highstock) Whether to zoom non-cartesian series. If
+     * `chart.zooming` is set, the option allows to disable zooming on an
+     * individual non-cartesian series. By default zooming is enabled for all
+     * series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highcharts) Point accessibility options for a series.
@@ -72249,6 +72664,14 @@ export interface PlotSunburstOptions {
      * (Highcharts) Set the initial visibility of the series.
      */
     visible?: boolean;
+    /**
+     * (Highcharts) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Point accessibility options for a series.
@@ -73200,6 +73623,14 @@ export interface PlotSupertrendOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highstock) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Positioning options for fixed tooltip, taking effect only when
@@ -73880,6 +74311,15 @@ export interface PlotTilemapOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highcharts, Highmaps) Whether to zoom non-cartesian series. If
+     * `chart.zooming` is set, the option allows to disable zooming on an
+     * individual non-cartesian series. By default zooming is enabled for all
+     * series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highcharts, Highstock, Highmaps) Positioning options for fixed tooltip,
@@ -75567,6 +76007,14 @@ export interface PlotTreemapOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highcharts) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Point accessibility options for a series.
@@ -76511,6 +76959,14 @@ export interface PlotTrendlineOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highstock) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Positioning options for fixed tooltip, taking effect only when
@@ -78571,6 +79027,14 @@ export interface PlotWaterfallOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highcharts) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Point accessibility options for a series.
@@ -79514,6 +79978,14 @@ export interface PlotWilliamsrOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highstock) Whether to zoom non-cartesian series. If `chart.zooming` is
+     * set, the option allows to disable zooming on an individual non-cartesian
+     * series. By default zooming is enabled for all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highstock) Positioning options for fixed tooltip, taking effect only when
@@ -80851,6 +81323,15 @@ export interface PlotXrangeOptions {
      * option (view live demo).
      */
     zones?: Array<SeriesZonesOptionsObject>;
+    /**
+     * (Highcharts, Highstock, Gantt) Whether to zoom non-cartesian series. If
+     * `chart.zooming` is set, the option allows to disable zooming on an
+     * individual non-cartesian series. By default zooming is enabled for all
+     * series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * (Highcharts, Highstock, Gantt) Positioning options for fixed tooltip, taking
@@ -86394,6 +86875,15 @@ export interface SeriesOptions {
      * (Highcharts, Highstock) Define the visual z index of the series.
      */
     zIndex?: number;
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Whether to zoom non-cartesian
+     * series. If `chart.zooming` is set, the option allows to disable zooming
+     * on an individual non-cartesian series. By default zooming is enabled for
+     * all series.
+     *
+     * Note: This option works only for non-cartesian series.
+     */
+    zoomEnabled?: boolean;
 }
 /**
  * The registry for all types of series options.
@@ -89099,8 +89589,7 @@ export interface SeriesStatesHoverHaloOptionsObject {
     enabled?: boolean;
     /**
      * (Highcharts, Highstock) Opacity for the halo unless a specific fill is
-     * overridden using the `attributes` setting. Note that Highcharts is only
-     * able to apply opacity to colors of hex or rgb(a) formats.
+     * overridden using the `attributes` setting.
      */
     opacity?: number;
     /**
@@ -89132,8 +89621,7 @@ export interface SeriesStatesHoverOptionsObject {
     borderWidth?: number;
     /**
      * (Highcharts, Highstock, Gantt) How much to brighten the point on
-     * interaction. Requires the main color to be defined in hex or rgb(a)
-     * format.
+     * interaction.
      *
      * In styled mode, the hover brightening is by default replaced with a
      * fill-opacity set in the `.highcharts-point:hover` rule.
@@ -94230,7 +94718,7 @@ export interface XAxisCurrentDateIndicatorEventsOptions {
     mouseover?: EventCallbackFunction<PlotLineOrBand>;
 }
 /**
- * (Gantt) Text labels for the plot bands
+ * (Gantt) Text labels for the plot lines
  */
 export interface XAxisCurrentDateIndicatorLabelOptions {
     /**
@@ -95181,6 +95669,9 @@ export interface XAxisOptions {
      * (Highcharts, Highstock, Highmaps, Gantt) An array defining where the
      * ticks are laid out on the axis. This overrides the default behaviour of
      * tickPixelInterval and tickInterval.
+     *
+     * Note: When working with date-time axes, be aware of time zone handling.
+     * See the documentation on time options for best practices.
      */
     tickPositions?: Array<number>;
     /**
@@ -95441,7 +95932,7 @@ export interface XAxisPlotLinesEventsOptions {
     mouseover?: EventCallbackFunction<PlotLineOrBand>;
 }
 /**
- * (Highcharts, Highstock, Gantt) Text labels for the plot bands
+ * (Highcharts, Highstock, Gantt) Text labels for the plot lines
  */
 export interface XAxisPlotLinesLabelOptions {
     /**
@@ -95546,7 +96037,7 @@ export interface XAxisPlotLinesOptions {
      */
     id?: string;
     /**
-     * (Highcharts, Highstock, Gantt) Text labels for the plot bands
+     * (Highcharts, Highstock, Gantt) Text labels for the plot lines
      */
     label?: XAxisPlotLinesLabelOptions;
     labels?: XAxisPlotLinesLabelsOptions;
@@ -97029,6 +97520,9 @@ export interface YAxisOptions {
      * (Highcharts, Highstock, Highmaps, Gantt) An array defining where the
      * ticks are laid out on the axis. This overrides the default behaviour of
      * tickPixelInterval and tickInterval.
+     *
+     * Note: When working with date-time axes, be aware of time zone handling.
+     * See the documentation on time options for best practices.
      */
     tickPositions?: Array<number>;
     /**
@@ -97323,7 +97817,7 @@ export interface YAxisPlotLinesEventsOptions {
     mouseover?: EventCallbackFunction<PlotLineOrBand>;
 }
 /**
- * (Highcharts, Highstock, Gantt) Text labels for the plot bands
+ * (Highcharts, Highstock, Gantt) Text labels for the plot lines
  */
 export interface YAxisPlotLinesLabelOptions {
     /**
@@ -97428,7 +97922,7 @@ export interface YAxisPlotLinesOptions {
      */
     id?: string;
     /**
-     * (Highcharts, Highstock, Gantt) Text labels for the plot bands
+     * (Highcharts, Highstock, Gantt) Text labels for the plot lines
      */
     label?: YAxisPlotLinesLabelOptions;
     labels?: YAxisPlotLinesLabelsOptions;
@@ -98617,6 +99111,9 @@ export interface ZAxisOptions {
      * (Highcharts) An array defining where the ticks are laid out on the axis.
      * This overrides the default behaviour of tickPixelInterval and
      * tickInterval.
+     *
+     * Note: When working with date-time axes, be aware of time zone handling.
+     * See the documentation on time options for best practices.
      */
     tickPositions?: Array<number>;
     /**
@@ -98859,7 +99356,7 @@ export interface ZAxisPlotLinesEventsOptions {
     mouseover?: EventCallbackFunction<PlotLineOrBand>;
 }
 /**
- * (Highcharts, Highstock, Gantt) Text labels for the plot bands
+ * (Highcharts, Highstock, Gantt) Text labels for the plot lines
  */
 export interface ZAxisPlotLinesLabelOptions {
     /**
@@ -98964,7 +99461,7 @@ export interface ZAxisPlotLinesOptions {
      */
     id?: string;
     /**
-     * (Highcharts, Highstock, Gantt) Text labels for the plot bands
+     * (Highcharts, Highstock, Gantt) Text labels for the plot lines
      */
     label?: ZAxisPlotLinesLabelOptions;
     labels?: ZAxisPlotLinesLabelsOptions;
@@ -100240,7 +100737,7 @@ export class Color {
      * Creates a color instance out of a color string or object.
      *
      * @param input
-     *        The input color in either rgba or hex format.
+     *        The input color.
      *
      * @return Color instance.
      */
@@ -100249,7 +100746,7 @@ export class Color {
      * Handle color operations. Some object methods are chainable.
      *
      * @param input
-     *        The input color in either rgba or hex format
+     *        The input color.
      */
     constructor(input: ColorType);
     /**
@@ -102702,7 +103199,7 @@ export function clearTimeout(id: (number|undefined)): void;
  * Creates a color instance out of a color string.
  *
  * @param input
- *        The input color in either rgba or hex format
+ *        The input color.
  *
  * @return Color instance
  */

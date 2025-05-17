@@ -36,11 +36,13 @@ class JSONConnector extends DataConnector {
      *
      * @param {JSONConnector.UserOptions} [options]
      * Options for the connector and converter.
+     *
+     * @param {Array<DataTable>} [dataTables]
+     * Multiple connector data tables options.
      */
-    constructor(options) {
+    constructor(options, dataTables) {
         const mergedOptions = merge(JSONConnector.defaultOptions, options);
-        super(mergedOptions);
-        this.converter = new JSONConverter(mergedOptions);
+        super(mergedOptions, dataTables);
         this.options = mergedOptions;
         if (mergedOptions.enablePolling) {
             this.startPolling(Math.max(mergedOptions.dataRefreshRate || 0, 1) * 1000);
@@ -61,40 +63,57 @@ class JSONConnector extends DataConnector {
      * @emits JSONConnector#afterLoad
      */
     load(eventDetail) {
-        const connector = this, converter = connector.converter, table = connector.table, { data, dataUrl, dataModifier } = connector.options;
+        const connector = this, tables = connector.dataTables, { data, dataUrl, dataModifier } = connector.options;
         connector.emit({
             type: 'load',
             data,
             detail: eventDetail,
-            table
+            tables
         });
         return Promise
             .resolve(dataUrl ?
-            fetch(dataUrl).then((response) => response.json())['catch']((error) => {
+            fetch(dataUrl, {
+                signal: connector?.pollingController?.signal
+            }).then((response) => response.json())['catch']((error) => {
                 connector.emit({
                     type: 'loadError',
                     detail: eventDetail,
                     error,
-                    table
+                    tables
                 });
                 console.warn(`Unable to fetch data from ${dataUrl}.`); // eslint-disable-line no-console
             }) :
             data || [])
             .then((data) => {
             if (data) {
-                // If already loaded, clear the current rows
-                table.deleteColumns();
-                converter.parse({ data });
-                table.setColumns(converter.getTable().getColumns());
+                this.initConverters(data, (key, table) => {
+                    const options = this.options;
+                    // Takes over the connector default options.
+                    const dataTableOptions = {
+                        dataTableKey: key,
+                        columnNames: table.columnNames ??
+                            options.columnNames,
+                        firstRowAsNames: table.firstRowAsNames ??
+                            options.firstRowAsNames,
+                        orientation: table.orientation ??
+                            options.orientation,
+                        beforeParse: table.beforeParse ??
+                            options.beforeParse
+                    };
+                    return new JSONConverter(merge(this.options, dataTableOptions));
+                }, (converter, data) => {
+                    converter.parse({ data });
+                });
             }
-            return connector.setModifierOptions(dataModifier).then(() => data);
+            return connector.setModifierOptions(dataModifier)
+                .then(() => data);
         })
             .then((data) => {
             connector.emit({
                 type: 'afterLoad',
                 data,
                 detail: eventDetail,
-                table
+                tables
             });
             return connector;
         })['catch']((error) => {
@@ -102,7 +121,7 @@ class JSONConnector extends DataConnector {
                 type: 'loadError',
                 detail: eventDetail,
                 error,
-                table
+                tables
             });
             throw error;
         });

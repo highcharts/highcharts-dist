@@ -185,8 +185,7 @@ class Pointer {
             });
             const { shapeType, attrs } = this.getSelectionMarkerAttrs(chartX, chartY);
             // Make a selection
-            if ((chart.hasCartesianSeries || chart.mapView) &&
-                this.hasZoom &&
+            if (this.hasZoom &&
                 clickedInside &&
                 !panKeyPressed) {
                 if (!selectionMarker) {

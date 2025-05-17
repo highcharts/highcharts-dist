@@ -39,11 +39,14 @@ class CSVConnector extends DataConnector {
      *
      * @param {CSVConnector.UserOptions} [options]
      * Options for the connector and converter.
+     *
+     * @param {Array<DataTable>} [dataTables]
+     * Multiple connector data tables options.
+     *
      */
-    constructor(options) {
+    constructor(options, dataTables) {
         const mergedOptions = merge(CSVConnector.defaultOptions, options);
-        super(mergedOptions);
-        this.converter = new CSVConverter(mergedOptions);
+        super(mergedOptions, dataTables);
         this.options = mergedOptions;
         if (mergedOptions.enablePolling) {
             this.startPolling(Math.max(mergedOptions.dataRefreshRate || 0, 1) * 1000);
@@ -64,23 +67,35 @@ class CSVConnector extends DataConnector {
      * @emits CSVConnector#afterLoad
      */
     load(eventDetail) {
-        const connector = this, converter = connector.converter, table = connector.table, { csv, csvURL, dataModifier } = connector.options;
+        const connector = this, tables = connector.dataTables, { csv, csvURL, dataModifier } = connector.options;
         connector.emit({
             type: 'load',
             csv,
             detail: eventDetail,
-            table
+            tables
         });
         return Promise
             .resolve(csvURL ?
-            fetch(csvURL).then((response) => response.text()) :
+            fetch(csvURL, {
+                signal: connector?.pollingController?.signal
+            }).then((response) => response.text()) :
             csv || '')
             .then((csv) => {
             if (csv) {
-                // If already loaded, clear the current rows
-                table.deleteColumns();
-                converter.parse({ csv });
-                table.setColumns(converter.getTable().getColumns());
+                this.initConverters(csv, (key, table) => {
+                    const options = this.options;
+                    // Takes over the connector default options.
+                    const dataTableOptions = {
+                        dataTableKey: key,
+                        firstRowAsNames: table.firstRowAsNames ??
+                            options.firstRowAsNames,
+                        beforeParse: table.beforeParse ??
+                            options.beforeParse
+                    };
+                    return new CSVConverter(merge(this.options, dataTableOptions));
+                }, (converter, data) => {
+                    converter.parse({ csv: data });
+                });
             }
             return connector
                 .setModifierOptions(dataModifier)
@@ -91,7 +106,7 @@ class CSVConnector extends DataConnector {
                 type: 'afterLoad',
                 csv,
                 detail: eventDetail,
-                table
+                tables
             });
             return connector;
         })['catch']((error) => {
@@ -99,7 +114,7 @@ class CSVConnector extends DataConnector {
                 type: 'loadError',
                 detail: eventDetail,
                 error,
-                table
+                tables
             });
             throw error;
         });
