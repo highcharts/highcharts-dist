@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.2.0 (2025-04-07)
+ * @license Highcharts JS v12.2.0-modified (2025-05-25)
  * @module highcharts/highcharts
  *
  * (c) 2009-2025 Torstein Honsi
@@ -74,7 +74,7 @@ var Globals;
      *  Constants
      *
      * */
-    Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '12.2.0', Globals.win = (typeof window !== 'undefined' ?
+    Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '12.2.0-modified', Globals.win = (typeof window !== 'undefined' ?
         window :
         {}), // eslint-disable-line node/no-unsupported-features/es-builtins
     Globals.doc = Globals.win.document, Globals.svg = !!Globals.doc?.createElementNS?.(Globals.SVG_NS, 'svg')?.createSVGRect, Globals.pageLang = Globals.doc?.documentElement?.closest('[lang]')?.lang, Globals.userAgent = Globals.win.navigator?.userAgent || '', Globals.isChrome = Globals.win.chrome, Globals.isFirefox = Globals.userAgent.indexOf('Firefox') !== -1, Globals.isMS = /(edge|msie|trident)/i.test(Globals.userAgent) && !Globals.win.opera, Globals.isSafari = !Globals.isChrome && Globals.userAgent.indexOf('Safari') !== -1, Globals.isTouchDevice = /(Mobile|Android|Windows Phone)/.test(Globals.userAgent), Globals.isWebKit = Globals.userAgent.indexOf('AppleWebKit') !== -1, Globals.deg2rad = Math.PI * 2 / 360, Globals.marginNames = [
@@ -2630,6 +2630,10 @@ const ChartDefaults = {
          * panning action is finished, the axes will adjust to their actual
          * settings.
          *
+         * **Note:** For non-cartesian series, the only supported panning type
+         * is `xy`, as zooming in a single direction is not applicable due to
+         * the radial nature of the coordinate system.
+         *
          * @sample {highcharts} highcharts/chart/panning-type
          *         Zooming and xy panning
          *
@@ -3169,6 +3173,11 @@ const ChartDefaults = {
     /**
      * Chart zooming options.
      * @since 10.2.1
+     *
+     * @sample     highcharts/plotoptions/sankey-inverted
+     *             Zooming in sankey series
+     * @sample     highcharts/series-treegraph/link-types
+     *             Zooming in treegraph series
      */
     zooming: {
         /**
@@ -3190,6 +3199,10 @@ const ChartDefaults = {
         /**
          * Decides in what dimensions the user can zoom by dragging the mouse.
          * Can be one of `x`, `y` or `xy`.
+         *
+         * **Note:** For non-cartesian series, the only supported zooming type
+         * is `xy`, as zooming in a single direction is not applicable due to
+         * the radial nature of the coordinate system.
          *
          * @declare    Highcharts.OptionsChartZoomingTypeValue
          * @type       {string}
@@ -7481,7 +7494,7 @@ const isStringColor = (color) => Color_isString(color) && !!color && color !== '
  * @name Highcharts.Color
  *
  * @param {Highcharts.ColorType} input
- * The input color in either rgba or hex format
+ * The input color.
  */
 class Color {
     /* *
@@ -7495,7 +7508,7 @@ class Color {
      * @function Highcharts.Color.parse
      *
      * @param {Highcharts.ColorType} [input]
-     * The input color in either rgba or hex format.
+     * The input color.
      *
      * @return {Highcharts.Color}
      * Color instance.
@@ -7755,11 +7768,7 @@ Color.None = new Color('');
  *
  * */
 /**
- * A valid color to be parsed and handled by Highcharts. Highcharts internally
- * supports hex colors like `#ffffff`, rgb colors like `rgb(255,255,255)` and
- * rgba colors like `rgba(255,255,255,1)`. Other colors may be supported by the
- * browsers and displayed correctly, but Highcharts is not able to process them
- * and apply concepts like opacity and brightening.
+ * A valid color to be parsed and handled by Highcharts.
  *
  * @typedef {string} Highcharts.ColorString
  */
@@ -7863,7 +7872,7 @@ Color.None = new Color('');
  * @function Highcharts.color
  *
  * @param {Highcharts.ColorType} input
- *        The input color in either rgba or hex format
+ *        The input color.
  *
  * @return {Highcharts.Color}
  *         Color instance
@@ -8800,9 +8809,9 @@ AST.allowedAttributes = [
     'cx',
     'cy',
     'd',
+    'disabled',
     'dx',
     'dy',
-    'disabled',
     'fill',
     'filterUnits',
     'flood-color',
@@ -8826,22 +8835,22 @@ AST.allowedAttributes = [
     'radius',
     'refX',
     'refY',
+    'result',
     'role',
+    'rowspan',
     'scope',
     'slope',
     'src',
     'startOffset',
     'stdDeviation',
-    'stroke',
     'stroke-linecap',
     'stroke-width',
+    'stroke',
     'style',
-    'tableValues',
-    'result',
-    'rowspan',
     'summary',
-    'target',
     'tabindex',
+    'tableValues',
+    'target',
     'text-align',
     'text-anchor',
     'textAnchor',
@@ -8898,6 +8907,7 @@ AST.allowedReferences = [
  * @type    {Array<string>}
  */
 AST.allowedTags = [
+    '#text',
     'a',
     'abbr',
     'b',
@@ -8922,10 +8932,10 @@ AST.allowedTags = [
     'feFuncG',
     'feFuncR',
     'feGaussianBlur',
-    'feMorphology',
-    'feOffset',
     'feMerge',
     'feMergeNode',
+    'feMorphology',
+    'feOffset',
     'filter',
     'h1',
     'h2',
@@ -8954,18 +8964,17 @@ AST.allowedTags = [
     'sup',
     'svg',
     'table',
+    'tbody',
+    'td',
     'text',
     'textPath',
+    'th',
     'thead',
     'title',
-    'tbody',
-    'tspan',
-    'td',
-    'th',
     'tr',
+    'tspan',
     'u',
-    'ul',
-    '#text'
+    'ul'
 ];
 AST.emptyHTML = emptyHTML;
 /**
@@ -12880,7 +12889,7 @@ class SVGRenderer {
         this.url = this.getReferenceURL();
         // Add description
         const desc = this.createElement('desc').add();
-        desc.element.appendChild(SVGRenderer_doc.createTextNode('Created with Highcharts 12.2.0'));
+        desc.element.appendChild(SVGRenderer_doc.createTextNode('Created with Highcharts 12.2.0-modified'));
         this.defs = this.createElement('defs').add();
         this.allowHTML = allowHTML;
         this.forExport = forExport;
@@ -13216,6 +13225,9 @@ class SVGRenderer {
      * The contrast color, either `#000000` or `#FFFFFF`.
      */
     getContrast(color) {
+        if (color === 'transparent') {
+            return '#000000';
+        }
         // #6216, #17273
         const rgba256 = Color_Color.parse(color).rgba, 
         // For each rgb channel, compute the luminosity based on all
@@ -14637,10 +14649,10 @@ const { attr: HTMLElement_attr, css: HTMLElement_css, createElement: HTMLElement
  * @private
  */
 function commonSetter(value, key, elem) {
-    const style = this.div?.style || elem.style;
+    const style = this.div?.style;
     SVG_SVGElement.prototype[`${key}Setter`].call(this, value, key, elem);
     if (style) {
-        style[key] = value;
+        elem.style[key] = style[key] = value;
     }
 }
 /**
@@ -14683,6 +14695,10 @@ const decorateSVGGroup = (g, container) => {
         g.translateXSetter = g.translateYSetter = (value, key) => {
             g[key] = value;
             div.style[key === 'translateX' ? 'left' : 'top'] = `${value}px`;
+            g.doTransform = true;
+        };
+        g.scaleXSetter = g.scaleYSetter = (value, key) => {
+            g[key] = value;
             g.doTransform = true;
         };
         g.opacitySetter = g.visibilitySetter = commonSetter;
@@ -16850,6 +16866,10 @@ var AxisDefaults;
          * overrides the default behaviour of [tickPixelInterval](
          * #xAxis.tickPixelInterval) and [tickInterval](#xAxis.tickInterval).
          *
+         * Note: When working with date-time axes, be aware of time zone
+         * handling. See the [documentation on time options](https://www.highcharts.com/docs/chart-concepts/axes#datetime)
+         * for best practices.
+         *
          * @see [tickPositioner](#xAxis.tickPositioner)
          *
          * @sample {highcharts} highcharts/xaxis/tickpositions-tickpositioner/
@@ -17937,6 +17957,7 @@ var AxisDefaults;
          * @default {highcharts} Values
          * @default {highstock} undefined
          * @product highcharts highstock gantt
+         * @apioption yAxis.title.text
          */
         },
         /**
@@ -23592,7 +23613,7 @@ class PlotLineOrBand {
  * @apioption xAxis.plotLines.zIndex
  */
 /**
- * Text labels for the plot bands
+ * Text labels for the plot lines
  *
  * @apioption xAxis.plotLines.label
  */
@@ -23609,6 +23630,14 @@ class PlotLineOrBand {
  * @default    left
  * @since      2.1
  * @apioption  xAxis.plotLines.label.align
+ */
+/**
+ * Whether or not the label can be hidden if it overlaps with another label.
+ *
+ * @type      {boolean}
+ * @default   undefined
+ * @since     11.4.8
+ * @apioption xAxis.plotBands.label.allowOverlap
  */
 /**
  * Whether to hide labels that are outside the plot area.
@@ -23987,7 +24016,9 @@ class Tooltip {
             // Use the average position for multiple points
             ret = [chartX - plotLeft, chartY - plotTop];
         }
-        return ret.map(Math.round);
+        const params = { point: points[0], ret };
+        Tooltip_fireEvent(this, 'getAnchor', params);
+        return params.ret.map(Math.round);
     }
     /**
      * Get the CSS class names for the tooltip's label. Styles the label
@@ -26659,8 +26690,7 @@ class Pointer {
             });
             const { shapeType, attrs } = this.getSelectionMarkerAttrs(chartX, chartY);
             // Make a selection
-            if ((chart.hasCartesianSeries || chart.mapView) &&
-                this.hasZoom &&
+            if (this.hasZoom &&
                 clickedInside &&
                 !panKeyPressed) {
                 if (!selectionMarker) {
@@ -28283,6 +28313,11 @@ class DataTableCore {
         this.modified = this;
         this.rowCount = 0;
         this.versionTag = DataTableCore_uniqueKey();
+        this.columnNames = options.columnNames;
+        this.firstRowAsNames = options.firstRowAsNames;
+        this.orientation = options.orientation;
+        this.dataModifier = options.dataModifier;
+        this.beforeParse = options.beforeParse;
         let rowCount = 0;
         DataTableCore_objectEach(options.columns || {}, (column, columnName) => {
             this.columns[columnName] = column.slice();
@@ -30805,9 +30840,7 @@ const seriesDefaults = {
                 size: 10,
                 /**
                  * Opacity for the halo unless a specific fill is overridden
-                 * using the `attributes` setting. Note that Highcharts is
-                 * only able to apply opacity to colors of hex or rgb(a)
-                 * formats.
+                 * using the `attributes` setting.
                  *
                  * @since   4.0
                  * @product highcharts highstock
@@ -33380,18 +33413,26 @@ class Series {
             horAxis = vertAxis;
             vertAxis = this.xAxis;
         }
-        return {
+        const params = {
+            scale: 1,
             translateX: horAxis ? horAxis.left : chart.plotLeft,
             translateY: vertAxis ? vertAxis.top : chart.plotTop,
+            name
+        };
+        Series_fireEvent(this, 'getPlotBox', params);
+        const { scale, translateX, translateY } = params;
+        return {
+            translateX,
+            translateY,
             rotation: inverted ? 90 : 0,
             rotationOriginX: inverted ?
-                (horAxis.len - vertAxis.len) / 2 :
+                scale * (horAxis.len - vertAxis.len) / 2 :
                 0,
             rotationOriginY: inverted ?
-                (horAxis.len + vertAxis.len) / 2 :
+                scale * (horAxis.len + vertAxis.len) / 2 :
                 0,
-            scaleX: inverted ? -1 : 1, // #1623
-            scaleY: 1
+            scaleX: inverted ? -scale : scale, // #1623
+            scaleY: scale
         };
     }
     /**
@@ -38122,12 +38163,13 @@ class Chart {
             renderAxes(colorAxis);
         }
         // The series
-        if (!chart.seriesGroup) {
-            chart.seriesGroup = renderer.g('series-group')
-                .attr({ zIndex: 3 })
-                .shadow(chart.options.chart.seriesGroupShadow)
-                .add();
-        }
+        chart.seriesGroup || (chart.seriesGroup = renderer.g('series-group')
+            .attr({ zIndex: 3 })
+            .shadow(chart.options.chart.seriesGroupShadow)
+            .add());
+        chart.dataLabelsGroup || (chart.dataLabelsGroup = renderer.g('datalabels-group')
+            .attr({ zIndex: 6 })
+            .add());
         chart.renderSeries();
         // Credits
         chart.addCredits();
@@ -38959,9 +39001,10 @@ class Chart {
      */
     transform(params) {
         const { axes = this.axes, event, from = {}, reset, selection, to = {}, trigger } = params, { inverted, time } = this;
-        let hasZoomed = false, displayButton, isAnyAxisPanning;
         // Remove active points for shared tooltip
         this.hoverPoints?.forEach((point) => point.setState());
+        Chart_fireEvent(this, 'transform', params);
+        let hasZoomed = params.hasZoomed || false, displayButton, isAnyAxisPanning;
         for (const axis of axes) {
             const { horiz, len, minPointOffset = 0, options, reversed } = axis, wh = horiz ? 'width' : 'height', xy = horiz ? 'x' : 'y', toLength = Chart_pick(to[wh], axis.len), fromLength = Chart_pick(from[wh], axis.len), 
             // If fingers pinched very close on this axis, treat as pan
@@ -39029,10 +39072,7 @@ class Chart {
             // It is not necessary to calculate extremes on ordinal axis,
             // because they are already calculated, so we don't want to override
             // them.
-            if (!axis.isOrdinal ||
-                axis.options.overscroll || // #21316
-                scale !== 1 ||
-                reset) {
+            if (!axis.isOrdinal || scale !== 1 || reset) {
                 // If the new range spills over, either to the min or max,
                 // adjust it.
                 if (newMin < floor) {
@@ -39076,6 +39116,13 @@ class Chart {
                         }
                     }
                     hasZoomed = true;
+                }
+                // Show the resetZoom button for non-cartesian series,
+                // except when triggered by mouse wheel zoom
+                if (!this.hasCartesianSeries &&
+                    !reset &&
+                    trigger !== 'mousewheel') {
+                    displayButton = true;
                 }
                 if (event) {
                     this[horiz ? 'mouseDownX' : 'mouseDownY'] =
@@ -42189,8 +42236,7 @@ const ColumnSeriesDefaults = {
              * @apioption plotOptions.column.states.hover.color
              */
             /**
-             * How much to brighten the point on interaction. Requires the
-             * main color to be defined in hex or rgb(a) format.
+             * How much to brighten the point on interaction.
              *
              * In styled mode, the hover brightening is by default replaced
              * with a fill-opacity set in the `.highcharts-point:hover`
@@ -43309,7 +43355,7 @@ var DataLabel;
      */
     function initDataLabelsGroup() {
         return this.plotGroup('dataLabelsGroup', 'data-labels', this.hasRendered ? 'inherit' : 'hidden', // #5133, #10220
-        this.options.dataLabels.zIndex || 6);
+        this.options.dataLabels.zIndex || 6, this.chart.dataLabelsGroup);
     }
     /**
      * Init the data labels with the correct animation
@@ -43447,7 +43493,9 @@ var DataLabel;
                     // Individual labels are disabled if the are explicitly
                     // disabled in the point options, or if they fall outside
                     // the plot area.
-                    if (labelEnabled && DataLabel_defined(labelText)) {
+                    if (labelEnabled &&
+                        DataLabel_defined(labelText) &&
+                        labelText !== '') {
                         if (!dataLabel) {
                             // Create new label element
                             dataLabel = renderer.label(labelText, 0, 0, labelOptions.shape, void 0, void 0, labelOptions.useHTML, void 0, 'data-label');
@@ -45178,8 +45226,7 @@ const PieSeriesDefaults = {
          */
         hover: {
             /**
-             * How much to brighten the point on interaction. Requires the
-             * main color to be defined in hex or rgb(a) format.
+             * How much to brighten the point on interaction.
              *
              * In styled mode, the hover brightness is by default replaced
              * by a fill-opacity given in the `.highcharts-point-hover`
@@ -49099,7 +49146,7 @@ const StockUtilities = {
  * */
 
 
-const { setOptions: NavigatorComposition_setOptions } = Defaults;
+const { defaultOptions: NavigatorComposition_defaultOptions } = Defaults;
 
 const { composed: NavigatorComposition_composed } = Core_Globals;
 
@@ -49129,8 +49176,8 @@ function NavigatorComposition_compose(ChartClass, AxisClass, SeriesClass) {
     if (NavigatorComposition_pushUnique(NavigatorComposition_composed, 'Navigator')) {
         ChartClass.prototype.setFixedRange = NavigatorComposition_setFixedRange;
         NavigatorComposition_extend(getRendererType().prototype.symbols, Navigator_NavigatorSymbols);
+        NavigatorComposition_extend(NavigatorComposition_defaultOptions, { navigator: Navigator_NavigatorDefaults });
         NavigatorComposition_addEvent(SeriesClass, 'afterUpdate', onSeriesAfterUpdate);
-        NavigatorComposition_setOptions({ navigator: Navigator_NavigatorDefaults });
     }
 }
 /**
@@ -49605,10 +49652,11 @@ const ScrollbarDefaults = {
 
 const { defaultOptions: Scrollbar_defaultOptions } = Defaults;
 
+const { composed: Scrollbar_composed } = Core_Globals;
 
 
 
-const { addEvent: Scrollbar_addEvent, correctFloat: Scrollbar_correctFloat, crisp: Scrollbar_crisp, defined: Scrollbar_defined, destroyObjectProperties: Scrollbar_destroyObjectProperties, fireEvent: Scrollbar_fireEvent, merge: Scrollbar_merge, pick: Scrollbar_pick, removeEvent: Scrollbar_removeEvent } = Core_Utilities;
+const { addEvent: Scrollbar_addEvent, correctFloat: Scrollbar_correctFloat, crisp: Scrollbar_crisp, defined: Scrollbar_defined, destroyObjectProperties: Scrollbar_destroyObjectProperties, extend: Scrollbar_extend, fireEvent: Scrollbar_fireEvent, merge: Scrollbar_merge, pick: Scrollbar_pick, pushUnique: Scrollbar_pushUnique, removeEvent: Scrollbar_removeEvent } = Core_Utilities;
 /* *
  *
  *  Constants
@@ -49634,6 +49682,9 @@ class Scrollbar {
      * */
     static compose(AxisClass) {
         Axis_ScrollbarAxis.compose(AxisClass, Scrollbar);
+        if (Scrollbar_pushUnique(Scrollbar_composed, 'Scrollbar')) {
+            Scrollbar_extend(Scrollbar_defaultOptions, { scrollbar: Scrollbar_ScrollbarDefaults });
+        }
     }
     /**
      * When we have vertical scrollbar, rifles and arrow in buttons should be
@@ -50240,12 +50291,6 @@ class Scrollbar {
  *
  * */
 Scrollbar.defaultOptions = Scrollbar_ScrollbarDefaults;
-/* *
- *
- *  Registry
- *
- * */
-Scrollbar_defaultOptions.scrollbar = Scrollbar_merge(true, Scrollbar.defaultOptions, Scrollbar_defaultOptions.scrollbar);
 /* *
  *
  *  Default Export
@@ -52940,8 +52985,7 @@ var OrdinalAxis;
     function onChartPan(e) {
         const chart = this, xAxis = chart.xAxis[0], overscroll = xAxis.ordinal.convertOverscroll(xAxis.options.overscroll), chartX = e.originalEvent.chartX, panning = chart.options.chart.panning;
         let runBase = false;
-        if (panning &&
-            panning.type !== 'y' &&
+        if (panning?.type !== 'y' &&
             xAxis.options.ordinal &&
             xAxis.series.length &&
             // On touch devices, let default function handle the pinching
@@ -52960,8 +53004,9 @@ var OrdinalAxis;
             }, index2val = xAxis.index2val, val2lin = xAxis.val2lin;
             let trimmedRange, ordinalPositions;
             // Make sure panning to the edges does not decrease the zoomed range
-            if ((min <= dataMin && movedUnits < 0) ||
-                (max + overscroll >= dataMax && movedUnits > 0)) {
+            if ((min <= dataMin && movedUnits <= 0) ||
+                (max >= dataMax + overscroll && movedUnits >= 0)) {
+                e.preventDefault();
                 return;
             }
             // We have an ordinal axis, but the data is equally spaced
@@ -52980,8 +53025,11 @@ var OrdinalAxis;
                 // If we don't compensate for this, we will be allowed to pan
                 // grouped data series passed the right of the plot area.
                 ordinalPositions = extendedAxis.ordinal.positions;
-                if (dataMax >
-                    ordinalPositions[ordinalPositions.length - 1]) {
+                if (overscroll) { // #21606
+                    ordinalPositions = extendedAxis.ordinal.positions =
+                        ordinalPositions.concat(xAxis.ordinal.getOverscrollPositions());
+                }
+                if (dataMax > ordinalPositions[ordinalPositions.length - 1]) {
                     ordinalPositions.push(dataMax);
                 }
                 // Get the new min and max values by getting the ordinal index
@@ -53012,7 +53060,7 @@ var OrdinalAxis;
         }
         // Revert to the linear chart.pan version
         if (runBase || (panning && /y/.test(panning.type))) {
-            if (overscroll) {
+            if (overscroll && OrdinalAxis_isNumber(xAxis.dataMax)) {
                 xAxis.max = xAxis.dataMax + overscroll;
             }
         }
@@ -53144,7 +53192,9 @@ var OrdinalAxis;
          * @private
          */
         beforeSetTickPositions() {
-            const axis = this.axis, ordinal = axis.ordinal, extremes = axis.getExtremes(), min = extremes.min, max = extremes.max, hasBreaks = axis.brokenAxis?.hasBreaks, isOrdinal = axis.options.ordinal;
+            const axis = this.axis, ordinal = axis.ordinal, extremes = axis.getExtremes(), min = extremes.min, max = extremes.max, hasBreaks = axis.brokenAxis?.hasBreaks, isOrdinal = axis.options.ordinal, overscroll = axis.options.overscroll &&
+                axis.ordinal.convertOverscroll(axis.options.overscroll) ||
+                0;
             let len, uniqueOrdinalPositions, dist, minIndex, maxIndex, slope, i, ordinalPositions = [], overscrollPointsRange = Number.MAX_VALUE, useOrdinal = false, adjustOrdinalExtremesPoints = false, isBoosted = false;
             // Apply the ordinal logic
             if (isOrdinal || hasBreaks) { // #4167 YAxis is never ordinal ?
@@ -53228,8 +53278,8 @@ var OrdinalAxis;
                     // spaced.
                     if (!axis.options.keepOrdinalPadding &&
                         (ordinalPositions[0] - min > dist ||
-                            (max -
-                                ordinalPositions[ordinalPositions.length - 1]) > dist)) {
+                            max - overscroll - ordinalPositions[len - 1] >
+                                dist)) {
                         useOrdinal = true;
                     }
                 }
@@ -53242,7 +53292,7 @@ var OrdinalAxis;
                     else if (len === 1) {
                         // We have just one point, closest distance is unknown.
                         // Assume then it is last point and overscrolled range:
-                        overscrollPointsRange = axis.ordinal.convertOverscroll(axis.options.overscroll);
+                        overscrollPointsRange = overscroll;
                         ordinalPositions = [
                             ordinalPositions[0],
                             ordinalPositions[0] + overscrollPointsRange
@@ -53372,6 +53422,9 @@ var OrdinalAxis;
                 // Add the fake series to hold the full data, then apply
                 // processData to it
                 axis.series.forEach((series) => {
+                    if (series.takeOrdinalPosition === false) {
+                        return; // #22657
+                    }
                     fakeSeries = {
                         xAxis: fakeAxis,
                         chart: chart,
@@ -57004,7 +57057,7 @@ Pathfinder.prototype.algorithms = PathfinderAlgorithms;
 
 ;// ./code/es-modules/masters/modules/pathfinder.src.js
 /**
- * @license Highcharts Gantt JS v12.2.0 (2025-04-07)
+ * @license Highcharts Gantt JS v12.2.0-modified (2025-05-25)
  * @module highcharts/modules/pathfinder
  * @requires highcharts
  *
@@ -57132,7 +57185,7 @@ const StaticScale = {
 
 ;// ./code/es-modules/masters/modules/static-scale.src.js
 /**
- * @license Highcharts Gantt JS v12.2.0 (2025-04-07)
+ * @license Highcharts Gantt JS v12.2.0-modified (2025-05-25)
  * @module highcharts/modules/static-scale
  * @requires highcharts
  *
@@ -57943,7 +57996,7 @@ Series_SeriesRegistry.registerSeriesType('xrange', XRangeSeries);
 
 ;// ./code/es-modules/masters/modules/xrange.src.js
 /**
- * @license Highcharts JS v12.2.0 (2025-04-07)
+ * @license Highcharts JS v12.2.0-modified (2025-05-25)
  * @module highcharts/modules/xrange
  * @requires highcharts
  *
@@ -61486,7 +61539,7 @@ Series_SeriesRegistry.registerSeriesType('gantt', GanttSeries);
 
 ;// ./code/es-modules/masters/modules/gantt.src.js
 /**
- * @license Highcharts Gantt JS v12.2.0 (2025-04-07)
+ * @license Highcharts Gantt JS v12.2.0-modified (2025-05-25)
  * @module highcharts/modules/gantt
  * @requires highcharts
  *
@@ -61530,7 +61583,7 @@ gantt_src_G.Scrollbar.compose(gantt_src_G.Axis);
 
 ;// ./code/es-modules/masters/highcharts-gantt.src.js
 /**
- * @license Highcharts Gantt JS v12.2.0 (2025-04-07)
+ * @license Highcharts Gantt JS v12.2.0-modified (2025-05-25)
  * @module highcharts/highcharts-gantt
  *
  * (c) 2017-2025 Lars Cabrera, Torstein Honsi, Jon Arild Nygard & Oystein Moseng

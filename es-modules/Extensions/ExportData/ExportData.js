@@ -814,12 +814,12 @@ function onChartAfterViewData() {
         const row = dataTableDiv.querySelector('thead tr');
         if (row) {
             row.childNodes.forEach((th) => {
-                const table = th.closest('table');
+                const tableBody = dataTableDiv.querySelector('tbody');
                 th.addEventListener('click', function () {
                     const rows = [...dataTableDiv.querySelectorAll('tr:not(thead tr)')], headers = [...th.parentNode.children];
                     rows.sort(comparer(headers.indexOf(th), chart.ascendingOrderInTable =
                         !chart.ascendingOrderInTable)).forEach((tr) => {
-                        table.appendChild(tr);
+                        tableBody?.appendChild(tr);
                     });
                     headers.forEach((th) => {
                         [

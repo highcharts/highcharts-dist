@@ -223,7 +223,7 @@ var DataLabel;
      */
     function initDataLabelsGroup() {
         return this.plotGroup('dataLabelsGroup', 'data-labels', this.hasRendered ? 'inherit' : 'hidden', // #5133, #10220
-        this.options.dataLabels.zIndex || 6);
+        this.options.dataLabels.zIndex || 6, this.chart.dataLabelsGroup);
     }
     /**
      * Init the data labels with the correct animation
@@ -361,7 +361,9 @@ var DataLabel;
                     // Individual labels are disabled if the are explicitly
                     // disabled in the point options, or if they fall outside
                     // the plot area.
-                    if (labelEnabled && defined(labelText)) {
+                    if (labelEnabled &&
+                        defined(labelText) &&
+                        labelText !== '') {
                         if (!dataLabel) {
                             // Create new label element
                             dataLabel = renderer.label(labelText, 0, 0, labelOptions.shape, void 0, void 0, labelOptions.useHTML, void 0, 'data-label');

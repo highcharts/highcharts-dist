@@ -11,20 +11,25 @@ const { defined } = U;
  *
  * */
 /**
- * A basic type of an annotation. It allows to add custom labels
- * or shapes. The items can be tied to points, axis coordinates
- * or chart pixel coordinates.
+ * A collection of annotations to add to the chart. The basic annotation allows
+ * adding custom labels or shapes. The items can be tied to points, axis
+ * coordinates or chart pixel coordinates.
  *
- * @sample highcharts/annotations/basic/
- *         Basic annotations
- * @sample highcharts/demo/annotations/
- *         Advanced annotations
- * @sample highcharts/css/annotations
- *         Styled mode
- * @sample highcharts/annotations-advanced/controllable
- *         Controllable items
+ * General options for all annotations can be set using the
+ * `Highcharts.setOptions` function. In this case only single objects are
+ * supported, because it alters the defaults for all items. For initialization
+ * in the chart constructors however, arrays of annotations are supported.
+ *
+ * See more in the [general docs](https://www.highcharts.com/docs/advanced-chart-features/annotations).
+ *
+ * @sample highcharts/annotations/basic/ Basic annotations
+ * @sample highcharts/demo/annotations/ Annotated chart
+ * @sample highcharts/css/annotations Styled mode
+ * @sample highcharts/annotations-advanced/controllable Controllable items
  * @sample {highstock} stock/annotations/fibonacci-retracements
  *         Custom annotation, Fibonacci retracement
+ * @sample highcharts/annotations/shape/
+ *         Themed crooked line annotation
  *
  * @type         {Array<*>}
  * @since        6.0.0
@@ -39,6 +44,17 @@ const AnnotationDefaults = {
      *
      * @type      {number|string}
      * @apioption annotations.id
+     */
+    /**
+     * For advanced annotations, this option defines the type of annotation. Can
+     * be one of the keys listed under the [types option](#annotations.types).
+     *
+     * @sample    highcharts/annotations-advanced/crooked-line
+     *            Crooked line annotation
+     * @requires  modules/annotations-advanced
+     * @product   highstock
+     * @type      {string}
+     * @apioption annotations.type
      */
     /**
      * Whether the annotation is visible.
@@ -623,10 +639,20 @@ const AnnotationDefaults = {
      */
     events: {},
     /**
+     * Option override for specific advanced annotation types. This collection
+     * is intended for general theming using `Highcharts.setOptions()`.
+     *
+     * @sample   highcharts/annotations/shape/
+     *           Themed crooked line annotation
+     * @product highstock
+     * @requires modules/annotations-advanced
+     */
+    types: {},
+    /**
      * The Z index of the annotation.
      */
     zIndex: 6
-}; // Type options are expected but not set
+};
 /* *
  *
  *  Default Export

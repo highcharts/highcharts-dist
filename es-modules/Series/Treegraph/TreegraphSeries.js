@@ -448,7 +448,8 @@ TreegraphSeries.defaultOptions = merge(TreemapSeries.defaultOptions, TreegraphSe
 extend(TreegraphSeries.prototype, {
     pointClass: TreegraphPoint,
     NodeClass: TreegraphNode,
-    LinkClass: TreegraphLink
+    LinkClass: TreegraphLink,
+    isCartesian: false
 });
 SeriesRegistry.registerSeriesType('treegraph', TreegraphSeries);
 /* *

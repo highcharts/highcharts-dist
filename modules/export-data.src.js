@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.2.0 (2025-04-07)
+ * @license Highcharts JS v12.2.0-modified (2025-05-25)
  * @module highcharts/modules/export-data
  * @requires highcharts
  * @requires highcharts/modules/exporting
@@ -1346,12 +1346,12 @@ function onChartAfterViewData() {
         const row = dataTableDiv.querySelector('thead tr');
         if (row) {
             row.childNodes.forEach((th) => {
-                const table = th.closest('table');
+                const tableBody = dataTableDiv.querySelector('tbody');
                 th.addEventListener('click', function () {
                     const rows = [...dataTableDiv.querySelectorAll('tr:not(thead tr)')], headers = [...th.parentNode.children];
                     rows.sort(comparer(headers.indexOf(th), chart.ascendingOrderInTable =
                         !chart.ascendingOrderInTable)).forEach((tr) => {
-                        table.appendChild(tr);
+                        tableBody?.appendChild(tr);
                     });
                     headers.forEach((th) => {
                         [
