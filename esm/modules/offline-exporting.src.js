@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.2.0 (2025-04-07)
+ * @license Highcharts JS v12.2.0-modified (2025-05-31)
  * @module highcharts/modules/offline-exporting
  * @requires highcharts
  * @requires highcharts/modules/exporting
@@ -2912,7 +2912,7 @@ var Exporting;
  *
  * */
 const OfflineExportingDefaults = {
-    libURL: 'https://code.highcharts.com/12.2.0/lib/',
+    libURL: 'https://code.highcharts.com/12.2.0-modified/lib/',
     // When offline-exporting is loaded, redefine the menu item definitions
     // related to download.
     menuItemDefinitions: {
@@ -2982,8 +2982,8 @@ const { ajax } = (external_data_src_js_default_HttpUtilities_default());
 
 
 const { addEvent: OfflineExporting_addEvent, error, extend: OfflineExporting_extend, fireEvent: OfflineExporting_fireEvent, merge: OfflineExporting_merge } = (external_highcharts_src_js_default_default());
-external_highcharts_src_js_default_AST_default().allowedAttributes.push('data-z-index', 'fill-opacity', 'filter', 'rx', 'ry', 'stroke-dasharray', 'stroke-linejoin', 'stroke-opacity', 'text-anchor', 'transform', 'version', 'viewBox', 'visibility', 'xmlns', 'xmlns:xlink');
-external_highcharts_src_js_default_AST_default().allowedTags.push('desc', 'clippath', 'g');
+external_highcharts_src_js_default_AST_default().allowedAttributes.push('data-z-index', 'fill-opacity', 'filter', 'preserveAspectRatio', 'rx', 'ry', 'stroke-dasharray', 'stroke-linejoin', 'stroke-opacity', 'text-anchor', 'transform', 'transform-origin', 'version', 'viewBox', 'visibility', 'xmlns', 'xmlns:xlink');
+external_highcharts_src_js_default_AST_default().allowedTags.push('desc', 'clippath', 'fedropshadow', 'femorphology', 'g', 'image');
 /* *
  *
  *  Composition
