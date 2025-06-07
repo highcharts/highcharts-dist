@@ -23,10 +23,10 @@ const { discardElement, objectEach } = U;
  * @function Highcharts.ajax
  *
  * @param {Highcharts.AjaxSettingsObject} settings
- *        The Ajax settings to use.
+ * The Ajax settings to use.
  *
- * @return {false|undefined}
- *         Returns false, if error occurred.
+ * @return {false | undefined}
+ * Returns false, if error occurred.
  */
 function ajax(settings) {
     const headers = {
@@ -37,10 +37,12 @@ function ajax(settings) {
     }, r = new XMLHttpRequest();
     /**
      * Private error handler.
+     *
      * @private
+     *
      * @param {XMLHttpRequest} xhr
      * Internal request object.
-     * @param {string|Error} err
+     * @param {string | Error} err
      * Occurred error.
      */
     function handleError(xhr, err) {
@@ -96,11 +98,12 @@ function ajax(settings) {
  * Get a JSON resource over XHR, also supporting CORS without preflight.
  *
  * @function Highcharts.getJSON
+ *
  * @param {string} url
- *        The URL to load.
+ * The URL to load.
  * @param {Function} success
- *        The success callback. For error handling, use the `Highcharts.ajax`
- *        function instead.
+ * The success callback. For error handling, use the `Highcharts.ajax` function
+ * instead.
  */
 function getJSON(url, success) {
     HttpUtilities.ajax({
@@ -115,46 +118,44 @@ function getJSON(url, success) {
     });
 }
 /**
- * The post utility
+ * The post utility.
  *
  * @private
  * @function Highcharts.post
  *
  * @param {string} url
- * Post URL
- *
+ * Post URL.
  * @param {Object} data
- * Post data
- *
+ * Post data.
  * @param {RequestInit} [fetchOptions]
- * Additional attributes for the post request
+ * Additional attributes for the post request.
  */
-/**
- *
- */
-function post(url, data, fetchOptions) {
+async function post(url, data, fetchOptions) {
+    // Prepare a form to send the data
     const formData = new win.FormData();
-    // Add the data
-    objectEach(data, function (val, name) {
-        formData.append(name, val);
+    // Add the data to the form
+    objectEach(data, function (value, name) {
+        formData.append(name, value);
     });
     formData.append('b64', 'true');
-    const { filename, type } = data;
-    return win.fetch(url, {
+    // Send the POST
+    const response = await win.fetch(url, {
         method: 'POST',
         body: formData,
         ...fetchOptions
-    }).then((res) => {
-        if (res.ok) {
-            res.text().then((text) => {
-                const link = document.createElement('a');
-                link.href = `data:${type};base64,${text}`;
-                link.download = filename;
-                link.click();
-                discardElement(link);
-            });
-        }
     });
+    // Check the response
+    if (response.ok) {
+        // Get the text from the response
+        const text = await response.text();
+        // Prepare self-click link with the Base64 representation
+        const link = document.createElement('a');
+        link.href = `data:${data.type};base64,${text}`;
+        link.download = data.filename;
+        link.click();
+        // Remove the link
+        discardElement(link);
+    }
 }
 /* *
  *
@@ -178,29 +179,35 @@ export default HttpUtilities;
 * The payload to send.
 *
 * @name Highcharts.AjaxSettingsObject#data
-* @type {string|Highcharts.Dictionary<any>|undefined}
+* @type {string | Highcharts.Dictionary<any> | undefined}
 */ /**
 * The data type expected.
+*
 * @name Highcharts.AjaxSettingsObject#dataType
-* @type {"json"|"xml"|"text"|"octet"|undefined}
+* @type {"json" | "xml" | "text" | "octet" | undefined}
 */ /**
 * Function to call on error.
+*
 * @name Highcharts.AjaxSettingsObject#error
-* @type {Function|undefined}
+* @type {Function | undefined}
 */ /**
 * The headers; keyed on header name.
+*
 * @name Highcharts.AjaxSettingsObject#headers
-* @type {Highcharts.Dictionary<string>|undefined}
+* @type {Highcharts.Dictionary<string> | undefined}
 */ /**
 * Function to call on success.
+*
 * @name Highcharts.AjaxSettingsObject#success
-* @type {Function|undefined}
+* @type {Function | undefined}
 */ /**
 * The HTTP method to use. For example GET or POST.
+*
 * @name Highcharts.AjaxSettingsObject#type
-* @type {string|undefined}
+* @type {string | undefined}
 */ /**
 * The URL to call.
+*
 * @name Highcharts.AjaxSettingsObject#url
 * @type {string}
 */

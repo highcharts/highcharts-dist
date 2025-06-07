@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.2.0 (2025-04-07)
+ * @license Highcharts JS v12.2.0-modified (2025-06-07)
  * @module highcharts/highcharts-more
  * @requires highcharts
  *
@@ -3421,8 +3421,8 @@ class BubblePoint extends ScatterPoint {
                 0 :
             0) + size;
         if (this.series.chart.inverted) {
-            const pos = this.pos() || [0, 0], { xAxis, yAxis, chart } = this.series;
-            return chart.renderer.symbols.circle(xAxis.len - pos[1] - computedSize, yAxis.len - pos[0] - computedSize, computedSize * 2, computedSize * 2);
+            const pos = this.pos() || [0, 0], { xAxis, yAxis, chart } = this.series, diameter = computedSize * 2;
+            return chart.renderer.symbols.circle((xAxis?.len || 0) - pos[1] - computedSize, (yAxis?.len || 0) - pos[0] - computedSize, diameter, diameter);
         }
         return highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_default().prototype.haloPath.call(this, 
         // #6067
@@ -5727,6 +5727,10 @@ function onChartLoad() {
  *        Browser event, before normalization.
  */
 function onMouseDown(point, event) {
+    const { panKey } = this.chart.options.chart, panKeyPressed = panKey && event[`${panKey}Key`];
+    if (panKeyPressed) {
+        return;
+    }
     const normalizedEvent = this.chart.pointer?.normalize(event) || event;
     point.fixedPosition = {
         chartX: normalizedEvent.chartX,
@@ -5918,7 +5922,8 @@ function onChartRender() {
             afterRender = true;
         }
     };
-    if (this.graphLayoutsLookup) {
+    // Don't animate layout when series is dragged
+    if (this.graphLayoutsLookup && !this.pointer?.hasDragged) {
         setAnimation(false, this);
         // Start simulation
         this.graphLayoutsLookup.forEach((layout) => layout.start());
@@ -6011,6 +6016,11 @@ class PackedBubblePoint extends PackedBubblePoint_BubblePoint {
         }
         else {
             highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_default().prototype.select.apply(this, arguments);
+        }
+    }
+    setState(state, move) {
+        if (this?.graphic?.parentGroup?.element) {
+            super.setState(state, move);
         }
     }
 }
@@ -11444,7 +11454,7 @@ var WaterfallAxis;
      * @private
      */
     function onAxisAfterBuildStacks() {
-        const axis = this, stacks = axis.waterfall.stacks;
+        const axis = this, stacks = axis.waterfall?.stacks;
         if (stacks) {
             stacks.changed = false;
             delete stacks.alreadyChanged;
@@ -11456,7 +11466,7 @@ var WaterfallAxis;
     function onAxisAfterRender() {
         const axis = this, stackLabelOptions = axis.options.stackLabels;
         if (stackLabelOptions?.enabled &&
-            axis.waterfall.stacks) {
+            axis.waterfall?.stacks) {
             axis.waterfall.renderStackTotals();
         }
     }
@@ -11477,7 +11487,7 @@ var WaterfallAxis;
         for (const serie of series) {
             if (serie.options.stacking) {
                 for (const axis of axes) {
-                    if (!axis.isXAxis) {
+                    if (!axis.isXAxis && axis.waterfall) {
                         axis.waterfall.stacks.changed = true;
                     }
                 }
@@ -11515,7 +11525,7 @@ var WaterfallAxis;
          * @function Highcharts.Axis#renderWaterfallStackTotals
          */
         renderStackTotals() {
-            const yAxis = this.axis, waterfallStacks = yAxis.waterfall.stacks, stackTotalGroup = yAxis.stacking?.stackTotalGroup, dummyStackItem = new (highcharts_StackItem_commonjs_highcharts_StackItem_commonjs2_highcharts_StackItem_root_Highcharts_StackItem_default())(yAxis, yAxis.options.stackLabels || {}, false, 0, void 0);
+            const yAxis = this.axis, waterfallStacks = yAxis.waterfall?.stacks, stackTotalGroup = yAxis.stacking?.stackTotalGroup, dummyStackItem = new (highcharts_StackItem_commonjs_highcharts_StackItem_commonjs2_highcharts_StackItem_root_Highcharts_StackItem_default())(yAxis, yAxis.options.stackLabels || {}, false, 0, void 0);
             this.dummyStackItem = dummyStackItem;
             // Render each waterfall stack total
             if (stackTotalGroup) {
@@ -11942,7 +11952,7 @@ class WaterfallSeries extends WaterfallSeries_ColumnSeries {
             if (!box || !prevBox) {
                 continue;
             }
-            const prevStack = yAxis.waterfall.stacks[this.stackKey], isPos = prevY > 0 ? -prevBox.height : 0;
+            const prevStack = yAxis.waterfall?.stacks[this.stackKey], isPos = prevY > 0 ? -prevBox.height : 0;
             if (prevStack && prevBox && box) {
                 const prevStackX = prevStack[i - 1];
                 // Y position of the connector is different when series are
@@ -12107,11 +12117,9 @@ class WaterfallSeries extends WaterfallSeries_ColumnSeries {
     // Extremes for a non-stacked series are recorded in processData.
     // In case of stacking, use Series.stackedYData to calculate extremes.
     getExtremes() {
-        const stacking = this.options.stacking;
-        let yAxis, waterfallStacks, stackedYNeg, stackedYPos;
-        if (stacking) {
-            yAxis = this.yAxis;
-            waterfallStacks = yAxis.waterfall.stacks;
+        const stacking = this.options.stacking, yAxis = this.yAxis, waterfallStacks = yAxis.waterfall?.stacks;
+        let stackedYNeg, stackedYPos;
+        if (stacking && waterfallStacks) {
             stackedYNeg = this.stackedYNeg = [];
             stackedYPos = this.stackedYPos = [];
             // The visible y range can be different when stacking is set to
@@ -12157,7 +12165,7 @@ WaterfallSeries_extend(WaterfallSeries.prototype, {
 });
 // Translate data points from raw values
 WaterfallSeries_addEvent(WaterfallSeries, 'afterColumnTranslate', function () {
-    const series = this, { options, points, yAxis } = series, minPointLength = WaterfallSeries_pick(options.minPointLength, 5), halfMinPointLength = minPointLength / 2, threshold = options.threshold || 0, stacking = options.stacking, actualStack = yAxis.waterfall.stacks[series.stackKey], processedYData = series.getColumn('y', true);
+    const series = this, { options, points, yAxis } = series, minPointLength = WaterfallSeries_pick(options.minPointLength, 5), halfMinPointLength = minPointLength / 2, threshold = options.threshold || 0, stacking = options.stacking, actualStack = yAxis.waterfall?.stacks[series.stackKey], processedYData = series.getColumn('y', true);
     let previousIntermediate = threshold, previousY = threshold, y, total, yPos, hPos;
     for (let i = 0; i < points.length; i++) {
         const point = points[i], yValue = processedYData[i], shapeArgs = point.shapeArgs, box = WaterfallSeries_extend({
@@ -12233,7 +12241,7 @@ WaterfallSeries_addEvent(WaterfallSeries, 'afterColumnTranslate', function () {
                 box.y = yAxis.translate(yPos, false, true, false, true);
                 box.height = Math.abs(box.y -
                     yAxis.translate(hPos, false, true, false, true));
-                const dummyStackItem = yAxis.waterfall.dummyStackItem;
+                const dummyStackItem = yAxis.waterfall?.dummyStackItem;
                 if (dummyStackItem) {
                     dummyStackItem.x = i;
                     dummyStackItem.label = actualStack[i].label;

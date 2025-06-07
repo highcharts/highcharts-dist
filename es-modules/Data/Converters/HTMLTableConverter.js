@@ -185,7 +185,7 @@ class HTMLTableConverter extends DataConverter {
     getTableHeaderHTML(topheaders = [], subheaders = [], options = this.options) {
         const { useMultiLevelHeaders, useRowspanHeaders } = options;
         let html = '<thead>', i = 0, len = subheaders && subheaders.length, next, cur, curColspan = 0, rowspan;
-        // Clean up multiple table headers. Chart.getDataRows() returns two
+        // Clean up multiple table headers. Exporting.getDataRows() returns two
         // levels of headers when using multilevel, not merged. We need to
         // merge identical headers, remove redundant headers, and keep it
         // all marked up nicely.

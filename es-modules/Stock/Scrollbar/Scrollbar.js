@@ -11,10 +11,11 @@
 import D from '../../Core/Defaults.js';
 const { defaultOptions } = D;
 import H from '../../Core/Globals.js';
+const { composed } = H;
 import ScrollbarAxis from '../../Core/Axis/ScrollbarAxis.js';
 import ScrollbarDefaults from './ScrollbarDefaults.js';
 import U from '../../Core/Utilities.js';
-const { addEvent, correctFloat, crisp, defined, destroyObjectProperties, fireEvent, merge, pick, removeEvent } = U;
+const { addEvent, correctFloat, crisp, defined, destroyObjectProperties, extend, fireEvent, merge, pick, pushUnique, removeEvent } = U;
 /* *
  *
  *  Constants
@@ -40,6 +41,9 @@ class Scrollbar {
      * */
     static compose(AxisClass) {
         ScrollbarAxis.compose(AxisClass, Scrollbar);
+        if (pushUnique(composed, 'Scrollbar')) {
+            extend(defaultOptions, { scrollbar: ScrollbarDefaults });
+        }
     }
     /**
      * When we have vertical scrollbar, rifles and arrow in buttons should be
@@ -646,12 +650,6 @@ class Scrollbar {
  *
  * */
 Scrollbar.defaultOptions = ScrollbarDefaults;
-/* *
- *
- *  Registry
- *
- * */
-defaultOptions.scrollbar = merge(true, Scrollbar.defaultOptions, defaultOptions.scrollbar);
 /* *
  *
  *  Default Export

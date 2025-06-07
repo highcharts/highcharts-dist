@@ -5,13 +5,6 @@
  *!*/
 import * as globals from "../globals";
 import * as _Highcharts from "../highcharts";
-/**
- * Adds the module to the imported Highcharts namespace.
- *
- * @param highcharts
- *        The imported Highcharts namespace to extend.
- */
-export function factory(highcharts: typeof Highcharts): void;
 declare module "../highcharts" {
     /**
      * Find color of point based on color axis.
@@ -26,5 +19,4 @@ declare module "../highcharts" {
      */
     function colorFromPoint(value: (number|null), point: Point): Array<number>;
 }
-export default factory;
-export let Highcharts: typeof _Highcharts;
+export default _Highcharts;

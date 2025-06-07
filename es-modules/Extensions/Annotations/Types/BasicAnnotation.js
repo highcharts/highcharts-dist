@@ -6,8 +6,6 @@
 'use strict';
 import Annotation from '../Annotation.js';
 import MockPoint from '../MockPoint.js';
-import U from '../../../Core/Utilities.js';
-const { merge } = U;
 /* *
  *
  *  Class
@@ -214,7 +212,6 @@ BasicAnnotation.basicControlPoints = {
             }
         }]
 };
-BasicAnnotation.prototype.defaultOptions = merge(Annotation.prototype.defaultOptions, {});
 Annotation.types.basicAnnotation = BasicAnnotation;
 /* *
  *
