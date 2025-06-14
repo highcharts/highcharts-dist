@@ -17,7 +17,7 @@
 import CSVConverter from '../Converters/CSVConverter.js';
 import DataConnector from './DataConnector.js';
 import U from '../../Core/Utilities.js';
-const { merge } = U;
+const { merge, defined } = U;
 /* *
  *
  *  Class
@@ -39,12 +39,16 @@ class CSVConnector extends DataConnector {
      *
      * @param {CSVConnector.UserOptions} [options]
      * Options for the connector and converter.
+     *
+     * @param {Array<DataTableOptions>} [dataTables]
+     * Multiple connector data tables options.
+     *
      */
-    constructor(options) {
+    constructor(options, dataTables) {
         const mergedOptions = merge(CSVConnector.defaultOptions, options);
-        super(mergedOptions);
-        this.converter = new CSVConverter(mergedOptions);
-        this.options = mergedOptions;
+        super(mergedOptions, dataTables);
+        this.options = defined(dataTables) ?
+            merge(mergedOptions, { dataTables }) : mergedOptions;
         if (mergedOptions.enablePolling) {
             this.startPolling(Math.max(mergedOptions.dataRefreshRate || 0, 1) * 1000);
         }
@@ -64,26 +68,39 @@ class CSVConnector extends DataConnector {
      * @emits CSVConnector#afterLoad
      */
     load(eventDetail) {
-        const connector = this, converter = connector.converter, table = connector.table, { csv, csvURL, dataModifier } = connector.options;
+        const connector = this, tables = connector.dataTables, { csv, csvURL, dataModifier, dataTables } = connector.options;
         connector.emit({
             type: 'load',
             csv,
             detail: eventDetail,
-            table
+            tables
         });
         return Promise
             .resolve(csvURL ?
-            fetch(csvURL).then((response) => response.text()) :
+            fetch(csvURL, {
+                signal: connector?.pollingController?.signal
+            }).then((response) => response.text()) :
             csv || '')
             .then((csv) => {
             if (csv) {
-                // If already loaded, clear the current rows
-                table.deleteColumns();
-                converter.parse({ csv });
-                table.setColumns(converter.getTable().getColumns());
+                this.initConverters(csv, (key) => {
+                    const options = this.options;
+                    const tableOptions = dataTables?.find((dataTable) => dataTable.key === key);
+                    // Takes over the connector default options.
+                    const mergedTableOptions = {
+                        dataTableKey: key,
+                        firstRowAsNames: tableOptions?.firstRowAsNames ??
+                            options.firstRowAsNames,
+                        beforeParse: tableOptions?.beforeParse ??
+                            options.beforeParse
+                    };
+                    return new CSVConverter(merge(this.options, mergedTableOptions));
+                }, (converter, data) => {
+                    converter.parse({ csv: data });
+                });
             }
             return connector
-                .setModifierOptions(dataModifier)
+                .setModifierOptions(dataModifier, dataTables)
                 .then(() => csv);
         })
             .then((csv) => {
@@ -91,7 +108,7 @@ class CSVConnector extends DataConnector {
                 type: 'afterLoad',
                 csv,
                 detail: eventDetail,
-                table
+                tables
             });
             return connector;
         })['catch']((error) => {
@@ -99,7 +116,7 @@ class CSVConnector extends DataConnector {
                 type: 'loadError',
                 detail: eventDetail,
                 error,
-                table
+                tables
             });
             throw error;
         });

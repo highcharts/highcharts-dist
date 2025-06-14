@@ -38,16 +38,53 @@ class DataConnector {
      *
      * @param {DataConnector.UserOptions} [options]
      * Options to use in the connector.
+     *
+     * @param {Array<DataTableOptions>} [dataTables]
+     * Multiple connector data tables options.
      */
-    constructor(options = {}) {
-        this.table = new DataTable(options.dataTable);
+    constructor(options = {}, dataTables = []) {
+        /**
+         * Tables managed by this DataConnector instance.
+         */
+        this.dataTables = {};
+        /**
+         * Helper flag for detecting whether the data connector is loaded.
+         * @internal
+         */
+        this.loaded = false;
         this.metadata = options.metadata || { columns: {} };
+        // Create a data table for each defined in the dataTables user options.
+        let dataTableIndex = 0;
+        if (dataTables?.length > 0) {
+            for (let i = 0, iEnd = dataTables.length; i < iEnd; ++i) {
+                const dataTable = dataTables[i];
+                const key = dataTable?.key;
+                this.dataTables[key ?? dataTableIndex] =
+                    new DataTable(dataTable);
+                if (!key) {
+                    dataTableIndex++;
+                }
+            }
+            // If user options dataTables is not defined, generate a default table.
+        }
+        else {
+            this.dataTables[0] = new DataTable(options.dataTable);
+        }
     }
     /**
      * Poll timer ID, if active.
      */
     get polling() {
         return !!this._polling;
+    }
+    /**
+     * Gets the first data table.
+     *
+     * @return {DataTable}
+     * The data table instance.
+     */
+    get table() {
+        return this.getTable();
     }
     /* *
      *
@@ -106,6 +143,22 @@ class DataConnector {
         if (names.length) {
             return names.sort((a, b) => (pick(columns[a].index, 0) - pick(columns[b].index, 0)));
         }
+    }
+    /**
+     * Returns a single data table instance based on the provided key.
+     * Otherwise, returns the first data table.
+     *
+     * @param {string} [key]
+     * The data table key.
+     *
+     * @return {DataTable}
+     * The data table instance.
+     */
+    getTable(key) {
+        if (key) {
+            return this.dataTables[key];
+        }
+        return Object.values(this.dataTables)[0];
     }
     /**
      * Retrieves the columns of the dataTable,
@@ -172,14 +225,17 @@ class DataConnector {
             connector.describeColumn(columnNames[i], { index: i });
         }
     }
-    setModifierOptions(modifierOptions) {
-        const ModifierClass = (modifierOptions &&
-            DataModifier.types[modifierOptions.type]);
-        return this.table
-            .setModifier(ModifierClass ?
-            new ModifierClass(modifierOptions) :
-            void 0)
-            .then(() => this);
+    async setModifierOptions(modifierOptions, tablesOptions) {
+        for (const [key, table] of Object.entries(this.dataTables)) {
+            const tableOptions = tablesOptions?.find((dataTable) => dataTable.key === key);
+            const mergedModifierOptions = merge(tableOptions?.dataModifier, modifierOptions);
+            const ModifierClass = (mergedModifierOptions &&
+                DataModifier.types[mergedModifierOptions.type]);
+            await table.setModifier(ModifierClass ?
+                new ModifierClass(mergedModifierOptions) :
+                void 0);
+        }
+        return this;
     }
     /**
      * Starts polling new data after the specific time span in milliseconds.
@@ -189,12 +245,16 @@ class DataConnector {
      */
     startPolling(refreshTime = 1000) {
         const connector = this;
+        const tables = connector.dataTables;
+        // Assign a new abort controller.
+        this.pollingController = new AbortController();
+        // Clear the polling timeout.
         window.clearTimeout(connector._polling);
         connector._polling = window.setTimeout(() => connector
             .load()['catch']((error) => connector.emit({
             type: 'loadError',
             error,
-            table: connector.table
+            tables
         }))
             .then(() => {
             if (connector._polling) {
@@ -203,10 +263,16 @@ class DataConnector {
         }), refreshTime);
     }
     /**
-     * Stops polling data.
+     * Stops polling data. Shouldn't be performed if polling is already stopped.
      */
     stopPolling() {
         const connector = this;
+        if (!connector.polling) {
+            return;
+        }
+        // Abort the existing request.
+        connector?.pollingController?.abort();
+        // Clear the polling timeout.
         window.clearTimeout(connector._polling);
         delete connector._polling;
     }
@@ -221,6 +287,35 @@ class DataConnector {
      */
     whatIs(name) {
         return this.metadata.columns[name];
+    }
+    /**
+     * Iterates over the dataTables and initiates the corresponding converters.
+     * Updates the dataTables and assigns the first converter.
+     *
+     * @param {T}[data]
+     * Data specific to the corresponding converter.
+     *
+     * @param {DataConnector.CreateConverterFunction}[createConverter]
+     * Creates a specific converter combining the dataTable options.
+     *
+     * @param {DataConnector.ParseDataFunction<T>}[parseData]
+     * Runs the converter parse method with the specific data type.
+     */
+    initConverters(data, createConverter, parseData) {
+        let index = 0;
+        for (const [key, table] of Object.entries(this.dataTables)) {
+            // Create a proper converter and parse its data.
+            const converter = createConverter(key, table);
+            parseData(converter, data);
+            // Update the dataTable.
+            table.deleteColumns();
+            table.setColumns(converter.getTable().getColumns());
+            // Assign the first converter.
+            if (index === 0) {
+                this.converter = converter;
+            }
+            index++;
+        }
     }
 }
 /* *

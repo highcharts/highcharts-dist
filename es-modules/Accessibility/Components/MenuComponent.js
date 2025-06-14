@@ -28,7 +28,7 @@ const { getFakeMouseEvent } = HTMLUtilities;
  * @private
  */
 function getExportMenuButtonElement(chart) {
-    return chart.exportSVGElements && chart.exportSVGElements[0];
+    return chart.exporting?.svgElements?.[0];
 }
 /**
  * @private
@@ -78,7 +78,7 @@ class MenuComponent extends AccessibilityComponent {
      * @private
      */
     onMenuHidden() {
-        const menu = this.chart.exportContextMenu;
+        const menu = this.chart.exporting?.contextMenuEl;
         if (menu) {
             menu.setAttribute('aria-hidden', 'true');
         }
@@ -88,7 +88,7 @@ class MenuComponent extends AccessibilityComponent {
      * @private
      */
     onMenuShown() {
-        const chart = this.chart, menu = chart.exportContextMenu;
+        const chart = this.chart, menu = chart.exporting?.contextMenuEl;
         if (menu) {
             this.addAccessibleContextMenuAttribs();
             unhideChartElementFromAT(chart, menu);
@@ -114,7 +114,7 @@ class MenuComponent extends AccessibilityComponent {
         this.proxyMenuButton();
         if (this.exportButtonProxy &&
             focusEl &&
-            focusEl === chart.exportingGroup) {
+            focusEl === chart.exporting?.group) {
             if (focusEl.focusBorder) {
                 chart.setFocusToElement(focusEl, this.exportButtonProxy.innerElement);
             }
@@ -154,7 +154,7 @@ class MenuComponent extends AccessibilityComponent {
      * @private
      */
     addAccessibleContextMenuAttribs() {
-        const chart = this.chart, exportList = chart.exportDivElements;
+        const chart = this.chart, exportList = chart.exporting?.divElements;
         if (exportList && exportList.length) {
             // Set tabindex on the menu items to allow focusing by script
             // Set role to give screen readers a chance to pick up the contents
@@ -220,13 +220,12 @@ class MenuComponent extends AccessibilityComponent {
                         ?.buttons
                         ?.contextButton.enabled !== false &&
                     chart.options.exporting.enabled !== false &&
-                    chart.options.exporting.accessibility.enabled !==
-                        false;
+                    (chart.options.exporting.accessibility?.enabled || false) !== false;
             },
             // Focus export menu button
             init: function () {
                 const proxy = component.exportButtonProxy;
-                const svgEl = component.chart.exportingGroup;
+                const svgEl = component.chart.exporting?.group;
                 if (proxy && svgEl) {
                     chart.setFocusToElement(svgEl, proxy.innerElement);
                 }
@@ -272,7 +271,7 @@ class MenuComponent extends AccessibilityComponent {
         const response = keyboardNavigationHandler.response;
         // Try to highlight next item in list. Highlighting e.g.
         // separators will fail.
-        for (let i = (chart.highlightedExportItemIx || 0) + 1; i < chart.exportDivElements.length; ++i) {
+        for (let i = (chart.highlightedExportItemIx || 0) + 1; i < (chart.exporting?.divElements?.length || 0); ++i) {
             if (chart.highlightExportItem(i)) {
                 return response.success;
             }
@@ -291,13 +290,14 @@ class MenuComponent extends AccessibilityComponent {
      */
     onKbdClick(keyboardNavigationHandler) {
         const chart = this.chart;
-        const curHighlightedItem = chart.exportDivElements[chart.highlightedExportItemIx];
-        const exportButtonElement = getExportMenuButtonElement(chart).element;
-        if (chart.openMenu) {
-            this.fakeClickEvent(curHighlightedItem);
+        const curHighlightedItem = chart.highlightedExportItemIx !== void 0 &&
+            chart.exporting?.divElements?.[chart.highlightedExportItemIx];
+        const exportButtonElement = getExportMenuButtonElement(chart)?.element;
+        if (chart.exporting?.openMenu) {
+            curHighlightedItem && this.fakeClickEvent(curHighlightedItem);
         }
         else {
-            this.fakeClickEvent(exportButtonElement);
+            exportButtonElement && this.fakeClickEvent(exportButtonElement);
             chart.highlightExportItem(0);
         }
         return keyboardNavigationHandler.response.success;
@@ -352,8 +352,10 @@ class MenuComponent extends AccessibilityComponent {
      * @function Highcharts.Chart#hideExportMenu
      */
     function chartHideExportMenu() {
-        const chart = this, exportList = chart.exportDivElements;
-        if (exportList && chart.exportContextMenu && chart.openMenu) {
+        const chart = this, exportList = chart.exporting?.divElements;
+        if (exportList &&
+            chart.exporting?.contextMenuEl &&
+            chart.exporting?.openMenu) {
             // Reset hover states etc.
             exportList.forEach((el) => {
                 if (el &&
@@ -364,7 +366,7 @@ class MenuComponent extends AccessibilityComponent {
             });
             chart.highlightedExportItemIx = 0;
             // Hide the menu div
-            chart.exportContextMenu.hideMenu();
+            chart.exporting.contextMenuEl.hideMenu();
             // Make sure the chart has focus and can capture keyboard events
             chart.container.focus();
         }
@@ -376,9 +378,8 @@ class MenuComponent extends AccessibilityComponent {
      * @function Highcharts.Chart#highlightExportItem
      */
     function chartHighlightExportItem(ix) {
-        const listItem = this.exportDivElements && this.exportDivElements[ix];
-        const curHighlighted = this.exportDivElements &&
-            this.exportDivElements[this.highlightedExportItemIx];
+        const listItem = this.exporting?.divElements?.[ix], curHighlighted = this.highlightedExportItemIx !== void 0 &&
+            this.exporting?.divElements?.[this.highlightedExportItemIx];
         if (listItem &&
             listItem.tagName === 'LI' &&
             !(listItem.children && listItem.children.length)) {
@@ -408,8 +409,8 @@ class MenuComponent extends AccessibilityComponent {
      */
     function chartHighlightLastExportItem() {
         const chart = this;
-        if (chart.exportDivElements) {
-            let i = chart.exportDivElements.length;
+        if (chart.exporting?.divElements) {
+            let i = chart.exporting?.divElements.length;
             while (i--) {
                 if (chart.highlightExportItem(i)) {
                     return true;

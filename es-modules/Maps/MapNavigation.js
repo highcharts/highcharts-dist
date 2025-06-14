@@ -196,7 +196,7 @@ class MapNavigation {
             // Check the mapNavigation buttons collision with exporting button
             // and translate the mapNavigation button if they overlap.
             const adjustMapNavBtn = function () {
-                const expBtnBBox = chart.exportingGroup?.getBBox();
+                const expBtnBBox = chart.exporting?.group?.getBBox();
                 if (expBtnBBox) {
                     const navBtnsBBox = mapNav.navButtonsGroup.getBBox();
                     // If buttons overlap

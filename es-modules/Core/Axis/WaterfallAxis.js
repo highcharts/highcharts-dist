@@ -46,7 +46,7 @@ var WaterfallAxis;
      * @private
      */
     function onAxisAfterBuildStacks() {
-        const axis = this, stacks = axis.waterfall.stacks;
+        const axis = this, stacks = axis.waterfall?.stacks;
         if (stacks) {
             stacks.changed = false;
             delete stacks.alreadyChanged;
@@ -58,7 +58,7 @@ var WaterfallAxis;
     function onAxisAfterRender() {
         const axis = this, stackLabelOptions = axis.options.stackLabels;
         if (stackLabelOptions?.enabled &&
-            axis.waterfall.stacks) {
+            axis.waterfall?.stacks) {
             axis.waterfall.renderStackTotals();
         }
     }
@@ -79,7 +79,7 @@ var WaterfallAxis;
         for (const serie of series) {
             if (serie.options.stacking) {
                 for (const axis of axes) {
-                    if (!axis.isXAxis) {
+                    if (!axis.isXAxis && axis.waterfall) {
                         axis.waterfall.stacks.changed = true;
                     }
                 }
@@ -117,7 +117,7 @@ var WaterfallAxis;
          * @function Highcharts.Axis#renderWaterfallStackTotals
          */
         renderStackTotals() {
-            const yAxis = this.axis, waterfallStacks = yAxis.waterfall.stacks, stackTotalGroup = yAxis.stacking?.stackTotalGroup, dummyStackItem = new StackItem(yAxis, yAxis.options.stackLabels || {}, false, 0, void 0);
+            const yAxis = this.axis, waterfallStacks = yAxis.waterfall?.stacks, stackTotalGroup = yAxis.stacking?.stackTotalGroup, dummyStackItem = new StackItem(yAxis, yAxis.options.stackLabels || {}, false, 0, void 0);
             this.dummyStackItem = dummyStackItem;
             // Render each waterfall stack total
             if (stackTotalGroup) {
