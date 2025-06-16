@@ -20,6 +20,8 @@ import ControllableImage from './Controllables/ControllableImage.js';
 import ControllableLabel from './Controllables/ControllableLabel.js';
 import ControlPoint from './ControlPoint.js';
 import ControlTarget from './ControlTarget.js';
+import D from '../../Core/Defaults.js';
+const { defaultOptions } = D;
 import EventEmitter from './EventEmitter.js';
 import MockPoint from './MockPoint.js';
 import PopupComposition from './Popup/PopupComposition.js';
@@ -151,7 +153,7 @@ class Annotation extends EventEmitter {
          * @name Highcharts.Annotation#options
          * @type {Highcharts.AnnotationsOptions}
          */
-        this.options = merge(this.defaultOptions, userOptions);
+        this.setOptions(userOptions);
         /**
          * The user options for the annotations.
          *
@@ -492,7 +494,12 @@ class Annotation extends EventEmitter {
      *        User options for an annotation
      */
     setOptions(userOptions) {
-        this.options = merge(this.defaultOptions, userOptions);
+        this.options = merge(
+        // Shared for all annotation types
+        this.defaultOptions, 
+        // The static typeOptions from the class
+        (userOptions.type &&
+            this.defaultOptions.types[userOptions.type]) || {}, userOptions);
     }
     /**
      * Set the annotation's visibility.
@@ -544,11 +551,6 @@ class Annotation extends EventEmitter {
         this.isUpdating = false;
     }
 }
-/* *
- *
- *  Static Properties
- *
- * */
 /**
  * @private
  */
@@ -576,6 +578,7 @@ Annotation.shapesMap = {
  */
 Annotation.types = {};
 Annotation.prototype.defaultOptions = AnnotationDefaults;
+defaultOptions.annotations = AnnotationDefaults;
 /**
  * List of events for `annotation.options.events` that should not be
  * added to `annotation.graphic` but to the `annotation`.

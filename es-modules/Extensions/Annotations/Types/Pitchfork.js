@@ -5,10 +5,49 @@
  * */
 'use strict';
 import Annotation from '../Annotation.js';
+import D from '../../../Core/Defaults.js';
+const { defaultOptions } = D;
 import InfinityLine from './InfinityLine.js';
 import MockPoint from '../MockPoint.js';
 import U from '../../../Core/Utilities.js';
 const { merge } = U;
+if (defaultOptions.annotations) {
+    defaultOptions.annotations.types.pitchfork = merge(defaultOptions.annotations.types.infinityLine, 
+    /**
+     * Options for the pitchfork annotation type.
+     *
+     * @sample highcharts/annotations-advanced/pitchfork/
+     *         Pitchfork
+     *
+     * @extends      annotations.types.infinityLine
+     * @product      highstock
+     * @optionparent annotations.types.pitchfork
+     */
+    {
+        typeOptions: {
+            /**
+             * Inner background options.
+             *
+             * @extends   annotations.types.crookedLine.shapeOptions
+             * @excluding height, r, type, width
+             */
+            innerBackground: {
+                fill: 'rgba(130, 170, 255, 0.4)',
+                strokeWidth: 0
+            },
+            /**
+             * Outer background options.
+             *
+             * @extends   annotations.types.crookedLine.shapeOptions
+             * @excluding height, r, type, width
+             */
+            outerBackground: {
+                fill: 'rgba(156, 229, 161, 0.4)',
+                strokeWidth: 0
+            }
+        }
+    });
+}
 /* *
  *
  *  Class
@@ -125,48 +164,8 @@ class Pitchfork extends InfinityLine {
         typeOptions.outerBackground = outerBackground.options;
     }
 }
-/* *
- *
- *  Static Properties
- *
- * */
 Pitchfork.topLineEdgePoint = Pitchfork.outerLineEdgePoint(1);
 Pitchfork.bottomLineEdgePoint = Pitchfork.outerLineEdgePoint(0);
-Pitchfork.prototype.defaultOptions = merge(InfinityLine.prototype.defaultOptions, 
-/**
- * A pitchfork annotation.
- *
- * @sample highcharts/annotations-advanced/pitchfork/
- *         Pitchfork
- *
- * @extends      annotations.infinityLine
- * @product      highstock
- * @optionparent annotations.pitchfork
- */
-{
-    typeOptions: {
-        /**
-         * Inner background options.
-         *
-         * @extends   annotations.crookedLine.shapeOptions
-         * @excluding height, r, type, width
-         */
-        innerBackground: {
-            fill: 'rgba(130, 170, 255, 0.4)',
-            strokeWidth: 0
-        },
-        /**
-         * Outer background options.
-         *
-         * @extends   annotations.crookedLine.shapeOptions
-         * @excluding height, r, type, width
-         */
-        outerBackground: {
-            fill: 'rgba(156, 229, 161, 0.4)',
-            strokeWidth: 0
-        }
-    }
-});
 Annotation.types.pitchfork = Pitchfork;
 /* *
  *

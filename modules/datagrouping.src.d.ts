@@ -5,13 +5,6 @@
  *!*/
 import * as globals from "../globals.src";
 import * as _Highcharts from "../highcharts.src";
-/**
- * Adds the module to the imported Highcharts namespace.
- *
- * @param highcharts
- *        The imported Highcharts namespace to extend.
- */
-export function factory(highcharts: typeof Highcharts): void;
 declare module "../highcharts.src" {
     interface Axis {
         /**
@@ -87,5 +80,4 @@ declare module "../highcharts.src" {
         groupData(table: DataTable, groupPositions: Array<number>, approximation?: (string|Function)): DataGroupingResultObject;
     }
 }
-export default factory;
-export let Highcharts: typeof _Highcharts;
+export default _Highcharts;

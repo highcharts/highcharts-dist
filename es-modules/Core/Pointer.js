@@ -185,8 +185,7 @@ class Pointer {
             });
             const { shapeType, attrs } = this.getSelectionMarkerAttrs(chartX, chartY);
             // Make a selection
-            if ((chart.hasCartesianSeries || chart.mapView) &&
-                this.hasZoom &&
+            if (this.hasZoom &&
                 clickedInside &&
                 !panKeyPressed) {
                 if (!selectionMarker) {
@@ -772,7 +771,7 @@ class Pointer {
             this.drag(pEvt);
         }
         // Show the tooltip and run mouse over events (#977)
-        if (!chart.openMenu &&
+        if (!chart.exporting?.openMenu &&
             (this.inClass(pEvt.target, 'highcharts-tracker') ||
                 chart.isInsidePlot(pEvt.chartX - chart.plotLeft, pEvt.chartY - chart.plotTop, {
                     visiblePlotOnly: true
@@ -1391,7 +1390,7 @@ class Pointer {
             isInside = chart.isInsidePlot(e.chartX - chart.plotLeft, e.chartY - chart.plotTop, {
                 visiblePlotOnly: true
             });
-            if (isInside && !chart.openMenu) {
+            if (isInside && !chart.exporting?.openMenu) {
                 // Run mouse events and display tooltip etc
                 if (start) {
                     this.runPointActions(e);
