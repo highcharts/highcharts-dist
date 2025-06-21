@@ -1,9 +1,11 @@
 /**
- * @license Highcharts JS v12.2.0 (2025-04-07)
+ * @license Highcharts JS v12.3.0 (2025-06-21)
  * @module highcharts/highcharts-3d
  * @requires highcharts
  *
  * 3D features for Highcharts JS
+ *
+ * (c) 2009-2025 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */

@@ -226,6 +226,8 @@ const FlagsSeriesDefaults = {
      */
     style: {
         /** @ignore-option */
+        color: "#000000" /* Palette.neutralColor100 */,
+        /** @ignore-option */
         fontSize: '0.7em',
         /** @ignore-option */
         fontWeight: 'bold'

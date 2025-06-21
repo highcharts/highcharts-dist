@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.2.0 (2025-04-07)
+ * @license Highcharts JS v12.3.0 (2025-06-21)
  * @module highcharts/modules/variwide
  * @requires highcharts
  *
@@ -414,7 +414,7 @@ const { column: ColumnSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_
 
 
 
-const { addEvent: VariwideSeries_addEvent, crisp, extend, merge, pick } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { addEvent: VariwideSeries_addEvent, arrayMin, arrayMax, crisp, extend, merge, pick } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
  *  Class
@@ -517,6 +517,13 @@ class VariwideSeries extends ColumnSeries {
                 }
             }
         }
+    }
+    getXExtremes(xData) {
+        const max = arrayMax(xData), maxZ = this.getColumn('z')[xData.indexOf(max)];
+        return {
+            min: arrayMin(xData),
+            max: max + (this.xAxis.categories ? 0 : maxZ)
+        };
     }
 }
 /* *

@@ -18,7 +18,7 @@
 import DataConnector from './DataConnector.js';
 import GoogleSheetsConverter from '../Converters/GoogleSheetsConverter.js';
 import U from '../../Core/Utilities.js';
-const { merge, pick } = U;
+const { merge, pick, defined } = U;
 /* *
  *
  *  Functions
@@ -55,12 +55,16 @@ class GoogleSheetsConnector extends DataConnector {
      *
      * @param {GoogleSheetsConnector.UserOptions} [options]
      * Options for the connector and converter.
+     *
+     * @param {Array<DataTableOptions>} [dataTables]
+     * Multiple connector data tables options.
+     *
      */
-    constructor(options) {
+    constructor(options, dataTables) {
         const mergedOptions = merge(GoogleSheetsConnector.defaultOptions, options);
-        super(mergedOptions);
-        this.converter = new GoogleSheetsConverter(mergedOptions);
-        this.options = mergedOptions;
+        super(mergedOptions, dataTables);
+        this.options = defined(dataTables) ?
+            merge(mergedOptions, { dataTables }) : mergedOptions;
     }
     /* *
      *
@@ -77,36 +81,44 @@ class GoogleSheetsConnector extends DataConnector {
      * Same connector instance with modified table.
      */
     load(eventDetail) {
-        const connector = this, converter = connector.converter, table = connector.table, { dataModifier, dataRefreshRate, enablePolling, firstRowAsNames, googleAPIKey, googleSpreadsheetKey } = connector.options, url = GoogleSheetsConnector.buildFetchURL(googleAPIKey, googleSpreadsheetKey, connector.options);
+        const connector = this, tables = connector.dataTables, { dataModifier, dataRefreshRate, enablePolling, googleAPIKey, googleSpreadsheetKey, dataTables } = connector.options, url = GoogleSheetsConnector.buildFetchURL(googleAPIKey, googleSpreadsheetKey, connector.options);
         connector.emit({
             type: 'load',
             detail: eventDetail,
-            table,
+            tables,
             url
         });
         if (!URL.canParse(url)) {
             throw new Error('Invalid URL: ' + url);
         }
-        return fetch(url)
+        return fetch(url, { signal: connector?.pollingController?.signal })
             .then((response) => (response.json()))
             .then((json) => {
             if (isGoogleError(json)) {
                 throw new Error(json.error.message);
             }
-            converter.parse({
-                firstRowAsNames,
-                json
+            this.initConverters(json, (key) => {
+                const options = this.options;
+                const tableOptions = dataTables?.find((dataTable) => dataTable.key === key);
+                // Takes over the connector default options.
+                const mergedTableOptions = {
+                    dataTableKey: key,
+                    firstRowAsNames: tableOptions?.firstRowAsNames ??
+                        options.firstRowAsNames,
+                    beforeParse: tableOptions?.beforeParse ??
+                        options.beforeParse
+                };
+                return new GoogleSheetsConverter(merge(this.options, mergedTableOptions));
+            }, (converter, data) => {
+                converter.parse({ json: data });
             });
-            // If already loaded, clear the current table
-            table.deleteColumns();
-            table.setColumns(converter.getTable().getColumns());
-            return connector.setModifierOptions(dataModifier);
+            return connector.setModifierOptions(dataModifier, dataTables);
         })
             .then(() => {
             connector.emit({
                 type: 'afterLoad',
                 detail: eventDetail,
-                table,
+                tables,
                 url
             });
             // Polling
@@ -119,7 +131,7 @@ class GoogleSheetsConnector extends DataConnector {
                 type: 'loadError',
                 detail: eventDetail,
                 error,
-                table
+                tables
             });
             throw error;
         });

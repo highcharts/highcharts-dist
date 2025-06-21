@@ -14,7 +14,7 @@ const { defaultOptions } = D;
 import H from '../Globals.js';
 const { composed, noop } = H;
 import U from '../Utilities.js';
-const { addEvent, correctFloat, defined, extend, fireEvent, isObject, merge, pick, pushUnique, relativeLength, wrap } = U;
+const { addEvent, correctFloat, defined, extend, fireEvent, isObject, merge, pick, pushUnique, relativeLength, splat, wrap } = U;
 /* *
  *
  *  Composition
@@ -294,9 +294,8 @@ var RadialAxis;
      * Find the path for plot lines perpendicular to the radial axis.
      */
     function getPlotLinePath(options) {
-        const center = this.pane.center, chart = this.chart, inverted = chart.inverted, reverse = options.reverse, background = this.pane.options.background ?
-            (this.pane.options.background[0] ||
-                this.pane.options.background) :
+        const center = this.pane.center, chart = this.chart, inverted = chart.inverted, reverse = options.reverse, backgroundOption = this.pane.options.background, background = backgroundOption ?
+            splat(backgroundOption)[0] :
             {}, innerRadius = background.innerRadius || '0%', outerRadius = background.outerRadius || '100%', x1 = center[0] + chart.plotLeft, y1 = center[1] + chart.plotTop, height = this.height, isCrosshair = options.isCrosshair, paneInnerR = center[3] / 2;
         let value = options.value, innerRatio, distance, a, b, otherAxis, xy, tickPositions, crossPos, path;
         const end = this.getPosition(value);

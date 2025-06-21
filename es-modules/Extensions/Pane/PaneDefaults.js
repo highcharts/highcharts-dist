@@ -8,13 +8,16 @@
  *
  * */
 'use strict';
+import D from '../../Core/Defaults.js';
+const { defaultOptions } = D;
 /* *
  *
  *  API Options
  *
  * */
 /**
- * An array of background items for the pane.
+ * A background item or an array of such for the pane. When used in
+ * `Highcharts.setOptions` for theming, the background must be a single item.
  *
  * @sample {highcharts} highcharts/demo/gauge-speedometer/
  *         Speedometer gauge with multiple backgrounds
@@ -118,6 +121,9 @@ const background = {
  * The pane serves as a container for axes and backgrounds for circular
  * gauges and polar charts.
  *
+ * When used in `Highcharts.setOptions` for theming, the pane must be a single
+ * object, otherwise arrays are supported.
+ *
  * @type         {*|Array<*>}
  * @since        2.3.0
  * @product      highcharts
@@ -125,6 +131,7 @@ const background = {
  * @optionparent pane
  */
 const pane = {
+    background,
     /**
      * The end angle of the polar X axis or gauge value axis, given in
      * degrees where 0 is north. Defaults to [startAngle](#pane.startAngle)
@@ -187,6 +194,7 @@ const pane = {
      */
     startAngle: 0
 };
+defaultOptions.pane = pane;
 /* *
  *
  *  Default Export

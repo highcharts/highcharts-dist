@@ -1,1 +1,8 @@
-import*as t from"./highcharts.js";import"./modules/stock.js";var e,r={};r.d=(t,e)=>{for(var o in e)r.o(e,o)&&!r.o(t,o)&&Object.defineProperty(t,o,{enumerable:!0,get:e[o]})},r.o=(t,e)=>Object.prototype.hasOwnProperty.call(t,e);let o=(e={},r.d(e,{default:()=>t.default}),e);r.d({},{}),o.default.product="Highstock";let a=o.default;export{a as default};
+/**
+ * Highstock JS v12.3.0 (2025-06-21)
+ * @module highcharts/highstock
+ *
+ * (c) 2009-2025 Torstein Honsi
+ *
+ * License: www.highcharts.com/license
+ */import*as t from"./highcharts.js";import"./modules/stock.js";var e,r,o={};o.d=(t,e)=>{for(var r in e)o.o(e,r)&&!o.o(t,r)&&Object.defineProperty(t,r,{enumerable:!0,get:e[r]})},o.o=(t,e)=>Object.prototype.hasOwnProperty.call(t,e);let a=(e={default:()=>t.default},r={},o.d(r,e),r);o.d({},{}),a.default.product="Highstock";let s=a.default;export{s as default};

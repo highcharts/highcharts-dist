@@ -80,8 +80,8 @@ var __webpack_exports__ = {};
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (ema_src)
 /* harmony export */ });
-/* harmony import */ var ema_src_Core_Globals_js_WEBPACK_IMPORTED_MODULE_0_ = __webpack_require__(944);
-/* harmony import */ var ema_src_Core_Globals_js_WEBPACK_IMPORTED_MODULE_0_default = /*#__PURE__*/__webpack_require__.n(ema_src_Core_Globals_js_WEBPACK_IMPORTED_MODULE_0_);
+/* harmony import */ var _Core_Globals_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(944);
+/* harmony import */ var _Core_Globals_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_Core_Globals_js__WEBPACK_IMPORTED_MODULE_0__);
 /**
  * @requires highcharts
  */
@@ -91,7 +91,7 @@ var __webpack_exports__ = {};
  */
 
 
-/* harmony default export */ const ema_src = ((ema_src_Core_Globals_js_WEBPACK_IMPORTED_MODULE_0_default()));
+/* harmony default export */ const ema_src = ((_Core_Globals_js__WEBPACK_IMPORTED_MODULE_0___default()));
 
 __webpack_exports__ = __webpack_exports__["default"];
 /******/ 	return __webpack_exports__;

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.2.0 (2025-04-07)
+ * @license Highcharts JS v12.3.0 (2025-06-21)
  * @module highcharts/modules/item-series
  * @requires highcharts
  *
@@ -2280,9 +2280,7 @@ const seriesDefaults = {
                 size: 10,
                 /**
                  * Opacity for the halo unless a specific fill is overridden
-                 * using the `attributes` setting. Note that Highcharts is
-                 * only able to apply opacity to colors of hex or rgb(a)
-                 * formats.
+                 * using the `attributes` setting.
                  *
                  * @since   4.0
                  * @product highcharts highstock
@@ -2944,7 +2942,7 @@ class ItemSeries extends PieSeries {
             rows = Math.sqrt(total);
             if (ratio > 1) {
                 rows = Math.ceil(rows);
-                while (rows > 0) {
+                while (rows > 1) {
                     cols = total / rows;
                     if (cols / rows > ratio) {
                         break;

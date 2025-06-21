@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v12.2.0 (2025-04-07)
+ * @license Highcharts Gantt JS v12.3.0 (2025-06-21)
  * @module highcharts/modules/pathfinder
  * @requires highcharts
  *
@@ -934,7 +934,8 @@ class GanttChart extends (highcharts_Chart_commonjs_highcharts_Chart_commonjs2_h
             // Defaults
             {
                 grid: {
-                    borderColor: "#cccccc" /* Palette.neutralColor20 */,
+                    borderColor: GanttChart_defaultOptions.xAxis?.grid?.borderColor ||
+                        "#cccccc" /* Palette.neutralColor20 */,
                     enabled: true
                 },
                 opposite: GanttChart_defaultOptions.xAxis?.opposite ??
@@ -954,7 +955,8 @@ class GanttChart extends (highcharts_Chart_commonjs_highcharts_Chart_commonjs2_h
         // Defaults
         {
             grid: {
-                borderColor: "#cccccc" /* Palette.neutralColor20 */,
+                borderColor: GanttChart_defaultOptions.yAxis?.grid?.borderColor ||
+                    "#cccccc" /* Palette.neutralColor20 */,
                 enabled: true
             },
             staticScale: 50,
@@ -2253,7 +2255,7 @@ const StockUtilities = {
  * */
 
 
-const { setOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { defaultOptions: NavigatorComposition_defaultOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 const { composed: NavigatorComposition_composed } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
@@ -2283,8 +2285,8 @@ function NavigatorComposition_compose(ChartClass, AxisClass, SeriesClass) {
     if (NavigatorComposition_pushUnique(NavigatorComposition_composed, 'Navigator')) {
         ChartClass.prototype.setFixedRange = NavigatorComposition_setFixedRange;
         extend(getRendererType().prototype.symbols, Navigator_NavigatorSymbols);
+        extend(NavigatorComposition_defaultOptions, { navigator: Navigator_NavigatorDefaults });
         NavigatorComposition_addEvent(SeriesClass, 'afterUpdate', onSeriesAfterUpdate);
-        setOptions({ navigator: Navigator_NavigatorDefaults });
     }
 }
 /**
@@ -2759,10 +2761,11 @@ const ScrollbarDefaults = {
 
 const { defaultOptions: Scrollbar_defaultOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
+const { composed: Scrollbar_composed } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 
 
-const { addEvent: Scrollbar_addEvent, correctFloat: Scrollbar_correctFloat, crisp, defined: Scrollbar_defined, destroyObjectProperties, fireEvent, merge: Scrollbar_merge, pick: Scrollbar_pick, removeEvent } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { addEvent: Scrollbar_addEvent, correctFloat: Scrollbar_correctFloat, crisp, defined: Scrollbar_defined, destroyObjectProperties, extend: Scrollbar_extend, fireEvent, merge: Scrollbar_merge, pick: Scrollbar_pick, pushUnique: Scrollbar_pushUnique, removeEvent } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
  *  Constants
@@ -2788,6 +2791,9 @@ class Scrollbar {
      * */
     static compose(AxisClass) {
         Axis_ScrollbarAxis.compose(AxisClass, Scrollbar);
+        if (Scrollbar_pushUnique(Scrollbar_composed, 'Scrollbar')) {
+            Scrollbar_extend(Scrollbar_defaultOptions, { scrollbar: Scrollbar_ScrollbarDefaults });
+        }
     }
     /**
      * When we have vertical scrollbar, rifles and arrow in buttons should be
@@ -3394,12 +3400,6 @@ class Scrollbar {
  *
  * */
 Scrollbar.defaultOptions = Scrollbar_ScrollbarDefaults;
-/* *
- *
- *  Registry
- *
- * */
-Scrollbar_defaultOptions.scrollbar = Scrollbar_merge(true, Scrollbar.defaultOptions, Scrollbar_defaultOptions.scrollbar);
 /* *
  *
  *  Default Export
@@ -6527,8 +6527,7 @@ var OrdinalAxis;
     function onChartPan(e) {
         const chart = this, xAxis = chart.xAxis[0], overscroll = xAxis.ordinal.convertOverscroll(xAxis.options.overscroll), chartX = e.originalEvent.chartX, panning = chart.options.chart.panning;
         let runBase = false;
-        if (panning &&
-            panning.type !== 'y' &&
+        if (panning?.type !== 'y' &&
             xAxis.options.ordinal &&
             xAxis.series.length &&
             // On touch devices, let default function handle the pinching
@@ -6547,8 +6546,9 @@ var OrdinalAxis;
             }, index2val = xAxis.index2val, val2lin = xAxis.val2lin;
             let trimmedRange, ordinalPositions;
             // Make sure panning to the edges does not decrease the zoomed range
-            if ((min <= dataMin && movedUnits < 0) ||
-                (max + overscroll >= dataMax && movedUnits > 0)) {
+            if ((min <= dataMin && movedUnits <= 0) ||
+                (max >= dataMax + overscroll && movedUnits >= 0)) {
+                e.preventDefault();
                 return;
             }
             // We have an ordinal axis, but the data is equally spaced
@@ -6567,8 +6567,11 @@ var OrdinalAxis;
                 // If we don't compensate for this, we will be allowed to pan
                 // grouped data series passed the right of the plot area.
                 ordinalPositions = extendedAxis.ordinal.positions;
-                if (dataMax >
-                    ordinalPositions[ordinalPositions.length - 1]) {
+                if (overscroll) { // #21606
+                    ordinalPositions = extendedAxis.ordinal.positions =
+                        ordinalPositions.concat(xAxis.ordinal.getOverscrollPositions());
+                }
+                if (dataMax > ordinalPositions[ordinalPositions.length - 1]) {
                     ordinalPositions.push(dataMax);
                 }
                 // Get the new min and max values by getting the ordinal index
@@ -6599,7 +6602,7 @@ var OrdinalAxis;
         }
         // Revert to the linear chart.pan version
         if (runBase || (panning && /y/.test(panning.type))) {
-            if (overscroll) {
+            if (overscroll && OrdinalAxis_isNumber(xAxis.dataMax)) {
                 xAxis.max = xAxis.dataMax + overscroll;
             }
         }
@@ -6731,7 +6734,9 @@ var OrdinalAxis;
          * @private
          */
         beforeSetTickPositions() {
-            const axis = this.axis, ordinal = axis.ordinal, extremes = axis.getExtremes(), min = extremes.min, max = extremes.max, hasBreaks = axis.brokenAxis?.hasBreaks, isOrdinal = axis.options.ordinal;
+            const axis = this.axis, ordinal = axis.ordinal, extremes = axis.getExtremes(), min = extremes.min, max = extremes.max, hasBreaks = axis.brokenAxis?.hasBreaks, isOrdinal = axis.options.ordinal, overscroll = axis.options.overscroll &&
+                axis.ordinal.convertOverscroll(axis.options.overscroll) ||
+                0;
             let len, uniqueOrdinalPositions, dist, minIndex, maxIndex, slope, i, ordinalPositions = [], overscrollPointsRange = Number.MAX_VALUE, useOrdinal = false, adjustOrdinalExtremesPoints = false, isBoosted = false;
             // Apply the ordinal logic
             if (isOrdinal || hasBreaks) { // #4167 YAxis is never ordinal ?
@@ -6815,8 +6820,8 @@ var OrdinalAxis;
                     // spaced.
                     if (!axis.options.keepOrdinalPadding &&
                         (ordinalPositions[0] - min > dist ||
-                            (max -
-                                ordinalPositions[ordinalPositions.length - 1]) > dist)) {
+                            max - overscroll - ordinalPositions[len - 1] >
+                                dist)) {
                         useOrdinal = true;
                     }
                 }
@@ -6829,7 +6834,7 @@ var OrdinalAxis;
                     else if (len === 1) {
                         // We have just one point, closest distance is unknown.
                         // Assume then it is last point and overscrolled range:
-                        overscrollPointsRange = axis.ordinal.convertOverscroll(axis.options.overscroll);
+                        overscrollPointsRange = overscroll;
                         ordinalPositions = [
                             ordinalPositions[0],
                             ordinalPositions[0] + overscrollPointsRange
@@ -6959,6 +6964,9 @@ var OrdinalAxis;
                 // Add the fake series to hold the full data, then apply
                 // processData to it
                 axis.series.forEach((series) => {
+                    if (series.takeOrdinalPosition === false) {
+                        return; // #22657
+                    }
                     fakeSeries = {
                         xAxis: fakeAxis,
                         chart: chart,
@@ -9909,7 +9917,7 @@ const connectorsDefaults = {
 
 
 
-const { setOptions: PathfinderComposition_setOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { setOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 const { defined: PathfinderComposition_defined, error: PathfinderComposition_error, merge: PathfinderComposition_merge } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
@@ -9998,7 +10006,7 @@ var ConnectionComposition;
             pointProto.getPathfinderAnchorPoint = pointGetPathfinderAnchorPoint;
             pointProto.getRadiansToVector = pointGetRadiansToVector;
             // Set default Pathfinder options
-            PathfinderComposition_setOptions(ConnectorsDefaults);
+            setOptions(ConnectorsDefaults);
         }
     }
     ConnectionComposition.compose = compose;
@@ -10712,7 +10720,7 @@ const StaticScale = {
 
 ;// ./code/es-modules/masters/modules/static-scale.src.js
 /**
- * @license Highcharts Gantt JS v12.2.0 (2025-04-07)
+ * @license Highcharts Gantt JS v12.3.0 (2025-06-21)
  * @module highcharts/modules/static-scale
  * @requires highcharts
  *
@@ -11523,7 +11531,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 ;// ./code/es-modules/masters/modules/xrange.src.js
 /**
- * @license Highcharts JS v12.2.0 (2025-04-07)
+ * @license Highcharts JS v12.3.0 (2025-06-21)
  * @module highcharts/modules/xrange
  * @requires highcharts
  *
@@ -15069,7 +15077,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 ;// ./code/es-modules/masters/modules/gantt.src.js
 /**
- * @license Highcharts Gantt JS v12.2.0 (2025-04-07)
+ * @license Highcharts Gantt JS v12.3.0 (2025-06-21)
  * @module highcharts/modules/gantt
  * @requires highcharts
  *

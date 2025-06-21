@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.2.0 (2025-04-07)
+ * @license Highcharts JS v12.3.0 (2025-06-21)
  * @module highcharts/modules/networkgraph
  * @requires highcharts
  *
@@ -129,6 +129,10 @@ function onChartLoad() {
  *        Browser event, before normalization.
  */
 function onMouseDown(point, event) {
+    const { panKey } = this.chart.options.chart, panKeyPressed = panKey && event[`${panKey}Key`];
+    if (panKeyPressed) {
+        return;
+    }
     const normalizedEvent = this.chart.pointer?.normalize(event) || event;
     point.fixedPosition = {
         chartX: normalizedEvent.chartX,
@@ -320,7 +324,8 @@ function onChartRender() {
             afterRender = true;
         }
     };
-    if (this.graphLayoutsLookup) {
+    // Don't animate layout when series is dragged
+    if (this.graphLayoutsLookup && !this.pointer?.hasDragged) {
         setAnimation(false, this);
         // Start simulation
         this.graphLayoutsLookup.forEach((layout) => layout.start());

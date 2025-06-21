@@ -9,7 +9,7 @@
  * */
 'use strict';
 import D from '../../Core/Defaults.js';
-const { setOptions } = D;
+const { defaultOptions } = D;
 import H from '../../Core/Globals.js';
 const { composed } = H;
 import NavigatorAxisAdditions from '../../Core/Axis/NavigatorAxisComposition.js';
@@ -39,8 +39,8 @@ function compose(ChartClass, AxisClass, SeriesClass) {
     if (pushUnique(composed, 'Navigator')) {
         ChartClass.prototype.setFixedRange = setFixedRange;
         extend(getRendererType().prototype.symbols, NavigatorSymbols);
+        extend(defaultOptions, { navigator: NavigatorDefaults });
         addEvent(SeriesClass, 'afterUpdate', onSeriesAfterUpdate);
-        setOptions({ navigator: NavigatorDefaults });
     }
 }
 /**

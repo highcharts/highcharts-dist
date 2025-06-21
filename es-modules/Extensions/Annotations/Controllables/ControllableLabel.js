@@ -216,15 +216,22 @@ class ControllableLabel extends Controllable {
         labelOptions[this.collection][this.index].y = this.options.y;
     }
     render(parent) {
-        const options = this.options, attrs = this.attrsFromOptions(options), style = options.style;
+        const options = this.options, attrs = this.attrsFromOptions(options), style = options.style, optionsChart = this.annotation.chart.options.chart, chartBackground = optionsChart.plotBackgroundColor ||
+            optionsChart.backgroundColor;
         this.graphic = this.annotation.chart.renderer
             .label('', 0, -9999, // #10055
-        options.shape, null, null, options.useHTML, null, 'annotation-label')
+        options.shape, void 0, void 0, options.useHTML, void 0, 'annotation-label')
             .attr(attrs)
             .add(parent);
         if (!this.annotation.chart.styledMode) {
             if (style.color === 'contrast') {
-                style.color = this.annotation.chart.renderer.getContrast(ControllableLabel.shapesWithoutBackground.indexOf(options.shape) > -1 ? '#FFFFFF' : options.backgroundColor);
+                const background = (ControllableLabel.shapesWithoutBackground.indexOf(options.shape) > -1 ||
+                    options.backgroundColor === 'none') ?
+                    chartBackground :
+                    options.backgroundColor;
+                style.color = this.annotation.chart.renderer.getContrast(typeof background === 'string' ? background :
+                    typeof chartBackground === 'string' ? chartBackground :
+                        '#ffffff');
             }
             this.graphic
                 .css(options.style)

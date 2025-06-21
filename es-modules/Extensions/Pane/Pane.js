@@ -68,7 +68,7 @@ class Pane {
      */
     setOptions(options) {
         // Set options. Angular charts have a default background (#3318)
-        this.options = options = merge(PaneDefaults.pane, this.chart.angular ? { background: {} } : void 0, options);
+        this.options = options = merge(PaneDefaults.pane, { background: this.chart.angular ? {} : void 0 }, options);
     }
     /**
      * Render the pane with its backgrounds.

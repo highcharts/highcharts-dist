@@ -75,6 +75,10 @@ function onChartLoad() {
  *        Browser event, before normalization.
  */
 function onMouseDown(point, event) {
+    const { panKey } = this.chart.options.chart, panKeyPressed = panKey && event[`${panKey}Key`];
+    if (panKeyPressed) {
+        return;
+    }
     const normalizedEvent = this.chart.pointer?.normalize(event) || event;
     point.fixedPosition = {
         chartX: normalizedEvent.chartX,

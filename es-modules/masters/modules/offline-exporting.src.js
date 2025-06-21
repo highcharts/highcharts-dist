@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.2.0 (2025-04-07)
+ * @license Highcharts JS v12.3.0 (2025-06-21)
  * @module highcharts/modules/offline-exporting
  * @requires highcharts
  * @requires highcharts/modules/exporting
@@ -20,5 +20,5 @@ G.dataURLtoBlob = G.dataURLtoBlob || DownloadURL.dataURLtoBlob;
 G.downloadSVGLocal = OfflineExporting.downloadSVGLocal;
 G.downloadURL = G.downloadURL || DownloadURL.downloadURL;
 // Compose
-OfflineExporting.compose(G.Chart);
+OfflineExporting.compose(G.Exporting);
 export default Highcharts;

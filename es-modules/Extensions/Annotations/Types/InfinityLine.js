@@ -6,9 +6,24 @@
 'use strict';
 import Annotation from '../Annotation.js';
 import CrookedLine from './CrookedLine.js';
+import D from '../../../Core/Defaults.js';
+const { defaultOptions } = D;
 import MockPoint from '../MockPoint.js';
 import U from '../../../Core/Utilities.js';
 const { merge } = U;
+if (defaultOptions.annotations) {
+    /**
+     * Options for the infinity line annotation type.
+     *
+     * @sample highcharts/annotations-advanced/infinity-line/
+     *         Infinity line
+     *
+     * @extends      annotations.types.crookedLine
+     * @product      highstock
+     * @optionparent annotations.types.infinityLine
+     */
+    defaultOptions.annotations.types.infinityLine = merge(defaultOptions.annotations.types.crookedLine);
+}
 /* *
  *
  *  Class
@@ -109,7 +124,6 @@ class InfinityLine extends CrookedLine {
  * */
 InfinityLine.endEdgePoint = InfinityLine.edgePoint(0, 1);
 InfinityLine.startEdgePoint = InfinityLine.edgePoint(1, 0);
-InfinityLine.prototype.defaultOptions = merge(CrookedLine.prototype.defaultOptions, {});
 Annotation.types.infinityLine = InfinityLine;
 /* *
  *
@@ -128,8 +142,8 @@ export default InfinityLine;
  * @sample highcharts/annotations-advanced/infinity-line/
  *         Infinity Line
  *
- * @extends   annotations.crookedLine
+ * @extends   annotations.types.crookedLine
  * @product   highstock
- * @apioption annotations.infinityLine
+ * @apioption annotations.types.infinityLine
  */
 (''); // Keeps doclets above in transpiled file

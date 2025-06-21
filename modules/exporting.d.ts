@@ -5,13 +5,6 @@
  *!*/
 import * as globals from "../globals";
 import * as _Highcharts from "../highcharts";
-/**
- * Adds the module to the imported Highcharts namespace.
- *
- * @param highcharts
- *        The imported Highcharts namespace to extend.
- */
-export function factory(highcharts: typeof Highcharts): void;
 declare module "../highcharts" {
     interface AjaxSettingsObject {
         data?: (string|Dictionary<any>);
@@ -23,10 +16,33 @@ declare module "../highcharts" {
         url: string;
     }
     interface Chart {
-        fullscreen: Fullscreen;
         /**
-         * Exporting module required. Submit an SVG version of the chart to a
-         * server along with some parameters for conversion.
+         * Exporting object.
+         */
+        exporting: Exporting;
+        fullscreen: Fullscreen;
+    }
+    /**
+     * The Exporting class provides methods for exporting charts to images. If
+     * the exporting module is loaded, this class is instantiated on the chart
+     * and available through the `chart.exporting` property. Read more about the
+     * exporting module.
+     */
+    class Exporting {
+        /**
+         * The Exporting class provides methods for exporting charts to images.
+         * If the exporting module is loaded, this class is instantiated on the
+         * chart and available through the `chart.exporting` property. Read more
+         * about the exporting module.
+         *
+         * @param chart
+         *        The chart instance.
+         */
+        constructor(chart: Chart);
+        /**
+         * Submit an SVG version of the chart along with some parameters for
+         * local conversion (PNG, JPEG, and SVG) or conversion on a server
+         * (PDF).
          *
          * @param exportingOptions
          *        Exporting options in addition to those defined in exporting.
@@ -36,15 +52,18 @@ declare module "../highcharts" {
          *        different background color can be added here, or `dataLabels`
          *        for export only.
          */
-        exportChart(exportingOptions: ExportingOptions, chartOptions: Options): void;
+        exportChart(exportingOptions?: ExportingOptions, chartOptions?: Options): void;
         /**
          * Return the unfiltered innerHTML of the chart container. Used as hook
          * for plugins. In styled mode, it also takes care of inlining CSS style
          * rules.
          *
+         * @param applyStyleSheets
+         *        whether or not to apply the style sheets.
+         *
          * @return The unfiltered SVG of the chart.
          */
-        getChartHTML(): string;
+        getChartHTML(applyStyleSheets?: boolean): string;
         /**
          * Get the default file name used for exported charts. By default it
          * creates a file name based on the chart title.
@@ -68,10 +87,10 @@ declare module "../highcharts" {
          */
         getSVG(chartOptions?: Options): string;
         /**
-         * Exporting module required. Clears away other elements in the page and
-         * prints the chart as it is displayed. By default, when the exporting
-         * module is enabled, a context button with a drop down menu in the
-         * upper right corner accesses this function.
+         * Clears away other elements in the page and prints the chart as it is
+         * displayed. By default, when the exporting module is enabled, a
+         * context button with a drop down menu in the upper right corner
+         * accesses this function.
          *
          * @fires Highcharts.Chart#beforePrint
          * @fires Highcharts.Chart#afterPrint
@@ -132,10 +151,5 @@ declare module "../highcharts" {
      *        `Highcharts.ajax` function instead.
      */
     function getJSON(url: string, success: Function): void;
-    /**
-     * Resolve CSS variables into hex colors
-     */
-    function resolveCSSVariables(): void;
 }
-export default factory;
-export let Highcharts: typeof _Highcharts;
+export default _Highcharts;

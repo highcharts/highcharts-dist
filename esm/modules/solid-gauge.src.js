@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.2.0 (2025-04-07)
+ * @license Highcharts JS v12.3.0 (2025-06-21)
  * @module highcharts/modules/solid-gauge
  * @requires highcharts
  * @requires highcharts/highcharts-more
@@ -902,7 +902,7 @@ class SolidGaugeSeries extends GaugeSeries {
                 )) * center[2]) / 200), innerRadius = ((pInt(pick(point.options.innerRadius, options.innerRadius, 60 // %
                 )) * center[2]) / 200), axisMinAngle = Math.min(yAxis.startAngleRad, yAxis.endAngleRad), axisMaxAngle = Math.max(yAxis.startAngleRad, yAxis.endAngleRad);
                 let graphic = point.graphic, rotation = (yAxis.startAngleRad +
-                    yAxis.translate(point.y, void 0, void 0, void 0, true)), shapeArgs, d, toColor = yAxis.toColor(point.y, point);
+                    yAxis.translate(point.y, void 0, void 0, void 0, true)), shapeArgs, d, toColor = yAxis.toColor(point.y, point), className = point.getClassName();
                 if (toColor === 'none') { // #3708
                     toColor = point.color || series.color || 'none';
                 }
@@ -965,8 +965,13 @@ class SolidGaugeSeries extends GaugeSeries {
                         'stroke-width': options.borderWidth || 0
                     });
                 }
+                else if (series.yAxis?.stops) {
+                    className = className
+                        .replace(/highcharts-color-\d/gm, '')
+                        .trim();
+                }
                 if (graphic) {
-                    graphic.addClass(point.getClassName(), true);
+                    graphic.addClass(className);
                 }
             }
         }

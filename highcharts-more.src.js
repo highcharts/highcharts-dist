@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.2.0 (2025-04-07)
+ * @license Highcharts JS v12.3.0 (2025-06-21)
  * @module highcharts/highcharts-more
  * @requires highcharts
  *
@@ -445,13 +445,16 @@ const PaneComposition = {
  *
  * */
 
+
+const { defaultOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
  *  API Options
  *
  * */
 /**
- * An array of background items for the pane.
+ * A background item or an array of such for the pane. When used in
+ * `Highcharts.setOptions` for theming, the background must be a single item.
  *
  * @sample {highcharts} highcharts/demo/gauge-speedometer/
  *         Speedometer gauge with multiple backgrounds
@@ -555,6 +558,9 @@ const background = {
  * The pane serves as a container for axes and backgrounds for circular
  * gauges and polar charts.
  *
+ * When used in `Highcharts.setOptions` for theming, the pane must be a single
+ * object, otherwise arrays are supported.
+ *
  * @type         {*|Array<*>}
  * @since        2.3.0
  * @product      highcharts
@@ -562,6 +568,7 @@ const background = {
  * @optionparent pane
  */
 const pane = {
+    background,
     /**
      * The end angle of the polar X axis or gauge value axis, given in
      * degrees where 0 is north. Defaults to [startAngle](#pane.startAngle)
@@ -624,6 +631,7 @@ const pane = {
      */
     startAngle: 0
 };
+defaultOptions.pane = pane;
 /* *
  *
  *  Default Export
@@ -706,7 +714,7 @@ class Pane {
      */
     setOptions(options) {
         // Set options. Angular charts have a default background (#3318)
-        this.options = options = merge(Pane_PaneDefaults.pane, this.chart.angular ? { background: {} } : void 0, options);
+        this.options = options = merge(Pane_PaneDefaults.pane, { background: this.chart.angular ? {} : void 0 }, options);
     }
     /**
      * Render the pane with its backgrounds.
@@ -3421,8 +3429,8 @@ class BubblePoint extends ScatterPoint {
                 0 :
             0) + size;
         if (this.series.chart.inverted) {
-            const pos = this.pos() || [0, 0], { xAxis, yAxis, chart } = this.series;
-            return chart.renderer.symbols.circle(xAxis.len - pos[1] - computedSize, yAxis.len - pos[0] - computedSize, computedSize * 2, computedSize * 2);
+            const pos = this.pos() || [0, 0], { xAxis, yAxis, chart } = this.series, diameter = computedSize * 2;
+            return chart.renderer.symbols.circle((xAxis?.len || 0) - pos[1] - computedSize, (yAxis?.len || 0) - pos[0] - computedSize, diameter, diameter);
         }
         return highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_default().prototype.haloPath.call(this, 
         // #6067
@@ -5727,6 +5735,10 @@ function onChartLoad() {
  *        Browser event, before normalization.
  */
 function onMouseDown(point, event) {
+    const { panKey } = this.chart.options.chart, panKeyPressed = panKey && event[`${panKey}Key`];
+    if (panKeyPressed) {
+        return;
+    }
     const normalizedEvent = this.chart.pointer?.normalize(event) || event;
     point.fixedPosition = {
         chartX: normalizedEvent.chartX,
@@ -5918,7 +5930,8 @@ function onChartRender() {
             afterRender = true;
         }
     };
-    if (this.graphLayoutsLookup) {
+    // Don't animate layout when series is dragged
+    if (this.graphLayoutsLookup && !this.pointer?.hasDragged) {
         setAnimation(false, this);
         // Start simulation
         this.graphLayoutsLookup.forEach((layout) => layout.start());
@@ -6011,6 +6024,11 @@ class PackedBubblePoint extends PackedBubblePoint_BubblePoint {
         }
         else {
             highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_default().prototype.select.apply(this, arguments);
+        }
+    }
+    setState(state, move) {
+        if (this?.graphic?.parentGroup?.element) {
+            super.setState(state, move);
         }
     }
 }
@@ -9500,11 +9518,11 @@ const RadialAxisDefaults = {
 
 
 
-const { defaultOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { defaultOptions: RadialAxis_defaultOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 const { composed: RadialAxis_composed, noop: RadialAxis_noop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { addEvent: RadialAxis_addEvent, correctFloat: RadialAxis_correctFloat, defined: RadialAxis_defined, extend: RadialAxis_extend, fireEvent: RadialAxis_fireEvent, isObject, merge: RadialAxis_merge, pick: RadialAxis_pick, pushUnique: RadialAxis_pushUnique, relativeLength: RadialAxis_relativeLength, wrap: RadialAxis_wrap } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { addEvent: RadialAxis_addEvent, correctFloat: RadialAxis_correctFloat, defined: RadialAxis_defined, extend: RadialAxis_extend, fireEvent: RadialAxis_fireEvent, isObject, merge: RadialAxis_merge, pick: RadialAxis_pick, pushUnique: RadialAxis_pushUnique, relativeLength: RadialAxis_relativeLength, splat: RadialAxis_splat, wrap: RadialAxis_wrap } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
  *  Composition
@@ -9784,9 +9802,8 @@ var RadialAxis;
      * Find the path for plot lines perpendicular to the radial axis.
      */
     function getPlotLinePath(options) {
-        const center = this.pane.center, chart = this.chart, inverted = chart.inverted, reverse = options.reverse, background = this.pane.options.background ?
-            (this.pane.options.background[0] ||
-                this.pane.options.background) :
+        const center = this.pane.center, chart = this.chart, inverted = chart.inverted, reverse = options.reverse, backgroundOption = this.pane.options.background, background = backgroundOption ?
+            RadialAxis_splat(backgroundOption)[0] :
             {}, innerRadius = background.innerRadius || '0%', outerRadius = background.outerRadius || '100%', x1 = center[0] + chart.plotLeft, y1 = center[1] + chart.plotTop, height = this.height, isCrosshair = options.isCrosshair, paneInnerR = center[3] / 2;
         let value = options.value, innerRatio, distance, a, b, otherAxis, xy, tickPositions, crossPos, path;
         const end = this.getPosition(value);
@@ -10306,18 +10323,18 @@ var RadialAxis;
         let defaultPolarOptions = {};
         if (angular) {
             if (!this.isXAxis) {
-                defaultPolarOptions = RadialAxis_merge(defaultOptions.yAxis, RadialAxis.radialDefaultOptions.radialGauge);
+                defaultPolarOptions = RadialAxis_merge(RadialAxis_defaultOptions.yAxis, RadialAxis.radialDefaultOptions.radialGauge);
             }
         }
         else if (polar) {
             defaultPolarOptions = this.horiz ?
-                RadialAxis_merge(defaultOptions.xAxis, RadialAxis.radialDefaultOptions.circular) :
+                RadialAxis_merge(RadialAxis_defaultOptions.xAxis, RadialAxis.radialDefaultOptions.circular) :
                 RadialAxis_merge(coll === 'xAxis' ?
-                    defaultOptions.xAxis :
-                    defaultOptions.yAxis, RadialAxis.radialDefaultOptions.radial);
+                    RadialAxis_defaultOptions.xAxis :
+                    RadialAxis_defaultOptions.yAxis, RadialAxis.radialDefaultOptions.radial);
         }
         if (inverted && coll === 'yAxis') {
-            defaultPolarOptions.stackLabels = isObject(defaultOptions.yAxis, true) ? defaultOptions.yAxis.stackLabels : {};
+            defaultPolarOptions.stackLabels = isObject(RadialAxis_defaultOptions.yAxis, true) ? RadialAxis_defaultOptions.yAxis.stackLabels : {};
             defaultPolarOptions.reversedStacks = true;
         }
         const options = this.options = RadialAxis_merge(defaultPolarOptions, userOptions);
@@ -10523,7 +10540,7 @@ function onChartCreateAxes() {
         this.pane = [];
     }
     this.options.pane = PolarComposition_splat(this.options.pane || {});
-    this.options.pane.forEach((paneOptions) => {
+    PolarComposition_splat(this.userOptions.pane || {}).forEach((paneOptions) => {
         new Pane_Pane(// eslint-disable-line no-new
         paneOptions, this);
     }, this);
@@ -11444,7 +11461,7 @@ var WaterfallAxis;
      * @private
      */
     function onAxisAfterBuildStacks() {
-        const axis = this, stacks = axis.waterfall.stacks;
+        const axis = this, stacks = axis.waterfall?.stacks;
         if (stacks) {
             stacks.changed = false;
             delete stacks.alreadyChanged;
@@ -11456,7 +11473,7 @@ var WaterfallAxis;
     function onAxisAfterRender() {
         const axis = this, stackLabelOptions = axis.options.stackLabels;
         if (stackLabelOptions?.enabled &&
-            axis.waterfall.stacks) {
+            axis.waterfall?.stacks) {
             axis.waterfall.renderStackTotals();
         }
     }
@@ -11477,7 +11494,7 @@ var WaterfallAxis;
         for (const serie of series) {
             if (serie.options.stacking) {
                 for (const axis of axes) {
-                    if (!axis.isXAxis) {
+                    if (!axis.isXAxis && axis.waterfall) {
                         axis.waterfall.stacks.changed = true;
                     }
                 }
@@ -11515,7 +11532,7 @@ var WaterfallAxis;
          * @function Highcharts.Axis#renderWaterfallStackTotals
          */
         renderStackTotals() {
-            const yAxis = this.axis, waterfallStacks = yAxis.waterfall.stacks, stackTotalGroup = yAxis.stacking?.stackTotalGroup, dummyStackItem = new (highcharts_StackItem_commonjs_highcharts_StackItem_commonjs2_highcharts_StackItem_root_Highcharts_StackItem_default())(yAxis, yAxis.options.stackLabels || {}, false, 0, void 0);
+            const yAxis = this.axis, waterfallStacks = yAxis.waterfall?.stacks, stackTotalGroup = yAxis.stacking?.stackTotalGroup, dummyStackItem = new (highcharts_StackItem_commonjs_highcharts_StackItem_commonjs2_highcharts_StackItem_root_Highcharts_StackItem_default())(yAxis, yAxis.options.stackLabels || {}, false, 0, void 0);
             this.dummyStackItem = dummyStackItem;
             // Render each waterfall stack total
             if (stackTotalGroup) {
@@ -11942,7 +11959,7 @@ class WaterfallSeries extends WaterfallSeries_ColumnSeries {
             if (!box || !prevBox) {
                 continue;
             }
-            const prevStack = yAxis.waterfall.stacks[this.stackKey], isPos = prevY > 0 ? -prevBox.height : 0;
+            const prevStack = yAxis.waterfall?.stacks[this.stackKey], isPos = prevY > 0 ? -prevBox.height : 0;
             if (prevStack && prevBox && box) {
                 const prevStackX = prevStack[i - 1];
                 // Y position of the connector is different when series are
@@ -12107,11 +12124,9 @@ class WaterfallSeries extends WaterfallSeries_ColumnSeries {
     // Extremes for a non-stacked series are recorded in processData.
     // In case of stacking, use Series.stackedYData to calculate extremes.
     getExtremes() {
-        const stacking = this.options.stacking;
-        let yAxis, waterfallStacks, stackedYNeg, stackedYPos;
-        if (stacking) {
-            yAxis = this.yAxis;
-            waterfallStacks = yAxis.waterfall.stacks;
+        const stacking = this.options.stacking, yAxis = this.yAxis, waterfallStacks = yAxis.waterfall?.stacks;
+        let stackedYNeg, stackedYPos;
+        if (stacking && waterfallStacks) {
             stackedYNeg = this.stackedYNeg = [];
             stackedYPos = this.stackedYPos = [];
             // The visible y range can be different when stacking is set to
@@ -12157,7 +12172,7 @@ WaterfallSeries_extend(WaterfallSeries.prototype, {
 });
 // Translate data points from raw values
 WaterfallSeries_addEvent(WaterfallSeries, 'afterColumnTranslate', function () {
-    const series = this, { options, points, yAxis } = series, minPointLength = WaterfallSeries_pick(options.minPointLength, 5), halfMinPointLength = minPointLength / 2, threshold = options.threshold || 0, stacking = options.stacking, actualStack = yAxis.waterfall.stacks[series.stackKey], processedYData = series.getColumn('y', true);
+    const series = this, { options, points, yAxis } = series, minPointLength = WaterfallSeries_pick(options.minPointLength, 5), halfMinPointLength = minPointLength / 2, threshold = options.threshold || 0, stacking = options.stacking, actualStack = yAxis.waterfall?.stacks[series.stackKey], processedYData = series.getColumn('y', true);
     let previousIntermediate = threshold, previousY = threshold, y, total, yPos, hPos;
     for (let i = 0; i < points.length; i++) {
         const point = points[i], yValue = processedYData[i], shapeArgs = point.shapeArgs, box = WaterfallSeries_extend({
@@ -12233,7 +12248,7 @@ WaterfallSeries_addEvent(WaterfallSeries, 'afterColumnTranslate', function () {
                 box.y = yAxis.translate(yPos, false, true, false, true);
                 box.height = Math.abs(box.y -
                     yAxis.translate(hPos, false, true, false, true));
-                const dummyStackItem = yAxis.waterfall.dummyStackItem;
+                const dummyStackItem = yAxis.waterfall?.dummyStackItem;
                 if (dummyStackItem) {
                     dummyStackItem.x = i;
                     dummyStackItem.label = actualStack[i].label;

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.2.0 (2025-04-07)
+ * @license Highcharts JS v12.3.0 (2025-06-21)
  * @module highcharts/modules/navigator
  * @requires highcharts
  *
@@ -1278,7 +1278,7 @@ const StockUtilities = {
  * */
 
 
-const { setOptions } = (external_highcharts_src_js_default_default());
+const { defaultOptions } = (external_highcharts_src_js_default_default());
 
 const { composed } = (external_highcharts_src_js_default_default());
 
@@ -1308,8 +1308,8 @@ function NavigatorComposition_compose(ChartClass, AxisClass, SeriesClass) {
     if (pushUnique(composed, 'Navigator')) {
         ChartClass.prototype.setFixedRange = NavigatorComposition_setFixedRange;
         extend(getRendererType().prototype.symbols, Navigator_NavigatorSymbols);
+        extend(defaultOptions, { navigator: Navigator_NavigatorDefaults });
         NavigatorComposition_addEvent(SeriesClass, 'afterUpdate', onSeriesAfterUpdate);
-        setOptions({ navigator: Navigator_NavigatorDefaults });
     }
 }
 /**
@@ -1782,12 +1782,13 @@ const ScrollbarDefaults = {
  * */
 
 
-const { defaultOptions } = (external_highcharts_src_js_default_default());
+const { defaultOptions: Scrollbar_defaultOptions } = (external_highcharts_src_js_default_default());
+
+const { composed: Scrollbar_composed } = (external_highcharts_src_js_default_default());
 
 
 
-
-const { addEvent: Scrollbar_addEvent, correctFloat: Scrollbar_correctFloat, crisp, defined: Scrollbar_defined, destroyObjectProperties, fireEvent, merge: Scrollbar_merge, pick: Scrollbar_pick, removeEvent } = (external_highcharts_src_js_default_default());
+const { addEvent: Scrollbar_addEvent, correctFloat: Scrollbar_correctFloat, crisp, defined: Scrollbar_defined, destroyObjectProperties, extend: Scrollbar_extend, fireEvent, merge: Scrollbar_merge, pick: Scrollbar_pick, pushUnique: Scrollbar_pushUnique, removeEvent } = (external_highcharts_src_js_default_default());
 /* *
  *
  *  Constants
@@ -1813,6 +1814,9 @@ class Scrollbar {
      * */
     static compose(AxisClass) {
         Axis_ScrollbarAxis.compose(AxisClass, Scrollbar);
+        if (Scrollbar_pushUnique(Scrollbar_composed, 'Scrollbar')) {
+            Scrollbar_extend(Scrollbar_defaultOptions, { scrollbar: Scrollbar_ScrollbarDefaults });
+        }
     }
     /**
      * When we have vertical scrollbar, rifles and arrow in buttons should be
@@ -2059,7 +2063,7 @@ class Scrollbar {
         scroller.scrollbarButtons = [];
         scroller.renderer = renderer;
         scroller.userOptions = options;
-        scroller.options = Scrollbar_merge(Scrollbar_ScrollbarDefaults, defaultOptions.scrollbar, options);
+        scroller.options = Scrollbar_merge(Scrollbar_ScrollbarDefaults, Scrollbar_defaultOptions.scrollbar, options);
         scroller.options.margin = Scrollbar_pick(scroller.options.margin, 10);
         scroller.chart = chart;
         // Backward compatibility
@@ -2419,12 +2423,6 @@ class Scrollbar {
  *
  * */
 Scrollbar.defaultOptions = Scrollbar_ScrollbarDefaults;
-/* *
- *
- *  Registry
- *
- * */
-defaultOptions.scrollbar = Scrollbar_merge(true, Scrollbar.defaultOptions, defaultOptions.scrollbar);
 /* *
  *
  *  Default Export

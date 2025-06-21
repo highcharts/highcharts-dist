@@ -1265,7 +1265,7 @@ class Chart {
         delete chart.pointer?.chartPosition;
         // Width and height checks for display:none. Target is doc in Opera
         // and win in Firefox, Chrome and IE9.
-        if (!chart.isPrinting &&
+        if (!chart.exporting?.isPrinting &&
             !chart.isResizing &&
             oldBox &&
             // When fired by resize observer inside hidden container
@@ -1804,12 +1804,13 @@ class Chart {
             renderAxes(colorAxis);
         }
         // The series
-        if (!chart.seriesGroup) {
-            chart.seriesGroup = renderer.g('series-group')
-                .attr({ zIndex: 3 })
-                .shadow(chart.options.chart.seriesGroupShadow)
-                .add();
-        }
+        chart.seriesGroup || (chart.seriesGroup = renderer.g('series-group')
+            .attr({ zIndex: 3 })
+            .shadow(chart.options.chart.seriesGroupShadow)
+            .add());
+        chart.dataLabelsGroup || (chart.dataLabelsGroup = renderer.g('datalabels-group')
+            .attr({ zIndex: 6 })
+            .add());
         chart.renderSeries();
         // Credits
         chart.addCredits();
@@ -2641,9 +2642,10 @@ class Chart {
      */
     transform(params) {
         const { axes = this.axes, event, from = {}, reset, selection, to = {}, trigger } = params, { inverted, time } = this;
-        let hasZoomed = false, displayButton, isAnyAxisPanning;
         // Remove active points for shared tooltip
         this.hoverPoints?.forEach((point) => point.setState());
+        fireEvent(this, 'transform', params);
+        let hasZoomed = params.hasZoomed || false, displayButton, isAnyAxisPanning;
         for (const axis of axes) {
             const { horiz, len, minPointOffset = 0, options, reversed } = axis, wh = horiz ? 'width' : 'height', xy = horiz ? 'x' : 'y', toLength = pick(to[wh], axis.len), fromLength = pick(from[wh], axis.len), 
             // If fingers pinched very close on this axis, treat as pan
@@ -2659,19 +2661,19 @@ class Chart {
             if (!reset && (fromCenter < 0 || fromCenter > axis.len)) {
                 continue;
             }
-            let newMin = axis.toValue(minPx, true) +
-                // Don't apply offset for selection (#20784)
-                (selection || axis.isOrdinal ?
-                    0 : minPointOffset * pointRangeDirection), newMax = axis.toValue(minPx + len / scale, true) -
-                (
-                // Don't apply offset for selection (#20784)
-                selection || axis.isOrdinal ?
-                    0 :
-                    ((minPointOffset * pointRangeDirection) ||
-                        // Polar zoom tests failed when this was not
-                        // commented:
-                        // (axis.isXAxis && axis.pointRangePadding) ||
-                        0)), allExtremes = axis.allExtremes;
+            // Adjust offset to ensure selection zoom triggers correctly
+            // (#22945)
+            const offset = (axis.chart.polar || axis.isOrdinal) ?
+                0 :
+                (minPointOffset * pointRangeDirection || 0), eventMin = axis.toValue(minPx, true), eventMax = axis.toValue(minPx + len / scale, true);
+            let newMin = eventMin + offset, newMax = eventMax - offset, allExtremes = axis.allExtremes;
+            if (selection) {
+                selection[axis.coll].push({
+                    axis,
+                    min: Math.min(eventMin, eventMax),
+                    max: Math.max(eventMin, eventMax)
+                });
+            }
             if (newMin > newMax) {
                 [newMin, newMax] = [newMax, newMin];
             }
@@ -2711,10 +2713,7 @@ class Chart {
             // It is not necessary to calculate extremes on ordinal axis,
             // because they are already calculated, so we don't want to override
             // them.
-            if (!axis.isOrdinal ||
-                axis.options.overscroll || // #21316
-                scale !== 1 ||
-                reset) {
+            if (!axis.isOrdinal || scale !== 1 || reset) {
                 // If the new range spills over, either to the min or max,
                 // adjust it.
                 if (newMin < floor) {
@@ -2758,6 +2757,13 @@ class Chart {
                         }
                     }
                     hasZoomed = true;
+                }
+                // Show the resetZoom button for non-cartesian series,
+                // except when triggered by mouse wheel zoom
+                if (!this.hasCartesianSeries &&
+                    !reset &&
+                    trigger !== 'mousewheel') {
+                    displayButton = true;
                 }
                 if (event) {
                     this[horiz ? 'mouseDownX' : 'mouseDownY'] =

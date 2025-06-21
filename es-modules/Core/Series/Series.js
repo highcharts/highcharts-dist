@@ -809,7 +809,9 @@ class Series {
             // all the rest are defined the same way. Although the 'for' loops
             // are similar, they are repeated inside each if-else conditional
             // for max performance.
-            let runTurbo = turboThreshold && dataLength > turboThreshold;
+            let runTurbo = (turboThreshold &&
+                !options.relativeXValue &&
+                dataLength > turboThreshold);
             if (runTurbo) {
                 const firstPoint = series.getFirstValidPoint(data), lastPoint = series.getFirstValidPoint(data, dataLength - 1, -1), isShortArray = (a) => Boolean(isArray(a) && (keys || isNumber(a[0])));
                 // Assume all points are numbers
@@ -2154,18 +2156,26 @@ class Series {
             horAxis = vertAxis;
             vertAxis = this.xAxis;
         }
-        return {
+        const params = {
+            scale: 1,
             translateX: horAxis ? horAxis.left : chart.plotLeft,
             translateY: vertAxis ? vertAxis.top : chart.plotTop,
+            name
+        };
+        fireEvent(this, 'getPlotBox', params);
+        const { scale, translateX, translateY } = params;
+        return {
+            translateX,
+            translateY,
             rotation: inverted ? 90 : 0,
             rotationOriginX: inverted ?
-                (horAxis.len - vertAxis.len) / 2 :
+                scale * (horAxis.len - vertAxis.len) / 2 :
                 0,
             rotationOriginY: inverted ?
-                (horAxis.len + vertAxis.len) / 2 :
+                scale * (horAxis.len + vertAxis.len) / 2 :
                 0,
-            scaleX: inverted ? -1 : 1, // #1623
-            scaleY: 1
+            scaleX: inverted ? -scale : scale, // #1623
+            scaleY: scale
         };
     }
     /**

@@ -139,7 +139,7 @@ class WaterfallSeries extends ColumnSeries {
             if (!box || !prevBox) {
                 continue;
             }
-            const prevStack = yAxis.waterfall.stacks[this.stackKey], isPos = prevY > 0 ? -prevBox.height : 0;
+            const prevStack = yAxis.waterfall?.stacks[this.stackKey], isPos = prevY > 0 ? -prevBox.height : 0;
             if (prevStack && prevBox && box) {
                 const prevStackX = prevStack[i - 1];
                 // Y position of the connector is different when series are
@@ -304,11 +304,9 @@ class WaterfallSeries extends ColumnSeries {
     // Extremes for a non-stacked series are recorded in processData.
     // In case of stacking, use Series.stackedYData to calculate extremes.
     getExtremes() {
-        const stacking = this.options.stacking;
-        let yAxis, waterfallStacks, stackedYNeg, stackedYPos;
-        if (stacking) {
-            yAxis = this.yAxis;
-            waterfallStacks = yAxis.waterfall.stacks;
+        const stacking = this.options.stacking, yAxis = this.yAxis, waterfallStacks = yAxis.waterfall?.stacks;
+        let stackedYNeg, stackedYPos;
+        if (stacking && waterfallStacks) {
             stackedYNeg = this.stackedYNeg = [];
             stackedYPos = this.stackedYPos = [];
             // The visible y range can be different when stacking is set to
@@ -354,7 +352,7 @@ extend(WaterfallSeries.prototype, {
 });
 // Translate data points from raw values
 addEvent(WaterfallSeries, 'afterColumnTranslate', function () {
-    const series = this, { options, points, yAxis } = series, minPointLength = pick(options.minPointLength, 5), halfMinPointLength = minPointLength / 2, threshold = options.threshold || 0, stacking = options.stacking, actualStack = yAxis.waterfall.stacks[series.stackKey], processedYData = series.getColumn('y', true);
+    const series = this, { options, points, yAxis } = series, minPointLength = pick(options.minPointLength, 5), halfMinPointLength = minPointLength / 2, threshold = options.threshold || 0, stacking = options.stacking, actualStack = yAxis.waterfall?.stacks[series.stackKey], processedYData = series.getColumn('y', true);
     let previousIntermediate = threshold, previousY = threshold, y, total, yPos, hPos;
     for (let i = 0; i < points.length; i++) {
         const point = points[i], yValue = processedYData[i], shapeArgs = point.shapeArgs, box = extend({
@@ -430,7 +428,7 @@ addEvent(WaterfallSeries, 'afterColumnTranslate', function () {
                 box.y = yAxis.translate(yPos, false, true, false, true);
                 box.height = Math.abs(box.y -
                     yAxis.translate(hPos, false, true, false, true));
-                const dummyStackItem = yAxis.waterfall.dummyStackItem;
+                const dummyStackItem = yAxis.waterfall?.dummyStackItem;
                 if (dummyStackItem) {
                     dummyStackItem.x = i;
                     dummyStackItem.label = actualStack[i].label;

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v12.2.0 (2025-04-07)
+ * @license Highstock JS v12.3.0 (2025-06-21)
  * @module highcharts/modules/full-screen
  * @requires highcharts
  *
@@ -141,7 +141,7 @@ class Fullscreen {
          * the fullscreen mode.
          *
          * @name Highcharts.Fullscreen#isOpen
-         * @type {boolean|undefined}
+         * @type {boolean | undefined}
          * @since 8.0.1
          */
         this.isOpen = false;
@@ -283,7 +283,7 @@ class Fullscreen {
      * @requires modules/full-screen
      */
     setButtonText() {
-        const chart = this.chart, exportDivElements = chart.exportDivElements, exportingOptions = chart.options.exporting, menuItems = (exportingOptions &&
+        const chart = this.chart, exportDivElements = chart.exporting?.divElements, exportingOptions = chart.options.exporting, menuItems = (exportingOptions &&
             exportingOptions.buttons &&
             exportingOptions.buttons.contextButton.menuItems), lang = chart.options.lang;
         if (exportingOptions &&

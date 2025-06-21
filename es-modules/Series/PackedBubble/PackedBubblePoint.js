@@ -58,6 +58,11 @@ class PackedBubblePoint extends BubblePoint {
             Point.prototype.select.apply(this, arguments);
         }
     }
+    setState(state, move) {
+        if (this?.graphic?.parentGroup?.element) {
+            super.setState(state, move);
+        }
+    }
 }
 /* *
  *

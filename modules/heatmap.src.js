@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.2.0 (2025-04-07)
+ * @license Highcharts JS v12.3.0 (2025-06-21)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -2153,8 +2153,7 @@ const HeatmapSeriesDefaults = {
             /** @ignore-option */
             halo: false, // #3406, halo is disabled on heatmaps by default
             /**
-             * How much to brighten the point on interaction. Requires the
-             * main color to be defined in hex or rgb(a) format.
+             * How much to brighten the point on interaction.
              *
              * In styled mode, the hover brightening is by default replaced
              * with a fill-opacity set in the `.highcharts-point:hover`
@@ -2906,7 +2905,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 ;// ./code/es-modules/masters/modules/heatmap.src.js
 /**
- * @license Highmaps JS v12.2.0 (2025-04-07)
+ * @license Highmaps JS v12.3.0 (2025-06-21)
  * @module highcharts/modules/heatmap
  * @requires highcharts
  *

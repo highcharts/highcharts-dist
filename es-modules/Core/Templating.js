@@ -132,7 +132,7 @@ function format(str = '', ctx, owner) {
     // The sub expression regex is the same as the top expression regex,
     // but except parens and block helpers (#), and surrounded by parens
     // instead of curly brackets.
-    subRegex = /\(([a-zA-Z\u00C0-\u017F\d:\.,;\-\/<>\[\]%_@+"'= ]+)\)/g, matches = [], floatRegex = /f$/, decRegex = /\.(\d)/, lang = owner?.options?.lang || defaultOptions.lang, time = owner?.time || defaultTime, numberFormatter = owner?.numberFormatter || numberFormat;
+    subRegex = /\(([a-zA-Z\u00C0-\u017F\d:\.,;\-\/<>\[\]%_@+"'= ]+)\)/g, matches = [], floatRegex = /f$/, decRegex = /\.(\d)/, lang = owner?.options?.lang || defaultOptions.lang, time = owner?.time || defaultTime, numberFormatter = owner?.numberFormatter || numberFormat.bind(owner);
     /*
      * Get a literal or variable value inside a template expression. May be
      * extended with other types like string or null if needed, but keep it
@@ -267,9 +267,11 @@ function format(str = '', ctx, owner) {
                 [expression] : expression.split(':');
             replacement = resolveProperty(valueAndFormat.shift() || '');
             // Format the replacement
-            if (valueAndFormat.length && typeof replacement === 'number') {
+            const isFloat = replacement % 1 !== 0;
+            if (typeof replacement === 'number' &&
+                (valueAndFormat.length || isFloat)) {
                 const segment = valueAndFormat.join(':');
-                if (floatRegex.test(segment)) { // Float
+                if (floatRegex.test(segment) || isFloat) { // Float
                     const decimals = parseInt((segment.match(decRegex) || ['', '-1'])[1], 10);
                     if (replacement !== null) {
                         replacement = numberFormatter(replacement, decimals, lang.decimalPoint, segment.indexOf(',') > -1 ? lang.thousandsSep : '');
@@ -364,8 +366,7 @@ function numberFormat(number, decimals, decimalPoint, thousandsSep) {
         options.useGrouping = false;
     }
     const hasSeparators = thousandsSep || decimalPoint, locale = hasSeparators ?
-        'en' :
-        (this?.locale || lang.locale || pageLang), cacheKey = JSON.stringify(options) + locale, nf = numberFormatCache[cacheKey] ?? (numberFormatCache[cacheKey] = new Intl.NumberFormat(locale, options));
+        'en' : (this?.locale || lang.locale || pageLang), cacheKey = JSON.stringify(options) + locale, nf = numberFormatCache[cacheKey] ?? (numberFormatCache[cacheKey] = new Intl.NumberFormat(locale, options));
     ret = nf.format(number);
     // If thousandsSep or decimalPoint are set, fall back to using English
     // format with string replacement for the separators.

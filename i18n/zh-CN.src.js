@@ -1,5 +1,5 @@
 /**
-* @license Highcharts JS v12.2.0 (2025-04-07)
+* @license Highcharts JS v12.3.0 (2025-06-21)
 * @module highcharts/i18n/zh-CN
 * @requires highcharts
 *
@@ -93,12 +93,12 @@ var __webpack_exports__ = {};
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (zh_CN_src)
 /* harmony export */ });
-/* harmony import */ var zh_CN_src_Core_Defaults_js_WEBPACK_IMPORTED_MODULE_0_ = __webpack_require__(944);
-/* harmony import */ var zh_CN_src_Core_Defaults_js_WEBPACK_IMPORTED_MODULE_0_default = /*#__PURE__*/__webpack_require__.n(zh_CN_src_Core_Defaults_js_WEBPACK_IMPORTED_MODULE_0_);
+/* harmony import */ var _Core_Defaults_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(944);
+/* harmony import */ var _Core_Defaults_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_Core_Defaults_js__WEBPACK_IMPORTED_MODULE_0__);
 
 
-const { setOptions: zh_CN_src_setOptions } = (zh_CN_src_Core_Defaults_js_WEBPACK_IMPORTED_MODULE_0_default());
-const zh_CN_src_languageOptions = {
+const { setOptions } = (_Core_Defaults_js__WEBPACK_IMPORTED_MODULE_0___default());
+const languageOptions = {
     "locale": "zh-CN",
     "chartTitle": "图表标题",
     "pieSliceName": "扇区",
@@ -602,11 +602,11 @@ const zh_CN_src_languageOptions = {
     },
     "noData": "没有数据显示"
 };
-zh_CN_src_setOptions({
-    lang: zh_CN_src_languageOptions
+setOptions({
+    lang: languageOptions
 });
 // Export Highcharts
-/* harmony default export */ const zh_CN_src = ((zh_CN_src_Core_Defaults_js_WEBPACK_IMPORTED_MODULE_0_default()));
+/* harmony default export */ const zh_CN_src = ((_Core_Defaults_js__WEBPACK_IMPORTED_MODULE_0___default()));
 
 __webpack_exports__ = __webpack_exports__["default"];
 /******/ 	return __webpack_exports__;

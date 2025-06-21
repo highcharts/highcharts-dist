@@ -446,9 +446,11 @@ class TreegraphSeries extends TreemapSeries {
 }
 TreegraphSeries.defaultOptions = merge(TreemapSeries.defaultOptions, TreegraphSeriesDefaults);
 extend(TreegraphSeries.prototype, {
+    forceDL: true,
     pointClass: TreegraphPoint,
     NodeClass: TreegraphNode,
-    LinkClass: TreegraphLink
+    LinkClass: TreegraphLink,
+    isCartesian: false
 });
 SeriesRegistry.registerSeriesType('treegraph', TreegraphSeries);
 /* *

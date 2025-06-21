@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.2.0 (2025-04-07)
+ * @license Highcharts JS v12.3.0 (2025-06-21)
  * @module highcharts/modules/annotations-advanced
  * @requires highcharts
  *
@@ -68,7 +68,7 @@ var x = (y) => {
  * */
 
 
-const { addEvent, erase, find, fireEvent, pick, wrap } = (external_highcharts_src_js_default_default());
+const { addEvent, erase, find, fireEvent, isArray, isObject, pick, wrap } = (external_highcharts_src_js_default_default());
 /* *
  *
  *  Functions
@@ -276,10 +276,14 @@ function chartRemoveAnnotation(idOrAnnotation) {
  * @private
  */
 function onChartAfterInit() {
-    const chart = this;
+    const chart = this, annotationsOption = this.options.annotations, annotationsUserOption = this.userOptions.annotations;
     chart.annotations = [];
-    if (!this.options.annotations) {
+    if (!isArray(this.options.annotations)) {
         this.options.annotations = [];
+    }
+    if (isObject(annotationsUserOption, true) &&
+        isObject(annotationsOption, true)) {
+        this.options.annotations.push(annotationsOption);
     }
 }
 /**
@@ -351,20 +355,25 @@ const { defined } = (external_highcharts_src_js_default_default());
  *
  * */
 /**
- * A basic type of an annotation. It allows to add custom labels
- * or shapes. The items can be tied to points, axis coordinates
- * or chart pixel coordinates.
+ * A collection of annotations to add to the chart. The basic annotation allows
+ * adding custom labels or shapes. The items can be tied to points, axis
+ * coordinates or chart pixel coordinates.
  *
- * @sample highcharts/annotations/basic/
- *         Basic annotations
- * @sample highcharts/demo/annotations/
- *         Advanced annotations
- * @sample highcharts/css/annotations
- *         Styled mode
- * @sample highcharts/annotations-advanced/controllable
- *         Controllable items
+ * General options for all annotations can be set using the
+ * `Highcharts.setOptions` function. In this case only single objects are
+ * supported, because it alters the defaults for all items. For initialization
+ * in the chart constructors however, arrays of annotations are supported.
+ *
+ * See more in the [general docs](https://www.highcharts.com/docs/advanced-chart-features/annotations).
+ *
+ * @sample highcharts/annotations/basic/ Basic annotations
+ * @sample highcharts/demo/annotations/ Annotated chart
+ * @sample highcharts/css/annotations Styled mode
+ * @sample highcharts/annotations-advanced/controllable Controllable items
  * @sample {highstock} stock/annotations/fibonacci-retracements
  *         Custom annotation, Fibonacci retracement
+ * @sample highcharts/annotations/shape/
+ *         Themed crooked line annotation
  *
  * @type         {Array<*>}
  * @since        6.0.0
@@ -379,6 +388,17 @@ const AnnotationDefaults = {
      *
      * @type      {number|string}
      * @apioption annotations.id
+     */
+    /**
+     * For advanced annotations, this option defines the type of annotation. Can
+     * be one of the keys listed under the [types option](#annotations.types).
+     *
+     * @sample    highcharts/annotations-advanced/crooked-line
+     *            Crooked line annotation
+     * @requires  modules/annotations-advanced
+     * @product   highstock
+     * @type      {string}
+     * @apioption annotations.type
      */
     /**
      * Whether the annotation is visible.
@@ -963,10 +983,20 @@ const AnnotationDefaults = {
      */
     events: {},
     /**
+     * Option override for specific advanced annotation types. This collection
+     * is intended for general theming using `Highcharts.setOptions()`.
+     *
+     * @sample   highcharts/annotations/shape/
+     *           Themed crooked line annotation
+     * @product highstock
+     * @requires modules/annotations-advanced
+     */
+    types: {},
+    /**
      * The Z index of the annotation.
      */
     zIndex: 6
-}; // Type options are expected but not set
+};
 /* *
  *
  *  Default Export
@@ -3402,15 +3432,22 @@ class ControllableLabel extends Controllables_Controllable {
         labelOptions[this.collection][this.index].y = this.options.y;
     }
     render(parent) {
-        const options = this.options, attrs = this.attrsFromOptions(options), style = options.style;
+        const options = this.options, attrs = this.attrsFromOptions(options), style = options.style, optionsChart = this.annotation.chart.options.chart, chartBackground = optionsChart.plotBackgroundColor ||
+            optionsChart.backgroundColor;
         this.graphic = this.annotation.chart.renderer
             .label('', 0, -9999, // #10055
-        options.shape, null, null, options.useHTML, null, 'annotation-label')
+        options.shape, void 0, void 0, options.useHTML, void 0, 'annotation-label')
             .attr(attrs)
             .add(parent);
         if (!this.annotation.chart.styledMode) {
             if (style.color === 'contrast') {
-                style.color = this.annotation.chart.renderer.getContrast(ControllableLabel.shapesWithoutBackground.indexOf(options.shape) > -1 ? '#FFFFFF' : options.backgroundColor);
+                const background = (ControllableLabel.shapesWithoutBackground.indexOf(options.shape) > -1 ||
+                    options.backgroundColor === 'none') ?
+                    chartBackground :
+                    options.backgroundColor;
+                style.color = this.annotation.chart.renderer.getContrast(typeof background === 'string' ? background :
+                    typeof chartBackground === 'string' ? chartBackground :
+                        '#ffffff');
             }
             this.graphic
                 .css(options.style)
@@ -3719,9 +3756,12 @@ class BaseForm {
         const popup = this, iconsURL = this.iconsURL;
         // Create close popup button.
         const closeButton = createElement('button', { className }, void 0, this.container);
-        closeButton.style['background-image'] = 'url(' +
-            (iconsURL.match(/png|svg|jpeg|jpg|gif/ig) ?
-                iconsURL : iconsURL + 'close.svg') + ')';
+        createElement('span', {
+            className: 'highcharts-icon'
+        }, {
+            backgroundImage: 'url(' + (iconsURL.match(/png|svg|jpeg|jpg|gif/ig) ?
+                iconsURL : iconsURL + 'close.svg') + ')'
+        }, closeButton);
         ['click', 'touchstart'].forEach((eventName) => {
             BaseForm_addEvent(closeButton, eventName, popup.closeButtonEvents.bind(popup));
         });
@@ -3792,7 +3832,7 @@ class BaseForm {
 
 const { doc: PopupAnnotations_doc, isFirefox } = (external_highcharts_src_js_default_default());
 
-const { createElement: PopupAnnotations_createElement, isArray, isObject, objectEach: PopupAnnotations_objectEach, pick: PopupAnnotations_pick, stableSort } = (external_highcharts_src_js_default_default());
+const { createElement: PopupAnnotations_createElement, isArray: PopupAnnotations_isArray, isObject: PopupAnnotations_isObject, objectEach: PopupAnnotations_objectEach, pick: PopupAnnotations_pick, stableSort } = (external_highcharts_src_js_default_default());
 /* *
  *
  *  Functions
@@ -3866,12 +3906,18 @@ function addToolbar(chart, options, callback) {
         showForm.call(this, 'annotation-edit', chart, options, callback);
     });
     button.className += ' highcharts-annotation-edit-button';
-    button.style['background-image'] = 'url(' +
-        this.iconsURL + 'edit.svg)';
+    PopupAnnotations_createElement('span', {
+        className: 'highcharts-icon'
+    }, {
+        backgroundImage: `url(${this.iconsURL}edit.svg)`
+    }, button);
     button = this.addButton(popupDiv, lang.removeButton || 'Remove', 'remove', popupDiv, callback);
     button.className += ' highcharts-annotation-remove-button';
-    button.style['background-image'] = 'url(' +
-        this.iconsURL + 'destroy.svg)';
+    PopupAnnotations_createElement('span', {
+        className: 'highcharts-icon'
+    }, {
+        backgroundImage: `url(${this.iconsURL}destroy.svg)`
+    }, button);
 }
 /**
  * Create annotation's form fields.
@@ -3898,12 +3944,12 @@ function addFormFields(parentDiv, chart, parentNode, options, storage, isRoot) {
     PopupAnnotations_objectEach(options, (value, option) => {
         // Create name like params.styles.fontSize
         parentFullName = parentNode !== '' ? parentNode + '.' + option : option;
-        if (isObject(value)) {
+        if (PopupAnnotations_isObject(value)) {
             if (
             // Value is object of options
-            !isArray(value) ||
+            !PopupAnnotations_isArray(value) ||
                 // Array of objects with params. i.e labels in Fibonacci
-                (isArray(value) && isObject(value[0]))) {
+                (PopupAnnotations_isArray(value) && PopupAnnotations_isObject(value[0]))) {
                 titleName = lang[option] || option;
                 if (!titleName.match(/\d/g)) {
                     storage.push([
@@ -4994,7 +5040,7 @@ function onNavigationBindingsShowPopup(config) {
         this.popup = new Popup_Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
             (this.chart.options.stockTools &&
                 this.chart.options.stockTools.gui.iconsURL) ||
-            'https://code.highcharts.com/12.2.0/gfx/stock-icons/'), this.chart);
+            'https://code.highcharts.com/12.3.0/gfx/stock-icons/'), this.chart);
     }
     this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
 }
@@ -5042,6 +5088,8 @@ const { getDeferredAnimation } = (external_highcharts_src_js_default_default());
 
 
 
+
+const { defaultOptions } = (external_highcharts_src_js_default_default());
 
 
 
@@ -5173,7 +5221,7 @@ class Annotation extends Annotations_EventEmitter {
          * @name Highcharts.Annotation#options
          * @type {Highcharts.AnnotationsOptions}
          */
-        this.options = Annotation_merge(this.defaultOptions, userOptions);
+        this.setOptions(userOptions);
         /**
          * The user options for the annotations.
          *
@@ -5514,7 +5562,12 @@ class Annotation extends Annotations_EventEmitter {
      *        User options for an annotation
      */
     setOptions(userOptions) {
-        this.options = Annotation_merge(this.defaultOptions, userOptions);
+        this.options = Annotation_merge(
+        // Shared for all annotation types
+        this.defaultOptions, 
+        // The static typeOptions from the class
+        (userOptions.type &&
+            this.defaultOptions.types[userOptions.type]) || {}, userOptions);
     }
     /**
      * Set the annotation's visibility.
@@ -5566,11 +5619,6 @@ class Annotation extends Annotations_EventEmitter {
         this.isUpdating = false;
     }
 }
-/* *
- *
- *  Static Properties
- *
- * */
 /**
  * @private
  */
@@ -5598,6 +5646,7 @@ Annotation.shapesMap = {
  */
 Annotation.types = {};
 Annotation.prototype.defaultOptions = Annotations_AnnotationDefaults;
+defaultOptions.annotations = Annotations_AnnotationDefaults;
 /**
  * List of events for `annotation.options.events` that should not be
  * added to `annotation.graphic` but to the `annotation`.
@@ -5671,8 +5720,6 @@ Annotations_ControlTarget.compose(Annotation);
 
 
 
-
-const { merge: BasicAnnotation_merge } = (external_highcharts_src_js_default_default());
 /* *
  *
  *  Class
@@ -5879,7 +5926,6 @@ BasicAnnotation.basicControlPoints = {
             }
         }]
 };
-BasicAnnotation.prototype.defaultOptions = BasicAnnotation_merge(Annotations_Annotation.prototype.defaultOptions, {});
 Annotations_Annotation.types.basicAnnotation = BasicAnnotation;
 /* *
  *
@@ -5898,8 +5944,105 @@ Annotations_Annotation.types.basicAnnotation = BasicAnnotation;
 
 
 
+const { defaultOptions: CrookedLine_defaultOptions } = (external_highcharts_src_js_default_default());
+
 
 const { merge: CrookedLine_merge } = (external_highcharts_src_js_default_default());
+if (CrookedLine_defaultOptions.annotations) {
+    /**
+    * Options for the crooked line annotation type.
+    *
+    * @sample highcharts/annotations-advanced/crooked-line/
+    *         Crooked line
+    *
+    * @product      highstock
+    * @optionparent annotations.types.crookedLine
+    */
+    CrookedLine_defaultOptions.annotations.types.crookedLine = {
+        /**
+         * @extends   annotations.labelOptions
+         * @apioption annotations.types.crookedLine.labelOptions
+         */
+        /**
+         * @extends   annotations.shapeOptions
+         * @apioption annotations.types.crookedLine.shapeOptions
+         */
+        /**
+         * Additional options for an annotation with the type.
+         */
+        typeOptions: {
+            /**
+             * This number defines which xAxis the point is connected to.
+             * It refers to either the axis id or the index of the axis
+             * in the xAxis array.
+             */
+            xAxis: 0,
+            /**
+             * This number defines which yAxis the point is connected to.
+             * It refers to either the axis id or the index of the axis
+             * in the xAxis array.
+             */
+            yAxis: 0,
+            /**
+             * @type      {Array<*>}
+             * @apioption annotations.types.crookedLine.typeOptions.points
+             */
+            /**
+             * The x position of the point.
+             *
+             * @type      {number}
+             * @apioption annotations.types.crookedLine.typeOptions.points.x
+             */
+            /**
+             * The y position of the point.
+             *
+             * @type      {number}
+             * @apioption annotations.types.crookedLine.typeOptions.points.y
+             */
+            /**
+             * @type      {number}
+             * @excluding positioner, events
+             * @apioption annotations.types.crookedLine.typeOptions.points.controlPoint
+             */
+            /**
+             * Line options.
+             *
+             * @excluding height, point, points, r, type, width
+             */
+            line: {
+                fill: 'none'
+            }
+        },
+        /**
+         * @excluding positioner, events
+         */
+        controlPointOptions: {
+            positioner: function (target) {
+                const graphic = this.graphic, xy = Annotations_MockPoint.pointToPixels(target.points[this.index]);
+                return {
+                    x: xy.x - (graphic.width || 0) / 2,
+                    y: xy.y - (graphic.height || 0) / 2
+                };
+            },
+            events: {
+                drag: function (e, target) {
+                    if (target.chart.isInsidePlot(e.chartX - target.chart.plotLeft, e.chartY - target.chart.plotTop, {
+                        visiblePlotOnly: true
+                    })) {
+                        const translation = this.mouseMoveToTranslation(e), typeOptions = target.options.typeOptions;
+                        target.translatePoint(translation.x, translation.y, this.index);
+                        // Update options:
+                        typeOptions.points[this.index].x =
+                            target.points[this.index].x;
+                        typeOptions.points[this.index].y =
+                            target.points[this.index].y;
+                        target.redraw(false);
+                    }
+                }
+            }
+        }
+    };
+}
 /* *
  *
  *  Class
@@ -5948,100 +6091,6 @@ class CrookedLine extends Annotations_Annotation {
         typeOptions.line = shape.options;
     }
 }
-CrookedLine.prototype.defaultOptions = CrookedLine_merge(Annotations_Annotation.prototype.defaultOptions, 
-/**
- * A crooked line annotation.
- *
- * @sample highcharts/annotations-advanced/crooked-line/
- *         Crooked line
- *
- * @product      highstock
- * @optionparent annotations.crookedLine
- */
-{
-    /**
-     * @extends   annotations.labelOptions
-     * @apioption annotations.crookedLine.labelOptions
-     */
-    /**
-     * @extends   annotations.shapeOptions
-     * @apioption annotations.crookedLine.shapeOptions
-     */
-    /**
-     * Additional options for an annotation with the type.
-     */
-    typeOptions: {
-        /**
-         * This number defines which xAxis the point is connected to.
-         * It refers to either the axis id or the index of the axis
-         * in the xAxis array.
-         */
-        xAxis: 0,
-        /**
-         * This number defines which yAxis the point is connected to.
-         * It refers to either the axis id or the index of the axis
-         * in the xAxis array.
-         */
-        yAxis: 0,
-        /**
-         * @type      {Array<*>}
-         * @apioption annotations.crookedLine.typeOptions.points
-         */
-        /**
-         * The x position of the point.
-         *
-         * @type      {number}
-         * @apioption annotations.crookedLine.typeOptions.points.x
-         */
-        /**
-         * The y position of the point.
-         *
-         * @type      {number}
-         * @apioption annotations.crookedLine.typeOptions.points.y
-         */
-        /**
-         * @type      {number}
-         * @excluding positioner, events
-         * @apioption annotations.crookedLine.typeOptions.points.controlPoint
-         */
-        /**
-         * Line options.
-         *
-         * @excluding height, point, points, r, type, width
-         */
-        line: {
-            fill: 'none'
-        }
-    },
-    /**
-     * @excluding positioner, events
-     */
-    controlPointOptions: {
-        positioner: function (target) {
-            const graphic = this.graphic, xy = Annotations_MockPoint.pointToPixels(target.points[this.index]);
-            return {
-                x: xy.x - (graphic.width || 0) / 2,
-                y: xy.y - (graphic.height || 0) / 2
-            };
-        },
-        events: {
-            drag: function (e, target) {
-                if (target.chart.isInsidePlot(e.chartX - target.chart.plotLeft, e.chartY - target.chart.plotTop, {
-                    visiblePlotOnly: true
-                })) {
-                    const translation = this.mouseMoveToTranslation(e), typeOptions = target.options.typeOptions;
-                    target.translatePoint(translation.x, translation.y, this.index);
-                    // Update options:
-                    typeOptions.points[this.index].x =
-                        target.points[this.index].x;
-                    typeOptions.points[this.index].y =
-                        target.points[this.index].y;
-                    target.redraw(false);
-                }
-            }
-        }
-    }
-});
 Annotations_Annotation.types.crookedLine = CrookedLine;
 /* *
  *
@@ -6060,7 +6109,50 @@ Annotations_Annotation.types.crookedLine = CrookedLine;
 
 
 
+const { defaultOptions: ElliottWave_defaultOptions } = (external_highcharts_src_js_default_default());
+
 const { merge: ElliottWave_merge } = (external_highcharts_src_js_default_default());
+if (ElliottWave_defaultOptions.annotations) {
+    ElliottWave_defaultOptions.annotations.types.elliottWave = ElliottWave_merge(ElliottWave_defaultOptions.annotations.types.crookedLine, 
+    /**
+     * Options for the elliott wave annotation type.
+     *
+     * @sample highcharts/annotations-advanced/elliott-wave/
+     *         Elliott wave
+     *
+     * @extends      annotations.types.crookedLine
+     * @product      highstock
+     * @optionparent annotations.types.elliottWave
+     */
+    {
+        typeOptions: {
+            /**
+             * @extends   annotations.types.crookedLine.labelOptions
+             * @apioption annotations.types.elliottWave.typeOptions.points.label
+             */
+            /**
+             * @ignore-option
+             */
+            labels: ['(0)', '(A)', '(B)', '(C)', '(D)', '(E)'],
+            line: {
+                strokeWidth: 1
+            }
+        },
+        labelOptions: {
+            align: 'center',
+            allowOverlap: true,
+            crop: true,
+            overflow: 'none',
+            type: 'rect',
+            backgroundColor: 'none',
+            borderWidth: 0,
+            y: -5,
+            style: {
+                color: "#333333" /* Palette.neutralColor80 */
+            }
+        }
+    });
+}
 /* *
  *
  *  Class
@@ -6084,42 +6176,6 @@ class ElliottWave extends Types_CrookedLine {
         });
     }
 }
-ElliottWave.prototype.defaultOptions = ElliottWave_merge(Types_CrookedLine.prototype.defaultOptions, 
-/**
- * An elliott wave annotation.
- *
- * @sample highcharts/annotations-advanced/elliott-wave/
- *         Elliott wave
- *
- * @extends      annotations.crookedLine
- * @product      highstock
- * @optionparent annotations.elliottWave
- */
-{
-    typeOptions: {
-        /**
-         * @extends   annotations.crookedLine.labelOptions
-         * @apioption annotations.elliottWave.typeOptions.points.label
-         */
-        /**
-         * @ignore-option
-         */
-        labels: ['(0)', '(A)', '(B)', '(C)', '(D)', '(E)'],
-        line: {
-            strokeWidth: 1
-        }
-    },
-    labelOptions: {
-        align: 'center',
-        allowOverlap: true,
-        crop: true,
-        overflow: 'none',
-        type: 'rect',
-        backgroundColor: 'none',
-        borderWidth: 0,
-        y: -5
-    }
-});
 Annotations_Annotation.types.elliottWave = ElliottWave;
 /* *
  *
@@ -6139,8 +6195,88 @@ Annotations_Annotation.types.elliottWave = ElliottWave;
 
 
 
+const { defaultOptions: Tunnel_defaultOptions } = (external_highcharts_src_js_default_default());
+
 
 const { merge: Tunnel_merge } = (external_highcharts_src_js_default_default());
+if (Tunnel_defaultOptions.annotations) {
+    Tunnel_defaultOptions.annotations.types.tunnel = Tunnel_merge(Tunnel_defaultOptions.annotations.types.crookedLine, 
+    /**
+     * Options for the tunnel annotation type.
+     *
+     * @extends annotations.types.crookedLine
+     * @sample highcharts/annotations-advanced/tunnel/
+     *         Tunnel
+     * @product highstock
+     * @optionparent annotations.types.tunnel
+     */
+    {
+        typeOptions: {
+            /**
+             * Background options.
+             *
+             * @type {Object}
+             * @excluding height, point, points, r, type, width, markerEnd,
+             *            markerStart
+             */
+            background: {
+                fill: 'rgba(130, 170, 255, 0.4)',
+                strokeWidth: 0
+            },
+            line: {
+                strokeWidth: 1
+            },
+            /**
+             * The height of the annotation in terms of yAxis.
+             */
+            height: -2,
+            /**
+             * Options for the control point which controls
+             * the annotation's height.
+             *
+             * @extends annotations.types.crookedLine.controlPointOptions
+             * @excluding positioner, events
+             */
+            heightControlPoint: {
+                positioner: function (target) {
+                    const startXY = Annotations_MockPoint.pointToPixels(target.points[2]), endXY = Annotations_MockPoint.pointToPixels(target.points[3]), x = (startXY.x + endXY.x) / 2;
+                    return {
+                        x: x - (this.graphic.width || 0) / 2,
+                        y: getSecondCoordinate(startXY, endXY, x) -
+                            (this.graphic.height || 0) / 2
+                    };
+                },
+                events: {
+                    drag: function (e, target) {
+                        if (target.chart.isInsidePlot(e.chartX - target.chart.plotLeft, e.chartY - target.chart.plotTop, {
+                            visiblePlotOnly: true
+                        })) {
+                            target.translateHeight(this.mouseMoveToTranslation(e).y);
+                            target.redraw(false);
+                        }
+                    }
+                }
+            }
+        },
+        /**
+         * @extends annotations.types.crookedLine.controlPointOptions
+         * @excluding positioner, events
+         */
+        controlPointOptions: {
+            events: {
+                drag: function (e, target) {
+                    if (target.chart.isInsidePlot(e.chartX - target.chart.plotLeft, e.chartY - target.chart.plotTop, {
+                        visiblePlotOnly: true
+                    })) {
+                        const translation = this.mouseMoveToTranslation(e);
+                        target.translateSide(translation.x, translation.y, !!this.index);
+                        target.redraw(false);
+                    }
+                }
+            }
+        }
+    });
+}
 /* *
  *
  *  Functions
@@ -6251,82 +6387,6 @@ class Tunnel extends Types_CrookedLine {
         this.userOptions.typeOptions.height = this.options.typeOptions.height;
     }
 }
-Tunnel.prototype.defaultOptions = Tunnel_merge(Types_CrookedLine.prototype.defaultOptions, 
-/**
- * A tunnel annotation.
- *
- * @extends annotations.crookedLine
- * @sample highcharts/annotations-advanced/tunnel/
- *         Tunnel
- * @product highstock
- * @optionparent annotations.tunnel
- */
-{
-    typeOptions: {
-        /**
-         * Background options.
-         *
-         * @type {Object}
-         * @excluding height, point, points, r, type, width, markerEnd,
-         *            markerStart
-         */
-        background: {
-            fill: 'rgba(130, 170, 255, 0.4)',
-            strokeWidth: 0
-        },
-        line: {
-            strokeWidth: 1
-        },
-        /**
-         * The height of the annotation in terms of yAxis.
-         */
-        height: -2,
-        /**
-         * Options for the control point which controls
-         * the annotation's height.
-         *
-         * @extends annotations.crookedLine.controlPointOptions
-         * @excluding positioner, events
-         */
-        heightControlPoint: {
-            positioner: function (target) {
-                const startXY = Annotations_MockPoint.pointToPixels(target.points[2]), endXY = Annotations_MockPoint.pointToPixels(target.points[3]), x = (startXY.x + endXY.x) / 2;
-                return {
-                    x: x - (this.graphic.width || 0) / 2,
-                    y: getSecondCoordinate(startXY, endXY, x) -
-                        (this.graphic.height || 0) / 2
-                };
-            },
-            events: {
-                drag: function (e, target) {
-                    if (target.chart.isInsidePlot(e.chartX - target.chart.plotLeft, e.chartY - target.chart.plotTop, {
-                        visiblePlotOnly: true
-                    })) {
-                        target.translateHeight(this.mouseMoveToTranslation(e).y);
-                        target.redraw(false);
-                    }
-                }
-            }
-        }
-    },
-    /**
-     * @extends annotations.crookedLine.controlPointOptions
-     * @excluding positioner, events
-     */
-    controlPointOptions: {
-        events: {
-            drag: function (e, target) {
-                if (target.chart.isInsidePlot(e.chartX - target.chart.plotLeft, e.chartY - target.chart.plotTop, {
-                    visiblePlotOnly: true
-                })) {
-                    const translation = this.mouseMoveToTranslation(e);
-                    target.translateSide(translation.x, translation.y, !!this.index);
-                    target.redraw(false);
-                }
-            }
-        }
-    }
-});
 Annotations_Annotation.types.tunnel = Tunnel;
 /* *
  *
@@ -6345,8 +6405,23 @@ Annotations_Annotation.types.tunnel = Tunnel;
 
 
 
+const { defaultOptions: InfinityLine_defaultOptions } = (external_highcharts_src_js_default_default());
+
 
 const { merge: InfinityLine_merge } = (external_highcharts_src_js_default_default());
+if (InfinityLine_defaultOptions.annotations) {
+    /**
+     * Options for the infinity line annotation type.
+     *
+     * @sample highcharts/annotations-advanced/infinity-line/
+     *         Infinity line
+     *
+     * @extends      annotations.types.crookedLine
+     * @product      highstock
+     * @optionparent annotations.types.infinityLine
+     */
+    InfinityLine_defaultOptions.annotations.types.infinityLine = InfinityLine_merge(InfinityLine_defaultOptions.annotations.types.crookedLine);
+}
 /* *
  *
  *  Class
@@ -6447,7 +6522,6 @@ class InfinityLine extends Types_CrookedLine {
  * */
 InfinityLine.endEdgePoint = InfinityLine.edgePoint(0, 1);
 InfinityLine.startEdgePoint = InfinityLine.edgePoint(1, 0);
-InfinityLine.prototype.defaultOptions = InfinityLine_merge(Types_CrookedLine.prototype.defaultOptions, {});
 Annotations_Annotation.types.infinityLine = InfinityLine;
 /* *
  *
@@ -6466,9 +6540,9 @@ Annotations_Annotation.types.infinityLine = InfinityLine;
  * @sample highcharts/annotations-advanced/infinity-line/
  *         Infinity Line
  *
- * @extends   annotations.crookedLine
+ * @extends   annotations.types.crookedLine
  * @product   highstock
- * @apioption annotations.infinityLine
+ * @apioption annotations.types.infinityLine
  */
 (''); // Keeps doclets above in transpiled file
 
@@ -6484,8 +6558,64 @@ Annotations_Annotation.types.infinityLine = InfinityLine;
 
 
 
+const { defaultOptions: TimeCycles_defaultOptions } = (external_highcharts_src_js_default_default());
+
 
 const { merge: TimeCycles_merge, isNumber: TimeCycles_isNumber, defined: TimeCycles_defined } = (external_highcharts_src_js_default_default());
+if (TimeCycles_defaultOptions.annotations) {
+    TimeCycles_defaultOptions.annotations.types.timeCycles = TimeCycles_merge(TimeCycles_defaultOptions.annotations.types.crookedLine, 
+    /**
+     * Options for the  time cycles annotation type.
+     *
+     * @sample highcharts/annotations-advanced/time-cycles/
+     *         Time Cycles annotation
+     *
+     * @extends      annotations.types.crookedLine
+     * @product      highstock
+     * @exclude      labelOptions
+     * @optionparent annotations.types.timeCycles
+     */
+    {
+        typeOptions: {
+            /**
+             * @exclude   y
+             * @product   highstock
+             * @apioption annotations.types.timeCycles.typeOptions.points
+             */
+            controlPointOptions: [{
+                    positioner: function (target) {
+                        const point = target.points[0], position = target.anchor(point).absolutePosition;
+                        return {
+                            x: position.x - (this.graphic.width || 0) / 2,
+                            y: target.y - (this.graphic.height || 0)
+                        };
+                    },
+                    events: {
+                        drag: function (e, target) {
+                            const position = target.anchor(target.points[0]).absolutePosition;
+                            target.translatePoint(e.chartX - position.x, 0, 0);
+                            target.redraw(false);
+                        }
+                    }
+                }, {
+                    positioner: function (target) {
+                        const point = target.points[1], position = target.anchor(point).absolutePosition;
+                        return {
+                            x: position.x - (this.graphic.width || 0) / 2,
+                            y: target.y - (this.graphic.height || 0)
+                        };
+                    },
+                    events: {
+                        drag: function (e, target) {
+                            const position = target.anchor(target.points[1]).absolutePosition;
+                            target.translatePoint(e.chartX - position.x, 0, 1);
+                            target.redraw(false);
+                        }
+                    }
+                }]
+        }
+    });
+}
 /* *
  *
  *  Functions
@@ -6606,58 +6736,6 @@ class TimeCycles extends Types_CrookedLine {
         super.redraw(animation);
     }
 }
-TimeCycles.prototype.defaultOptions = TimeCycles_merge(Types_CrookedLine.prototype.defaultOptions, 
-/**
- * The TimeCycles Annotation
- *
- * @sample highcharts/annotations-advanced/time-cycles/
- *         Time Cycles annotation
- *
- * @extends      annotations.crookedLine
- * @product      highstock
- * @exclude      labelOptions
- * @optionparent annotations.timeCycles
- */
-{
-    typeOptions: {
-        /**
-         * @exclude   y
-         * @product   highstock
-         * @apioption annotations.timeCycles.typeOptions.points
-         */
-        controlPointOptions: [{
-                positioner: function (target) {
-                    const point = target.points[0], position = target.anchor(point).absolutePosition;
-                    return {
-                        x: position.x - (this.graphic.width || 0) / 2,
-                        y: target.y - (this.graphic.height || 0)
-                    };
-                },
-                events: {
-                    drag: function (e, target) {
-                        const position = target.anchor(target.points[0]).absolutePosition;
-                        target.translatePoint(e.chartX - position.x, 0, 0);
-                        target.redraw(false);
-                    }
-                }
-            }, {
-                positioner: function (target) {
-                    const point = target.points[1], position = target.anchor(point).absolutePosition;
-                    return {
-                        x: position.x - (this.graphic.width || 0) / 2,
-                        y: target.y - (this.graphic.height || 0)
-                    };
-                },
-                events: {
-                    drag: function (e, target) {
-                        const position = target.anchor(target.points[1]).absolutePosition;
-                        target.translatePoint(e.chartX - position.x, 0, 1);
-                        target.redraw(false);
-                    }
-                }
-            }]
-    }
-});
 Annotations_Annotation.types.timeCycles = TimeCycles;
 /* *
  *
@@ -6675,9 +6753,95 @@ Annotations_Annotation.types.timeCycles = TimeCycles;
 
 
 
+const { defaultOptions: Fibonacci_defaultOptions } = (external_highcharts_src_js_default_default());
+
 
 
 const { merge: Fibonacci_merge } = (external_highcharts_src_js_default_default());
+if (Fibonacci_defaultOptions.annotations) {
+    Fibonacci_defaultOptions.annotations.types.fibonacci = Fibonacci_merge(Fibonacci_defaultOptions.annotations.types.tunnel, 
+    /**
+     * Options for the fibonacci annotation type.
+     *
+     * @sample highcharts/annotations-advanced/fibonacci/
+     *         Fibonacci
+     *
+     * @extends      annotations.types.crookedLine
+     * @product      highstock
+     * @optionparent annotations.types.fibonacci
+     */
+    {
+        typeOptions: {
+            /**
+             * Whether the annotation levels should be reversed. By default
+             * they start from 0 and go to 1.
+             *
+             * @sample highcharts/annotations-advanced/fibonacci-reversed/
+             *         Fibonacci annotation reversed
+             *
+             * @type {boolean}
+             * @apioption annotations.types.fibonacci.typeOptions.reversed
+             */
+            reversed: false,
+            /**
+             * The height of the fibonacci in terms of yAxis.
+             */
+            height: 2,
+            /**
+             * An array of background colors:
+             * Default to:
+             * ```
+             * [
+             * 'rgba(130, 170, 255, 0.4)',
+             * 'rgba(139, 191, 216, 0.4)',
+             * 'rgba(150, 216, 192, 0.4)',
+             * 'rgba(156, 229, 161, 0.4)',
+             * 'rgba(162, 241, 130, 0.4)',
+             * 'rgba(169, 255, 101, 0.4)'
+             * ]
+             * ```
+             */
+            backgroundColors: [
+                'rgba(130, 170, 255, 0.4)',
+                'rgba(139, 191, 216, 0.4)',
+                'rgba(150, 216, 192, 0.4)',
+                'rgba(156, 229, 161, 0.4)',
+                'rgba(162, 241, 130, 0.4)',
+                'rgba(169, 255, 101, 0.4)'
+            ],
+            /**
+             * The color of line.
+             */
+            lineColor: "#999999" /* Palette.neutralColor40 */,
+            /**
+             * An array of colors for the lines.
+             */
+            lineColors: [],
+            /**
+             * An array with options for the labels.
+             *
+             * @type      {Array<*>}
+             * @extends   annotations.types.crookedLine.labelOptions
+             * @apioption annotations.types.fibonacci.typeOptions.labels
+             */
+            labels: []
+        },
+        labelOptions: {
+            allowOverlap: true,
+            align: 'right',
+            backgroundColor: 'none',
+            borderWidth: 0,
+            crop: false,
+            overflow: 'none',
+            shape: 'rect',
+            style: {
+                color: "#333333" /* Palette.neutralColor80 */
+            },
+            verticalAlign: 'middle',
+            y: 0
+        }
+    });
+}
 /* *
  *
  *  Functions
@@ -6786,88 +6950,6 @@ class Fibonacci extends Types_Tunnel {
  *
  * */
 Fibonacci.levels = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1];
-Fibonacci.prototype.defaultOptions = Fibonacci_merge(Types_Tunnel.prototype.defaultOptions, 
-/**
- * A fibonacci annotation.
- *
- * @sample highcharts/annotations-advanced/fibonacci/
- *         Fibonacci
- *
- * @extends      annotations.crookedLine
- * @product      highstock
- * @optionparent annotations.fibonacci
- */
-{
-    typeOptions: {
-        /**
-         * Whether the annotation levels should be reversed. By default they
-         * start from 0 and go to 1.
-         *
-         * @sample highcharts/annotations-advanced/fibonacci-reversed/
-         *         Fibonacci annotation reversed
-         *
-         * @type {boolean}
-         * @apioption annotations.fibonacci.typeOptions.reversed
-         */
-        reversed: false,
-        /**
-         * The height of the fibonacci in terms of yAxis.
-         */
-        height: 2,
-        /**
-         * An array of background colors:
-         * Default to:
-         * ```
-         * [
-         * 'rgba(130, 170, 255, 0.4)',
-         * 'rgba(139, 191, 216, 0.4)',
-         * 'rgba(150, 216, 192, 0.4)',
-         * 'rgba(156, 229, 161, 0.4)',
-         * 'rgba(162, 241, 130, 0.4)',
-         * 'rgba(169, 255, 101, 0.4)'
-         * ]
-         * ```
-         */
-        backgroundColors: [
-            'rgba(130, 170, 255, 0.4)',
-            'rgba(139, 191, 216, 0.4)',
-            'rgba(150, 216, 192, 0.4)',
-            'rgba(156, 229, 161, 0.4)',
-            'rgba(162, 241, 130, 0.4)',
-            'rgba(169, 255, 101, 0.4)'
-        ],
-        /**
-         * The color of line.
-         */
-        lineColor: "#999999" /* Palette.neutralColor40 */,
-        /**
-         * An array of colors for the lines.
-         */
-        lineColors: [],
-        /**
-         * An array with options for the labels.
-         *
-         * @type      {Array<*>}
-         * @extends   annotations.crookedLine.labelOptions
-         * @apioption annotations.fibonacci.typeOptions.labels
-         */
-        labels: []
-    },
-    labelOptions: {
-        allowOverlap: true,
-        align: 'right',
-        backgroundColor: 'none',
-        borderWidth: 0,
-        crop: false,
-        overflow: 'none',
-        shape: 'rect',
-        style: {
-            color: 'grey'
-        },
-        verticalAlign: 'middle',
-        y: 0
-    }
-});
 Annotations_Annotation.types.fibonacci = Fibonacci;
 /* *
  *
@@ -6889,9 +6971,83 @@ Annotations_Annotation.types.fibonacci = Fibonacci;
 
 
 
+const { defaultOptions: FibonacciTimeZones_defaultOptions } = (external_highcharts_src_js_default_default());
+
 
 
 const { merge: FibonacciTimeZones_merge } = (external_highcharts_src_js_default_default());
+if (FibonacciTimeZones_defaultOptions.annotations) {
+    FibonacciTimeZones_defaultOptions.annotations.types.fibonacciTimeZones = FibonacciTimeZones_merge(FibonacciTimeZones_defaultOptions.annotations.types.crookedLine, 
+    /**
+     * Options for the fibonacci time zones annotation type.
+     *
+     * @sample highcharts/annotations-advanced/fibonacci-time-zones/
+     *         Fibonacci Time Zones
+     *
+     * @extends      annotations.types.crookedLine
+     * @since        9.3.0
+     * @product      highstock
+     * @optionparent annotations.types.fibonacciTimeZones
+     */
+    {
+        typeOptions: {
+            /**
+             * @exclude   y
+             * @since     9.3.0
+             * @product   highstock
+             * @apioption annotations.types.fibonacciTimeZones.typeOptions.points
+             */
+            // Options for showing in popup edit
+            line: {
+                /**
+                 * The color of the lines.
+                 *
+                 * @type      {string}
+                 * @since     9.3.0
+                 * @apioption annotations.types.fibonacciTimeZones.typeOptions.line.stroke
+                 */
+                stroke: "#333333" /* Palette.neutralColor80 */,
+                /**
+                 * The width of the lines.
+                 *
+                 * @type      {number}
+                 * @since     9.3.0
+                 * @default   1
+                 * @apioption annotations.types.fibonacciTimeZones.typeOptions.line.strokeWidth
+                 */
+                strokeWidth: 1,
+                // Don't inherit fill (don't display in popup edit)
+                fill: void 0
+            },
+            controlPointOptions: {
+                positioner: function () {
+                    // The control point is in the middle of the second line
+                    const target = this.target, graphic = this.graphic, edgePoints = target.secondLineEdgePoints, args = { annotation: target }, firstEdgePointY = edgePoints[0](args).y, secondEdgePointY = edgePoints[1](args).y, plotLeft = this.chart.plotLeft, plotTop = this.chart.plotTop;
+                    let x = edgePoints[0](args).x, y = (firstEdgePointY + secondEdgePointY) / 2;
+                    if (this.chart.inverted) {
+                        [x, y] = [y, x];
+                    }
+                    return {
+                        x: plotLeft + x - (graphic.width || 0) / 2,
+                        y: plotTop + y - (graphic.height || 0) / 2
+                    };
+                },
+                events: {
+                    drag: function (e, target) {
+                        const isInsidePlot = target.chart.isInsidePlot(e.chartX - target.chart.plotLeft, e.chartY - target.chart.plotTop, {
+                            visiblePlotOnly: true
+                        });
+                        if (isInsidePlot) {
+                            const translation = this.mouseMoveToTranslation(e);
+                            target.translatePoint(translation.x, 0, 1);
+                            target.redraw(false);
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
 /* *
  *
  *  Functions
@@ -6995,77 +7151,6 @@ class FibonacciTimeZones extends Types_CrookedLine {
         typeOptions.controlPointOptions = controlPoint.options;
     }
 }
-FibonacciTimeZones.prototype.defaultOptions = FibonacciTimeZones_merge(Types_CrookedLine.prototype.defaultOptions, 
-/**
- * The Fibonacci Time Zones annotation.
- *
- * @sample highcharts/annotations-advanced/fibonacci-time-zones/
- *         Fibonacci Time Zones
- *
- * @extends      annotations.crookedLine
- * @since        9.3.0
- * @product      highstock
- * @optionparent annotations.fibonacciTimeZones
- */
-{
-    typeOptions: {
-        /**
-         * @exclude   y
-         * @since     9.3.0
-         * @product   highstock
-         * @apioption annotations.fibonacciTimeZones.typeOptions.points
-         */
-        // Options for showing in popup edit
-        line: {
-            /**
-             * The color of the lines.
-             *
-             * @type      {string}
-             * @since     9.3.0
-             * @default   'rgba(0, 0, 0, 0.75)'
-             * @apioption annotations.fibonacciTimeZones.typeOptions.line.stroke
-             */
-            stroke: 'rgba(0, 0, 0, 0.75)',
-            /**
-             * The width of the lines.
-             *
-             * @type      {number}
-             * @since     9.3.0
-             * @default   1
-             * @apioption annotations.fibonacciTimeZones.typeOptions.line.strokeWidth
-             */
-            strokeWidth: 1,
-            // Don't inherit fill (don't display in popup edit)
-            fill: void 0
-        },
-        controlPointOptions: {
-            positioner: function () {
-                // The control point is in the middle of the second line
-                const target = this.target, graphic = this.graphic, edgePoints = target.secondLineEdgePoints, args = { annotation: target }, firstEdgePointY = edgePoints[0](args).y, secondEdgePointY = edgePoints[1](args).y, plotLeft = this.chart.plotLeft, plotTop = this.chart.plotTop;
-                let x = edgePoints[0](args).x, y = (firstEdgePointY + secondEdgePointY) / 2;
-                if (this.chart.inverted) {
-                    [x, y] = [y, x];
-                }
-                return {
-                    x: plotLeft + x - (graphic.width || 0) / 2,
-                    y: plotTop + y - (graphic.height || 0) / 2
-                };
-            },
-            events: {
-                drag: function (e, target) {
-                    const isInsidePlot = target.chart.isInsidePlot(e.chartX - target.chart.plotLeft, e.chartY - target.chart.plotTop, {
-                        visiblePlotOnly: true
-                    });
-                    if (isInsidePlot) {
-                        const translation = this.mouseMoveToTranslation(e);
-                        target.translatePoint(translation.x, 0, 1);
-                        target.redraw(false);
-                    }
-                }
-            }
-        }
-    }
-});
 Annotations_Annotation.types.fibonacciTimeZones = FibonacciTimeZones;
 /* *
  *
@@ -7083,9 +7168,48 @@ Annotations_Annotation.types.fibonacciTimeZones = FibonacciTimeZones;
 
 
 
+const { defaultOptions: Pitchfork_defaultOptions } = (external_highcharts_src_js_default_default());
+
 
 
 const { merge: Pitchfork_merge } = (external_highcharts_src_js_default_default());
+if (Pitchfork_defaultOptions.annotations) {
+    Pitchfork_defaultOptions.annotations.types.pitchfork = Pitchfork_merge(Pitchfork_defaultOptions.annotations.types.infinityLine, 
+    /**
+     * Options for the pitchfork annotation type.
+     *
+     * @sample highcharts/annotations-advanced/pitchfork/
+     *         Pitchfork
+     *
+     * @extends      annotations.types.infinityLine
+     * @product      highstock
+     * @optionparent annotations.types.pitchfork
+     */
+    {
+        typeOptions: {
+            /**
+             * Inner background options.
+             *
+             * @extends   annotations.types.crookedLine.shapeOptions
+             * @excluding height, r, type, width
+             */
+            innerBackground: {
+                fill: 'rgba(130, 170, 255, 0.4)',
+                strokeWidth: 0
+            },
+            /**
+             * Outer background options.
+             *
+             * @extends   annotations.types.crookedLine.shapeOptions
+             * @excluding height, r, type, width
+             */
+            outerBackground: {
+                fill: 'rgba(156, 229, 161, 0.4)',
+                strokeWidth: 0
+            }
+        }
+    });
+}
 /* *
  *
  *  Class
@@ -7202,48 +7326,8 @@ class Pitchfork extends Types_InfinityLine {
         typeOptions.outerBackground = outerBackground.options;
     }
 }
-/* *
- *
- *  Static Properties
- *
- * */
 Pitchfork.topLineEdgePoint = Pitchfork.outerLineEdgePoint(1);
 Pitchfork.bottomLineEdgePoint = Pitchfork.outerLineEdgePoint(0);
-Pitchfork.prototype.defaultOptions = Pitchfork_merge(Types_InfinityLine.prototype.defaultOptions, 
-/**
- * A pitchfork annotation.
- *
- * @sample highcharts/annotations-advanced/pitchfork/
- *         Pitchfork
- *
- * @extends      annotations.infinityLine
- * @product      highstock
- * @optionparent annotations.pitchfork
- */
-{
-    typeOptions: {
-        /**
-         * Inner background options.
-         *
-         * @extends   annotations.crookedLine.shapeOptions
-         * @excluding height, r, type, width
-         */
-        innerBackground: {
-            fill: 'rgba(130, 170, 255, 0.4)',
-            strokeWidth: 0
-        },
-        /**
-         * Outer background options.
-         *
-         * @extends   annotations.crookedLine.shapeOptions
-         * @excluding height, r, type, width
-         */
-        outerBackground: {
-            fill: 'rgba(156, 229, 161, 0.4)',
-            strokeWidth: 0
-        }
-    }
-});
 Annotations_Annotation.types.pitchfork = Pitchfork;
 /* *
  *
@@ -7261,19 +7345,71 @@ Annotations_Annotation.types.pitchfork = Pitchfork;
 
 
 
+const { defaultOptions: VerticalLine_defaultOptions } = (external_highcharts_src_js_default_default());
+
 
 const { merge: VerticalLine_merge, pick: VerticalLine_pick } = (external_highcharts_src_js_default_default());
+if (VerticalLine_defaultOptions.annotations) {
+    /**
+     * Options for the vertical line annotation type.
+     *
+     * @sample highcharts/annotations-advanced/vertical-line/
+     *         Vertical line
+     *
+     * @extends      annotations.types.crookedLine
+     * @excluding    labels, shapes, controlPointOptions
+     * @product      highstock
+     * @optionparent annotations.types.verticalLine
+     */
+    VerticalLine_defaultOptions.annotations.types.verticalLine = {
+        typeOptions: {
+            /**
+             * @ignore
+             */
+            yOffset: 10,
+            /**
+             * Label options.
+             *
+             * @extends annotations.types.crookedLine.labelOptions
+             */
+            label: {
+                offset: -40,
+                point: function (target) {
+                    return target.annotation.points[0];
+                },
+                allowOverlap: true,
+                backgroundColor: 'none',
+                borderWidth: 0,
+                crop: true,
+                overflow: 'none',
+                shape: 'rect',
+                text: '{y:.2f}'
+            },
+            /**
+             * Connector options.
+             *
+             * @extends   annotations.types.crookedLine.shapeOptions
+             * @excluding height, r, type, width
+             */
+            connector: {
+                strokeWidth: 1,
+                markerEnd: 'arrow'
+            }
+        },
+        labelOptions: {
+            style: {
+                color: "#333333" /* Palette.neutralColor80 */,
+                fontSize: '0.7em'
+            }
+        }
+    };
+}
 /* *
  *
  *  Class
  *
  * */
 class VerticalLine extends Annotations_Annotation {
-    /* *
-     *
-     *  Static Functions
-     *
-     * */
     static connectorFirstPoint(target) {
         const annotation = target.annotation, chart = annotation.chart, inverted = chart.inverted, point = annotation.points[0], left = VerticalLine_pick(point.series.yAxis && point.series.yAxis.left, 0), top = VerticalLine_pick(point.series.yAxis && point.series.yAxis.top, 0), offset = annotation.options.typeOptions.label.offset, y = Annotations_MockPoint.pointToPixels(point, true)[inverted ? 'x' : 'y'];
         return {
@@ -7334,54 +7470,6 @@ class VerticalLine extends Annotations_Annotation {
         typeOptions.label = label.options;
     }
 }
-VerticalLine.prototype.defaultOptions = VerticalLine_merge(Annotations_Annotation.prototype.defaultOptions, 
-/**
- * A vertical line annotation.
- *
- * @sample highcharts/annotations-advanced/vertical-line/
- *         Vertical line
- *
- * @extends      annotations.crookedLine
- * @excluding    labels, shapes, controlPointOptions
- * @product      highstock
- * @optionparent annotations.verticalLine
- */
-{
-    typeOptions: {
-        /**
-         * @ignore
-         */
-        yOffset: 10,
-        /**
-         * Label options.
-         *
-         * @extends annotations.crookedLine.labelOptions
-         */
-        label: {
-            offset: -40,
-            point: function (target) {
-                return target.annotation.points[0];
-            },
-            allowOverlap: true,
-            backgroundColor: 'none',
-            borderWidth: 0,
-            crop: true,
-            overflow: 'none',
-            shape: 'rect',
-            text: '{y:.2f}'
-        },
-        /**
-         * Connector options.
-         *
-         * @extends   annotations.crookedLine.shapeOptions
-         * @excluding height, r, type, width
-         */
-        connector: {
-            strokeWidth: 1,
-            markerEnd: 'arrow'
-        }
-    }
-});
 Annotations_Annotation.types.verticalLine = VerticalLine;
 /* *
  *
@@ -7400,7 +7488,236 @@ Annotations_Annotation.types.verticalLine = VerticalLine;
 
 
 
+const { defaultOptions: Measure_defaultOptions } = (external_highcharts_src_js_default_default());
+
 const { defined: Measure_defined, extend: Measure_extend, isNumber: Measure_isNumber, merge: Measure_merge, pick: Measure_pick } = (external_highcharts_src_js_default_default());
+if (Measure_defaultOptions.annotations) {
+    /**
+     * Options for the measure annotation type.
+     *
+     * @extends annotations.types.crookedLine
+     * @excluding labels, labelOptions, shapes, shapeOptions
+     * @sample highcharts/annotations-advanced/measure/
+     *         Measure
+     * @product highstock
+     * @optionparent annotations.types.measure
+     */
+    Measure_defaultOptions.annotations.types.measure = {
+        typeOptions: {
+            /**
+             * Decides in what dimensions the user can resize by dragging the
+             * mouse. Can be one of x, y or xy.
+             */
+            selectType: 'xy',
+            /**
+             * This number defines which xAxis the point is connected to.
+             * It refers to either the axis id or the index of the axis
+             * in the xAxis array.
+             */
+            xAxis: 0,
+            /**
+             * This number defines which yAxis the point is connected to.
+             * It refers to either the axis id or the index of the axis
+             * in the yAxis array.
+             */
+            yAxis: 0,
+            background: {
+                /**
+                 * The color of the rectangle.
+                 */
+                fill: 'rgba(130, 170, 255, 0.4)',
+                /**
+                 * The width of border.
+                 */
+                strokeWidth: 0,
+                /**
+                 * The color of border.
+                 */
+                stroke: void 0
+            },
+            /**
+             * Configure a crosshair that is horizontally placed in middle of
+             * rectangle.
+             *
+             */
+            crosshairX: {
+                /**
+                 * Enable or disable the horizontal crosshair.
+                 *
+                 */
+                enabled: true,
+                /**
+                 * The Z index of the crosshair in annotation.
+                 */
+                zIndex: 6,
+                /**
+                 * The dash or dot style of the crosshair's line. For possible
+                 * values, see
+                 * [this demonstration](https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/series-dashstyle-all/).
+                 *
+                 * @type    {Highcharts.DashStyleValue}
+                 * @default Dash
+                 */
+                dashStyle: 'Dash',
+                /**
+                 * The marker-end defines the arrowhead that will be drawn
+                 * at the final vertex of the given crosshair's path.
+                 *
+                 * @type       {string}
+                 * @default    arrow
+                 */
+                markerEnd: 'arrow'
+            },
+            /**
+             * Configure a crosshair that is vertically placed in middle of
+             * rectangle.
+             */
+            crosshairY: {
+                /**
+                 * Enable or disable the vertical crosshair.
+                 *
+                 */
+                enabled: true,
+                /**
+                 * The Z index of the crosshair in annotation.
+                 */
+                zIndex: 6,
+                /**
+                 * The dash or dot style of the crosshair's line. For possible
+                 * values, see
+                 * [this demonstration](https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/series-dashstyle-all/).
+                 *
+                 * @type      {Highcharts.DashStyleValue}
+                 * @default   Dash
+                 * @apioption annotations.types.measure.typeOptions.crosshairY.dashStyle
+                 *
+                 */
+                dashStyle: 'Dash',
+                /**
+                 * The marker-end defines the arrowhead that will be drawn
+                 * at the final vertex of the given crosshair's path.
+                 *
+                 * @type       {string}
+                 * @default    arrow
+                 * @validvalue ["none", "arrow"]
+                 *
+                 */
+                markerEnd: 'arrow'
+            },
+            label: {
+                /**
+                 * Enable or disable the label text (min, max, average,
+                 * bins values).
+                 *
+                 * Defaults to true.
+                 */
+                enabled: true,
+                /**
+                 * CSS styles for the measure label.
+                 *
+                 * @type    {Highcharts.CSSObject}
+                 * @default {"color": "#666666", "fontSize": "11px"}
+                 */
+                style: {
+                    fontSize: '0.7em',
+                    color: "#333333" /* Palette.neutralColor80 */
+                },
+                /**
+                 * Formatter function for the label text.
+                 *
+                 * Available data are:
+                 *
+                 * <table>
+                 *
+                 * <tbody>
+                 *
+                 * <tr>
+                 *
+                 * <td>`this.min`</td>
+                 *
+                 * <td>The minimum value of the points in the selected
+                 * range.</td>
+                 *
+                 * </tr>
+                 *
+                 * <tr>
+                 *
+                 * <td>`this.max`</td>
+                 *
+                 * <td>The maximum value of the points in the selected
+                 * range.</td>
+                 *
+                 * </tr>
+                 *
+                 * <tr>
+                 *
+                 * <td>`this.average`</td>
+                 *
+                 * <td>The average value of the points in the selected
+                 * range.</td>
+                 *
+                 * </tr>
+                 *
+                 * <tr>
+                 *
+                 * <td>`this.bins`</td>
+                 *
+                 * <td>The amount of the points in the selected range.</td>
+                 *
+                 * </tr>
+                 *
+                 * </table>
+                 *
+                 * @type {Function}
+                 *
+                 */
+                formatter: void 0
+            }
+        },
+        controlPointOptions: {
+            positioner: function (target) {
+                const cpIndex = this.index, chart = target.chart, options = target.options, typeOptions = options.typeOptions, selectType = typeOptions.selectType, controlPointOptions = options.controlPointOptions, inverted = chart.inverted, xAxis = chart.xAxis[typeOptions.xAxis], yAxis = chart.yAxis[typeOptions.yAxis], ext = getExtremes(target.xAxisMin, target.xAxisMax, target.yAxisMin, target.yAxisMax);
+                let targetX = target.xAxisMax, targetY = target.yAxisMax, x, y;
+                if (selectType === 'x') {
+                    targetY = (ext.yAxisMax + ext.yAxisMin) / 2;
+                    // First control point
+                    if (cpIndex === 0) {
+                        targetX = target.xAxisMin;
+                    }
+                }
+                if (selectType === 'y') {
+                    targetX = ext.xAxisMin +
+                        ((ext.xAxisMax - ext.xAxisMin) / 2);
+                    // First control point
+                    if (cpIndex === 0) {
+                        targetY = target.yAxisMin;
+                    }
+                }
+                if (inverted) {
+                    x = yAxis.toPixels(targetY);
+                    y = xAxis.toPixels(targetX);
+                }
+                else {
+                    x = xAxis.toPixels(targetX);
+                    y = yAxis.toPixels(targetY);
+                }
+                return {
+                    x: x - (controlPointOptions.width / 2),
+                    y: y - (controlPointOptions.height / 2)
+                };
+            },
+            events: {
+                drag: function (e, target) {
+                    const translation = this.mouseMoveToTranslation(e), selectType = target.options.typeOptions.selectType, index = this.index, x = selectType === 'y' ? 0 : translation.x, y = selectType === 'x' ? 0 : translation.y;
+                    target.resize(x, y, index, selectType);
+                    target.resizeX += x;
+                    target.resizeY += y;
+                    target.redraw(false, true);
+                }
+            }
+        }
+    };
+}
 /* *
  *
  *
@@ -7969,232 +8286,6 @@ class Measure extends Annotations_Annotation {
         this.shapes.forEach((item) => item.translate(dx, dy));
     }
 }
-Measure.prototype.defaultOptions = Measure_merge(Annotations_Annotation.prototype.defaultOptions, 
-/**
- * A measure annotation.
- *
- * @extends annotations.crookedLine
- * @excluding labels, labelOptions, shapes, shapeOptions
- * @sample highcharts/annotations-advanced/measure/
- *         Measure
- * @product highstock
- * @optionparent annotations.measure
- */
-{
-    typeOptions: {
-        /**
-         * Decides in what dimensions the user can resize by dragging the
-         * mouse. Can be one of x, y or xy.
-         */
-        selectType: 'xy',
-        /**
-         * This number defines which xAxis the point is connected to.
-         * It refers to either the axis id or the index of the axis
-         * in the xAxis array.
-         */
-        xAxis: 0,
-        /**
-         * This number defines which yAxis the point is connected to.
-         * It refers to either the axis id or the index of the axis
-         * in the yAxis array.
-         */
-        yAxis: 0,
-        background: {
-            /**
-             * The color of the rectangle.
-             */
-            fill: 'rgba(130, 170, 255, 0.4)',
-            /**
-             * The width of border.
-             */
-            strokeWidth: 0,
-            /**
-             * The color of border.
-             */
-            stroke: void 0
-        },
-        /**
-         * Configure a crosshair that is horizontally placed in middle of
-         * rectangle.
-         *
-         */
-        crosshairX: {
-            /**
-             * Enable or disable the horizontal crosshair.
-             *
-             */
-            enabled: true,
-            /**
-             * The Z index of the crosshair in annotation.
-             */
-            zIndex: 6,
-            /**
-             * The dash or dot style of the crosshair's line. For possible
-             * values, see
-             * [this demonstration](https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/series-dashstyle-all/).
-             *
-             * @type    {Highcharts.DashStyleValue}
-             * @default Dash
-             */
-            dashStyle: 'Dash',
-            /**
-             * The marker-end defines the arrowhead that will be drawn
-             * at the final vertex of the given crosshair's path.
-             *
-             * @type       {string}
-             * @default    arrow
-             */
-            markerEnd: 'arrow'
-        },
-        /**
-         * Configure a crosshair that is vertically placed in middle of
-         * rectangle.
-         */
-        crosshairY: {
-            /**
-             * Enable or disable the vertical crosshair.
-             *
-             */
-            enabled: true,
-            /**
-             * The Z index of the crosshair in annotation.
-             */
-            zIndex: 6,
-            /**
-             * The dash or dot style of the crosshair's line. For possible
-             * values, see
-             * [this demonstration](https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/series-dashstyle-all/).
-             *
-             * @type      {Highcharts.DashStyleValue}
-             * @default   Dash
-             * @apioption annotations.measure.typeOptions.crosshairY.dashStyle
-             *
-             */
-            dashStyle: 'Dash',
-            /**
-             * The marker-end defines the arrowhead that will be drawn
-             * at the final vertex of the given crosshair's path.
-             *
-             * @type       {string}
-             * @default    arrow
-             * @validvalue ["none", "arrow"]
-             *
-             */
-            markerEnd: 'arrow'
-        },
-        label: {
-            /**
-             * Enable or disable the label text (min, max, average,
-             * bins values).
-             *
-             * Defaults to true.
-             */
-            enabled: true,
-            /**
-             * CSS styles for the measure label.
-             *
-             * @type    {Highcharts.CSSObject}
-             * @default {"color": "#666666", "fontSize": "11px"}
-             */
-            style: {
-                fontSize: '0.7em',
-                color: "#666666" /* Palette.neutralColor60 */
-            },
-            /**
-             * Formatter function for the label text.
-             *
-             * Available data are:
-             *
-             * <table>
-             *
-             * <tbody>
-             *
-             * <tr>
-             *
-             * <td>`this.min`</td>
-             *
-             * <td>The minimum value of the points in the selected
-             * range.</td>
-             *
-             * </tr>
-             *
-             * <tr>
-             *
-             * <td>`this.max`</td>
-             *
-             * <td>The maximum value of the points in the selected
-             * range.</td>
-             *
-             * </tr>
-             *
-             * <tr>
-             *
-             * <td>`this.average`</td>
-             *
-             * <td>The average value of the points in the selected
-             * range.</td>
-             *
-             * </tr>
-             *
-             * <tr>
-             *
-             * <td>`this.bins`</td>
-             *
-             * <td>The amount of the points in the selected range.</td>
-             *
-             * </tr>
-             *
-             * </table>
-             *
-             * @type {Function}
-             *
-             */
-            formatter: void 0
-        }
-    },
-    controlPointOptions: {
-        positioner: function (target) {
-            const cpIndex = this.index, chart = target.chart, options = target.options, typeOptions = options.typeOptions, selectType = typeOptions.selectType, controlPointOptions = options.controlPointOptions, inverted = chart.inverted, xAxis = chart.xAxis[typeOptions.xAxis], yAxis = chart.yAxis[typeOptions.yAxis], ext = getExtremes(target.xAxisMin, target.xAxisMax, target.yAxisMin, target.yAxisMax);
-            let targetX = target.xAxisMax, targetY = target.yAxisMax, x, y;
-            if (selectType === 'x') {
-                targetY = (ext.yAxisMax + ext.yAxisMin) / 2;
-                // First control point
-                if (cpIndex === 0) {
-                    targetX = target.xAxisMin;
-                }
-            }
-            if (selectType === 'y') {
-                targetX = ext.xAxisMin +
-                    ((ext.xAxisMax - ext.xAxisMin) / 2);
-                // First control point
-                if (cpIndex === 0) {
-                    targetY = target.yAxisMin;
-                }
-            }
-            if (inverted) {
-                x = yAxis.toPixels(targetY);
-                y = xAxis.toPixels(targetX);
-            }
-            else {
-                x = xAxis.toPixels(targetX);
-                y = yAxis.toPixels(targetY);
-            }
-            return {
-                x: x - (controlPointOptions.width / 2),
-                y: y - (controlPointOptions.height / 2)
-            };
-        },
-        events: {
-            drag: function (e, target) {
-                const translation = this.mouseMoveToTranslation(e), selectType = target.options.typeOptions.selectType, index = this.index, x = selectType === 'y' ? 0 : translation.x, y = selectType === 'x' ? 0 : translation.y;
-                target.resize(x, y, index, selectType);
-                target.resizeX += x;
-                target.resizeY += y;
-                target.redraw(false, true);
-            }
-        }
-    }
-});
 Annotations_Annotation.types.measure = Measure;
 /* *
  *

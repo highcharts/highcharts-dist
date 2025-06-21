@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.2.0 (2025-04-07)
+ * @license Highcharts JS v12.3.0 (2025-06-21)
  * @module highcharts/modules/boost
  * @requires highcharts
  *
@@ -3222,7 +3222,7 @@ function onSeriesDestroy() {
     const series = this, chart = series.chart;
     if (chart.boost &&
         chart.boost.markerGroup === series.markerGroup) {
-        series.markerGroup = null;
+        series.markerGroup = void 0;
     }
     if (chart.hoverPoints) {
         chart.hoverPoints = chart.hoverPoints.filter(function (point) {
@@ -3230,7 +3230,7 @@ function onSeriesDestroy() {
         });
     }
     if (chart.hoverPoint && chart.hoverPoint.series === series) {
-        chart.hoverPoint = null;
+        chart.hoverPoint = void 0;
     }
 }
 /**
@@ -3408,8 +3408,27 @@ function seriesRenderCanvas() {
         this.getColumn('x') :
         void 0) ||
         this.options.xData ||
-        this.getColumn('x', true)), lineWidth = BoostSeries_pick(options.lineWidth, 1), nullYSubstitute = options.nullInteraction && yMin;
+        this.getColumn('x', true)), lineWidth = BoostSeries_pick(options.lineWidth, 1), nullYSubstitute = options.nullInteraction && yMin, tooltip = chart.tooltip;
     let renderer = false, lastClientX, yBottom = yAxis.getThreshold(threshold), minVal, maxVal, minI, maxI;
+    // Clear mock points and tooltip after zoom (#20330)
+    if (!this.boosted) {
+        return;
+    }
+    this.points?.forEach((point) => {
+        point?.destroyElements?.();
+    });
+    this.points = [];
+    if (tooltip && !tooltip.isHidden) {
+        const isSeriesHovered = chart.hoverPoint?.series === this ||
+            chart.hoverPoints?.some((point) => point.series === this);
+        if (isSeriesHovered) {
+            chart.hoverPoint = chart.hoverPoints = void 0;
+            tooltip.hide(0);
+        }
+    }
+    else if (chart.hoverPoints) {
+        chart.hoverPoints = chart.hoverPoints.filter((point) => point.series !== this);
+    }
     // When touch-zooming or mouse-panning, re-rendering the canvas would not
     // perform fast enough. Instead, let the axes redraw, but not the series.
     // The series is scale-translated in an event handler for an approximate

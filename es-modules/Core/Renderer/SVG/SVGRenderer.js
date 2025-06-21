@@ -171,7 +171,7 @@ class SVGRenderer {
         this.url = this.getReferenceURL();
         // Add description
         const desc = this.createElement('desc').add();
-        desc.element.appendChild(doc.createTextNode('Created with Highcharts 12.2.0'));
+        desc.element.appendChild(doc.createTextNode('Created with Highcharts 12.3.0'));
         this.defs = this.createElement('defs').add();
         this.allowHTML = allowHTML;
         this.forExport = forExport;
@@ -507,6 +507,9 @@ class SVGRenderer {
      * The contrast color, either `#000000` or `#FFFFFF`.
      */
     getContrast(color) {
+        if (color === 'transparent') {
+            return '#000000';
+        }
         // #6216, #17273
         const rgba256 = Color.parse(color).rgba, 
         // For each rgb channel, compute the luminosity based on all

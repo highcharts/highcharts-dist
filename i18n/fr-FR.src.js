@@ -1,5 +1,5 @@
 /**
-* @license Highcharts JS v12.2.0 (2025-04-07)
+* @license Highcharts JS v12.3.0 (2025-06-21)
 * @module highcharts/i18n/fr-FR
 * @requires highcharts
 *
@@ -93,12 +93,12 @@ var __webpack_exports__ = {};
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (fr_FR_src)
 /* harmony export */ });
-/* harmony import */ var fr_FR_src_Core_Defaults_js_WEBPACK_IMPORTED_MODULE_0_ = __webpack_require__(944);
-/* harmony import */ var fr_FR_src_Core_Defaults_js_WEBPACK_IMPORTED_MODULE_0_default = /*#__PURE__*/__webpack_require__.n(fr_FR_src_Core_Defaults_js_WEBPACK_IMPORTED_MODULE_0_);
+/* harmony import */ var _Core_Defaults_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(944);
+/* harmony import */ var _Core_Defaults_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_Core_Defaults_js__WEBPACK_IMPORTED_MODULE_0__);
 
 
-const { setOptions: fr_FR_src_setOptions } = (fr_FR_src_Core_Defaults_js_WEBPACK_IMPORTED_MODULE_0_default());
-const fr_FR_src_languageOptions = {
+const { setOptions } = (_Core_Defaults_js__WEBPACK_IMPORTED_MODULE_0___default());
+const languageOptions = {
     "locale": "fr-FR",
     "chartTitle": "Titre du graphique",
     "pieSliceName": "Part",
@@ -602,11 +602,11 @@ const fr_FR_src_languageOptions = {
     },
     "noData": "Aucune donnée à afficher"
 };
-fr_FR_src_setOptions({
-    lang: fr_FR_src_languageOptions
+setOptions({
+    lang: languageOptions
 });
 // Export Highcharts
-/* harmony default export */ const fr_FR_src = ((fr_FR_src_Core_Defaults_js_WEBPACK_IMPORTED_MODULE_0_default()));
+/* harmony default export */ const fr_FR_src = ((_Core_Defaults_js__WEBPACK_IMPORTED_MODULE_0___default()));
 
 __webpack_exports__ = __webpack_exports__["default"];
 /******/ 	return __webpack_exports__;

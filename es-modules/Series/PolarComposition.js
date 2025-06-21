@@ -161,7 +161,7 @@ function onChartCreateAxes() {
         this.pane = [];
     }
     this.options.pane = splat(this.options.pane || {});
-    this.options.pane.forEach((paneOptions) => {
+    splat(this.userOptions.pane || {}).forEach((paneOptions) => {
         new Pane(// eslint-disable-line no-new
         paneOptions, this);
     }, this);

@@ -319,7 +319,7 @@ const navigation = {
      * from a different server.
      *
      * @type      {string}
-     * @default   https://code.highcharts.com/12.2.0/gfx/stock-icons/
+     * @default   https://code.highcharts.com/12.3.0/gfx/stock-icons/
      * @since     7.1.3
      * @apioption navigation.iconsURL
      */

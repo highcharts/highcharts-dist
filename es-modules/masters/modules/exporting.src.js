@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.2.0 (2025-04-07)
+ * @license Highcharts JS v12.3.0 (2025-06-21)
  * @module highcharts/modules/exporting
  * @requires highcharts
  *
@@ -14,9 +14,13 @@ import Highcharts from '../../Core/Globals.js';
 import Exporting from '../../Extensions/Exporting/Exporting.js';
 import HttpUtilities from '../../Core/HttpUtilities.js';
 const G = Highcharts;
+// Class
+G.Exporting = Exporting;
+// Compatibility
 G.HttpUtilities = G.HttpUtilities || HttpUtilities;
 G.ajax = G.HttpUtilities.ajax;
 G.getJSON = G.HttpUtilities.getJSON;
 G.post = G.HttpUtilities.post;
+// Compose
 Exporting.compose(G.Chart, G.Renderer);
 export default Highcharts;

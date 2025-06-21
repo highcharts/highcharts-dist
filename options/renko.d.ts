@@ -839,6 +839,14 @@ declare module "../highcharts" {
          * option (view live demo).
          */
         zones?: Array<Highcharts.SeriesZonesOptionsObject>;
+        /**
+         * (Highstock) Whether to zoom non-cartesian series. If `chart.zooming`
+         * is set, the option allows to disable zooming on an individual
+         * non-cartesian series. By default zooming is enabled for all series.
+         *
+         * Note: This option works only for non-cartesian series.
+         */
+        zoomEnabled?: boolean;
     }
     /**
      * (Highstock) A `renko` series. If the type option is not specified, it is

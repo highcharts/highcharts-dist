@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.2.0 (2025-04-07)
+ * @license Highcharts JS v12.3.0 (2025-06-21)
  * @module highcharts/modules/data-tools
  * @requires highcharts
  *
@@ -1964,16 +1964,53 @@ class DataConnector {
      *
      * @param {DataConnector.UserOptions} [options]
      * Options to use in the connector.
+     *
+     * @param {Array<DataTableOptions>} [dataTables]
+     * Multiple connector data tables options.
      */
-    constructor(options = {}) {
-        this.table = new Data_DataTable(options.dataTable);
+    constructor(options = {}, dataTables = []) {
+        /**
+         * Tables managed by this DataConnector instance.
+         */
+        this.dataTables = {};
+        /**
+         * Helper flag for detecting whether the data connector is loaded.
+         * @internal
+         */
+        this.loaded = false;
         this.metadata = options.metadata || { columns: {} };
+        // Create a data table for each defined in the dataTables user options.
+        let dataTableIndex = 0;
+        if (dataTables?.length > 0) {
+            for (let i = 0, iEnd = dataTables.length; i < iEnd; ++i) {
+                const dataTable = dataTables[i];
+                const key = dataTable?.key;
+                this.dataTables[key ?? dataTableIndex] =
+                    new Data_DataTable(dataTable);
+                if (!key) {
+                    dataTableIndex++;
+                }
+            }
+            // If user options dataTables is not defined, generate a default table.
+        }
+        else {
+            this.dataTables[0] = new Data_DataTable(options.dataTable);
+        }
     }
     /**
      * Poll timer ID, if active.
      */
     get polling() {
         return !!this._polling;
+    }
+    /**
+     * Gets the first data table.
+     *
+     * @return {DataTable}
+     * The data table instance.
+     */
+    get table() {
+        return this.getTable();
     }
     /* *
      *
@@ -2032,6 +2069,22 @@ class DataConnector {
         if (names.length) {
             return names.sort((a, b) => (pick(columns[a].index, 0) - pick(columns[b].index, 0)));
         }
+    }
+    /**
+     * Returns a single data table instance based on the provided key.
+     * Otherwise, returns the first data table.
+     *
+     * @param {string} [key]
+     * The data table key.
+     *
+     * @return {DataTable}
+     * The data table instance.
+     */
+    getTable(key) {
+        if (key) {
+            return this.dataTables[key];
+        }
+        return Object.values(this.dataTables)[0];
     }
     /**
      * Retrieves the columns of the dataTable,
@@ -2098,14 +2151,17 @@ class DataConnector {
             connector.describeColumn(columnNames[i], { index: i });
         }
     }
-    setModifierOptions(modifierOptions) {
-        const ModifierClass = (modifierOptions &&
-            Modifiers_DataModifier.types[modifierOptions.type]);
-        return this.table
-            .setModifier(ModifierClass ?
-            new ModifierClass(modifierOptions) :
-            void 0)
-            .then(() => this);
+    async setModifierOptions(modifierOptions, tablesOptions) {
+        for (const [key, table] of Object.entries(this.dataTables)) {
+            const tableOptions = tablesOptions?.find((dataTable) => dataTable.key === key);
+            const mergedModifierOptions = DataConnector_merge(tableOptions?.dataModifier, modifierOptions);
+            const ModifierClass = (mergedModifierOptions &&
+                Modifiers_DataModifier.types[mergedModifierOptions.type]);
+            await table.setModifier(ModifierClass ?
+                new ModifierClass(mergedModifierOptions) :
+                void 0);
+        }
+        return this;
     }
     /**
      * Starts polling new data after the specific time span in milliseconds.
@@ -2115,12 +2171,16 @@ class DataConnector {
      */
     startPolling(refreshTime = 1000) {
         const connector = this;
+        const tables = connector.dataTables;
+        // Assign a new abort controller.
+        this.pollingController = new AbortController();
+        // Clear the polling timeout.
         window.clearTimeout(connector._polling);
         connector._polling = window.setTimeout(() => connector
             .load()['catch']((error) => connector.emit({
             type: 'loadError',
             error,
-            table: connector.table
+            tables
         }))
             .then(() => {
             if (connector._polling) {
@@ -2129,10 +2189,16 @@ class DataConnector {
         }), refreshTime);
     }
     /**
-     * Stops polling data.
+     * Stops polling data. Shouldn't be performed if polling is already stopped.
      */
     stopPolling() {
         const connector = this;
+        if (!connector.polling) {
+            return;
+        }
+        // Abort the existing request.
+        connector?.pollingController?.abort();
+        // Clear the polling timeout.
         window.clearTimeout(connector._polling);
         delete connector._polling;
     }
@@ -2147,6 +2213,35 @@ class DataConnector {
      */
     whatIs(name) {
         return this.metadata.columns[name];
+    }
+    /**
+     * Iterates over the dataTables and initiates the corresponding converters.
+     * Updates the dataTables and assigns the first converter.
+     *
+     * @param {T}[data]
+     * Data specific to the corresponding converter.
+     *
+     * @param {DataConnector.CreateConverterFunction}[createConverter]
+     * Creates a specific converter combining the dataTable options.
+     *
+     * @param {DataConnector.ParseDataFunction<T>}[parseData]
+     * Runs the converter parse method with the specific data type.
+     */
+    initConverters(data, createConverter, parseData) {
+        let index = 0;
+        for (const [key, table] of Object.entries(this.dataTables)) {
+            // Create a proper converter and parse its data.
+            const converter = createConverter(key, table);
+            parseData(converter, data);
+            // Update the dataTable.
+            table.deleteColumns();
+            table.setColumns(converter.getTable().getColumns());
+            // Assign the first converter.
+            if (index === 0) {
+                this.converter = converter;
+            }
+            index++;
+        }
     }
 }
 /* *
@@ -3321,7 +3416,7 @@ class DataPool {
     getConnector(connectorId) {
         const connector = this.connectors[connectorId];
         // Already loaded
-        if (connector) {
+        if (connector?.loaded) {
             return Promise.resolve(connector);
         }
         let waitingList = this.waiting[connectorId];
@@ -3436,12 +3531,14 @@ class DataPool {
             if (!ConnectorClass) {
                 throw new Error(`Connector type not found. (${options.type})`);
             }
-            const connector = new ConnectorClass(options.options);
+            const connector = this.connectors[options.id] = new ConnectorClass(options.options, options.dataTables);
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             connector
                 .load()
-                .then((connector) => {
-                this.connectors[options.id] = connector;
+                .then(({ converter, dataTables }) => {
+                connector.dataTables = dataTables;
+                connector.converter = converter;
+                connector.loaded = true;
                 this.emit({
                     type: 'afterLoad',
                     options
@@ -3449,6 +3546,15 @@ class DataPool {
                 resolve(connector);
             })['catch'](reject);
         });
+    }
+    /**
+     * Cancels all data connectors pending requests.
+     */
+    cancelPendingRequests() {
+        const { connectors } = this;
+        for (const connectorKey of Object.keys(connectors)) {
+            connectors[connectorKey].stopPolling();
+        }
     }
     /**
      * Registers a callback for a specific event.
@@ -6438,7 +6544,7 @@ Converters_DataConverter.registerType('CSV', CSVConverter);
 
 
 
-const { merge: CSVConnector_merge } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { merge: CSVConnector_merge, defined: CSVConnector_defined } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
  *  Class
@@ -6460,12 +6566,16 @@ class CSVConnector extends Connectors_DataConnector {
      *
      * @param {CSVConnector.UserOptions} [options]
      * Options for the connector and converter.
+     *
+     * @param {Array<DataTableOptions>} [dataTables]
+     * Multiple connector data tables options.
+     *
      */
-    constructor(options) {
+    constructor(options, dataTables) {
         const mergedOptions = CSVConnector_merge(CSVConnector.defaultOptions, options);
-        super(mergedOptions);
-        this.converter = new Converters_CSVConverter(mergedOptions);
-        this.options = mergedOptions;
+        super(mergedOptions, dataTables);
+        this.options = CSVConnector_defined(dataTables) ?
+            CSVConnector_merge(mergedOptions, { dataTables }) : mergedOptions;
         if (mergedOptions.enablePolling) {
             this.startPolling(Math.max(mergedOptions.dataRefreshRate || 0, 1) * 1000);
         }
@@ -6485,26 +6595,39 @@ class CSVConnector extends Connectors_DataConnector {
      * @emits CSVConnector#afterLoad
      */
     load(eventDetail) {
-        const connector = this, converter = connector.converter, table = connector.table, { csv, csvURL, dataModifier } = connector.options;
+        const connector = this, tables = connector.dataTables, { csv, csvURL, dataModifier, dataTables } = connector.options;
         connector.emit({
             type: 'load',
             csv,
             detail: eventDetail,
-            table
+            tables
         });
         return Promise
             .resolve(csvURL ?
-            fetch(csvURL).then((response) => response.text()) :
+            fetch(csvURL, {
+                signal: connector?.pollingController?.signal
+            }).then((response) => response.text()) :
             csv || '')
             .then((csv) => {
             if (csv) {
-                // If already loaded, clear the current rows
-                table.deleteColumns();
-                converter.parse({ csv });
-                table.setColumns(converter.getTable().getColumns());
+                this.initConverters(csv, (key) => {
+                    const options = this.options;
+                    const tableOptions = dataTables?.find((dataTable) => dataTable.key === key);
+                    // Takes over the connector default options.
+                    const mergedTableOptions = {
+                        dataTableKey: key,
+                        firstRowAsNames: tableOptions?.firstRowAsNames ??
+                            options.firstRowAsNames,
+                        beforeParse: tableOptions?.beforeParse ??
+                            options.beforeParse
+                    };
+                    return new Converters_CSVConverter(CSVConnector_merge(this.options, mergedTableOptions));
+                }, (converter, data) => {
+                    converter.parse({ csv: data });
+                });
             }
             return connector
-                .setModifierOptions(dataModifier)
+                .setModifierOptions(dataModifier, dataTables)
                 .then(() => csv);
         })
             .then((csv) => {
@@ -6512,7 +6635,7 @@ class CSVConnector extends Connectors_DataConnector {
                 type: 'afterLoad',
                 csv,
                 detail: eventDetail,
-                table
+                tables
             });
             return connector;
         })['catch']((error) => {
@@ -6520,7 +6643,7 @@ class CSVConnector extends Connectors_DataConnector {
                 type: 'loadError',
                 detail: eventDetail,
                 error,
-                table
+                tables
             });
             throw error;
         });
@@ -6747,7 +6870,7 @@ Converters_DataConverter.registerType('JSON', JSONConverter);
 
 
 
-const { merge: JSONConnector_merge } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { merge: JSONConnector_merge, defined: JSONConnector_defined } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
  *  Class
@@ -6769,12 +6892,15 @@ class JSONConnector extends Connectors_DataConnector {
      *
      * @param {JSONConnector.UserOptions} [options]
      * Options for the connector and converter.
+     *
+     * @param {Array<DataTableOptions>} [dataTables]
+     * Multiple connector data tables options.
      */
-    constructor(options) {
+    constructor(options, dataTables) {
         const mergedOptions = JSONConnector_merge(JSONConnector.defaultOptions, options);
-        super(mergedOptions);
-        this.converter = new Converters_JSONConverter(mergedOptions);
-        this.options = mergedOptions;
+        super(mergedOptions, dataTables);
+        this.options = JSONConnector_defined(dataTables) ?
+            JSONConnector_merge(mergedOptions, { dataTables }) : mergedOptions;
         if (mergedOptions.enablePolling) {
             this.startPolling(Math.max(mergedOptions.dataRefreshRate || 0, 1) * 1000);
         }
@@ -6794,40 +6920,58 @@ class JSONConnector extends Connectors_DataConnector {
      * @emits JSONConnector#afterLoad
      */
     load(eventDetail) {
-        const connector = this, converter = connector.converter, table = connector.table, { data, dataUrl, dataModifier } = connector.options;
+        const connector = this, tables = connector.dataTables, { data, dataUrl, dataModifier, dataTables } = connector.options;
         connector.emit({
             type: 'load',
             data,
             detail: eventDetail,
-            table
+            tables
         });
         return Promise
             .resolve(dataUrl ?
-            fetch(dataUrl).then((response) => response.json())['catch']((error) => {
+            fetch(dataUrl, {
+                signal: connector?.pollingController?.signal
+            }).then((response) => response.json())['catch']((error) => {
                 connector.emit({
                     type: 'loadError',
                     detail: eventDetail,
                     error,
-                    table
+                    tables
                 });
                 console.warn(`Unable to fetch data from ${dataUrl}.`); // eslint-disable-line no-console
             }) :
             data || [])
             .then((data) => {
             if (data) {
-                // If already loaded, clear the current rows
-                table.deleteColumns();
-                converter.parse({ data });
-                table.setColumns(converter.getTable().getColumns());
+                this.initConverters(data, (key) => {
+                    const options = this.options;
+                    const tableOptions = dataTables?.find((dataTable) => dataTable.key === key);
+                    // Takes over the connector default options.
+                    const mergedTableOptions = {
+                        dataTableKey: key,
+                        columnNames: tableOptions?.columnNames ??
+                            options.columnNames,
+                        firstRowAsNames: tableOptions?.firstRowAsNames ??
+                            options.firstRowAsNames,
+                        orientation: tableOptions?.orientation ??
+                            options.orientation,
+                        beforeParse: tableOptions?.beforeParse ??
+                            options.beforeParse
+                    };
+                    return new Converters_JSONConverter(JSONConnector_merge(this.options, mergedTableOptions));
+                }, (converter, data) => {
+                    converter.parse({ data });
+                });
             }
-            return connector.setModifierOptions(dataModifier).then(() => data);
+            return connector.setModifierOptions(dataModifier, dataTables)
+                .then(() => data);
         })
             .then((data) => {
             connector.emit({
                 type: 'afterLoad',
                 data,
                 detail: eventDetail,
-                table
+                tables
             });
             return connector;
         })['catch']((error) => {
@@ -6835,7 +6979,7 @@ class JSONConnector extends Connectors_DataConnector {
                 type: 'loadError',
                 detail: eventDetail,
                 error,
-                table
+                tables
             });
             throw error;
         });
@@ -7020,7 +7164,7 @@ Converters_DataConverter.registerType('GoogleSheets', GoogleSheetsConverter);
 
 
 
-const { merge: GoogleSheetsConnector_merge, pick: GoogleSheetsConnector_pick } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { merge: GoogleSheetsConnector_merge, pick: GoogleSheetsConnector_pick, defined: GoogleSheetsConnector_defined } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
  *  Functions
@@ -7057,12 +7201,16 @@ class GoogleSheetsConnector extends Connectors_DataConnector {
      *
      * @param {GoogleSheetsConnector.UserOptions} [options]
      * Options for the connector and converter.
+     *
+     * @param {Array<DataTableOptions>} [dataTables]
+     * Multiple connector data tables options.
+     *
      */
-    constructor(options) {
+    constructor(options, dataTables) {
         const mergedOptions = GoogleSheetsConnector_merge(GoogleSheetsConnector.defaultOptions, options);
-        super(mergedOptions);
-        this.converter = new Converters_GoogleSheetsConverter(mergedOptions);
-        this.options = mergedOptions;
+        super(mergedOptions, dataTables);
+        this.options = GoogleSheetsConnector_defined(dataTables) ?
+            GoogleSheetsConnector_merge(mergedOptions, { dataTables }) : mergedOptions;
     }
     /* *
      *
@@ -7079,36 +7227,44 @@ class GoogleSheetsConnector extends Connectors_DataConnector {
      * Same connector instance with modified table.
      */
     load(eventDetail) {
-        const connector = this, converter = connector.converter, table = connector.table, { dataModifier, dataRefreshRate, enablePolling, firstRowAsNames, googleAPIKey, googleSpreadsheetKey } = connector.options, url = GoogleSheetsConnector.buildFetchURL(googleAPIKey, googleSpreadsheetKey, connector.options);
+        const connector = this, tables = connector.dataTables, { dataModifier, dataRefreshRate, enablePolling, googleAPIKey, googleSpreadsheetKey, dataTables } = connector.options, url = GoogleSheetsConnector.buildFetchURL(googleAPIKey, googleSpreadsheetKey, connector.options);
         connector.emit({
             type: 'load',
             detail: eventDetail,
-            table,
+            tables,
             url
         });
         if (!URL.canParse(url)) {
             throw new Error('Invalid URL: ' + url);
         }
-        return fetch(url)
+        return fetch(url, { signal: connector?.pollingController?.signal })
             .then((response) => (response.json()))
             .then((json) => {
             if (isGoogleError(json)) {
                 throw new Error(json.error.message);
             }
-            converter.parse({
-                firstRowAsNames,
-                json
+            this.initConverters(json, (key) => {
+                const options = this.options;
+                const tableOptions = dataTables?.find((dataTable) => dataTable.key === key);
+                // Takes over the connector default options.
+                const mergedTableOptions = {
+                    dataTableKey: key,
+                    firstRowAsNames: tableOptions?.firstRowAsNames ??
+                        options.firstRowAsNames,
+                    beforeParse: tableOptions?.beforeParse ??
+                        options.beforeParse
+                };
+                return new Converters_GoogleSheetsConverter(GoogleSheetsConnector_merge(this.options, mergedTableOptions));
+            }, (converter, data) => {
+                converter.parse({ json: data });
             });
-            // If already loaded, clear the current table
-            table.deleteColumns();
-            table.setColumns(converter.getTable().getColumns());
-            return connector.setModifierOptions(dataModifier);
+            return connector.setModifierOptions(dataModifier, dataTables);
         })
             .then(() => {
             connector.emit({
                 type: 'afterLoad',
                 detail: eventDetail,
-                table,
+                tables,
                 url
             });
             // Polling
@@ -7121,7 +7277,7 @@ class GoogleSheetsConnector extends Connectors_DataConnector {
                 type: 'loadError',
                 detail: eventDetail,
                 error,
-                table
+                tables
             });
             throw error;
         });
@@ -7394,7 +7550,7 @@ class HTMLTableConverter extends Converters_DataConverter {
     getTableHeaderHTML(topheaders = [], subheaders = [], options = this.options) {
         const { useMultiLevelHeaders, useRowspanHeaders } = options;
         let html = '<thead>', i = 0, len = subheaders && subheaders.length, next, cur, curColspan = 0, rowspan;
-        // Clean up multiple table headers. Chart.getDataRows() returns two
+        // Clean up multiple table headers. Exporting.getDataRows() returns two
         // levels of headers when using multilevel, not merged. We need to
         // merge identical headers, remove redundant headers, and keep it
         // all marked up nicely.
@@ -7642,7 +7798,7 @@ class HTMLTableConnector extends Connectors_DataConnector {
         connector.emit({
             type: 'load',
             detail: eventDetail,
-            table,
+            tables: { table },
             tableElement: connector.tableElement
         });
         let tableElement;
@@ -7661,7 +7817,7 @@ class HTMLTableConnector extends Connectors_DataConnector {
                 type: 'loadError',
                 detail: eventDetail,
                 error,
-                table
+                tables: { table }
             });
             return Promise.reject(new Error(error));
         }
@@ -7675,7 +7831,7 @@ class HTMLTableConnector extends Connectors_DataConnector {
             connector.emit({
                 type: 'afterLoad',
                 detail: eventDetail,
-                table,
+                tables: { table },
                 tableElement: connector.tableElement
             });
             return connector;

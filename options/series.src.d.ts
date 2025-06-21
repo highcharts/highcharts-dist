@@ -1174,6 +1174,15 @@ declare module "../highcharts.src" {
          * option (view live demo).
          */
         zones?: Array<Highcharts.SeriesZonesOptionsObject>;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) Whether to zoom
+         * non-cartesian series. If `chart.zooming` is set, the option allows to
+         * disable zooming on an individual non-cartesian series. By default
+         * zooming is enabled for all series.
+         *
+         * Note: This option works only for non-cartesian series.
+         */
+        zoomEnabled?: boolean;
     }
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Positioning options for fixed

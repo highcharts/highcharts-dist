@@ -5,13 +5,6 @@
  *!*/
 import * as globals from "../globals.src";
 import * as _Highcharts from "../highcharts.src";
-/**
- * Adds the module to the imported Highcharts namespace.
- *
- * @param highcharts
- *        The imported Highcharts namespace to extend.
- */
-export function factory(highcharts: typeof Highcharts): void;
 declare module "../highcharts.src" {
     /**
      * An array of GeoJSON or TopoJSON objects or strings used as map data for
@@ -421,5 +414,4 @@ declare module "../highcharts.src" {
      */
     function topo2geo(): void;
 }
-export default factory;
-export let Highcharts: typeof _Highcharts;
+export default _Highcharts;

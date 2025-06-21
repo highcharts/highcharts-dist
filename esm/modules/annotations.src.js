@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.2.0 (2025-04-07)
+ * @license Highcharts JS v12.3.0 (2025-06-21)
  * @module highcharts/modules/annotations
  * @requires highcharts
  *
@@ -60,7 +60,7 @@ var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require_
  * */
 
 
-const { addEvent, erase, find, fireEvent, pick, wrap } = (external_highcharts_src_js_default_default());
+const { addEvent, erase, find, fireEvent, isArray, isObject, pick, wrap } = (external_highcharts_src_js_default_default());
 /* *
  *
  *  Functions
@@ -268,10 +268,14 @@ function chartRemoveAnnotation(idOrAnnotation) {
  * @private
  */
 function onChartAfterInit() {
-    const chart = this;
+    const chart = this, annotationsOption = this.options.annotations, annotationsUserOption = this.userOptions.annotations;
     chart.annotations = [];
-    if (!this.options.annotations) {
+    if (!isArray(this.options.annotations)) {
         this.options.annotations = [];
+    }
+    if (isObject(annotationsUserOption, true) &&
+        isObject(annotationsOption, true)) {
+        this.options.annotations.push(annotationsOption);
     }
 }
 /**
@@ -343,20 +347,25 @@ const { defined } = (external_highcharts_src_js_default_default());
  *
  * */
 /**
- * A basic type of an annotation. It allows to add custom labels
- * or shapes. The items can be tied to points, axis coordinates
- * or chart pixel coordinates.
+ * A collection of annotations to add to the chart. The basic annotation allows
+ * adding custom labels or shapes. The items can be tied to points, axis
+ * coordinates or chart pixel coordinates.
  *
- * @sample highcharts/annotations/basic/
- *         Basic annotations
- * @sample highcharts/demo/annotations/
- *         Advanced annotations
- * @sample highcharts/css/annotations
- *         Styled mode
- * @sample highcharts/annotations-advanced/controllable
- *         Controllable items
+ * General options for all annotations can be set using the
+ * `Highcharts.setOptions` function. In this case only single objects are
+ * supported, because it alters the defaults for all items. For initialization
+ * in the chart constructors however, arrays of annotations are supported.
+ *
+ * See more in the [general docs](https://www.highcharts.com/docs/advanced-chart-features/annotations).
+ *
+ * @sample highcharts/annotations/basic/ Basic annotations
+ * @sample highcharts/demo/annotations/ Annotated chart
+ * @sample highcharts/css/annotations Styled mode
+ * @sample highcharts/annotations-advanced/controllable Controllable items
  * @sample {highstock} stock/annotations/fibonacci-retracements
  *         Custom annotation, Fibonacci retracement
+ * @sample highcharts/annotations/shape/
+ *         Themed crooked line annotation
  *
  * @type         {Array<*>}
  * @since        6.0.0
@@ -371,6 +380,17 @@ const AnnotationDefaults = {
      *
      * @type      {number|string}
      * @apioption annotations.id
+     */
+    /**
+     * For advanced annotations, this option defines the type of annotation. Can
+     * be one of the keys listed under the [types option](#annotations.types).
+     *
+     * @sample    highcharts/annotations-advanced/crooked-line
+     *            Crooked line annotation
+     * @requires  modules/annotations-advanced
+     * @product   highstock
+     * @type      {string}
+     * @apioption annotations.type
      */
     /**
      * Whether the annotation is visible.
@@ -955,10 +975,20 @@ const AnnotationDefaults = {
      */
     events: {},
     /**
+     * Option override for specific advanced annotation types. This collection
+     * is intended for general theming using `Highcharts.setOptions()`.
+     *
+     * @sample   highcharts/annotations/shape/
+     *           Themed crooked line annotation
+     * @product highstock
+     * @requires modules/annotations-advanced
+     */
+    types: {},
+    /**
      * The Z index of the annotation.
      */
     zIndex: 6
-}; // Type options are expected but not set
+};
 /* *
  *
  *  Default Export
@@ -3394,15 +3424,22 @@ class ControllableLabel extends Controllables_Controllable {
         labelOptions[this.collection][this.index].y = this.options.y;
     }
     render(parent) {
-        const options = this.options, attrs = this.attrsFromOptions(options), style = options.style;
+        const options = this.options, attrs = this.attrsFromOptions(options), style = options.style, optionsChart = this.annotation.chart.options.chart, chartBackground = optionsChart.plotBackgroundColor ||
+            optionsChart.backgroundColor;
         this.graphic = this.annotation.chart.renderer
             .label('', 0, -9999, // #10055
-        options.shape, null, null, options.useHTML, null, 'annotation-label')
+        options.shape, void 0, void 0, options.useHTML, void 0, 'annotation-label')
             .attr(attrs)
             .add(parent);
         if (!this.annotation.chart.styledMode) {
             if (style.color === 'contrast') {
-                style.color = this.annotation.chart.renderer.getContrast(ControllableLabel.shapesWithoutBackground.indexOf(options.shape) > -1 ? '#FFFFFF' : options.backgroundColor);
+                const background = (ControllableLabel.shapesWithoutBackground.indexOf(options.shape) > -1 ||
+                    options.backgroundColor === 'none') ?
+                    chartBackground :
+                    options.backgroundColor;
+                style.color = this.annotation.chart.renderer.getContrast(typeof background === 'string' ? background :
+                    typeof chartBackground === 'string' ? chartBackground :
+                        '#ffffff');
             }
             this.graphic
                 .css(options.style)
@@ -3711,9 +3748,12 @@ class BaseForm {
         const popup = this, iconsURL = this.iconsURL;
         // Create close popup button.
         const closeButton = createElement('button', { className }, void 0, this.container);
-        closeButton.style['background-image'] = 'url(' +
-            (iconsURL.match(/png|svg|jpeg|jpg|gif/ig) ?
-                iconsURL : iconsURL + 'close.svg') + ')';
+        createElement('span', {
+            className: 'highcharts-icon'
+        }, {
+            backgroundImage: 'url(' + (iconsURL.match(/png|svg|jpeg|jpg|gif/ig) ?
+                iconsURL : iconsURL + 'close.svg') + ')'
+        }, closeButton);
         ['click', 'touchstart'].forEach((eventName) => {
             BaseForm_addEvent(closeButton, eventName, popup.closeButtonEvents.bind(popup));
         });
@@ -3784,7 +3824,7 @@ class BaseForm {
 
 const { doc: PopupAnnotations_doc, isFirefox } = (external_highcharts_src_js_default_default());
 
-const { createElement: PopupAnnotations_createElement, isArray, isObject, objectEach: PopupAnnotations_objectEach, pick: PopupAnnotations_pick, stableSort } = (external_highcharts_src_js_default_default());
+const { createElement: PopupAnnotations_createElement, isArray: PopupAnnotations_isArray, isObject: PopupAnnotations_isObject, objectEach: PopupAnnotations_objectEach, pick: PopupAnnotations_pick, stableSort } = (external_highcharts_src_js_default_default());
 /* *
  *
  *  Functions
@@ -3858,12 +3898,18 @@ function addToolbar(chart, options, callback) {
         showForm.call(this, 'annotation-edit', chart, options, callback);
     });
     button.className += ' highcharts-annotation-edit-button';
-    button.style['background-image'] = 'url(' +
-        this.iconsURL + 'edit.svg)';
+    PopupAnnotations_createElement('span', {
+        className: 'highcharts-icon'
+    }, {
+        backgroundImage: `url(${this.iconsURL}edit.svg)`
+    }, button);
     button = this.addButton(popupDiv, lang.removeButton || 'Remove', 'remove', popupDiv, callback);
     button.className += ' highcharts-annotation-remove-button';
-    button.style['background-image'] = 'url(' +
-        this.iconsURL + 'destroy.svg)';
+    PopupAnnotations_createElement('span', {
+        className: 'highcharts-icon'
+    }, {
+        backgroundImage: `url(${this.iconsURL}destroy.svg)`
+    }, button);
 }
 /**
  * Create annotation's form fields.
@@ -3890,12 +3936,12 @@ function addFormFields(parentDiv, chart, parentNode, options, storage, isRoot) {
     PopupAnnotations_objectEach(options, (value, option) => {
         // Create name like params.styles.fontSize
         parentFullName = parentNode !== '' ? parentNode + '.' + option : option;
-        if (isObject(value)) {
+        if (PopupAnnotations_isObject(value)) {
             if (
             // Value is object of options
-            !isArray(value) ||
+            !PopupAnnotations_isArray(value) ||
                 // Array of objects with params. i.e labels in Fibonacci
-                (isArray(value) && isObject(value[0]))) {
+                (PopupAnnotations_isArray(value) && PopupAnnotations_isObject(value[0]))) {
                 titleName = lang[option] || option;
                 if (!titleName.match(/\d/g)) {
                     storage.push([
@@ -4986,7 +5032,7 @@ function onNavigationBindingsShowPopup(config) {
         this.popup = new Popup_Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
             (this.chart.options.stockTools &&
                 this.chart.options.stockTools.gui.iconsURL) ||
-            'https://code.highcharts.com/12.2.0/gfx/stock-icons/'), this.chart);
+            'https://code.highcharts.com/12.3.0/gfx/stock-icons/'), this.chart);
     }
     this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
 }
@@ -5034,6 +5080,8 @@ const { getDeferredAnimation } = (external_highcharts_src_js_default_default());
 
 
 
+
+const { defaultOptions } = (external_highcharts_src_js_default_default());
 
 
 
@@ -5165,7 +5213,7 @@ class Annotation extends Annotations_EventEmitter {
          * @name Highcharts.Annotation#options
          * @type {Highcharts.AnnotationsOptions}
          */
-        this.options = Annotation_merge(this.defaultOptions, userOptions);
+        this.setOptions(userOptions);
         /**
          * The user options for the annotations.
          *
@@ -5506,7 +5554,12 @@ class Annotation extends Annotations_EventEmitter {
      *        User options for an annotation
      */
     setOptions(userOptions) {
-        this.options = Annotation_merge(this.defaultOptions, userOptions);
+        this.options = Annotation_merge(
+        // Shared for all annotation types
+        this.defaultOptions, 
+        // The static typeOptions from the class
+        (userOptions.type &&
+            this.defaultOptions.types[userOptions.type]) || {}, userOptions);
     }
     /**
      * Set the annotation's visibility.
@@ -5558,11 +5611,6 @@ class Annotation extends Annotations_EventEmitter {
         this.isUpdating = false;
     }
 }
-/* *
- *
- *  Static Properties
- *
- * */
 /**
  * @private
  */
@@ -5590,6 +5638,7 @@ Annotation.shapesMap = {
  */
 Annotation.types = {};
 Annotation.prototype.defaultOptions = Annotations_AnnotationDefaults;
+defaultOptions.annotations = Annotations_AnnotationDefaults;
 /**
  * List of events for `annotation.options.events` that should not be
  * added to `annotation.graphic` but to the `annotation`.
@@ -6168,7 +6217,7 @@ const navigation = {
      * from a different server.
      *
      * @type      {string}
-     * @default   https://code.highcharts.com/12.2.0/gfx/stock-icons/
+     * @default   https://code.highcharts.com/12.3.0/gfx/stock-icons/
      * @since     7.1.3
      * @apioption navigation.iconsURL
      */

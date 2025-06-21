@@ -8,9 +8,65 @@
 'use strict';
 import Annotation from '../Annotation.js';
 import CrookedLine from './CrookedLine.js';
+import D from '../../../Core/Defaults.js';
+const { defaultOptions } = D;
 import ControlPoint from '../ControlPoint.js';
 import U from '../../../Core/Utilities.js';
 const { merge, isNumber, defined } = U;
+if (defaultOptions.annotations) {
+    defaultOptions.annotations.types.timeCycles = merge(defaultOptions.annotations.types.crookedLine, 
+    /**
+     * Options for the  time cycles annotation type.
+     *
+     * @sample highcharts/annotations-advanced/time-cycles/
+     *         Time Cycles annotation
+     *
+     * @extends      annotations.types.crookedLine
+     * @product      highstock
+     * @exclude      labelOptions
+     * @optionparent annotations.types.timeCycles
+     */
+    {
+        typeOptions: {
+            /**
+             * @exclude   y
+             * @product   highstock
+             * @apioption annotations.types.timeCycles.typeOptions.points
+             */
+            controlPointOptions: [{
+                    positioner: function (target) {
+                        const point = target.points[0], position = target.anchor(point).absolutePosition;
+                        return {
+                            x: position.x - (this.graphic.width || 0) / 2,
+                            y: target.y - (this.graphic.height || 0)
+                        };
+                    },
+                    events: {
+                        drag: function (e, target) {
+                            const position = target.anchor(target.points[0]).absolutePosition;
+                            target.translatePoint(e.chartX - position.x, 0, 0);
+                            target.redraw(false);
+                        }
+                    }
+                }, {
+                    positioner: function (target) {
+                        const point = target.points[1], position = target.anchor(point).absolutePosition;
+                        return {
+                            x: position.x - (this.graphic.width || 0) / 2,
+                            y: target.y - (this.graphic.height || 0)
+                        };
+                    },
+                    events: {
+                        drag: function (e, target) {
+                            const position = target.anchor(target.points[1]).absolutePosition;
+                            target.translatePoint(e.chartX - position.x, 0, 1);
+                            target.redraw(false);
+                        }
+                    }
+                }]
+        }
+    });
+}
 /* *
  *
  *  Functions
@@ -131,58 +187,6 @@ class TimeCycles extends CrookedLine {
         super.redraw(animation);
     }
 }
-TimeCycles.prototype.defaultOptions = merge(CrookedLine.prototype.defaultOptions, 
-/**
- * The TimeCycles Annotation
- *
- * @sample highcharts/annotations-advanced/time-cycles/
- *         Time Cycles annotation
- *
- * @extends      annotations.crookedLine
- * @product      highstock
- * @exclude      labelOptions
- * @optionparent annotations.timeCycles
- */
-{
-    typeOptions: {
-        /**
-         * @exclude   y
-         * @product   highstock
-         * @apioption annotations.timeCycles.typeOptions.points
-         */
-        controlPointOptions: [{
-                positioner: function (target) {
-                    const point = target.points[0], position = target.anchor(point).absolutePosition;
-                    return {
-                        x: position.x - (this.graphic.width || 0) / 2,
-                        y: target.y - (this.graphic.height || 0)
-                    };
-                },
-                events: {
-                    drag: function (e, target) {
-                        const position = target.anchor(target.points[0]).absolutePosition;
-                        target.translatePoint(e.chartX - position.x, 0, 0);
-                        target.redraw(false);
-                    }
-                }
-            }, {
-                positioner: function (target) {
-                    const point = target.points[1], position = target.anchor(point).absolutePosition;
-                    return {
-                        x: position.x - (this.graphic.width || 0) / 2,
-                        y: target.y - (this.graphic.height || 0)
-                    };
-                },
-                events: {
-                    drag: function (e, target) {
-                        const position = target.anchor(target.points[1]).absolutePosition;
-                        target.translatePoint(e.chartX - position.x, 0, 1);
-                        target.redraw(false);
-                    }
-                }
-            }]
-    }
-});
 Annotation.types.timeCycles = TimeCycles;
 /* *
  *

@@ -107,7 +107,7 @@ class Tick {
         // position, use that. If not, use the general format.
         if (axis.dateTime) {
             if (tickPositionInfo) {
-                dateTimeLabelFormats = chart.time.resolveDTLFormat(options.dateTimeLabelFormats[(!options.grid &&
+                dateTimeLabelFormats = chart.time.resolveDTLFormat(options.dateTimeLabelFormats[(!options.grid?.enabled &&
                     tickPositionInfo.higherRanks[pos]) ||
                     tickPositionInfo.unitName]);
                 dateTimeLabelFormat = dateTimeLabelFormats.main;

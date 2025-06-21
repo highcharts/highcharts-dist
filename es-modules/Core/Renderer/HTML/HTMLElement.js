@@ -22,10 +22,10 @@ const { attr, css, createElement, defined, extend, getAlignFactor, isNumber, pIn
  * @private
  */
 function commonSetter(value, key, elem) {
-    const style = this.div?.style || elem.style;
+    const style = this.div?.style;
     SVGElement.prototype[`${key}Setter`].call(this, value, key, elem);
     if (style) {
-        style[key] = value;
+        elem.style[key] = style[key] = value;
     }
 }
 /**
@@ -68,6 +68,10 @@ const decorateSVGGroup = (g, container) => {
         g.translateXSetter = g.translateYSetter = (value, key) => {
             g[key] = value;
             div.style[key === 'translateX' ? 'left' : 'top'] = `${value}px`;
+            g.doTransform = true;
+        };
+        g.scaleXSetter = g.scaleYSetter = (value, key) => {
+            g[key] = value;
             g.doTransform = true;
         };
         g.opacitySetter = g.visibilitySetter = commonSetter;

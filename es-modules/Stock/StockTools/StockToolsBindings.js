@@ -63,7 +63,7 @@ const StockToolsBindings = {
                             y: coordsY.value
                         }]
                 }
-            }, navigation.annotationsOptions, navigation.bindings.segment.annotationsOptions);
+            }, navigation.annotationsOptions, navigation.bindings?.segment.annotationsOptions);
             return this.chart.addAnnotation(options);
         },
         /** @ignore-option */
@@ -107,7 +107,7 @@ const StockToolsBindings = {
                             y: coordsY.value
                         }]
                 }
-            }, navigation.annotationsOptions, navigation.bindings.arrowSegment.annotationsOptions);
+            }, navigation.annotationsOptions, navigation.bindings?.arrowSegment.annotationsOptions);
             return this.chart.addAnnotation(options);
         },
         /** @ignore-option */
@@ -149,7 +149,7 @@ const StockToolsBindings = {
                             y: coordsY.value
                         }]
                 }
-            }, navigation.annotationsOptions, navigation.bindings.ray.annotationsOptions);
+            }, navigation.annotationsOptions, navigation.bindings?.ray.annotationsOptions);
             return this.chart.addAnnotation(options);
         },
         /** @ignore-option */
@@ -194,7 +194,7 @@ const StockToolsBindings = {
                             y: coordsY.value
                         }]
                 }
-            }, navigation.annotationsOptions, navigation.bindings.arrowRay.annotationsOptions);
+            }, navigation.annotationsOptions, navigation.bindings?.arrowRay.annotationsOptions);
             return this.chart.addAnnotation(options);
         },
         /** @ignore-option */
@@ -235,7 +235,7 @@ const StockToolsBindings = {
                             y: coordsY.value
                         }]
                 }
-            }, navigation.annotationsOptions, navigation.bindings.infinityLine.annotationsOptions);
+            }, navigation.annotationsOptions, navigation.bindings?.infinityLine.annotationsOptions);
             return this.chart.addAnnotation(options);
         },
         /** @ignore-option */
@@ -280,7 +280,7 @@ const StockToolsBindings = {
                             y: coordsY.value
                         }]
                 }
-            }, navigation.annotationsOptions, navigation.bindings.arrowInfinityLine
+            }, navigation.annotationsOptions, navigation.bindings?.arrowInfinityLine
                 .annotationsOptions);
             return this.chart.addAnnotation(options);
         },
@@ -320,8 +320,7 @@ const StockToolsBindings = {
                             y: coordsY.value
                         }]
                 }
-            }, navigation.annotationsOptions, navigation.bindings
-                .horizontalLine.annotationsOptions);
+            }, navigation.annotationsOptions, navigation.bindings?.horizontalLine.annotationsOptions);
             this.chart.addAnnotation(options);
         }
     },
@@ -356,7 +355,7 @@ const StockToolsBindings = {
                             y: coordsY.value
                         }]
                 }
-            }, navigation.annotationsOptions, navigation.bindings.verticalLine.annotationsOptions);
+            }, navigation.annotationsOptions, navigation.bindings?.verticalLine.annotationsOptions);
             this.chart.addAnnotation(options);
         }
     },
@@ -392,7 +391,7 @@ const StockToolsBindings = {
                         { x, y }
                     ]
                 }
-            }, navigation.annotationsOptions, navigation.bindings.crooked3.annotationsOptions);
+            }, navigation.annotationsOptions, navigation.bindings?.crooked3.annotationsOptions);
             return this.chart.addAnnotation(options);
         },
         /** @ignore-option */
@@ -434,7 +433,7 @@ const StockToolsBindings = {
                         { x, y }
                     ]
                 }
-            }, navigation.annotationsOptions, navigation.bindings.crooked5.annotationsOptions);
+            }, navigation.annotationsOptions, navigation.bindings?.crooked5.annotationsOptions);
             return this.chart.addAnnotation(options);
         },
         /** @ignore-option */
@@ -476,13 +475,8 @@ const StockToolsBindings = {
                         { x, y },
                         { x, y }
                     ]
-                },
-                labelOptions: {
-                    style: {
-                        color: "#666666" /* Palette.neutralColor60 */
-                    }
                 }
-            }, navigation.annotationsOptions, navigation.bindings.elliott3.annotationsOptions);
+            }, navigation.annotationsOptions, navigation.bindings?.elliott3.annotationsOptions);
             return this.chart.addAnnotation(options);
         },
         /** @ignore-option */
@@ -525,13 +519,8 @@ const StockToolsBindings = {
                         { x, y },
                         { x, y }
                     ]
-                },
-                labelOptions: {
-                    style: {
-                        color: "#666666" /* Palette.neutralColor60 */
-                    }
                 }
-            }, navigation.annotationsOptions, navigation.bindings.elliott5.annotationsOptions);
+            }, navigation.annotationsOptions, navigation.bindings?.elliott5.annotationsOptions);
             return this.chart.addAnnotation(options);
         },
         /** @ignore-option */
@@ -571,27 +560,18 @@ const StockToolsBindings = {
                     yAxis: coordsY.axis.index,
                     point: { x, y },
                     crosshairX: {
-                        strokeWidth: 1,
-                        stroke: "#000000" /* Palette.neutralColor100 */
+                        strokeWidth: 1
                     },
                     crosshairY: {
                         enabled: false,
-                        strokeWidth: 0,
-                        stroke: "#000000" /* Palette.neutralColor100 */
+                        strokeWidth: 0
                     },
                     background: {
                         width: 0,
-                        height: 0,
-                        strokeWidth: 0,
-                        stroke: "#ffffff" /* Palette.backgroundColor */
-                    }
-                },
-                labelOptions: {
-                    style: {
-                        color: "#666666" /* Palette.neutralColor60 */
+                        height: 0
                     }
                 }
-            }, navigation.annotationsOptions, navigation.bindings.measureX.annotationsOptions);
+            }, navigation.annotationsOptions, navigation.bindings?.measureX.annotationsOptions);
             return this.chart.addAnnotation(options);
         },
         /** @ignore-option */
@@ -628,26 +608,18 @@ const StockToolsBindings = {
                     point: { x, y },
                     crosshairX: {
                         enabled: false,
-                        strokeWidth: 0,
-                        stroke: "#000000" /* Palette.neutralColor100 */
+                        strokeWidth: 0
                     },
                     crosshairY: {
-                        strokeWidth: 1,
-                        stroke: "#000000" /* Palette.neutralColor100 */
+                        strokeWidth: 1
                     },
                     background: {
                         width: 0,
                         height: 0,
-                        strokeWidth: 0,
-                        stroke: "#ffffff" /* Palette.backgroundColor */
-                    }
-                },
-                labelOptions: {
-                    style: {
-                        color: "#666666" /* Palette.neutralColor60 */
+                        strokeWidth: 0
                     }
                 }
-            }, navigation.annotationsOptions, navigation.bindings.measureY.annotationsOptions);
+            }, navigation.annotationsOptions, navigation.bindings?.measureY.annotationsOptions);
             return this.chart.addAnnotation(options);
         },
         /** @ignore-option */
@@ -685,24 +657,16 @@ const StockToolsBindings = {
                     background: {
                         width: 0,
                         height: 0,
-                        strokeWidth: 0,
-                        stroke: "#ffffff" /* Palette.backgroundColor */
+                        strokeWidth: 0
                     },
                     crosshairX: {
-                        strokeWidth: 1,
-                        stroke: "#000000" /* Palette.neutralColor100 */
+                        strokeWidth: 1
                     },
                     crosshairY: {
-                        strokeWidth: 1,
-                        stroke: "#000000" /* Palette.neutralColor100 */
-                    }
-                },
-                labelOptions: {
-                    style: {
-                        color: "#666666" /* Palette.neutralColor60 */
+                        strokeWidth: 1
                     }
                 }
-            }, navigation.annotationsOptions, navigation.bindings.measureXY.annotationsOptions);
+            }, navigation.annotationsOptions, navigation.bindings?.measureXY.annotationsOptions);
             return this.chart.addAnnotation(options);
         },
         /** @ignore-option */
@@ -742,13 +706,8 @@ const StockToolsBindings = {
                         { x, y },
                         { x, y }
                     ]
-                },
-                labelOptions: {
-                    style: {
-                        color: "#666666" /* Palette.neutralColor60 */
-                    }
                 }
-            }, navigation.annotationsOptions, navigation.bindings.fibonacci.annotationsOptions);
+            }, navigation.annotationsOptions, navigation.bindings?.fibonacci.annotationsOptions);
             return this.chart.addAnnotation(options);
         },
         /** @ignore-option */
@@ -787,7 +746,7 @@ const StockToolsBindings = {
                         { x, y }
                     ]
                 }
-            }, navigation.annotationsOptions, navigation.bindings.parallelChannel
+            }, navigation.annotationsOptions, navigation.bindings?.parallelChannel
                 .annotationsOptions);
             return this.chart.addAnnotation(options);
         },
@@ -833,15 +792,9 @@ const StockToolsBindings = {
                         },
                         { x, y },
                         { x, y }
-                    ],
-                    innerBackground: {
-                        fill: 'rgba(100, 170, 255, 0.8)'
-                    }
-                },
-                shapeOptions: {
-                    strokeWidth: 2
+                    ]
                 }
-            }, navigation.annotationsOptions, navigation.bindings.pitchfork.annotationsOptions);
+            }, navigation.annotationsOptions, navigation.bindings?.pitchfork.annotationsOptions);
             return this.chart.addAnnotation(options);
         },
         /** @ignore-option */
@@ -886,19 +839,8 @@ const StockToolsBindings = {
                         offset: closestPoint.below ? 40 : -40,
                         text: this.verticalCounter.toString()
                     }
-                },
-                labelOptions: {
-                    style: {
-                        color: "#666666" /* Palette.neutralColor60 */,
-                        fontSize: '0.7em'
-                    }
-                },
-                shapeOptions: {
-                    stroke: 'rgba(0, 0, 0, 0.75)',
-                    strokeWidth: 1
                 }
-            }, navigation.annotationsOptions, navigation.bindings
-                .verticalCounter.annotationsOptions), annotation = this.chart.addAnnotation(options);
+            }, navigation.annotationsOptions, navigation.bindings?.verticalCounter.annotationsOptions), annotation = this.chart.addAnnotation(options);
             this.verticalCounter++;
             annotation.options.events.click.call(annotation, {});
         }
@@ -930,14 +872,9 @@ const StockToolsBindings = {
                             x: closestPoint.x
                         }, {
                             x: closestPoint.x
-                        }],
-                    line: {
-                        stroke: 'rgba(0, 0, 0, 0.75)',
-                        fill: 'transparent',
-                        strokeWidth: 2
-                    }
+                        }]
                 }
-            }, navigation.annotationsOptions, navigation.bindings.timeCycles.annotationsOptions), annotation = this.chart.addAnnotation(options);
+            }, navigation.annotationsOptions, navigation.bindings?.timeCycles.annotationsOptions), annotation = this.chart.addAnnotation(options);
             annotation.options.events.click.call(annotation, {});
             return annotation;
         },
@@ -969,19 +906,8 @@ const StockToolsBindings = {
                     label: {
                         offset: closestPoint.below ? 40 : -40
                     }
-                },
-                labelOptions: {
-                    style: {
-                        color: "#666666" /* Palette.neutralColor60 */,
-                        fontSize: '0.7em'
-                    }
-                },
-                shapeOptions: {
-                    stroke: 'rgba(0, 0, 0, 0.75)',
-                    strokeWidth: 1
                 }
-            }, navigation.annotationsOptions, navigation.bindings
-                .verticalLabel.annotationsOptions), annotation = this.chart.addAnnotation(options);
+            }, navigation.annotationsOptions, navigation.bindings?.verticalLabel.annotationsOptions), annotation = this.chart.addAnnotation(options);
             annotation.options.events.click.call(annotation, {});
         }
     },
@@ -1027,13 +953,8 @@ const StockToolsBindings = {
                             "#f21313" /* Palette.negativeColor */ :
                             "#06b535" /* Palette.positiveColor */
                     }
-                },
-                shapeOptions: {
-                    stroke: 'rgba(0, 0, 0, 0.75)',
-                    strokeWidth: 1
                 }
-            }, navigation.annotationsOptions, navigation.bindings
-                .verticalArrow.annotationsOptions), annotation = this.chart.addAnnotation(options);
+            }, navigation.annotationsOptions, navigation.bindings?.verticalArrow.annotationsOptions), annotation = this.chart.addAnnotation(options);
             annotation.options.events.click.call(annotation, {});
         }
     },
@@ -1066,7 +987,7 @@ const StockToolsBindings = {
                             x: coordsX.value
                         }]
                 }
-            }, navigation.annotationsOptions, navigation.bindings.fibonacciTimeZones
+            }, navigation.annotationsOptions, navigation.bindings?.fibonacciTimeZones
                 .annotationsOptions);
             return this.chart.addAnnotation(options);
         },

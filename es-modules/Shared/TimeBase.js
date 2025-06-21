@@ -123,7 +123,7 @@ class TimeBase {
     update(options = {}) {
         this.dTLCache = {};
         this.options = options = merge(true, this.options, options);
-        const { timezoneOffset, useUTC } = options;
+        const { timezoneOffset, useUTC, locale } = options;
         // Allow using a different Date class
         this.Date = options.Date || win.Date || Date;
         // Assign the time zone. Handle the legacy, deprecated `useUTC` option.
@@ -143,6 +143,10 @@ class TimeBase {
         this.variableTimezone = timezone !== 'UTC' &&
             timezone?.indexOf('Etc/GMT') !== 0;
         this.timezone = timezone;
+        // Update locale.
+        if (this.lang && locale) {
+            this.lang.locale = locale;
+        }
         // Assign default time formats from locale strings
         ['months', 'shortMonths', 'weekdays', 'shortWeekdays'].forEach((name) => {
             const isMonth = /months/i.test(name), isShort = /short/.test(name), options = {

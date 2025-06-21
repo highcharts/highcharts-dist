@@ -1767,6 +1767,10 @@ var AxisDefaults;
          * overrides the default behaviour of [tickPixelInterval](
          * #xAxis.tickPixelInterval) and [tickInterval](#xAxis.tickInterval).
          *
+         * Note: When working with date-time axes, be aware of time zone
+         * handling. See the [documentation on time options](https://www.highcharts.com/docs/chart-concepts/axes#datetime)
+         * for best practices.
+         *
          * @see [tickPositioner](#xAxis.tickPositioner)
          *
          * @sample {highcharts} highcharts/xaxis/tickpositions-tickpositioner/
@@ -2854,6 +2858,7 @@ var AxisDefaults;
          * @default {highcharts} Values
          * @default {highstock} undefined
          * @product highcharts highstock gantt
+         * @apioption yAxis.title.text
          */
         },
         /**

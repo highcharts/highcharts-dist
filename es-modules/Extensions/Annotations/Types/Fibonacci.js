@@ -5,10 +5,96 @@
  * */
 'use strict';
 import Annotation from '../Annotation.js';
+import D from '../../../Core/Defaults.js';
+const { defaultOptions } = D;
 import MockPoint from '../MockPoint.js';
 import Tunnel from './Tunnel.js';
 import U from '../../../Core/Utilities.js';
 const { merge } = U;
+if (defaultOptions.annotations) {
+    defaultOptions.annotations.types.fibonacci = merge(defaultOptions.annotations.types.tunnel, 
+    /**
+     * Options for the fibonacci annotation type.
+     *
+     * @sample highcharts/annotations-advanced/fibonacci/
+     *         Fibonacci
+     *
+     * @extends      annotations.types.crookedLine
+     * @product      highstock
+     * @optionparent annotations.types.fibonacci
+     */
+    {
+        typeOptions: {
+            /**
+             * Whether the annotation levels should be reversed. By default
+             * they start from 0 and go to 1.
+             *
+             * @sample highcharts/annotations-advanced/fibonacci-reversed/
+             *         Fibonacci annotation reversed
+             *
+             * @type {boolean}
+             * @apioption annotations.types.fibonacci.typeOptions.reversed
+             */
+            reversed: false,
+            /**
+             * The height of the fibonacci in terms of yAxis.
+             */
+            height: 2,
+            /**
+             * An array of background colors:
+             * Default to:
+             * ```
+             * [
+             * 'rgba(130, 170, 255, 0.4)',
+             * 'rgba(139, 191, 216, 0.4)',
+             * 'rgba(150, 216, 192, 0.4)',
+             * 'rgba(156, 229, 161, 0.4)',
+             * 'rgba(162, 241, 130, 0.4)',
+             * 'rgba(169, 255, 101, 0.4)'
+             * ]
+             * ```
+             */
+            backgroundColors: [
+                'rgba(130, 170, 255, 0.4)',
+                'rgba(139, 191, 216, 0.4)',
+                'rgba(150, 216, 192, 0.4)',
+                'rgba(156, 229, 161, 0.4)',
+                'rgba(162, 241, 130, 0.4)',
+                'rgba(169, 255, 101, 0.4)'
+            ],
+            /**
+             * The color of line.
+             */
+            lineColor: "#999999" /* Palette.neutralColor40 */,
+            /**
+             * An array of colors for the lines.
+             */
+            lineColors: [],
+            /**
+             * An array with options for the labels.
+             *
+             * @type      {Array<*>}
+             * @extends   annotations.types.crookedLine.labelOptions
+             * @apioption annotations.types.fibonacci.typeOptions.labels
+             */
+            labels: []
+        },
+        labelOptions: {
+            allowOverlap: true,
+            align: 'right',
+            backgroundColor: 'none',
+            borderWidth: 0,
+            crop: false,
+            overflow: 'none',
+            shape: 'rect',
+            style: {
+                color: "#333333" /* Palette.neutralColor80 */
+            },
+            verticalAlign: 'middle',
+            y: 0
+        }
+    });
+}
 /* *
  *
  *  Functions
@@ -117,88 +203,6 @@ class Fibonacci extends Tunnel {
  *
  * */
 Fibonacci.levels = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1];
-Fibonacci.prototype.defaultOptions = merge(Tunnel.prototype.defaultOptions, 
-/**
- * A fibonacci annotation.
- *
- * @sample highcharts/annotations-advanced/fibonacci/
- *         Fibonacci
- *
- * @extends      annotations.crookedLine
- * @product      highstock
- * @optionparent annotations.fibonacci
- */
-{
-    typeOptions: {
-        /**
-         * Whether the annotation levels should be reversed. By default they
-         * start from 0 and go to 1.
-         *
-         * @sample highcharts/annotations-advanced/fibonacci-reversed/
-         *         Fibonacci annotation reversed
-         *
-         * @type {boolean}
-         * @apioption annotations.fibonacci.typeOptions.reversed
-         */
-        reversed: false,
-        /**
-         * The height of the fibonacci in terms of yAxis.
-         */
-        height: 2,
-        /**
-         * An array of background colors:
-         * Default to:
-         * ```
-         * [
-         * 'rgba(130, 170, 255, 0.4)',
-         * 'rgba(139, 191, 216, 0.4)',
-         * 'rgba(150, 216, 192, 0.4)',
-         * 'rgba(156, 229, 161, 0.4)',
-         * 'rgba(162, 241, 130, 0.4)',
-         * 'rgba(169, 255, 101, 0.4)'
-         * ]
-         * ```
-         */
-        backgroundColors: [
-            'rgba(130, 170, 255, 0.4)',
-            'rgba(139, 191, 216, 0.4)',
-            'rgba(150, 216, 192, 0.4)',
-            'rgba(156, 229, 161, 0.4)',
-            'rgba(162, 241, 130, 0.4)',
-            'rgba(169, 255, 101, 0.4)'
-        ],
-        /**
-         * The color of line.
-         */
-        lineColor: "#999999" /* Palette.neutralColor40 */,
-        /**
-         * An array of colors for the lines.
-         */
-        lineColors: [],
-        /**
-         * An array with options for the labels.
-         *
-         * @type      {Array<*>}
-         * @extends   annotations.crookedLine.labelOptions
-         * @apioption annotations.fibonacci.typeOptions.labels
-         */
-        labels: []
-    },
-    labelOptions: {
-        allowOverlap: true,
-        align: 'right',
-        backgroundColor: 'none',
-        borderWidth: 0,
-        crop: false,
-        overflow: 'none',
-        shape: 'rect',
-        style: {
-            color: 'grey'
-        },
-        verticalAlign: 'middle',
-        y: 0
-    }
-});
 Annotation.types.fibonacci = Fibonacci;
 /* *
  *

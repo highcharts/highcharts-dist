@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.2.0 (2025-04-07)
+ * @license Highcharts JS v12.3.0 (2025-06-21)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -2313,7 +2313,7 @@ class MapNavigation {
             // Check the mapNavigation buttons collision with exporting button
             // and translate the mapNavigation button if they overlap.
             const adjustMapNavBtn = function () {
-                const expBtnBBox = chart.exportingGroup?.getBBox();
+                const expBtnBBox = chart.exporting?.group?.getBBox();
                 if (expBtnBBox) {
                     const navBtnsBBox = mapNav.navButtonsGroup.getBBox();
                     // If buttons overlap
@@ -9174,8 +9174,8 @@ class BubblePoint extends BubblePoint_ScatterPoint {
                 0 :
             0) + size;
         if (this.series.chart.inverted) {
-            const pos = this.pos() || [0, 0], { xAxis, yAxis, chart } = this.series;
-            return chart.renderer.symbols.circle(xAxis.len - pos[1] - computedSize, yAxis.len - pos[0] - computedSize, computedSize * 2, computedSize * 2);
+            const pos = this.pos() || [0, 0], { xAxis, yAxis, chart } = this.series, diameter = computedSize * 2;
+            return chart.renderer.symbols.circle((xAxis?.len || 0) - pos[1] - computedSize, (yAxis?.len || 0) - pos[0] - computedSize, diameter, diameter);
         }
         return highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_default().prototype.haloPath.call(this, 
         // #6067
@@ -10693,8 +10693,7 @@ const HeatmapSeriesDefaults = {
             /** @ignore-option */
             halo: false, // #3406, halo is disabled on heatmaps by default
             /**
-             * How much to brighten the point on interaction. Requires the
-             * main color to be defined in hex or rgb(a) format.
+             * How much to brighten the point on interaction.
              *
              * In styled mode, the hover brightening is by default replaced
              * with a fill-opacity set in the `.highcharts-point:hover`
@@ -11443,7 +11442,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 ;// ./code/es-modules/masters/modules/map.src.js
 /**
- * @license Highmaps JS v12.2.0 (2025-04-07)
+ * @license Highmaps JS v12.3.0 (2025-06-21)
  * @module highcharts/modules/map
  * @requires highcharts
  *

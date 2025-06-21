@@ -207,7 +207,9 @@ class Tooltip {
             // Use the average position for multiple points
             ret = [chartX - plotLeft, chartY - plotTop];
         }
-        return ret.map(Math.round);
+        const params = { point: points[0], ret };
+        fireEvent(this, 'getAnchor', params);
+        return params.ret.map(Math.round);
     }
     /**
      * Get the CSS class names for the tooltip's label. Styles the label

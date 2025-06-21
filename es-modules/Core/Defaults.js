@@ -1727,6 +1727,10 @@ const defaultOptions = {
                 /**
                  * @ignore
                  */
+                color: "#333333" /* Palette.neutralColor80 */,
+                /**
+                 * @ignore
+                 */
                 fontSize: '0.8em',
                 /**
                  * @ignore

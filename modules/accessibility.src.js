@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.2.0 (2025-04-07)
+ * @license Highcharts JS v12.3.0 (2025-06-21)
  * @module highcharts/modules/accessibility
  * @requires highcharts
  *
@@ -2340,7 +2340,7 @@ class InfoRegionsComponent extends Accessibility_AccessibilityComponent {
         const chart = this.chart;
         const component = this;
         this.initRegionsDefinitions();
-        this.addEvent(chart, 'aftergetTableAST', function (e) {
+        this.addEvent(chart, 'afterGetTableAST', function (e) {
             component.onDataTableCreated(e);
         });
         this.addEvent(chart, 'afterViewData', function (e) {
@@ -2535,7 +2535,7 @@ class InfoRegionsComponent extends Accessibility_AccessibilityComponent {
             yAxisDescription: axesDesc.yAxis,
             playAsSoundButton: shouldHaveSonifyBtn ?
                 this.getSonifyButtonText(sonifyButtonId) : '',
-            viewTableButton: chart.getCSV ?
+            viewTableButton: chart.exporting?.getCSV ?
                 this.getDataTableButtonText(dataTableButtonId) : '',
             annotationsTitle: annotationsList ? annotationsTitleStr : '',
             annotationsList: annotationsList
@@ -2697,7 +2697,7 @@ class InfoRegionsComponent extends Accessibility_AccessibilityComponent {
             el.onclick = chart.options.accessibility
                 .screenReaderSection.onViewDataTableClick ||
                 function () {
-                    chart.viewData();
+                    chart.exporting?.viewData();
                 };
         }
     }
@@ -2787,7 +2787,7 @@ const { getFakeMouseEvent: MenuComponent_getFakeMouseEvent } = Utils_HTMLUtiliti
  * @private
  */
 function getExportMenuButtonElement(chart) {
-    return chart.exportSVGElements && chart.exportSVGElements[0];
+    return chart.exporting?.svgElements?.[0];
 }
 /**
  * @private
@@ -2837,7 +2837,7 @@ class MenuComponent extends Accessibility_AccessibilityComponent {
      * @private
      */
     onMenuHidden() {
-        const menu = this.chart.exportContextMenu;
+        const menu = this.chart.exporting?.contextMenuEl;
         if (menu) {
             menu.setAttribute('aria-hidden', 'true');
         }
@@ -2847,7 +2847,7 @@ class MenuComponent extends Accessibility_AccessibilityComponent {
      * @private
      */
     onMenuShown() {
-        const chart = this.chart, menu = chart.exportContextMenu;
+        const chart = this.chart, menu = chart.exporting?.contextMenuEl;
         if (menu) {
             this.addAccessibleContextMenuAttribs();
             MenuComponent_unhideChartElementFromAT(chart, menu);
@@ -2873,7 +2873,7 @@ class MenuComponent extends Accessibility_AccessibilityComponent {
         this.proxyMenuButton();
         if (this.exportButtonProxy &&
             focusEl &&
-            focusEl === chart.exportingGroup) {
+            focusEl === chart.exporting?.group) {
             if (focusEl.focusBorder) {
                 chart.setFocusToElement(focusEl, this.exportButtonProxy.innerElement);
             }
@@ -2913,7 +2913,7 @@ class MenuComponent extends Accessibility_AccessibilityComponent {
      * @private
      */
     addAccessibleContextMenuAttribs() {
-        const chart = this.chart, exportList = chart.exportDivElements;
+        const chart = this.chart, exportList = chart.exporting?.divElements;
         if (exportList && exportList.length) {
             // Set tabindex on the menu items to allow focusing by script
             // Set role to give screen readers a chance to pick up the contents
@@ -2979,13 +2979,12 @@ class MenuComponent extends Accessibility_AccessibilityComponent {
                         ?.buttons
                         ?.contextButton.enabled !== false &&
                     chart.options.exporting.enabled !== false &&
-                    chart.options.exporting.accessibility.enabled !==
-                        false;
+                    (chart.options.exporting.accessibility?.enabled || false) !== false;
             },
             // Focus export menu button
             init: function () {
                 const proxy = component.exportButtonProxy;
-                const svgEl = component.chart.exportingGroup;
+                const svgEl = component.chart.exporting?.group;
                 if (proxy && svgEl) {
                     chart.setFocusToElement(svgEl, proxy.innerElement);
                 }
@@ -3031,7 +3030,7 @@ class MenuComponent extends Accessibility_AccessibilityComponent {
         const response = keyboardNavigationHandler.response;
         // Try to highlight next item in list. Highlighting e.g.
         // separators will fail.
-        for (let i = (chart.highlightedExportItemIx || 0) + 1; i < chart.exportDivElements.length; ++i) {
+        for (let i = (chart.highlightedExportItemIx || 0) + 1; i < (chart.exporting?.divElements?.length || 0); ++i) {
             if (chart.highlightExportItem(i)) {
                 return response.success;
             }
@@ -3050,13 +3049,14 @@ class MenuComponent extends Accessibility_AccessibilityComponent {
      */
     onKbdClick(keyboardNavigationHandler) {
         const chart = this.chart;
-        const curHighlightedItem = chart.exportDivElements[chart.highlightedExportItemIx];
-        const exportButtonElement = getExportMenuButtonElement(chart).element;
-        if (chart.openMenu) {
-            this.fakeClickEvent(curHighlightedItem);
+        const curHighlightedItem = chart.highlightedExportItemIx !== void 0 &&
+            chart.exporting?.divElements?.[chart.highlightedExportItemIx];
+        const exportButtonElement = getExportMenuButtonElement(chart)?.element;
+        if (chart.exporting?.openMenu) {
+            curHighlightedItem && this.fakeClickEvent(curHighlightedItem);
         }
         else {
-            this.fakeClickEvent(exportButtonElement);
+            exportButtonElement && this.fakeClickEvent(exportButtonElement);
             chart.highlightExportItem(0);
         }
         return keyboardNavigationHandler.response.success;
@@ -3111,8 +3111,10 @@ class MenuComponent extends Accessibility_AccessibilityComponent {
      * @function Highcharts.Chart#hideExportMenu
      */
     function chartHideExportMenu() {
-        const chart = this, exportList = chart.exportDivElements;
-        if (exportList && chart.exportContextMenu && chart.openMenu) {
+        const chart = this, exportList = chart.exporting?.divElements;
+        if (exportList &&
+            chart.exporting?.contextMenuEl &&
+            chart.exporting?.openMenu) {
             // Reset hover states etc.
             exportList.forEach((el) => {
                 if (el &&
@@ -3123,7 +3125,7 @@ class MenuComponent extends Accessibility_AccessibilityComponent {
             });
             chart.highlightedExportItemIx = 0;
             // Hide the menu div
-            chart.exportContextMenu.hideMenu();
+            chart.exporting.contextMenuEl.hideMenu();
             // Make sure the chart has focus and can capture keyboard events
             chart.container.focus();
         }
@@ -3135,9 +3137,8 @@ class MenuComponent extends Accessibility_AccessibilityComponent {
      * @function Highcharts.Chart#highlightExportItem
      */
     function chartHighlightExportItem(ix) {
-        const listItem = this.exportDivElements && this.exportDivElements[ix];
-        const curHighlighted = this.exportDivElements &&
-            this.exportDivElements[this.highlightedExportItemIx];
+        const listItem = this.exporting?.divElements?.[ix], curHighlighted = this.highlightedExportItemIx !== void 0 &&
+            this.exporting?.divElements?.[this.highlightedExportItemIx];
         if (listItem &&
             listItem.tagName === 'LI' &&
             !(listItem.children && listItem.children.length)) {
@@ -3167,8 +3168,8 @@ class MenuComponent extends Accessibility_AccessibilityComponent {
      */
     function chartHighlightLastExportItem() {
         const chart = this;
-        if (chart.exportDivElements) {
-            let i = chart.exportDivElements.length;
+        if (chart.exporting?.divElements) {
+            let i = chart.exporting?.divElements.length;
             while (i--) {
                 if (chart.highlightExportItem(i)) {
                     return true;
@@ -3924,6 +3925,9 @@ class LegendComponent extends Accessibility_AccessibilityComponent {
      */
     proxyLegendItem(item) {
         const legendItem = item.legendItem || {};
+        const legendItemLabel = item.legendItem?.label;
+        const legendLabelEl = legendItemLabel?.element;
+        const ellipsis = Boolean(legendItem.label?.styles?.textOverflow === 'ellipsis');
         if (!legendItem.label || !legendItem.group) {
             return;
         }
@@ -3935,8 +3939,14 @@ class LegendComponent extends Accessibility_AccessibilityComponent {
         const attribs = {
             tabindex: -1,
             'aria-pressed': item.visible,
-            'aria-label': itemLabel
+            'aria-label': itemLabel,
+            title: ''
         };
+        // Check if label contains an ellipsis character (\u2026) #22397
+        if (ellipsis &&
+            (legendLabelEl.textContent || '').indexOf('\u2026') !== -1) {
+            attribs.title = legendItemLabel?.textStr;
+        }
         // Considers useHTML
         const proxyPositioningElement = legendItem.group.div ?
             legendItem.label :
@@ -5334,7 +5344,7 @@ const StockUtilities = {
  * */
 
 
-const { setOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { defaultOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 const { composed } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
@@ -5364,8 +5374,8 @@ function NavigatorComposition_compose(ChartClass, AxisClass, SeriesClass) {
     if (pushUnique(composed, 'Navigator')) {
         ChartClass.prototype.setFixedRange = NavigatorComposition_setFixedRange;
         extend(getRendererType().prototype.symbols, Navigator_NavigatorSymbols);
+        extend(defaultOptions, { navigator: Navigator_NavigatorDefaults });
         NavigatorComposition_addEvent(SeriesClass, 'afterUpdate', onSeriesAfterUpdate);
-        setOptions({ navigator: Navigator_NavigatorDefaults });
     }
 }
 /**
@@ -5838,12 +5848,13 @@ const ScrollbarDefaults = {
  * */
 
 
-const { defaultOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { defaultOptions: Scrollbar_defaultOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+
+const { composed: Scrollbar_composed } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 
 
-
-const { addEvent: Scrollbar_addEvent, correctFloat: Scrollbar_correctFloat, crisp, defined: Scrollbar_defined, destroyObjectProperties, fireEvent: Scrollbar_fireEvent, merge: Scrollbar_merge, pick: Scrollbar_pick, removeEvent } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { addEvent: Scrollbar_addEvent, correctFloat: Scrollbar_correctFloat, crisp, defined: Scrollbar_defined, destroyObjectProperties, extend: Scrollbar_extend, fireEvent: Scrollbar_fireEvent, merge: Scrollbar_merge, pick: Scrollbar_pick, pushUnique: Scrollbar_pushUnique, removeEvent } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
  *  Constants
@@ -5869,6 +5880,9 @@ class Scrollbar {
      * */
     static compose(AxisClass) {
         Axis_ScrollbarAxis.compose(AxisClass, Scrollbar);
+        if (Scrollbar_pushUnique(Scrollbar_composed, 'Scrollbar')) {
+            Scrollbar_extend(Scrollbar_defaultOptions, { scrollbar: Scrollbar_ScrollbarDefaults });
+        }
     }
     /**
      * When we have vertical scrollbar, rifles and arrow in buttons should be
@@ -6115,7 +6129,7 @@ class Scrollbar {
         scroller.scrollbarButtons = [];
         scroller.renderer = renderer;
         scroller.userOptions = options;
-        scroller.options = Scrollbar_merge(Scrollbar_ScrollbarDefaults, defaultOptions.scrollbar, options);
+        scroller.options = Scrollbar_merge(Scrollbar_ScrollbarDefaults, Scrollbar_defaultOptions.scrollbar, options);
         scroller.options.margin = Scrollbar_pick(scroller.options.margin, 10);
         scroller.chart = chart;
         // Backward compatibility
@@ -6475,12 +6489,6 @@ class Scrollbar {
  *
  * */
 Scrollbar.defaultOptions = Scrollbar_ScrollbarDefaults;
-/* *
- *
- *  Registry
- *
- * */
-defaultOptions.scrollbar = Scrollbar_merge(true, Scrollbar.defaultOptions, defaultOptions.scrollbar);
 /* *
  *
  *  Default Export
@@ -11397,11 +11405,6 @@ const { doc: HighContrastMode_doc, isMS, win: HighContrastMode_win } = (highchar
  * @return {boolean} Returns true if the browser is in High Contrast mode.
  */
 function isHighContrastModeActive() {
-    // Use media query on Edge, but not on IE
-    const isEdge = /(Edg)/.test(HighContrastMode_win.navigator.userAgent);
-    if (HighContrastMode_win.matchMedia && isEdge) {
-        return HighContrastMode_win.matchMedia('(-ms-high-contrast: active)').matches;
-    }
     // Test BG image for IE
     if (isMS && HighContrastMode_win.getComputedStyle) {
         const testDiv = HighContrastMode_doc.createElement('div');

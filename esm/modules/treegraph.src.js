@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.2.0 (2025-04-07)
+ * @license Highcharts JS v12.3.0 (2025-06-21)
  * Treegraph chart series type
  * @module highcharts/modules/treegraph
  * @requires highcharts
@@ -2158,9 +2158,11 @@ class TreegraphSeries extends TreemapSeries {
 }
 TreegraphSeries.defaultOptions = TreegraphSeries_merge(TreemapSeries.defaultOptions, Treegraph_TreegraphSeriesDefaults);
 TreegraphSeries_extend(TreegraphSeries.prototype, {
+    forceDL: true,
     pointClass: Treegraph_TreegraphPoint,
     NodeClass: Treegraph_TreegraphNode,
-    LinkClass: TreegraphLink
+    LinkClass: TreegraphLink,
+    isCartesian: false
 });
 external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('treegraph', TreegraphSeries);
 /* *
