@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
+ * @license Highcharts JS v12.3.0-modified (2025-06-27)
  * @module highcharts/highcharts
  *
  * (c) 2009-2025 Torstein Honsi
@@ -74,7 +74,7 @@ var Globals;
      *  Constants
      *
      * */
-    Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '12.3.0', Globals.win = (typeof window !== 'undefined' ?
+    Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '12.3.0-modified', Globals.win = (typeof window !== 'undefined' ?
         window :
         {}), // eslint-disable-line node/no-unsupported-features/es-builtins
     Globals.doc = Globals.win.document, Globals.svg = !!Globals.doc?.createElementNS?.(Globals.SVG_NS, 'svg')?.createSVGRect, Globals.pageLang = Globals.doc?.documentElement?.closest('[lang]')?.lang, Globals.userAgent = Globals.win.navigator?.userAgent || '', Globals.isChrome = Globals.win.chrome, Globals.isFirefox = Globals.userAgent.indexOf('Firefox') !== -1, Globals.isMS = /(edge|msie|trident)/i.test(Globals.userAgent) && !Globals.win.opera, Globals.isSafari = !Globals.isChrome && Globals.userAgent.indexOf('Safari') !== -1, Globals.isTouchDevice = /(Mobile|Android|Windows Phone)/.test(Globals.userAgent), Globals.isWebKit = Globals.userAgent.indexOf('AppleWebKit') !== -1, Globals.deg2rad = Math.PI * 2 / 360, Globals.marginNames = [
@@ -3174,7 +3174,7 @@ const ChartDefaults = {
      * Chart zooming options.
      * @since 10.2.1
      *
-     * @sample     highcharts/plotoptions/sankey-inverted
+     * @sample     highcharts/plotoptions/sankey-node-color
      *             Zooming in sankey series
      * @sample     highcharts/series-treegraph/link-types
      *             Zooming in treegraph series
@@ -12898,7 +12898,7 @@ class SVGRenderer {
         this.url = this.getReferenceURL();
         // Add description
         const desc = this.createElement('desc').add();
-        desc.element.appendChild(SVGRenderer_doc.createTextNode('Created with Highcharts 12.3.0'));
+        desc.element.appendChild(SVGRenderer_doc.createTextNode('Created with Highcharts 12.3.0-modified'));
         this.defs = this.createElement('defs').add();
         this.allowHTML = allowHTML;
         this.forExport = forExport;
@@ -15796,14 +15796,6 @@ var AxisDefaults;
          * @product   highcharts highstock gantt
          * @context   Highcharts.Axis
          * @apioption xAxis.events.pointInBreak
-         */
-        /**
-         * An event fired when a point is outside a break after zoom.
-         *
-         * @type      {Highcharts.AxisPointBreakEventCallbackFunction}
-         * @product   highcharts highstock gantt
-         * @context   Highcharts.Axis
-         * @apioption xAxis.events.pointBreakOut
          */
         /**
          * Fires when the minimum and maximum is set for the axis, either by
@@ -19456,7 +19448,7 @@ class Axis {
         }
         const minPixelPadding = axis.minPixelPadding, doPostTranslate = (axis.isOrdinal ||
             axis.brokenAxis?.hasBreaks ||
-            (axis.logarithmic && handleLog)) && axis.lin2val;
+            (axis.logarithmic && handleLog)) && !!axis.lin2val;
         let sign = 1, cvsOffset = 0, localA = old && axis.old ? axis.old.transA : axis.transA, returnValue = 0;
         if (!localA) {
             localA = axis.transA;
@@ -26594,17 +26586,20 @@ class Pointer {
                 activeSeries.push.apply(activeSeries, this.chart.series.filter((otherSeries) => otherSeries.markerGroup === series.markerGroup));
             }
         });
-        // Now loop over all series, filtering out active series
-        this.chart.series.forEach((series) => {
+        for (const series of this.chart.series) {
+            const seriesOptions = series.options;
+            if (seriesOptions.states?.inactive?.enabled === false) {
+                continue;
+            }
             if (activeSeries.indexOf(series) === -1) {
                 // Inactive series
                 series.setState('inactive', true);
             }
-            else if (series.options.inactiveOtherPoints) {
+            else if (seriesOptions.inactiveOtherPoints) {
                 // Active series, but other points should be inactivated
                 series.setAllPointsToState('inactive');
             }
-        });
+        }
     }
     /**
      * Destroys the Pointer object and disconnects DOM events.
@@ -48416,9 +48411,9 @@ class ColorAxis extends Axis_Axis {
             // First time only
             if (!axis.added) {
                 axis.added = true;
-                axis.labelLeft = 0;
-                axis.labelRight = axis.width;
             }
+            axis.labelLeft = 0;
+            axis.labelRight = axis.width;
             // Reset it to avoid color axis reserving space
             axis.chart.axisOffset[axis.side] = sideOffset;
         }
@@ -48794,7 +48789,7 @@ Array.prototype.push.apply(Axis_Axis.keepProps, ColorAxis.keepProps);
 
 ;// ./code/es-modules/masters/modules/coloraxis.src.js
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
+ * @license Highcharts JS v12.3.0-modified (2025-06-27)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -58341,7 +58336,7 @@ Series_SeriesRegistry.registerSeriesType('heatmap', HeatmapSeries);
 
 ;// ./code/es-modules/masters/modules/map.src.js
 /**
- * @license Highmaps JS v12.3.0 (2025-06-21)
+ * @license Highmaps JS v12.3.0-modified (2025-06-27)
  * @module highcharts/modules/map
  * @requires highcharts
  *
@@ -58387,7 +58382,7 @@ Maps_MapView.compose(Chart_MapChart);
 
 ;// ./code/es-modules/masters/highmaps.src.js
 /**
- * @license Highmaps JS v12.3.0 (2025-06-21)
+ * @license Highmaps JS v12.3.0-modified (2025-06-27)
  * @module highcharts/highmaps
  *
  * (c) 2011-2025 Torstein Honsi

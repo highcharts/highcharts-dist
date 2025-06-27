@@ -1,5 +1,5 @@
 /**
- * Highmaps JS v12.3.0 (2025-06-21)
+ * Highmaps JS v12.3.0-modified (2025-06-27)
  * @module highcharts/highmaps
  *
  * (c) 2011-2025 Torstein Honsi

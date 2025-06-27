@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
+ * @license Highcharts JS v12.3.0-modified (2025-06-27)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -1229,9 +1229,9 @@ class ColorAxis extends (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_high
             // First time only
             if (!axis.added) {
                 axis.added = true;
-                axis.labelLeft = 0;
-                axis.labelRight = axis.width;
             }
+            axis.labelLeft = 0;
+            axis.labelRight = axis.width;
             // Reset it to avoid color axis reserving space
             axis.chart.axisOffset[axis.side] = sideOffset;
         }
@@ -2905,7 +2905,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 ;// ./code/es-modules/masters/modules/heatmap.src.js
 /**
- * @license Highmaps JS v12.3.0 (2025-06-21)
+ * @license Highmaps JS v12.3.0-modified (2025-06-27)
  * @module highcharts/modules/heatmap
  * @requires highcharts
  *

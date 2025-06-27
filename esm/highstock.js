@@ -1,5 +1,5 @@
 /**
- * Highstock JS v12.3.0 (2025-06-21)
+ * Highstock JS v12.3.0-modified (2025-06-27)
  * @module highcharts/highstock
  *
  * (c) 2009-2025 Torstein Honsi

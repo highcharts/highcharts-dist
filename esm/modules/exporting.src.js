@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
+ * @license Highcharts JS v12.3.0-modified (2025-06-27)
  * @module highcharts/modules/exporting
  * @requires highcharts
  *
@@ -492,7 +492,7 @@ const exporting = {
      * @since     5.0.0
      * @apioption exporting.libURL
      */
-    libURL: 'https://code.highcharts.com/12.3.0/lib/',
+    libURL: 'https://code.highcharts.com/12.3.0-modified/lib/',
     /**
      * Whether the chart should be exported using the browser's built-in
      * capabilities, allowing offline exports without requiring access to the
