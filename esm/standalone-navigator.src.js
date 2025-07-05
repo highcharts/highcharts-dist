@@ -1,8 +1,10 @@
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
- * @module highcharts/highcharts
+ * @license Highchart JS v12.3.0-modified (2025-07-05)
+ * @module highcharts/standalone-navigator
  *
- * (c) 2009-2025 Torstein Honsi
+ * Standalone Navigator for Highcharts.
+ *
+ * (c) 2009-2025 Highsoft AS
  *
  * License: www.highcharts.com/license
  */
@@ -34,7 +36,7 @@ var Globals;
      *  Constants
      *
      * */
-    Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '12.3.0', Globals.win = (typeof window !== 'undefined' ?
+    Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '12.3.0-modified', Globals.win = (typeof window !== 'undefined' ?
         window :
         {}), // eslint-disable-line node/no-unsupported-features/es-builtins
     Globals.doc = Globals.win.document, Globals.svg = !!Globals.doc?.createElementNS?.(Globals.SVG_NS, 'svg')?.createSVGRect, Globals.pageLang = Globals.doc?.documentElement?.closest('[lang]')?.lang, Globals.userAgent = Globals.win.navigator?.userAgent || '', Globals.isChrome = Globals.win.chrome, Globals.isFirefox = Globals.userAgent.indexOf('Firefox') !== -1, Globals.isMS = /(edge|msie|trident)/i.test(Globals.userAgent) && !Globals.win.opera, Globals.isSafari = !Globals.isChrome && Globals.userAgent.indexOf('Safari') !== -1, Globals.isTouchDevice = /(Mobile|Android|Windows Phone)/.test(Globals.userAgent), Globals.isWebKit = Globals.userAgent.indexOf('AppleWebKit') !== -1, Globals.deg2rad = Math.PI * 2 / 360, Globals.marginNames = [
@@ -2919,11 +2921,12 @@ const ChartDefaults = {
      * others series in a stack. The shadow can be an object configuration
      * containing `color`, `offsetX`, `offsetY`, `opacity` and `width`.
      *
-     * @sample highcharts/chart/seriesgroupshadow/ Shadow
+     * @sample highcharts/chart/seriesgroupshadow/
+     *         Shadow
      *
      * @type      {boolean|Highcharts.ShadowOptionsObject}
      * @default   false
-     * @apioption chart.shadow
+     * @apioption chart.seriesGroupShadow
      */
     /**
      * Whether to apply a drop shadow to the outer chart area. Requires
@@ -3134,7 +3137,7 @@ const ChartDefaults = {
      * Chart zooming options.
      * @since 10.2.1
      *
-     * @sample     highcharts/plotoptions/sankey-inverted
+     * @sample     highcharts/plotoptions/sankey-node-color
      *             Zooming in sankey series
      * @sample     highcharts/series-treegraph/link-types
      *             Zooming in treegraph series
@@ -12858,7 +12861,7 @@ class SVGRenderer {
         this.url = this.getReferenceURL();
         // Add description
         const desc = this.createElement('desc').add();
-        desc.element.appendChild(SVGRenderer_doc.createTextNode('Created with Highcharts 12.3.0'));
+        desc.element.appendChild(SVGRenderer_doc.createTextNode('Created with Highcharts 12.3.0-modified'));
         this.defs = this.createElement('defs').add();
         this.allowHTML = allowHTML;
         this.forExport = forExport;
@@ -15756,14 +15759,6 @@ var AxisDefaults;
          * @product   highcharts highstock gantt
          * @context   Highcharts.Axis
          * @apioption xAxis.events.pointInBreak
-         */
-        /**
-         * An event fired when a point is outside a break after zoom.
-         *
-         * @type      {Highcharts.AxisPointBreakEventCallbackFunction}
-         * @product   highcharts highstock gantt
-         * @context   Highcharts.Axis
-         * @apioption xAxis.events.pointBreakOut
          */
         /**
          * Fires when the minimum and maximum is set for the axis, either by
@@ -19416,7 +19411,7 @@ class Axis {
         }
         const minPixelPadding = axis.minPixelPadding, doPostTranslate = (axis.isOrdinal ||
             axis.brokenAxis?.hasBreaks ||
-            (axis.logarithmic && handleLog)) && axis.lin2val;
+            (axis.logarithmic && handleLog)) && !!axis.lin2val;
         let sign = 1, cvsOffset = 0, localA = old && axis.old ? axis.old.transA : axis.transA, returnValue = 0;
         if (!localA) {
             localA = axis.transA;
@@ -26554,17 +26549,20 @@ class Pointer {
                 activeSeries.push.apply(activeSeries, this.chart.series.filter((otherSeries) => otherSeries.markerGroup === series.markerGroup));
             }
         });
-        // Now loop over all series, filtering out active series
-        this.chart.series.forEach((series) => {
+        for (const series of this.chart.series) {
+            const seriesOptions = series.options;
+            if (seriesOptions.states?.inactive?.enabled === false) {
+                continue;
+            }
             if (activeSeries.indexOf(series) === -1) {
                 // Inactive series
                 series.setState('inactive', true);
             }
-            else if (series.options.inactiveOtherPoints) {
+            else if (seriesOptions.inactiveOtherPoints) {
                 // Active series, but other points should be inactivated
                 series.setAllPointsToState('inactive');
             }
-        });
+        }
     }
     /**
      * Destroys the Pointer object and disconnects DOM events.
@@ -47187,7 +47185,14 @@ var Responsive;
 (''); // Keeps doclets above in JS file
 
 ;// ./code/es-modules/masters/highcharts.src.js
-
+/**
+ * @license Highcharts JS v12.3.0-modified (2025-07-05)
+ * @module highcharts/highcharts
+ *
+ * (c) 2009-2025 Highsoft AS
+ *
+ * License: www.highcharts.com/license
+ */
 
 
 
@@ -48328,7 +48333,7 @@ const NavigatorComposition = {
 
 const { composed: ScrollbarAxis_composed } = Core_Globals;
 
-const { addEvent: ScrollbarAxis_addEvent, defined: ScrollbarAxis_defined, pick: ScrollbarAxis_pick, pushUnique: ScrollbarAxis_pushUnique } = Core_Utilities;
+const { addEvent: ScrollbarAxis_addEvent, correctFloat: ScrollbarAxis_correctFloat, defined: ScrollbarAxis_defined, pick: ScrollbarAxis_pick, pushUnique: ScrollbarAxis_pushUnique } = Core_Utilities;
 /* *
  *
  *  Composition
@@ -48375,9 +48380,10 @@ var ScrollbarAxis;
             axisMin,
             axisMax,
             scrollMin: ScrollbarAxis_defined(axis.dataMin) ?
-                Math.min(axisMin, axis.min, axis.dataMin, ScrollbarAxis_pick(axis.threshold, Infinity)) : axisMin,
-            scrollMax: ScrollbarAxis_defined(axis.dataMax) ?
-                Math.max(axisMax, axis.max, axis.dataMax, ScrollbarAxis_pick(axis.threshold, -Infinity)) : axisMax
+                Math.min(axisMin, axis.min ?? Infinity, axis.dataMin, axis.threshold ?? Infinity) : axisMin,
+            scrollMax: axis.treeGrid?.adjustedMax ?? (ScrollbarAxis_defined(axis.dataMax) ?
+                Math.max(axisMax, axis.max ?? -Infinity, axis.dataMax, axis.threshold ?? -Infinity) :
+                axisMax)
         };
     }
     /**
@@ -48405,7 +48411,7 @@ var ScrollbarAxis;
             axis.options.startOnTick = axis.options.endOnTick = false;
             axis.scrollbar = new Scrollbar(axis.chart.renderer, axis.options.scrollbar, axis.chart);
             ScrollbarAxis_addEvent(axis.scrollbar, 'changed', function (e) {
-                const { axisMin, axisMax, scrollMin: unitedMin, scrollMax: unitedMax } = getExtremes(axis), range = unitedMax - unitedMin;
+                const { axisMin, axisMax, scrollMin: unitedMin, scrollMax: unitedMax } = getExtremes(axis), minPX = axis.toPixels(unitedMin), maxPX = axis.toPixels(unitedMax), rangePX = maxPX - minPX;
                 let to, from;
                 // #12834, scroll when show/hide series, wrong extremes
                 if (!ScrollbarAxis_defined(axisMin) || !ScrollbarAxis_defined(axisMax)) {
@@ -48413,20 +48419,20 @@ var ScrollbarAxis;
                 }
                 if ((axis.horiz && !axis.reversed) ||
                     (!axis.horiz && axis.reversed)) {
-                    to = unitedMin + range * this.to;
-                    from = unitedMin + range * this.from;
+                    to = Math.min(unitedMax, axis.toValue(minPX + rangePX * this.to));
+                    from = Math.max(unitedMin, axis.toValue(minPX + rangePX * this.from));
                 }
                 else {
                     // Y-values in browser are reversed, but this also
                     // applies for reversed horizontal axis:
-                    to = unitedMin + range * (1 - this.from);
-                    from = unitedMin + range * (1 - this.to);
+                    to = Math.min(unitedMax, axis.toValue(minPX + rangePX * (1 - this.from)));
+                    from = Math.max(unitedMin, axis.toValue(minPX + rangePX * (1 - this.to)));
                 }
                 if (this.shouldUpdateExtremes(e.DOMType)) {
                     // #17977, set animation to undefined instead of true
                     const animate = e.DOMType === 'mousemove' ||
                         e.DOMType === 'touchmove' ? false : void 0;
-                    axis.setExtremes(from, to, true, animate, e);
+                    axis.setExtremes(ScrollbarAxis_correctFloat(from), ScrollbarAxis_correctFloat(to), true, animate, e);
                 }
                 else {
                     // When live redraw is disabled, don't change extremes
@@ -48441,7 +48447,7 @@ var ScrollbarAxis;
      * @private
      */
     function onAxisAfterRender() {
-        const axis = this, { scrollMin, scrollMax } = getExtremes(axis), scrollbar = axis.scrollbar, offset = (axis.axisTitleMargin + (axis.titleOffset || 0)), scrollbarsOffsets = axis.chart.scrollbarsOffsets, axisMargin = axis.options.margin || 0;
+        const axis = this, { scrollMin, scrollMax } = getExtremes(axis), scrollbar = axis.scrollbar, offset = (axis.axisTitleMargin || 0) + (axis.titleOffset || 0), scrollbarsOffsets = axis.chart.scrollbarsOffsets, axisMargin = axis.options.margin || 0;
         let offsetsIndex, from, to;
         if (scrollbar && scrollbarsOffsets) {
             if (axis.horiz) {
@@ -48507,10 +48513,10 @@ var ScrollbarAxis;
                 scrollbar.setRange(from, to);
             }
             else {
-                from = ((axis.min - scrollMin) /
-                    (scrollMax - scrollMin));
-                to = ((axis.max - scrollMin) /
-                    (scrollMax - scrollMin));
+                from = (axis.toPixels(axis.min) - axis.toPixels(scrollMin)) /
+                    (axis.toPixels(scrollMax) - axis.toPixels(scrollMin));
+                to = (axis.toPixels(axis.max) - axis.toPixels(scrollMin)) /
+                    (axis.toPixels(scrollMax) - axis.toPixels(scrollMin));
                 if ((axis.horiz && !axis.reversed) ||
                     (!axis.horiz && axis.reversed)) {
                     scrollbar.setRange(from, to);
@@ -51309,7 +51315,7 @@ class StandaloneNavigator {
 
 ;// ./code/es-modules/masters/modules/navigator.src.js
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
+ * @license Highcharts JS v12.3.0-modified (2025-07-05)
  * @module highcharts/modules/navigator
  * @requires highcharts
  *
@@ -51330,15 +51336,7 @@ Navigator_NavigatorComposition.compose(navigator_src_G.Chart, navigator_src_G.Ax
 /* harmony default export */ const navigator_src = ((/* unused pure expression or super */ null && (Highcharts)));
 
 ;// ./code/es-modules/masters/standalone-navigator.src.js
-/* *
- *
- *  (c) 2010-2025 Mateusz Bernacik
- *
- *  License: www.highcharts.com/license
- *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
- *
- * */
+
 
 
 

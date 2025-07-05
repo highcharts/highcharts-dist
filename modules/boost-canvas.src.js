@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
+ * @license Highcharts JS v12.3.0-modified (2025-07-05)
  * @module highcharts/modules/boost-canvas
  * @requires highcharts
  *
@@ -3331,7 +3331,7 @@ function getPoint(series, boostPoint) {
     if (boostPoint instanceof PointClass) {
         return boostPoint;
     }
-    const isScatter = series.is('scatter'), xData = ((isScatter && series.getColumn('x', true).length ?
+    const data = seriesOptions.data, isScatter = series.is('scatter'), xData = ((isScatter && series.getColumn('x', true).length ?
         series.getColumn('x', true) :
         void 0) ||
         (series.getColumn('x').length ? series.getColumn('x') : void 0) ||
@@ -3339,9 +3339,18 @@ function getPoint(series, boostPoint) {
         series.getColumn('x', true) ||
         false), yData = (series.getColumn('y', true) ||
         seriesOptions.yData ||
-        false), point = new PointClass(series, (isScatter && xData && yData) ?
-        [xData[boostPoint.i], yData[boostPoint.i]] :
-        (isArray(series.options.data) ? series.options.data : [])[boostPoint.i], xData ? xData[boostPoint.i] : void 0);
+        false), pointIndex = boostPoint.i, point = new PointClass(series, (isScatter && xData && yData) ?
+        [xData[pointIndex], yData[pointIndex]] :
+        (isArray(data) ? data : [])[boostPoint.i], xData ? xData[pointIndex] : void 0);
+    if (isScatter &&
+        seriesOptions?.keys?.length) {
+        const keys = seriesOptions.keys;
+        // Don't reassign X and Y properties as they're already handled above
+        for (let keysIndex = keys.length - 1; keysIndex > -1; keysIndex--) {
+            point[keys[keysIndex]] =
+                data[pointIndex][keysIndex];
+        }
+    }
     point.category = BoostSeries_pick(xAxis.categories ?
         xAxis.categories[point.x] :
         point.x, // @todo simplify
@@ -3351,7 +3360,7 @@ function getPoint(series, boostPoint) {
     point.distX = boostPoint.distX;
     point.plotX = boostPoint.plotX;
     point.plotY = boostPoint.plotY;
-    point.index = boostPoint.i;
+    point.index = pointIndex;
     point.percentage = boostPoint.percentage;
     point.isInside = series.isPointInside(point);
     return point;

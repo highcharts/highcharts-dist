@@ -1,8 +1,8 @@
 /**
- * @license Highstock JS v12.3.0 (2025-06-21)
+ * @license Highchart Stock v12.3.0-modified (2025-07-05)
  * @module highcharts/highstock
  *
- * (c) 2009-2025 Torstein Honsi
+ * (c) 2009-2025 Highsoft AS
  *
  * License: www.highcharts.com/license
  */

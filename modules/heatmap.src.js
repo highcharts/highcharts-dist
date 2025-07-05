@@ -1,11 +1,9 @@
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
- * @module highcharts/modules/color-axis
+ * @license Highmaps JS v12.3.0-modified (2025-07-05)
+ * @module highcharts/modules/heatmap
  * @requires highcharts
  *
- * ColorAxis module
- *
- * (c) 2012-2025 Pawel Potaczek
+ * (c) 2009-2025 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -1229,9 +1227,9 @@ class ColorAxis extends (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_high
             // First time only
             if (!axis.added) {
                 axis.added = true;
-                axis.labelLeft = 0;
-                axis.labelRight = axis.width;
             }
+            axis.labelLeft = 0;
+            axis.labelRight = axis.width;
             // Reset it to avoid color axis reserving space
             axis.chart.axisOffset[axis.side] = sideOffset;
         }
@@ -1606,7 +1604,17 @@ Array.prototype.push.apply((highcharts_Axis_commonjs_highcharts_Axis_commonjs2_h
 ''; // Detach doclet above
 
 ;// ./code/es-modules/masters/modules/coloraxis.src.js
-
+/**
+ * @license Highcharts JS v12.3.0-modified (2025-07-05)
+ * @module highcharts/modules/color-axis
+ * @requires highcharts
+ *
+ * ColorAxis module
+ *
+ * (c) 2012-2025 Pawel Potaczek
+ *
+ * License: www.highcharts.com/license
+ */
 
 
 
@@ -2904,15 +2912,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 ''; // Detach doclets above
 
 ;// ./code/es-modules/masters/modules/heatmap.src.js
-/**
- * @license Highmaps JS v12.3.0 (2025-06-21)
- * @module highcharts/modules/heatmap
- * @requires highcharts
- *
- * (c) 2009-2025 Torstein Honsi
- *
- * License: www.highcharts.com/license
- */
+
 
 
 
