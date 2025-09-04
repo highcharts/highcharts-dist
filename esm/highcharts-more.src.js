@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
+ * @license Highcharts JS v12.4.0 (2025-09-04)
  * @module highcharts/highcharts-more
  * @requires highcharts
  *
- * (c) 2009-2025 Torstein Honsi
+ * (c) 2009-2025 Highsoft AS
  *
  * License: www.highcharts.com/license
  */
@@ -242,28 +242,35 @@ function compose(ChartClass, PointerClass) {
  */
 function isInsidePane(x, y, center, startAngle, endAngle) {
     let insideSlice = true;
-    const cx = center[0], cy = center[1];
+    const cx = center[0], cy = center[1], twoPi = 2 * Math.PI;
     const distance = Math.sqrt(Math.pow(x - cx, 2) + Math.pow(y - cy, 2));
     if (defined(startAngle) && defined(endAngle)) {
         // Round angle to N-decimals to avoid numeric errors
-        const angle = Math.atan2(correctFloat(y - cy, 8), correctFloat(x - cx, 8));
+        let angle = Math.atan2(correctFloat(y - cy, 8), correctFloat(x - cx, 8));
+        // Normalize angle to [0, 2π)
+        angle = (angle + twoPi) % (twoPi);
+        startAngle = (startAngle + twoPi) % (twoPi);
+        endAngle = (endAngle + twoPi) % (twoPi);
         // Ignore full circle panes:
-        if (endAngle !== startAngle) {
-            // If normalized start angle is bigger than normalized end,
-            // it means angles have different signs. In such situation we
-            // check the <-PI, startAngle> and <endAngle, PI> ranges.
+        if (Math.abs(endAngle - startAngle) > 1e-6) {
+            // If the normalized start angle is greater than the end angle,
+            // it means the arc wraps around 0°. In this case, we check
+            // if the angle falls into either [startAngle, 2π) or [0, endAngle].
             if (startAngle > endAngle) {
-                insideSlice = (angle >= startAngle &&
-                    angle <= Math.PI) || (angle <= endAngle &&
-                    angle >= -Math.PI);
+                insideSlice = (angle >= startAngle ||
+                    angle <= endAngle);
             }
             else {
-                // In this case, we simple check if angle is within the
-                // <startAngle, endAngle> range
+                // In this case, we simply check if angle is within the
+                // [startAngle, endAngle] range
                 insideSlice = angle >= startAngle &&
-                    angle <= correctFloat(endAngle, 8);
+                    angle <= endAngle;
             }
         }
+    }
+    else {
+        // If no start/end angles are defined, treat it as a full circle
+        insideSlice = true;
     }
     // Round up radius because x and y values are rounded
     return distance <= Math.ceil(center[2] / 2) && insideSlice;
@@ -7988,6 +7995,13 @@ function initDataLabels() {
         // Initialize the opacity of the group to 0 (start of animation)
         dataLabelsGroup.attr({ opacity: 0 });
         if (series.visible) { // #2597, #3023, #3024
+            // #19663, initial data labels animation
+            if (series.options.animation && dlOptions?.animation) {
+                dataLabelsGroup.animate({ opacity: 1 }, dlOptions?.animation);
+            }
+            else {
+                dataLabelsGroup.attr({ opacity: 1 });
+            }
             dataLabelsGroup.show();
         }
         return dataLabelsGroup;
@@ -8173,7 +8187,7 @@ function setPolygon(event) {
                         }
                     }
                 }
-                catch (e) {
+                catch {
                     // Safari fails on getStartPositionOfChar even if the
                     // character is within the `textContent.length`
                     break;
@@ -8185,7 +8199,7 @@ function setPolygon(event) {
                 polygon.unshift(upper);
                 polygon.unshift(lower);
             }
-            catch (e) {
+            catch {
                 // Safari fails on getStartPositionOfChar even if the character
                 // is within the `textContent.length`
                 break;
@@ -9266,6 +9280,392 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 /* harmony default export */ const Polygon_PolygonSeries = ((/* unused pure expression or super */ null && (PolygonSeries)));
 
+;// ./code/es-modules/Extensions/BorderRadius.js
+/* *
+ *
+ *  Highcharts Border Radius module
+ *
+ *  Author: Torstein Honsi
+ *
+ *  License: www.highcharts.com/license
+ *
+ *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+ *
+ * */
+
+
+const { defaultOptions: BorderRadius_defaultOptions } = (external_highcharts_src_js_default_default());
+
+const { noop: BorderRadius_noop } = (external_highcharts_src_js_default_default());
+
+const { addEvent: BorderRadius_addEvent, extend: BorderRadius_extend, isObject, merge: BorderRadius_merge, relativeLength: BorderRadius_relativeLength } = (external_highcharts_src_js_default_default());
+/* *
+ *
+ *  Constants
+ *
+ * */
+const defaultBorderRadiusOptions = {
+    radius: 0,
+    scope: 'stack',
+    where: void 0
+};
+/* *
+ *
+ *  Variables
+ *
+ * */
+let oldArc = BorderRadius_noop;
+let oldRoundedRect = BorderRadius_noop;
+/* *
+ *
+ *  Functions
+ *
+ * */
+/**
+ * @private
+ */
+function applyBorderRadius(path, i, r) {
+    const a = path[i];
+    let b = path[i + 1];
+    if (b[0] === 'Z') {
+        b = path[0];
+    }
+    let line, arc, fromLineToArc;
+    // From straight line to arc
+    if ((a[0] === 'M' || a[0] === 'L') && b[0] === 'A') {
+        line = a;
+        arc = b;
+        fromLineToArc = true;
+        // From arc to straight line
+    }
+    else if (a[0] === 'A' && (b[0] === 'M' || b[0] === 'L')) {
+        line = b;
+        arc = a;
+    }
+    if (line && arc && arc.params) {
+        const bigR = arc[1], 
+        // In our use cases, outer pie slice arcs are clockwise and inner
+        // arcs (donut/sunburst etc) are anti-clockwise
+        clockwise = arc[5], params = arc.params, { start, end, cx, cy } = params;
+        // Some geometric constants
+        const relativeR = clockwise ? (bigR - r) : (bigR + r), 
+        // The angle, on the big arc, that the border radius arc takes up
+        angleOfBorderRadius = relativeR ? Math.asin(r / relativeR) : 0, angleOffset = clockwise ?
+            angleOfBorderRadius :
+            -angleOfBorderRadius, 
+        // The distance along the radius of the big arc to the starting
+        // point of the small border radius arc
+        distanceBigCenterToStartArc = (Math.cos(angleOfBorderRadius) *
+            relativeR);
+        // From line to arc
+        if (fromLineToArc) {
+            // Update the cache
+            params.start = start + angleOffset;
+            // First move to the start position at the radial line. We want to
+            // start one borderRadius closer to the center.
+            line[1] = cx + distanceBigCenterToStartArc * Math.cos(start);
+            line[2] = cy + distanceBigCenterToStartArc * Math.sin(start);
+            // Now draw an arc towards the point where the small circle touches
+            // the great circle.
+            path.splice(i + 1, 0, [
+                'A',
+                r,
+                r,
+                0, // Slanting,
+                0, // Long arc
+                1, // Clockwise
+                cx + bigR * Math.cos(params.start),
+                cy + bigR * Math.sin(params.start)
+            ]);
+            // From arc to line
+        }
+        else {
+            // Update the cache
+            params.end = end - angleOffset;
+            // End the big arc a bit earlier
+            arc[6] = cx + bigR * Math.cos(params.end);
+            arc[7] = cy + bigR * Math.sin(params.end);
+            // Draw a small arc towards a point on the end angle, but one
+            // borderRadius closer to the center relative to the perimeter.
+            path.splice(i + 1, 0, [
+                'A',
+                r,
+                r,
+                0,
+                0,
+                1,
+                cx + distanceBigCenterToStartArc * Math.cos(end),
+                cy + distanceBigCenterToStartArc * Math.sin(end)
+            ]);
+        }
+        // Long or short arc must be reconsidered because we have modified the
+        // start and end points
+        arc[4] = Math.abs(params.end - params.start) < Math.PI ? 0 : 1;
+    }
+}
+/**
+ * Extend arc with borderRadius.
+ * @private
+ */
+function arc(x, y, w, h, options = {}) {
+    const path = oldArc(x, y, w, h, options), { brStart = true, brEnd = true, innerR = 0, r = w, start = 0, end = 0 } = options;
+    if (options.open || !options.borderRadius) {
+        return path;
+    }
+    const alpha = end - start, sinHalfAlpha = Math.sin(alpha / 2), borderRadius = Math.max(Math.min(BorderRadius_relativeLength(options.borderRadius || 0, r - innerR), 
+    // Cap to half the sector radius
+    (r - innerR) / 2, 
+    // For smaller pie slices, cap to the largest small circle that
+    // can be fitted within the sector
+    (r * sinHalfAlpha) / (1 + sinHalfAlpha)), 0), 
+    // For the inner radius, we need an extra cap because the inner arc
+    // is shorter than the outer arc
+    innerBorderRadius = Math.min(borderRadius, 2 * (alpha / Math.PI) * innerR);
+    // Apply turn-by-turn border radius. Start at the end since we're
+    // splicing in arc segments.
+    let i = path.length - 1;
+    while (i--) {
+        if ((!brStart && (i === 0 || i === 3)) ||
+            (!brEnd && (i === 1 || i === 2))) {
+            continue;
+        }
+        applyBorderRadius(path, i, i > 1 ? innerBorderRadius : borderRadius);
+    }
+    return path;
+}
+/** @private */
+function seriesOnAfterColumnTranslate() {
+    if (this.options.borderRadius &&
+        !(this.chart.is3d && this.chart.is3d())) {
+        const { options, yAxis } = this, percent = options.stacking === 'percent', seriesDefault = BorderRadius_defaultOptions.plotOptions?.[this.type]
+            ?.borderRadius, borderRadius = optionsToObject(options.borderRadius, isObject(seriesDefault) ? seriesDefault : {}), reversed = yAxis.options.reversed;
+        for (const point of this.points) {
+            const { shapeArgs } = point;
+            if (point.shapeType === 'roundedRect' && shapeArgs) {
+                const { width = 0, height = 0, y = 0 } = shapeArgs;
+                let brBoxY = y, brBoxHeight = height;
+                // It would be nice to refactor StackItem.getStackBox/
+                // setOffset so that we could get a reliable box out of
+                // it. Currently it is close if we remove the label
+                // offset, but we still need to run crispCol and also
+                // flip it if inverted, so atm it is simpler to do it
+                // like the below.
+                if (borderRadius.scope === 'stack' &&
+                    point.stackTotal) {
+                    const stackEnd = yAxis.translate(percent ? 100 : point.stackTotal, false, true, false, true), stackThreshold = yAxis.translate(options.threshold || 0, false, true, false, true), box = this.crispCol(0, Math.min(stackEnd, stackThreshold), 0, Math.abs(stackEnd - stackThreshold));
+                    brBoxY = box.y;
+                    brBoxHeight = box.height;
+                }
+                const flip = (point.negative ? -1 : 1) *
+                    (reversed ? -1 : 1) === -1;
+                // Handle the where option
+                let where = borderRadius.where;
+                // Waterfall, hanging columns should have rounding on
+                // all sides
+                if (!where &&
+                    this.is('waterfall') &&
+                    Math.abs((point.yBottom || 0) -
+                        (this.translatedThreshold || 0)) > this.borderWidth) {
+                    where = 'all';
+                }
+                if (!where) {
+                    where = 'end';
+                }
+                // Get the radius
+                const r = Math.min(BorderRadius_relativeLength(borderRadius.radius, width), width / 2, 
+                // Cap to the height, but not if where is `end`
+                where === 'all' ? height / 2 : Infinity) || 0;
+                // If the `where` option is 'end', cut off the
+                // rectangles by making the border-radius box one r
+                // greater, so that the imaginary radius falls outside
+                // the rectangle.
+                if (where === 'end') {
+                    if (flip) {
+                        brBoxY -= r;
+                        brBoxHeight += r;
+                    }
+                    else {
+                        brBoxHeight += r;
+                    }
+                }
+                BorderRadius_extend(shapeArgs, { brBoxHeight, brBoxY, r });
+            }
+        }
+    }
+}
+/** @private */
+function BorderRadius_compose(SeriesClass, SVGElementClass, SVGRendererClass) {
+    const PieSeriesClass = SeriesClass.types.pie;
+    if (!SVGElementClass.symbolCustomAttribs.includes('borderRadius')) {
+        const symbols = SVGRendererClass.prototype.symbols;
+        BorderRadius_addEvent(SeriesClass, 'afterColumnTranslate', seriesOnAfterColumnTranslate, {
+            // After columnrange and polar column modifications
+            order: 9
+        });
+        BorderRadius_addEvent(PieSeriesClass, 'afterTranslate', pieSeriesOnAfterTranslate);
+        SVGElementClass.symbolCustomAttribs.push('borderRadius', 'brBoxHeight', 'brBoxY', 'brEnd', 'brStart');
+        oldArc = symbols.arc;
+        oldRoundedRect = symbols.roundedRect;
+        symbols.arc = arc;
+        symbols.roundedRect = roundedRect;
+    }
+}
+/** @private */
+function optionsToObject(options, seriesBROptions) {
+    if (!isObject(options)) {
+        options = { radius: options || 0 };
+    }
+    return BorderRadius_merge(defaultBorderRadiusOptions, seriesBROptions, options);
+}
+/** @private */
+function pieSeriesOnAfterTranslate() {
+    const borderRadius = optionsToObject(this.options.borderRadius);
+    for (const point of this.points) {
+        const shapeArgs = point.shapeArgs;
+        if (shapeArgs) {
+            shapeArgs.borderRadius = BorderRadius_relativeLength(borderRadius.radius, (shapeArgs.r || 0) - ((shapeArgs.innerR) || 0));
+        }
+    }
+}
+/**
+ * Extend roundedRect with individual cutting through rOffset.
+ * @private
+ */
+function roundedRect(x, y, width, height, options = {}) {
+    const path = oldRoundedRect(x, y, width, height, options), { r = 0, brBoxHeight = height, brBoxY = y } = options, brOffsetTop = y - brBoxY, brOffsetBtm = (brBoxY + brBoxHeight) - (y + height), 
+    // When the distance to the border-radius box is greater than the r
+    // itself, it means no border radius. The -0.1 accounts for float
+    // rounding errors.
+    rTop = (brOffsetTop - r) > -0.1 ? 0 : r, rBtm = (brOffsetBtm - r) > -0.1 ? 0 : r, cutTop = Math.max(rTop && brOffsetTop, 0), cutBtm = Math.max(rBtm && brOffsetBtm, 0);
+    /*
+
+    The naming of control points:
+
+      / a -------- b \
+     /                \
+    h                  c
+    |                  |
+    |                  |
+    |                  |
+    g                  d
+     \                /
+      \ f -------- e /
+
+    */
+    const a = [x + rTop, y], b = [x + width - rTop, y], c = [x + width, y + rTop], d = [
+        x + width, y + height - rBtm
+    ], e = [
+        x + width - rBtm,
+        y + height
+    ], f = [x + rBtm, y + height], g = [x, y + height - rBtm], h = [x, y + rTop];
+    const applyPythagoras = (r, altitude) => Math.sqrt(Math.pow(r, 2) - Math.pow(altitude, 2));
+    // Inside stacks, cut off part of the top
+    if (cutTop) {
+        const base = applyPythagoras(rTop, rTop - cutTop);
+        a[0] -= base;
+        b[0] += base;
+        c[1] = h[1] = y + rTop - cutTop;
+    }
+    // Column is lower than the radius. Cut off bottom inside the top
+    // radius.
+    if (height < rTop - cutTop) {
+        const base = applyPythagoras(rTop, rTop - cutTop - height);
+        c[0] = d[0] = x + width - rTop + base;
+        e[0] = Math.min(c[0], e[0]);
+        f[0] = Math.max(d[0], f[0]);
+        g[0] = h[0] = x + rTop - base;
+        c[1] = h[1] = y + height;
+    }
+    // Inside stacks, cut off part of the bottom
+    if (cutBtm) {
+        const base = applyPythagoras(rBtm, rBtm - cutBtm);
+        e[0] += base;
+        f[0] -= base;
+        d[1] = g[1] = y + height - rBtm + cutBtm;
+    }
+    // Cut off top inside the bottom radius
+    if (height < rBtm - cutBtm) {
+        const base = applyPythagoras(rBtm, rBtm - cutBtm - height);
+        c[0] = d[0] = x + width - rBtm + base;
+        b[0] = Math.min(c[0], b[0]);
+        a[0] = Math.max(d[0], a[0]);
+        g[0] = h[0] = x + rBtm - base;
+        d[1] = g[1] = y;
+    }
+    // Preserve the box for data labels
+    path.length = 0;
+    path.push(['M', ...a], 
+    // Top side
+    ['L', ...b], 
+    // Top right corner
+    ['A', rTop, rTop, 0, 0, 1, ...c], 
+    // Right side
+    ['L', ...d], 
+    // Bottom right corner
+    ['A', rBtm, rBtm, 0, 0, 1, ...e], 
+    // Bottom side
+    ['L', ...f], 
+    // Bottom left corner
+    ['A', rBtm, rBtm, 0, 0, 1, ...g], 
+    // Left side
+    ['L', ...h], 
+    // Top left corner
+    ['A', rTop, rTop, 0, 0, 1, ...a], ['Z']);
+    return path;
+}
+/* *
+ *
+ *  Default Export
+ *
+ * */
+const BorderRadius = {
+    compose: BorderRadius_compose,
+    optionsToObject
+};
+/* harmony default export */ const Extensions_BorderRadius = (BorderRadius);
+/* *
+ *
+ *  API Declarations
+ *
+ * */
+/**
+ * Detailed options for border radius.
+ *
+ * @sample  {highcharts} highcharts/plotoptions/column-borderradius/
+ *          Rounded columns
+ * @sample  highcharts/plotoptions/series-border-radius
+ *          Column and pie with rounded border
+ *
+ * @interface Highcharts.BorderRadiusOptionsObject
+ */ /**
+* The border radius. A number signifies pixels. A percentage string, like for
+* example `50%`, signifies a relative size. For columns this is relative to the
+* column width, for pies it is relative to the radius and the inner radius.
+*
+* @name Highcharts.BorderRadiusOptionsObject#radius
+* @type {string|number}
+*/ /**
+* The scope of the rounding for column charts. In a stacked column chart, the
+* value `point` means each single point will get rounded corners. The value
+* `stack` means the rounding will apply to the full stack, so that only points
+* close to the top or bottom will receive rounding.
+*
+* @name Highcharts.BorderRadiusOptionsObject#scope
+* @validvalue ["point", "stack"]
+* @type {string}
+*/ /**
+* For column charts, where in the point or stack to apply rounding. The `end`
+* value means only those corners at the point value will be rounded, leaving
+* the corners at the base or threshold unrounded. This is the most intuitive
+* behaviour. The `all` value means also the base will be rounded.
+*
+* @name Highcharts.BorderRadiusOptionsObject#where
+* @validvalue ["all", "end"]
+* @type {string}
+* @default end
+*/
+(''); // Keeps doclets above in JS file
+
 ;// ./code/es-modules/Core/Axis/RadialAxisDefaults.js
 /* *
  *
@@ -9410,7 +9810,7 @@ const { defaultOptions: RadialAxis_defaultOptions } = (external_highcharts_src_j
 
 const { composed: RadialAxis_composed, noop: RadialAxis_noop } = (external_highcharts_src_js_default_default());
 
-const { addEvent: RadialAxis_addEvent, correctFloat: RadialAxis_correctFloat, defined: RadialAxis_defined, extend: RadialAxis_extend, fireEvent: RadialAxis_fireEvent, isObject, merge: RadialAxis_merge, pick: RadialAxis_pick, pushUnique: RadialAxis_pushUnique, relativeLength: RadialAxis_relativeLength, splat: RadialAxis_splat, wrap: RadialAxis_wrap } = (external_highcharts_src_js_default_default());
+const { addEvent: RadialAxis_addEvent, correctFloat: RadialAxis_correctFloat, defined: RadialAxis_defined, extend: RadialAxis_extend, fireEvent: RadialAxis_fireEvent, isObject: RadialAxis_isObject, merge: RadialAxis_merge, pick: RadialAxis_pick, pushUnique: RadialAxis_pushUnique, relativeLength: RadialAxis_relativeLength, splat: RadialAxis_splat, wrap: RadialAxis_wrap } = (external_highcharts_src_js_default_default());
 /* *
  *
  *  Composition
@@ -9627,8 +10027,18 @@ var RadialAxis;
                 return r;
             }
             return radius;
-        }, center = this.center, startAngleRad = this.startAngleRad, fullRadius = center[2] / 2, offset = Math.min(this.offset, 0), left = this.left || 0, top = this.top || 0, percentRegex = /%$/, isCircular = this.isCircular; // X axis in a polar chart
-        let start, end, angle, xOnPerimeter, open, path, outerRadius = RadialAxis_pick(radiusToPixels(options.outerRadius), fullRadius), innerRadius = radiusToPixels(options.innerRadius), thickness = RadialAxis_pick(radiusToPixels(options.thickness), 10);
+        }, center = this.center, startAngleRad = this.startAngleRad, borderRadius = options.borderRadius, fullRadius = center[2] / 2, offset = Math.min(this.offset, 0), left = this.left || 0, top = this.top || 0, percentRegex = /%$/, isCircular = this.isCircular, // X axis in a polar chart
+        trueBands = this.options.plotBands || [], index = trueBands.indexOf(options);
+        let start, end, angle, xOnPerimeter, open, path, outerRadius = RadialAxis_pick(radiusToPixels(options.outerRadius), fullRadius), innerRadius = radiusToPixels(options.innerRadius), thickness = RadialAxis_pick(radiusToPixels(options.thickness), 10), brStart = true, brEnd = true;
+        // Apply conditional border radius, only for ends of band stacks
+        if (borderRadius && index > -1) {
+            if (trueBands[index - 1] && trueBands[index - 1].to === from) {
+                brStart = false;
+            }
+            if (trueBands[index + 1] && trueBands[index + 1].from === to) {
+                brEnd = false;
+            }
+        }
         // Polygonal plot bands
         if (this.options.gridLineInterpolation === 'polygon') {
             path = this.getPlotLinePath({ value: from }).concat(this.getPlotLinePath({ value: to, reverse: true }));
@@ -9663,7 +10073,9 @@ var RadialAxis;
                 end: Math.max(start, end),
                 innerR: RadialAxis_pick(innerRadius, outerRadius - thickness),
                 open,
-                borderRadius: options.borderRadius
+                borderRadius,
+                brStart,
+                brEnd
             });
             // Provide positioning boxes for the label (#6406)
             if (isCircular) {
@@ -10222,7 +10634,7 @@ var RadialAxis;
                     RadialAxis_defaultOptions.yAxis, RadialAxis.radialDefaultOptions.radial);
         }
         if (inverted && coll === 'yAxis') {
-            defaultPolarOptions.stackLabels = isObject(RadialAxis_defaultOptions.yAxis, true) ? RadialAxis_defaultOptions.yAxis.stackLabels : {};
+            defaultPolarOptions.stackLabels = RadialAxis_isObject(RadialAxis_defaultOptions.yAxis, true) ? RadialAxis_defaultOptions.yAxis.stackLabels : {};
             defaultPolarOptions.reversedStacks = true;
         }
         const options = this.options = RadialAxis_merge(defaultPolarOptions, userOptions);
@@ -10278,12 +10690,16 @@ var RadialAxis;
 
 const { animObject: PolarComposition_animObject } = (external_highcharts_src_js_default_default());
 
+const { optionsToObject: PolarComposition_optionsToObject } = Extensions_BorderRadius;
+
+const { defaultOptions: PolarComposition_defaultOptions } = (external_highcharts_src_js_default_default());
+
 const { composed: PolarComposition_composed } = (external_highcharts_src_js_default_default());
 
 
 
 
-const { addEvent: PolarComposition_addEvent, defined: PolarComposition_defined, find, isNumber: PolarComposition_isNumber, merge: PolarComposition_merge, pick: PolarComposition_pick, pushUnique: PolarComposition_pushUnique, relativeLength: PolarComposition_relativeLength, splat: PolarComposition_splat, uniqueKey: PolarComposition_uniqueKey, wrap: PolarComposition_wrap } = (external_highcharts_src_js_default_default());
+const { addEvent: PolarComposition_addEvent, defined: PolarComposition_defined, find, isNumber: PolarComposition_isNumber, isObject: PolarComposition_isObject, merge: PolarComposition_merge, pick: PolarComposition_pick, pushUnique: PolarComposition_pushUnique, relativeLength: PolarComposition_relativeLength, splat: PolarComposition_splat, uniqueKey: PolarComposition_uniqueKey, wrap: PolarComposition_wrap } = (external_highcharts_src_js_default_default());
 /* *
  *
  *  Functions
@@ -10590,6 +11006,33 @@ function onSeriesAfterInit() {
             this.isRadialSeries = true;
             if (this.is('column')) {
                 this.isRadialBar = true;
+            }
+        }
+    }
+}
+/**
+ * Apply conditional rounding to polar bars
+ */
+function onSeriesAfterColumnTranslate() {
+    const { chart, options, yAxis } = this;
+    if (options.borderRadius &&
+        chart.polar &&
+        chart.inverted) {
+        const seriesDefault = PolarComposition_defaultOptions.plotOptions?.[this.type]
+            ?.borderRadius, { scope, where = 'end' } = PolarComposition_optionsToObject(options.borderRadius, PolarComposition_isObject(seriesDefault) ? seriesDefault : {});
+        for (const point of this.points) {
+            const { shapeArgs } = point;
+            if (point.shapeType === 'arc' && shapeArgs) {
+                let brStart = where === 'all', brEnd = true;
+                if (options.stacking && scope === 'stack') {
+                    brStart = point.stackY === point.y && where === 'all',
+                        brEnd = point.stackY === point.stackTotal;
+                }
+                if (yAxis.reversed) {
+                    [brStart, brEnd] = [brEnd, brStart];
+                }
+                shapeArgs.brStart = brStart;
+                shapeArgs.brEnd = brEnd;
             }
         }
     }
@@ -11186,6 +11629,10 @@ class PolarAdditions {
             PolarComposition_addEvent(PointerClass, 'getSelectionMarkerAttrs', onPointerGetSelectionMarkerAttrs);
             PolarComposition_addEvent(PointerClass, 'getSelectionBox', onPointerGetSelectionBox);
             PolarComposition_addEvent(SeriesClass, 'afterInit', onSeriesAfterInit);
+            PolarComposition_addEvent(SeriesClass, 'afterColumnTranslate', onSeriesAfterColumnTranslate, {
+                // After columnrange and polar column modifications
+                order: 9
+            });
             PolarComposition_addEvent(SeriesClass, 'afterTranslate', onSeriesAfterTranslate, { order: 2 } // Run after translation of ||-coords
             );
             PolarComposition_addEvent(SeriesClass, 'afterColumnTranslate', onAfterColumnTranslate, { order: 4 });
@@ -11831,12 +12278,12 @@ class WaterfallSeries extends WaterfallSeries_ColumnSeries {
     // Return an empty path initially, because we need to know the stroke-width
     // in order to set the final path.
     getGraphPath() {
-        return [['M', 0, 0]];
+        return this.graph?.pathArray || [['M', 0, 0]];
     }
     // Draw columns' connector lines
     getCrispPath() {
         const // Skip points where Y is not a number (#18636)
-        data = this.data.filter((d) => WaterfallSeries_isNumber(d.y)), yAxis = this.yAxis, length = data.length, graphLineWidth = this.graph?.strokeWidth() || 0, reversedXAxis = this.xAxis.reversed, reversedYAxis = this.yAxis.reversed, stacking = this.options.stacking, path = [];
+        data = this.points.filter((d) => WaterfallSeries_isNumber(d.y)), yAxis = this.yAxis, length = data.length, graphLineWidth = this.graph?.strokeWidth() || 0, reversedXAxis = this.xAxis.reversed, reversedYAxis = this.yAxis.reversed, stacking = this.options.stacking, path = [];
         for (let i = 1; i < length; i++) {
             if (!( // Skip lines that would pass over the null point (#18636)
             this.options.connectNulls ||
@@ -11855,8 +12302,7 @@ class WaterfallSeries extends WaterfallSeries_ColumnSeries {
                 // value
                 let yPos;
                 if (stacking) {
-                    const connectorThreshold = prevStackX.connectorThreshold;
-                    yPos = WaterfallSeries_crisp(yAxis.translate(connectorThreshold, false, true, false, true) +
+                    yPos = WaterfallSeries_crisp(yAxis.translate(prevStackX.connectorThreshold || 0, false, true, false, true) +
                         (reversedYAxis ? isPos : 0), graphLineWidth);
                 }
                 else {
@@ -11896,11 +12342,9 @@ class WaterfallSeries extends WaterfallSeries_ColumnSeries {
     // crisp rendering.
     drawGraph() {
         WaterfallSeries_LineSeries.prototype.drawGraph.call(this);
-        if (this.graph) {
-            this.graph.attr({
-                d: this.getCrispPath()
-            });
-        }
+        this.graph?.animate({
+            d: this.getCrispPath()
+        });
     }
     // Waterfall has stacking along the x-values too.
     setStackedPoints(axis) {

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
+ * @license Highcharts JS v12.4.0 (2025-09-04)
  * @module highcharts/modules/sonification
  * @requires highcharts
  *
@@ -3593,7 +3593,9 @@ function getScript(scriptLocation) {
         };
         // Reject in case of fail
         script.onerror = () => {
-            reject(error(`Error loading script ${scriptLocation}`));
+            const msg = `Error loading script ${scriptLocation}`;
+            error(msg);
+            reject(new Error(msg));
         };
         // Append the newly created script
         head.appendChild(script);
@@ -4895,7 +4897,7 @@ class Sonification {
             this.audioContext.suspend();
             this.audioDestination = this.audioContext.destination;
         }
-        catch (e) { /* Ignore */ }
+        catch { /* Ignore */ }
     }
     /**
      * Set the audio destination node to something other than the default

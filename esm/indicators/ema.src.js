@@ -38,9 +38,6 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
 ;// ./code/es-modules/masters/indicators/ema.src.js
-/**
- * @requires highcharts
- */
 /*
  * Since v9.3.0, EMA technical indicator is part of indicators.js.
  * It's no longer necessary to load this file.

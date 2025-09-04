@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v12.3.0 (2025-06-21)
+ * @license Highstock JS v12.4.0 (2025-09-04)
  * @module highcharts/indicators/indicators-all
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -4846,7 +4846,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 const { noop: MACDIndicator_noop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { column: ColumnSeries, sma: MACDIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+const { sma: MACDIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
 
 const { extend: MACDIndicator_extend, correctFloat: MACDIndicator_correctFloat, defined: MACDIndicator_defined, merge: MACDIndicator_merge } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *

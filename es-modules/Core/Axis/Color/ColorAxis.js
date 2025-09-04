@@ -83,7 +83,7 @@ class ColorAxis extends Axis {
             userOptions.layout !== 'vertical' :
             legend.layout !== 'vertical';
         axis.side = userOptions.side || horiz ? 2 : 1;
-        axis.reversed = userOptions.reversed || !horiz;
+        axis.reversed = userOptions.reversed;
         axis.opposite = !horiz;
         super.init(chart, userOptions, 'colorAxis');
         // `super.init` saves the extended user options, now replace it with the
@@ -189,9 +189,9 @@ class ColorAxis extends Axis {
             // First time only
             if (!axis.added) {
                 axis.added = true;
-                axis.labelLeft = 0;
-                axis.labelRight = axis.width;
             }
+            axis.labelLeft = 0;
+            axis.labelRight = axis.width;
             // Reset it to avoid color axis reserving space
             axis.chart.axisOffset[axis.side] = sideOffset;
         }

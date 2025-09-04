@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
+ * @license Highcharts JS v12.4.0 (2025-09-04)
  * @module highcharts/modules/data-tools
  * @requires highcharts
  *
@@ -219,7 +219,7 @@ class DataModifier {
                     detail: eventDetail,
                     table
                 });
-                reject(e);
+                reject(e instanceof Error ? e : new Error('' + e));
             }
         });
     }
@@ -1261,8 +1261,7 @@ class DataTable extends Data_DataTableCore {
      * Returns all column names.
      */
     getColumnNames() {
-        const table = this, columnNames = Object.keys(table.columns);
-        return columnNames;
+        return Object.keys(this.columns);
     }
     /**
      * Retrieves all or the given columns.
@@ -3633,6 +3632,8 @@ DataPool.version = '1.0.0';
  *
  * */
 
+
+const { isString } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
  *  Constants
@@ -3913,6 +3914,20 @@ function parseArguments(text, alternativeSeparators) {
     return args;
 }
 /**
+ * Checks if there's one of the following operator before the negative number
+ * value: '*', '/' or '^'.
+ *
+ * Used to properly indicate a negative value reference or negate a directly
+ * passed number value.
+ */
+function negativeReference(formula) {
+    const formulaLength = formula.length;
+    const priorFormula = formula[formulaLength - 2];
+    return (formula[formulaLength - 1] === '-' &&
+        isString(priorFormula) &&
+        !!priorFormula.match(/\*|\/|\^/));
+}
+/**
  * Converts a spreadsheet formula string into a formula array. Throws a
  * `FormulaParserError` when the string can not be parsed.
  *
@@ -3955,6 +3970,10 @@ function parseFormula(text, alternativeSeparators) {
             if (rowRelative) {
                 reference.rowRelative = true;
             }
+            if (negativeReference(formula)) {
+                formula.pop();
+                reference.isNegative = true;
+            }
             formula.push(reference);
             next = next.substring(match[0].length).trim();
             continue;
@@ -3979,6 +3998,10 @@ function parseFormula(text, alternativeSeparators) {
             if (rowRelative) {
                 reference.rowRelative = true;
             }
+            if (negativeReference(formula)) {
+                formula.pop();
+                reference.isNegative = true;
+            }
             formula.push(reference);
             next = next.substring(match[0].length).trim();
             continue;
@@ -4000,7 +4023,15 @@ function parseFormula(text, alternativeSeparators) {
         // Check for a number value
         match = next.match(decimalRegExp);
         if (match) {
-            formula.push(parseFloat(match[0]));
+            let number = parseFloat(match[0]);
+            // If the current value is multiplication-related and the previous
+            // one is a minus sign, set the current value to negative and remove
+            // the minus sign.
+            if (negativeReference(formula)) {
+                formula.pop();
+                number = -number;
+            }
+            formula.push(number);
             next = next.substring(match[0].length).trim();
             continue;
         }
@@ -4230,6 +4261,8 @@ const MathFormula = {
 
 
 const { isFormula: FormulaProcessor_isFormula, isFunction: FormulaProcessor_isFunction, isOperator: FormulaProcessor_isOperator, isRange: FormulaProcessor_isRange, isReference: FormulaProcessor_isReference, isValue: FormulaProcessor_isValue } = FormulaTypes;
+
+const { defined: FormulaProcessor_defined } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
  *  Constants
@@ -4495,13 +4528,56 @@ function getReferenceValue(reference, table) {
             const result = table.modified.getCell(columnName, reference.row);
             return FormulaProcessor_isValue(result) ? result : NaN;
         }
-        return FormulaProcessor_isValue(cell) ? cell : NaN;
+        if (FormulaProcessor_isValue(cell)) {
+            return reference.isNegative ? -cell : cell;
+        }
+        return NaN;
     }
     return NaN;
 }
 /**
+ * Calculates a value based on the two top values and the related operator.
+ *
+ * Used to properly process the formula's values based on its operators.
+ *
+ * @private
+ * @function Highcharts.applyOperator
+ *
+ * @param {Array<Highcharts.Value>} values
+ * Processed formula values.
+ *
+ * @param {Array<Highcharts.Operator>} operators
+ * Processed formula operators.
+ */
+function applyOperator(values, operators) {
+    if (values.length < 2 || operators.length < 1) {
+        values.push(NaN);
+    }
+    const secondValue = values.pop();
+    const firstValue = values.pop();
+    const operator = operators.pop();
+    if (!FormulaProcessor_defined(secondValue) || !FormulaProcessor_defined(firstValue) || !FormulaProcessor_defined(operator)) {
+        values.push(NaN);
+    }
+    else {
+        values.push(basicOperation(operator, firstValue, secondValue));
+    }
+}
+/**
  * Processes a formula array on the given table. If the formula does not contain
  * references or ranges, then no table has to be provided.
+ *
+ * Performs formulas considering the operators precedence.
+ *
+ * // Example of the `2 * 3 + 4` formula:
+ * 2 -> values: [2], operators: []
+ * * -> values: [2], operators: [*]
+ * 3 -> values: [2, 3], operators: [*]
+ * // Since the higher precedence operator exists (* > +), perform it first.
+ * + -> values: [6], operators: [+]
+ * 4 -> values: [6, 4], operators: [+]
+ * // When non-higher precedence operators remain, perform rest calculations.
+ * -> values: [10], operators: []
  *
  * @private
  * @function Highcharts.processFormula
@@ -4516,61 +4592,68 @@ function getReferenceValue(reference, table) {
  * Result value of the process. `NaN` indicates an error.
  */
 function processFormula(formula, table) {
-    let x;
-    for (let i = 0, iEnd = formula.length, item, operator, result, y; i < iEnd; ++i) {
-        item = formula[i];
-        // Remember operator for operation on next item
+    // Keeps all the values to calculate them in a proper priority, based on the
+    // given operators.
+    const values = [];
+    // Keeps all the operators to calculate the values above, following the
+    // proper priority.
+    const operators = [];
+    // Indicates if the next item is a value (not an operator).
+    let expectingValue = true;
+    for (let i = 0, iEnd = formula.length; i < iEnd; ++i) {
+        const item = formula[i];
         if (FormulaProcessor_isOperator(item)) {
-            operator = item;
-            continue;
-        }
-        // Next item is a value
-        if (FormulaProcessor_isValue(item)) {
-            y = item;
-            // Next item is a formula and needs to get processed first
-        }
-        else if (FormulaProcessor_isFormula(item)) {
-            y = processFormula(formula, table);
-            // Next item is a function call and needs to get processed first
-        }
-        else if (FormulaProcessor_isFunction(item)) {
-            result = processFunction(item, table);
-            y = (FormulaProcessor_isValue(result) ? result : NaN); // Arrays are not allowed here
-            // Next item is a reference and needs to get resolved
-        }
-        else if (FormulaProcessor_isReference(item)) {
-            y = (table && getReferenceValue(item, table));
-        }
-        // If we have a next value, lets do the operation
-        if (typeof y !== 'undefined') {
-            // Next value is our first value
-            if (typeof x === 'undefined') {
-                if (operator) {
-                    x = basicOperation(operator, 0, y);
-                }
-                else {
-                    x = y;
-                }
-                // Fail fast if no operator available
-            }
-            else if (!operator) {
-                return NaN;
-                // Regular next value
+            if (expectingValue && item === '-') {
+                // Split the negative values to be handled as a binary
+                // operation if the next item is a value.
+                values.push(0);
+                operators.push('-');
+                expectingValue = true;
             }
             else {
-                const operator2 = formula[i + 1];
-                if (FormulaProcessor_isOperator(operator2) &&
-                    operatorPriority[operator2] > operatorPriority[operator]) {
-                    y = basicOperation(operator2, y, processFormula(formula.slice(i + 2)));
-                    i = iEnd;
+                // Perform if the higher precedence operator exist.
+                while (operators.length &&
+                    operatorPriority[operators[operators.length - 1]] >=
+                        operatorPriority[item]) {
+                    applyOperator(values, operators);
                 }
-                x = basicOperation(operator, x, y);
+                operators.push(item);
+                expectingValue = true;
             }
-            operator = void 0;
-            y = void 0;
+            continue;
+        }
+        let value;
+        // Assign the proper value, starting from the most common types.
+        if (FormulaProcessor_isValue(item)) {
+            value = item;
+        }
+        else if (FormulaProcessor_isReference(item)) {
+            value = table ? getReferenceValue(item, table) : NaN;
+        }
+        else if (FormulaProcessor_isFunction(item)) {
+            const result = processFunction(item, table);
+            value = FormulaProcessor_isValue(result) ? result : NaN;
+        }
+        else if (FormulaProcessor_isFormula(item)) {
+            value = processFormula(item, table);
+        }
+        if (typeof value !== 'undefined') {
+            values.push(value);
+            expectingValue = false;
+        }
+        else {
+            return NaN;
         }
     }
-    return FormulaProcessor_isValue(x) ? x : NaN;
+    // Handle the remaining operators that weren't taken into consideration, due
+    // to non-higher precedence.
+    while (operators.length) {
+        applyOperator(values, operators);
+    }
+    if (values.length !== 1) {
+        return NaN;
+    }
+    return values[0];
 }
 /**
  * Process a function on the given table. If the arguments do not contain
@@ -6842,7 +6925,6 @@ class JSONConverter extends Converters_DataConverter {
  */
 JSONConverter.defaultOptions = {
     ...Converters_DataConverter.defaultOptions,
-    data: [],
     orientation: 'rows'
 };
 Converters_DataConverter.registerType('JSON', JSONConverter);
@@ -6991,7 +7073,6 @@ class JSONConnector extends Connectors_DataConnector {
  *
  * */
 JSONConnector.defaultOptions = {
-    data: [],
     enablePolling: false,
     dataRefreshRate: 0,
     firstRowAsNames: true,
@@ -7578,7 +7659,7 @@ class HTMLTableConverter extends Converters_DataConverter {
                     if (cur === subheaders[i]) {
                         if (useRowspanHeaders) {
                             rowspan = 2;
-                            delete subheaders[i];
+                            subheaders.splice(i, 1);
                         }
                         else {
                             rowspan = 1;
@@ -8777,6 +8858,17 @@ class SortModifier extends Modifiers_DataModifier {
             (b || 0) > (a || 0) ? 1 :
                 0);
     }
+    static compareFactory(direction, customCompare) {
+        if (customCompare) {
+            if (direction === 'desc') {
+                return (a, b) => -customCompare(a, b);
+            }
+            return customCompare;
+        }
+        return (direction === 'asc' ?
+            SortModifier.ascending :
+            SortModifier.descending);
+    }
     /* *
      *
      *  Constructor
@@ -8950,9 +9042,7 @@ class SortModifier extends Modifiers_DataModifier {
     modifyTable(table, eventDetail) {
         const modifier = this;
         modifier.emit({ type: 'modify', detail: eventDetail, table });
-        const columnNames = table.getColumnNames(), rowCount = table.getRowCount(), rowReferences = this.getRowReferences(table), { direction, orderByColumn, orderInColumn } = modifier.options, compare = (direction === 'asc' ?
-            SortModifier.ascending :
-            SortModifier.descending), orderByColumnIndex = columnNames.indexOf(orderByColumn), modified = table.modified;
+        const columnNames = table.getColumnNames(), rowCount = table.getRowCount(), rowReferences = this.getRowReferences(table), { direction, orderByColumn, orderInColumn, compare: customCompare } = modifier.options, compare = SortModifier.compareFactory(direction, customCompare), orderByColumnIndex = columnNames.indexOf(orderByColumn), modified = table.modified;
         if (orderByColumnIndex !== -1) {
             rowReferences.sort((a, b) => compare(a.row[orderByColumnIndex], b.row[orderByColumnIndex]));
         }
@@ -9000,7 +9090,178 @@ Modifiers_DataModifier.registerType('Sort', SortModifier);
  * */
 /* harmony default export */ const Modifiers_SortModifier = ((/* unused pure expression or super */ null && (SortModifier)));
 
+;// ./code/es-modules/Data/Modifiers/FilterModifier.js
+/* *
+ *
+ *  (c) 2009-2025 Highsoft AS
+ *
+ *  License: www.highcharts.com/license
+ *
+ *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+ *
+ *  Authors:
+ *  - Dawid Dragula
+ *
+ * */
+
+
+
+const { isFunction: FilterModifier_isFunction, merge: FilterModifier_merge } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+/* *
+ *
+ *  Class
+ *
+ * */
+/**
+ * Filters out table rows matching a given condition.
+ */
+class FilterModifier extends Modifiers_DataModifier {
+    /* *
+     *
+     *  Static Functions
+     *
+     * */
+    /**
+     * Compiles a filter condition into a callback function.
+     *
+     * @param {FilterCondition} condition
+     * Condition to compile.
+     */
+    static compile(condition) {
+        if (FilterModifier_isFunction(condition)) {
+            return condition;
+        }
+        const op = condition.operator;
+        switch (op) {
+            case 'and': {
+                const subs = condition.conditions.map((c) => this.compile(c));
+                return (row, table, i) => subs.every((cond) => cond(row, table, i));
+            }
+            case 'or': {
+                const subs = condition.conditions.map((c) => this.compile(c));
+                return (row, table, i) => subs.some((cond) => cond(row, table, i));
+            }
+            case 'not': {
+                const sub = this.compile(condition.condition);
+                return (row, table, i) => !sub(row, table, i);
+            }
+        }
+        const { columnName: col, value } = condition;
+        switch (op) {
+            case '==':
+                // eslint-disable-next-line eqeqeq
+                return (row) => row[col] == value;
+            case '===':
+                return (row) => row[col] === value;
+            case '!=':
+                // eslint-disable-next-line eqeqeq
+                return (row) => row[col] != value;
+            case '!==':
+                return (row) => row[col] !== value;
+            case '>':
+                return (row) => (row[col] || 0) > (value || 0);
+            case '>=':
+                return (row) => (row[col] || 0) >= (value || 0);
+            case '<':
+                return (row) => (row[col] || 0) < (value || 0);
+            case '<=':
+                return (row) => (row[col] || 0) <= (value || 0);
+        }
+        const { ignoreCase } = condition;
+        const str = (val) => {
+            const s = '' + val;
+            return (ignoreCase ?? true) ? s.toLowerCase() : s;
+        };
+        switch (op) {
+            case 'contains':
+                return (row) => str(row[col]).includes(str(value));
+            default:
+                return (row) => str(row[col])[op](str(value));
+        }
+    }
+    /* *
+     *
+     *  Constructor
+     *
+     * */
+    /**
+     * Constructs an instance of the filter modifier.
+     *
+     * @param {Partial<FilterModifier.Options>} [options]
+     * Options to configure the filter modifier.
+     */
+    constructor(options) {
+        super();
+        this.options = FilterModifier_merge(FilterModifier.defaultOptions, options);
+    }
+    /* *
+     *
+     *  Functions
+     *
+     * */
+    /**
+     * Replaces table rows with filtered rows.
+     *
+     * @param {DataTable} table
+     * Table to modify.
+     *
+     * @param {DataEvent.Detail} [eventDetail]
+     * Custom information for pending events.
+     *
+     * @return {DataTable}
+     * Table with `modified` property as a reference.
+     */
+    modifyTable(table, eventDetail) {
+        const modifier = this;
+        modifier.emit({ type: 'modify', detail: eventDetail, table });
+        const { condition } = modifier.options;
+        if (!condition) {
+            // If no condition is set, return the unmodified table.
+            return table;
+        }
+        const matchRow = FilterModifier.compile(condition);
+        // This line should be investigated further when reworking Data Layer.
+        const modified = table.modified;
+        const rows = [];
+        const indexes = [];
+        for (let i = 0, iEnd = table.getRowCount(); i < iEnd; ++i) {
+            const row = table.getRowObject(i);
+            if (!row) {
+                continue;
+            }
+            if (matchRow(row, table, i)) {
+                rows.push(row);
+                indexes.push(modified.getOriginalRowIndex(i));
+            }
+        }
+        modified.deleteRows();
+        modified.setRows(rows);
+        modified.setOriginalRowIndexes(indexes);
+        modifier.emit({ type: 'afterModify', detail: eventDetail, table });
+        return table;
+    }
+}
+/* *
+ *
+ *  Static Properties
+ *
+ * */
+/**
+ * Default options for the filter modifier.
+ */
+FilterModifier.defaultOptions = {
+    type: 'Filter'
+};
+Modifiers_DataModifier.registerType('Filter', FilterModifier);
+/* *
+ *
+ *  Default Export
+ *
+ * */
+/* harmony default export */ const Modifiers_FilterModifier = ((/* unused pure expression or super */ null && (FilterModifier)));
+
 ;// ./code/es-modules/masters/modules/data-tools.src.js
+
 
 
 

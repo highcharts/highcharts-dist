@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
+ * @license Highcharts JS v12.4.0 (2025-09-04)
  * @module highcharts/modules/series-on-point
  * @requires highcharts
  *
@@ -476,13 +476,6 @@ class DataTableCore {
 ;// external ["../highcharts.src.js","default","Point"]
 const external_highcharts_src_js_default_Point_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Point;
 var external_highcharts_src_js_default_Point_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Point_namespaceObject);
-;// external ["../highcharts.src.js","default","Series"]
-var x = (y) => {
-	var x = {}; __webpack_require__.d(x,
-    	y); return x
-    } 
-    var y = (x) => (() => (x))
-    const external_highcharts_src_js_default_Series_namespaceObject = x({  });
 ;// external ["../highcharts.src.js","default","SeriesRegistry"]
 const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
 var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
@@ -503,7 +496,6 @@ var external_highcharts_src_js_default_SVGRenderer_default = /*#__PURE__*/__webp
 
 
 const { composed } = (external_highcharts_src_js_default_default());
-
 
 
 const { bubble } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
+ * @license Highcharts JS v12.4.0 (2025-09-04)
  * @module highcharts/modules/variwide
  * @requires highcharts
  *
@@ -101,17 +101,15 @@ function onAxisAfterDrawCrosshair(e) {
  */
 function onAxisAfterRender() {
     const axis = this;
-    if (this.variwide) {
-        this.chart.labelCollectors.push(function () {
-            return axis.tickPositions
-                .filter((pos) => !!axis.ticks[pos].label)
-                .map((pos, i) => {
-                const label = axis.ticks[pos].label;
-                label.labelrank = axis.zData[i];
-                return label;
-            });
-        });
-    }
+    this.chart.labelCollectors.push(function () {
+        return axis.variwide ? axis.tickPositions
+            .filter((pos) => !!axis.ticks[pos].label)
+            .map((pos, i) => {
+            const label = axis.ticks[pos].label;
+            label.labelrank = axis.zData?.[i];
+            return label;
+        }) : [];
+    });
 }
 /**
  * @private

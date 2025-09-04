@@ -44,7 +44,6 @@ var BoostCanvas;
      *  Variables
      *
      * */
-    let ChartConstructor;
     let destroyLoadingDiv;
     /* *
      *
@@ -82,7 +81,6 @@ var BoostCanvas;
         const seriesProto = SeriesClass.prototype;
         if (!seriesProto.renderCanvas) {
             const { area: AreaSeries, bubble: BubbleSeries, column: ColumnSeries, heatmap: HeatmapSeries, scatter: ScatterSeries } = seriesTypes;
-            ChartConstructor = ChartClass;
             ChartClass.prototype.callbacks.push((chart) => {
                 addEvent(chart, 'predraw', onChartClear);
                 addEvent(chart, 'render', onChartCanvasToSVG);
@@ -213,9 +211,6 @@ var BoostCanvas;
             };
             boost.clipRect = chart.renderer.clipRect();
             boost.target.clip(boost.clipRect);
-        }
-        else if (!(target instanceof ChartConstructor)) {
-            ///  ctx.clearRect(0, 0, width, height);
         }
         if (boost.canvas.width !== width) {
             boost.canvas.width = width;

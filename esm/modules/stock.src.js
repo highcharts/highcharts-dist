@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v12.3.0 (2025-06-21)
+ * @license Highstock JS v12.4.0 (2025-09-04)
  * @module highcharts/modules/stock
  * @requires highcharts
  *
@@ -51,15 +51,9 @@ import * as __WEBPACK_EXTERNAL_MODULE__mouse_wheel_zoom_src_js_c5a2afed__ from "
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
-;// external ["../highcharts.src.js","default","Axis"]
-const external_highcharts_src_js_default_Axis_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Axis;
-var external_highcharts_src_js_default_Axis_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Axis_namespaceObject);
 ;// external ["../highcharts.src.js","default","Point"]
 const external_highcharts_src_js_default_Point_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Point;
 var external_highcharts_src_js_default_Point_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Point_namespaceObject);
-;// external ["../highcharts.src.js","default","Series"]
-const external_highcharts_src_js_default_Series_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series;
-var external_highcharts_src_js_default_Series_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_namespaceObject);
 ;// ./code/es-modules/Series/DataModifyComposition.js
 /* *
  *
@@ -72,9 +66,7 @@ var external_highcharts_src_js_default_Series_default = /*#__PURE__*/__webpack_r
  * */
 
 
-
 const { tooltipFormatter: pointTooltipFormatter } = (external_highcharts_src_js_default_Point_default()).prototype;
-
 
 const { addEvent, arrayMax, arrayMin, correctFloat, defined, isArray, isNumber, isString, pick } = (external_highcharts_src_js_default_default());
 /* *
@@ -610,6 +602,9 @@ var DataModifyComposition;
  */
 ''; // Keeps doclets above in transpiled file
 
+;// external ["../highcharts.src.js","default","Axis"]
+const external_highcharts_src_js_default_Axis_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Axis;
+var external_highcharts_src_js_default_Axis_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Axis_namespaceObject);
 ;// ./code/es-modules/Stock/Navigator/ChartNavigatorComposition.js
 /* *
  *
@@ -1901,7 +1896,7 @@ const NavigatorComposition = {
 
 const { composed: ScrollbarAxis_composed } = (external_highcharts_src_js_default_default());
 
-const { addEvent: ScrollbarAxis_addEvent, defined: ScrollbarAxis_defined, pick: ScrollbarAxis_pick, pushUnique: ScrollbarAxis_pushUnique } = (external_highcharts_src_js_default_default());
+const { addEvent: ScrollbarAxis_addEvent, correctFloat: ScrollbarAxis_correctFloat, defined: ScrollbarAxis_defined, pick: ScrollbarAxis_pick, pushUnique: ScrollbarAxis_pushUnique } = (external_highcharts_src_js_default_default());
 /* *
  *
  *  Composition
@@ -1948,9 +1943,10 @@ var ScrollbarAxis;
             axisMin,
             axisMax,
             scrollMin: ScrollbarAxis_defined(axis.dataMin) ?
-                Math.min(axisMin, axis.min, axis.dataMin, ScrollbarAxis_pick(axis.threshold, Infinity)) : axisMin,
-            scrollMax: ScrollbarAxis_defined(axis.dataMax) ?
-                Math.max(axisMax, axis.max, axis.dataMax, ScrollbarAxis_pick(axis.threshold, -Infinity)) : axisMax
+                Math.min(axisMin, axis.min ?? Infinity, axis.dataMin, axis.threshold ?? Infinity) : axisMin,
+            scrollMax: axis.treeGrid?.adjustedMax ?? (ScrollbarAxis_defined(axis.dataMax) ?
+                Math.max(axisMax, axis.max ?? -Infinity, axis.dataMax, axis.threshold ?? -Infinity) :
+                axisMax)
         };
     }
     /**
@@ -1978,7 +1974,7 @@ var ScrollbarAxis;
             axis.options.startOnTick = axis.options.endOnTick = false;
             axis.scrollbar = new Scrollbar(axis.chart.renderer, axis.options.scrollbar, axis.chart);
             ScrollbarAxis_addEvent(axis.scrollbar, 'changed', function (e) {
-                const { axisMin, axisMax, scrollMin: unitedMin, scrollMax: unitedMax } = getExtremes(axis), range = unitedMax - unitedMin;
+                const { axisMin, axisMax, scrollMin: unitedMin, scrollMax: unitedMax } = getExtremes(axis), minPX = axis.toPixels(unitedMin), maxPX = axis.toPixels(unitedMax), rangePX = maxPX - minPX;
                 let to, from;
                 // #12834, scroll when show/hide series, wrong extremes
                 if (!ScrollbarAxis_defined(axisMin) || !ScrollbarAxis_defined(axisMax)) {
@@ -1986,20 +1982,20 @@ var ScrollbarAxis;
                 }
                 if ((axis.horiz && !axis.reversed) ||
                     (!axis.horiz && axis.reversed)) {
-                    to = unitedMin + range * this.to;
-                    from = unitedMin + range * this.from;
+                    to = Math.min(unitedMax, axis.toValue(minPX + rangePX * this.to));
+                    from = Math.max(unitedMin, axis.toValue(minPX + rangePX * this.from));
                 }
                 else {
                     // Y-values in browser are reversed, but this also
                     // applies for reversed horizontal axis:
-                    to = unitedMin + range * (1 - this.from);
-                    from = unitedMin + range * (1 - this.to);
+                    to = Math.min(unitedMax, axis.toValue(minPX + rangePX * (1 - this.from)));
+                    from = Math.max(unitedMin, axis.toValue(minPX + rangePX * (1 - this.to)));
                 }
                 if (this.shouldUpdateExtremes(e.DOMType)) {
                     // #17977, set animation to undefined instead of true
                     const animate = e.DOMType === 'mousemove' ||
                         e.DOMType === 'touchmove' ? false : void 0;
-                    axis.setExtremes(from, to, true, animate, e);
+                    axis.setExtremes(ScrollbarAxis_correctFloat(from), ScrollbarAxis_correctFloat(to), true, animate, e);
                 }
                 else {
                     // When live redraw is disabled, don't change extremes
@@ -2014,7 +2010,7 @@ var ScrollbarAxis;
      * @private
      */
     function onAxisAfterRender() {
-        const axis = this, { scrollMin, scrollMax } = getExtremes(axis), scrollbar = axis.scrollbar, offset = (axis.axisTitleMargin + (axis.titleOffset || 0)), scrollbarsOffsets = axis.chart.scrollbarsOffsets, axisMargin = axis.options.margin || 0;
+        const axis = this, { scrollMin, scrollMax } = getExtremes(axis), scrollbar = axis.scrollbar, offset = (axis.axisTitleMargin || 0) + (axis.titleOffset || 0), scrollbarsOffsets = axis.chart.scrollbarsOffsets, axisMargin = axis.options.margin || 0;
         let offsetsIndex, from, to;
         if (scrollbar && scrollbarsOffsets) {
             if (axis.horiz) {
@@ -2062,8 +2058,9 @@ var ScrollbarAxis;
                 isNaN(scrollMax) ||
                 !ScrollbarAxis_defined(axis.min) ||
                 !ScrollbarAxis_defined(axis.max) ||
-                axis.dataMin === axis.dataMax // #10733
-            ) {
+                (ScrollbarAxis_defined(axis.dataMin) && // #23335
+                    axis.dataMin === axis.dataMax // #10733
+                )) {
                 // Default action: when data extremes are the same or there is
                 // not extremes on the axis, but scrollbar exists, make it
                 // full size
@@ -2080,10 +2077,10 @@ var ScrollbarAxis;
                 scrollbar.setRange(from, to);
             }
             else {
-                from = ((axis.min - scrollMin) /
-                    (scrollMax - scrollMin));
-                to = ((axis.max - scrollMin) /
-                    (scrollMax - scrollMin));
+                from = (axis.toPixels(axis.min) - axis.toPixels(scrollMin)) /
+                    (axis.toPixels(scrollMax) - axis.toPixels(scrollMin));
+                to = (axis.toPixels(axis.max) - axis.toPixels(scrollMin)) /
+                    (axis.toPixels(scrollMax) - axis.toPixels(scrollMin));
                 if ((axis.horiz && !axis.reversed) ||
                     (!axis.horiz && axis.reversed)) {
                     scrollbar.setRange(from, to);
@@ -4912,7 +4909,6 @@ class DataTableCore {
  *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
-
 
 
 
@@ -8817,7 +8813,7 @@ StockChart_addEvent((external_highcharts_src_js_default_Chart_default()), 'updat
     function onAxisGetPlotLinePath(e) {
         const axis = this, series = (axis.isLinked && !axis.series && axis.linkedParent ?
             axis.linkedParent.series :
-            axis.series), chart = axis.chart, renderer = chart.renderer, axisLeft = axis.left, axisTop = axis.top, result = [], translatedValue = e.translatedValue, value = e.value, force = e.force, 
+            axis.series), { chart, horiz } = axis, renderer = chart.renderer, result = [], { acrossPanes = true, force, translatedValue, value } = e, allPerpendicularAxes = (axis.isXAxis ? chart.yAxis : chart.xAxis) || [], 
         /**
          * Return the other axis based on either the axis option or on
          * related series.
@@ -8825,6 +8821,9 @@ StockChart_addEvent((external_highcharts_src_js_default_Chart_default()), 'updat
          */
         getAxis = (coll) => {
             const otherColl = coll === 'xAxis' ? 'yAxis' : 'xAxis', opt = axis.options[otherColl];
+            if (acrossPanes && !axis.options.isInternal) {
+                return allPerpendicularAxes.filter((a) => !a.options.isInternal);
+            }
             // Other axis indexed by number
             if (StockChart_isNumber(opt)) {
                 return [chart[otherColl][opt]];
@@ -8836,23 +8835,25 @@ StockChart_addEvent((external_highcharts_src_js_default_Chart_default()), 'updat
             // Auto detect based on existing series
             return series.map((s) => s[otherColl]);
         };
-        let x1, y1, x2, y2, axes = [], // #3416 need a default array
-        axes2, uniqueAxes, transVal;
-        if ( // For stock chart, by default render paths across the panes
-        // except the case when `acrossPanes` is disabled by user (#6644)
-        (chart.options.isStock && e.acrossPanes !== false) &&
+        /**
+         * Push a segment to the result SVGPath array
+         */
+        function pushSegment(pos, crossingPos1, crossingPos2) {
+            result.push(['M', horiz ? pos : crossingPos1, horiz ? crossingPos1 : pos], ['L', horiz ? pos : crossingPos2, horiz ? crossingPos2 : pos]);
+        }
+        let axes = [], // #3416 need a default array
+        uniqueAxes, transVal;
+        if (chart.options.isStock &&
             // Ignore in case of colorAxis or zAxis. #3360, #3524, #6720
-            axis.coll === 'xAxis' || axis.coll === 'yAxis') {
+            (axis.coll === 'xAxis' || axis.coll === 'yAxis')) {
             e.preventDefault();
             // Get the related axes based on series
             axes = getAxis(axis.coll);
             // Get the related axes based options.*Axis setting #2810
-            axes2 = (axis.isXAxis ? chart.yAxis : chart.xAxis);
-            for (const A of axes2) {
+            for (const A of allPerpendicularAxes) {
                 if (!A.options.isInternal) {
-                    const a = (A.isXAxis ? 'yAxis' : 'xAxis'), relatedAxis = (StockChart_defined(A.options[a]) ?
-                        chart[a][A.options[a]] :
-                        chart[a][0]);
+                    const a = (A.isXAxis ? 'yAxis' : 'xAxis'), relatedAxis = (StockChart_defined(A.options[a]) &&
+                        chart[a][A.options[a]]);
                     if (axis === relatedAxis) {
                         axes.push(A);
                     }
@@ -8874,45 +8875,33 @@ StockChart_addEvent((external_highcharts_src_js_default_Chart_default()), 'updat
             }
             transVal = StockChart_pick(translatedValue, axis.translate(value || 0, void 0, void 0, e.old));
             if (StockChart_isNumber(transVal)) {
-                if (axis.horiz) {
-                    for (const axis2 of uniqueAxes) {
-                        let skip;
-                        y1 = axis2.pos;
-                        y2 = y1 + axis2.len;
-                        x1 = x2 = Math.round(transVal + axis.transB);
-                        // Outside plot area
-                        if (force !== 'pass' &&
-                            (x1 < axisLeft || x1 > axisLeft + axis.width)) {
-                            if (force) {
-                                x1 = x2 = StockChart_clamp(x1, axisLeft, axisLeft + axis.width);
-                            }
-                            else {
-                                skip = true;
-                            }
-                        }
-                        if (!skip) {
-                            result.push(['M', x1, y1], ['L', x2, y2]);
-                        }
+                let skip, pos = horiz ?
+                    transVal + axis.pos :
+                    axis.pos + axis.len - transVal;
+                // Outside plot area
+                if (force !== 'pass' &&
+                    (pos < axis.pos || pos > axis.pos + axis.len)) {
+                    if (force) {
+                        pos = StockChart_clamp(pos, axis.pos, axis.pos + axis.len);
+                    }
+                    else {
+                        skip = true;
                     }
                 }
-                else {
-                    for (const axis2 of uniqueAxes) {
-                        let skip;
-                        x1 = axis2.pos;
-                        x2 = x1 + axis2.len;
-                        y1 = y2 = axisTop + axis.height - transVal;
-                        // Outside plot area
-                        if (force !== 'pass' &&
-                            (y1 < axisTop || y1 > axisTop + axis.height)) {
-                            if (force) {
-                                y1 = y2 = StockChart_clamp(y1, axisTop, axisTop + axis.height);
-                            }
-                            else {
-                                skip = true;
-                            }
-                        }
-                        if (!skip) {
-                            result.push(['M', x1, y1], ['L', x2, y2]);
+                if (!skip) {
+                    const crossingPosName = horiz ? 'top' : 'left', crossingLenName = horiz ? 'height' : 'width';
+                    if (!acrossPanes &&
+                        // If the perpendicular position is set explicitly on
+                        // the axis, use it. For example, if `top` and `height`
+                        // options are set on a horizontal x-axis, the grid
+                        // lines should conform to that position.
+                        (axis.options[crossingPosName] ||
+                            axis.options[crossingLenName])) {
+                        pushSegment(pos, axis[crossingPosName], axis[crossingPosName] + axis[crossingLenName]);
+                    }
+                    else {
+                        for (const perpendicularAxis of uniqueAxes) {
+                            pushSegment(pos, perpendicularAxis.pos, perpendicularAxis.pos + perpendicularAxis.len);
                         }
                     }
                 }
@@ -10612,6 +10601,9 @@ var FlagsSymbols;
 ;// external ["../highcharts.src.js","default","Series","types","column"]
 const external_highcharts_src_js_default_Series_types_column_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.column;
 var external_highcharts_src_js_default_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_column_namespaceObject);
+;// external ["../highcharts.src.js","default","Series"]
+const external_highcharts_src_js_default_Series_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series;
+var external_highcharts_src_js_default_Series_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_namespaceObject);
 ;// ./code/es-modules/Series/OnSeriesComposition.js
 /* *
  *

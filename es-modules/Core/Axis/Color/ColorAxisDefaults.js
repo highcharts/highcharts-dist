@@ -396,11 +396,10 @@ const colorAxisDefaults = {
      */
     /**
      * Whether to reverse the axis so that the highest number is closest
-     * to the origin. Defaults to `false` in a horizontal legend and
-     * `true` in a vertical legend, where the smallest value starts on
-     * top.
+     * to the origin. Defaults to `false`.
      *
      * @type      {boolean}
+     * @default   false
      * @product   highcharts highstock highmaps
      * @apioption colorAxis.reversed
      */

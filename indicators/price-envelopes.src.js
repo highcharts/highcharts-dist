@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v12.3.0 (2025-06-21)
+ * @license Highstock JS v12.4.0 (2025-09-04)
  * @module highcharts/indicators/price-envelopes
  * @requires highcharts
  * @requires highcharts/modules/stock

@@ -268,7 +268,8 @@ class HTMLElement extends SVGElement {
             // Calling offsetWidth affects rendering time as it forces layout
             // (#7656).
             if (textWidth !== oldTextWidth) { // #983, #1254
-                const textPxLength = getTextPxLength(), textWidthNum = textWidth || 0, willOverWrap = element.style.textOverflow === '' &&
+                const textPxLength = getTextPxLength(), textWidthNum = textWidth || 0, willOverWrap = !renderer.styledMode &&
+                    element.style.textOverflow === '' &&
                     element.style.webkitLineClamp;
                 if ((textWidthNum > oldTextWidth ||
                     textPxLength > textWidthNum ||

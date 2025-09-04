@@ -61,7 +61,7 @@ class Sonification {
             this.audioContext.suspend();
             this.audioDestination = this.audioContext.destination;
         }
-        catch (e) { /* Ignore */ }
+        catch { /* Ignore */ }
     }
     /**
      * Set the audio destination node to something other than the default

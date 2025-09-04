@@ -12,7 +12,6 @@ import DataTableCore from '../Data/DataTableCore.js';
 import H from '../Core/Globals.js';
 const { composed } = H;
 import Point from '../Core/Series/Point.js';
-import Series from '../Core/Series/Series.js';
 import SeriesRegistry from '../Core/Series/SeriesRegistry.js';
 const { bubble } = SeriesRegistry.seriesTypes;
 import SVGRenderer from '../Core/Renderer/SVG/SVGRenderer.js';

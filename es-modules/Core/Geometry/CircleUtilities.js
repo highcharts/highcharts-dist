@@ -9,7 +9,9 @@
  * */
 'use strict';
 import Geometry from './GeometryUtilities.js';
+import Utilities from '../Utilities';
 const { getAngleBetweenPoints, getCenterOfPoints, getDistanceBetweenPoints } = Geometry;
+const { correctFloat } = Utilities;
 /* *
  *
  *  Namespace
@@ -54,7 +56,7 @@ var CircleUtilities;
         if (r <= 0) {
             throw new Error('radius of circle must be a positive number.');
         }
-        return Math.PI * r * r;
+        return correctFloat(Math.PI * r * r);
     }
     CircleUtilities.getAreaOfCircle = getAreaOfCircle;
     /**

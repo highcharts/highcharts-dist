@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
+ * @license Highcharts JS v12.4.0 (2025-09-04)
  * @module highcharts/modules/sankey
  * @requires highcharts
  *
@@ -1708,7 +1708,7 @@ function setPolygon(event) {
                         }
                     }
                 }
-                catch (e) {
+                catch {
                     // Safari fails on getStartPositionOfChar even if the
                     // character is within the `textContent.length`
                     break;
@@ -1720,7 +1720,7 @@ function setPolygon(event) {
                 polygon.unshift(upper);
                 polygon.unshift(lower);
             }
-            catch (e) {
+            catch {
                 // Safari fails on getStartPositionOfChar even if the character
                 // is within the `textContent.length`
                 break;

@@ -28,7 +28,8 @@ class SVGLabel extends SVGElement {
      *  Constructor
      *
      * */
-    constructor(renderer, str, x, y, shape, anchorX, anchorY, useHTML, baseline, className) {
+    constructor(renderer, str, x, y, shape, // @todo (SymbolKey|string),
+    anchorX, anchorY, useHTML, baseline, className) {
         super(renderer, 'g');
         this.paddingLeftSetter = this.paddingSetter;
         this.paddingRightSetter = this.paddingSetter;
@@ -361,10 +362,18 @@ class SVGLabel extends SVGElement {
             // Force animation even when setting to the same value (#7898)
             this['forceAnimate:x'] = true;
         }
+        if (this.anchorX) {
+            // #22907, force anchorX to animate after x set
+            this['forceAnimate:anchorX'] = true;
+        }
         this.xSetting = Math.round(value);
         this.attr('translateX', this.xSetting);
     }
     ySetter(value) {
+        if (this.anchorY) {
+            // #22907, force anchorY to animate after y set
+            this['forceAnimate:anchorY'] = true;
+        }
         this.ySetting = this.y = Math.round(value);
         this.attr('translateY', this.ySetting);
     }

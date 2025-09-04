@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
+ * @license Highcharts JS v12.4.0 (2025-09-04)
  * @module highcharts/modules/xrange
  * @requires highcharts
  *
@@ -337,7 +337,8 @@ class XRangePoint extends ColumnPoint {
             if (!series.chart.styledMode) {
                 this.color = colorByPoint.color;
             }
-            if (!this.options.colorIndex) {
+            if (typeof this.options.colorIndex === 'undefined' ||
+                this.options.colorIndex === null) {
                 this.colorIndex = colorByPoint.colorIndex;
             }
         }

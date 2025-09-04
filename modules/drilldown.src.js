@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
+ * @license Highcharts JS v12.4.0 (2025-09-04)
  * @module highcharts/modules/drilldown
  * @requires highcharts
  *
@@ -731,7 +731,7 @@ class Breadcrumbs {
     renderButton(breadcrumb, posX, posY) {
         const breadcrumbs = this, chart = this.chart, breadcrumbsOptions = breadcrumbs.options, buttonTheme = merge(breadcrumbsOptions.buttonTheme);
         const button = chart.renderer
-            .button(breadcrumbs.getButtonText(breadcrumb), posX, posY, function (e) {
+            .button(breadcrumbs.getButtonText(breadcrumb), posX, posY, function (e /* @todo (Event|any) */) {
             // Extract events from button object and call
             const buttonEvents = breadcrumbsOptions.events &&
                 breadcrumbsOptions.events.click;

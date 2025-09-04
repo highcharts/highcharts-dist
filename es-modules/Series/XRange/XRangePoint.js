@@ -64,7 +64,8 @@ class XRangePoint extends ColumnPoint {
             if (!series.chart.styledMode) {
                 this.color = colorByPoint.color;
             }
-            if (!this.options.colorIndex) {
+            if (typeof this.options.colorIndex === 'undefined' ||
+                this.options.colorIndex === null) {
                 this.colorIndex = colorByPoint.colorIndex;
             }
         }

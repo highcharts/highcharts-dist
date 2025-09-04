@@ -107,6 +107,10 @@ var FocusBorderComposition;
             this.focusElement.removeFocusBorder();
         }
         this.focusElement = svgElement;
+        // #22122, focus border should re-render after window is resized
+        addEvent(this, 'endResize', function () {
+            this.renderFocusBorder();
+        });
         this.renderFocusBorder();
     }
     /**

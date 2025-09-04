@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
+ * @license Highcharts JS v12.4.0 (2025-09-04)
  * Treegraph chart series type
  * @module highcharts/modules/treegraph
  * @requires highcharts
@@ -1099,8 +1099,10 @@ class TreegraphLayout {
      * right outernal node or defaultAncestor.
      *
      * @param {TreegraphNode} node
+     * Treegraph node.
+     *
      * @param {TreegraphNode} defaultAncestor
-     *        The default ancestor of the passed node.
+     * The default ancestor of the passed node.
      */
     apportion(node, defaultAncestor) {
         const treeLayout = this, leftSibling = node.getLeftSibling();
@@ -1149,9 +1151,13 @@ class TreegraphLayout {
      * Shifts the subtree from leftNode to rightNode.
      *
      * @param {TreegraphNode} leftNode
+     * Left treegraph node.
+     *
      * @param {TreegraphNode} rightNode
+     * Right treegraph node.
+     *
      * @param {number} shift
-     *        The value, by which the subtree should be moved.
+     * The value, by which the subtree should be moved.
      */
     moveSubtree(leftNode, rightNode, shift) {
         const subtrees = rightNode.relativeXPosition - leftNode.relativeXPosition;
@@ -1175,8 +1181,8 @@ class TreegraphLayout {
                 node.parent = node.oldParentNode.parent;
                 node.parentNode = node.oldParentNode;
                 // Delete dummyNode
-                delete node.oldParentNode.children[node.relativeXPosition];
-                node.oldParentNode.children[node.relativeXPosition] = node;
+                node.oldParentNode.children
+                    .splice(node.relativeXPosition, 1, node);
                 node.oldParentNode = void 0;
             }
         }
@@ -1648,7 +1654,7 @@ function setPolygon(event) {
                         }
                     }
                 }
-                catch (e) {
+                catch {
                     // Safari fails on getStartPositionOfChar even if the
                     // character is within the `textContent.length`
                     break;
@@ -1660,7 +1666,7 @@ function setPolygon(event) {
                 polygon.unshift(upper);
                 polygon.unshift(lower);
             }
-            catch (e) {
+            catch {
                 // Safari fails on getStartPositionOfChar even if the character
                 // is within the `textContent.length`
                 break;

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
+ * @license Highcharts JS v12.4.0 (2025-09-04)
  * @module highcharts/modules/accessibility
  * @requires highcharts
  *
@@ -1634,6 +1634,10 @@ var FocusBorderComposition;
             this.focusElement.removeFocusBorder();
         }
         this.focusElement = svgElement;
+        // #22122, focus border should re-render after window is resized
+        FocusBorder_addEvent(this, 'endResize', function () {
+            this.renderFocusBorder();
+        });
         this.renderFocusBorder();
     }
     /**
@@ -2983,7 +2987,9 @@ class MenuComponent extends Accessibility_AccessibilityComponent {
         if (exportButton) {
             const el = exportButton.element;
             if (el.onclick) {
-                el.onclick(MenuComponent_getFakeMouseEvent('click'));
+                el.onclick = function () {
+                    MenuComponent_getFakeMouseEvent('click');
+                };
             }
         }
     }
@@ -5292,7 +5298,7 @@ const NavigatorComposition = {
 
 const { composed: ScrollbarAxis_composed } = (external_highcharts_src_js_default_default());
 
-const { addEvent: ScrollbarAxis_addEvent, defined: ScrollbarAxis_defined, pick: ScrollbarAxis_pick, pushUnique: ScrollbarAxis_pushUnique } = (external_highcharts_src_js_default_default());
+const { addEvent: ScrollbarAxis_addEvent, correctFloat: ScrollbarAxis_correctFloat, defined: ScrollbarAxis_defined, pick: ScrollbarAxis_pick, pushUnique: ScrollbarAxis_pushUnique } = (external_highcharts_src_js_default_default());
 /* *
  *
  *  Composition
@@ -5339,9 +5345,10 @@ var ScrollbarAxis;
             axisMin,
             axisMax,
             scrollMin: ScrollbarAxis_defined(axis.dataMin) ?
-                Math.min(axisMin, axis.min, axis.dataMin, ScrollbarAxis_pick(axis.threshold, Infinity)) : axisMin,
-            scrollMax: ScrollbarAxis_defined(axis.dataMax) ?
-                Math.max(axisMax, axis.max, axis.dataMax, ScrollbarAxis_pick(axis.threshold, -Infinity)) : axisMax
+                Math.min(axisMin, axis.min ?? Infinity, axis.dataMin, axis.threshold ?? Infinity) : axisMin,
+            scrollMax: axis.treeGrid?.adjustedMax ?? (ScrollbarAxis_defined(axis.dataMax) ?
+                Math.max(axisMax, axis.max ?? -Infinity, axis.dataMax, axis.threshold ?? -Infinity) :
+                axisMax)
         };
     }
     /**
@@ -5369,7 +5376,7 @@ var ScrollbarAxis;
             axis.options.startOnTick = axis.options.endOnTick = false;
             axis.scrollbar = new Scrollbar(axis.chart.renderer, axis.options.scrollbar, axis.chart);
             ScrollbarAxis_addEvent(axis.scrollbar, 'changed', function (e) {
-                const { axisMin, axisMax, scrollMin: unitedMin, scrollMax: unitedMax } = getExtremes(axis), range = unitedMax - unitedMin;
+                const { axisMin, axisMax, scrollMin: unitedMin, scrollMax: unitedMax } = getExtremes(axis), minPX = axis.toPixels(unitedMin), maxPX = axis.toPixels(unitedMax), rangePX = maxPX - minPX;
                 let to, from;
                 // #12834, scroll when show/hide series, wrong extremes
                 if (!ScrollbarAxis_defined(axisMin) || !ScrollbarAxis_defined(axisMax)) {
@@ -5377,20 +5384,20 @@ var ScrollbarAxis;
                 }
                 if ((axis.horiz && !axis.reversed) ||
                     (!axis.horiz && axis.reversed)) {
-                    to = unitedMin + range * this.to;
-                    from = unitedMin + range * this.from;
+                    to = Math.min(unitedMax, axis.toValue(minPX + rangePX * this.to));
+                    from = Math.max(unitedMin, axis.toValue(minPX + rangePX * this.from));
                 }
                 else {
                     // Y-values in browser are reversed, but this also
                     // applies for reversed horizontal axis:
-                    to = unitedMin + range * (1 - this.from);
-                    from = unitedMin + range * (1 - this.to);
+                    to = Math.min(unitedMax, axis.toValue(minPX + rangePX * (1 - this.from)));
+                    from = Math.max(unitedMin, axis.toValue(minPX + rangePX * (1 - this.to)));
                 }
                 if (this.shouldUpdateExtremes(e.DOMType)) {
                     // #17977, set animation to undefined instead of true
                     const animate = e.DOMType === 'mousemove' ||
                         e.DOMType === 'touchmove' ? false : void 0;
-                    axis.setExtremes(from, to, true, animate, e);
+                    axis.setExtremes(ScrollbarAxis_correctFloat(from), ScrollbarAxis_correctFloat(to), true, animate, e);
                 }
                 else {
                     // When live redraw is disabled, don't change extremes
@@ -5405,7 +5412,7 @@ var ScrollbarAxis;
      * @private
      */
     function onAxisAfterRender() {
-        const axis = this, { scrollMin, scrollMax } = getExtremes(axis), scrollbar = axis.scrollbar, offset = (axis.axisTitleMargin + (axis.titleOffset || 0)), scrollbarsOffsets = axis.chart.scrollbarsOffsets, axisMargin = axis.options.margin || 0;
+        const axis = this, { scrollMin, scrollMax } = getExtremes(axis), scrollbar = axis.scrollbar, offset = (axis.axisTitleMargin || 0) + (axis.titleOffset || 0), scrollbarsOffsets = axis.chart.scrollbarsOffsets, axisMargin = axis.options.margin || 0;
         let offsetsIndex, from, to;
         if (scrollbar && scrollbarsOffsets) {
             if (axis.horiz) {
@@ -5453,8 +5460,9 @@ var ScrollbarAxis;
                 isNaN(scrollMax) ||
                 !ScrollbarAxis_defined(axis.min) ||
                 !ScrollbarAxis_defined(axis.max) ||
-                axis.dataMin === axis.dataMax // #10733
-            ) {
+                (ScrollbarAxis_defined(axis.dataMin) && // #23335
+                    axis.dataMin === axis.dataMax // #10733
+                )) {
                 // Default action: when data extremes are the same or there is
                 // not extremes on the axis, but scrollbar exists, make it
                 // full size
@@ -5471,10 +5479,10 @@ var ScrollbarAxis;
                 scrollbar.setRange(from, to);
             }
             else {
-                from = ((axis.min - scrollMin) /
-                    (scrollMax - scrollMin));
-                to = ((axis.max - scrollMin) /
-                    (scrollMax - scrollMin));
+                from = (axis.toPixels(axis.min) - axis.toPixels(scrollMin)) /
+                    (axis.toPixels(scrollMax) - axis.toPixels(scrollMin));
+                to = (axis.toPixels(axis.max) - axis.toPixels(scrollMin)) /
+                    (axis.toPixels(scrollMax) - axis.toPixels(scrollMin));
                 if ((axis.horiz && !axis.reversed) ||
                     (!axis.horiz && axis.reversed)) {
                     scrollbar.setRange(from, to);
@@ -8053,7 +8061,7 @@ class NavigatorComponent extends Accessibility_AccessibilityComponent {
      */
     updateNavigator(beforeAnnounce) {
         const performUpdate = (beforeAnnounce) => {
-            const chart = this.chart, { navigator, pointer } = chart;
+            const chart = this.chart, { navigator, pointer } = chart, keyboardNavigation = this.chart.accessibility?.keyboardNavigation;
             if (navigator &&
                 pointer &&
                 this.minHandleProxy &&
@@ -8078,6 +8086,10 @@ class NavigatorComponent extends Accessibility_AccessibilityComponent {
                         }, handle));
                     }
                 });
+                // If navigating by keyboard, do not reset #22122
+                if (keyboardNavigation) {
+                    keyboardNavigation.keyboardReset = false;
+                }
                 if (beforeAnnounce) {
                     beforeAnnounce();
                 }
@@ -10009,7 +10021,9 @@ var ForcedMarkersComposition;
         else if (series.a11yMarkersForced) {
             delete series.a11yMarkersForced;
             unforceSeriesMarkerOptions(series);
-            delete series.resetA11yMarkerOptions;
+            if (options.marker && options.marker.enabled === false) { // #23329
+                delete series.resetA11yMarkerOptions; // #16624
+            }
         }
     }
     /**
@@ -11742,6 +11756,9 @@ const Options = {
              *
              * Set to empty string to remove the region altogether.
              *
+             * @sample highcharts/accessibility/before-chart-format
+             *         beforeChartFormat
+             *
              * @since 8.0.0
              */
             beforeChartFormat: '<{headingTagName}>{chartTitle}</{headingTagName}>' +
@@ -11847,6 +11864,9 @@ const Options = {
              * won't have accessible descriptions unless handled separately.
              *
              * Set to `false` to disable.
+             *
+             * @sample highcharts/accessibility/point-description-enabled-threshold
+             *         pointDescriptionEnabledThreshold
              *
              * @type  {boolean|number}
              * @since 8.0.0
@@ -12064,6 +12084,9 @@ const Options = {
          * The default option is `auto`, which applies the high contrast theme
          * the user's system has a high contrast theme active.
          *
+         * @sample highcharts/accessibility/high-contrast-mode
+         *         High contrast mode enabled
+         *
          * @since 11.4.0
          */
         highContrastMode: 'auto',
@@ -12176,6 +12199,9 @@ const Options = {
              * `container` first in order will make the keyboard focus stop on
              * the chart container first, requiring the user to tab again to
              * enter the chart.
+             *
+             * @sample highcharts/accessibility/custom-component
+             *         Custom order is set
              *
              * @type  {Array<string>}
              * @since 7.1.0

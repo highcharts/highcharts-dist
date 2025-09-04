@@ -81,6 +81,9 @@ const defaultOptions = {
      * setup uses `Highcharts.setOptions` to make the options apply to all
      * charts in the same page.
      *
+     * Some language options, like `months` and `weekdays`, are only used
+     * with non-locale-aware date formats.
+     *
      * ```js
      * Highcharts.setOptions({
      *     lang: {
@@ -130,7 +133,7 @@ const defaultOptions = {
          * An array containing the months names. Corresponds to the `%B` format
          * in `Highcharts.dateFormat()`. Defaults to 'undefined',
          * meaning the default month names are used according to the
-         * `lang.locale` setting.
+         * `lang.locale` or browser settings.
          *
          * @type    {Array<string>}
          */
@@ -145,23 +148,25 @@ const defaultOptions = {
          * An array containing the months names in abbreviated form. Corresponds
          * to the `%b` format in `Highcharts.dateFormat()`. Defaults to
          * 'undefined', meaning the default short month names are used according
-         * to the `lang.locale` setting.
+         * to the `lang.locale` or browser settings.
          *
          * @type    {Array<string>}
          */
         shortMonths: void 0,
         /**
-         * An array containing the weekday names. Defaults to 'undefined',
-         * meaning the default weekday names are used according to the
-         * `lang.locale` setting.
+         * An array containing the weekday names. Corresponds
+         * to the `%A` format in `Highcharts.dateFormat()`. Defaults to
+         * 'undefined', meaning the default weekday names are used according to
+         * the `lang.locale` or browser settings.
          *
          * @type    {Array<string>}
          */
         weekdays: void 0,
         /**
-         * Short week days, starting Sunday. Defaults to 'undefined', meaning
+         * Short week days, starting Sunday. Corresponds to the `%a` format in
+         * `Highcharts.dateFormat()`. Defaults to 'undefined', meaning
          * the default short weekday names are used according to the
-         * `lang.locale` setting.
+         * `lang.locale` or browser settings.
          *
          * @sample highcharts/lang/shortweekdays/
          *         Finnish two-letter abbreviations

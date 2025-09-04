@@ -170,7 +170,6 @@ class JSONConverter extends DataConverter {
  */
 JSONConverter.defaultOptions = {
     ...DataConverter.defaultOptions,
-    data: [],
     orientation: 'rows'
 };
 DataConverter.registerType('JSON', JSONConverter);

@@ -110,7 +110,7 @@ function hasWebGLSupport() {
                     return true;
                 }
             }
-            catch (e) {
+            catch {
                 // Silent error
             }
         }
@@ -158,6 +158,10 @@ export default Boost;
  *         Line chart with hundreds of series
  * @sample highcharts/boost/scatter
  *         Scatter chart
+ * @sample highcharts/boost/scatter-pointcolor
+ *         Scatter chart with colored points
+ * @sample highcharts/boost/scatter-colorbypoint
+ *         Scatter chart with colorByPoint
  * @sample highcharts/boost/area
  *         Area chart
  * @sample highcharts/boost/arearange

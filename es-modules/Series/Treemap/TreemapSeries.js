@@ -582,7 +582,7 @@ class TreemapSeries extends ScatterSeries {
     drawPoints(points = this.points) {
         const series = this, chart = series.chart, renderer = chart.renderer, styledMode = chart.styledMode, options = series.options, shadow = styledMode ? {} : options.shadow, borderRadius = options.borderRadius, withinAnimationLimit = chart.pointCount < options.animationLimit, allowTraversingTree = options.allowTraversingTree;
         for (const point of points) {
-            const levelDynamic = point.node.levelDynamic, animatableAttribs = {}, attribs = {}, css = {}, groupKey = 'level-group-' + point.node.level, hasGraphic = !!point.graphic, shouldAnimate = withinAnimationLimit && hasGraphic, shapeArgs = point.shapeArgs;
+            const animatableAttribs = {}, attribs = {}, css = {}, groupKey = 'level-group-' + point.node.level, hasGraphic = !!point.graphic, shouldAnimate = withinAnimationLimit && hasGraphic, shapeArgs = point.shapeArgs;
             // Don't bother with calculate styling if the point is not drawn
             if (point.shouldDraw()) {
                 point.isInside = true;
@@ -608,9 +608,9 @@ class TreemapSeries extends ScatterSeries {
                 if (!series[groupKey]) {
                     series[groupKey] = renderer.g(groupKey)
                         .attr({
-                        // @todo Set the zIndex based upon the number of
-                        // levels, instead of using 1000
-                        zIndex: 1000 - (levelDynamic || 0)
+                        // Use the static level in order to retain z-index
+                        // when data is updated (#23432).
+                        zIndex: -(point.node.level || 0)
                     })
                         .add(series.group);
                     series[groupKey].survive = true;

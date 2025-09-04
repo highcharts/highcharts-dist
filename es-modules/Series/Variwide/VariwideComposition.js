@@ -47,17 +47,15 @@ function onAxisAfterDrawCrosshair(e) {
  */
 function onAxisAfterRender() {
     const axis = this;
-    if (this.variwide) {
-        this.chart.labelCollectors.push(function () {
-            return axis.tickPositions
-                .filter((pos) => !!axis.ticks[pos].label)
-                .map((pos, i) => {
-                const label = axis.ticks[pos].label;
-                label.labelrank = axis.zData[i];
-                return label;
-            });
-        });
-    }
+    this.chart.labelCollectors.push(function () {
+        return axis.variwide ? axis.tickPositions
+            .filter((pos) => !!axis.ticks[pos].label)
+            .map((pos, i) => {
+            const label = axis.ticks[pos].label;
+            label.labelrank = axis.zData?.[i];
+            return label;
+        }) : [];
+    });
 }
 /**
  * @private

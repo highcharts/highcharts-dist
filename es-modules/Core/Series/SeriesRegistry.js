@@ -8,6 +8,12 @@
  *
  * */
 'use strict';
+/* *
+ *
+ *  Imports
+ *
+ * */
+import Series from './Series.js';
 import H from '../Globals.js';
 import D from '../Defaults.js';
 const { defaultOptions } = D;
@@ -91,7 +97,8 @@ var SeriesRegistry;
         defaultPlotOptions[type] = merge(defaultPlotOptions[parent], options);
         // Create the class
         delete SeriesRegistry.seriesTypes[type];
-        registerSeriesType(type, extendClass(SeriesRegistry.seriesTypes[parent] || function () { }, seriesProto));
+        const parentClass = SeriesRegistry.seriesTypes[parent] || Series, childClass = extendClass(parentClass, seriesProto);
+        registerSeriesType(type, childClass);
         SeriesRegistry.seriesTypes[type].prototype.type = type;
         // Create the point class if needed
         if (pointProto) {

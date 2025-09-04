@@ -159,7 +159,9 @@ var ForcedMarkersComposition;
         else if (series.a11yMarkersForced) {
             delete series.a11yMarkersForced;
             unforceSeriesMarkerOptions(series);
-            delete series.resetA11yMarkerOptions;
+            if (options.marker && options.marker.enabled === false) { // #23329
+                delete series.resetA11yMarkerOptions; // #16624
+            }
         }
     }
     /**

@@ -65,6 +65,16 @@ class BellcurveSeries extends AreaSplineSeries {
      *  Functions
      *
      * */
+    setData(data, redraw = true, animation, updatePoints) {
+        let alteredData;
+        if (typeof data !== 'undefined' && data.length > 0) {
+            data = data.filter(isNumber),
+                this.setMean(data);
+            this.setStandardDeviation(data);
+            alteredData = this.derivedData(this.mean || 0, this.standardDeviation || 0);
+        }
+        super.setData.call(this, alteredData, redraw, animation, updatePoints);
+    }
     derivedData(mean, standardDeviation) {
         const options = this.options, intervals = options.intervals, pointsInInterval = options.pointsInInterval, stop = intervals * pointsInInterval * 2 + 1, increment = standardDeviation / pointsInInterval, data = [];
         let x = mean - intervals * standardDeviation;
@@ -76,20 +86,17 @@ class BellcurveSeries extends AreaSplineSeries {
     }
     setDerivedData() {
         const series = this;
-        if (series.baseSeries?.getColumn('y').length || 0 > 1) {
-            series.setMean();
-            series.setStandardDeviation();
-            series.setData(series.derivedData(series.mean || 0, series.standardDeviation || 0), false, void 0, false);
+        if (series.baseSeries?.getColumn('y').length) {
+            series.setData(series.baseSeries?.getColumn('y'), false, void 0, false);
         }
-        return (void 0);
     }
-    setMean() {
+    setMean(data) {
         const series = this;
-        series.mean = correctFloat(BellcurveSeries.mean(series.baseSeries?.getColumn('y') || []));
+        series.mean = correctFloat(BellcurveSeries.mean(data || []));
     }
-    setStandardDeviation() {
+    setStandardDeviation(data) {
         const series = this;
-        series.standardDeviation = correctFloat(BellcurveSeries.standardDeviation(series.baseSeries?.getColumn('y') || [], series.mean));
+        series.standardDeviation = correctFloat(BellcurveSeries.standardDeviation(data || [], series.mean));
     }
 }
 /* *

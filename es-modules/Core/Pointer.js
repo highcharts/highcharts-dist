@@ -75,17 +75,20 @@ class Pointer {
                 activeSeries.push.apply(activeSeries, this.chart.series.filter((otherSeries) => otherSeries.markerGroup === series.markerGroup));
             }
         });
-        // Now loop over all series, filtering out active series
-        this.chart.series.forEach((series) => {
+        for (const series of this.chart.series) {
+            const seriesOptions = series.options;
+            if (seriesOptions.states?.inactive?.enabled === false) {
+                continue;
+            }
             if (activeSeries.indexOf(series) === -1) {
                 // Inactive series
                 series.setState('inactive', true);
             }
-            else if (series.options.inactiveOtherPoints) {
+            else if (seriesOptions.inactiveOtherPoints) {
                 // Active series, but other points should be inactivated
                 series.setAllPointsToState('inactive');
             }
-        });
+        }
     }
     /**
      * Destroys the Pointer object and disconnects DOM events.
@@ -298,6 +301,7 @@ class Pointer {
             chart.mouseIsDown = false;
             this.hasDragged = 0;
             this.pinchDown = [];
+            this.hasPinchMoved = false;
         }
     }
     /**
@@ -847,6 +851,11 @@ class Pointer {
      * @function Highcharts.Pointer#onDocumentMouseUp
      */
     onDocumentMouseUp(e) {
+        // #17852, IOS devices sometimes reverts back to previous point when
+        // dragging between points
+        if (e?.touches && this.hasPinchMoved) {
+            e?.preventDefault?.();
+        }
         charts[pick(Pointer.hoverChartIndex, -1)]
             ?.pointer
             ?.drop(e);
@@ -1402,7 +1411,7 @@ class Pointer {
                 // checking how much it moved, and cancelling on small
                 // distances. #3450. Tested and still relevant as of 2024.
                 if (e.type === 'touchmove') {
-                    hasMoved = pinchDown[0] ? // #5266
+                    this.hasPinchMoved = hasMoved = pinchDown[0] ? // #5266
                         (Math.pow(pinchDown[0].chartX - e.chartX, 2) +
                             Math.pow(pinchDown[0].chartY - e.chartY, 2)) >= 16 :
                         false;

@@ -350,7 +350,7 @@ class Breadcrumbs {
     renderButton(breadcrumb, posX, posY) {
         const breadcrumbs = this, chart = this.chart, breadcrumbsOptions = breadcrumbs.options, buttonTheme = merge(breadcrumbsOptions.buttonTheme);
         const button = chart.renderer
-            .button(breadcrumbs.getButtonText(breadcrumb), posX, posY, function (e) {
+            .button(breadcrumbs.getButtonText(breadcrumb), posX, posY, function (e /* @todo (Event|any) */) {
             // Extract events from button object and call
             const buttonEvents = breadcrumbsOptions.events &&
                 breadcrumbsOptions.events.click;

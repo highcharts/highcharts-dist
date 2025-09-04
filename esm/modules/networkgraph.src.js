@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
+ * @license Highcharts JS v12.4.0 (2025-09-04)
  * @module highcharts/modules/networkgraph
  * @requires highcharts
  *
@@ -2832,6 +2832,13 @@ function initDataLabels() {
         // Initialize the opacity of the group to 0 (start of animation)
         dataLabelsGroup.attr({ opacity: 0 });
         if (series.visible) { // #2597, #3023, #3024
+            // #19663, initial data labels animation
+            if (series.options.animation && dlOptions?.animation) {
+                dataLabelsGroup.animate({ opacity: 1 }, dlOptions?.animation);
+            }
+            else {
+                dataLabelsGroup.attr({ opacity: 1 });
+            }
             dataLabelsGroup.show();
         }
         return dataLabelsGroup;
@@ -3014,7 +3021,7 @@ function setPolygon(event) {
                         }
                     }
                 }
-                catch (e) {
+                catch {
                     // Safari fails on getStartPositionOfChar even if the
                     // character is within the `textContent.length`
                     break;
@@ -3026,7 +3033,7 @@ function setPolygon(event) {
                 polygon.unshift(upper);
                 polygon.unshift(lower);
             }
-            catch (e) {
+            catch {
                 // Safari fails on getStartPositionOfChar even if the character
                 // is within the `textContent.length`
                 break;

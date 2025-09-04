@@ -113,6 +113,15 @@ class Point {
      * @type {Readonly<Highcharts.SVGAttributes>|undefined}
      */
     /**
+     * Defines the tooltip's position for a data point in a chart. It is an
+     * array of numbers representing the coordinates for the tooltip's
+     * placement, allowing for precise control over its location.
+     *
+     * @readonly
+     * @name Highcharts.Point#tooltipPos
+     * @type {Readonly<Array<number>>|undefined}
+     */
+    /**
      * The total of values in either a stack for stacked series, or a pie in a
      * pie series.
      *

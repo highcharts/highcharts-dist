@@ -193,7 +193,6 @@ declare module "../highcharts" {
      * @return Rotated path.
      */
     function swapXY(path: SVGPathArray, vertical?: boolean): SVGPathArray;
-    function arc(): void;
     /**
      * Callout shape used for default tooltips.
      */
@@ -213,7 +212,6 @@ declare module "../highcharts" {
     function describeSeries(series: Series): void;
     function diamond(): void;
     function rect(): void;
-    function roundedRect(): void;
     function triangle(): void;
     function triangleDown(): void;
 }

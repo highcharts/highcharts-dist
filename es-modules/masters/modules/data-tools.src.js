@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
+ * @license Highcharts JS v12.4.0 (2025-09-04)
  * @module highcharts/modules/data-tools
  * @requires highcharts
  *
@@ -27,6 +27,7 @@ import '../../Data/Modifiers/InvertModifier.js';
 import '../../Data/Modifiers/MathModifier.js';
 import '../../Data/Modifiers/RangeModifier.js';
 import '../../Data/Modifiers/SortModifier.js';
+import '../../Data/Modifiers/FilterModifier.js';
 const G = Highcharts;
 G.DataConnector = G.DataConnector || DataConnector;
 G.DataConverter = G.DataConverter || DataConverter;

@@ -16,7 +16,7 @@ const { distribute } = R;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: Series } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-const { arrayMax, clamp, defined, pick, pushUnique, relativeLength } = U;
+const { arrayMax, clamp, defined, isNumber, pick, pushUnique, relativeLength } = U;
 /* *
  *
  *  Composition
@@ -368,7 +368,7 @@ var ColumnDataLabel;
                     // #8864: every connector can have individual options
                     const { connectorColor, connectorWidth = 1 } = (dataLabel.options || {}), labelPosition = dataLabel.dataLabelPosition;
                     // Draw the connector
-                    if (connectorWidth) {
+                    if (isNumber(connectorWidth)) {
                         let isNew;
                         connector = dataLabel.connector;
                         if (labelPosition && labelPosition.distance > 0) {

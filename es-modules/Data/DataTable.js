@@ -454,8 +454,7 @@ class DataTable extends DataTableCore {
      * Returns all column names.
      */
     getColumnNames() {
-        const table = this, columnNames = Object.keys(table.columns);
-        return columnNames;
+        return Object.keys(this.columns);
     }
     /**
      * Retrieves all or the given columns.

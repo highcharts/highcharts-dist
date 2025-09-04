@@ -31,7 +31,7 @@ function draw(point, params) {
     params.attribs = {
         ...params.attribs,
         'class': point.getClassName()
-    } || {};
+    };
     if ((point.shouldDraw())) {
         if (!graphic) {
             if (params.shapeType === 'text') {

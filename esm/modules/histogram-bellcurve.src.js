@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
+ * @license Highcharts JS v12.4.0 (2025-09-04)
  * @module highcharts/modules/histogram-bellcurve
  * @requires highcharts
  *
@@ -294,23 +294,22 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
 
 const { column: ColumnSeries } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
 
-const { arrayMax, arrayMin, correctFloat, extend, isNumber, merge } = (external_highcharts_src_js_default_default());
+const { arrayMax, arrayMin, correctFloat, isNumber, merge } = (external_highcharts_src_js_default_default());
 /* ************************************************************************** *
  *  HISTOGRAM
  * ************************************************************************** */
 /**
- * A dictionary with formulas for calculating number of bins based on the
- * base series
+ * A dictionary with formulas for calculating number of bins based on data
  **/
 const binsNumberFormulas = {
-    'square-root': function (baseSeries) {
-        return Math.ceil(Math.sqrt(baseSeries.options.data.length));
+    'square-root': function (data) {
+        return Math.ceil(Math.sqrt(data.length));
     },
-    'sturges': function (baseSeries) {
-        return Math.ceil(Math.log(baseSeries.options.data.length) * Math.LOG2E);
+    'sturges': function (data) {
+        return Math.ceil(Math.log(data.length) * Math.LOG2E);
     },
-    'rice': function (baseSeries) {
-        return Math.ceil(2 * Math.pow(baseSeries.options.data.length, 1 / 3));
+    'rice': function (data) {
+        return Math.ceil(2 * Math.pow(data.length, 1 / 3));
     }
 };
 /**
@@ -346,15 +345,22 @@ class HistogramSeries extends ColumnSeries {
      *  Functions
      *
      * */
-    binsNumber() {
+    binsNumber(data) {
         const binsNumberOption = this.options.binsNumber;
         const binsNumber = binsNumberFormulas[binsNumberOption] ||
             // #7457
             (typeof binsNumberOption === 'function' && binsNumberOption);
-        return Math.ceil((binsNumber && binsNumber(this.baseSeries)) ||
+        return Math.ceil((binsNumber && binsNumber(data)) ||
             (isNumber(binsNumberOption) ?
                 binsNumberOption :
-                binsNumberFormulas['square-root'](this.baseSeries)));
+                binsNumberFormulas['square-root'](data)));
+    }
+    setData(data, redraw = true, animation, updatePoints) {
+        let alteredData;
+        if (typeof data !== 'undefined' && data.length > 0) {
+            alteredData = this.derivedData(data.filter(isNumber), this.binsNumber(data), this.options.binWidth);
+        }
+        super.setData.call(this, alteredData, redraw, animation, updatePoints);
     }
     derivedData(baseData, binsNumber, binWidth) {
         const series = this, max = correctFloat(arrayMax(baseData)), 
@@ -411,8 +417,7 @@ class HistogramSeries extends ColumnSeries {
             this.setData([]);
             return;
         }
-        const data = this.derivedData(yData, this.binsNumber(), this.options.binWidth);
-        this.setData(data, false);
+        this.setData(yData, false, void 0, false);
     }
 }
 /* *
@@ -421,9 +426,6 @@ class HistogramSeries extends ColumnSeries {
  *
  * */
 HistogramSeries.defaultOptions = merge(ColumnSeries.defaultOptions, Histogram_HistogramSeriesDefaults);
-extend(HistogramSeries.prototype, {
-    hasDerivedData: Series_DerivedComposition.hasDerivedData
-});
 Series_DerivedComposition.compose(HistogramSeries);
 external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('histogram', HistogramSeries);
 /* *
@@ -628,6 +630,16 @@ class BellcurveSeries extends AreaSplineSeries {
      *  Functions
      *
      * */
+    setData(data, redraw = true, animation, updatePoints) {
+        let alteredData;
+        if (typeof data !== 'undefined' && data.length > 0) {
+            data = data.filter(BellcurveSeries_isNumber),
+                this.setMean(data);
+            this.setStandardDeviation(data);
+            alteredData = this.derivedData(this.mean || 0, this.standardDeviation || 0);
+        }
+        super.setData.call(this, alteredData, redraw, animation, updatePoints);
+    }
     derivedData(mean, standardDeviation) {
         const options = this.options, intervals = options.intervals, pointsInInterval = options.pointsInInterval, stop = intervals * pointsInInterval * 2 + 1, increment = standardDeviation / pointsInInterval, data = [];
         let x = mean - intervals * standardDeviation;
@@ -639,20 +651,17 @@ class BellcurveSeries extends AreaSplineSeries {
     }
     setDerivedData() {
         const series = this;
-        if (series.baseSeries?.getColumn('y').length || 0 > 1) {
-            series.setMean();
-            series.setStandardDeviation();
-            series.setData(series.derivedData(series.mean || 0, series.standardDeviation || 0), false, void 0, false);
+        if (series.baseSeries?.getColumn('y').length) {
+            series.setData(series.baseSeries?.getColumn('y'), false, void 0, false);
         }
-        return (void 0);
     }
-    setMean() {
+    setMean(data) {
         const series = this;
-        series.mean = BellcurveSeries_correctFloat(BellcurveSeries.mean(series.baseSeries?.getColumn('y') || []));
+        series.mean = BellcurveSeries_correctFloat(BellcurveSeries.mean(data || []));
     }
-    setStandardDeviation() {
+    setStandardDeviation(data) {
         const series = this;
-        series.standardDeviation = BellcurveSeries_correctFloat(BellcurveSeries.standardDeviation(series.baseSeries?.getColumn('y') || [], series.mean));
+        series.standardDeviation = BellcurveSeries_correctFloat(BellcurveSeries.standardDeviation(data || [], series.mean));
     }
 }
 /* *

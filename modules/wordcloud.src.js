@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
+ * @license Highcharts JS v12.4.0 (2025-09-04)
  * @module highcharts/modules/wordcloud
  * @requires highcharts
  *
@@ -137,7 +137,7 @@ function draw(point, params) {
     params.attribs = {
         ...params.attribs,
         'class': point.getClassName()
-    } || {};
+    };
     if ((point.shouldDraw())) {
         if (!graphic) {
             if (params.shapeType === 'text') {

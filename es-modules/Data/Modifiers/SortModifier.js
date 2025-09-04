@@ -41,6 +41,17 @@ class SortModifier extends DataModifier {
             (b || 0) > (a || 0) ? 1 :
                 0);
     }
+    static compareFactory(direction, customCompare) {
+        if (customCompare) {
+            if (direction === 'desc') {
+                return (a, b) => -customCompare(a, b);
+            }
+            return customCompare;
+        }
+        return (direction === 'asc' ?
+            SortModifier.ascending :
+            SortModifier.descending);
+    }
     /* *
      *
      *  Constructor
@@ -214,9 +225,7 @@ class SortModifier extends DataModifier {
     modifyTable(table, eventDetail) {
         const modifier = this;
         modifier.emit({ type: 'modify', detail: eventDetail, table });
-        const columnNames = table.getColumnNames(), rowCount = table.getRowCount(), rowReferences = this.getRowReferences(table), { direction, orderByColumn, orderInColumn } = modifier.options, compare = (direction === 'asc' ?
-            SortModifier.ascending :
-            SortModifier.descending), orderByColumnIndex = columnNames.indexOf(orderByColumn), modified = table.modified;
+        const columnNames = table.getColumnNames(), rowCount = table.getRowCount(), rowReferences = this.getRowReferences(table), { direction, orderByColumn, orderInColumn, compare: customCompare } = modifier.options, compare = SortModifier.compareFactory(direction, customCompare), orderByColumnIndex = columnNames.indexOf(orderByColumn), modified = table.modified;
         if (orderByColumnIndex !== -1) {
             rowReferences.sort((a, b) => compare(a.row[orderByColumnIndex], b.row[orderByColumnIndex]));
         }

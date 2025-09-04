@@ -18,7 +18,7 @@ const { clamp, error, pick } = U;
  *
  * */
 const fragmentShader = [
-    /* eslint-disable max-len, @typescript-eslint/indent */
+    /* eslint-disable max-len, @stylistic/indent */
     'precision highp float;',
     'uniform vec4 fillColor;',
     'varying highp vec2 position;',
@@ -46,10 +46,10 @@ const fragmentShader = [
     'gl_FragColor = col;',
     '}',
     '}'
-    /* eslint-enable max-len, @typescript-eslint/indent */
+    /* eslint-enable max-len, @stylistic/indent */
 ].join('\n');
 const vertexShader = [
-    /* eslint-disable max-len, @typescript-eslint/indent */
+    /* eslint-disable max-len, @stylistic/indent */
     '#version 100',
     '#define LN10 2.302585092994046',
     'precision highp float;',
@@ -64,6 +64,7 @@ const vertexShader = [
     'uniform bool skipTranslation;',
     'uniform float xAxisTrans;',
     'uniform float xAxisMin;',
+    'uniform float xAxisMax;',
     'uniform float xAxisMinPad;',
     'uniform float xAxisPointRange;',
     'uniform float xAxisLen;',
@@ -76,6 +77,7 @@ const vertexShader = [
     'uniform bool  xAxisReversed;',
     'uniform float yAxisTrans;',
     'uniform float yAxisMin;',
+    'uniform float yAxisMax;',
     'uniform float yAxisMinPad;',
     'uniform float yAxisPointRange;',
     'uniform float yAxisLen;',
@@ -86,6 +88,7 @@ const vertexShader = [
     'uniform bool  yAxisCVSCoord;',
     'uniform bool  yAxisIsLog;',
     'uniform bool  yAxisReversed;',
+    'uniform bool  isCircle;',
     'uniform bool  isBubble;',
     'uniform bool  bubbleSizeByArea;',
     'uniform float bubbleZMin;',
@@ -174,7 +177,17 @@ const vertexShader = [
     '}',
     // 'gl_PointSize = 10.0;',
     'vColor = aColor;',
-    'if (skipTranslation && isInverted) {',
+    // It's not working correctly on useGPUTranslations off, because we
+    // operate on pixel values then, not on axis values. Maybe we should
+    // just skip outer points before pushing them to the vertex buffer?
+    'if (!skipTranslation && isCircle && (',
+    'aVertexPosition.x < xAxisMin ||',
+    'aVertexPosition.x > xAxisMax ||',
+    'aVertexPosition.y < yAxisMin ||',
+    'aVertexPosition.y > yAxisMax',
+    ')) {',
+    'gl_Position = uPMatrix * vec4(2.0, 2.0, 2.0, 1.0);',
+    '} else if (skipTranslation && isInverted) {',
     // If we get translated values from JS, just swap them (x, y)
     'gl_Position = uPMatrix * vec4(aVertexPosition.y + yAxisPos, aVertexPosition.x + xAxisPos, 0.0, 1.0);',
     '} else if (isInverted) {',
@@ -186,7 +199,7 @@ const vertexShader = [
     '}',
     // 'gl_Position = uPMatrix * vec4(aVertexPosition.x, aVertexPosition.y, 0.0, 1.0);',
     '}'
-    /* eslint-enable max-len, @typescript-eslint/indent */
+    /* eslint-enable max-len, @stylistic/indent */
 ].join('\n');
 /* *
  *

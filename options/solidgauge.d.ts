@@ -118,6 +118,12 @@ declare module "../highcharts" {
          */
         animation?: (boolean|Highcharts.AnimationOptionsObject);
         /**
+         * (Highcharts) The corner radius of the border surrounding solid gauge.
+         * A number signifies pixels and percentage string, like for example
+         * `50%`, signifies a relative size.
+         */
+        borderRadius?: (number|string);
+        /**
          * (Highcharts) An additional class name to apply to the series'
          * graphical elements. This option does not replace default class names
          * of the graphical element. Changes to the series' color will also be

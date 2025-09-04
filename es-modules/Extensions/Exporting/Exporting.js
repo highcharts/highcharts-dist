@@ -122,6 +122,85 @@ class Exporting {
             return canvas.toDataURL(imageType);
         }
     }
+    static async fetchCSS(href) {
+        const content = await fetch(href)
+            .then((res) => res.text());
+        const newSheet = new CSSStyleSheet();
+        newSheet.replaceSync(content);
+        return newSheet;
+    }
+    static async handleStyleSheet(sheet, resultArray) {
+        try {
+            for (const rule of Array.from(sheet.cssRules)) {
+                if (rule instanceof CSSImportRule) {
+                    const sheet = await Exporting.fetchCSS(rule.href);
+                    await Exporting.handleStyleSheet(sheet, resultArray);
+                }
+                if (rule instanceof CSSFontFaceRule) {
+                    let cssText = rule.cssText;
+                    if (sheet.href) {
+                        const baseUrl = sheet.href, regexp = /url\(\s*(['"]?)(?![a-z]+:|\/\/)([^'")]+?)\1\s*\)/gi;
+                        // Replace relative URLs
+                        cssText = cssText.replace(regexp, (_, quote, relPath) => {
+                            const absolutePath = new URL(relPath, baseUrl).href;
+                            return `url(${quote}${absolutePath}${quote})`;
+                        });
+                    }
+                    resultArray.push(cssText);
+                }
+            }
+        }
+        catch {
+            if (sheet.href) {
+                const newSheet = await Exporting.fetchCSS(sheet.href);
+                await Exporting.handleStyleSheet(newSheet, resultArray);
+            }
+        }
+    }
+    static async fetchStyleSheets() {
+        const cssTexts = [];
+        for (const sheet of Array.from(doc.styleSheets)) {
+            await Exporting.handleStyleSheet(sheet, cssTexts);
+        }
+        return cssTexts;
+    }
+    static async inlineFonts(svg) {
+        const cssTexts = await Exporting.fetchStyleSheets(), urlRegex = /url\(([^)]+)\)/g, urls = [];
+        let cssText = cssTexts.join('\n'), match;
+        while ((match = urlRegex.exec(cssText))) {
+            const m = match[1].replace(/['"]/g, '');
+            if (!urls.includes(m)) {
+                urls.push(m);
+            }
+        }
+        const arrayBufferToBase64 = (buffer) => {
+            let binary = '';
+            const bytes = new Uint8Array(buffer);
+            for (let i = 0; i < bytes.byteLength; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return btoa(binary);
+        };
+        const replacements = {};
+        for (const url of urls) {
+            try {
+                const res = await fetch(url), contentType = res.headers.get('Content-Type') || '', b64 = arrayBufferToBase64(await res.arrayBuffer());
+                replacements[url] = `data:${contentType};base64,${b64}`;
+            }
+            catch {
+                // eslint-disable-next-line
+            }
+        }
+        cssText = cssText.replace(urlRegex, (_, url) => {
+            const strippedUrl = url.replace(/['"]/g, '');
+            return `url(${replacements[strippedUrl] || strippedUrl})`;
+        });
+        const styleEl = document.createElementNS('http://www.w3.org/2000/svg', 'style');
+        styleEl.textContent = cssText;
+        // Needs to be appended to pass sanitization
+        svg.append(styleEl);
+        return svg;
+    }
     /**
      * Loads an image from the provided URL.
      *
@@ -152,6 +231,7 @@ class Exporting {
             };
             // Reject in case of fail
             image.onerror = (error) => {
+                // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
                 reject(error);
             };
             // Provide the image URL
@@ -1220,6 +1300,7 @@ class Exporting {
                     // Get the defaults into a standard object (simple merge
                     // won't do)
                     const s = win.getComputedStyle(dummy, null), defaults = {};
+                    // eslint-disable-next-line @typescript-eslint/no-for-in-array
                     for (const key in s) {
                         if (key.length < 1000 /* RegexLimits.shortLimit */ &&
                             typeof s[key] === 'string' &&
@@ -1355,6 +1436,11 @@ class Exporting {
                 else {
                     image.parentNode.removeChild(image);
                 }
+            }
+            const svgElement = chartCopyContainer?.querySelector('svg');
+            if (svgElement &&
+                !exportingOptions.chartOptions?.chart?.style?.fontFamily) {
+                await Exporting.inlineFonts(svgElement);
             }
             // Sanitize the SVG
             const sanitizedSVG = sanitize(chartCopyContainer?.innerHTML);

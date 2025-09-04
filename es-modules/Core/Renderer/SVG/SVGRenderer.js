@@ -171,7 +171,7 @@ class SVGRenderer {
         this.url = this.getReferenceURL();
         // Add description
         const desc = this.createElement('desc').add();
-        desc.element.appendChild(doc.createTextNode('Created with Highcharts 12.3.0'));
+        desc.element.appendChild(doc.createTextNode('Created with Highcharts 12.4.0'));
         this.defs = this.createElement('defs').add();
         this.allowHTML = allowHTML;
         this.forExport = forExport;
@@ -1310,15 +1310,15 @@ class SVGRenderer {
      *
      * @function Highcharts.SVGRenderer#fontMetrics
      *
-     * @param {Highcharts.SVGElement|Highcharts.SVGDOMElement|number} [element]
-     *        The element to inspect for a current font size. If a number is
-     *        given, it's used as a fall back for direct font size in pixels.
+     * @param {Highcharts.SVGElement|Highcharts.SVGDOMElement|number} ref
+     * The element to inspect for a current font size. If a number is given,
+     * it's used as a fall back for direct font size in pixels.
      *
      * @return {Highcharts.FontMetricsObject}
-     *         The font metrics.
+     * The font metrics.
      */
-    fontMetrics(element) {
-        const f = pInt(SVGElement.prototype.getStyle.call(element, 'font-size') || 0);
+    fontMetrics(ref) {
+        const f = isNumber(ref) ? ref : pInt((SVGElement.prototype.getStyle.call(ref, 'font-size') || 0));
         // Empirical values found by comparing font size and bounding box
         // height. Applies to the default font family.
         // https://jsfiddle.net/highcharts/7xvn7/

@@ -135,7 +135,6 @@ class JSONConnector extends DataConnector {
  *
  * */
 JSONConnector.defaultOptions = {
-    data: [],
     enablePolling: false,
     dataRefreshRate: 0,
     firstRowAsNames: true,

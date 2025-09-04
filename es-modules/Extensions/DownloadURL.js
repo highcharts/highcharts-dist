@@ -142,7 +142,9 @@ export function getScript(scriptLocation) {
         };
         // Reject in case of fail
         script.onerror = () => {
-            reject(error(`Error loading script ${scriptLocation}`));
+            const msg = `Error loading script ${scriptLocation}`;
+            error(msg);
+            reject(new Error(msg));
         };
         // Append the newly created script
         head.appendChild(script);

@@ -1,11 +1,11 @@
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
+ * @license Highcharts JS v12.4.0 (2025-09-04)
  * @module highcharts/highcharts-3d
  * @requires highcharts
  *
  * 3D features for Highcharts JS
  *
- * (c) 2009-2025 Torstein Honsi
+ * (c) 2009-2025 Highsoft AS
  *
  * License: www.highcharts.com/license
  */
@@ -2777,9 +2777,6 @@ class Axis3DAdditions {
             else { // X and Z Axis
                 let sin = Math.sin(alpha);
                 const cos = Math.cos(alpha);
-                if (axis.opposite) {
-                    sin = -sin;
-                }
                 if (reverseFlap) {
                     sin = -sin;
                 }

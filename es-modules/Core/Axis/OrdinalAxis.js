@@ -8,7 +8,6 @@
  *
  * */
 'use strict';
-import Axis from './Axis.js';
 import DataTableCore from '../../Data/DataTableCore.js';
 import H from '../Globals.js';
 import U from '../Utilities.js';

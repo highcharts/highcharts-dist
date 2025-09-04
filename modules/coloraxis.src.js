@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
+ * @license Highcharts JS v12.4.0 (2025-09-04)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -796,11 +796,10 @@ const colorAxisDefaults = {
      */
     /**
      * Whether to reverse the axis so that the highest number is closest
-     * to the origin. Defaults to `false` in a horizontal legend and
-     * `true` in a vertical legend, where the smallest value starts on
-     * top.
+     * to the origin. Defaults to `false`.
      *
      * @type      {boolean}
+     * @default   false
      * @product   highcharts highstock highmaps
      * @apioption colorAxis.reversed
      */
@@ -1109,7 +1108,7 @@ class ColorAxis extends (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_high
             userOptions.layout !== 'vertical' :
             legend.layout !== 'vertical';
         axis.side = userOptions.side || horiz ? 2 : 1;
-        axis.reversed = userOptions.reversed || !horiz;
+        axis.reversed = userOptions.reversed;
         axis.opposite = !horiz;
         super.init(chart, userOptions, 'colorAxis');
         // `super.init` saves the extended user options, now replace it with the
@@ -1215,9 +1214,9 @@ class ColorAxis extends (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_high
             // First time only
             if (!axis.added) {
                 axis.added = true;
-                axis.labelLeft = 0;
-                axis.labelRight = axis.width;
             }
+            axis.labelLeft = 0;
+            axis.labelRight = axis.width;
             // Reset it to avoid color axis reserving space
             axis.chart.axisOffset[axis.side] = sideOffset;
         }

@@ -10,13 +10,17 @@
 'use strict';
 import A from '../Core/Animation/AnimationUtilities.js';
 const { animObject } = A;
+import BorderRadius from '../Extensions/BorderRadius.js';
+const { optionsToObject } = BorderRadius;
+import D from '../Core/Defaults.js';
+const { defaultOptions } = D;
 import H from '../Core/Globals.js';
 const { composed } = H;
 import Series from '../Core/Series/Series.js';
 import Pane from '../Extensions/Pane/Pane.js';
 import RadialAxis from '../Core/Axis/RadialAxis.js';
 import U from '../Core/Utilities.js';
-const { addEvent, defined, find, isNumber, merge, pick, pushUnique, relativeLength, splat, uniqueKey, wrap } = U;
+const { addEvent, defined, find, isNumber, isObject, merge, pick, pushUnique, relativeLength, splat, uniqueKey, wrap } = U;
 /* *
  *
  *  Functions
@@ -323,6 +327,33 @@ function onSeriesAfterInit() {
             this.isRadialSeries = true;
             if (this.is('column')) {
                 this.isRadialBar = true;
+            }
+        }
+    }
+}
+/**
+ * Apply conditional rounding to polar bars
+ */
+function onSeriesAfterColumnTranslate() {
+    const { chart, options, yAxis } = this;
+    if (options.borderRadius &&
+        chart.polar &&
+        chart.inverted) {
+        const seriesDefault = defaultOptions.plotOptions?.[this.type]
+            ?.borderRadius, { scope, where = 'end' } = optionsToObject(options.borderRadius, isObject(seriesDefault) ? seriesDefault : {});
+        for (const point of this.points) {
+            const { shapeArgs } = point;
+            if (point.shapeType === 'arc' && shapeArgs) {
+                let brStart = where === 'all', brEnd = true;
+                if (options.stacking && scope === 'stack') {
+                    brStart = point.stackY === point.y && where === 'all',
+                        brEnd = point.stackY === point.stackTotal;
+                }
+                if (yAxis.reversed) {
+                    [brStart, brEnd] = [brEnd, brStart];
+                }
+                shapeArgs.brStart = brStart;
+                shapeArgs.brEnd = brEnd;
             }
         }
     }
@@ -919,6 +950,10 @@ class PolarAdditions {
             addEvent(PointerClass, 'getSelectionMarkerAttrs', onPointerGetSelectionMarkerAttrs);
             addEvent(PointerClass, 'getSelectionBox', onPointerGetSelectionBox);
             addEvent(SeriesClass, 'afterInit', onSeriesAfterInit);
+            addEvent(SeriesClass, 'afterColumnTranslate', onSeriesAfterColumnTranslate, {
+                // After columnrange and polar column modifications
+                order: 9
+            });
             addEvent(SeriesClass, 'afterTranslate', onSeriesAfterTranslate, { order: 2 } // Run after translation of ||-coords
             );
             addEvent(SeriesClass, 'afterColumnTranslate', onAfterColumnTranslate, { order: 4 });

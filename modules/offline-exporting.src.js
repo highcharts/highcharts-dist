@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
+ * @license Highcharts JS v12.4.0 (2025-09-04)
  * @module highcharts/modules/offline-exporting
  * @requires highcharts
  * @requires highcharts/modules/exporting
@@ -257,7 +257,9 @@ function getScript(scriptLocation) {
         };
         // Reject in case of fail
         script.onerror = () => {
-            reject(error(`Error loading script ${scriptLocation}`));
+            const msg = `Error loading script ${scriptLocation}`;
+            error(msg);
+            reject(new Error(msg));
         };
         // Append the newly created script
         head.appendChild(script);
@@ -550,7 +552,7 @@ var OfflineExporting;
                         normalBase64 = base64;
                     }
                 }
-                catch (e) {
+                catch {
                     // If fetch or reading fails, fallback to next variant
                 }
             }

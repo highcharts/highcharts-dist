@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
+ * @license Highcharts JS v12.4.0 (2025-09-04)
  * @module highcharts/modules/series-on-point
  * @requires highcharts
  *
@@ -12,14 +12,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Point"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["SVGRenderer"]);
+		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Point"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["SVGRenderer"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/series-on-point", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Point"],amd1["Series"],amd1["SeriesRegistry"],amd1["SVGRenderer"]);});
+		define("highcharts/modules/series-on-point", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Point"],amd1["SeriesRegistry"],amd1["SVGRenderer"]);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/series-on-point"] = factory(root["_Highcharts"], root["_Highcharts"]["Point"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["SVGRenderer"]);
+		exports["highcharts/modules/series-on-point"] = factory(root["_Highcharts"], root["_Highcharts"]["Point"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["SVGRenderer"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Point"], root["Highcharts"]["Series"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["SVGRenderer"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__540__) => {
+		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Point"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["SVGRenderer"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__540__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -42,13 +42,6 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__540__;
-
-/***/ }),
-
-/***/ 820:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__820__;
 
 /***/ }),
 
@@ -553,8 +546,6 @@ class DataTableCore {
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Point"],"commonjs":["highcharts","Point"],"commonjs2":["highcharts","Point"],"root":["Highcharts","Point"]}
 var highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_ = __webpack_require__(260);
 var highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_default = /*#__PURE__*/__webpack_require__.n(highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_);
-// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series"],"commonjs":["highcharts","Series"],"commonjs2":["highcharts","Series"],"root":["Highcharts","Series"]}
-var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_ = __webpack_require__(820);
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
@@ -575,7 +566,6 @@ var highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_
 
 
 const { composed } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
-
 
 
 const { bubble } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;

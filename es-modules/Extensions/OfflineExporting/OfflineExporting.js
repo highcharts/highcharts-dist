@@ -235,7 +235,7 @@ var OfflineExporting;
                         normalBase64 = base64;
                     }
                 }
-                catch (e) {
+                catch {
                     // If fetch or reading fails, fallback to next variant
                 }
             }

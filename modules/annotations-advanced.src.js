@@ -1,6 +1,6 @@
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
- * @module highcharts/modules/annotations
+ * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @module highcharts/modules/annotations-advanced
  * @requires highcharts
  *
  * Annotations module
@@ -1678,9 +1678,12 @@ class MockPoint {
      * The mock point's options.
      */
     getOptions() {
-        return this.hasDynamicOptions() ?
-            this.options(this.target) :
-            this.options;
+        if (this.hasDynamicOptions()) {
+            if (typeof this.options === 'function') {
+                return this.options(this.target);
+            }
+        }
+        return this.options;
     }
     /**
      * Check if the point has dynamic options.
@@ -5102,7 +5105,7 @@ function onNavigationBindingsShowPopup(config) {
         this.popup = new Popup_Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
             (this.chart.options.stockTools &&
                 this.chart.options.stockTools.gui.iconsURL) ||
-            'https://code.highcharts.com/12.3.0/gfx/stock-icons/'), this.chart);
+            'https://code.highcharts.com/12.4.0/gfx/stock-icons/'), this.chart);
     }
     this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
 }
@@ -6287,7 +6290,7 @@ const navigation = {
      * from a different server.
      *
      * @type      {string}
-     * @default   https://code.highcharts.com/12.3.0/gfx/stock-icons/
+     * @default   https://code.highcharts.com/12.4.0/gfx/stock-icons/
      * @since     7.1.3
      * @apioption navigation.iconsURL
      */
@@ -7199,7 +7202,17 @@ NavigationBindings.annotationsNonEditable = {
 (''); // Keeps doclets above in JS file
 
 ;// ./code/es-modules/masters/modules/annotations.src.js
-
+/**
+ * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @module highcharts/modules/annotations
+ * @requires highcharts
+ *
+ * Annotations module
+ *
+ * (c) 2009-2025 Torstein Honsi
+ *
+ * License: www.highcharts.com/license
+ */
 
 
 
@@ -9794,17 +9807,7 @@ Annotations_Annotation.types.measure = Measure;
 /* harmony default export */ const Types_Measure = ((/* unused pure expression or super */ null && (Measure)));
 
 ;// ./code/es-modules/masters/modules/annotations-advanced.src.js
-/**
- * @license Highcharts JS v12.3.0 (2025-06-21)
- * @module highcharts/modules/annotations-advanced
- * @requires highcharts
- *
- * Annotations module
- *
- * (c) 2009-2025 Torstein Honsi
- *
- * License: www.highcharts.com/license
- */
+
 
 
 

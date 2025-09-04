@@ -119,7 +119,7 @@ class DataModifier {
                     detail: eventDetail,
                     table
                 });
-                reject(e);
+                reject(e instanceof Error ? e : new Error('' + e));
             }
         });
     }

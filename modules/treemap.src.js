@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
+ * @license Highcharts JS v12.4.0 (2025-09-04)
  * @module highcharts/modules/treemap
  * @requires highcharts
  *
@@ -756,7 +756,7 @@ class Breadcrumbs {
     renderButton(breadcrumb, posX, posY) {
         const breadcrumbs = this, chart = this.chart, breadcrumbsOptions = breadcrumbs.options, buttonTheme = merge(breadcrumbsOptions.buttonTheme);
         const button = chart.renderer
-            .button(breadcrumbs.getButtonText(breadcrumb), posX, posY, function (e) {
+            .button(breadcrumbs.getButtonText(breadcrumb), posX, posY, function (e /* @todo (Event|any) */) {
             // Extract events from button object and call
             const buttonEvents = breadcrumbsOptions.events &&
                 breadcrumbsOptions.events.click;
@@ -1390,7 +1390,7 @@ function draw(point, params) {
     params.attribs = {
         ...params.attribs,
         'class': point.getClassName()
-    } || {};
+    };
     if ((point.shouldDraw())) {
         if (!graphic) {
             if (params.shapeType === 'text') {
@@ -3113,7 +3113,7 @@ class TreemapSeries extends ScatterSeries {
     drawPoints(points = this.points) {
         const series = this, chart = series.chart, renderer = chart.renderer, styledMode = chart.styledMode, options = series.options, shadow = styledMode ? {} : options.shadow, borderRadius = options.borderRadius, withinAnimationLimit = chart.pointCount < options.animationLimit, allowTraversingTree = options.allowTraversingTree;
         for (const point of points) {
-            const levelDynamic = point.node.levelDynamic, animatableAttribs = {}, attribs = {}, css = {}, groupKey = 'level-group-' + point.node.level, hasGraphic = !!point.graphic, shouldAnimate = withinAnimationLimit && hasGraphic, shapeArgs = point.shapeArgs;
+            const animatableAttribs = {}, attribs = {}, css = {}, groupKey = 'level-group-' + point.node.level, hasGraphic = !!point.graphic, shouldAnimate = withinAnimationLimit && hasGraphic, shapeArgs = point.shapeArgs;
             // Don't bother with calculate styling if the point is not drawn
             if (point.shouldDraw()) {
                 point.isInside = true;
@@ -3139,9 +3139,9 @@ class TreemapSeries extends ScatterSeries {
                 if (!series[groupKey]) {
                     series[groupKey] = renderer.g(groupKey)
                         .attr({
-                        // @todo Set the zIndex based upon the number of
-                        // levels, instead of using 1000
-                        zIndex: 1000 - (levelDynamic || 0)
+                        // Use the static level in order to retain z-index
+                        // when data is updated (#23432).
+                        zIndex: -(point.node.level || 0)
                     })
                         .add(series.group);
                     series[groupKey].survive = true;

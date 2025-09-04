@@ -1,8 +1,8 @@
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
- * @module highcharts/highcharts
+ * @license Highcharts Maps v12.4.0 (2025-09-04)
+ * @module highcharts/highmaps
  *
- * (c) 2009-2025 Torstein Honsi
+ * (c) 2011-2025 Highsoft AS
  *
  * License: www.highcharts.com/license
  */
@@ -74,7 +74,7 @@ var Globals;
      *  Constants
      *
      * */
-    Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '12.3.0', Globals.win = (typeof window !== 'undefined' ?
+    Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '12.4.0', Globals.win = (typeof window !== 'undefined' ?
         window :
         {}), // eslint-disable-line node/no-unsupported-features/es-builtins
     Globals.doc = Globals.win.document, Globals.svg = !!Globals.doc?.createElementNS?.(Globals.SVG_NS, 'svg')?.createSVGRect, Globals.pageLang = Globals.doc?.documentElement?.closest('[lang]')?.lang, Globals.userAgent = Globals.win.navigator?.userAgent || '', Globals.isChrome = Globals.win.chrome, Globals.isFirefox = Globals.userAgent.indexOf('Firefox') !== -1, Globals.isMS = /(edge|msie|trident)/i.test(Globals.userAgent) && !Globals.win.opera, Globals.isSafari = !Globals.isChrome && Globals.userAgent.indexOf('Safari') !== -1, Globals.isTouchDevice = /(Mobile|Android|Windows Phone)/.test(Globals.userAgent), Globals.isWebKit = Globals.userAgent.indexOf('AppleWebKit') !== -1, Globals.deg2rad = Math.PI * 2 / 360, Globals.marginNames = [
@@ -2959,11 +2959,12 @@ const ChartDefaults = {
      * others series in a stack. The shadow can be an object configuration
      * containing `color`, `offsetX`, `offsetY`, `opacity` and `width`.
      *
-     * @sample highcharts/chart/seriesgroupshadow/ Shadow
+     * @sample highcharts/chart/seriesgroupshadow/
+     *         Shadow
      *
      * @type      {boolean|Highcharts.ShadowOptionsObject}
      * @default   false
-     * @apioption chart.shadow
+     * @apioption chart.seriesGroupShadow
      */
     /**
      * Whether to apply a drop shadow to the outer chart area. Requires
@@ -3174,7 +3175,7 @@ const ChartDefaults = {
      * Chart zooming options.
      * @since 10.2.1
      *
-     * @sample     highcharts/plotoptions/sankey-inverted
+     * @sample     highcharts/plotoptions/sankey-node-color
      *             Zooming in sankey series
      * @sample     highcharts/series-treegraph/link-types
      *             Zooming in treegraph series
@@ -4587,6 +4588,9 @@ const defaultOptions = {
      * setup uses `Highcharts.setOptions` to make the options apply to all
      * charts in the same page.
      *
+     * Some language options, like `months` and `weekdays`, are only used
+     * with non-locale-aware date formats.
+     *
      * ```js
      * Highcharts.setOptions({
      *     lang: {
@@ -4636,7 +4640,7 @@ const defaultOptions = {
          * An array containing the months names. Corresponds to the `%B` format
          * in `Highcharts.dateFormat()`. Defaults to 'undefined',
          * meaning the default month names are used according to the
-         * `lang.locale` setting.
+         * `lang.locale` or browser settings.
          *
          * @type    {Array<string>}
          */
@@ -4651,23 +4655,25 @@ const defaultOptions = {
          * An array containing the months names in abbreviated form. Corresponds
          * to the `%b` format in `Highcharts.dateFormat()`. Defaults to
          * 'undefined', meaning the default short month names are used according
-         * to the `lang.locale` setting.
+         * to the `lang.locale` or browser settings.
          *
          * @type    {Array<string>}
          */
         shortMonths: void 0,
         /**
-         * An array containing the weekday names. Defaults to 'undefined',
-         * meaning the default weekday names are used according to the
-         * `lang.locale` setting.
+         * An array containing the weekday names. Corresponds
+         * to the `%A` format in `Highcharts.dateFormat()`. Defaults to
+         * 'undefined', meaning the default weekday names are used according to
+         * the `lang.locale` or browser settings.
          *
          * @type    {Array<string>}
          */
         weekdays: void 0,
         /**
-         * Short week days, starting Sunday. Defaults to 'undefined', meaning
+         * Short week days, starting Sunday. Corresponds to the `%a` format in
+         * `Highcharts.dateFormat()`. Defaults to 'undefined', meaning
          * the default short weekday names are used according to the
-         * `lang.locale` setting.
+         * `lang.locale` or browser settings.
          *
          * @sample highcharts/lang/shortweekdays/
          *         Finnish two-letter abbreviations
@@ -8724,7 +8730,7 @@ class AST {
                 trustedTypesPolicy.createHTML(markup) :
                 markup, 'text/html');
         }
-        catch (e) {
+        catch {
             // There are two cases where this fails:
             // 1. IE9 and PhantomJS, where the DOMParser only supports parsing
             //    XML
@@ -10736,8 +10742,8 @@ class SVGElement {
                         toggleTextShadowShim('');
                     }
                 }
-                catch (e) {
-                    '';
+                catch {
+                    // Ignore error
                 }
                 // If the bBox is not set, the try-catch block above failed. The
                 // other condition is for Opera that returns a width of
@@ -11642,7 +11648,8 @@ class SVGLabel extends SVG_SVGElement {
      *  Constructor
      *
      * */
-    constructor(renderer, str, x, y, shape, anchorX, anchorY, useHTML, baseline, className) {
+    constructor(renderer, str, x, y, shape, // @todo (SymbolKey|string),
+    anchorX, anchorY, useHTML, baseline, className) {
         super(renderer, 'g');
         this.paddingLeftSetter = this.paddingSetter;
         this.paddingRightSetter = this.paddingSetter;
@@ -11975,10 +11982,18 @@ class SVGLabel extends SVG_SVGElement {
             // Force animation even when setting to the same value (#7898)
             this['forceAnimate:x'] = true;
         }
+        if (this.anchorX) {
+            // #22907, force anchorX to animate after x set
+            this['forceAnimate:anchorX'] = true;
+        }
         this.xSetting = Math.round(value);
         this.attr('translateX', this.xSetting);
     }
     ySetter(value) {
+        if (this.anchorY) {
+            // #22907, force anchorY to animate after y set
+            this['forceAnimate:anchorY'] = true;
+        }
         this.ySetting = this.y = Math.round(value);
         this.attr('translateY', this.ySetting);
     }
@@ -12645,8 +12660,8 @@ class TextBuilder {
                         lengths[end] = startAt +
                             parentNode.getSubStringLength(0, words ? end + 1 : end);
                     }
-                    catch (e) {
-                        '';
+                    catch {
+                        // Ignore error
                     }
                 }
             }
@@ -12898,7 +12913,7 @@ class SVGRenderer {
         this.url = this.getReferenceURL();
         // Add description
         const desc = this.createElement('desc').add();
-        desc.element.appendChild(SVGRenderer_doc.createTextNode('Created with Highcharts 12.3.0'));
+        desc.element.appendChild(SVGRenderer_doc.createTextNode('Created with Highcharts 12.4.0'));
         this.defs = this.createElement('defs').add();
         this.allowHTML = allowHTML;
         this.forExport = forExport;
@@ -14037,15 +14052,15 @@ class SVGRenderer {
      *
      * @function Highcharts.SVGRenderer#fontMetrics
      *
-     * @param {Highcharts.SVGElement|Highcharts.SVGDOMElement|number} [element]
-     *        The element to inspect for a current font size. If a number is
-     *        given, it's used as a fall back for direct font size in pixels.
+     * @param {Highcharts.SVGElement|Highcharts.SVGDOMElement|number} ref
+     * The element to inspect for a current font size. If a number is given,
+     * it's used as a fall back for direct font size in pixels.
      *
      * @return {Highcharts.FontMetricsObject}
-     *         The font metrics.
+     * The font metrics.
      */
-    fontMetrics(element) {
-        const f = SVGRenderer_pInt(SVG_SVGElement.prototype.getStyle.call(element, 'font-size') || 0);
+    fontMetrics(ref) {
+        const f = SVGRenderer_isNumber(ref) ? ref : SVGRenderer_pInt((SVG_SVGElement.prototype.getStyle.call(ref, 'font-size') || 0));
         // Empirical values found by comparing font size and bounding box
         // height. Applies to the default font family.
         // https://jsfiddle.net/highcharts/7xvn7/
@@ -14904,7 +14919,8 @@ class HTMLElement extends SVG_SVGElement {
             // Calling offsetWidth affects rendering time as it forces layout
             // (#7656).
             if (textWidth !== oldTextWidth) { // #983, #1254
-                const textPxLength = getTextPxLength(), textWidthNum = textWidth || 0, willOverWrap = element.style.textOverflow === '' &&
+                const textPxLength = getTextPxLength(), textWidthNum = textWidth || 0, willOverWrap = !renderer.styledMode &&
+                    element.style.textOverflow === '' &&
                     element.style.webkitLineClamp;
                 if ((textWidthNum > oldTextWidth ||
                     textPxLength > textWidthNum ||
@@ -15796,14 +15812,6 @@ var AxisDefaults;
          * @product   highcharts highstock gantt
          * @context   Highcharts.Axis
          * @apioption xAxis.events.pointInBreak
-         */
-        /**
-         * An event fired when a point is outside a break after zoom.
-         *
-         * @type      {Highcharts.AxisPointBreakEventCallbackFunction}
-         * @product   highcharts highstock gantt
-         * @context   Highcharts.Axis
-         * @apioption xAxis.events.pointBreakOut
          */
         /**
          * Fires when the minimum and maximum is set for the axis, either by
@@ -19456,7 +19464,7 @@ class Axis {
         }
         const minPixelPadding = axis.minPixelPadding, doPostTranslate = (axis.isOrdinal ||
             axis.brokenAxis?.hasBreaks ||
-            (axis.logarithmic && handleLog)) && axis.lin2val;
+            (axis.logarithmic && handleLog)) && !!axis.lin2val;
         let sign = 1, cvsOffset = 0, localA = old && axis.old ? axis.old.transA : axis.transA, returnValue = 0;
         if (!localA) {
             localA = axis.transA;
@@ -21018,7 +21026,8 @@ class Axis {
             if (cssWidth !== void 0) {
                 return parseInt(String(cssWidth), 10);
             }
-            if (marginLeft) {
+            // Skip marginLeft for opposite axis to avoid label cutoff, #22821
+            if (!this.opposite && marginLeft) {
                 return marginLeft - chart.spacing[3];
             }
         }
@@ -21733,7 +21742,7 @@ class Axis {
                 axis.plotLinesAndBandsGroups[plotGroup].destroy();
         }
         // Delete all properties and fall back to the prototype.
-        Axis_objectEach(axis, function (val, key) {
+        Axis_objectEach(axis, function (_val, key) {
             if (axis.getKeepProps().indexOf(key) === -1) {
                 delete axis[key];
             }
@@ -23016,7 +23025,7 @@ class PlotLineOrBand {
         // Common for lines and bands. Add events only if they were not added
         // before.
         if (!this.eventsAdded && events) {
-            PlotLineOrBand_objectEach(events, (event, eventType) => {
+            PlotLineOrBand_objectEach(events, (_event, eventType) => {
                 svgElem?.on(eventType, (e) => {
                     events[eventType].apply(this, [e]);
                 });
@@ -23094,7 +23103,7 @@ class PlotLineOrBand {
                     // default options for plot lines and bands, default to the
                     // title color. If we expose the palette, we should use that
                     // instead.
-                    color: axis.chart.options.title?.style.color,
+                    color: axis.chart.options.title?.style?.color,
                     fontSize: '0.8em',
                     textOverflow: (isBand && !inside) ? '' : 'ellipsis'
                 }, optionsLabel.style));
@@ -25310,6 +25319,15 @@ class Point {
      * @type {Readonly<Highcharts.SVGAttributes>|undefined}
      */
     /**
+     * Defines the tooltip's position for a data point in a chart. It is an
+     * array of numbers representing the coordinates for the tooltip's
+     * placement, allowing for precise control over its location.
+     *
+     * @readonly
+     * @name Highcharts.Point#tooltipPos
+     * @type {Readonly<Array<number>>|undefined}
+     */
+    /**
      * The total of values in either a stack for stacked series, or a pie in a
      * pie series.
      *
@@ -26594,17 +26612,20 @@ class Pointer {
                 activeSeries.push.apply(activeSeries, this.chart.series.filter((otherSeries) => otherSeries.markerGroup === series.markerGroup));
             }
         });
-        // Now loop over all series, filtering out active series
-        this.chart.series.forEach((series) => {
+        for (const series of this.chart.series) {
+            const seriesOptions = series.options;
+            if (seriesOptions.states?.inactive?.enabled === false) {
+                continue;
+            }
             if (activeSeries.indexOf(series) === -1) {
                 // Inactive series
                 series.setState('inactive', true);
             }
-            else if (series.options.inactiveOtherPoints) {
+            else if (seriesOptions.inactiveOtherPoints) {
                 // Active series, but other points should be inactivated
                 series.setAllPointsToState('inactive');
             }
-        });
+        }
     }
     /**
      * Destroys the Pointer object and disconnects DOM events.
@@ -26817,6 +26838,7 @@ class Pointer {
             chart.mouseIsDown = false;
             this.hasDragged = 0;
             this.pinchDown = [];
+            this.hasPinchMoved = false;
         }
     }
     /**
@@ -27366,6 +27388,11 @@ class Pointer {
      * @function Highcharts.Pointer#onDocumentMouseUp
      */
     onDocumentMouseUp(e) {
+        // #17852, IOS devices sometimes reverts back to previous point when
+        // dragging between points
+        if (e?.touches && this.hasPinchMoved) {
+            e?.preventDefault?.();
+        }
         Pointer_charts[Pointer_pick(Pointer.hoverChartIndex, -1)]
             ?.pointer
             ?.drop(e);
@@ -27921,7 +27948,7 @@ class Pointer {
                 // checking how much it moved, and cancelling on small
                 // distances. #3450. Tested and still relevant as of 2024.
                 if (e.type === 'touchmove') {
-                    hasMoved = pinchDown[0] ? // #5266
+                    this.hasPinchMoved = hasMoved = pinchDown[0] ? // #5266
                         (Math.pow(pinchDown[0].chartX - e.chartX, 2) +
                             Math.pow(pinchDown[0].chartY - e.chartY, 2)) >= 16 :
                         false;
@@ -31162,6 +31189,12 @@ const seriesDefaults = {
  *
  * */
 
+/* *
+ *
+ *  Imports
+ *
+ * */
+
 
 
 const { defaultOptions: SeriesRegistry_defaultOptions } = Defaults;
@@ -31245,7 +31278,8 @@ var SeriesRegistry;
         defaultPlotOptions[type] = SeriesRegistry_merge(defaultPlotOptions[parent], options);
         // Create the class
         delete SeriesRegistry.seriesTypes[type];
-        registerSeriesType(type, SeriesRegistry_extendClass(SeriesRegistry.seriesTypes[parent] || function () { }, seriesProto));
+        const parentClass = SeriesRegistry.seriesTypes[parent] || Series_Series, childClass = SeriesRegistry_extendClass(parentClass, seriesProto);
+        registerSeriesType(type, childClass);
         SeriesRegistry.seriesTypes[type].prototype.type = type;
         // Create the point class if needed
         if (pointProto) {
@@ -34063,7 +34097,7 @@ class Series {
             oldOptions.type ||
             chart.options.chart.type);
         const keepPoints = !(
-        // Indicators, histograms etc recalculate the data. It should be
+        // Indicators etc recalculate the data. It should be
         // possible to omit this.
         this.hasDerivedData ||
             // New type requires new point classes
@@ -35273,16 +35307,14 @@ class Legend {
      * The item to remove
      */
     destroyItem(item) {
-        const checkbox = item.checkbox, legendItem = item.legendItem || {};
+        const legendItem = item.legendItem || {};
         // Destroy SVG elements
         for (const key of ['group', 'label', 'line', 'symbol']) {
             if (legendItem[key]) {
                 legendItem[key] = legendItem[key].destroy();
             }
         }
-        if (checkbox) {
-            Legend_discardElement(checkbox);
-        }
+        item.checkbox = Legend_discardElement(item.checkbox);
         item.legendItem = void 0;
     }
     /**
@@ -35611,13 +35643,13 @@ class Legend {
                 /(rtv|rm|rbv)/,
                 /(rbh|cb|lbh)/,
                 /(lbv|lm|ltv)/
-            ]).forEach(function (alignments, side) {
+            ]).forEach((alignments, side) => {
                 if (alignments.test(alignment) && !Legend_defined(margin[side])) {
                     // Now we have detected on which side of the chart we should
                     // reserve space for the legend
                     chart[marginNames[side]] = Math.max(chart[marginNames[side]], (chart.legend[(side + 1) % 2 ? 'legendHeight' : 'legendWidth'] +
-                        [1, -1, -1, 1][side] * options[(side % 2) ? 'x' : 'y'] +
-                        Legend_pick(options.margin, 12) +
+                        [1, -1, -1, 1][side] * (options[(side % 2) ? 'x' : 'y']) +
+                        (options.margin ?? 12) +
                         spacing[side] +
                         (chart.titleOffset[side] || 0)));
                 }
@@ -36230,6 +36262,9 @@ class Legend {
 * @type {Highcharts.SVGElement|undefined}
 */ /**
 * @name Highcharts.LegendItemObject#symbol
+* @type {Highcharts.SVGElement|undefined}
+*/ /**
+* @name Highcharts.LegendItemObject#label
 * @type {Highcharts.SVGElement|undefined}
 */
 /**
@@ -37577,8 +37612,8 @@ class Chart {
     getAxisMargins() {
         const chart = this, 
         // [top, right, bottom, left]
-        axisOffset = chart.axisOffset = [0, 0, 0, 0], colorAxis = chart.colorAxis, margin = chart.margin, getOffset = function (axes) {
-            axes.forEach(function (axis) {
+        axisOffset = chart.axisOffset = [0, 0, 0, 0], colorAxis = chart.colorAxis, margin = chart.margin, getOffset = (axes) => {
+            axes.forEach((axis) => {
                 if (axis.visible) {
                     axis.getOffset();
                 }
@@ -37592,9 +37627,9 @@ class Chart {
             getOffset(colorAxis);
         }
         // Add the axis offsets
-        Chart_marginNames.forEach(function (m, side) {
+        Chart_marginNames.forEach((marginName, side) => {
             if (!Chart_defined(margin[side])) {
-                chart[m] += axisOffset[side];
+                chart[marginName] += axisOffset[side];
             }
         });
         chart.setChartSize();
@@ -37849,21 +37884,22 @@ class Chart {
         Chart_fireEvent(this, 'resetMargins');
         const chart = this, chartOptions = chart.options.chart, plotBorderWidth = chartOptions.plotBorderWidth || 0, halfWidth = Math.round(plotBorderWidth) / 2;
         // Create margin and spacing array
-        ['margin', 'spacing'].forEach(function splashArrays(target) {
+        ['margin', 'spacing'].forEach((target) => {
             const value = chartOptions[target], values = Chart_isObject(value) ? value : [value, value, value, value];
             [
                 'Top',
                 'Right',
                 'Bottom',
                 'Left'
-            ].forEach(function (sideName, side) {
-                chart[target][side] = Chart_pick(chartOptions[target + sideName], values[side]);
+            ].forEach((sideName, side) => {
+                chart[target][side] = (chartOptions[`${target}${sideName}`] ??
+                    values[side]);
             });
         });
         // Set margin names like chart.plotTop, chart.plotLeft,
         // chart.marginRight, chart.marginBottom.
-        Chart_marginNames.forEach(function (m, side) {
-            chart[m] = Chart_pick(chart.margin[side], chart.spacing[side]);
+        Chart_marginNames.forEach((marginName, side) => {
+            chart[marginName] = chart.margin[side] ?? chart.spacing[side];
         });
         chart.axisOffset = [0, 0, 0, 0]; // Top, right, bottom, left
         chart.clipOffset = [
@@ -39426,29 +39462,33 @@ class ScrollablePlotArea {
     static afterSetSize(chart, e) {
         const { minWidth, minHeight } = chart.options.chart.scrollablePlotArea || {}, { clipBox, plotBox, inverted, renderer } = chart;
         let scrollablePixelsX, scrollablePixelsY, recalculateHoriz;
-        if (!renderer.forExport) {
-            // The amount of pixels to scroll, the difference between chart
-            // width and scrollable width
-            if (minWidth) {
-                chart.scrollablePixelsX = scrollablePixelsX = Math.max(0, minWidth - chart.chartWidth);
-                if (scrollablePixelsX) {
-                    chart.scrollablePlotBox = ScrollablePlotArea_merge(chart.plotBox);
-                    plotBox.width = chart.plotWidth += scrollablePixelsX;
-                    clipBox[inverted ? 'height' : 'width'] += scrollablePixelsX;
-                    recalculateHoriz = true;
-                }
-                // Currently we can only do either X or Y
+        // Skip for exporting
+        if (renderer.forExport) {
+            return;
+        }
+        // The amount of pixels to scroll, the difference between chart width
+        // and scrollable width
+        if (minWidth) {
+            chart.scrollablePixelsX = scrollablePixelsX = Math.max(0, minWidth - chart.chartWidth);
+            if (scrollablePixelsX) {
+                chart.scrollablePlotBox = ScrollablePlotArea_merge(chart.plotBox);
+                plotBox.width = chart.plotWidth += scrollablePixelsX;
+                clipBox[inverted ? 'height' : 'width'] += scrollablePixelsX;
+                recalculateHoriz = true;
             }
-            else if (minHeight) {
-                chart.scrollablePixelsY = scrollablePixelsY = Math.max(0, minHeight - chart.chartHeight);
-                if (ScrollablePlotArea_defined(scrollablePixelsY)) {
-                    chart.scrollablePlotBox = ScrollablePlotArea_merge(chart.plotBox);
-                    plotBox.height = chart.plotHeight += scrollablePixelsY;
-                    clipBox[inverted ? 'width' : 'height'] += scrollablePixelsY;
-                    recalculateHoriz = false;
-                }
+            // Currently we can only do either X or Y
+        }
+        else if (minHeight) {
+            chart.scrollablePixelsY = scrollablePixelsY = Math.max(0, minHeight - chart.chartHeight);
+            if (ScrollablePlotArea_defined(scrollablePixelsY)) {
+                chart.scrollablePlotBox = ScrollablePlotArea_merge(chart.plotBox);
+                plotBox.height = chart.plotHeight += scrollablePixelsY;
+                clipBox[inverted ? 'width' : 'height'] += scrollablePixelsY;
+                recalculateHoriz = false;
             }
-            if (ScrollablePlotArea_defined(recalculateHoriz) && !e.skipAxes) {
+        }
+        if (ScrollablePlotArea_defined(recalculateHoriz)) {
+            if (!e.skipAxes) {
                 for (const axis of chart.axes) {
                     // Apply the corrected plot size to the axes of the other
                     // orientation than the scrolling direction
@@ -39460,6 +39500,10 @@ class ScrollablePlotArea {
                     }
                 }
             }
+        }
+        else {
+            // Clear (potential) old box when a new one was not set
+            delete chart.scrollablePlotBox;
         }
     }
     constructor(chart) {
@@ -40043,7 +40087,6 @@ class StackItem {
 
 
 const { getDeferredAnimation: StackingAxis_getDeferredAnimation } = AnimationUtilities;
-
 
 const { series: { prototype: seriesProto } } = Series_SeriesRegistry;
 
@@ -45508,11 +45551,11 @@ class PieSeries extends Series_Series {
     }
     /**
      * Define hasData function for non-cartesian series. Returns true if the
-     * series has points at all.
+     * series has at least one visible point (#23235)
      * @private
      */
     hasData() {
-        return !!this.dataTable.rowCount;
+        return this.points.some((point) => point.visible);
     }
     /**
      * Draw the data points
@@ -45733,7 +45776,7 @@ const { distribute: PieDataLabel_distribute } = Renderer_RendererUtilities;
 
 const { series: PieDataLabel_Series } = Series_SeriesRegistry;
 
-const { arrayMax: PieDataLabel_arrayMax, clamp: PieDataLabel_clamp, defined: PieDataLabel_defined, pick: PieDataLabel_pick, pushUnique: PieDataLabel_pushUnique, relativeLength: PieDataLabel_relativeLength } = Core_Utilities;
+const { arrayMax: PieDataLabel_arrayMax, clamp: PieDataLabel_clamp, defined: PieDataLabel_defined, isNumber: PieDataLabel_isNumber, pick: PieDataLabel_pick, pushUnique: PieDataLabel_pushUnique, relativeLength: PieDataLabel_relativeLength } = Core_Utilities;
 /* *
  *
  *  Composition
@@ -46085,7 +46128,7 @@ var PieDataLabel_ColumnDataLabel;
                     // #8864: every connector can have individual options
                     const { connectorColor, connectorWidth = 1 } = (dataLabel.options || {}), labelPosition = dataLabel.dataLabelPosition;
                     // Draw the connector
-                    if (connectorWidth) {
+                    if (PieDataLabel_isNumber(connectorWidth)) {
                         let isNew;
                         connector = dataLabel.connector;
                         if (labelPosition && labelPosition.distance > 0) {
@@ -46710,7 +46753,7 @@ function applyBorderRadius(path, i, r) {
  * @private
  */
 function BorderRadius_arc(x, y, w, h, options = {}) {
-    const path = oldArc(x, y, w, h, options), { innerR = 0, r = w, start = 0, end = 0 } = options;
+    const path = oldArc(x, y, w, h, options), { brStart = true, brEnd = true, innerR = 0, r = w, start = 0, end = 0 } = options;
     if (options.open || !options.borderRadius) {
         return path;
     }
@@ -46727,6 +46770,10 @@ function BorderRadius_arc(x, y, w, h, options = {}) {
     // splicing in arc segments.
     let i = path.length - 1;
     while (i--) {
+        if ((!brStart && (i === 0 || i === 3)) ||
+            (!brEnd && (i === 1 || i === 2))) {
+            continue;
+        }
         applyBorderRadius(path, i, i > 1 ? innerBorderRadius : borderRadius);
     }
     return path;
@@ -46801,7 +46848,7 @@ function BorderRadius_compose(SeriesClass, SVGElementClass, SVGRendererClass) {
             order: 9
         });
         BorderRadius_addEvent(PieSeriesClass, 'afterTranslate', pieSeriesOnAfterTranslate);
-        SVGElementClass.symbolCustomAttribs.push('borderRadius', 'brBoxHeight', 'brBoxY');
+        SVGElementClass.symbolCustomAttribs.push('borderRadius', 'brBoxHeight', 'brBoxY', 'brEnd', 'brStart');
         oldArc = symbols.arc;
         oldRoundedRect = symbols.roundedRect;
         symbols.arc = BorderRadius_arc;
@@ -47227,7 +47274,14 @@ var Responsive;
 (''); // Keeps doclets above in JS file
 
 ;// ./code/es-modules/masters/highcharts.src.js
-
+/**
+ * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @module highcharts/highcharts
+ *
+ * (c) 2009-2025 Highsoft AS
+ *
+ * License: www.highcharts.com/license
+ */
 
 
 
@@ -48003,11 +48057,10 @@ const colorAxisDefaults = {
      */
     /**
      * Whether to reverse the axis so that the highest number is closest
-     * to the origin. Defaults to `false` in a horizontal legend and
-     * `true` in a vertical legend, where the smallest value starts on
-     * top.
+     * to the origin. Defaults to `false`.
      *
      * @type      {boolean}
+     * @default   false
      * @product   highcharts highstock highmaps
      * @apioption colorAxis.reversed
      */
@@ -48310,7 +48363,7 @@ class ColorAxis extends Axis_Axis {
             userOptions.layout !== 'vertical' :
             legend.layout !== 'vertical';
         axis.side = userOptions.side || horiz ? 2 : 1;
-        axis.reversed = userOptions.reversed || !horiz;
+        axis.reversed = userOptions.reversed;
         axis.opposite = !horiz;
         super.init(chart, userOptions, 'colorAxis');
         // `super.init` saves the extended user options, now replace it with the
@@ -48416,9 +48469,9 @@ class ColorAxis extends Axis_Axis {
             // First time only
             if (!axis.added) {
                 axis.added = true;
-                axis.labelLeft = 0;
-                axis.labelRight = axis.width;
             }
+            axis.labelLeft = 0;
+            axis.labelRight = axis.width;
             // Reset it to avoid color axis reserving space
             axis.chart.axisOffset[axis.side] = sideOffset;
         }
@@ -48794,7 +48847,7 @@ Array.prototype.push.apply(Axis_Axis.keepProps, ColorAxis.keepProps);
 
 ;// ./code/es-modules/masters/modules/coloraxis.src.js
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
+ * @license Highcharts JS v12.4.0 (2025-09-04)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -58341,7 +58394,7 @@ Series_SeriesRegistry.registerSeriesType('heatmap', HeatmapSeries);
 
 ;// ./code/es-modules/masters/modules/map.src.js
 /**
- * @license Highmaps JS v12.3.0 (2025-06-21)
+ * @license Highmaps JS v12.4.0 (2025-09-04)
  * @module highcharts/modules/map
  * @requires highcharts
  *
@@ -58386,14 +58439,7 @@ Maps_MapView.compose(Chart_MapChart);
 /* harmony default export */ const map_src = ((/* unused pure expression or super */ null && (Highcharts)));
 
 ;// ./code/es-modules/masters/highmaps.src.js
-/**
- * @license Highmaps JS v12.3.0 (2025-06-21)
- * @module highcharts/highmaps
- *
- * (c) 2011-2025 Torstein Honsi
- *
- * License: www.highcharts.com/license
- */
+
 
 
 

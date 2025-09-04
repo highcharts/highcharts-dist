@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v12.3.0 (2025-06-21)
+ * @license Highstock JS v12.4.0 (2025-09-04)
  * @module highcharts/indicators/macd
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -72,7 +72,7 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
 
 const { noop } = (external_highcharts_src_js_default_default());
 
-const { column: ColumnSeries, sma: SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+const { sma: SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
 
 const { extend, correctFloat, defined, merge } = (external_highcharts_src_js_default_default());
 /* *

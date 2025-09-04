@@ -504,7 +504,7 @@ class Axis {
         }
         const minPixelPadding = axis.minPixelPadding, doPostTranslate = (axis.isOrdinal ||
             axis.brokenAxis?.hasBreaks ||
-            (axis.logarithmic && handleLog)) && axis.lin2val;
+            (axis.logarithmic && handleLog)) && !!axis.lin2val;
         let sign = 1, cvsOffset = 0, localA = old && axis.old ? axis.old.transA : axis.transA, returnValue = 0;
         if (!localA) {
             localA = axis.transA;
@@ -2066,7 +2066,8 @@ class Axis {
             if (cssWidth !== void 0) {
                 return parseInt(String(cssWidth), 10);
             }
-            if (marginLeft) {
+            // Skip marginLeft for opposite axis to avoid label cutoff, #22821
+            if (!this.opposite && marginLeft) {
                 return marginLeft - chart.spacing[3];
             }
         }
@@ -2781,7 +2782,7 @@ class Axis {
                 axis.plotLinesAndBandsGroups[plotGroup].destroy();
         }
         // Delete all properties and fall back to the prototype.
-        objectEach(axis, function (val, key) {
+        objectEach(axis, function (_val, key) {
             if (axis.getKeepProps().indexOf(key) === -1) {
                 delete axis[key];
             }

@@ -789,11 +789,12 @@ const ChartDefaults = {
      * others series in a stack. The shadow can be an object configuration
      * containing `color`, `offsetX`, `offsetY`, `opacity` and `width`.
      *
-     * @sample highcharts/chart/seriesgroupshadow/ Shadow
+     * @sample highcharts/chart/seriesgroupshadow/
+     *         Shadow
      *
      * @type      {boolean|Highcharts.ShadowOptionsObject}
      * @default   false
-     * @apioption chart.shadow
+     * @apioption chart.seriesGroupShadow
      */
     /**
      * Whether to apply a drop shadow to the outer chart area. Requires
@@ -1004,7 +1005,7 @@ const ChartDefaults = {
      * Chart zooming options.
      * @since 10.2.1
      *
-     * @sample     highcharts/plotoptions/sankey-inverted
+     * @sample     highcharts/plotoptions/sankey-node-color
      *             Zooming in sankey series
      * @sample     highcharts/series-treegraph/link-types
      *             Zooming in treegraph series

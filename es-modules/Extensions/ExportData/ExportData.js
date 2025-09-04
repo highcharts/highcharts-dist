@@ -230,7 +230,7 @@ var ExportData;
             return domurl.createObjectURL(new win.Blob(['\uFEFF' + content], // #7084
             { type: type }));
         }
-        catch (e) {
+        catch {
             // Ignore
         }
     }
@@ -629,10 +629,7 @@ var ExportData;
             let textContent = pick(value, ''), className = 'highcharts-text' + (classes ? ' ' + classes : '');
             // Convert to string if number
             if (typeof textContent === 'number') {
-                textContent = textContent.toString();
-                if (decimalPoint === ',') {
-                    textContent = textContent.replace('.', decimalPoint);
-                }
+                textContent = chart.numberFormatter(textContent, -1, decimalPoint, tagName === 'th' ? '' : void 0);
                 className = 'highcharts-number';
             }
             else if (!value) {
@@ -679,6 +676,7 @@ var ExportData;
                         if (cur === subheaders[i]) {
                             if (exporting.options.useRowspanHeaders) {
                                 rowspan = 2;
+                                // eslint-disable-next-line @typescript-eslint/no-array-delete
                                 delete subheaders[i];
                             }
                             else {

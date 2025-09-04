@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
+ * @license Highcharts JS v12.4.0 (2025-09-04)
  * @module highcharts/modules/boost
  * @requires highcharts
  *
@@ -451,7 +451,7 @@ const { clamp, error, pick: WGLShader_pick } = (external_highcharts_src_js_defau
  *
  * */
 const fragmentShader = [
-    /* eslint-disable max-len, @typescript-eslint/indent */
+    /* eslint-disable max-len, @stylistic/indent */
     'precision highp float;',
     'uniform vec4 fillColor;',
     'varying highp vec2 position;',
@@ -479,10 +479,10 @@ const fragmentShader = [
     'gl_FragColor = col;',
     '}',
     '}'
-    /* eslint-enable max-len, @typescript-eslint/indent */
+    /* eslint-enable max-len, @stylistic/indent */
 ].join('\n');
 const vertexShader = [
-    /* eslint-disable max-len, @typescript-eslint/indent */
+    /* eslint-disable max-len, @stylistic/indent */
     '#version 100',
     '#define LN10 2.302585092994046',
     'precision highp float;',
@@ -497,6 +497,7 @@ const vertexShader = [
     'uniform bool skipTranslation;',
     'uniform float xAxisTrans;',
     'uniform float xAxisMin;',
+    'uniform float xAxisMax;',
     'uniform float xAxisMinPad;',
     'uniform float xAxisPointRange;',
     'uniform float xAxisLen;',
@@ -509,6 +510,7 @@ const vertexShader = [
     'uniform bool  xAxisReversed;',
     'uniform float yAxisTrans;',
     'uniform float yAxisMin;',
+    'uniform float yAxisMax;',
     'uniform float yAxisMinPad;',
     'uniform float yAxisPointRange;',
     'uniform float yAxisLen;',
@@ -519,6 +521,7 @@ const vertexShader = [
     'uniform bool  yAxisCVSCoord;',
     'uniform bool  yAxisIsLog;',
     'uniform bool  yAxisReversed;',
+    'uniform bool  isCircle;',
     'uniform bool  isBubble;',
     'uniform bool  bubbleSizeByArea;',
     'uniform float bubbleZMin;',
@@ -607,7 +610,17 @@ const vertexShader = [
     '}',
     // 'gl_PointSize = 10.0;',
     'vColor = aColor;',
-    'if (skipTranslation && isInverted) {',
+    // It's not working correctly on useGPUTranslations off, because we
+    // operate on pixel values then, not on axis values. Maybe we should
+    // just skip outer points before pushing them to the vertex buffer?
+    'if (!skipTranslation && isCircle && (',
+    'aVertexPosition.x < xAxisMin ||',
+    'aVertexPosition.x > xAxisMax ||',
+    'aVertexPosition.y < yAxisMin ||',
+    'aVertexPosition.y > yAxisMax',
+    ')) {',
+    'gl_Position = uPMatrix * vec4(2.0, 2.0, 2.0, 1.0);',
+    '} else if (skipTranslation && isInverted) {',
     // If we get translated values from JS, just swap them (x, y)
     'gl_Position = uPMatrix * vec4(aVertexPosition.y + yAxisPos, aVertexPosition.x + xAxisPos, 0.0, 1.0);',
     '} else if (isInverted) {',
@@ -619,7 +632,7 @@ const vertexShader = [
     '}',
     // 'gl_Position = uPMatrix * vec4(aVertexPosition.x, aVertexPosition.y, 0.0, 1.0);',
     '}'
-    /* eslint-enable max-len, @typescript-eslint/indent */
+    /* eslint-enable max-len, @stylistic/indent */
 ].join('\n');
 /* *
  *
@@ -1101,6 +1114,8 @@ class WGLVertexBuffer {
  * */
 
 
+const { getBoostClipRect: WGLRenderer_getBoostClipRect } = Boost_BoostChart;
+
 const { parse: color } = (external_highcharts_src_js_default_Color_default());
 
 const { doc, win } = (external_highcharts_src_js_default_default());
@@ -1318,10 +1333,9 @@ class WGLRenderer {
         /// threshold = options.threshold,
         // yBottom = chart.yAxis[0].getThreshold(threshold),
         // hasThreshold = isNumber(threshold),
-        // colorByPoint = series.options.colorByPoint,
+        colorByPoint = series.options.colorByPoint, 
         // This is required for color by point, so make sure this is
         // uncommented if enabling that
-        // colorIndex = 0,
         // Required for color axis support
         // caxis,
         connectNulls = options.connectNulls, 
@@ -1333,7 +1347,7 @@ class WGLRenderer {
         //
         skipped = 0, hadPoints = false, 
         // The following are used in the builder while loop
-        x, y, d, z, i = -1, px = false, nx = false, low, nextInside = false, prevInside = false, pcolor = false, isXInside = false, isYInside = true, firstPoint = true, zoneColors, zoneDefColor = false, gapSize = false, vlen = 0;
+        x, y, d, z, i = -1, px = false, nx = false, low, nextInside = false, prevInside = false, pcolor = void 0, isXInside = false, isYInside = true, firstPoint = true, zoneColors, zoneDefColor = false, gapSize = false, vlen = 0, colorIndex = 0;
         if (options.boostData && options.boostData.length > 0) {
             return;
         }
@@ -1546,27 +1560,29 @@ class WGLRenderer {
             if (chartDestroyed) {
                 break;
             }
-            // Uncomment this to enable color by point.
-            // This currently left disabled as the charts look really ugly
-            // when enabled and there's a lot of points.
-            // Leaving in for the future (tm).
-            // if (colorByPoint) {
-            //     colorIndex = ++colorIndex %
-            //         series.chart.options.colors.length;
-            //     pcolor = toRGBAFast(series.chart.options.colors[colorIndex]);
-            //     pcolor[0] /= 255.0;
-            //     pcolor[1] /= 255.0;
-            //     pcolor[2] /= 255.0;
-            // }
             // Handle the point.color option (#5999)
             const pointOptions = rawData && rawData[i];
-            if (!useRaw && isObject(pointOptions, true)) {
-                if (pointOptions.color) {
+            if (!useRaw) {
+                if (isObject(pointOptions, true) && pointOptions.color) {
                     pcolor = color(pointOptions.color).rgba;
+                }
+                const colorKeyIndex = series.options.keys?.indexOf('color');
+                if (Array.isArray(pointOptions) &&
+                    colorKeyIndex &&
+                    typeof pointOptions[colorKeyIndex] === 'string') {
+                    pcolor = color(pointOptions[colorKeyIndex]).rgba;
+                }
+                else if (colorByPoint && chart.options.colors) {
+                    colorIndex = colorIndex %
+                        chart.options.colors.length;
+                    pcolor = color(chart.options.colors[colorIndex]).rgba;
+                }
+                if (pcolor) {
                     pcolor[0] /= 255.0;
                     pcolor[1] /= 255.0;
                     pcolor[2] /= 255.0;
                 }
+                colorIndex++;
             }
             if (useRaw) {
                 x = d[0];
@@ -1773,15 +1789,15 @@ class WGLRenderer {
                     minVal = yAxis.toPixels(minVal, true);
                 }
                 // Need to add an extra point here
-                vertice(x, minVal, 0, 0, pcolor);
+                vertice(x, minVal, false, 0, pcolor);
             }
             // Do step line if enabled.
             // Draws an additional point at the old Y at the new X.
             // See #6976.
             if (options.step && !firstPoint) {
-                vertice(x, lastY, 0, 2, pcolor);
+                vertice(x, lastY, false, 2, pcolor);
             }
-            vertice(x, y, 0, series.type === 'bubble' ? (z || 1) : 2, pcolor);
+            vertice(x, y, false, series.type === 'bubble' ? (z || 1) : 2, pcolor);
             // Uncomment this to support color axis.
             // if (caxis) {
             //     pcolor = color(caxis.toColor(y)).rgba;
@@ -1899,6 +1915,7 @@ class WGLRenderer {
         const pixelRatio = this.getPixelRatio();
         shader.setUniform('xAxisTrans', axis.transA * pixelRatio);
         shader.setUniform('xAxisMin', axis.min);
+        shader.setUniform('xAxisMax', axis.max);
         shader.setUniform('xAxisMinPad', axis.minPixelPadding * pixelRatio);
         shader.setUniform('xAxisPointRange', axis.pointRange);
         shader.setUniform('xAxisLen', axis.len * pixelRatio);
@@ -1921,6 +1938,7 @@ class WGLRenderer {
         const pixelRatio = this.getPixelRatio();
         shader.setUniform('yAxisTrans', axis.transA * pixelRatio);
         shader.setUniform('yAxisMin', axis.min);
+        shader.setUniform('yAxisMax', axis.max);
         shader.setUniform('yAxisMinPad', axis.minPixelPadding * pixelRatio);
         shader.setUniform('yAxisPointRange', axis.pointRange);
         shader.setUniform('yAxisLen', axis.len * pixelRatio);
@@ -2087,9 +2105,13 @@ class WGLRenderer {
             // Do the actual rendering
             // If the line width is < 0, skip rendering of the lines. See #7833.
             if (lineWidth > 0 || s.drawMode !== 'LINE_STRIP') {
+                const { x: cx, y: cy, width: cw, height: ch } = WGLRenderer_getBoostClipRect(chart, s.series);
+                gl.enable(gl.SCISSOR_TEST);
+                gl.scissor(cx, height - cy - ch, cw, ch);
                 for (sindex = 0; sindex < s.segments.length; sindex++) {
                     vbuffer.render(s.segments[sindex].from, s.segments[sindex].to, s.drawMode);
                 }
+                gl.disable(gl.SCISSOR_TEST);
             }
             if (s.hasMarkers && showMarkers) {
                 shader.setPointSize(WGLRenderer_pick(options.marker && options.marker.radius, 5) * 2 * pixelRatio);
@@ -2212,7 +2234,7 @@ class WGLRenderer {
                 gl.bindTexture(gl.TEXTURE_2D, null);
                 props.isReady = true;
             }
-            catch (e) {
+            catch {
                 // Silent error
             }
         };
@@ -2994,15 +3016,18 @@ function createAndAttachRenderer(chart, series) {
     boost.canvas.width = width;
     boost.canvas.height = height;
     if (boost.clipRect) {
-        const box = BoostSeries_getBoostClipRect(chart, target), 
+        const box = BoostSeries_getBoostClipRect(chart, target);
+        boost.clipRect.attr(box);
         // When using panes, the image itself must be clipped. When not
         // using panes, it is better to clip the target group, because then
         // we preserve clipping on touch- and mousewheel zoom preview.
-        clippedElement = (box.width === chart.clipBox.width &&
-            box.height === chart.clipBox.height) ? targetGroup :
-            (boost.targetFo || boost.target);
-        boost.clipRect.attr(box);
-        clippedElement?.clip(boost.clipRect);
+        if (box.width === chart.clipBox.width &&
+            box.height === chart.clipBox.height) {
+            targetGroup?.clip(chart.renderer.clipRect(box.x - 4, box.y, box.width + 4, box.height + 4)); // #9799
+        }
+        else {
+            (boost.targetFo || boost.target).clip(boost.clipRect);
+        }
     }
     boost.resize();
     boost.clear();
@@ -3186,7 +3211,7 @@ function exitBoost(series) {
  */
 function hasExtremes(series, checkX) {
     const options = series.options, dataLength = series.dataTable.modified.rowCount, xAxis = series.xAxis && series.xAxis.options, yAxis = series.yAxis && series.yAxis.options, colorAxis = series.colorAxis && series.colorAxis.options;
-    return dataLength > (options.boostThreshold || Number.MAX_VALUE) &&
+    return dataLength > BoostSeries_pick(options.boostThreshold, Number.MAX_VALUE) &&
         // Defined yAxis extremes
         BoostSeries_isNumber(yAxis.min) &&
         BoostSeries_isNumber(yAxis.max) &&
@@ -3210,7 +3235,7 @@ const getSeriesBoosting = (series, data) => {
     }
     return (BoostSeries_isChartSeriesBoosting(series.chart) ||
         ((data ? data.length : 0) >=
-            (series.options.boostThreshold || Number.MAX_VALUE)));
+            BoostSeries_pick(series.options.boostThreshold, Number.MAX_VALUE)));
 };
 /**
  * Extend series.destroy to also remove the fake k-d-tree points (#5137).
@@ -3276,7 +3301,7 @@ function getPoint(series, boostPoint) {
     if (boostPoint instanceof PointClass) {
         return boostPoint;
     }
-    const isScatter = series.is('scatter'), xData = ((isScatter && series.getColumn('x', true).length ?
+    const data = seriesOptions.data, isScatter = series.is('scatter'), xData = ((isScatter && series.getColumn('x', true).length ?
         series.getColumn('x', true) :
         void 0) ||
         (series.getColumn('x').length ? series.getColumn('x') : void 0) ||
@@ -3284,9 +3309,19 @@ function getPoint(series, boostPoint) {
         series.getColumn('x', true) ||
         false), yData = (series.getColumn('y', true) ||
         seriesOptions.yData ||
-        false), point = new PointClass(series, (isScatter && xData && yData) ?
-        [xData[boostPoint.i], yData[boostPoint.i]] :
-        (isArray(series.options.data) ? series.options.data : [])[boostPoint.i], xData ? xData[boostPoint.i] : void 0);
+        false), pointIndex = boostPoint.i, pointColor = data?.[pointIndex]
+        ?.color, point = new PointClass(series, (isScatter && xData && yData) ?
+        [xData[pointIndex], yData[pointIndex]] :
+        (isArray(data) ? data : [])[pointIndex], xData ? xData[pointIndex] : void 0);
+    if (isScatter &&
+        seriesOptions?.keys?.length) {
+        const keys = seriesOptions.keys;
+        // Don't reassign X and Y properties as they're already handled above
+        for (let keysIndex = keys.length - 1; keysIndex > -1; keysIndex--) {
+            point[keys[keysIndex]] =
+                data[pointIndex][keysIndex];
+        }
+    }
     point.category = BoostSeries_pick(xAxis.categories ?
         xAxis.categories[point.x] :
         point.x, // @todo simplify
@@ -3296,9 +3331,12 @@ function getPoint(series, boostPoint) {
     point.distX = boostPoint.distX;
     point.plotX = boostPoint.plotX;
     point.plotY = boostPoint.plotY;
-    point.index = boostPoint.i;
+    point.index = pointIndex;
     point.percentage = boostPoint.percentage;
     point.isInside = series.isPointInside(point);
+    if (pointColor) {
+        point.color = pointColor; // Set color for hover effect #23370
+    }
     return point;
 }
 /**
@@ -3514,11 +3552,8 @@ function seriesRenderCanvas() {
     // Do not start building while drawing
     this.buildKDTree = noop;
     BoostSeries_fireEvent(this, 'renderCanvas');
-    if (this.is('line') &&
-        lineWidth > 1 &&
-        seriesBoost?.target &&
-        chartBoost &&
-        !chartBoost.lineWidthFilter) {
+    if (chartBoost && seriesBoost?.target && lineWidth > 1 && this.is('line')) {
+        chartBoost.lineWidthFilter?.remove();
         chartBoost.lineWidthFilter = chart.renderer.definition({
             tagName: 'filter',
             children: [
@@ -4113,7 +4148,7 @@ function hasWebGLSupport() {
                     return true;
                 }
             }
-            catch (e) {
+            catch {
                 // Silent error
             }
         }
@@ -4161,6 +4196,10 @@ const Boost = {
  *         Line chart with hundreds of series
  * @sample highcharts/boost/scatter
  *         Scatter chart
+ * @sample highcharts/boost/scatter-pointcolor
+ *         Scatter chart with colored points
+ * @sample highcharts/boost/scatter-colorbypoint
+ *         Scatter chart with colorByPoint
  * @sample highcharts/boost/area
  *         Area chart
  * @sample highcharts/boost/arearange

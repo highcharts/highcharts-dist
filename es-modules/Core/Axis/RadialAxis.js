@@ -231,8 +231,18 @@ var RadialAxis;
                 return r;
             }
             return radius;
-        }, center = this.center, startAngleRad = this.startAngleRad, fullRadius = center[2] / 2, offset = Math.min(this.offset, 0), left = this.left || 0, top = this.top || 0, percentRegex = /%$/, isCircular = this.isCircular; // X axis in a polar chart
-        let start, end, angle, xOnPerimeter, open, path, outerRadius = pick(radiusToPixels(options.outerRadius), fullRadius), innerRadius = radiusToPixels(options.innerRadius), thickness = pick(radiusToPixels(options.thickness), 10);
+        }, center = this.center, startAngleRad = this.startAngleRad, borderRadius = options.borderRadius, fullRadius = center[2] / 2, offset = Math.min(this.offset, 0), left = this.left || 0, top = this.top || 0, percentRegex = /%$/, isCircular = this.isCircular, // X axis in a polar chart
+        trueBands = this.options.plotBands || [], index = trueBands.indexOf(options);
+        let start, end, angle, xOnPerimeter, open, path, outerRadius = pick(radiusToPixels(options.outerRadius), fullRadius), innerRadius = radiusToPixels(options.innerRadius), thickness = pick(radiusToPixels(options.thickness), 10), brStart = true, brEnd = true;
+        // Apply conditional border radius, only for ends of band stacks
+        if (borderRadius && index > -1) {
+            if (trueBands[index - 1] && trueBands[index - 1].to === from) {
+                brStart = false;
+            }
+            if (trueBands[index + 1] && trueBands[index + 1].from === to) {
+                brEnd = false;
+            }
+        }
         // Polygonal plot bands
         if (this.options.gridLineInterpolation === 'polygon') {
             path = this.getPlotLinePath({ value: from }).concat(this.getPlotLinePath({ value: to, reverse: true }));
@@ -267,7 +277,9 @@ var RadialAxis;
                 end: Math.max(start, end),
                 innerR: pick(innerRadius, outerRadius - thickness),
                 open,
-                borderRadius: options.borderRadius
+                borderRadius,
+                brStart,
+                brEnd
             });
             // Provide positioning boxes for the label (#6406)
             if (isCircular) {

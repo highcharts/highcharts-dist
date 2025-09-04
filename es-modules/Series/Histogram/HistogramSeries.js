@@ -14,23 +14,22 @@ import HistogramSeriesDefaults from './HistogramSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
-const { arrayMax, arrayMin, correctFloat, extend, isNumber, merge } = U;
+const { arrayMax, arrayMin, correctFloat, isNumber, merge } = U;
 /* ************************************************************************** *
  *  HISTOGRAM
  * ************************************************************************** */
 /**
- * A dictionary with formulas for calculating number of bins based on the
- * base series
+ * A dictionary with formulas for calculating number of bins based on data
  **/
 const binsNumberFormulas = {
-    'square-root': function (baseSeries) {
-        return Math.ceil(Math.sqrt(baseSeries.options.data.length));
+    'square-root': function (data) {
+        return Math.ceil(Math.sqrt(data.length));
     },
-    'sturges': function (baseSeries) {
-        return Math.ceil(Math.log(baseSeries.options.data.length) * Math.LOG2E);
+    'sturges': function (data) {
+        return Math.ceil(Math.log(data.length) * Math.LOG2E);
     },
-    'rice': function (baseSeries) {
-        return Math.ceil(2 * Math.pow(baseSeries.options.data.length, 1 / 3));
+    'rice': function (data) {
+        return Math.ceil(2 * Math.pow(data.length, 1 / 3));
     }
 };
 /**
@@ -66,15 +65,22 @@ class HistogramSeries extends ColumnSeries {
      *  Functions
      *
      * */
-    binsNumber() {
+    binsNumber(data) {
         const binsNumberOption = this.options.binsNumber;
         const binsNumber = binsNumberFormulas[binsNumberOption] ||
             // #7457
             (typeof binsNumberOption === 'function' && binsNumberOption);
-        return Math.ceil((binsNumber && binsNumber(this.baseSeries)) ||
+        return Math.ceil((binsNumber && binsNumber(data)) ||
             (isNumber(binsNumberOption) ?
                 binsNumberOption :
-                binsNumberFormulas['square-root'](this.baseSeries)));
+                binsNumberFormulas['square-root'](data)));
+    }
+    setData(data, redraw = true, animation, updatePoints) {
+        let alteredData;
+        if (typeof data !== 'undefined' && data.length > 0) {
+            alteredData = this.derivedData(data.filter(isNumber), this.binsNumber(data), this.options.binWidth);
+        }
+        super.setData.call(this, alteredData, redraw, animation, updatePoints);
     }
     derivedData(baseData, binsNumber, binWidth) {
         const series = this, max = correctFloat(arrayMax(baseData)), 
@@ -131,8 +137,7 @@ class HistogramSeries extends ColumnSeries {
             this.setData([]);
             return;
         }
-        const data = this.derivedData(yData, this.binsNumber(), this.options.binWidth);
-        this.setData(data, false);
+        this.setData(yData, false, void 0, false);
     }
 }
 /* *
@@ -141,9 +146,6 @@ class HistogramSeries extends ColumnSeries {
  *
  * */
 HistogramSeries.defaultOptions = merge(ColumnSeries.defaultOptions, HistogramSeriesDefaults);
-extend(HistogramSeries.prototype, {
-    hasDerivedData: DerivedComposition.hasDerivedData
-});
 DerivedComposition.compose(HistogramSeries);
 SeriesRegistry.registerSeriesType('histogram', HistogramSeries);
 /* *

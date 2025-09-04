@@ -10,6 +10,8 @@
  *
  * */
 'use strict';
+import BoostChart from './BoostChart.js';
+const { getBoostClipRect } = BoostChart;
 import Color from '../../Core/Color/Color.js';
 const { parse: color } = Color;
 import H from '../../Core/Globals.js';
@@ -228,10 +230,9 @@ class WGLRenderer {
         /// threshold = options.threshold,
         // yBottom = chart.yAxis[0].getThreshold(threshold),
         // hasThreshold = isNumber(threshold),
-        // colorByPoint = series.options.colorByPoint,
+        colorByPoint = series.options.colorByPoint, 
         // This is required for color by point, so make sure this is
         // uncommented if enabling that
-        // colorIndex = 0,
         // Required for color axis support
         // caxis,
         connectNulls = options.connectNulls, 
@@ -243,7 +244,7 @@ class WGLRenderer {
         //
         skipped = 0, hadPoints = false, 
         // The following are used in the builder while loop
-        x, y, d, z, i = -1, px = false, nx = false, low, nextInside = false, prevInside = false, pcolor = false, isXInside = false, isYInside = true, firstPoint = true, zoneColors, zoneDefColor = false, gapSize = false, vlen = 0;
+        x, y, d, z, i = -1, px = false, nx = false, low, nextInside = false, prevInside = false, pcolor = void 0, isXInside = false, isYInside = true, firstPoint = true, zoneColors, zoneDefColor = false, gapSize = false, vlen = 0, colorIndex = 0;
         if (options.boostData && options.boostData.length > 0) {
             return;
         }
@@ -456,27 +457,29 @@ class WGLRenderer {
             if (chartDestroyed) {
                 break;
             }
-            // Uncomment this to enable color by point.
-            // This currently left disabled as the charts look really ugly
-            // when enabled and there's a lot of points.
-            // Leaving in for the future (tm).
-            // if (colorByPoint) {
-            //     colorIndex = ++colorIndex %
-            //         series.chart.options.colors.length;
-            //     pcolor = toRGBAFast(series.chart.options.colors[colorIndex]);
-            //     pcolor[0] /= 255.0;
-            //     pcolor[1] /= 255.0;
-            //     pcolor[2] /= 255.0;
-            // }
             // Handle the point.color option (#5999)
             const pointOptions = rawData && rawData[i];
-            if (!useRaw && isObject(pointOptions, true)) {
-                if (pointOptions.color) {
+            if (!useRaw) {
+                if (isObject(pointOptions, true) && pointOptions.color) {
                     pcolor = color(pointOptions.color).rgba;
+                }
+                const colorKeyIndex = series.options.keys?.indexOf('color');
+                if (Array.isArray(pointOptions) &&
+                    colorKeyIndex &&
+                    typeof pointOptions[colorKeyIndex] === 'string') {
+                    pcolor = color(pointOptions[colorKeyIndex]).rgba;
+                }
+                else if (colorByPoint && chart.options.colors) {
+                    colorIndex = colorIndex %
+                        chart.options.colors.length;
+                    pcolor = color(chart.options.colors[colorIndex]).rgba;
+                }
+                if (pcolor) {
                     pcolor[0] /= 255.0;
                     pcolor[1] /= 255.0;
                     pcolor[2] /= 255.0;
                 }
+                colorIndex++;
             }
             if (useRaw) {
                 x = d[0];
@@ -683,15 +686,15 @@ class WGLRenderer {
                     minVal = yAxis.toPixels(minVal, true);
                 }
                 // Need to add an extra point here
-                vertice(x, minVal, 0, 0, pcolor);
+                vertice(x, minVal, false, 0, pcolor);
             }
             // Do step line if enabled.
             // Draws an additional point at the old Y at the new X.
             // See #6976.
             if (options.step && !firstPoint) {
-                vertice(x, lastY, 0, 2, pcolor);
+                vertice(x, lastY, false, 2, pcolor);
             }
-            vertice(x, y, 0, series.type === 'bubble' ? (z || 1) : 2, pcolor);
+            vertice(x, y, false, series.type === 'bubble' ? (z || 1) : 2, pcolor);
             // Uncomment this to support color axis.
             // if (caxis) {
             //     pcolor = color(caxis.toColor(y)).rgba;
@@ -809,6 +812,7 @@ class WGLRenderer {
         const pixelRatio = this.getPixelRatio();
         shader.setUniform('xAxisTrans', axis.transA * pixelRatio);
         shader.setUniform('xAxisMin', axis.min);
+        shader.setUniform('xAxisMax', axis.max);
         shader.setUniform('xAxisMinPad', axis.minPixelPadding * pixelRatio);
         shader.setUniform('xAxisPointRange', axis.pointRange);
         shader.setUniform('xAxisLen', axis.len * pixelRatio);
@@ -831,6 +835,7 @@ class WGLRenderer {
         const pixelRatio = this.getPixelRatio();
         shader.setUniform('yAxisTrans', axis.transA * pixelRatio);
         shader.setUniform('yAxisMin', axis.min);
+        shader.setUniform('yAxisMax', axis.max);
         shader.setUniform('yAxisMinPad', axis.minPixelPadding * pixelRatio);
         shader.setUniform('yAxisPointRange', axis.pointRange);
         shader.setUniform('yAxisLen', axis.len * pixelRatio);
@@ -997,9 +1002,13 @@ class WGLRenderer {
             // Do the actual rendering
             // If the line width is < 0, skip rendering of the lines. See #7833.
             if (lineWidth > 0 || s.drawMode !== 'LINE_STRIP') {
+                const { x: cx, y: cy, width: cw, height: ch } = getBoostClipRect(chart, s.series);
+                gl.enable(gl.SCISSOR_TEST);
+                gl.scissor(cx, height - cy - ch, cw, ch);
                 for (sindex = 0; sindex < s.segments.length; sindex++) {
                     vbuffer.render(s.segments[sindex].from, s.segments[sindex].to, s.drawMode);
                 }
+                gl.disable(gl.SCISSOR_TEST);
             }
             if (s.hasMarkers && showMarkers) {
                 shader.setPointSize(pick(options.marker && options.marker.radius, 5) * 2 * pixelRatio);
@@ -1122,7 +1131,7 @@ class WGLRenderer {
                 gl.bindTexture(gl.TEXTURE_2D, null);
                 props.isReady = true;
             }
-            catch (e) {
+            catch {
                 // Silent error
             }
         };

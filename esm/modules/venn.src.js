@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
+ * @license Highcharts JS v12.4.0 (2025-09-04)
  * @module highcharts/modules/venn
  * @requires highcharts
  *
@@ -169,7 +169,9 @@ var GeometryUtilities;
  * */
 
 
+
 const { getAngleBetweenPoints, getCenterOfPoints, getDistanceBetweenPoints } = Geometry_GeometryUtilities;
+const { correctFloat } = (external_highcharts_src_js_default_default());
 /* *
  *
  *  Namespace
@@ -214,7 +216,7 @@ var CircleUtilities;
         if (r <= 0) {
             throw new Error('radius of circle must be a positive number.');
         }
-        return Math.PI * r * r;
+        return correctFloat(Math.PI * r * r);
     }
     CircleUtilities.getAreaOfCircle = getAreaOfCircle;
     /**
@@ -579,7 +581,7 @@ function draw(point, params) {
     params.attribs = {
         ...params.attribs,
         'class': point.getClassName()
-    } || {};
+    };
     if ((point.shouldDraw())) {
         if (!graphic) {
             if (params.shapeType === 'text') {

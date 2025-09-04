@@ -1,10 +1,16 @@
 /**
- * @license Highcharts Gantt JS v12.3.0 (2025-06-21)
+ * @license Highcharts Gantt JS v12.4.0 (2025-09-04)
  * @module highcharts/highcharts-gantt
  *
- * (c) 2017-2025 Lars Cabrera, Torstein Honsi, Jon Arild Nygard & Oystein Moseng
+ * (c) 2017-2025 Highsoft AS
  *
  * License: www.highcharts.com/license
+ *
+ * Authors:
+ * - Lars Cabrera
+ * - Torstein Honsi
+ * - Jon Arild Nygard
+ * - Oystein Moseng
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_c57973fa__ from "./highcharts.src.js";
 import * as __WEBPACK_EXTERNAL_MODULE__modules_gantt_src_js_671dcdef__ from "./modules/gantt.src.js";

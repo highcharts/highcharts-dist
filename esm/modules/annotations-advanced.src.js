@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
+ * @license Highcharts JS v12.4.0 (2025-09-04)
  * @module highcharts/modules/annotations-advanced
  * @requires highcharts
  *
@@ -1616,9 +1616,12 @@ class MockPoint {
      * The mock point's options.
      */
     getOptions() {
-        return this.hasDynamicOptions() ?
-            this.options(this.target) :
-            this.options;
+        if (this.hasDynamicOptions()) {
+            if (typeof this.options === 'function') {
+                return this.options(this.target);
+            }
+        }
+        return this.options;
     }
     /**
      * Check if the point has dynamic options.
@@ -5040,7 +5043,7 @@ function onNavigationBindingsShowPopup(config) {
         this.popup = new Popup_Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
             (this.chart.options.stockTools &&
                 this.chart.options.stockTools.gui.iconsURL) ||
-            'https://code.highcharts.com/12.3.0/gfx/stock-icons/'), this.chart);
+            'https://code.highcharts.com/12.4.0/gfx/stock-icons/'), this.chart);
     }
     this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
 }

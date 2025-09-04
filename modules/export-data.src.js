@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
+ * @license Highcharts JS v12.4.0 (2025-09-04)
  * @module highcharts/modules/export-data
  * @requires highcharts
  * @requires highcharts/modules/exporting
@@ -257,7 +257,9 @@ function getScript(scriptLocation) {
         };
         // Reject in case of fail
         script.onerror = () => {
-            reject(error(`Error loading script ${scriptLocation}`));
+            const msg = `Error loading script ${scriptLocation}`;
+            error(msg);
+            reject(new Error(msg));
         };
         // Append the newly created script
         head.appendChild(script);
@@ -859,7 +861,7 @@ var ExportData;
             return domurl.createObjectURL(new ExportData_win.Blob(['\uFEFF' + content], // #7084
             { type: type }));
         }
-        catch (e) {
+        catch {
             // Ignore
         }
     }
@@ -1258,10 +1260,7 @@ var ExportData;
             let textContent = pick(value, ''), className = 'highcharts-text' + (classes ? ' ' + classes : '');
             // Convert to string if number
             if (typeof textContent === 'number') {
-                textContent = textContent.toString();
-                if (decimalPoint === ',') {
-                    textContent = textContent.replace('.', decimalPoint);
-                }
+                textContent = chart.numberFormatter(textContent, -1, decimalPoint, tagName === 'th' ? '' : void 0);
                 className = 'highcharts-number';
             }
             else if (!value) {
@@ -1308,6 +1307,7 @@ var ExportData;
                         if (cur === subheaders[i]) {
                             if (exporting.options.useRowspanHeaders) {
                                 rowspan = 2;
+                                // eslint-disable-next-line @typescript-eslint/no-array-delete
                                 delete subheaders[i];
                             }
                             else {

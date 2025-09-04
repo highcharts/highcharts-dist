@@ -211,9 +211,12 @@ class MockPoint {
      * The mock point's options.
      */
     getOptions() {
-        return this.hasDynamicOptions() ?
-            this.options(this.target) :
-            this.options;
+        if (this.hasDynamicOptions()) {
+            if (typeof this.options === 'function') {
+                return this.options(this.target);
+            }
+        }
+        return this.options;
     }
     /**
      * Check if the point has dynamic options.

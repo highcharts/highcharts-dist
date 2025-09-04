@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.3.0 (2025-06-21)
+ * @license Highcharts JS v12.4.0 (2025-09-04)
  * @module highcharts/modules/solid-gauge
  * @requires highcharts
  * @requires highcharts/highcharts-more
@@ -185,7 +185,7 @@ function applyBorderRadius(path, i, r) {
  * @private
  */
 function arc(x, y, w, h, options = {}) {
-    const path = oldArc(x, y, w, h, options), { innerR = 0, r = w, start = 0, end = 0 } = options;
+    const path = oldArc(x, y, w, h, options), { brStart = true, brEnd = true, innerR = 0, r = w, start = 0, end = 0 } = options;
     if (options.open || !options.borderRadius) {
         return path;
     }
@@ -202,6 +202,10 @@ function arc(x, y, w, h, options = {}) {
     // splicing in arc segments.
     let i = path.length - 1;
     while (i--) {
+        if ((!brStart && (i === 0 || i === 3)) ||
+            (!brEnd && (i === 1 || i === 2))) {
+            continue;
+        }
         applyBorderRadius(path, i, i > 1 ? innerBorderRadius : borderRadius);
     }
     return path;
@@ -276,7 +280,7 @@ function compose(SeriesClass, SVGElementClass, SVGRendererClass) {
             order: 9
         });
         addEvent(PieSeriesClass, 'afterTranslate', pieSeriesOnAfterTranslate);
-        SVGElementClass.symbolCustomAttribs.push('borderRadius', 'brBoxHeight', 'brBoxY');
+        SVGElementClass.symbolCustomAttribs.push('borderRadius', 'brBoxHeight', 'brBoxY', 'brEnd', 'brStart');
         oldArc = symbols.arc;
         oldRoundedRect = symbols.roundedRect;
         symbols.arc = arc;
@@ -658,6 +662,19 @@ const SolidGaugeAxis = {
  * @optionparent plotOptions.solidgauge
  */
 const SolidGaugeSeriesDefaults = {
+    /**
+     * The corner radius of the border surrounding solid gauge. A number
+     * signifies pixels and percentage string, like for example `50%`,
+     * signifies a relative size.
+     *
+     * @sample {highcharts} highcharts/series-solidgauge/pane-borderradius
+     *         Solid gauge with rounded border.
+     *
+     * @type      {number | string}
+     * @since     11.0.0
+     * @product   highcharts
+     * @apioption plotOptions.solidgauge.borderRadius
+     */
     /**
      * The inner radius for points in a solid gauge. Can be given only in
      * percentage, either as a number or a string like `"50%"`.

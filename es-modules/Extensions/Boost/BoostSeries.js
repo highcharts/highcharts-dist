@@ -275,15 +275,18 @@ function createAndAttachRenderer(chart, series) {
     boost.canvas.width = width;
     boost.canvas.height = height;
     if (boost.clipRect) {
-        const box = getBoostClipRect(chart, target), 
+        const box = getBoostClipRect(chart, target);
+        boost.clipRect.attr(box);
         // When using panes, the image itself must be clipped. When not
         // using panes, it is better to clip the target group, because then
         // we preserve clipping on touch- and mousewheel zoom preview.
-        clippedElement = (box.width === chart.clipBox.width &&
-            box.height === chart.clipBox.height) ? targetGroup :
-            (boost.targetFo || boost.target);
-        boost.clipRect.attr(box);
-        clippedElement?.clip(boost.clipRect);
+        if (box.width === chart.clipBox.width &&
+            box.height === chart.clipBox.height) {
+            targetGroup?.clip(chart.renderer.clipRect(box.x - 4, box.y, box.width + 4, box.height + 4)); // #9799
+        }
+        else {
+            (boost.targetFo || boost.target).clip(boost.clipRect);
+        }
     }
     boost.resize();
     boost.clear();
@@ -467,7 +470,7 @@ function exitBoost(series) {
  */
 function hasExtremes(series, checkX) {
     const options = series.options, dataLength = series.dataTable.modified.rowCount, xAxis = series.xAxis && series.xAxis.options, yAxis = series.yAxis && series.yAxis.options, colorAxis = series.colorAxis && series.colorAxis.options;
-    return dataLength > (options.boostThreshold || Number.MAX_VALUE) &&
+    return dataLength > pick(options.boostThreshold, Number.MAX_VALUE) &&
         // Defined yAxis extremes
         isNumber(yAxis.min) &&
         isNumber(yAxis.max) &&
@@ -491,7 +494,7 @@ const getSeriesBoosting = (series, data) => {
     }
     return (isChartSeriesBoosting(series.chart) ||
         ((data ? data.length : 0) >=
-            (series.options.boostThreshold || Number.MAX_VALUE)));
+            pick(series.options.boostThreshold, Number.MAX_VALUE)));
 };
 /**
  * Extend series.destroy to also remove the fake k-d-tree points (#5137).
@@ -557,7 +560,7 @@ function getPoint(series, boostPoint) {
     if (boostPoint instanceof PointClass) {
         return boostPoint;
     }
-    const isScatter = series.is('scatter'), xData = ((isScatter && series.getColumn('x', true).length ?
+    const data = seriesOptions.data, isScatter = series.is('scatter'), xData = ((isScatter && series.getColumn('x', true).length ?
         series.getColumn('x', true) :
         void 0) ||
         (series.getColumn('x').length ? series.getColumn('x') : void 0) ||
@@ -565,9 +568,19 @@ function getPoint(series, boostPoint) {
         series.getColumn('x', true) ||
         false), yData = (series.getColumn('y', true) ||
         seriesOptions.yData ||
-        false), point = new PointClass(series, (isScatter && xData && yData) ?
-        [xData[boostPoint.i], yData[boostPoint.i]] :
-        (isArray(series.options.data) ? series.options.data : [])[boostPoint.i], xData ? xData[boostPoint.i] : void 0);
+        false), pointIndex = boostPoint.i, pointColor = data?.[pointIndex]
+        ?.color, point = new PointClass(series, (isScatter && xData && yData) ?
+        [xData[pointIndex], yData[pointIndex]] :
+        (isArray(data) ? data : [])[pointIndex], xData ? xData[pointIndex] : void 0);
+    if (isScatter &&
+        seriesOptions?.keys?.length) {
+        const keys = seriesOptions.keys;
+        // Don't reassign X and Y properties as they're already handled above
+        for (let keysIndex = keys.length - 1; keysIndex > -1; keysIndex--) {
+            point[keys[keysIndex]] =
+                data[pointIndex][keysIndex];
+        }
+    }
     point.category = pick(xAxis.categories ?
         xAxis.categories[point.x] :
         point.x, // @todo simplify
@@ -577,9 +590,12 @@ function getPoint(series, boostPoint) {
     point.distX = boostPoint.distX;
     point.plotX = boostPoint.plotX;
     point.plotY = boostPoint.plotY;
-    point.index = boostPoint.i;
+    point.index = pointIndex;
     point.percentage = boostPoint.percentage;
     point.isInside = series.isPointInside(point);
+    if (pointColor) {
+        point.color = pointColor; // Set color for hover effect #23370
+    }
     return point;
 }
 /**
@@ -795,11 +811,8 @@ function seriesRenderCanvas() {
     // Do not start building while drawing
     this.buildKDTree = noop;
     fireEvent(this, 'renderCanvas');
-    if (this.is('line') &&
-        lineWidth > 1 &&
-        seriesBoost?.target &&
-        chartBoost &&
-        !chartBoost.lineWidthFilter) {
+    if (chartBoost && seriesBoost?.target && lineWidth > 1 && this.is('line')) {
+        chartBoost.lineWidthFilter?.remove();
         chartBoost.lineWidthFilter = chart.renderer.definition({
             tagName: 'filter',
             children: [

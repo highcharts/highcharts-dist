@@ -158,11 +158,11 @@ class PieSeries extends Series {
     }
     /**
      * Define hasData function for non-cartesian series. Returns true if the
-     * series has points at all.
+     * series has at least one visible point (#23235)
      * @private
      */
     hasData() {
-        return !!this.dataTable.rowCount;
+        return this.points.some((point) => point.visible);
     }
     /**
      * Draw the data points

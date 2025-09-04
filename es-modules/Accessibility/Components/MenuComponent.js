@@ -343,7 +343,9 @@ class MenuComponent extends AccessibilityComponent {
         if (exportButton) {
             const el = exportButton.element;
             if (el.onclick) {
-                el.onclick(getFakeMouseEvent('click'));
+                el.onclick = function () {
+                    getFakeMouseEvent('click');
+                };
             }
         }
     }

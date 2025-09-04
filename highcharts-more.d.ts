@@ -6,6 +6,11 @@
 import * as globals from "./globals";
 import * as _Highcharts from "./highcharts";
 declare module "./highcharts" {
+    interface BorderRadiusOptionsObject {
+        radius: (number|string);
+        scope: ("point"|"stack");
+        where: ("all"|"end");
+    }
     interface Point {
         /**
          * Array for multiple SVG graphics representing the point in the chart.
@@ -129,6 +134,10 @@ declare module "./highcharts" {
      */
     function onLegendItemClick(): void;
     function onPointerAfterGetHoverData(): void;
+    /**
+     * Apply conditional rounding to polar bars
+     */
+    function onSeriesAfterColumnTranslate(): void;
     /**
      * Add special cases within the Tick class' methods for radial axes.
      */
