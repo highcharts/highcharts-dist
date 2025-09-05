@@ -1,5 +1,5 @@
 /**
- * @license Highchart Stock v12.4.0 (2025-09-04)
+ * @license Highchart Stock v12.4.0-modified (2025-09-05)
  * @module highcharts/highstock
  *
  * (c) 2009-2025 Highsoft AS
@@ -74,7 +74,7 @@ var Globals;
      *  Constants
      *
      * */
-    Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '12.4.0', Globals.win = (typeof window !== 'undefined' ?
+    Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '12.4.0-modified', Globals.win = (typeof window !== 'undefined' ?
         window :
         {}), // eslint-disable-line node/no-unsupported-features/es-builtins
     Globals.doc = Globals.win.document, Globals.svg = !!Globals.doc?.createElementNS?.(Globals.SVG_NS, 'svg')?.createSVGRect, Globals.pageLang = Globals.doc?.documentElement?.closest('[lang]')?.lang, Globals.userAgent = Globals.win.navigator?.userAgent || '', Globals.isChrome = Globals.win.chrome, Globals.isFirefox = Globals.userAgent.indexOf('Firefox') !== -1, Globals.isMS = /(edge|msie|trident)/i.test(Globals.userAgent) && !Globals.win.opera, Globals.isSafari = !Globals.isChrome && Globals.userAgent.indexOf('Safari') !== -1, Globals.isTouchDevice = /(Mobile|Android|Windows Phone)/.test(Globals.userAgent), Globals.isWebKit = Globals.userAgent.indexOf('AppleWebKit') !== -1, Globals.deg2rad = Math.PI * 2 / 360, Globals.marginNames = [
@@ -12913,7 +12913,7 @@ class SVGRenderer {
         this.url = this.getReferenceURL();
         // Add description
         const desc = this.createElement('desc').add();
-        desc.element.appendChild(SVGRenderer_doc.createTextNode('Created with Highcharts 12.4.0'));
+        desc.element.appendChild(SVGRenderer_doc.createTextNode('Created with Highcharts 12.4.0-modified'));
         this.defs = this.createElement('defs').add();
         this.allowHTML = allowHTML;
         this.forExport = forExport;
@@ -47275,7 +47275,7 @@ var Responsive;
 
 ;// ./code/es-modules/masters/highcharts.src.js
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-09-05)
  * @module highcharts/highcharts
  *
  * (c) 2009-2025 Highsoft AS
@@ -58396,7 +58396,7 @@ var BrokenAxis;
 
 ;// ./code/es-modules/masters/modules/broken-axis.src.js
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-09-05)
  * @module highcharts/modules/broken-axis
  * @requires highcharts
  *
@@ -59888,7 +59888,7 @@ const DataGroupingComposition = {
 
 ;// ./code/es-modules/masters/modules/datagrouping.src.js
 /**
- * @license Highstock JS v12.4.0 (2025-09-04)
+ * @license Highstock JS v12.4.0-modified (2025-09-05)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *
@@ -60210,7 +60210,7 @@ const MouseWheelZoomComposition = {
 
 ;// ./code/es-modules/masters/modules/mouse-wheel-zoom.src.js
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-09-05)
  * @module highcharts/modules/mouse-wheel-zoom
  * @requires highcharts
  *
@@ -60230,7 +60230,7 @@ mouse_wheel_zoom_src_G.MouseWheelZoom.compose(mouse_wheel_zoom_src_G.Chart);
 
 ;// ./code/es-modules/masters/modules/stock.src.js
 /**
- * @license Highstock JS v12.4.0 (2025-09-04)
+ * @license Highstock JS v12.4.0-modified (2025-09-05)
  * @module highcharts/modules/stock
  * @requires highcharts
  *

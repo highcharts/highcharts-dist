@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v12.4.0 (2025-09-04)
+ * @license Highstock JS v12.4.0-modified (2025-09-05)
  * @module highcharts/modules/stock-tools
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -568,7 +568,7 @@ const navigation = {
      * from a different server.
      *
      * @type      {string}
-     * @default   https://code.highcharts.com/12.4.0/gfx/stock-icons/
+     * @default   https://code.highcharts.com/12.4.0-modified/gfx/stock-icons/
      * @since     7.1.3
      * @apioption navigation.iconsURL
      */
@@ -5376,7 +5376,7 @@ class Toolbar {
     getIconsURL() {
         return this.chart.options.navigation.iconsURL ||
             this.options.iconsURL ||
-            'https://code.highcharts.com/12.4.0/gfx/stock-icons/';
+            'https://code.highcharts.com/12.4.0-modified/gfx/stock-icons/';
     }
 }
 Toolbar.prototype.classMapping = {

@@ -1,5 +1,5 @@
 !/**
- * Highstock JS v12.4.0 (2025-09-04)
+ * Highstock JS v12.4.0-modified (2025-09-05)
  * @module highcharts/modules/hollowcandlestick
  * @requires highcharts
  * @requires highcharts/modules/stock
