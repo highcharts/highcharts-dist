@@ -345,6 +345,16 @@ const AnnotationDefaults = {
      * @apioption annotations.labels
      */
     /**
+     * The array of control points.
+     *
+     * @sample highcharts/annotations/ellipse
+     *         Ellipse annotation
+     *
+     * @extends annotations.controlPointOptions
+     * @type {Array<AnnotationControlPointOptionsObject>}
+     * @apioption annotations.labels.controlPoints
+     */
+    /**
      * This option defines the point to which the label will be
      * connected. It can be either the point which exists in the
      * series - it is referenced by the point's id - or a new point
@@ -372,6 +382,16 @@ const AnnotationDefaults = {
      * @type      {Array<*>}
      * @extends   annotations.shapeOptions
      * @apioption annotations.shapes
+     */
+    /**
+     * The array of control points.
+     *
+     * @sample highcharts/annotations-advanced/controllable-image
+     *         Controllable image annotation
+     *
+     * @extends annotations.controlPointOptions
+     * @type {Array<AnnotationControlPointOptionsObject>}
+     * @apioption annotations.shapes.controlPoints
      */
     /**
      * This option defines the point to which the shape will be
@@ -638,6 +658,73 @@ const AnnotationDefaults = {
      * @requires modules/annotations
      */
     events: {},
+    /**
+     *
+     * Additional options for an annotation with the type.
+     *
+     * @requires  modules/annotations
+     * @apioption annotations.typeOptions
+     */
+    typeOptions: {
+    /**
+     * Background shape options for the annotation.
+     *
+     * @extends annotations.shapeOptions
+     * @apioption annotations.typeOptions.background
+     */
+    /**
+     * Height of the annotation in pixels.
+     *
+     * @type {number}
+     * @apioption annotations.typeOptions.height
+     */
+    /**
+     * Line options.
+     *
+     * @extends annotations.shapeOptions
+     * @apioption annotations.typeOptions.line
+     */
+    /**
+     * A single point that the annotation is attached to. It can be either
+     * the point which exists in the series - it is referenced by the
+     * point's id - or a new point with defined x, y properties
+     * and optionally axes.
+     *
+     * @type {string|AnnotationMockPointFunction|AnnotationMockPointOptionsObject}
+     * @apioption annotations.typeOptions.point
+     */
+    /**
+     * An array of points that the annotation is attached to. Each point can
+     * the point which exists in the series - it is referenced by the
+     * point's id - or a new point with defined x, y properties
+     * and optionally axes.
+     *
+     * @type {Array<*>}
+     * @apioption annotations.typeOptions.points
+     */
+    /**
+     * The annotation type identifier.
+     *
+     * @type {string}
+     * @apioption annotations.typeOptions.type
+     */
+    /**
+     * This number defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis
+     * in the `xAxis` array.
+     *
+     * @type {number}
+     * @apioption annotations.typeOptions.xAxis
+     */
+    /**
+     * This number defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis
+     * in the `yAxis` array.
+     *
+     * @type {number}
+     * @apioption annotations.typeOptions.yAxis
+     */
+    },
     /**
      * Option override for specific advanced annotation types. This collection
      * is intended for general theming using `Highcharts.setOptions()`.

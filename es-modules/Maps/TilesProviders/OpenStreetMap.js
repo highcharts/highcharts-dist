@@ -7,6 +7,7 @@
  *  Class
  *
  * */
+/** @internal */
 class OpenStreetMap {
     constructor() {
         /* *
@@ -46,4 +47,5 @@ class OpenStreetMap {
  *  Default Export
  *
  * */
+/** @internal */
 export default OpenStreetMap;

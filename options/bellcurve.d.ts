@@ -339,8 +339,10 @@ declare module "../highcharts" {
         y?: number;
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) The z index of the data
-         * labels. Use a `zIndex` of 6 to display it above the series, or use a
-         * `zIndex` of 2 to display it behind the series.
+         * labels group. Does not apply below series level options.
+         *
+         * Use a `zIndex` of 6 to display it above the series, or use a `zIndex`
+         * of 2 to display it behind the series.
          */
         zIndex?: number;
     }
@@ -395,7 +397,8 @@ declare module "../highcharts" {
      *
      * **TypeScript:**
      *
-     * - the type option must always be set.
+     * - type option should always be set, otherwise a broad set of unsupported
+     * options is allowed.
      *
      * - when accessing an array of series, the combined set of all series types
      * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
@@ -705,6 +708,9 @@ declare module "../highcharts" {
          * If master series uses data sorting and linked series does not have
          * its own sorting definition, the linked series will be sorted in the
          * same order as the master one.
+         *
+         * If a `compare` value is not set on a linked series, it will be
+         * inherited from the parent series.
          */
         linkedTo?: string;
         /**

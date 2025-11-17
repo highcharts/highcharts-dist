@@ -7,6 +7,7 @@
  *  Class
  *
  * */
+/** @internal */
 class Esri {
     constructor() {
         /* *
@@ -88,4 +89,5 @@ class Esri {
  *  Default Export
  *
  * */
+/** @internal */
 export default Esri;

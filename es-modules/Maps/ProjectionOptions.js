@@ -1,14 +1,10 @@
 /* *
  *
- *  (c) 2009-2025 Highsoft AS
+ *  (c) 2021 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
  *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
- *  Authors:
- *  - Sophie Bremer
- *
  * */
-'use strict';
 export {};

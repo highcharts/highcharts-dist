@@ -937,7 +937,7 @@ class PolarAdditions {
      *
      * */
     static compose(AxisClass, ChartClass, PointerClass, SeriesClass, TickClass, PointClass, AreaSplineRangeSeriesClass, ColumnSeriesClass, LineSeriesClass, SplineSeriesClass) {
-        Pane.compose(ChartClass, PointerClass);
+        Pane.compose(ChartClass, PointerClass, SeriesClass);
         RadialAxis.compose(AxisClass, TickClass);
         if (pushUnique(composed, 'Polar')) {
             const chartProto = ChartClass.prototype, pointProto = PointClass.prototype, pointerProto = PointerClass.prototype, seriesProto = SeriesClass.prototype;

@@ -162,8 +162,8 @@ class ChartAdditions {
                 // Stop duplicating and overriding animations
                 series.options.inactiveOtherPoints = true;
                 // Hide and disable dataLabels
-                series.dataLabelsGroup?.destroy();
-                delete series.dataLabelsGroup;
+                series.dataLabelsGroups?.forEach((g) => g?.destroy());
+                series.dataLabelsGroups = [];
             });
             // #18925 map zooming is not working with geoJSON maps
             if (chart.options.drilldown &&
@@ -518,10 +518,10 @@ class ChartAdditions {
                     }
                     else {
                         // Hide and disable dataLabels
-                        if (oldSeries.dataLabelsGroup) {
-                            oldSeries.dataLabelsGroup.destroy();
-                            delete oldSeries.dataLabelsGroup;
-                        }
+                        oldSeries.dataLabelsGroups?.forEach((g) => {
+                            g?.destroy();
+                        });
+                        oldSeries.dataLabelsGroups = [];
                         if (chart.mapView && newSeries) {
                             if (zoomingDrill) {
                                 // Stop hovering while drilling down

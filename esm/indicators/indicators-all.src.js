@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v12.4.0 (2025-09-04)
+ * @license Highstock JS v12.4.0-modified (2025-11-17)
  * @module highcharts/indicators/indicators-all
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -12,7 +12,7 @@
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 import * as __WEBPACK_EXTERNAL_MODULE__modules_datagrouping_src_js_b7a4250c__ from "../modules/datagrouping.src.js";
-import * as __WEBPACK_EXTERNAL_MODULE__modules_stock_src_js_b3d80146__ from "../modules/stock.src.js";
+import "../modules/stock.src.js";
 /******/ // The require scope
 /******/ var __webpack_require__ = {};
 /******/ 
@@ -47,6 +47,7 @@ import * as __WEBPACK_EXTERNAL_MODULE__modules_stock_src_js_b3d80146__ from "../
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -78,7 +79,7 @@ const { addEvent, fireEvent, error, extend, isArray, merge, pick } = (external_h
  * @private
  */
 const tableToMultiYData = (series, processed) => {
-    const yData = [], pointArrayMap = series.pointArrayMap, table = processed && series.dataTable.modified || series.dataTable;
+    const yData = [], pointArrayMap = series.pointArrayMap, table = processed && series.dataTable.getModified() || series.dataTable;
     if (!pointArrayMap) {
         return series.getColumn('y', processed);
     }
@@ -4796,23 +4797,21 @@ class MACDIndicator extends MACDIndicator_SMAIndicator {
      * */
     init() {
         external_highcharts_src_js_default_SeriesRegistry_default().seriesTypes.sma.prototype.init.apply(this, arguments);
-        const originalColor = this.color;
+        const originalColor = this.color, originalColorIndex = this.colorIndex;
         // Check whether series is initialized. It may be not initialized,
         // when any of required indicators is missing.
         if (this.options) {
-            // If the default colour doesn't set, get the next available from
+            // If the default color doesn't set, get the next available from
             // the array and apply it #15608.
             if (MACDIndicator_defined(this.colorIndex)) {
-                if (this.options.signalLine &&
-                    this.options.signalLine.styles &&
+                if (this.options.signalLine?.styles &&
                     !this.options.signalLine.styles.lineColor) {
                     this.options.colorIndex = this.colorIndex + 1;
                     this.getCyclic('color', void 0, this.chart.options.colors);
                     this.options.signalLine.styles.lineColor =
                         this.color;
                 }
-                if (this.options.macdLine &&
-                    this.options.macdLine.styles &&
+                if (this.options.macdLine?.styles &&
                     !this.options.macdLine.styles.lineColor) {
                     this.options.colorIndex = this.colorIndex + 1;
                     this.getCyclic('color', void 0, this.chart.options.colors);
@@ -4823,16 +4822,17 @@ class MACDIndicator extends MACDIndicator_SMAIndicator {
             // Zones have indexes automatically calculated, we need to
             // translate them to support multiple lines within one indicator
             this.macdZones = {
-                zones: this.options.macdLine.zones,
+                zones: this.options.macdLine?.zones,
                 startIndex: 0
             };
             this.signalZones = {
-                zones: this.macdZones.zones.concat(this.options.signalLine.zones),
-                startIndex: this.macdZones.zones.length
+                zones: this.macdZones.zones?.concat(this.options.signalLine.zones),
+                startIndex: this.macdZones.zones?.length
             };
         }
         // Reset color and index #15608.
         this.color = originalColor;
+        this.colorIndex = originalColorIndex;
     }
     toYData(point) {
         return [point.y, point.signal, point.MACD];
@@ -10510,12 +10510,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ''; // To include the above in the js output
 
 ;// external "../modules/stock.src.js"
-var x = (y) => {
-	var x = {}; __webpack_require__.d(x,
-    	y); return x
-    } 
-    var y = (x) => (() => (x))
-    const stock_src_js_namespaceObject = x({  });
+
 ;// ./code/es-modules/masters/indicators/indicators-all.src.js
 
 

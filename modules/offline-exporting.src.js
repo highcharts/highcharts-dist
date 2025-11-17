@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/offline-exporting
  * @requires highcharts
  * @requires highcharts/modules/exporting
@@ -112,7 +112,7 @@ __webpack_require__.d(__webpack_exports__, {
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts"],"commonjs":["highcharts"],"commonjs2":["highcharts"],"root":["Highcharts"]}
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_ = __webpack_require__(944);
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default = /*#__PURE__*/__webpack_require__.n(highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_);
-;// ./code/es-modules/Extensions/DownloadURL.js
+;// ./code/es-modules/Shared/DownloadURL.js
 /* *
  *
  *  (c) 2015-2025 Oystein Moseng
@@ -265,6 +265,40 @@ function getScript(scriptLocation) {
         head.appendChild(script);
     });
 }
+/**
+ * Get a blob object from content, if blob is supported.
+ *
+ * @private
+ * @function Highcharts.getBlobFromContent
+ *
+ * @param {string} content
+ * The content to create the blob from.
+ * @param {string} type
+ * The type of the content.
+ *
+ * @return {string | undefined}
+ * The blob object, or undefined if not supported.
+ *
+ * @requires modules/exporting
+ * @requires modules/export-data
+ */
+function getBlobFromContent(content, type) {
+    const nav = win.navigator, domurl = win.URL || win.webkitURL || win;
+    try {
+        // MS specific
+        if ((nav.msSaveOrOpenBlob) && win.MSBlobBuilder) {
+            const blob = new win.MSBlobBuilder();
+            blob.append(content);
+            return blob.getBlob('image/svg+xml');
+        }
+        return domurl.createObjectURL(new win.Blob(['\uFEFF' + content], // #7084
+        { type: type }));
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    }
+    catch (e) {
+        // Ignore
+    }
+}
 /* *
  *
  *  Default Export
@@ -273,9 +307,10 @@ function getScript(scriptLocation) {
 const DownloadURL = {
     dataURLtoBlob,
     downloadURL,
+    getBlobFromContent,
     getScript
 };
-/* harmony default export */ const Extensions_DownloadURL = (DownloadURL);
+/* harmony default export */ const Shared_DownloadURL = (DownloadURL);
 
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","AST"],"commonjs":["highcharts","AST"],"commonjs2":["highcharts","AST"],"root":["Highcharts","AST"]}
 var highcharts_AST_commonjs_highcharts_AST_commonjs2_highcharts_AST_root_Highcharts_AST_ = __webpack_require__(660);
@@ -332,7 +367,7 @@ const OfflineExportingDefaults = {
 
 const { getOptions, setOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { downloadURL: OfflineExporting_downloadURL, getScript: OfflineExporting_getScript } = Extensions_DownloadURL;
+const { downloadURL: OfflineExporting_downloadURL, getScript: OfflineExporting_getScript } = Shared_DownloadURL;
 
 const { composed, doc: OfflineExporting_doc, win: OfflineExporting_win } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
@@ -721,9 +756,9 @@ var OfflineExporting;
 
 const G = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 // Compatibility
-G.dataURLtoBlob = G.dataURLtoBlob || Extensions_DownloadURL.dataURLtoBlob;
+G.dataURLtoBlob = G.dataURLtoBlob || Shared_DownloadURL.dataURLtoBlob;
 G.downloadSVGLocal = OfflineExporting_OfflineExporting.downloadSVGLocal;
-G.downloadURL = G.downloadURL || Extensions_DownloadURL.downloadURL;
+G.downloadURL = G.downloadURL || Shared_DownloadURL.downloadURL;
 // Compose
 OfflineExporting_OfflineExporting.compose(G.Exporting);
 /* harmony default export */ const offline_exporting_src = ((highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default()));

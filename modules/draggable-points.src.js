@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/draggable-points
  * @requires highcharts
  *
@@ -2385,7 +2385,7 @@ function pointShowDragHandles() {
             // Correct left edge value depending on the xAxis' type, #16596
             const minEdge = point.series.xAxis.categories ? -0.5 : 0;
             if (!path || pos.x < minEdge || pos.y < 0) {
-                return;
+                continue;
             }
             // If cursor is not set explicitly, use axis direction
             handleAttrs.cursor = handleOptions.cursor ||

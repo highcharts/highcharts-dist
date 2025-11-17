@@ -121,18 +121,19 @@ function dateFormat(format, timestamp, upperCaseFirst) {
  *        replaced by its value.
  *
  * @param {Highcharts.Chart} [owner]
- *        A `Chart` or `DataGrid` instance used to get numberFormatter and time.
+ *        A `Chart` or `Grid` instance used to get numberFormatter and time.
  *
  * @return {string}
  *         The formatted string.
  */
 function format(str = '', ctx, owner) {
-    // Notice: using u flag will require a refactor for ES5 (#22450).
-    const regex = /\{([a-zA-Z\u00C0-\u017F\d:\.,;\-\/<>\[\]%_@+"'’= #\(\)]+)\}/g, // eslint-disable-line max-len
+    // eslint-disable-next-line prefer-regex-literals
+    const regex = new RegExp('\\{([\\p{L}\\d:\\.,;\\-\\/<>\\[\\]%_@+"\'’= #\\(\\)]+)\\}', 'gu'), 
     // The sub expression regex is the same as the top expression regex,
     // but except parens and block helpers (#), and surrounded by parens
     // instead of curly brackets.
-    subRegex = /\(([a-zA-Z\u00C0-\u017F\d:\.,;\-\/<>\[\]%_@+"'= ]+)\)/g, matches = [], floatRegex = /f$/, decRegex = /\.(\d)/, lang = owner?.options?.lang || defaultOptions.lang, time = owner?.time || defaultTime, numberFormatter = owner?.numberFormatter || numberFormat.bind(owner);
+    // eslint-disable-next-line prefer-regex-literals
+    subRegex = new RegExp('\\(([\\p{L}\\d:\\.,;\\-\\/<>\\[\\]%_@+"\'= ]+)\\)', 'gu'), matches = [], floatRegex = /f$/, decRegex = /\.(\d)/, lang = owner?.options?.lang || defaultOptions.lang, time = owner?.time || defaultTime, numberFormatter = owner?.numberFormatter || numberFormat.bind(owner);
     /*
      * Get a literal or variable value inside a template expression. May be
      * extended with other types like string or null if needed, but keep it

@@ -14,6 +14,8 @@
  * */
 'use strict';
 import DataTable from '../../Data/DataTable.js';
+import ColumnUtils from '../../Data/ColumnUtils.js';
+const { convertToNumber } = ColumnUtils;
 import U from '../Utilities.js';
 const { defined, uniqueKey } = U;
 /* *
@@ -70,14 +72,15 @@ class DataSeriesConverter {
             for (let i = 0, iEnd = table.getRowCount(); i < iEnd; i++) {
                 isCellFound = false;
                 pointOptions = {
-                    x: table.getCellAsNumber('x', i, true)
+                    x: convertToNumber(table.getCell('x', i), true)
                 };
                 for (let j = 0, jEnd = pointArrayMap.length; j < jEnd; j++) {
                     cellName = pointArrayMap[j] + '_' + seriesId;
                     cell = table.getCell(cellName, i);
                     if (typeof cell !== 'undefined') {
                         isCellFound = true;
-                        pointOptions[pointArrayMap[j]] = table.getCellAsNumber(cellName, i);
+                        pointOptions[pointArrayMap[j]] =
+                            convertToNumber(table.getCell(cellName, i));
                     }
                 }
                 if (isCellFound) {

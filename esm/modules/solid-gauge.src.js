@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/solid-gauge
  * @requires highcharts
  * @requires highcharts/highcharts-more
@@ -11,7 +11,7 @@
  * License: www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
-import * as __WEBPACK_EXTERNAL_MODULE__highcharts_more_src_js_48e0d456__ from "../highcharts-more.src.js";
+import "../highcharts-more.src.js";
 /******/ // The require scope
 /******/ var __webpack_require__ = {};
 /******/ 
@@ -46,17 +46,13 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_more_src_js_48e0d456__ from ".
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
 ;// external "../highcharts-more.src.js"
-var x = (y) => {
-	var x = {}; __webpack_require__.d(x,
-    	y); return x
-    } 
-    var y = (x) => (() => (x))
-    const external_highcharts_more_src_js_namespaceObject = x({  });
+
 ;// ./code/es-modules/Extensions/BorderRadius.js
 /* *
  *
@@ -449,7 +445,7 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
 ;// external ["../highcharts.src.js","default","Color"]
 const external_highcharts_src_js_default_Color_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Color;
 var external_highcharts_src_js_default_Color_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Color_namespaceObject);
-;// ./code/es-modules/Core/Axis/Color/ColorAxisLike.js
+;// ./code/es-modules/Core/Axis/Color/ColorAxisBase.js
 /* *
  *
  *  (c) 2010-2025 Torstein Honsi
@@ -463,14 +459,14 @@ var external_highcharts_src_js_default_Color_default = /*#__PURE__*/__webpack_re
 
 const { parse: color } = (external_highcharts_src_js_default_Color_default());
 
-const { merge: ColorAxisLike_merge } = (external_highcharts_src_js_default_default());
+const { merge: ColorAxisBase_merge } = (external_highcharts_src_js_default_default());
 /* *
  *
  *  Namespace
  *
  * */
-var ColorAxisLike;
-(function (ColorAxisLike) {
+var ColorAxisBase;
+(function (ColorAxisBase) {
     /* *
      *
      *  Declarations
@@ -492,7 +488,7 @@ var ColorAxisLike;
         legendItem.labels = [];
         for (let i = 0, iEnd = userDataClasses.length; i < iEnd; ++i) {
             dataClass = userDataClasses[i];
-            dataClass = ColorAxisLike_merge(dataClass);
+            dataClass = ColorAxisBase_merge(dataClass);
             dataClasses.push(dataClass);
             if (!chart.styledMode && dataClass.color) {
                 continue;
@@ -516,7 +512,7 @@ var ColorAxisLike;
             }
         }
     }
-    ColorAxisLike.initDataClasses = initDataClasses;
+    ColorAxisBase.initDataClasses = initDataClasses;
     /**
      * Create initial color stops.
      * @private
@@ -530,7 +526,7 @@ var ColorAxisLike;
             stops[i].color = color(stops[i][1]);
         }
     }
-    ColorAxisLike.initStops = initStops;
+    ColorAxisBase.initStops = initStops;
     /**
      * Normalize logarithmic values.
      * @private
@@ -543,7 +539,7 @@ var ColorAxisLike;
         return 1 - ((max - value) /
             ((max - min) || 1));
     }
-    ColorAxisLike.normalizedValue = normalizedValue;
+    ColorAxisBase.normalizedValue = normalizedValue;
     /**
      * Translate from a value to a color.
      * @private
@@ -586,14 +582,14 @@ var ColorAxisLike;
         }
         return color;
     }
-    ColorAxisLike.toColor = toColor;
-})(ColorAxisLike || (ColorAxisLike = {}));
+    ColorAxisBase.toColor = toColor;
+})(ColorAxisBase || (ColorAxisBase = {}));
 /* *
  *
  *  Default Export
  *
  * */
-/* harmony default export */ const Color_ColorAxisLike = (ColorAxisLike);
+/* harmony default export */ const Color_ColorAxisBase = (ColorAxisBase);
 
 ;// ./code/es-modules/Core/Axis/SolidGaugeAxis.js
 /* *
@@ -618,7 +614,7 @@ const { extend: SolidGaugeAxis_extend } = (external_highcharts_src_js_default_de
  * @private
  */
 function init(axis) {
-    SolidGaugeAxis_extend(axis, Color_ColorAxisLike);
+    SolidGaugeAxis_extend(axis, Color_ColorAxisBase);
 }
 /* *
  *

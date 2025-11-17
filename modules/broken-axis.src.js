@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/broken-axis
  * @requires highcharts
  *
@@ -376,7 +376,7 @@ var BrokenAxis;
                     });
                     // For stacked chart generate empty stack items, #6546
                     if (yAxis.stacking && this.options.stacking) {
-                        stack = yAxis.stacking.stacks[this.stackKey][xRange] = new (highcharts_StackItem_commonjs_highcharts_StackItem_commonjs2_highcharts_StackItem_root_Highcharts_StackItem_default())(yAxis, yAxis.options.stackLabels, false, xRange, this.stack);
+                        stack = yAxis.stacking.stacks[this.stackKey][xRange] = new (highcharts_StackItem_commonjs_highcharts_StackItem_commonjs2_highcharts_StackItem_root_Highcharts_StackItem_default())(yAxis, yAxis.options.stackLabels, false, xRange, this.stack ?? '');
                         stack.total = 0;
                     }
                 }

@@ -303,7 +303,9 @@ class Point {
      *
      * @private
      * @function Highcharts.Point#destroyElements
+     *
      * @param {Highcharts.Dictionary<number>} [kinds]
+     * Kinds of elements to destroy
      */
     destroyElements(kinds) {
         const point = this, props = point.getGraphicalProps(kinds);
@@ -610,6 +612,8 @@ class Point {
         }
     }
     /**
+     * Resolve the color of a point.
+     *
      * @private
      * @function Highcharts.Point#resolveColor
      */
@@ -755,6 +759,8 @@ class Point {
         let i;
         redraw = pick(redraw, true);
         /**
+         * Perform the actual update of the point.
+         *
          * @private
          */
         function update() {

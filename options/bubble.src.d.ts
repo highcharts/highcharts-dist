@@ -339,8 +339,10 @@ declare module "../highcharts.src" {
         y?: number;
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) The z index of the data
-         * labels. Use a `zIndex` of 6 to display it above the series, or use a
-         * `zIndex` of 2 to display it behind the series.
+         * labels group. Does not apply below series level options.
+         *
+         * Use a `zIndex` of 6 to display it above the series, or use a `zIndex`
+         * of 2 to display it behind the series.
          */
         zIndex?: number;
     }

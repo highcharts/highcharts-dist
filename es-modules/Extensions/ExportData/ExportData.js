@@ -17,8 +17,8 @@ import AST from '../../Core/Renderer/HTML/AST.js';
 import Chart from '../../Core/Chart/Chart.js';
 import D from '../../Core/Defaults.js';
 const { getOptions, setOptions } = D;
-import DownloadURL from '../DownloadURL.js';
-const { downloadURL } = DownloadURL;
+import DownloadURL from '../../Shared/DownloadURL.js';
+const { downloadURL, getBlobFromContent } = DownloadURL;
 import ExportDataDefaults from './ExportDataDefaults.js';
 import G from '../../Core/Globals.js';
 const { composed, doc, win } = G;
@@ -200,39 +200,6 @@ var ExportData;
             downloadURL(getBlobFromContent(template, 'application/vnd.ms-excel') ||
                 uri + base64(template), this.getFilename() + '.xls');
         });
-    }
-    /**
-     * Get a blob object from content, if blob is supported.
-     *
-     * @private
-     * @function Highcharts.getBlobFromContent
-     *
-     * @param {string} content
-     * The content to create the blob from.
-     * @param {string} type
-     * The type of the content.
-     *
-     * @return {string | undefined}
-     * The blob object, or undefined if not supported.
-     *
-     * @requires modules/exporting
-     * @requires modules/export-data
-     */
-    function getBlobFromContent(content, type) {
-        const nav = win.navigator, domurl = win.URL || win.webkitURL || win;
-        try {
-            // MS specific
-            if ((nav.msSaveOrOpenBlob) && win.MSBlobBuilder) {
-                const blob = new win.MSBlobBuilder();
-                blob.append(content);
-                return blob.getBlob('image/svg+xml');
-            }
-            return domurl.createObjectURL(new win.Blob(['\uFEFF' + content], // #7084
-            { type: type }));
-        }
-        catch {
-            // Ignore
-        }
     }
     /**
      * Returns the current chart data as a CSV string.

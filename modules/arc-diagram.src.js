@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module modules/arc-diagram
  * @requires highcharts/modules/sankey
  *
@@ -1400,10 +1400,13 @@ class ArcDiagramSeries extends SankeySeries {
             }
             if (this.mapOptionsToLevel) {
                 // Calculate data label options for the point
-                node.dlOptions = SankeySeries.getDLOptions({
-                    level: this.mapOptionsToLevel[node.level],
-                    optionsPoint: node.options
-                });
+                node.dlOptions = {
+                    ...SankeySeries.getDLOptions({
+                        level: this.mapOptionsToLevel[node.level],
+                        optionsPoint: node.options
+                    }),
+                    zIndex: void 0
+                };
             }
             // Pass test in drawPoints
             node.plotX = 1;

@@ -27,6 +27,11 @@
 class DataCursor {
     /* *
      *
+     *  Static Properties
+     *
+     * */
+    /* *
+     *
      *  Constructor
      *
      * */
@@ -221,16 +226,6 @@ class DataCursor {
         return this;
     }
 }
-/* *
- *
- *  Static Properties
- *
- * */
-/**
- * Semantic version string of the DataCursor class.
- * @internal
- */
-DataCursor.version = '1.0.0';
 /* *
  *
  *  Class Namespace

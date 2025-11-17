@@ -338,8 +338,10 @@ declare module "../highcharts" {
         y?: number;
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) The z index of the data
-         * labels. Use a `zIndex` of 6 to display it above the series, or use a
-         * `zIndex` of 2 to display it behind the series.
+         * labels group. Does not apply below series level options.
+         *
+         * Use a `zIndex` of 6 to display it above the series, or use a `zIndex`
+         * of 2 to display it behind the series.
          */
         zIndex?: number;
     }
@@ -384,7 +386,8 @@ declare module "../highcharts" {
      *
      * **TypeScript:**
      *
-     * - the type option must always be set.
+     * - type option should always be set, otherwise a broad set of unsupported
+     * options is allowed.
      *
      * - when accessing an array of series, the combined set of all series types
      * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
@@ -748,6 +751,43 @@ declare module "../highcharts" {
         zoomEnabled?: boolean;
     }
     /**
+     * (Highcharts, Highstock, Highmaps) Positioning options for fixed tooltip,
+     * taking effect only when tooltip.fixed is `true`.
+     */
+    interface PlotMapTooltipPositionOptions {
+        /**
+         * (Highcharts, Highstock, Highmaps) The horizontal alignment of the
+         * fixed tooltip.
+         */
+        align?: Highcharts.AlignValue;
+        /**
+         * (Highcharts, Highstock, Highmaps) What the fixed tooltip alignment
+         * should be relative to.
+         *
+         * The default, `pane`, means that it is aligned within the plot area
+         * for that given series. If the tooltip is split (as default in Stock
+         * charts), each partial tooltip is aligned within the series' pane.
+         */
+        relativeTo?: Highcharts.OptionsRelativeToValue;
+        /**
+         * (Highcharts, Highstock, Highmaps) The vertical alignment of the fixed
+         * tooltip.
+         */
+        verticalAlign?: Highcharts.VerticalAlignValue;
+        /**
+         * (Highcharts, Highstock, Highmaps) X pixel offset from the given
+         * position. Can be used to shy away from axis lines, grid lines etc to
+         * avoid the tooltip overlapping other elements.
+         */
+        x?: number;
+        /**
+         * (Highcharts, Highstock, Highmaps) Y pixel offset from the given
+         * position. Can be used to shy away from axis lines, grid lines etc to
+         * avoid the tooltip overlapping other elements.
+         */
+        y?: number;
+    }
+    /**
      * (Highmaps) An array of data points for the series. For the `map` series
      * type, points can be given in the following ways:
      *
@@ -863,7 +903,8 @@ declare module "../highcharts" {
      *
      * **TypeScript:**
      *
-     * - the type option must always be set.
+     * - type option should always be set, otherwise a broad set of unsupported
+     * options is allowed.
      *
      * - when accessing an array of series, the combined set of all series types
      * is represented by Highcharts.SeriesOptionsType . Narrowing down to the

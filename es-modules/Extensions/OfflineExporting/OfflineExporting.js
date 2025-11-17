@@ -14,7 +14,7 @@ import AST from '../../Core/Renderer/HTML/AST.js';
 import Chart from '../../Core/Chart/Chart.js';
 import D from '../../Core/Defaults.js';
 const { getOptions, setOptions } = D;
-import DownloadURL from '../DownloadURL.js';
+import DownloadURL from '../../Shared/DownloadURL.js';
 const { downloadURL, getScript } = DownloadURL;
 import G from '../../Core/Globals.js';
 const { composed, doc, win } = G;

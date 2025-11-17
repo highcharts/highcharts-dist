@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * Organization chart series type
  * @module highcharts/modules/organization
  * @requires highcharts
@@ -326,7 +326,7 @@ const OrganizationSeriesDefaults = {
         lineWidth: 1,
         /**
          * Radius for the rounded corners of the links between nodes.
-         * Works for `default` link type.
+         * Works for the `orthogonal` link type.
          *
          * @sample   highcharts/series-organization/link-options
          *           Square links
@@ -339,11 +339,11 @@ const OrganizationSeriesDefaults = {
          *           Different link types
          *
          * @declare Highcharts.OrganizationLinkTypeValue
-         * @type {'default' | 'curved' | 'straight'}
-         * @default 'default'
+         * @type {'orthogonal' | 'curved' | 'straight'}
+         * @default 'orthogonal'
          * @product highcharts
          */
-        type: 'default'
+        type: 'orthogonal'
     },
     borderWidth: 1,
     /**
@@ -716,16 +716,26 @@ const OrganizationSeriesDefaults = {
  * */
 
 const getLinkPath = {
-    'default': getDefaultPath,
+    'default': getOrthogonalPath,
+    orthogonal: getOrthogonalPath,
     straight: getStraightPath,
     curved: getCurvedPath
 };
 /**
  *
  */
-function getDefaultPath(pathParams) {
-    const { x1, y1, x2, y2, width = 0, inverted = false, radius, parentVisible } = pathParams;
-    const path = [
+function getOrthogonalPath(pathParams) {
+    const { x1, y1, x2, y2, bendAt, width = 0, inverted = false, radius, parentVisible } = pathParams;
+    if (parentVisible) {
+        const bend = bendAt ?? (width / 2);
+        return applyRadius([
+            ['M', x1, y1],
+            ['L', x1 + bend * (inverted ? -1 : 1), y1],
+            ['L', x1 + bend * (inverted ? -1 : 1), y2],
+            ['L', x2, y2]
+        ], radius);
+    }
+    return [
         ['M', x1, y1],
         ['L', x1, y1],
         ['C', x1, y1, x1, y2, x1, y2],
@@ -733,14 +743,6 @@ function getDefaultPath(pathParams) {
         ['C', x1, y1, x1, y2, x1, y2],
         ['L', x1, y2]
     ];
-    return parentVisible ?
-        applyRadius([
-            ['M', x1, y1],
-            ['L', x1 + width * (inverted ? -0.5 : 0.5), y1],
-            ['L', x1 + width * (inverted ? -0.5 : 0.5), y2],
-            ['L', x2, y2]
-        ], radius) :
-        path;
 }
 /**
  *

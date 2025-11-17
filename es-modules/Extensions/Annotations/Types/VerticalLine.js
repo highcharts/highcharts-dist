@@ -49,7 +49,7 @@ if (defaultOptions.annotations) {
             /**
              * Connector options.
              *
-             * @extends   annotations.types.crookedLine.shapeOptions
+             * @extends   annotations.shapeOptions
              * @excluding height, r, type, width
              */
             connector: {

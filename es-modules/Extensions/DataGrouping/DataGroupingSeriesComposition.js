@@ -144,7 +144,7 @@ function applyGrouping(hasExtremesChanged) {
     series.destroyGroupedData();
     const table = dataGroupingOptions.groupAll ?
         series.dataTable :
-        series.dataTable.modified || series.dataTable, processedXData = series.getColumn('x', !dataGroupingOptions.groupAll), xData = processedXData, plotSizeX = chart.plotSizeX, xAxis = series.xAxis, extremes = xAxis.getExtremes(), ordinal = xAxis.options.ordinal, groupPixelWidth = series.groupPixelWidth;
+        series.dataTable.getModified() || series.dataTable, processedXData = series.getColumn('x', !dataGroupingOptions.groupAll), xData = processedXData, plotSizeX = chart.plotSizeX, xAxis = series.xAxis, extremes = xAxis.getExtremes(), ordinal = xAxis.options.ordinal, groupPixelWidth = series.groupPixelWidth;
     let i, hasGroupedData;
     // Execute grouping if the amount of points is greater than the limit
     // defined in groupPixelWidth

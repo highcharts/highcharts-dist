@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/mouse-wheel-zoom
  * @requires highcharts
  *
@@ -315,7 +315,11 @@ function onAfterDrawChartBox() {
         clipRect = chart.zoomClipRect;
     }
     chart.seriesGroup?.clip(clipRect);
-    chart.dataLabelsGroup?.clip(clipRect);
+    chart.series.forEach((series) => {
+        series.dataLabelsParentGroups?.forEach((dataLabelsGroup) => {
+            dataLabelsGroup.clip(clipRect);
+        });
+    });
 }
 /**
  * Adjust tooltip position to scaled series group
@@ -331,6 +335,10 @@ function onGetAnchor(params) {
         params.ret[1] = (params.ret[1] * scale) + top - chart.plotTop;
     }
 }
+/**
+ * Adjust series group props
+ * @private
+ */
 function onAfterSetChartSize(params) {
     if (params.skipAxes) {
         this.series.forEach((series) => {
@@ -343,6 +351,19 @@ function onAfterSetChartSize(params) {
                 });
             }
         });
+    }
+}
+/**
+ * Create data labels parent group for clipping purposes after zoom-in
+ * @private
+ */
+function onInitDataLabelsGroup({ index, zIndex }) {
+    var _a;
+    if (this.hasDataLabels?.()) {
+        this.dataLabelsParentGroups || (this.dataLabelsParentGroups = []);
+        (_a = this.dataLabelsParentGroups)[index] || (_a[index] = this.chart.renderer.g()
+            .attr({ zIndex })
+            .add());
     }
 }
 /* *
@@ -371,6 +392,7 @@ class NonCartesianSeriesZoom {
             addEvent(ChartClass, 'transform', onTransform);
             addEvent(ChartClass, 'afterSetChartSize', onAfterSetChartSize);
             addEvent(SeriesClass, 'getPlotBox', onGetPlotBox);
+            addEvent(SeriesClass, 'initDataLabelsGroup', onInitDataLabelsGroup);
             addEvent(TooltipClass, 'getAnchor', onGetAnchor);
         }
     }

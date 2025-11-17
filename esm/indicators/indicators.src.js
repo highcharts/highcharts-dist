@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v12.4.0 (2025-09-04)
+ * @license Highstock JS v12.4.0-modified (2025-11-17)
  * @module highcharts/indicators/indicators
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -11,7 +11,7 @@
  * License: www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
-import * as __WEBPACK_EXTERNAL_MODULE__modules_stock_src_js_b3d80146__ from "../modules/stock.src.js";
+import "../modules/stock.src.js";
 /******/ // The require scope
 /******/ var __webpack_require__ = {};
 /******/ 
@@ -46,6 +46,7 @@ import * as __WEBPACK_EXTERNAL_MODULE__modules_stock_src_js_b3d80146__ from "../
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -77,7 +78,7 @@ const { addEvent, fireEvent, error, extend, isArray, merge, pick } = (external_h
  * @private
  */
 const tableToMultiYData = (series, processed) => {
-    const yData = [], pointArrayMap = series.pointArrayMap, table = processed && series.dataTable.modified || series.dataTable;
+    const yData = [], pointArrayMap = series.pointArrayMap, table = processed && series.dataTable.getModified() || series.dataTable;
     if (!pointArrayMap) {
         return series.getColumn('y', processed);
     }
@@ -878,12 +879,7 @@ var MultipleLinesComposition;
 /* harmony default export */ const Indicators_MultipleLinesComposition = (MultipleLinesComposition);
 
 ;// external "../modules/stock.src.js"
-var x = (y) => {
-	var x = {}; __webpack_require__.d(x,
-    	y); return x
-    } 
-    var y = (x) => (() => (x))
-    const stock_src_js_namespaceObject = x({  });
+
 ;// ./code/es-modules/masters/indicators/indicators.src.js
 
 

@@ -571,20 +571,27 @@ class ColumnSeries extends Series {
         });
         // Add the event listeners, we need to do this only once
         if (!series._hasTracking) {
-            series.trackerGroups.forEach(function (key) {
-                if (series[key]) {
-                    // We don't always have dataLabelsGroup
-                    series[key]
-                        .addClass('highcharts-tracker')
-                        .on('mouseover', onMouseOver)
-                        .on('mouseout', function (e) {
-                        pointer?.onTrackerMouseOut(e);
-                    })
-                        .on('touchstart', onMouseOver);
-                    if (!chart.styledMode && series.options.cursor) {
-                        series[key]
-                            .css({ cursor: series.options.cursor });
-                    }
+            series.trackerGroups?.reduce((acc, key) => {
+                if (key === 'dataLabelsGroup') {
+                    acc.push(...(series.dataLabelsGroups || []));
+                }
+                else {
+                    acc.push(series[key]);
+                }
+                return acc;
+            }, []).forEach((group) => {
+                if (!group) {
+                    // Skip undefined
+                    return;
+                }
+                group.addClass('highcharts-tracker')
+                    .on('mouseover', onMouseOver)
+                    .on('mouseout', function (e) {
+                    pointer?.onTrackerMouseOut(e);
+                })
+                    .on('touchstart', onMouseOver);
+                if (!chart.styledMode && series.options.cursor) {
+                    group.css({ cursor: series.options.cursor });
                 }
             });
             series._hasTracking = true;

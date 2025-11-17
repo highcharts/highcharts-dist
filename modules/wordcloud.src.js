@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/wordcloud
  * @requires highcharts
  *
@@ -1157,7 +1157,7 @@ const WordcloudUtils = {
 ;// ./code/es-modules/Series/Wordcloud/WordcloudSeries.js
 /* *
  *
- *  Experimental Highcharts module which enables visualization of a word cloud.
+ *  Highcharts module which enables visualization of a word cloud.
  *
  *  (c) 2016-2025 Highsoft AS
  *  Authors: Jon Arild Nygard

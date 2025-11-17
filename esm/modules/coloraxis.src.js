@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -44,6 +44,7 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -793,7 +794,7 @@ const colorAxisDefaults = {
  * */
 /* harmony default export */ const ColorAxisDefaults = (colorAxisDefaults);
 
-;// ./code/es-modules/Core/Axis/Color/ColorAxisLike.js
+;// ./code/es-modules/Core/Axis/Color/ColorAxisBase.js
 /* *
  *
  *  (c) 2010-2025 Torstein Honsi
@@ -805,16 +806,16 @@ const colorAxisDefaults = {
  * */
 
 
-const { parse: ColorAxisLike_color } = (external_highcharts_src_js_default_Color_default());
+const { parse: ColorAxisBase_color } = (external_highcharts_src_js_default_Color_default());
 
-const { merge: ColorAxisLike_merge } = (external_highcharts_src_js_default_default());
+const { merge: ColorAxisBase_merge } = (external_highcharts_src_js_default_default());
 /* *
  *
  *  Namespace
  *
  * */
-var ColorAxisLike;
-(function (ColorAxisLike) {
+var ColorAxisBase;
+(function (ColorAxisBase) {
     /* *
      *
      *  Declarations
@@ -836,7 +837,7 @@ var ColorAxisLike;
         legendItem.labels = [];
         for (let i = 0, iEnd = userDataClasses.length; i < iEnd; ++i) {
             dataClass = userDataClasses[i];
-            dataClass = ColorAxisLike_merge(dataClass);
+            dataClass = ColorAxisBase_merge(dataClass);
             dataClasses.push(dataClass);
             if (!chart.styledMode && dataClass.color) {
                 continue;
@@ -855,12 +856,12 @@ var ColorAxisLike;
                 }
             }
             else {
-                dataClass.color = ColorAxisLike_color(options.minColor).tweenTo(ColorAxisLike_color(options.maxColor), iEnd < 2 ? 0.5 : i / (iEnd - 1) // #3219
+                dataClass.color = ColorAxisBase_color(options.minColor).tweenTo(ColorAxisBase_color(options.maxColor), iEnd < 2 ? 0.5 : i / (iEnd - 1) // #3219
                 );
             }
         }
     }
-    ColorAxisLike.initDataClasses = initDataClasses;
+    ColorAxisBase.initDataClasses = initDataClasses;
     /**
      * Create initial color stops.
      * @private
@@ -871,10 +872,10 @@ var ColorAxisLike;
             [1, options.maxColor || '']
         ];
         for (let i = 0, iEnd = stops.length; i < iEnd; ++i) {
-            stops[i].color = ColorAxisLike_color(stops[i][1]);
+            stops[i].color = ColorAxisBase_color(stops[i][1]);
         }
     }
-    ColorAxisLike.initStops = initStops;
+    ColorAxisBase.initStops = initStops;
     /**
      * Normalize logarithmic values.
      * @private
@@ -887,7 +888,7 @@ var ColorAxisLike;
         return 1 - ((max - value) /
             ((max - min) || 1));
     }
-    ColorAxisLike.normalizedValue = normalizedValue;
+    ColorAxisBase.normalizedValue = normalizedValue;
     /**
      * Translate from a value to a color.
      * @private
@@ -930,14 +931,14 @@ var ColorAxisLike;
         }
         return color;
     }
-    ColorAxisLike.toColor = toColor;
-})(ColorAxisLike || (ColorAxisLike = {}));
+    ColorAxisBase.toColor = toColor;
+})(ColorAxisBase || (ColorAxisBase = {}));
 /* *
  *
  *  Default Export
  *
  * */
-/* harmony default export */ const Color_ColorAxisLike = (ColorAxisLike);
+/* harmony default export */ const Color_ColorAxisBase = (ColorAxisBase);
 
 ;// external ["../highcharts.src.js","default","LegendSymbol"]
 const external_highcharts_src_js_default_LegendSymbol_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].LegendSymbol;
@@ -1487,7 +1488,7 @@ ColorAxis.defaultLegendLength = 200;
 ColorAxis.keepProps = [
     'legendItem'
 ];
-ColorAxis_extend(ColorAxis.prototype, Color_ColorAxisLike);
+ColorAxis_extend(ColorAxis.prototype, Color_ColorAxisBase);
 /* *
  *
  *  Registry

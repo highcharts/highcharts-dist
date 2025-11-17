@@ -339,8 +339,10 @@ declare module "../highcharts.src" {
         y?: number;
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) The z index of the data
-         * labels. Use a `zIndex` of 6 to display it above the series, or use a
-         * `zIndex` of 2 to display it behind the series.
+         * labels group. Does not apply below series level options.
+         *
+         * Use a `zIndex` of 6 to display it above the series, or use a `zIndex`
+         * of 2 to display it behind the series.
          */
         zIndex?: number;
     }
@@ -393,7 +395,8 @@ declare module "../highcharts.src" {
      *
      * **TypeScript:**
      *
-     * - the type option must always be set.
+     * - type option should always be set, otherwise a broad set of unsupported
+     * options is allowed.
      *
      * - when accessing an array of series, the combined set of all series types
      * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
@@ -517,7 +520,9 @@ declare module "../highcharts.src" {
          * percentage or absolute change depending on whether `compare` is set
          * to `"percent"` or `"value"`. When this is applied to multiple series,
          * it allows comparing the development of the series against each other.
-         * Adds a `change` field to every point object.
+         * Adds a `change` field to every point object. If a `compare` value is
+         * not set on a linked series, it will be inherited from the parent
+         * series.
          */
         compare?: Highcharts.OptionsCompareValue;
         /**
@@ -1033,7 +1038,8 @@ declare module "../highcharts.src" {
      *
      * **TypeScript:**
      *
-     * - the type option must always be set.
+     * - type option should always be set, otherwise a broad set of unsupported
+     * options is allowed.
      *
      * - when accessing an array of series, the combined set of all series types
      * is represented by Highcharts.SeriesOptionsType . Narrowing down to the

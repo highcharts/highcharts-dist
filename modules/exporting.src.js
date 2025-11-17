@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/exporting
  * @requires highcharts
  *
@@ -209,7 +209,7 @@ var ChartNavigationComposition;
  * */
 /* harmony default export */ const Chart_ChartNavigationComposition = (ChartNavigationComposition);
 
-;// ./code/es-modules/Extensions/DownloadURL.js
+;// ./code/es-modules/Shared/DownloadURL.js
 /* *
  *
  *  (c) 2015-2025 Oystein Moseng
@@ -362,6 +362,40 @@ function getScript(scriptLocation) {
         head.appendChild(script);
     });
 }
+/**
+ * Get a blob object from content, if blob is supported.
+ *
+ * @private
+ * @function Highcharts.getBlobFromContent
+ *
+ * @param {string} content
+ * The content to create the blob from.
+ * @param {string} type
+ * The type of the content.
+ *
+ * @return {string | undefined}
+ * The blob object, or undefined if not supported.
+ *
+ * @requires modules/exporting
+ * @requires modules/export-data
+ */
+function getBlobFromContent(content, type) {
+    const nav = win.navigator, domurl = win.URL || win.webkitURL || win;
+    try {
+        // MS specific
+        if ((nav.msSaveOrOpenBlob) && win.MSBlobBuilder) {
+            const blob = new win.MSBlobBuilder();
+            blob.append(content);
+            return blob.getBlob('image/svg+xml');
+        }
+        return domurl.createObjectURL(new win.Blob(['\uFEFF' + content], // #7084
+        { type: type }));
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    }
+    catch (e) {
+        // Ignore
+    }
+}
 /* *
  *
  *  Default Export
@@ -370,9 +404,10 @@ function getScript(scriptLocation) {
 const DownloadURL = {
     dataURLtoBlob,
     downloadURL,
+    getBlobFromContent,
     getScript
 };
-/* harmony default export */ const Extensions_DownloadURL = (DownloadURL);
+/* harmony default export */ const Shared_DownloadURL = (DownloadURL);
 
 ;// ./code/es-modules/Extensions/Exporting/ExportingDefaults.js
 /* *
@@ -557,7 +592,7 @@ const exporting = {
      * @since     5.0.0
      * @apioption exporting.libURL
      */
-    libURL: 'https://code.highcharts.com/12.4.0/lib/',
+    libURL: 'https://code.highcharts.com/12.4.0-modified/lib/',
     /**
      * Whether the chart should be exported using the browser's built-in
      * capabilities, allowing offline exports without requiring access to the
@@ -1924,7 +1959,7 @@ const HttpUtilities = {
 
 const { defaultOptions, setOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { downloadURL: Exporting_downloadURL, getScript: Exporting_getScript } = Extensions_DownloadURL;
+const { downloadURL: Exporting_downloadURL, getScript: Exporting_getScript } = Shared_DownloadURL;
 
 
 

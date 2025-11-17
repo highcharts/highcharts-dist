@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v12.4.0 (2025-09-04)
+ * @license Highmaps JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/heatmap
  * @requires highcharts
  *
@@ -8,7 +8,7 @@
  * License: www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
-import * as __WEBPACK_EXTERNAL_MODULE__coloraxis_src_js_cdd22a72__ from "./coloraxis.src.js";
+import "./coloraxis.src.js";
 /******/ // The require scope
 /******/ var __webpack_require__ = {};
 /******/ 
@@ -43,17 +43,13 @@ import * as __WEBPACK_EXTERNAL_MODULE__coloraxis_src_js_cdd22a72__ from "./color
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
 ;// external "./coloraxis.src.js"
-var x = (y) => {
-	var x = {}; __webpack_require__.d(x,
-    	y); return x
-    } 
-    var y = (x) => (() => (x))
-    const external_coloraxis_src_js_namespaceObject = x({  });
+
 ;// external ["../highcharts.src.js","default","Color"]
 const external_highcharts_src_js_default_Color_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Color;
 var external_highcharts_src_js_default_Color_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Color_namespaceObject);
@@ -1291,6 +1287,9 @@ HeatmapSeries.defaultOptions = merge(ScatterSeries.defaultOptions, Heatmap_Heatm
 HeatmapSeries_addEvent(HeatmapSeries, 'afterDataClassLegendClick', function () {
     this.isDirtyCanvas = true;
     this.drawPoints();
+    if (this.options.enableMouseTracking) {
+        this.drawTracker(); // #23162, set tracker again after points redraw
+    }
 });
 HeatmapSeries_extend(HeatmapSeries.prototype, {
     axisTypes: Series_ColorMapComposition.seriesMembers.axisTypes,

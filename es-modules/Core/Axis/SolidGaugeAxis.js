@@ -8,7 +8,7 @@
  *
  * */
 'use strict';
-import ColorAxisLike from './Color/ColorAxisLike.js';
+import ColorAxisBase from './Color/ColorAxisBase';
 import U from '../Utilities.js';
 const { extend } = U;
 /* *
@@ -20,7 +20,7 @@ const { extend } = U;
  * @private
  */
 function init(axis) {
-    extend(axis, ColorAxisLike);
+    extend(axis, ColorAxisBase);
 }
 /* *
  *

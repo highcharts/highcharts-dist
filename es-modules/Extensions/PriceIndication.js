@@ -21,13 +21,33 @@ const { addEvent, merge, pushUnique } = U;
 function compose(SeriesClass) {
     if (pushUnique(composed, 'PriceIndication')) {
         addEvent(SeriesClass, 'afterRender', onSeriesAfterRender);
+        addEvent(SeriesClass, 'hide', onSeriesHide);
     }
+}
+/**
+ * Hides price indication when parent series is hidden. Showing the indicator is
+ * handled by the `onSeriesAfterRender` function.
+ *
+ * @private
+ *
+ */
+function onSeriesHide() {
+    const series = this;
+    [
+        'lastPrice',
+        'lastPriceLabel',
+        'lastVisiblePrice',
+        'lastVisiblePriceLabel'
+    ].forEach((key) => {
+        series[key]?.hide();
+    });
 }
 /** @private */
 function onSeriesAfterRender() {
     const series = this, seriesOptions = series.options, lastVisiblePrice = seriesOptions.lastVisiblePrice, lastPrice = seriesOptions.lastPrice;
     if ((lastVisiblePrice || lastPrice) &&
-        seriesOptions.id !== 'highcharts-navigator-series') {
+        seriesOptions.id !== 'highcharts-navigator-series' &&
+        series.visible) {
         const xAxis = series.xAxis, yAxis = series.yAxis, origOptions = yAxis.crosshair, origGraphic = yAxis.cross, origLabel = yAxis.crossLabel, points = series.points, pLength = points.length, dataLength = series.dataTable.rowCount, x = series.getColumn('x')[dataLength - 1], y = series.getColumn('y')[dataLength - 1] ??
             series.getColumn('close')[dataLength - 1];
         let yValue;

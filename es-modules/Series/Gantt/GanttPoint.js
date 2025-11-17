@@ -57,6 +57,7 @@ class GanttPoint extends XRangePoint {
         const ganttPoint = super.applyOptions(options, x);
         GanttPoint.setGanttPointAliases(ganttPoint, ganttPoint.series.chart);
         this.isNull = !this.isValid?.();
+        this.formatPrefix = this.isNull ? 'null' : 'point'; // #23605
         return ganttPoint;
     }
     isValid() {

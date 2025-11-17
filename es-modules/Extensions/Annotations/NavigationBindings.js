@@ -642,7 +642,9 @@ class NavigationBindings {
             }
         }
         objectEach(options, (option, key) => {
-            if (key === 'typeOptions') {
+            if (key === 'typeOptions' &&
+                visualOptions['type'] !== 'basicAnnotation' // #23575
+            ) {
                 visualOptions[key] = {};
                 objectEach(options[key], (typeOption, typeKey) => {
                     traverse(typeOption, typeKey, nestedEditables, visualOptions[key], typeKey);

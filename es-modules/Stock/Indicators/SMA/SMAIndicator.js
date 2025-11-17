@@ -18,7 +18,7 @@ const { addEvent, fireEvent, error, extend, isArray, merge, pick } = U;
  * @private
  */
 const tableToMultiYData = (series, processed) => {
-    const yData = [], pointArrayMap = series.pointArrayMap, table = processed && series.dataTable.modified || series.dataTable;
+    const yData = [], pointArrayMap = series.pointArrayMap, table = processed && series.dataTable.getModified() || series.dataTable;
     if (!pointArrayMap) {
         return series.getColumn('y', processed);
     }

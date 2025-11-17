@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v12.4.0 (2025-09-04)
+ * @license Highstock JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/stock
  * @requires highcharts
  *
@@ -10,9 +10,9 @@
  * License: www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
-import * as __WEBPACK_EXTERNAL_MODULE__broken_axis_src_js_5f3d6d24__ from "./broken-axis.src.js";
-import * as __WEBPACK_EXTERNAL_MODULE__datagrouping_src_js_902e97be__ from "./datagrouping.src.js";
-import * as __WEBPACK_EXTERNAL_MODULE__mouse_wheel_zoom_src_js_c5a2afed__ from "./mouse-wheel-zoom.src.js";
+import "./broken-axis.src.js";
+import "./datagrouping.src.js";
+import "./mouse-wheel-zoom.src.js";
 /******/ // The require scope
 /******/ var __webpack_require__ = {};
 /******/ 
@@ -47,6 +47,7 @@ import * as __WEBPACK_EXTERNAL_MODULE__mouse_wheel_zoom_src_js_c5a2afed__ from "
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -54,6 +55,9 @@ var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require_
 ;// external ["../highcharts.src.js","default","Point"]
 const external_highcharts_src_js_default_Point_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Point;
 var external_highcharts_src_js_default_Point_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Point_namespaceObject);
+;// external ["../highcharts.src.js","default","Series"]
+const external_highcharts_src_js_default_Series_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series;
+var external_highcharts_src_js_default_Series_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_namespaceObject);
 ;// ./code/es-modules/Series/DataModifyComposition.js
 /* *
  *
@@ -67,6 +71,7 @@ var external_highcharts_src_js_default_Point_default = /*#__PURE__*/__webpack_re
 
 
 const { tooltipFormatter: pointTooltipFormatter } = (external_highcharts_src_js_default_Point_default()).prototype;
+
 
 const { addEvent, arrayMax, arrayMin, correctFloat, defined, isArray, isNumber, isString, pick } = (external_highcharts_src_js_default_default());
 /* *
@@ -176,6 +181,17 @@ var DataModifyComposition;
      * @function Highcharts.Series#init
      */
     function afterInit() {
+        // If linked series does not have compare option set, use the parent
+        // series' compare option, #21119.
+        const linkedTo = this.options.linkedTo, chart = this.chart;
+        if (linkedTo) {
+            const linkedSeries = linkedTo === ':previous' ?
+                chart.series[this.index - 1] :
+                chart.get(linkedTo);
+            if (linkedSeries instanceof (external_highcharts_src_js_default_Series_default())) {
+                this.options.compare = pick(this.userOptions.compare, linkedSeries.options.compare);
+            }
+        }
         const compare = this.options.compare;
         let dataModify;
         if (compare === 'percent' ||
@@ -514,7 +530,8 @@ var DataModifyComposition;
  * or absolute change depending on whether `compare` is set to `"percent"`
  * or `"value"`. When this is applied to multiple series, it allows
  * comparing the development of the series against each other. Adds
- * a `change` field to every point object.
+ * a `change` field to every point object. If a `compare` value is not set on a
+ * linked series, it will be inherited from the parent series.
  *
  * @see [compareBase](#plotOptions.series.compareBase)
  * @see [Axis.setCompare()](/class-reference/Highcharts.Axis#setCompare)
@@ -4516,7 +4533,7 @@ var ColumnUtils;
      * @param {boolean} asSubarray
      * If column is a typed array, return a subarray instead of a new array. It
      * is faster `O(1)`, but the entire buffer will be kept in memory until all
-     * views to it are destroyed. Default is `false`.
+     * views of it are destroyed. Default is `false`.
      *
      * @return {DataTable.Column}
      * Modified column.
@@ -4582,6 +4599,33 @@ var ColumnUtils;
         };
     }
     ColumnUtils.splice = splice;
+    /**
+     * Converts a cell value to a number.
+     *
+     * @param {DataTable.CellType} value
+     * Cell value to convert to a number.
+     *
+     * @param {boolean} useNaN
+     * If `true`, returns `NaN` for non-numeric values; if `false`,
+     * returns `null` instead.
+     *
+     * @return {number | null}
+     * Number or `null` if the value is not a number.
+     *
+     * @private
+     */
+    function convertToNumber(value, useNaN) {
+        switch (typeof value) {
+            case 'boolean':
+                return (value ? 1 : 0);
+            case 'number':
+                return (isNaN(value) && !useNaN ? null : value);
+            default:
+                value = parseFloat(`${value ?? ''}`);
+                return (isNaN(value) && !useNaN ? null : value);
+        }
+    }
+    ColumnUtils.convertToNumber = convertToNumber;
 })(ColumnUtils || (ColumnUtils = {}));
 /* *
  *
@@ -4659,12 +4703,11 @@ class DataTableCore {
          * @type {string}
          */
         this.id = (options.id || uniqueKey());
-        this.modified = this;
         this.rowCount = 0;
         this.versionTag = uniqueKey();
         let rowCount = 0;
-        objectEach(options.columns || {}, (column, columnName) => {
-            this.columns[columnName] = column.slice();
+        objectEach(options.columns || {}, (column, columnId) => {
+            this.columns[columnId] = column.slice();
             rowCount = Math.max(rowCount, column.length);
         });
         this.applyRowCount(rowCount);
@@ -4683,9 +4726,9 @@ class DataTableCore {
      */
     applyRowCount(rowCount) {
         this.rowCount = rowCount;
-        objectEach(this.columns, (column, columnName) => {
+        objectEach(this.columns, (column, columnId) => {
             if (column.length !== rowCount) {
-                this.columns[columnName] = setLength(column, rowCount);
+                this.columns[columnId] = setLength(column, rowCount);
             }
         });
     }
@@ -4706,8 +4749,8 @@ class DataTableCore {
     deleteRows(rowIndex, rowCount = 1) {
         if (rowCount > 0 && rowIndex < this.rowCount) {
             let length = 0;
-            objectEach(this.columns, (column, columnName) => {
-                this.columns[columnName] =
+            objectEach(this.columns, (column, columnId) => {
+                this.columns[columnId] =
                     splice(column, rowIndex, rowCount).array;
                 length = column.length;
             });
@@ -4720,33 +4763,33 @@ class DataTableCore {
      * Fetches the given column by the canonical column name. Simplified version
      * of the full `DataTable.getRow` method, always returning by reference.
      *
-     * @param {string} columnName
+     * @param {string} columnId
      * Name of the column to get.
      *
      * @return {Highcharts.DataTableColumn|undefined}
      * A copy of the column, or `undefined` if not found.
      */
-    getColumn(columnName, 
+    getColumn(columnId, 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asReference) {
-        return this.columns[columnName];
+        return this.columns[columnId];
     }
     /**
      * Retrieves all or the given columns. Simplified version of the full
      * `DataTable.getColumns` method, always returning by reference.
      *
-     * @param {Array<string>} [columnNames]
-     * Column names to retrieve.
+     * @param {Array<string>} [columnIds]
+     * Column ids to retrieve.
      *
      * @return {Highcharts.DataTableColumnCollection}
      * Collection of columns. If a requested column was not found, it is
      * `undefined`.
      */
-    getColumns(columnNames, 
+    getColumns(columnIds, 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asReference) {
-        return (columnNames || Object.keys(this.columns)).reduce((columns, columnName) => {
-            columns[columnName] = this.columns[columnName];
+        return (columnIds || Object.keys(this.columns)).reduce((columns, columnId) => {
+            columns[columnId] = this.columns[columnId];
             return columns;
         }, {});
     }
@@ -4756,19 +4799,19 @@ class DataTableCore {
      * @param {number} rowIndex
      * Row index to retrieve. First row has index 0.
      *
-     * @param {Array<string>} [columnNames]
+     * @param {Array<string>} [columnIds]
      * Column names to retrieve.
      *
      * @return {Record<string, number|string|undefined>|undefined}
      * Returns the row values, or `undefined` if not found.
      */
-    getRow(rowIndex, columnNames) {
-        return (columnNames || Object.keys(this.columns)).map((key) => this.columns[key]?.[rowIndex]);
+    getRow(rowIndex, columnIds) {
+        return (columnIds || Object.keys(this.columns)).map((key) => this.columns[key]?.[rowIndex]);
     }
     /**
      * Sets cell values for a column. Will insert a new column, if not found.
      *
-     * @param {string} columnName
+     * @param {string} columnId
      * Column name to set.
      *
      * @param {Highcharts.DataTableColumn} [column]
@@ -4783,8 +4826,8 @@ class DataTableCore {
      * @emits #setColumns
      * @emits #afterSetColumns
      */
-    setColumn(columnName, column = [], rowIndex = 0, eventDetail) {
-        this.setColumns({ [columnName]: column }, rowIndex, eventDetail);
+    setColumn(columnId, column = [], rowIndex = 0, eventDetail) {
+        this.setColumns({ [columnId]: column }, rowIndex, eventDetail);
     }
     /**
      * Sets cell values for multiple columns. Will insert new columns, if not
@@ -4806,8 +4849,8 @@ class DataTableCore {
      */
     setColumns(columns, rowIndex, eventDetail) {
         let rowCount = this.rowCount;
-        objectEach(columns, (column, columnName) => {
-            this.columns[columnName] = column.slice();
+        objectEach(columns, (column, columnId) => {
+            this.columns[columnId] = column.slice();
             rowCount = column.length;
         });
         this.applyRowCount(rowCount);
@@ -4836,18 +4879,27 @@ class DataTableCore {
      * @emits #afterSetRows
      */
     setRow(row, rowIndex = this.rowCount, insert, eventDetail) {
-        const { columns } = this, indexRowCount = insert ? this.rowCount + 1 : rowIndex + 1;
-        objectEach(row, (cellValue, columnName) => {
-            let column = columns[columnName] ||
-                eventDetail?.addColumns !== false && new Array(indexRowCount);
+        const { columns } = this, indexRowCount = insert ? this.rowCount + 1 : rowIndex + 1, rowKeys = Object.keys(row);
+        if (eventDetail?.addColumns !== false) {
+            for (let i = 0, iEnd = rowKeys.length; i < iEnd; i++) {
+                const key = rowKeys[i];
+                if (!columns[key]) {
+                    columns[key] = [];
+                }
+            }
+        }
+        objectEach(columns, (column, columnId) => {
+            if (!column && eventDetail?.addColumns !== false) {
+                column = new Array(indexRowCount);
+            }
             if (column) {
                 if (insert) {
-                    column = splice(column, rowIndex, 0, true, [cellValue]).array;
+                    column = splice(column, rowIndex, 0, true, [row[columnId] ?? null]).array;
                 }
                 else {
-                    column[rowIndex] = cellValue;
+                    column[rowIndex] = row[columnId] ?? null;
                 }
-                columns[columnName] = column;
+                columns[columnId] = column;
             }
         });
         if (indexRowCount > this.rowCount) {
@@ -4857,6 +4909,16 @@ class DataTableCore {
             DataTableCore_fireEvent(this, 'afterSetRows');
             this.versionTag = uniqueKey();
         }
+    }
+    /**
+     * Returns the medified (clone) or the original data table if the modified
+     * one does not exist.
+     *
+     * @return {Highcharts.DataTableCore}
+     * The medified (clone) or the original data table.
+     */
+    getModified() {
+        return this.modified || this;
     }
 }
 /* *
@@ -6665,6 +6727,10 @@ function RangeSelectorComposition_onChartBeforeRender() {
         }
     }
 }
+/**
+ * Redraw rangeSelector on chart redraw event
+ * @private
+ */
 function redrawRangeSelector() {
     const chart = this;
     const rangeSelector = this.rangeSelector;
@@ -6710,11 +6776,19 @@ function onChartDestroy() {
     }
 }
 /**
- *
+ * Reflow rangeSelector and adjust chart layout
+ * @private
  */
 function onChartGetMargins() {
     const rangeSelector = this.rangeSelector;
     if (rangeSelector?.options?.enabled) {
+        // Rerender rangeSelector in order to return correct plotHeight, #23058
+        const { min, max } = this.xAxis[0].getExtremes();
+        if (RangeSelectorComposition_isNumber(min) &&
+            rangeSelector.inputGroup &&
+            rangeSelector.inputGroup.getBBox().width < 20) {
+            rangeSelector.render(min, max);
+        }
         const rangeSelectorHeight = rangeSelector.getHeight();
         const verticalAlign = rangeSelector.options.verticalAlign;
         if (!rangeSelector.options.floating) {
@@ -6795,8 +6869,7 @@ const { defaultOptions: RangeSelector_defaultOptions } = (external_highcharts_sr
 
 const { format } = (external_highcharts_src_js_default_Templating_default());
 
-
-const { addEvent: RangeSelector_addEvent, createElement, css: RangeSelector_css, defined: RangeSelector_defined, destroyObjectProperties: RangeSelector_destroyObjectProperties, diffObjects, discardElement, extend: RangeSelector_extend, fireEvent: RangeSelector_fireEvent, isNumber: RangeSelector_isNumber, isString: RangeSelector_isString, merge: RangeSelector_merge, objectEach: RangeSelector_objectEach, pick: RangeSelector_pick, splat: RangeSelector_splat } = (external_highcharts_src_js_default_default());
+const { addEvent: RangeSelector_addEvent, createElement, css: RangeSelector_css, defined: RangeSelector_defined, destroyObjectProperties: RangeSelector_destroyObjectProperties, discardElement, extend: RangeSelector_extend, fireEvent: RangeSelector_fireEvent, isNumber: RangeSelector_isNumber, isString: RangeSelector_isString, merge: RangeSelector_merge, objectEach: RangeSelector_objectEach, pick: RangeSelector_pick, splat: RangeSelector_splat } = (external_highcharts_src_js_default_default());
 /* *
  *
  *  Functions
@@ -7138,9 +7211,8 @@ class RangeSelector {
                 range &&
                 actualRange < range) {
                 // Handle ordinal ranges
-                const positions = baseAxis.ordinal.positions, prevOrdinalPosition = Axis_OrdinalAxis.Additions.findIndexOf(positions, baseAxis.min, true), nextOrdinalPosition = Math.min(Axis_OrdinalAxis.Additions.findIndexOf(positions, baseAxis.max, true) + 1, positions.length - 1);
-                if (positions[nextOrdinalPosition] -
-                    positions[prevOrdinalPosition] > range) {
+                const positions = baseAxis.ordinal.positions;
+                if (positions[positions.length - 1] - positions[0] > range) {
                     isSameRange = true;
                 }
             }
@@ -7981,14 +8053,11 @@ class RangeSelector {
             }
             // Update current buttons
             for (let i = btnLength - 1; i >= 0; i--) {
-                const diff = diffObjects(newButtonsOptions[i], this.buttonOptions[i]);
-                if (Object.keys(diff).length !== 0) {
-                    const rangeOptions = newButtonsOptions[i];
-                    this.buttons[i].destroy();
-                    dropdown?.options.remove(i + 1);
-                    this.createButton(rangeOptions, i, width, states);
-                    this.computeButtonRange(rangeOptions);
-                }
+                const rangeOptions = newButtonsOptions[i];
+                this.buttons[i].destroy();
+                dropdown?.options.remove(i + 1);
+                this.createButton(rangeOptions, i, width, states);
+                this.computeButtonRange(rangeOptions);
             }
             // Create missing buttons
             if (newButtonsOptions.length > this.buttonOptions.length) {
@@ -8121,7 +8190,7 @@ class RangeSelector {
                 xOffsetForExportButton +
                 inputGroup.getBBox().width >
                 chart.plotWidth) {
-                if (dropdown === 'responsive') {
+                if (dropdown === 'responsive' || dropdown === 'always') {
                     this.collapseButtons();
                 }
                 else {
@@ -8208,9 +8277,7 @@ class RangeSelector {
         if (dropdown) {
             this.dropdownLabel.hide();
             RangeSelector_css(dropdown, {
-                visibility: 'hidden',
-                width: '1px',
-                height: '1px'
+                visibility: 'hidden'
             });
             this.hasVisibleDropdown = false;
         }
@@ -8275,7 +8342,7 @@ class RangeSelector {
             this.destroy();
             return this.init(chart);
         }
-        this.isDirty = !!options.buttons;
+        this.isDirty = !!options.buttons || !!options.buttonTheme;
         if (redraw) {
             this.render();
         }
@@ -10601,9 +10668,6 @@ var FlagsSymbols;
 ;// external ["../highcharts.src.js","default","Series","types","column"]
 const external_highcharts_src_js_default_Series_types_column_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.column;
 var external_highcharts_src_js_default_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_column_namespaceObject);
-;// external ["../highcharts.src.js","default","Series"]
-const external_highcharts_src_js_default_Series_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series;
-var external_highcharts_src_js_default_Series_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_namespaceObject);
 ;// ./code/es-modules/Series/OnSeriesComposition.js
 /* *
  *
@@ -10911,7 +10975,7 @@ class FlagsSeries extends FlagsSeries_ColumnSeries {
                 // Create the flag
                 if (!graphic) {
                     graphic = point.graphic = renderer.label('', 0, void 0, shape, void 0, void 0, options.useHTML)
-                        .addClass('highcharts-point')
+                        .addClass(point.getClassName())
                         .add(series.markerGroup);
                     // Add reference to the point for tracker (#6303)
                     if (point.graphic.div) {
@@ -11128,26 +11192,11 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ''; // Detach doclets above
 
 ;// external "./broken-axis.src.js"
-var x = (y) => {
-	var x = {}; __webpack_require__.d(x,
-    	y); return x
-    } 
-    var y = (x) => (() => (x))
-    const external_broken_axis_src_js_namespaceObject = x({  });
+
 ;// external "./datagrouping.src.js"
-var external_datagrouping_src_js_x = (y) => {
-	var x = {}; __webpack_require__.d(x,
-    	y); return x
-    } 
-    var external_datagrouping_src_js_y = (x) => (() => (x))
-    const external_datagrouping_src_js_namespaceObject = external_datagrouping_src_js_x({  });
+
 ;// external "./mouse-wheel-zoom.src.js"
-var external_mouse_wheel_zoom_src_js_x = (y) => {
-	var x = {}; __webpack_require__.d(x,
-    	y); return x
-    } 
-    var external_mouse_wheel_zoom_src_js_y = (x) => (() => (x))
-    const external_mouse_wheel_zoom_src_js_namespaceObject = external_mouse_wheel_zoom_src_js_x({  });
+
 ;// ./code/es-modules/masters/modules/stock.src.js
 
 

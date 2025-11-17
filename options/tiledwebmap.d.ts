@@ -6,122 +6,109 @@
 import * as Highcharts from "../highcharts";
 declare module "../highcharts" {
     /**
-     * (Highmaps) A tiledwebmap series allows user to display dynamically joined
-     * individual images (tiles) and join them together to create a map.
-     *
-     * Configuration options for the series are given in three levels:
-     *
-     * 1. Options for all series in a chart are defined in the
-     * plotOptions.series object.
-     *
-     * 2. Options for all `tiledwebmap` series are defined in
-     * plotOptions.tiledwebmap.
-     *
-     * 3. Options for one single series are given in the series instance array.
-     * (see online documentation for example)
-     *
-     * **TypeScript:**
-     *
-     * - the type option must always be set.
-     *
-     * - when accessing an array of series, the combined set of all series types
-     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
-     * specific type can be done by checking the `type` property. (see online
-     * documentation for example)
+     * (Highmaps) Point accessibility options for a series.
      */
-    interface PlotTiledwebmapOptions {
+    interface PlotTiledwebmapAccessibilityPointOptions {
         /**
-         * (Highmaps) Accessibility options for a series.
-         */
-        accessibility?: Highcharts.SeriesAccessibilityOptionsObject;
-        /**
-         * (Highmaps) An additional class name to apply to the series' graphical
-         * elements. This option does not replace default class names of the
-         * graphical element. Changes to the series' color will also be
-         * reflected in a chart's legend and tooltip.
-         */
-        className?: string;
-        /**
-         * (Highmaps) A reserved subspace to store options and values for
-         * customized functionality. Here you can add additional data for your
-         * own event callbacks and formatter callbacks.
-         */
-        custom?: Highcharts.Dictionary<any>;
-        /**
-         * (Highmaps) A description of the series to add to the screen reader
-         * information about the series.
-         */
-        description?: string;
-        /**
-         * (Highmaps) General event handlers for the series items. These event
-         * hooks can also be attached to the series at run time using the
-         * `Highcharts.addEvent` function.
-         */
-        events?: Highcharts.SeriesEventsOptionsObject;
-        /**
-         * (Highmaps) Highlight only the hovered point and fade the remaining
-         * points.
+         * (Highmaps) Date format to use for points on datetime axes when
+         * describing them to screen reader users.
          *
-         * Scatter-type series require enabling the 'inactive' marker state and
-         * adjusting opacity. Note that this approach could affect performance
-         * with large datasets.
-         */
-        inactiveOtherPoints?: boolean;
-        /**
-         * (Highmaps) When set to `false` will prevent the series data from
-         * being included in any form of data export.
+         * Defaults to the same format as in tooltip.
          *
-         * Since version 6.0.0 until 7.1.0 the option was existing undocumented
-         * as `includeInCSVExport`.
+         * For an overview of the replacement codes, see dateFormat.
          */
-        includeInDataExport?: boolean;
+        dateFormat?: string;
         /**
-         * (Highmaps) What type of legend symbol to render for this series. Can
-         * be one of `areaMarker`, `lineMarker` or `rectangle`.
+         * (Highmaps) Formatter function to determine the date/time format used
+         * with points on datetime axes when describing them to screen reader
+         * users. Receives one argument, `point`, referring to the point to
+         * describe. Should return a date format string compatible with
+         * dateFormat.
          */
-        legendSymbol?: Highcharts.OptionsLegendSymbolValue;
+        dateFormatter?: Highcharts.ScreenReaderFormatterCallbackFunction<Highcharts.Point>;
         /**
-         * (Highmaps) Opacity of a series parts: line, fill (e.g. area) and
-         * dataLabels.
+         * (Highmaps) Whether or not to describe points with the value `null` to
+         * assistive technology, such as screen readers.
          */
-        opacity?: number;
+        describeNull?: boolean;
         /**
-         * (Highmaps) Same as accessibility.point.descriptionFormat, but for an
-         * individual series. Overrides the chart wide configuration.
-         */
-        pointDescriptionFormat?: Function;
-        /**
-         * (Highmaps) Provider options for the series.
-         */
-        provider?: Highcharts.PlotTiledwebmapProviderOptions;
-        /**
-         * (Highmaps) Whether to display this particular series or series type
-         * in the legend. Standalone series are shown in legend by default, and
-         * linked series are not. Since v7.2.0 it is possible to show series
-         * that use colorAxis by setting this option to `true`.
-         */
-        showInLegend?: boolean;
-        /**
-         * (Highmaps) If set to `true`, the accessibility module will skip past
-         * the points in this series for keyboard navigation.
-         */
-        skipKeyboardNavigation?: boolean;
-        states?: Highcharts.SeriesStatesOptionsObject;
-        /**
-         * (Highmaps) Set the initial visibility of the series.
-         */
-        visible?: boolean;
-        /**
-         * (Highmaps) Define the z index of the series.
-         */
-        zIndex?: number;
-        /**
-         * (Highmaps) Whether to zoom non-cartesian series. If `chart.zooming`
-         * is set, the option allows to disable zooming on an individual
-         * non-cartesian series. By default zooming is enabled for all series.
+         * (Highmaps) A format string to use instead of the default for point
+         * descriptions.
          *
-         * Note: This option works only for non-cartesian series.
+         * The context of the format string is the point instance.
+         *
+         * As opposed to accessibility.point.valueDescriptionFormat, this option
+         * replaces the whole description.
          */
-        zoomEnabled?: boolean;
+        descriptionFormat?: string;
+        /**
+         * (Highmaps) Formatter function to use instead of the default for point
+         * descriptions. Same as `accessibility.point.descriptionFormatter`, but
+         * applies to a series instead of the whole chart.
+         *
+         * Note: Prefer using accessibility.point.valueDescriptionFormat instead
+         * if possible, as default functionality such as describing annotations
+         * will be preserved.
+         */
+        descriptionFormatter?: Highcharts.ScreenReaderFormatterCallbackFunction<Highcharts.Point>;
+        /**
+         * (Highmaps) Decimals to use for the values in the point descriptions.
+         * Uses tooltip.valueDecimals if not defined.
+         */
+        valueDecimals?: number;
+        /**
+         * (Highmaps) Format to use for describing the values of data points to
+         * assistive technology - including screen readers. The point context is
+         * available as `{point}`.
+         *
+         * Other available context variables include `{index}`, `{value}`, and
+         * `{xDescription}`.
+         *
+         * Additionally, the series name, annotation info, and description added
+         * in `point.accessibility.description` is added by default if relevant.
+         * To override this, use the accessibility.point.descriptionFormatter
+         * option.
+         */
+        valueDescriptionFormat?: string;
+        /**
+         * (Highmaps) Prefix to add to the values in the point descriptions.
+         * Uses tooltip.valuePrefix if not defined.
+         */
+        valuePrefix?: string;
+        /**
+         * (Highmaps) Suffix to add to the values in the point descriptions.
+         * Uses tooltip.valueSuffix if not defined.
+         */
+        valueSuffix?: string;
+    }
+    /**
+     * (Highmaps) Provider options for the series.
+     */
+    interface PlotTiledwebmapProviderOptions {
+        /**
+         * (Highmaps) API key for providers that require using one.
+         */
+        apiKey?: string;
+        /**
+         * (Highmaps) Subdomain required by each provider. Check the providers
+         * documentation for available subdomains.
+         */
+        subdomain?: string;
+        /**
+         * (Highmaps) Set a tiles theme. Check the providers documentation for
+         * official list of available themes.
+         */
+        theme?: string;
+        /**
+         * (Highmaps) Provider type to pull data (tiles) from.
+         */
+        type?: string;
+        /**
+         * (Highmaps) Custom URL for providers not specified in providers type.
+         * Available variables to use in URL are: `{x}`, `{y}`, `{z}` or
+         * `{zoom}`. Remember to always specify a projection, when using a
+         * custom URL.
+         */
+        url?: string;
     }
 }

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/networkgraph
  * @requires highcharts
  *
@@ -44,6 +44,7 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -2789,7 +2790,7 @@ class ReingoldFruchtermanLayout {
  * */
 
 
-const { merge: SimulationSeriesUtilities_merge, syncTimeout } = (external_highcharts_src_js_default_default());
+const { syncTimeout } = (external_highcharts_src_js_default_default());
 
 const { animObject } = (external_highcharts_src_js_default_default());
 /**
@@ -2823,7 +2824,8 @@ function initDataLabelsDefer() {
 function initDataLabels() {
     const series = this, dlOptions = series.options.dataLabels;
     if (!series.dataLabelsGroup) {
-        const dataLabelsGroup = this.initDataLabelsGroup();
+        // Those series support only one group of data labels (index 0)
+        const dataLabelsGroup = this.initDataLabelsGroup(0, dlOptions);
         // Apply the dataLabels.style not only to the
         // individual dataLabels but also to the entire group
         if (!series.chart.styledMode && dlOptions?.style) {
@@ -2834,7 +2836,7 @@ function initDataLabels() {
         if (series.visible) { // #2597, #3023, #3024
             // #19663, initial data labels animation
             if (series.options.animation && dlOptions?.animation) {
-                dataLabelsGroup.animate({ opacity: 1 }, dlOptions?.animation);
+                dataLabelsGroup.animate({ opacity: 1 }, dlOptions.animation);
             }
             else {
                 dataLabelsGroup.attr({ opacity: 1 });
@@ -2844,7 +2846,10 @@ function initDataLabels() {
         return dataLabelsGroup;
     }
     // Place it on first and subsequent (redraw) calls
-    series.dataLabelsGroup.attr(SimulationSeriesUtilities_merge({ opacity: 1 }, this.getPlotBox('data-labels')));
+    series.dataLabelsGroup.attr({
+        opacity: 1,
+        ...this.getPlotBox('data-labels')
+    });
     return series.dataLabelsGroup;
 }
 const DataLabelsDeferUtils = {

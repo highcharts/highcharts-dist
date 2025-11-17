@@ -28,10 +28,10 @@ function applyCursorCSS(element, cursor, addClass, styledMode) {
 }
 /** @private */
 function columnAnimateDrilldown(init) {
-    const series = this, chart = series.chart, drilldownLevels = chart.drilldownLevels, animationOptions = animObject((chart.options.drilldown || {}).animation), xAxis = this.xAxis, styledMode = chart.styledMode;
+    const series = this, chart = series.chart, { drilldownLevels, styledMode } = chart, animationOptions = animObject(chart.options.drilldown?.animation), xAxis = this.xAxis;
     if (!init) {
         let animateFrom;
-        (drilldownLevels || []).forEach((level) => {
+        drilldownLevels?.forEach((level) => {
             if (series.options._ddSeriesId ===
                 level.lowerSeriesOptions._ddSeriesId) {
                 animateFrom = level.shapeArgs;
@@ -54,9 +54,7 @@ function columnAnimateDrilldown(init) {
                     .animate(extend(point.shapeArgs, { fill: point.color || series.color }), animationOptions);
             }
         });
-        if (chart.drilldown) {
-            chart.drilldown.fadeInGroup(this.dataLabelsGroup);
-        }
+        this.dataLabelsGroups?.forEach((g) => chart.drilldown?.fadeInGroup(g));
         // Reset to prototype
         delete this.animate;
     }
@@ -74,10 +72,14 @@ function columnAnimateDrilldown(init) {
 function columnAnimateDrillupFrom(level) {
     const series = this, animationOptions = animObject((series.chart.options.drilldown || {}).animation);
     // Cancel mouse events on the series group (#2787)
-    (series.trackerGroups || []).forEach((key) => {
-        // We don't always have dataLabelsGroup
-        if (series[key]) {
-            series[key].on('mouseover');
+    series.trackerGroups?.forEach((key) => {
+        if (key === 'dataLabelsGroup') {
+            series.dataLabelsGroups?.forEach((g) => {
+                g?.on('mouseover', () => { });
+            });
+        }
+        else {
+            series[key]?.on('mouseover');
         }
     });
     let group = series.group;
@@ -209,13 +211,10 @@ function mapAnimateDrilldown(init) {
     if (chart &&
         group &&
         series.options &&
-        chart.options.drilldown &&
-        chart.options.drilldown.animation) {
+        chart.options.drilldown?.animation) {
         // Initialize the animation
         if (init && chart.mapView) {
-            group.attr({
-                opacity: 0.01
-            });
+            group.attr({ opacity: 0.01 });
             chart.mapView.allowTransformAnimation = false;
             // Stop duplicating and overriding animations
             series.options.inactiveOtherPoints = true;
@@ -223,19 +222,13 @@ function mapAnimateDrilldown(init) {
             // Run the animation
         }
         else {
-            group.animate({
-                opacity: 1
-            }, chart.options.drilldown.animation, () => {
+            group.animate({ opacity: 1 }, chart.options.drilldown.animation, () => {
                 if (series.options) {
                     series.options.inactiveOtherPoints = false;
-                    series.options.enableMouseTracking =
-                        pick((series.userOptions &&
-                            series.userOptions.enableMouseTracking), true);
+                    series.options.enableMouseTracking = pick(series.userOptions?.enableMouseTracking, true);
                 }
             });
-            if (chart.drilldown) {
-                chart.drilldown.fadeInGroup(this.dataLabelsGroup);
-            }
+            series.dataLabelsGroups?.forEach((g) => chart.drilldown?.fadeInGroup(g));
         }
     }
 }
@@ -247,7 +240,7 @@ function mapAnimateDrilldown(init) {
  */
 function mapAnimateDrillupFrom() {
     const series = this, chart = series.chart;
-    if (chart && chart.mapView) {
+    if (chart?.mapView) {
         chart.mapView.allowTransformAnimation = false;
     }
     // Stop duplicating and overriding animations
@@ -276,9 +269,7 @@ function mapAnimateDrillupTo(init) {
         }
         else {
             group.animate({ opacity: 1 }, (chart.options.drilldown || {}).animation);
-            if (chart.drilldown) {
-                chart.drilldown.fadeInGroup(series.dataLabelsGroup);
-            }
+            series.dataLabelsGroups?.forEach((g) => chart.drilldown?.fadeInGroup(g));
         }
     }
 }
@@ -390,9 +381,7 @@ function pieAnimateDrilldown(init) {
                     }))[animationOptions ? 'animate' : 'attr'](animateTo, animationOptions);
                 }
             }
-            if (chart.drilldown) {
-                chart.drilldown.fadeInGroup(series.dataLabelsGroup);
-            }
+            series.dataLabelsGroups?.forEach((g) => chart.drilldown?.fadeInGroup(g));
             // Reset to prototype
             delete series.animate;
         }

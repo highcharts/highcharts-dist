@@ -1,11 +1,11 @@
 /**
-* @license Highcharts JS v12.4.0 (2025-09-04)
+* @license Highcharts JS v12.4.0-modified (2025-11-17)
 * @module highcharts/i18n/nb-NO
 * @requires highcharts
 *
 * nb-NO language pack
 *
-* (c) 2009-2025 Torstein Honsi
+* (c) 2009-2025 Highsoft AS
 *
 * License: www.highcharts.com/license
 *
@@ -169,7 +169,12 @@ const languageOptions = {
             "timeRangeMinutes": "Dataområde: {range} minutter.",
             "timeRangeSeconds": "Dataområde: {range} sekunder.",
             "rangeFromTo": "Datarekkevidde fra {rangeFrom} til {rangeTo}.",
-            "rangeCategories": "Dataområde: {numCategories} kategorier."
+            "rangeCategories": "Dataområde: {numCategories} kategorier.",
+            "defaultAxisNames": {
+                "categories": "kategorier",
+                "time": "tid",
+                "values": "verdier"
+            }
         },
         "exporting": {
             "chartMenuLabel": "Diagrammeny",

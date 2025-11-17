@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v12.4.0 (2025-09-04)
+ * @license Highcharts Gantt JS v12.4.0-modified (2025-11-17)
  * @module highcharts/highcharts-gantt
  *
  * (c) 2017-2025 Highsoft AS
@@ -80,7 +80,7 @@ var Globals;
      *  Constants
      *
      * */
-    Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '12.4.0', Globals.win = (typeof window !== 'undefined' ?
+    Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '12.4.0-modified', Globals.win = (typeof window !== 'undefined' ?
         window :
         {}), // eslint-disable-line node/no-unsupported-features/es-builtins
     Globals.doc = Globals.win.document, Globals.svg = !!Globals.doc?.createElementNS?.(Globals.SVG_NS, 'svg')?.createSVGRect, Globals.pageLang = Globals.doc?.documentElement?.closest('[lang]')?.lang, Globals.userAgent = Globals.win.navigator?.userAgent || '', Globals.isChrome = Globals.win.chrome, Globals.isFirefox = Globals.userAgent.indexOf('Firefox') !== -1, Globals.isMS = /(edge|msie|trident)/i.test(Globals.userAgent) && !Globals.win.opera, Globals.isSafari = !Globals.isChrome && Globals.userAgent.indexOf('Safari') !== -1, Globals.isTouchDevice = /(Mobile|Android|Windows Phone)/.test(Globals.userAgent), Globals.isWebKit = Globals.userAgent.indexOf('AppleWebKit') !== -1, Globals.deg2rad = Math.PI * 2 / 360, Globals.marginNames = [
@@ -5712,6 +5712,16 @@ const defaultOptions = {
          * @apioption legend.margin
          */
         /**
+         * Maximum width for the legend. Can be a percentage of the chart width,
+         * or an integer representing how many pixels wide the legend can be.
+         *
+         * @sample {highcharts} highcharts/legend/maxwidth/
+         *         Max width set to 7%
+         *
+         * @type      {number|string}
+         * @apioption legend.maxWidth
+         */
+        /**
          * Maximum pixel height for the legend. When the maximum height is
          * extended, navigation will show.
          *
@@ -9179,18 +9189,19 @@ function dateFormat(format, timestamp, upperCaseFirst) {
  *        replaced by its value.
  *
  * @param {Highcharts.Chart} [owner]
- *        A `Chart` or `DataGrid` instance used to get numberFormatter and time.
+ *        A `Chart` or `Grid` instance used to get numberFormatter and time.
  *
  * @return {string}
  *         The formatted string.
  */
 function format(str = '', ctx, owner) {
-    // Notice: using u flag will require a refactor for ES5 (#22450).
-    const regex = /\{([a-zA-Z\u00C0-\u017F\d:\.,;\-\/<>\[\]%_@+"'’= #\(\)]+)\}/g, // eslint-disable-line max-len
+    // eslint-disable-next-line prefer-regex-literals
+    const regex = new RegExp('\\{([\\p{L}\\d:\\.,;\\-\\/<>\\[\\]%_@+"\'’= #\\(\\)]+)\\}', 'gu'), 
     // The sub expression regex is the same as the top expression regex,
     // but except parens and block helpers (#), and surrounded by parens
     // instead of curly brackets.
-    subRegex = /\(([a-zA-Z\u00C0-\u017F\d:\.,;\-\/<>\[\]%_@+"'= ]+)\)/g, matches = [], floatRegex = /f$/, decRegex = /\.(\d)/, lang = owner?.options?.lang || Templating_defaultOptions.lang, time = owner?.time || Templating_defaultTime, numberFormatter = owner?.numberFormatter || numberFormat.bind(owner);
+    // eslint-disable-next-line prefer-regex-literals
+    subRegex = new RegExp('\\(([\\p{L}\\d:\\.,;\\-\\/<>\\[\\]%_@+"\'= ]+)\\)', 'gu'), matches = [], floatRegex = /f$/, decRegex = /\.(\d)/, lang = owner?.options?.lang || Templating_defaultOptions.lang, time = owner?.time || Templating_defaultTime, numberFormatter = owner?.numberFormatter || numberFormat.bind(owner);
     /*
      * Get a literal or variable value inside a template expression. May be
      * extended with other types like string or null if needed, but keep it
@@ -9985,9 +9996,11 @@ class SVGElement {
         // Default: top align
         y = (alignToBox.y || 0) + (alignOptions.y || 0) +
             ((alignToBox.height || 0) - (alignOptions.height || 0)) *
-                SVGElement_getAlignFactor(alignOptions.verticalAlign), attribs = {
-            'text-align': alignOptions?.align
-        };
+                SVGElement_getAlignFactor(alignOptions.verticalAlign), attribs = {};
+        // Add text-align attribute only if option is defined, #22698
+        if (alignOptions.align) {
+            attribs['text-align'] = alignOptions.align;
+        }
         attribs[alignByTranslate ? 'translateX' : 'x'] = Math.round(x);
         attribs[alignByTranslate ? 'translateY' : 'y'] = Math.round(y);
         // Animate only if already placed
@@ -10826,19 +10839,21 @@ class SVGElement {
         aX = pX + baseline * cosRad90, bX = aX + wCosRad, cX = bX - height * cosRad90, dX = cX - wCosRad, aY = pY + baseline * sinRad90, bY = aY + wSinRad, cY = bY - height * sinRad90, dY = cY - wSinRad;
         // Deduct the bounding box from the corners
         const x = Math.min(aX, bX, cX, dX), y = Math.min(aY, bY, cY, dY), boxWidth = Math.max(aX, bX, cX, dX) - x, boxHeight = Math.max(aY, bY, cY, dY) - y;
-        /* Uncomment to debug boxes
-        this.renderer.path([
+        /* Uncomment to visualize boxes
+        this.bBoxViz ??= this.renderer.path()
+            .attr({
+                stroke: 'red',
+                'stroke-width': 1,
+                zIndex: 20
+            })
+            .add();
+        this.bBoxViz.attr('d', [
             ['M', aX, aY],
             ['L', bX, bY],
             ['L', cX, cY],
             ['L', dX, dY],
             ['Z']
-        ])
-            .attr({
-                stroke: 'red',
-                'stroke-width': 1
-            })
-            .add();
+        ]);
         // */
         return {
             x,
@@ -11785,7 +11800,7 @@ class SVGLabel extends SVG_SVGElement {
         // If we have a text string and the DOM bBox was 0, it typically means
         // that the label was first rendered hidden, so we need to update the
         // bBox (#15246)
-        if (this.textStr && this.bBox.width === 0 && this.bBox.height === 0) {
+        if ((this.textStr && this.bBox.width === 0 && this.bBox.height === 0) || this.rotation) {
             this.updateBoxSize();
         }
         const { padding, height = 0, translateX = 0, translateY = 0, width = 0 } = this, paddingLeft = SVGLabel_pick(this.paddingLeft, padding), rotation = rot ?? (this.rotation || 0);
@@ -12547,7 +12562,7 @@ class TextBuilder {
     /**
      * Get the rendered line height of a <text>, <tspan> or pure text node.
      * @private
-     * @param {DOMElementType|Text} node The node to check for
+     * @param {Highcharts.DOMElementType|Text} node The node to check for
      * @return {number} The rendered line height
      */
     getLineHeight(node) {
@@ -12919,7 +12934,7 @@ class SVGRenderer {
         this.url = this.getReferenceURL();
         // Add description
         const desc = this.createElement('desc').add();
-        desc.element.appendChild(SVGRenderer_doc.createTextNode('Created with Highcharts 12.4.0'));
+        desc.element.appendChild(SVGRenderer_doc.createTextNode('Created with Highcharts 12.4.0-modified'));
         this.defs = this.createElement('defs').add();
         this.allowHTML = allowHTML;
         this.forExport = forExport;
@@ -20507,7 +20522,9 @@ class Axis {
     getThresholdAlignment(callerAxis) {
         if (!Axis_isNumber(this.dataMin) ||
             (this !== callerAxis &&
-                this.series.some((s) => (s.isDirty || s.isDirtyData)))) {
+                this.series.some((s) => 
+                // The xAxis.isDirty check is for setExtremes (#23677)
+                s.isDirty || s.isDirtyData || s.xAxis?.isDirty))) {
             this.getSeriesExtremes();
         }
         if (Axis_isNumber(this.threshold)) {
@@ -20575,9 +20592,11 @@ class Axis {
         // tick index. Unless `thresholdAlignment` is exactly 0 or 1, avoid the
         // first or last tick because that would lead to series being clipped.
         if (Axis_isNumber(thresholdAlignment)) {
-            thresholdTickIndex = thresholdAlignment < 0.5 ?
-                Math.ceil(thresholdAlignment * (tickAmount - 1)) :
-                Math.floor(thresholdAlignment * (tickAmount - 1));
+            thresholdTickIndex = thresholdAlignment === 0 ? 0 :
+                thresholdAlignment === 1 ? tickAmount - 1 :
+                    // Get the closest integer between 1 and
+                    // `tickAmount - 2` (#23787)
+                    Math.round(Axis_clamp(thresholdAlignment * (tickAmount - 1), 1, tickAmount - 2));
             if (options.reversed) {
                 thresholdTickIndex = tickAmount - 1 - thresholdTickIndex;
             }
@@ -20881,7 +20900,7 @@ class Axis {
      * Can be `"center"`, `"left"` or `"right"`.
      */
     autoLabelAlign(rotation) {
-        const angle = (Axis_pick(rotation, 0) - (this.side * 90) + 720) % 360, evt = { align: 'center' };
+        const angle = ((rotation - this.side * 90) % 360 + 360) % 360, evt = { align: 'center' };
         Axis_fireEvent(this, 'autoLabelAlign', evt, function (e) {
             if (angle > 15 && angle < 165) {
                 e.align = 'right';
@@ -21099,7 +21118,7 @@ class Axis {
         }
         // Set the explicit or automatic label alignment
         this.labelAlign = labelOptions.align ||
-            this.autoLabelAlign(this.labelRotation);
+            this.autoLabelAlign(this.labelRotation || 0);
         if (this.labelAlign) {
             attr.align = this.labelAlign;
         }
@@ -23856,7 +23875,7 @@ const { composed: Tooltip_composed, dateFormats, doc: Tooltip_doc, isSafari } = 
 const { distribute } = Renderer_RendererUtilities;
 
 
-const { addEvent: Tooltip_addEvent, clamp: Tooltip_clamp, css: Tooltip_css, discardElement: Tooltip_discardElement, extend: Tooltip_extend, fireEvent: Tooltip_fireEvent, getAlignFactor: Tooltip_getAlignFactor, isArray: Tooltip_isArray, isNumber: Tooltip_isNumber, isObject: Tooltip_isObject, isString: Tooltip_isString, merge: Tooltip_merge, pick: Tooltip_pick, pushUnique: Tooltip_pushUnique, splat: Tooltip_splat, syncTimeout: Tooltip_syncTimeout } = Core_Utilities;
+const { addEvent: Tooltip_addEvent, clamp: Tooltip_clamp, css: Tooltip_css, clearTimeout: Tooltip_clearTimeout, discardElement: Tooltip_discardElement, extend: Tooltip_extend, fireEvent: Tooltip_fireEvent, getAlignFactor: Tooltip_getAlignFactor, isArray: Tooltip_isArray, isNumber: Tooltip_isNumber, isObject: Tooltip_isObject, isString: Tooltip_isString, merge: Tooltip_merge, pick: Tooltip_pick, pushUnique: Tooltip_pushUnique, splat: Tooltip_splat, syncTimeout: Tooltip_syncTimeout } = Core_Utilities;
 /* *
  *
  *  Class
@@ -23987,7 +24006,7 @@ class Tooltip {
             this.renderer = this.renderer.destroy();
             Tooltip_discardElement(this.container);
         }
-        Core_Utilities.clearTimeout(this.hideTimer);
+        Tooltip_clearTimeout(this.hideTimer);
     }
     /**
      * Extendable method to get the anchor position of the tooltip
@@ -24368,7 +24387,7 @@ class Tooltip {
     hide(delay) {
         const tooltip = this;
         // Disallow duplicate timers (#1728, #1766)
-        Core_Utilities.clearTimeout(this.hideTimer);
+        Tooltip_clearTimeout(this.hideTimer);
         delay = Tooltip_pick(delay, this.options.hideDelay);
         if (!this.isHidden) {
             this.hideTimer = Tooltip_syncTimeout(function () {
@@ -24527,7 +24546,7 @@ class Tooltip {
         if (!options.enabled || !point.series) { // #16820
             return;
         }
-        Core_Utilities.clearTimeout(this.hideTimer);
+        Tooltip_clearTimeout(this.hideTimer);
         // A switch saying if this specific tooltip configuration allows shared
         // or split modes
         tooltip.allowShared = !(!Tooltip_isArray(pointOrPoints) &&
@@ -24978,6 +24997,11 @@ class Tooltip {
                 .rect(box)
                 .addClass('highcharts-tracker')
                 .add(label);
+            // For a rapid move going outside of the elements keeping the
+            // tooltip visible, cancel the hide (#23512).
+            Tooltip_addEvent(tooltip.tracker.element, 'mouseenter', () => {
+                Tooltip_clearTimeout(tooltip.hideTimer);
+            });
             if (!chart.styledMode) {
                 tooltip.tracker.attr({
                     fill: 'rgba(0,0,0,0)'
@@ -25515,7 +25539,9 @@ class Point {
      *
      * @private
      * @function Highcharts.Point#destroyElements
+     *
      * @param {Highcharts.Dictionary<number>} [kinds]
+     * Kinds of elements to destroy
      */
     destroyElements(kinds) {
         const point = this, props = point.getGraphicalProps(kinds);
@@ -25822,6 +25848,8 @@ class Point {
         }
     }
     /**
+     * Resolve the color of a point.
+     *
      * @private
      * @function Highcharts.Point#resolveColor
      */
@@ -25967,6 +25995,8 @@ class Point {
         let i;
         redraw = Point_pick(redraw, true);
         /**
+         * Perform the actual update of the point.
+         *
          * @private
          */
         function update() {
@@ -26649,8 +26679,6 @@ class Pointer {
                 Pointer.unbindDocumentTouchEnd = (Pointer.unbindDocumentTouchEnd());
             }
         }
-        // Memory and CPU leak
-        clearInterval(pointer.tooltipTimeout);
         Pointer_objectEach(pointer, function (_val, prop) {
             pointer[prop] = void 0;
         });
@@ -27832,7 +27860,9 @@ class Pointer {
      * @function Highcharts.Pointer#setDOMEvents
      */
     setDOMEvents() {
-        const container = this.chart.container, ownerDoc = container.ownerDocument;
+        const container = this.chart.container, ownerDoc = container.ownerDocument, 
+        // Get the parent element, including handling Shadow DOM (#23450)
+        getParent = (el) => el.parentElement || el.getRootNode()?.host?.parentElement;
         container.onmousedown = this.onContainerMouseDown.bind(this);
         container.onmousemove = this.onContainerMouseMove.bind(this);
         container.onclick = this.onContainerClick.bind(this);
@@ -27845,12 +27875,12 @@ class Pointer {
         }
         // In case we are dealing with overflow, reset the chart position when
         // scrolling parent elements
-        let parent = this.chart.renderTo.parentElement;
+        let parent = getParent(this.chart.renderTo);
         while (parent && parent.tagName !== 'BODY') {
             this.eventsToUnbind.push(Pointer_addEvent(parent, 'scroll', () => {
                 delete this.chartPosition;
             }));
-            parent = parent.parentElement;
+            parent = getParent(parent);
         }
         this.eventsToUnbind.push(Pointer_addEvent(container, 'touchstart', this.onContainerTouchStart.bind(this), { passive: false }), Pointer_addEvent(container, 'touchmove', this.onContainerTouchMove.bind(this), { passive: false }));
         if (!Pointer.unbindDocumentTouchEnd) {
@@ -28214,7 +28244,7 @@ var ColumnUtils;
      * @param {boolean} asSubarray
      * If column is a typed array, return a subarray instead of a new array. It
      * is faster `O(1)`, but the entire buffer will be kept in memory until all
-     * views to it are destroyed. Default is `false`.
+     * views of it are destroyed. Default is `false`.
      *
      * @return {DataTable.Column}
      * Modified column.
@@ -28280,6 +28310,33 @@ var ColumnUtils;
         };
     }
     ColumnUtils.splice = splice;
+    /**
+     * Converts a cell value to a number.
+     *
+     * @param {DataTable.CellType} value
+     * Cell value to convert to a number.
+     *
+     * @param {boolean} useNaN
+     * If `true`, returns `NaN` for non-numeric values; if `false`,
+     * returns `null` instead.
+     *
+     * @return {number | null}
+     * Number or `null` if the value is not a number.
+     *
+     * @private
+     */
+    function convertToNumber(value, useNaN) {
+        switch (typeof value) {
+            case 'boolean':
+                return (value ? 1 : 0);
+            case 'number':
+                return (isNaN(value) && !useNaN ? null : value);
+            default:
+                value = parseFloat(`${value ?? ''}`);
+                return (isNaN(value) && !useNaN ? null : value);
+        }
+    }
+    ColumnUtils.convertToNumber = convertToNumber;
 })(ColumnUtils || (ColumnUtils = {}));
 /* *
  *
@@ -28357,12 +28414,11 @@ class DataTableCore {
          * @type {string}
          */
         this.id = (options.id || DataTableCore_uniqueKey());
-        this.modified = this;
         this.rowCount = 0;
         this.versionTag = DataTableCore_uniqueKey();
         let rowCount = 0;
-        DataTableCore_objectEach(options.columns || {}, (column, columnName) => {
-            this.columns[columnName] = column.slice();
+        DataTableCore_objectEach(options.columns || {}, (column, columnId) => {
+            this.columns[columnId] = column.slice();
             rowCount = Math.max(rowCount, column.length);
         });
         this.applyRowCount(rowCount);
@@ -28381,9 +28437,9 @@ class DataTableCore {
      */
     applyRowCount(rowCount) {
         this.rowCount = rowCount;
-        DataTableCore_objectEach(this.columns, (column, columnName) => {
+        DataTableCore_objectEach(this.columns, (column, columnId) => {
             if (column.length !== rowCount) {
-                this.columns[columnName] = setLength(column, rowCount);
+                this.columns[columnId] = setLength(column, rowCount);
             }
         });
     }
@@ -28404,8 +28460,8 @@ class DataTableCore {
     deleteRows(rowIndex, rowCount = 1) {
         if (rowCount > 0 && rowIndex < this.rowCount) {
             let length = 0;
-            DataTableCore_objectEach(this.columns, (column, columnName) => {
-                this.columns[columnName] =
+            DataTableCore_objectEach(this.columns, (column, columnId) => {
+                this.columns[columnId] =
                     splice(column, rowIndex, rowCount).array;
                 length = column.length;
             });
@@ -28418,33 +28474,33 @@ class DataTableCore {
      * Fetches the given column by the canonical column name. Simplified version
      * of the full `DataTable.getRow` method, always returning by reference.
      *
-     * @param {string} columnName
+     * @param {string} columnId
      * Name of the column to get.
      *
      * @return {Highcharts.DataTableColumn|undefined}
      * A copy of the column, or `undefined` if not found.
      */
-    getColumn(columnName, 
+    getColumn(columnId, 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asReference) {
-        return this.columns[columnName];
+        return this.columns[columnId];
     }
     /**
      * Retrieves all or the given columns. Simplified version of the full
      * `DataTable.getColumns` method, always returning by reference.
      *
-     * @param {Array<string>} [columnNames]
-     * Column names to retrieve.
+     * @param {Array<string>} [columnIds]
+     * Column ids to retrieve.
      *
      * @return {Highcharts.DataTableColumnCollection}
      * Collection of columns. If a requested column was not found, it is
      * `undefined`.
      */
-    getColumns(columnNames, 
+    getColumns(columnIds, 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asReference) {
-        return (columnNames || Object.keys(this.columns)).reduce((columns, columnName) => {
-            columns[columnName] = this.columns[columnName];
+        return (columnIds || Object.keys(this.columns)).reduce((columns, columnId) => {
+            columns[columnId] = this.columns[columnId];
             return columns;
         }, {});
     }
@@ -28454,19 +28510,19 @@ class DataTableCore {
      * @param {number} rowIndex
      * Row index to retrieve. First row has index 0.
      *
-     * @param {Array<string>} [columnNames]
+     * @param {Array<string>} [columnIds]
      * Column names to retrieve.
      *
      * @return {Record<string, number|string|undefined>|undefined}
      * Returns the row values, or `undefined` if not found.
      */
-    getRow(rowIndex, columnNames) {
-        return (columnNames || Object.keys(this.columns)).map((key) => this.columns[key]?.[rowIndex]);
+    getRow(rowIndex, columnIds) {
+        return (columnIds || Object.keys(this.columns)).map((key) => this.columns[key]?.[rowIndex]);
     }
     /**
      * Sets cell values for a column. Will insert a new column, if not found.
      *
-     * @param {string} columnName
+     * @param {string} columnId
      * Column name to set.
      *
      * @param {Highcharts.DataTableColumn} [column]
@@ -28481,8 +28537,8 @@ class DataTableCore {
      * @emits #setColumns
      * @emits #afterSetColumns
      */
-    setColumn(columnName, column = [], rowIndex = 0, eventDetail) {
-        this.setColumns({ [columnName]: column }, rowIndex, eventDetail);
+    setColumn(columnId, column = [], rowIndex = 0, eventDetail) {
+        this.setColumns({ [columnId]: column }, rowIndex, eventDetail);
     }
     /**
      * Sets cell values for multiple columns. Will insert new columns, if not
@@ -28504,8 +28560,8 @@ class DataTableCore {
      */
     setColumns(columns, rowIndex, eventDetail) {
         let rowCount = this.rowCount;
-        DataTableCore_objectEach(columns, (column, columnName) => {
-            this.columns[columnName] = column.slice();
+        DataTableCore_objectEach(columns, (column, columnId) => {
+            this.columns[columnId] = column.slice();
             rowCount = column.length;
         });
         this.applyRowCount(rowCount);
@@ -28534,18 +28590,27 @@ class DataTableCore {
      * @emits #afterSetRows
      */
     setRow(row, rowIndex = this.rowCount, insert, eventDetail) {
-        const { columns } = this, indexRowCount = insert ? this.rowCount + 1 : rowIndex + 1;
-        DataTableCore_objectEach(row, (cellValue, columnName) => {
-            let column = columns[columnName] ||
-                eventDetail?.addColumns !== false && new Array(indexRowCount);
+        const { columns } = this, indexRowCount = insert ? this.rowCount + 1 : rowIndex + 1, rowKeys = Object.keys(row);
+        if (eventDetail?.addColumns !== false) {
+            for (let i = 0, iEnd = rowKeys.length; i < iEnd; i++) {
+                const key = rowKeys[i];
+                if (!columns[key]) {
+                    columns[key] = [];
+                }
+            }
+        }
+        DataTableCore_objectEach(columns, (column, columnId) => {
+            if (!column && eventDetail?.addColumns !== false) {
+                column = new Array(indexRowCount);
+            }
             if (column) {
                 if (insert) {
-                    column = splice(column, rowIndex, 0, true, [cellValue]).array;
+                    column = splice(column, rowIndex, 0, true, [row[columnId] ?? null]).array;
                 }
                 else {
-                    column[rowIndex] = cellValue;
+                    column[rowIndex] = row[columnId] ?? null;
                 }
-                columns[columnName] = column;
+                columns[columnId] = column;
             }
         });
         if (indexRowCount > this.rowCount) {
@@ -28555,6 +28620,16 @@ class DataTableCore {
             DataTableCore_fireEvent(this, 'afterSetRows');
             this.versionTag = DataTableCore_uniqueKey();
         }
+    }
+    /**
+     * Returns the medified (clone) or the original data table if the modified
+     * one does not exist.
+     *
+     * @return {Highcharts.DataTableCore}
+     * The medified (clone) or the original data table.
+     */
+    getModified() {
+        return this.modified || this;
     }
 }
 /* *
@@ -29199,6 +29274,9 @@ const seriesDefaults = {
      * its own sorting definition, the linked series will be sorted in the
      * same order as the master one.
      *
+     * If a `compare` value is not set on a linked series, it will be inherited
+     * from the parent series.
+     *
      * @sample {highcharts|highstock} highcharts/demo/arearange-line/
      *         Linked series
      *
@@ -29491,7 +29569,7 @@ const seriesDefaults = {
      */
     /**
      * Whether to stack the values of each series on top of each other.
-     * Possible values are `undefined` to disable, `"normal"` to stack by
+     * Possible values are null to disable, `"normal"` to stack by
      * value or `"percent"`.
      *
      * When stacking is enabled, data must be sorted
@@ -29528,8 +29606,9 @@ const seriesDefaults = {
      *         Area
      *
      * @type       {string}
+     * @default    null
      * @product    highcharts highstock
-     * @validvalue ["normal", "overlap", "percent", "stream"]
+     * @validvalue ["normal", "overlap", "percent", "stream", null]
      * @apioption  plotOptions.series.stacking
      */
     /**
@@ -30667,8 +30746,11 @@ const seriesDefaults = {
          */
         x: 0,
         /**
-         * The z index of the data labels. Use a `zIndex` of 6 to display it above
-         * the series, or use a `zIndex` of 2 to display it behind the series.
+         * The z index of the data labels group. Does not apply below series
+         * level options.
+         *
+         * Use a `zIndex` of 6 to display it above the series,
+         * or use a `zIndex` of 2 to display it behind the series.
          *
          * @type      {number}
          * @default   6
@@ -31195,12 +31277,6 @@ const seriesDefaults = {
  *
  * */
 
-/* *
- *
- *  Imports
- *
- * */
-
 
 
 const { defaultOptions: SeriesRegistry_defaultOptions } = Defaults;
@@ -31284,7 +31360,8 @@ var SeriesRegistry;
         defaultPlotOptions[type] = SeriesRegistry_merge(defaultPlotOptions[parent], options);
         // Create the class
         delete SeriesRegistry.seriesTypes[type];
-        const parentClass = SeriesRegistry.seriesTypes[parent] || Series_Series, childClass = SeriesRegistry_extendClass(parentClass, seriesProto);
+        const parentClass = (SeriesRegistry.seriesTypes[parent] ||
+            Core_Globals.Series), childClass = SeriesRegistry_extendClass(parentClass, seriesProto);
         registerSeriesType(type, childClass);
         SeriesRegistry.seriesTypes[type].prototype.type = type;
         // Create the point class if needed
@@ -31770,8 +31847,18 @@ class Series {
             Series_format(this.chart.options.lang.seriesName, this, this.chart);
     }
     /**
+     * Set series-specific properties for color and symbol. Called internally
+     * from Series.update().
+     *
      * @private
      * @function Highcharts.Series#getCyclic
+     *
+     * @param {'color'|'symbol'} prop
+     *        The property to set, either `color` or `symbol`.
+     * @param {*} [value]
+     *        The value to set. If not given, the next available value is used.
+     * @param {Highcharts.Dictionary<*>} [defaults]
+     *        The default values.
      */
     getCyclic(prop, value, defaults) {
         const chart = this.chart, indexName = `${prop}Index`, counterName = `${prop}Counter`, len = (
@@ -31850,9 +31937,9 @@ class Series {
      * @private
      * @function Highcharts.Series#getColumn
      */
-    getColumn(columnName, modified) {
-        return (modified ? this.dataTable.modified : this.dataTable)
-            .getColumn(columnName, true) || [];
+    getColumn(columnId, modified) {
+        return (modified ? this.dataTable.getModified() : this.dataTable)
+            .getColumn(columnId, true) || [];
     }
     /**
      * Finds the index of an existing point that matches the given point
@@ -31931,7 +32018,7 @@ class Series {
      * @function Highcharts.Series#updateData
      */
     updateData(data, animation) {
-        const { options, requireSorting } = this, dataSorting = options.dataSorting, oldData = this.points, pointsToAdd = [], equalLength = data.length === oldData.length;
+        const { options, requireSorting } = this, dataSorting = options.dataSorting, oldData = this.points, pointsToAdd = [], equalLength = data.length === oldData.length, oldXIncrement = this.xIncrement;
         let hasUpdatedByKey, i, point, lastIndex, succeeded = true;
         this.xIncrement = null;
         // Iterate the new data
@@ -32019,7 +32106,8 @@ class Series {
             this.addPoint(point, false, void 0, void 0, false);
         }, this);
         const xData = this.getColumn('x');
-        if (this.xIncrement === null &&
+        if (oldXIncrement !== null &&
+            this.xIncrement === null &&
             xData.length) {
             this.xIncrement = Series_arrayMax(xData);
             this.autoIncrement();
@@ -32151,8 +32239,8 @@ class Series {
                                 colArray[j]?.push(pt[j - autoX]);
                             }
                         }
-                        table.setColumns(dataColumnKeys.reduce((columns, columnName, i) => {
-                            columns[columnName] = colArray[i];
+                        table.setColumns(dataColumnKeys.reduce((columns, columnId, i) => {
+                            columns[columnId] = colArray[i];
                             return columns;
                         }, {}));
                     }
@@ -32192,8 +32280,8 @@ class Series {
                 }
             }
             if (!runTurbo) {
-                const columns = dataColumnKeys.reduce((columns, columnName) => {
-                    columns[columnName] = [];
+                const columns = dataColumnKeys.reduce((columns, columnId) => {
+                    columns[columnId] = [];
                     return columns;
                 }, {});
                 for (i = 0; i < dataLength; i++) {
@@ -32424,7 +32512,7 @@ class Series {
      * @function Highcharts.Series#generatePoints
      */
     generatePoints() {
-        const series = this, options = series.options, dataOptions = series.processedData || options.data, table = series.dataTable.modified, xData = series.getColumn('x', true), PointClass = series.pointClass, processedDataLength = table.rowCount, cropStart = series.cropStart || 0, hasGroupedData = series.hasGroupedData, keys = options.keys, points = [], groupCropStartIndex = (options.dataGrouping?.groupAll ?
+        const series = this, options = series.options, dataOptions = series.processedData || options.data, table = series.dataTable.getModified(), xData = series.getColumn('x', true), PointClass = series.pointClass, processedDataLength = table.rowCount, cropStart = series.cropStart || 0, hasGroupedData = series.hasGroupedData, keys = options.keys, points = [], groupCropStartIndex = (options.dataGrouping?.groupAll ?
             cropStart :
             0), categories = series.xAxis?.categories, pointArrayMap = series.pointArrayMap || ['y'], 
         // Create a configuration object out of a data row
@@ -32567,7 +32655,7 @@ class Series {
             this.options.getExtremesFromAll, // #4599, #21003
         table = getExtremesFromAll && this.cropped ?
             this.dataTable :
-            this.dataTable.modified, rowCount = table.rowCount, customData = yData || this.stackedYData, yAxisData = customData ?
+            this.dataTable.getModified(), rowCount = table.rowCount, customData = yData || this.stackedYData, yAxisData = customData ?
             [customData] :
             (this.keysAffectYAxis || this.pointArrayMap || ['y'])?.map((key) => table.getColumn(key, true) || []) || [], xData = this.getColumn('x', true), activeYData = [], 
         // Handle X outside the viewed area. This does not work with
@@ -32860,6 +32948,7 @@ class Series {
     setClip() {
         const { chart, group, markerGroup } = this, sharedClips = chart.sharedClips, renderer = chart.renderer, clipBox = chart.getClipBox(this), sharedClipKey = this.getSharedClipKey(); // #4526
         let clipRect = sharedClips[sharedClipKey];
+        Series_fireEvent(this, 'setClip', { clipBox });
         // If a clipping rectangle for the same set of axes does not exist,
         // create it
         if (!clipRect) {
@@ -33683,8 +33772,24 @@ class Series {
         Series_syncTimeout(startRecursive, seriesOptions.kdNow || e?.type === 'touchstart' ? 0 : 1);
     }
     /**
+     * Search the k-d-tree for the point closest to the given point.
+     *
      * @private
      * @function Highcharts.Series#searchKDTree
+     *
+     * @param {Highcharts.KDPointSearchObject} point
+     *        The point to search for.
+     * @param {boolean} [compareX=false]
+     *        Search only by the X value, not Y.
+     * @param {Highcharts.PointerEvent} [e]
+     *        The normalized pointer event.
+     * @param {Function} [suppliedPointEvaluator]
+     *        A custom point evaluator function.
+     * @param {Function} [suppliedBSideCheckEvaluator]
+     *        A custom b-side check evaluator function.
+     *
+     * @return {Highcharts.Point|undefined}
+     *         The closest point found.
      */
     searchKDTree(point, compareX, e, suppliedPointEvaluator, suppliedBSideCheckEvaluator) {
         const series = this, [kdX, kdY] = this.kdAxisArray, kdComparer = compareX ? 'distX' : 'dist', kdDimensions = (series.options.findNearestPointBy || '')
@@ -33708,7 +33813,22 @@ class Series {
             p2.distX = Series_defined(x) ? (Math.abs(x) - radius) : Number.MAX_VALUE;
         }
         /**
+         * Search the kd-tree.
+         *
          * @private
+         * @function doSearch
+         *
+         * @param {Highcharts.KDPointSearchObject} search
+         *        The point to search for.
+         * @param {Highcharts.KDNode} tree
+         *        The kd-tree structure to search.
+         * @param {number} depth
+         *        The depth in the tree.
+         * @param {number} dimensions
+         *        The dimensions in the tree.
+         *
+         * @return {Highcharts.Point}
+         *         The closest point found.
          */
         function doSearch(search, tree, depth, dimensions) {
             const point = tree.point, axis = series.kdAxisArray[depth % dimensions];
@@ -33739,6 +33859,8 @@ class Series {
         }
     }
     /**
+     * Return the value of pointPlacement relative to the point's x value.
+     *
      * @private
      * @function Highcharts.Series#pointPlacementToXValue
      */
@@ -33754,8 +33876,16 @@ class Series {
             0;
     }
     /**
+     * Check whether a point is inside the plot area.
+     *
      * @private
      * @function Highcharts.Series#isPointInside
+     *
+     * @param {Highcharts.Dictionary<number>|Highcharts.Point} point
+     * A point-like object with `plotX` and `plotY` properties.
+     *
+     * @return {boolean}
+     * True if the point is inside the plot area.
      */
     isPointInside(point) {
         const { chart, xAxis, yAxis } = this, { plotX = -1, plotY = -1 } = point, isInside = (plotY >= 0 &&
@@ -33820,7 +33950,7 @@ class Series {
             [
                 series.tracker,
                 series.markerGroup,
-                series.dataLabelsGroup
+                ...(series.dataLabelsGroups || [])
             ].forEach((tracker) => {
                 if (tracker) {
                     tracker.addClass('highcharts-tracker')
@@ -34029,6 +34159,8 @@ class Series {
     remove(redraw, animation, withEvent, keepEvents) {
         const series = this, chart = series.chart;
         /**
+         * Remove the series.
+         *
          * @private
          */
         function remove() {
@@ -34083,9 +34215,11 @@ class Series {
         // Must use user options when changing type because series.options
         // is merged in with type specific plotOptions
         oldOptions = series.userOptions, initialType = series.initialType || series.type, plotOptions = chart.options.plotOptions, initialSeriesProto = seriesTypes[initialType].prototype, groups = [
+            'dataLabelsGroup',
+            'dataLabelsGroups',
+            'dataLabelsParentGroups',
             'group',
             'markerGroup',
-            'dataLabelsGroup',
             'transformGroup'
         ], optionsToCheck = [
             'dataGrouping',
@@ -34137,6 +34271,10 @@ class Series {
         }
         else {
             this.dataTable.modified = this.dataTable;
+        }
+        // Merge in multiple data label options (#23560)
+        if (options.dataLabels && oldOptions.dataLabels) {
+            options.dataLabels = this.mergeArrays(oldOptions.dataLabels, options.dataLabels);
         }
         // Do the merge, with some forced options
         options = Series_merge(oldOptions, {
@@ -34346,19 +34484,18 @@ class Series {
      *        Determines if state should be inherited by points too.
      */
     setState(state, inherit) {
-        const series = this, options = series.options, graph = series.graph, inactiveOtherPoints = options.inactiveOtherPoints, stateOptions = options.states, 
+        const series = this, { graph, options } = series, { inactiveOtherPoints, states: stateOptions } = options, 
         // By default a quick animation to hover/inactive,
         // slower to un-hover
-        stateAnimation = Series_pick((stateOptions[state || 'normal'] &&
-            stateOptions[state || 'normal'].animation), series.chart.options.chart.animation);
-        let lineWidth = options.lineWidth, opacity = options.opacity;
+        stateAnimation = Series_pick(stateOptions?.[state || 'normal']?.animation, series.chart.options.chart.animation);
+        let { lineWidth, opacity } = options;
         state = state || '';
         if (series.state !== state) {
             // Toggle class names
             [
                 series.group,
                 series.markerGroup,
-                series.dataLabelsGroup
+                ...(series.dataLabelsGroups || [])
             ].forEach(function (group) {
                 if (group) {
                     // Old state
@@ -34373,8 +34510,7 @@ class Series {
             });
             series.state = state;
             if (!series.chart.styledMode) {
-                if (stateOptions[state] &&
-                    stateOptions[state].enabled === false) {
+                if (stateOptions[state]?.enabled === false) {
                     return;
                 }
                 if (state) {
@@ -34399,14 +34535,10 @@ class Series {
                     [
                         series.group,
                         series.markerGroup,
-                        series.dataLabelsGroup,
+                        ...(series.dataLabelsGroups || []),
                         series.labelBySeries
                     ].forEach(function (group) {
-                        if (group) {
-                            group.animate({
-                                opacity: opacity
-                            }, stateAnimation);
-                        }
+                        group?.animate({ opacity }, stateAnimation);
                     });
                 }
             }
@@ -34451,24 +34583,25 @@ class Series {
      * @emits Highcharts.Series#event:hide
      * @emits Highcharts.Series#event:show
      */
-    setVisible(vis, redraw) {
+    setVisible(visible, redraw) {
         const series = this, chart = series.chart, ignoreHiddenSeries = chart.options.chart.ignoreHiddenSeries, oldVisibility = series.visible;
         // If called without an argument, toggle visibility
         series.visible =
-            vis =
+            visible =
                 series.options.visible =
                     series.userOptions.visible =
-                        typeof vis === 'undefined' ? !oldVisibility : vis; // #5618
-        const showOrHide = vis ? 'show' : 'hide';
-        // Show or hide elements
+                        typeof visible === 'undefined' ? !oldVisibility : visible; // #5618
+        const showOrHide = visible ? 'show' : 'hide';
         [
             'group',
-            'dataLabelsGroup',
             'markerGroup',
             'tracker',
             'tt'
         ].forEach((key) => {
             series[key]?.[showOrHide]();
+        });
+        series.dataLabelsGroups?.forEach((g) => {
+            g?.[showOrHide]();
         });
         // Hide tooltip (#1361)
         if (chart.hoverSeries === series ||
@@ -34476,7 +34609,7 @@ class Series {
             series.onMouseOut();
         }
         if (series.legendItem) {
-            chart.legend.colorizeItem(series, vis);
+            chart.legend.colorizeItem(series, visible);
         }
         // Rescale or adapt to resized chart
         series.isDirty = true;
@@ -34490,7 +34623,7 @@ class Series {
         }
         // Show or hide linked series
         series.linkedSeries.forEach((otherSeries) => {
-            otherSeries.setVisible(vis, false);
+            otherSeries.setVisible(visible, false);
         });
         if (ignoreHiddenSeries) {
             chart.isDirtyBox = true;
@@ -34831,6 +34964,10 @@ Series_SeriesRegistry.series = Series;
 * Related browser event.
 * @name Highcharts.SeriesLegendItemClickEventObject#browserEvent
 * @type {global.PointerEvent}
+*/ /**
+* Whether the default action has been prevented (`true`) or not.
+* @name Highcharts.SeriesLegendItemClickEventObject#defaultPrevented
+* @type {boolean|undefined}
 */ /**
 * Prevent the default action of toggle the visibility of the series.
 * @name Highcharts.SeriesLegendItemClickEventObject#preventDefault
@@ -35517,9 +35654,9 @@ class Legend {
         // Take care of max width and text overflow (#6659)
         if (chart.styledMode || !itemStyle.width) {
             label.css({
-                width: ((options.itemWidth ||
+                width: (Math.min(options.itemWidth ||
                     legend.widthOption ||
-                    chart.spacingBox.width) - itemExtraWidth) + 'px'
+                    chart.spacingBox.width, options.maxWidth ? Legend_relativeLength(options.maxWidth, chart.chartWidth) : Infinity) - itemExtraWidth) + 'px'
             });
         }
         // Always update the text
@@ -35719,7 +35856,7 @@ class Legend {
      * @function Highcharts.Legend#render
      */
     render() {
-        const legend = this, chart = legend.chart, renderer = chart.renderer, options = legend.options, padding = legend.padding, 
+        const legend = this, chart = legend.chart, chartSpacingBoxWidth = chart.spacingBox.width, renderer = chart.renderer, options = legend.options, padding = legend.padding, 
         // Add each series or point
         allItems = legend.getAllItems();
         let display, legendWidth, legendHeight, legendGroup = legend.group, allowedWidth, box = legend.box;
@@ -35727,9 +35864,9 @@ class Legend {
         legend.itemY = legend.initialItemY;
         legend.offsetWidth = 0;
         legend.lastItemY = 0;
-        legend.widthOption = Legend_relativeLength(options.width, chart.spacingBox.width - padding);
+        legend.widthOption = Legend_relativeLength(options.width, chartSpacingBoxWidth - padding);
         // Compute how wide the legend is allowed to be
-        allowedWidth = chart.spacingBox.width - 2 * padding - options.x;
+        allowedWidth = chartSpacingBoxWidth - 2 * padding - options.x;
         if (['rm', 'lm'].indexOf(legend.getAlignment().substring(0, 2)) > -1) {
             allowedWidth /= 2;
         }
@@ -35783,7 +35920,11 @@ class Legend {
         allItems.forEach(legend.renderItem, legend);
         allItems.forEach(legend.layoutItem, legend);
         // Get the box
-        legendWidth = (legend.widthOption || legend.offsetWidth) + padding;
+        legendWidth = (options.maxWidth ?
+            Math.min(legend.widthOption ||
+                allowedWidth, Legend_relativeLength(options.maxWidth, chart.chartWidth) ||
+                Infinity) :
+            (legend.widthOption || legend.offsetWidth)) + padding;
         legendHeight = legend.lastItemY + legend.lastLineHeight +
             legend.titleHeight;
         legendHeight = legend.handleOverflow(legendHeight);
@@ -36342,6 +36483,10 @@ class Legend {
 * @name Highcharts.PointLegendItemClickEventObject#browserEvent
 * @type {Highcharts.PointerEvent}
 */ /**
+* Whether the default action has been prevented (`true`) or not.
+* @name Highcharts.PointLegendItemClickEventObject#defaultPrevented
+* @type {boolean|undefined}
+*/ /**
 * Prevent the default action of toggle the visibility of the point.
 * @name Highcharts.PointLegendItemClickEventObject#preventDefault
 * @type {Function}
@@ -36393,6 +36538,10 @@ class Legend {
 * Related browser event.
 * @name Highcharts.SeriesLegendItemClickEventObject#browserEvent
 * @type {Highcharts.PointerEvent}
+*/ /**
+* Whether the default action has been prevented (`true`) or not.
+* @name Highcharts.SeriesLegendItemClickEventObject#defaultPrevented
+* @type {boolean|undefined}
 */ /**
 * Prevent the default action of toggle the visibility of the series.
 * @name Highcharts.SeriesLegendItemClickEventObject#preventDefault
@@ -36700,7 +36849,7 @@ class Chart {
         });
     }
     /**
-     * Internal function to unitialize an individual series.
+     * Internal function to initialize an individual series.
      *
      * @private
      * @function Highcharts.Chart#initSeries
@@ -38080,34 +38229,29 @@ class Chart {
         });
         // Apply new links
         chartSeries.forEach(function (series) {
-            const { linkedTo } = series.options;
-            if (Chart_isString(linkedTo)) {
-                let linkedParent;
-                if (linkedTo === ':previous') {
-                    linkedParent = chart.series[series.index - 1];
-                }
-                else {
-                    linkedParent = chart.get(linkedTo);
-                }
+            const { linkedTo } = series.options, linkedParent = Chart_isString(linkedTo) && (linkedTo === ':previous' ?
+                chartSeries[series.index - 1] :
+                chart.get(linkedTo));
+            if (linkedParent &&
                 // #3341 avoid mutual linking
-                if (linkedParent &&
-                    linkedParent.linkedParent !== series) {
-                    linkedParent.linkedSeries.push(series);
-                    /**
-                     * The parent series of the current series, if the current
-                     * series has a [linkedTo](https://api.highcharts.com/highcharts/series.line.linkedTo)
-                     * setting.
-                     *
-                     * @name Highcharts.Series#linkedParent
-                     * @type {Highcharts.Series}
-                     * @readonly
-                     */
-                    series.linkedParent = linkedParent;
-                    if (linkedParent.enabledDataSorting) {
-                        series.setDataSortingOptions();
-                    }
-                    series.visible = Chart_pick(series.options.visible, linkedParent.options.visible, series.visible); // #3879
+                linkedParent.linkedParent !== series) {
+                linkedParent.linkedSeries.push(series);
+                /**
+                 * The parent series of the current series, if the current
+                 * series has a [linkedTo](https://api.highcharts.com/highcharts/series.line.linkedTo)
+                 * setting.
+                 *
+                 * @name Highcharts.Series#linkedParent
+                 * @type {Highcharts.Series}
+                 * @readonly
+                 */
+                series.linkedParent = linkedParent;
+                if (linkedParent.enabledDataSorting) {
+                    series.setDataSortingOptions();
                 }
+                series.visible = (series.options.visible ??
+                    linkedParent.options.visible ??
+                    series.visible); // #3879
             }
         });
         Chart_fireEvent(this, 'afterLinkSeries', { isUpdating });
@@ -38219,9 +38363,6 @@ class Chart {
         chart.seriesGroup || (chart.seriesGroup = renderer.g('series-group')
             .attr({ zIndex: 3 })
             .shadow(chart.options.chart.seriesGroupShadow)
-            .add());
-        chart.dataLabelsGroup || (chart.dataLabelsGroup = renderer.g('datalabels-group')
-            .attr({ zIndex: 6 })
             .add());
         chart.renderSeries();
         // Credits
@@ -38412,6 +38553,7 @@ class Chart {
             this.setReflow();
         }
         this.warnIfA11yModuleNotLoaded();
+        this.warnIfCSSNotLoaded();
         // Don't run again
         this.hasLoaded = true;
     }
@@ -38435,6 +38577,18 @@ class Chart {
                     'usable for people with disabilities. Set the ' +
                     '"accessibility.enabled" option to false to remove this ' +
                     'warning. See https://www.highcharts.com/docs/accessibility/accessibility-module.', false, this);
+            }
+        }
+    }
+    /**
+     * Emit console warning if the highcharts.css file is not loaded.
+     * @private
+     */
+    warnIfCSSNotLoaded() {
+        if (this.styledMode) {
+            const containerStyle = Chart_win.getComputedStyle(this.container);
+            if (containerStyle.zIndex !== '0') {
+                Chart_error(35, false, this);
             }
         }
     }
@@ -39053,7 +39207,7 @@ class Chart {
      * @function Highcharts.Chart#transform
      */
     transform(params) {
-        const { axes = this.axes, event, from = {}, reset, selection, to = {}, trigger } = params, { inverted, time } = this;
+        const { axes = this.axes, event, from = {}, reset, selection, to = {}, trigger, allowResetButton = true } = params, { inverted, time } = this;
         // Remove active points for shared tooltip
         this.hoverPoints?.forEach((point) => point.setState());
         Chart_fireEvent(this, 'transform', params);
@@ -39098,7 +39252,7 @@ class Chart {
                 !allExtremes) {
                 for (const series of axis.series) {
                     const seriesExtremes = series.getExtremes(series.getProcessedData(true).modified
-                        .getColumn('y') || [], true);
+                        .getColumn(series.pointValKey || 'y') || [], true);
                     allExtremes ?? (allExtremes = {
                         dataMin: Number.MAX_VALUE,
                         dataMax: -Number.MAX_VALUE
@@ -39158,24 +39312,21 @@ class Chart {
                         // panning/zooming hard. Reset and redraw after the
                         // operation has finished.
                         axis.isPanning = trigger !== 'zoom';
-                        if (axis.isPanning) {
+                        if (axis.isPanning && trigger !== 'mousewheel') {
                             isAnyAxisPanning = true; // #21319
                         }
                         axis.setExtremes(reset ? void 0 : newMin, reset ? void 0 : newMax, false, false, { move, trigger, scale });
                         if (!reset &&
-                            (newMin > floor || newMax < ceiling) &&
-                            trigger !== 'mousewheel') {
-                            displayButton = true;
+                            (newMin > floor || newMax < ceiling)) {
+                            displayButton = allowResetButton;
                         }
                     }
                     hasZoomed = true;
                 }
-                // Show the resetZoom button for non-cartesian series,
-                // except when triggered by mouse wheel zoom
+                // Show the resetZoom button for non-cartesian series.
                 if (!this.hasCartesianSeries &&
-                    !reset &&
-                    trigger !== 'mousewheel') {
-                    displayButton = true;
+                    !reset) {
+                    displayButton = allowResetButton;
                 }
                 if (event) {
                     this[horiz ? 'mouseDownX' : 'mouseDownY'] =
@@ -40864,7 +41015,7 @@ Series_SeriesRegistry.registerSeriesType('line', LineSeries);
  *
  * @type      {string}
  * @since     5.0.0
- * @product   highcharts gantt
+ * @product   highcharts highstock gantt
  * @apioption series.line.data.className
  */
 /**
@@ -40913,7 +41064,8 @@ Series_SeriesRegistry.registerSeriesType('line', LineSeries);
 /**
  * Individual data label for each point. The options are the same as
  * the ones for [plotOptions.series.dataLabels](
- * #plotOptions.series.dataLabels).
+ * #plotOptions.series.dataLabels) with exception of `zIndex` which is applied
+ * on the data label's parent group.
  *
  * @sample highcharts/point/datalabels/
  *         Show a label for the last value
@@ -40921,6 +41073,7 @@ Series_SeriesRegistry.registerSeriesType('line', LineSeries);
  * @type      {*|Array<*>}
  * @declare   Highcharts.DataLabelsOptions
  * @extends   plotOptions.line.dataLabels
+ * @excluding zIndex
  * @product   highcharts highstock gantt
  * @apioption series.line.data.dataLabels
  */
@@ -43105,20 +43258,27 @@ class ColumnSeries extends Series_Series {
         });
         // Add the event listeners, we need to do this only once
         if (!series._hasTracking) {
-            series.trackerGroups.forEach(function (key) {
-                if (series[key]) {
-                    // We don't always have dataLabelsGroup
-                    series[key]
-                        .addClass('highcharts-tracker')
-                        .on('mouseover', onMouseOver)
-                        .on('mouseout', function (e) {
-                        pointer?.onTrackerMouseOut(e);
-                    })
-                        .on('touchstart', onMouseOver);
-                    if (!chart.styledMode && series.options.cursor) {
-                        series[key]
-                            .css({ cursor: series.options.cursor });
-                    }
+            series.trackerGroups?.reduce((acc, key) => {
+                if (key === 'dataLabelsGroup') {
+                    acc.push(...(series.dataLabelsGroups || []));
+                }
+                else {
+                    acc.push(series[key]);
+                }
+                return acc;
+            }, []).forEach((group) => {
+                if (!group) {
+                    // Skip undefined
+                    return;
+                }
+                group.addClass('highcharts-tracker')
+                    .on('mouseover', onMouseOver)
+                    .on('mouseout', function (e) {
+                    pointer?.onTrackerMouseOut(e);
+                })
+                    .on('touchstart', onMouseOver);
+                if (!chart.styledMode && series.options.cursor) {
+                    group.css({ cursor: series.options.cursor });
                 }
             });
             series._hasTracking = true;
@@ -43393,7 +43553,15 @@ var DataLabel;
         return true;
     }
     /**
+     * Compose the data label composition onto a series class.
+     *
      * @private
+     * @function compose
+     *
+     * @param {Highcharts.Series} SeriesClass
+     * The series class to compose onto.
+     *
+     * @return {void}
      */
     function compose(SeriesClass) {
         const seriesProto = SeriesClass.prototype;
@@ -43411,20 +43579,53 @@ var DataLabel;
     DataLabel.compose = compose;
     /**
      * Create the SVGElement group for dataLabels
+     *
      * @private
+     * @function initDataLabelsGroup
+     *
+     * @param {number} index
+     * The index of the data labels group.
+     * @param {Highcharts.DataLabelOptions} [dataLabelsOptions]
+     * Data label options for the group.
+     *
+     * @return {Highcharts.SVGElement}
+     * The SVGElement group.
      */
-    function initDataLabelsGroup() {
-        return this.plotGroup('dataLabelsGroup', 'data-labels', this.hasRendered ? 'inherit' : 'hidden', // #5133, #10220
-        this.options.dataLabels.zIndex || 6, this.chart.dataLabelsGroup);
+    function initDataLabelsGroup(index, dataLabelsOptions) {
+        DataLabel_fireEvent(this, 'initDataLabelsGroup', {
+            index,
+            zIndex: dataLabelsOptions?.zIndex ?? 6
+        });
+        // Existing group or first time
+        this.dataLabelsGroup = this.dataLabelsGroups?.[index];
+        const group = this.plotGroup('dataLabelsGroup', 'data-labels', this.hasRendered ? 'inherit' : 'hidden', // #5133, #10220
+        dataLabelsOptions?.zIndex ?? 6, this.dataLabelsParentGroups?.[index]);
+        this.dataLabelsGroups || (this.dataLabelsGroups = []);
+        this.dataLabelsGroups[index] = group;
+        // Keep reference to the 1st group
+        this.dataLabelsGroup = this.dataLabelsGroups[0];
+        return group;
     }
     /**
-     * Init the data labels with the correct animation
+     * Init the data labels with the correct animation.
+     *
      * @private
+     * @function initDataLabels
+     *
+     * @param {number} index
+     * The index of the data labels group.
+     * @param {Highcharts.AnimationOptions} animationConfig
+     * The animation options.
+     * @param {Highcharts.DataLabelOptions} [dataLabelsOptions]
+     * Data label options for the group.
+     *
+     * @return {Highcharts.SVGElement}
+     * The SVGElement group.
      */
-    function initDataLabels(animationConfig) {
-        const series = this, hasRendered = series.hasRendered || 0;
+    function initDataLabels(index, animationConfig, dataLabelsOptions) {
+        const series = this, hasRendered = !!series.hasRendered;
         // Create a separate group for the data labels to avoid rotation
-        const dataLabelsGroup = this.initDataLabelsGroup()
+        const dataLabelsGroup = this.initDataLabelsGroup(index, dataLabelsOptions)
             .attr({ opacity: +hasRendered }); // #3300
         if (!hasRendered && dataLabelsGroup) {
             if (series.visible) { // #2597, #3023, #3024
@@ -43455,7 +43656,6 @@ var DataLabel;
             { defer: 0, duration: 0 };
         DataLabel_fireEvent(this, 'drawDataLabels');
         if (series.hasDataLabels?.()) {
-            dataLabelsGroup = this.initDataLabels(animationConfig);
             // Make the labels for each point
             points.forEach((point) => {
                 const dataLabels = point.dataLabels || [], pointColor = point.color || series.color;
@@ -43467,6 +43667,10 @@ var DataLabel;
                 point.dlOptions || point.options?.dataLabels));
                 // Handle each individual data label for this point
                 pointOptions.forEach((labelOptions, i) => {
+                    // Create dataLabelsGroup for each data labels config
+                    // (can be multiple)
+                    dataLabelsGroup =
+                        this.initDataLabels(i, animationConfig, labelOptions);
                     // Options for one datalabel
                     const labelEnabled = (labelOptions.enabled &&
                         (point.visible || point.dataLabelOnHidden) &&
@@ -46130,7 +46334,7 @@ var PieDataLabel_ColumnDataLabel;
             // Place the labels in the final position
             this.placeDataLabels();
             this.points.forEach((point) => {
-                (point.dataLabels || []).forEach((dataLabel) => {
+                point.dataLabels?.forEach((dataLabel, i) => {
                     // #8864: every connector can have individual options
                     const { connectorColor, connectorWidth = 1 } = (dataLabel.options || {}), labelPosition = dataLabel.dataLabelPosition;
                     // Draw the connector
@@ -46148,7 +46352,7 @@ var PieDataLabel_ColumnDataLabel;
                                     (point.className ?
                                         ' ' + point.className :
                                         ''))
-                                    .add(series.dataLabelsGroup);
+                                    .add(series.dataLabelsGroups?.[i]);
                             }
                             if (!chart.styledMode) {
                                 connector.attr({
@@ -47281,7 +47485,7 @@ var Responsive;
 
 ;// ./code/es-modules/masters/highcharts.src.js
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/highcharts
  *
  * (c) 2009-2025 Highsoft AS
@@ -47603,7 +47807,7 @@ const Connection_deg2rad = Core_Globals.deg2rad, max = Math.max, min = Math.min;
  * The Connection class. Used internally to represent a connection between two
  * points.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.Connection
  *
@@ -47617,6 +47821,7 @@ const Connection_deg2rad = Core_Globals.deg2rad, max = Math.max, min = Math.min;
  *        Connection options.
  */
 class Connection {
+    /** @internal */
     constructor(from, to, options) {
         this.init(from, to, options);
     }
@@ -47897,6 +48102,7 @@ class Connection {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Gantt_Connection = (Connection);
 /* *
  *
@@ -52584,6 +52790,10 @@ function RangeSelectorComposition_onChartBeforeRender() {
         }
     }
 }
+/**
+ * Redraw rangeSelector on chart redraw event
+ * @private
+ */
 function redrawRangeSelector() {
     const chart = this;
     const rangeSelector = this.rangeSelector;
@@ -52629,11 +52839,19 @@ function onChartDestroy() {
     }
 }
 /**
- *
+ * Reflow rangeSelector and adjust chart layout
+ * @private
  */
 function onChartGetMargins() {
     const rangeSelector = this.rangeSelector;
     if (rangeSelector?.options?.enabled) {
+        // Rerender rangeSelector in order to return correct plotHeight, #23058
+        const { min, max } = this.xAxis[0].getExtremes();
+        if (RangeSelectorComposition_isNumber(min) &&
+            rangeSelector.inputGroup &&
+            rangeSelector.inputGroup.getBBox().width < 20) {
+            rangeSelector.render(min, max);
+        }
         const rangeSelectorHeight = rangeSelector.getHeight();
         const verticalAlign = rangeSelector.options.verticalAlign;
         if (!rangeSelector.options.floating) {
@@ -52688,1050 +52906,6 @@ const RangeSelectorComposition = {
 };
 /* harmony default export */ const RangeSelector_RangeSelectorComposition = (RangeSelectorComposition);
 
-;// ./code/es-modules/Core/Axis/OrdinalAxis.js
-/* *
- *
- *  (c) 2010-2025 Torstein Honsi
- *
- *  License: www.highcharts.com/license
- *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
- *
- * */
-
-
-
-
-const { addEvent: OrdinalAxis_addEvent, correctFloat: OrdinalAxis_correctFloat, css: OrdinalAxis_css, defined: OrdinalAxis_defined, error: OrdinalAxis_error, isNumber: OrdinalAxis_isNumber, pick: OrdinalAxis_pick, timeUnits: OrdinalAxis_timeUnits, isString: OrdinalAxis_isString } = Core_Utilities;
-/* *
- *
- *  Composition
- *
- * */
-/**
- * Extends the axis with ordinal support.
- * @private
- */
-var OrdinalAxis;
-(function (OrdinalAxis) {
-    /* *
-     *
-     *  Declarations
-     *
-     * */
-    /* *
-     *
-     *  Functions
-     *
-     * */
-    /**
-     * Extends the axis with ordinal support.
-     *
-     * @private
-     *
-     * @param AxisClass
-     * Axis class to extend.
-     *
-     * @param ChartClass
-     * Chart class to use.
-     *
-     * @param SeriesClass
-     * Series class to use.
-     */
-    function compose(AxisClass, SeriesClass, ChartClass) {
-        const axisProto = AxisClass.prototype;
-        if (!axisProto.ordinal2lin) {
-            axisProto.getTimeTicks = getTimeTicks;
-            axisProto.index2val = index2val;
-            axisProto.lin2val = lin2val;
-            axisProto.val2lin = val2lin;
-            // Record this to prevent overwriting by broken-axis module (#5979)
-            axisProto.ordinal2lin = axisProto.val2lin;
-            OrdinalAxis_addEvent(AxisClass, 'afterInit', onAxisAfterInit);
-            OrdinalAxis_addEvent(AxisClass, 'foundExtremes', onAxisFoundExtremes);
-            OrdinalAxis_addEvent(AxisClass, 'afterSetScale', onAxisAfterSetScale);
-            OrdinalAxis_addEvent(AxisClass, 'initialAxisTranslation', onAxisInitialAxisTranslation);
-            OrdinalAxis_addEvent(ChartClass, 'pan', onChartPan);
-            OrdinalAxis_addEvent(ChartClass, 'touchpan', onChartPan);
-            OrdinalAxis_addEvent(SeriesClass, 'updatedData', onSeriesUpdatedData);
-        }
-        return AxisClass;
-    }
-    OrdinalAxis.compose = compose;
-    /**
-     * In an ordinal axis, there might be areas with dense concentrations of
-     * points, then large gaps between some. Creating equally distributed
-     * ticks over this entire range may lead to a huge number of ticks that
-     * will later be removed. So instead, break the positions up in
-     * segments, find the tick positions for each segment then concatenize
-     * them. This method is used from both data grouping logic and X axis
-     * tick position logic.
-     * @private
-     */
-    function getTimeTicks(normalizedInterval, min, max, startOfWeek, positions = [], closestDistance = 0, findHigherRanks) {
-        const higherRanks = {}, tickPixelIntervalOption = this.options.tickPixelInterval, time = this.chart.time, 
-        // Record all the start positions of a segment, to use when
-        // deciding what's a gap in the data.
-        segmentStarts = [];
-        let end, segmentPositions, hasCrossedHigherRank, info, outsideMax, start = 0, groupPositions = [], lastGroupPosition = -Number.MAX_VALUE;
-        // The positions are not always defined, for example for ordinal
-        // positions when data has regular interval (#1557, #2090)
-        if ((!this.options.ordinal && !this.options.breaks) ||
-            !positions ||
-            positions.length < 3 ||
-            typeof min === 'undefined') {
-            return time.getTimeTicks.apply(time, arguments);
-        }
-        // Analyze the positions array to split it into segments on gaps
-        // larger than 5 times the closest distance. The closest distance is
-        // already found at this point, so we reuse that instead of
-        // computing it again.
-        const posLength = positions.length;
-        for (end = 0; end < posLength; end++) {
-            outsideMax = end && positions[end - 1] > max;
-            if (positions[end] < min) { // Set the last position before min
-                start = end;
-            }
-            if (end === posLength - 1 ||
-                positions[end + 1] - positions[end] > closestDistance * 5 ||
-                outsideMax) {
-                // For each segment, calculate the tick positions from the
-                // getTimeTicks utility function. The interval will be the
-                // same regardless of how long the segment is.
-                if (positions[end] > lastGroupPosition) { // #1475
-                    segmentPositions = time.getTimeTicks(normalizedInterval, positions[start], positions[end], startOfWeek);
-                    // Prevent duplicate groups, for example for multiple
-                    // segments within one larger time frame (#1475)
-                    while (segmentPositions.length &&
-                        segmentPositions[0] <= lastGroupPosition) {
-                        segmentPositions.shift();
-                    }
-                    if (segmentPositions.length) {
-                        lastGroupPosition =
-                            segmentPositions[segmentPositions.length - 1];
-                    }
-                    segmentStarts.push(groupPositions.length);
-                    groupPositions = groupPositions.concat(segmentPositions);
-                }
-                // Set start of next segment
-                start = end + 1;
-            }
-            if (outsideMax) {
-                break;
-            }
-        }
-        // Get the grouping info from the last of the segments. The info is
-        // the same for all segments.
-        if (segmentPositions) {
-            info = segmentPositions.info;
-            // Optionally identify ticks with higher rank, for example
-            // when the ticks have crossed midnight.
-            if (findHigherRanks && info.unitRange <= OrdinalAxis_timeUnits.hour) {
-                end = groupPositions.length - 1;
-                // Compare points two by two
-                for (start = 1; start < end; start++) {
-                    if (time.dateFormat('%d', groupPositions[start]) !==
-                        time.dateFormat('%d', groupPositions[start - 1])) {
-                        higherRanks[groupPositions[start]] = 'day';
-                        hasCrossedHigherRank = true;
-                    }
-                }
-                // If the complete array has crossed midnight, we want
-                // to mark the first positions also as higher rank
-                if (hasCrossedHigherRank) {
-                    higherRanks[groupPositions[0]] = 'day';
-                }
-                info.higherRanks = higherRanks;
-            }
-            // Save the info
-            info.segmentStarts = segmentStarts;
-            groupPositions.info = info;
-        }
-        else {
-            OrdinalAxis_error(12, false, this.chart);
-        }
-        // Don't show ticks within a gap in the ordinal axis, where the
-        // space between two points is greater than a portion of the tick
-        // pixel interval
-        if (findHigherRanks && OrdinalAxis_defined(tickPixelIntervalOption)) {
-            const length = groupPositions.length, translatedArr = [], distances = [];
-            let itemToRemove, translated, lastTranslated, medianDistance, distance, i = length;
-            // Find median pixel distance in order to keep a reasonably even
-            // distance between ticks (#748)
-            while (i--) {
-                translated = this.translate(groupPositions[i]);
-                if (lastTranslated) {
-                    distances[i] = lastTranslated - translated;
-                }
-                translatedArr[i] = lastTranslated = translated;
-            }
-            distances.sort((a, b) => a - b);
-            medianDistance = distances[Math.floor(distances.length / 2)];
-            if (medianDistance < tickPixelIntervalOption * 0.6) {
-                medianDistance = null;
-            }
-            // Now loop over again and remove ticks where needed
-            i = groupPositions[length - 1] > max ? length - 1 : length; // #817
-            lastTranslated = void 0;
-            while (i--) {
-                translated = translatedArr[i];
-                distance = Math.abs(lastTranslated - translated);
-                // #4175 - when axis is reversed, the distance, is negative but
-                // tickPixelIntervalOption positive, so we need to compare the
-                // same values
-                // Remove ticks that are closer than 0.6 times the pixel
-                // interval from the one to the right, but not if it is close to
-                // the median distance (#748).
-                if (lastTranslated &&
-                    distance < tickPixelIntervalOption * 0.8 &&
-                    (medianDistance === null || distance < medianDistance * 0.8)) {
-                    // Is this a higher ranked position with a normal
-                    // position to the right?
-                    if (higherRanks[groupPositions[i]] &&
-                        !higherRanks[groupPositions[i + 1]]) {
-                        // Yes: remove the lower ranked neighbour to the
-                        // right
-                        itemToRemove = i + 1;
-                        lastTranslated = translated; // #709
-                    }
-                    else {
-                        // No: remove this one
-                        itemToRemove = i;
-                    }
-                    groupPositions.splice(itemToRemove, 1);
-                }
-                else {
-                    lastTranslated = translated;
-                }
-            }
-        }
-        return groupPositions;
-    }
-    /**
-     * Get axis position of given index of the extended ordinal positions.
-     * Used only when panning an ordinal axis.
-     *
-     * @private
-     * @function Highcharts.Axis#index2val
-     * @param {number} index
-     * The index value of searched point
-     */
-    function index2val(index) {
-        const axis = this, ordinal = axis.ordinal, 
-        // Context could be changed to extendedOrdinalPositions.
-        ordinalPositions = ordinal.positions;
-        // The visible range contains only equally spaced values.
-        if (!ordinalPositions) {
-            return index;
-        }
-        let i = ordinalPositions.length - 1, distance;
-        if (index < 0) { // Out of range, in effect panning to the left
-            index = ordinalPositions[0];
-        }
-        else if (index > i) { // Out of range, panning to the right
-            index = ordinalPositions[i];
-        }
-        else { // Split it up
-            i = Math.floor(index);
-            distance = index - i; // The decimal
-        }
-        if (typeof distance !== 'undefined' &&
-            typeof ordinalPositions[i] !== 'undefined') {
-            return ordinalPositions[i] + (distance ?
-                distance *
-                    (ordinalPositions[i + 1] - ordinalPositions[i]) :
-                0);
-        }
-        return index;
-    }
-    /**
-     * Translate from linear (internal) to axis value.
-     *
-     * @private
-     * @function Highcharts.Axis#lin2val
-     * @param {number} val
-     * The linear abstracted value.
-     */
-    function lin2val(val) {
-        const axis = this, ordinal = axis.ordinal, localMin = axis.old ? axis.old.min : axis.min, localA = axis.old ? axis.old.transA : axis.transA;
-        // Always use extendedPositions (#19816)
-        const positions = ordinal.getExtendedPositions();
-        // In some cases (especially in early stages of the chart creation) the
-        // getExtendedPositions might return undefined.
-        if (positions?.length) {
-            // Convert back from modivied value to pixels. // #15970
-            const pixelVal = OrdinalAxis_correctFloat((val - localMin) * localA +
-                axis.minPixelPadding), index = OrdinalAxis_correctFloat(ordinal.getIndexOfPoint(pixelVal, positions)), mantissa = OrdinalAxis_correctFloat(index % 1);
-            // Check if the index is inside position array. If true,
-            // read/approximate value for that exact index.
-            if (index >= 0 && index <= positions.length - 1) {
-                const leftNeighbour = positions[Math.floor(index)], rightNeighbour = positions[Math.ceil(index)], distance = rightNeighbour - leftNeighbour;
-                return positions[Math.floor(index)] + mantissa * distance;
-            }
-        }
-        // If the value is outside positions array, return initial value
-        return val; // #16784
-    }
-    /**
-     * Internal function to calculate the precise index in ordinalPositions
-     * array.
-     * @private
-     */
-    function getIndexInArray(ordinalPositions, val) {
-        const index = OrdinalAxis.Additions.findIndexOf(ordinalPositions, val, true);
-        if (ordinalPositions[index] === val) {
-            return index;
-        }
-        const percent = (val - ordinalPositions[index]) /
-            (ordinalPositions[index + 1] - ordinalPositions[index]);
-        return index + percent;
-    }
-    /**
-    * @private
-    */
-    function onAxisAfterInit() {
-        const axis = this;
-        if (!axis.ordinal) {
-            axis.ordinal = new OrdinalAxis.Additions(axis);
-        }
-    }
-    /**
-     * @private
-     */
-    function onAxisFoundExtremes() {
-        const axis = this, { eventArgs, options } = axis;
-        if (axis.isXAxis &&
-            OrdinalAxis_defined(options.overscroll) &&
-            options.overscroll !== 0 &&
-            OrdinalAxis_isNumber(axis.max) &&
-            OrdinalAxis_isNumber(axis.min)) {
-            if (axis.options.ordinal && !axis.ordinal.originalOrdinalRange) {
-                // Calculate the original ordinal range
-                axis.ordinal.getExtendedPositions(false);
-            }
-            if (axis.max === axis.dataMax &&
-                (
-                // Panning is an exception. We don't want to apply
-                // overscroll when panning over the dataMax
-                eventArgs?.trigger !== 'pan' ||
-                    axis.isInternal) &&
-                // Scrollbar buttons are the other execption
-                eventArgs?.trigger !== 'navigator') {
-                const overscroll = axis.ordinal.convertOverscroll(options.overscroll);
-                axis.max += overscroll;
-                // Live data and buttons require translation for the min:
-                if (!axis.isInternal &&
-                    OrdinalAxis_defined(axis.userMin) &&
-                    eventArgs?.trigger !== 'mousewheel') {
-                    axis.min += overscroll;
-                }
-            }
-        }
-    }
-    /**
-     * For ordinal axis, that loads data async, redraw axis after data is
-     * loaded. If we don't do that, axis will have the same extremes as
-     * previously, but ordinal positions won't be calculated. See #10290
-     * @private
-     */
-    function onAxisAfterSetScale() {
-        const axis = this;
-        if (axis.horiz && !axis.isDirty) {
-            axis.isDirty = axis.isOrdinal &&
-                axis.chart.navigator &&
-                !axis.chart.navigator.adaptToUpdatedData;
-        }
-    }
-    /**
-     * @private
-     */
-    function onAxisInitialAxisTranslation() {
-        const axis = this;
-        if (axis.ordinal) {
-            axis.ordinal.beforeSetTickPositions();
-            axis.tickInterval = axis.ordinal.postProcessTickInterval(axis.tickInterval);
-        }
-    }
-    /**
-     * Extending the Chart.pan method for ordinal axes
-     * @private
-     */
-    function onChartPan(e) {
-        const chart = this, xAxis = chart.xAxis[0], overscroll = xAxis.ordinal.convertOverscroll(xAxis.options.overscroll), chartX = e.originalEvent.chartX, panning = chart.options.chart.panning;
-        let runBase = false;
-        if (panning?.type !== 'y' &&
-            xAxis.options.ordinal &&
-            xAxis.series.length &&
-            // On touch devices, let default function handle the pinching
-            (!e.touches || e.touches.length <= 1)) {
-            const mouseDownX = chart.mouseDownX, extremes = xAxis.getExtremes(), dataMin = extremes.dataMin, dataMax = extremes.dataMax, min = extremes.min, max = extremes.max, hoverPoints = chart.hoverPoints, closestPointRange = (xAxis.closestPointRange ||
-                xAxis.ordinal?.overscrollPointsRange), pointPixelWidth = (xAxis.translationSlope *
-                (xAxis.ordinal.slope || closestPointRange)), 
-            // How many ordinal units did we move?
-            movedUnits = Math.round((mouseDownX - chartX) / pointPixelWidth), 
-            // Get index of all the chart's points
-            extendedOrdinalPositions = xAxis.ordinal.getExtendedPositions(), extendedAxis = {
-                ordinal: {
-                    positions: extendedOrdinalPositions,
-                    extendedOrdinalPositions: extendedOrdinalPositions
-                }
-            }, index2val = xAxis.index2val, val2lin = xAxis.val2lin;
-            let trimmedRange, ordinalPositions;
-            // Make sure panning to the edges does not decrease the zoomed range
-            if ((min <= dataMin && movedUnits <= 0) ||
-                (max >= dataMax + overscroll && movedUnits >= 0)) {
-                e.preventDefault();
-                return;
-            }
-            // We have an ordinal axis, but the data is equally spaced
-            if (!extendedAxis.ordinal.positions) {
-                runBase = true;
-            }
-            else if (Math.abs(movedUnits) > 1) {
-                // Remove active points for shared tooltip
-                if (hoverPoints) {
-                    hoverPoints.forEach(function (point) {
-                        point.setState();
-                    });
-                }
-                // In grouped data series, the last ordinal position represents
-                // the grouped data, which is to the left of the real data max.
-                // If we don't compensate for this, we will be allowed to pan
-                // grouped data series passed the right of the plot area.
-                ordinalPositions = extendedAxis.ordinal.positions;
-                if (overscroll) { // #21606
-                    ordinalPositions = extendedAxis.ordinal.positions =
-                        ordinalPositions.concat(xAxis.ordinal.getOverscrollPositions());
-                }
-                if (dataMax > ordinalPositions[ordinalPositions.length - 1]) {
-                    ordinalPositions.push(dataMax);
-                }
-                // Get the new min and max values by getting the ordinal index
-                // for the current extreme, then add the moved units and
-                // translate back to values. This happens on the extended
-                // ordinal positions if the new position is out of range, else
-                // it happens on the current x axis which is smaller and faster.
-                chart.setFixedRange(max - min);
-                trimmedRange = xAxis.navigatorAxis
-                    .toFixedRange(void 0, void 0, index2val.apply(extendedAxis, [
-                    val2lin.apply(extendedAxis, [min, true]) +
-                        movedUnits
-                ]), index2val.apply(extendedAxis, [
-                    val2lin.apply(extendedAxis, [max, true]) +
-                        movedUnits
-                ]));
-                // Apply it if it is within the available data range
-                if (trimmedRange.min >= Math.min(ordinalPositions[0], min) &&
-                    trimmedRange.max <= Math.max(ordinalPositions[ordinalPositions.length - 1], max) + overscroll) {
-                    xAxis.setExtremes(trimmedRange.min, trimmedRange.max, true, false, { trigger: 'pan' });
-                }
-                chart.mouseDownX = chartX; // Set new reference for next run
-                OrdinalAxis_css(chart.container, { cursor: 'move' });
-            }
-        }
-        else {
-            runBase = true;
-        }
-        // Revert to the linear chart.pan version
-        if (runBase || (panning && /y/.test(panning.type))) {
-            if (overscroll && OrdinalAxis_isNumber(xAxis.dataMax)) {
-                xAxis.max = xAxis.dataMax + overscroll;
-            }
-        }
-        else {
-            e.preventDefault();
-        }
-    }
-    /**
-     * @private
-     */
-    function onSeriesUpdatedData() {
-        const xAxis = this.xAxis;
-        // Destroy the extended ordinal index on updated data
-        // and destroy extendedOrdinalPositions, #16055.
-        if (xAxis?.options.ordinal) {
-            delete xAxis.ordinal.index;
-            delete xAxis.ordinal.originalOrdinalRange;
-        }
-    }
-    /**
-     * Translate from a linear axis value to the corresponding ordinal axis
-     * position. If there are no gaps in the ordinal axis this will be the
-     * same. The translated value is the value that the point would have if
-     * the axis was linear, using the same min and max.
-     *
-     * @private
-     * @function Highcharts.Axis#val2lin
-     * @param {number} val
-     * The axis value.
-     * @param {boolean} [toIndex]
-     * Whether to return the index in the ordinalPositions or the new value.
-     */
-    function val2lin(val, toIndex) {
-        const axis = this, ordinal = axis.ordinal, ordinalPositions = ordinal.positions;
-        let slope = ordinal.slope, extendedOrdinalPositions;
-        if (!ordinalPositions) {
-            return val;
-        }
-        const ordinalLength = ordinalPositions.length;
-        let ordinalIndex;
-        // If the searched value is inside visible plotArea, ivastigate the
-        // value basing on ordinalPositions.
-        if (ordinalPositions[0] <= val &&
-            ordinalPositions[ordinalLength - 1] >= val) {
-            ordinalIndex = getIndexInArray(ordinalPositions, val);
-            // Final return value is based on ordinalIndex
-        }
-        else {
-            extendedOrdinalPositions = ordinal.getExtendedPositions?.();
-            if (!extendedOrdinalPositions?.length) {
-                return val;
-            }
-            const length = extendedOrdinalPositions.length;
-            if (!slope) {
-                slope =
-                    (extendedOrdinalPositions[length - 1] -
-                        extendedOrdinalPositions[0]) /
-                        length;
-            }
-            // `originalPointReference` is equal to the index of first point of
-            // ordinalPositions in extendedOrdinalPositions.
-            const originalPositionsReference = getIndexInArray(extendedOrdinalPositions, ordinalPositions[0]);
-            // If the searched value is outside the visiblePlotArea,
-            // check if it is inside extendedOrdinalPositions.
-            if (val >= extendedOrdinalPositions[0] &&
-                val <=
-                    extendedOrdinalPositions[length - 1]) {
-                // Return Value
-                ordinalIndex = getIndexInArray(extendedOrdinalPositions, val) -
-                    originalPositionsReference;
-            }
-            else {
-                if (!toIndex) {
-                    // If the value is outside positions array,
-                    // return initial value, #16784
-                    return val;
-                }
-                // Since ordinal.slope is the average distance between 2
-                // points on visible plotArea, this can be used to calculate
-                // the approximate position of the point, which is outside
-                // the extendedOrdinalPositions.
-                if (val < extendedOrdinalPositions[0]) {
-                    const diff = extendedOrdinalPositions[0] - val, approximateIndexOffset = diff / slope;
-                    ordinalIndex =
-                        -originalPositionsReference -
-                            approximateIndexOffset;
-                }
-                else {
-                    const diff = val -
-                        extendedOrdinalPositions[length - 1], approximateIndexOffset = diff / slope;
-                    ordinalIndex =
-                        approximateIndexOffset +
-                            length -
-                            originalPositionsReference;
-                }
-            }
-        }
-        return toIndex ? ordinalIndex : slope * (ordinalIndex || 0) +
-            ordinal.offset;
-    }
-    /* *
-     *
-     *  Classes
-     *
-     * */
-    /**
-     * @private
-     */
-    class Additions {
-        /* *
-         *
-         *  Constructors
-         *
-         * */
-        /**
-         * @private
-         */
-        constructor(axis) {
-            this.index = {};
-            this.axis = axis;
-        }
-        /* *
-        *
-        *  Functions
-        *
-        * */
-        /**
-         * Calculate the ordinal positions before tick positions are calculated.
-         * @private
-         */
-        beforeSetTickPositions() {
-            const axis = this.axis, ordinal = axis.ordinal, extremes = axis.getExtremes(), min = extremes.min, max = extremes.max, hasBreaks = axis.brokenAxis?.hasBreaks, isOrdinal = axis.options.ordinal, overscroll = axis.options.overscroll &&
-                axis.ordinal.convertOverscroll(axis.options.overscroll) ||
-                0;
-            let len, uniqueOrdinalPositions, dist, minIndex, maxIndex, slope, i, ordinalPositions = [], overscrollPointsRange = Number.MAX_VALUE, useOrdinal = false, adjustOrdinalExtremesPoints = false, isBoosted = false;
-            // Apply the ordinal logic
-            if (isOrdinal || hasBreaks) { // #4167 YAxis is never ordinal ?
-                let distanceBetweenPoint = 0;
-                axis.series.forEach(function (series, i) {
-                    const xData = series.getColumn('x', true);
-                    uniqueOrdinalPositions = [];
-                    // For an axis with multiple series, check if the distance
-                    // between points is identical throughout all series.
-                    if (i > 0 &&
-                        series.options.id !== 'highcharts-navigator-series' &&
-                        xData.length > 1) {
-                        adjustOrdinalExtremesPoints = (distanceBetweenPoint !== xData[1] - xData[0]);
-                    }
-                    distanceBetweenPoint = xData[1] - xData[0];
-                    if (series.boosted) {
-                        isBoosted = series.boosted;
-                    }
-                    if (series.reserveSpace() &&
-                        (series
-                            .takeOrdinalPosition !== false || hasBreaks)) {
-                        // Concatenate the processed X data into the existing
-                        // positions, or the empty array
-                        ordinalPositions = ordinalPositions.concat(xData);
-                        len = ordinalPositions.length;
-                        // Remove duplicates (#1588)
-                        ordinalPositions.sort(function (a, b) {
-                            // Without a custom function it is sorted as strings
-                            return a - b;
-                        });
-                        overscrollPointsRange = Math.min(overscrollPointsRange, OrdinalAxis_pick(
-                        // Check for a single-point series:
-                        series.closestPointRange, overscrollPointsRange));
-                        if (len) {
-                            i = 0;
-                            while (i < len - 1) {
-                                if (ordinalPositions[i] !==
-                                    ordinalPositions[i + 1]) {
-                                    uniqueOrdinalPositions.push(ordinalPositions[i + 1]);
-                                }
-                                i++;
-                            }
-                            // Check first item:
-                            if (uniqueOrdinalPositions[0] !==
-                                ordinalPositions[0]) {
-                                uniqueOrdinalPositions.unshift(ordinalPositions[0]);
-                            }
-                            ordinalPositions = uniqueOrdinalPositions;
-                        }
-                    }
-                });
-                if (!axis.ordinal.originalOrdinalRange) {
-                    // Calculate current originalOrdinalRange
-                    axis.ordinal.originalOrdinalRange =
-                        (ordinalPositions.length - 1) * overscrollPointsRange;
-                }
-                // If the distance between points is not identical throughout
-                // all series, remove the first and last ordinal position to
-                // avoid enabling ordinal logic when it is not needed, #17405.
-                // Only for boosted series because changes are negligible.
-                if (adjustOrdinalExtremesPoints && isBoosted) {
-                    ordinalPositions.pop();
-                    ordinalPositions.shift();
-                }
-                // Cache the length
-                len = ordinalPositions.length;
-                // Check if we really need the overhead of mapping axis data
-                // against the ordinal positions. If the series consist of
-                // evenly spaced data any way, we don't need any ordinal logic.
-                if (len > 2) { // Two points have equal distance by default
-                    dist = ordinalPositions[1] - ordinalPositions[0];
-                    i = len - 1;
-                    while (i-- && !useOrdinal) {
-                        if (ordinalPositions[i + 1] - ordinalPositions[i] !==
-                            dist) {
-                            useOrdinal = true;
-                        }
-                    }
-                    // When zooming in on a week, prevent axis padding for
-                    // weekends even though the data within the week is evenly
-                    // spaced.
-                    if (!axis.options.keepOrdinalPadding &&
-                        (ordinalPositions[0] - min > dist ||
-                            max - overscroll - ordinalPositions[len - 1] >
-                                dist)) {
-                        useOrdinal = true;
-                    }
-                }
-                else if (axis.options.overscroll) {
-                    if (len === 2) {
-                        // Exactly two points, distance for overscroll is fixed:
-                        overscrollPointsRange =
-                            ordinalPositions[1] - ordinalPositions[0];
-                    }
-                    else if (len === 1) {
-                        // We have just one point, closest distance is unknown.
-                        // Assume then it is last point and overscrolled range:
-                        overscrollPointsRange = overscroll;
-                        ordinalPositions = [
-                            ordinalPositions[0],
-                            ordinalPositions[0] + overscrollPointsRange
-                        ];
-                    }
-                    else {
-                        // In case of zooming in on overscrolled range, stick to
-                        // the old range:
-                        overscrollPointsRange = ordinal.overscrollPointsRange;
-                    }
-                }
-                // Record the slope and offset to compute the linear values from
-                // the array index. Since the ordinal positions may exceed the
-                // current range, get the start and end positions within it
-                // (#719, #665b)
-                if (useOrdinal || axis.forceOrdinal) {
-                    if (axis.options.overscroll) {
-                        ordinal.overscrollPointsRange = overscrollPointsRange;
-                        ordinalPositions = ordinalPositions.concat(ordinal.getOverscrollPositions());
-                    }
-                    // Register
-                    ordinal.positions = ordinalPositions;
-                    // This relies on the ordinalPositions being set. Use
-                    // Math.max and Math.min to prevent padding on either sides
-                    // of the data.
-                    minIndex = axis.ordinal2lin(// #5979
-                    Math.max(min, ordinalPositions[0]), true);
-                    maxIndex = Math.max(axis.ordinal2lin(Math.min(max, ordinalPositions[ordinalPositions.length - 1]), true), 1); // #3339
-                    // Set the slope and offset of the values compared to the
-                    // indices in the ordinal positions.
-                    ordinal.slope = slope =
-                        (max - min) / (maxIndex - minIndex);
-                    ordinal.offset = min - (minIndex * slope);
-                }
-                else {
-                    ordinal.overscrollPointsRange = OrdinalAxis_pick(axis.closestPointRange, ordinal.overscrollPointsRange);
-                    ordinal.positions = axis.ordinal.slope = ordinal.offset =
-                        void 0;
-                }
-            }
-            axis.isOrdinal = isOrdinal && useOrdinal; // #3818, #4196, #4926
-            ordinal.groupIntervalFactor = null; // Reset for next run
-        }
-        /**
-         * Faster way of using the Array.indexOf method.
-         * Works for sorted arrays only with unique values.
-         *
-         * @param {Array} sortedArray
-         *        The sorted array inside which we are looking for.
-         * @param {number} key
-         *        The key to being found.
-         * @param {boolean} indirectSearch
-         *        In case of lack of the point in the array, should return
-         *        value be equal to -1 or the closest smaller index.
-         *  @private
-         */
-        static findIndexOf(sortedArray, key, indirectSearch) {
-            let start = 0, end = sortedArray.length - 1, middle;
-            while (start < end) {
-                middle = Math.ceil((start + end) / 2);
-                // Key found as the middle element.
-                if (sortedArray[middle] <= key) {
-                    // Continue searching to the right.
-                    start = middle;
-                }
-                else {
-                    // Continue searching to the left.
-                    end = middle - 1;
-                }
-            }
-            if (sortedArray[start] === key) {
-                return start;
-            }
-            // Key could not be found.
-            return !indirectSearch ? -1 : start;
-        }
-        /**
-         * Get the ordinal positions for the entire data set. This is necessary
-         * in chart panning because we need to find out what points or data
-         * groups are available outside the visible range. When a panning
-         * operation starts, if an index for the given grouping does not exists,
-         * it is created and cached. This index is deleted on updated data, so
-         * it will be regenerated the next time a panning operation starts.
-         * @private
-         */
-        getExtendedPositions(withOverscroll = true) {
-            const ordinal = this, axis = ordinal.axis, axisProto = axis.constructor.prototype, chart = axis.chart, key = axis.series.reduce((k, series) => {
-                const grouping = series.currentDataGrouping;
-                return (k +
-                    (grouping ? grouping.count + grouping.unitName : 'raw'));
-            }, ''), overscroll = withOverscroll ?
-                axis.ordinal.convertOverscroll(axis.options.overscroll) : 0, extremes = axis.getExtremes();
-            let fakeAxis, fakeSeries = void 0, ordinalIndex = ordinal.index;
-            // If this is the first time, or the ordinal index is deleted by
-            // updatedData,
-            // create it.
-            if (!ordinalIndex) {
-                ordinalIndex = ordinal.index = {};
-            }
-            if (!ordinalIndex[key]) {
-                // Create a fake axis object where the extended ordinal
-                // positions are emulated
-                fakeAxis = {
-                    series: [],
-                    chart: chart,
-                    forceOrdinal: false,
-                    getExtremes: function () {
-                        return {
-                            min: extremes.dataMin,
-                            max: extremes.dataMax + overscroll
-                        };
-                    },
-                    applyGrouping: axisProto.applyGrouping,
-                    getGroupPixelWidth: axisProto.getGroupPixelWidth,
-                    getTimeTicks: axisProto.getTimeTicks,
-                    options: {
-                        ordinal: true
-                    },
-                    ordinal: {
-                        getGroupIntervalFactor: this.getGroupIntervalFactor
-                    },
-                    ordinal2lin: axisProto.ordinal2lin, // #6276
-                    getIndexOfPoint: axisProto.getIndexOfPoint,
-                    val2lin: axisProto.val2lin // #2590
-                };
-                fakeAxis.ordinal.axis = fakeAxis;
-                // Add the fake series to hold the full data, then apply
-                // processData to it
-                axis.series.forEach((series) => {
-                    if (series.takeOrdinalPosition === false) {
-                        return; // #22657
-                    }
-                    fakeSeries = {
-                        xAxis: fakeAxis,
-                        chart: chart,
-                        groupPixelWidth: series.groupPixelWidth,
-                        destroyGroupedData: Core_Globals.noop,
-                        getColumn: series.getColumn,
-                        applyGrouping: series.applyGrouping,
-                        getProcessedData: series.getProcessedData,
-                        reserveSpace: series.reserveSpace,
-                        visible: series.visible
-                    };
-                    const xData = series.getColumn('x').concat(withOverscroll ?
-                        ordinal.getOverscrollPositions() :
-                        []);
-                    fakeSeries.dataTable = new Data_DataTableCore({
-                        columns: {
-                            x: xData
-                        }
-                    });
-                    fakeSeries.options = {
-                        ...series.options,
-                        dataGrouping: series.currentDataGrouping ? {
-                            firstAnchor: series.options.dataGrouping?.firstAnchor,
-                            anchor: series.options.dataGrouping?.anchor,
-                            lastAnchor: series.options.dataGrouping?.firstAnchor,
-                            enabled: true,
-                            forced: true,
-                            approximation: 'open',
-                            units: [[
-                                    series.currentDataGrouping.unitName,
-                                    [series.currentDataGrouping.count]
-                                ]]
-                        } : {
-                            enabled: false
-                        }
-                    };
-                    fakeAxis.series.push(fakeSeries);
-                    series.processData.apply(fakeSeries);
-                });
-                fakeAxis.applyGrouping({ hasExtremesChanged: true });
-                // Force to use the ordinal when points are evenly spaced (e.g.
-                // weeks), #3825.
-                if ((fakeSeries?.closestPointRange !==
-                    fakeSeries?.basePointRange) &&
-                    fakeSeries.currentDataGrouping) {
-                    fakeAxis.forceOrdinal = true;
-                }
-                // Run beforeSetTickPositions to compute the ordinalPositions
-                axis.ordinal.beforeSetTickPositions.apply({ axis: fakeAxis });
-                if (!axis.ordinal.originalOrdinalRange &&
-                    fakeAxis.ordinal.originalOrdinalRange) {
-                    axis.ordinal.originalOrdinalRange =
-                        fakeAxis.ordinal.originalOrdinalRange;
-                }
-                // Cache it
-                if (fakeAxis.ordinal.positions) {
-                    ordinalIndex[key] = fakeAxis.ordinal.positions;
-                }
-            }
-            return ordinalIndex[key];
-        }
-        /**
-         * Find the factor to estimate how wide the plot area would have been if
-         * ordinal gaps were included. This value is used to compute an imagined
-         * plot width in order to establish the data grouping interval.
-         *
-         * A real world case is the intraday-candlestick example. Without this
-         * logic, it would show the correct data grouping when viewing a range
-         * within each day, but once moving the range to include the gap between
-         * two days, the interval would include the cut-away night hours and the
-         * data grouping would be wrong. So the below method tries to compensate
-         * by identifying the most common point interval, in this case days.
-         *
-         * An opposite case is presented in issue #718. We have a long array of
-         * daily data, then one point is appended one hour after the last point.
-         * We expect the data grouping not to change.
-         *
-         * In the future, if we find cases where this estimation doesn't work
-         * optimally, we might need to add a second pass to the data grouping
-         * logic, where we do another run with a greater interval if the number
-         * of data groups is more than a certain fraction of the desired group
-         * count.
-         * @private
-         */
-        getGroupIntervalFactor(xMin, xMax, series) {
-            const ordinal = this, processedXData = series.getColumn('x', true), len = processedXData.length, distances = [];
-            let median, i, groupIntervalFactor = ordinal.groupIntervalFactor;
-            // Only do this computation for the first series, let the other
-            // inherit it (#2416)
-            if (!groupIntervalFactor) {
-                // Register all the distances in an array
-                for (i = 0; i < len - 1; i++) {
-                    distances[i] = (processedXData[i + 1] -
-                        processedXData[i]);
-                }
-                // Sort them and find the median
-                distances.sort(function (a, b) {
-                    return a - b;
-                });
-                median = distances[Math.floor(len / 2)];
-                // Compensate for series that don't extend through the entire
-                // axis extent. #1675.
-                xMin = Math.max(xMin, processedXData[0]);
-                xMax = Math.min(xMax, processedXData[len - 1]);
-                ordinal.groupIntervalFactor = groupIntervalFactor =
-                    (len * median) / (xMax - xMin);
-            }
-            // Return the factor needed for data grouping
-            return groupIntervalFactor;
-        }
-        /**
-         * Get index of point inside the ordinal positions array.
-         *
-         * @private
-         * @param {number} pixelVal
-         * The pixel value of a point.
-         *
-         * @param {Array<number>} [ordinalArray]
-         * An array of all points available on the axis for the given data set.
-         * Either ordinalPositions if the value is inside the plotArea or
-         * extendedOrdinalPositions if not.
-         */
-        getIndexOfPoint(pixelVal, ordinalArray) {
-            const ordinal = this, axis = ordinal.axis, min = axis.min, minX = axis.minPixelPadding, indexOfMin = getIndexInArray(ordinalArray, min);
-            const ordinalPointPixelInterval = axis.translationSlope *
-                (ordinal.slope ||
-                    axis.closestPointRange ||
-                    ordinal.overscrollPointsRange);
-            const shiftIndex = OrdinalAxis_correctFloat((pixelVal - minX) / ordinalPointPixelInterval);
-            return indexOfMin + shiftIndex;
-        }
-        /**
-         * Get ticks for an ordinal axis within a range where points don't
-         * exist. It is required when overscroll is enabled. We can't base on
-         * points, because we may not have any, so we use approximated
-         * pointRange and generate these ticks between Axis.dataMax,
-         * Axis.dataMax + Axis.overscroll evenly spaced. Used in panning and
-         * navigator scrolling.
-         * @private
-         */
-        getOverscrollPositions() {
-            const ordinal = this, axis = ordinal.axis, extraRange = ordinal.convertOverscroll(axis.options.overscroll), distance = ordinal.overscrollPointsRange, positions = [];
-            let max = axis.dataMax;
-            if (OrdinalAxis_defined(distance)) {
-                // Max + pointRange because we need to scroll to the last
-                while (max < axis.dataMax + extraRange) {
-                    max += distance;
-                    positions.push(max);
-                }
-            }
-            return positions;
-        }
-        /**
-         * Make the tick intervals closer because the ordinal gaps make the
-         * ticks spread out or cluster.
-         * @private
-         */
-        postProcessTickInterval(tickInterval) {
-            // Problem: https://jsfiddle.net/highcharts/FQm4E/1/. This is a case
-            // where this algorithm doesn't work optimally. In this case, the
-            // tick labels are spread out per week, but all the gaps reside
-            // within weeks. So we have a situation where the labels are courser
-            // than the ordinal gaps, and thus the tick interval should not be
-            // altered.
-            const ordinal = this, axis = ordinal.axis, ordinalSlope = ordinal.slope, closestPointRange = axis.closestPointRange;
-            let ret;
-            if (ordinalSlope && closestPointRange) {
-                if (!axis.options.breaks) {
-                    ret = (tickInterval /
-                        (ordinalSlope / closestPointRange));
-                }
-                else {
-                    ret = closestPointRange || tickInterval; // #7275
-                }
-            }
-            else {
-                ret = tickInterval;
-            }
-            return ret;
-        }
-        /**
-         * If overscroll is pixel or percentage value, convert it to axis range.
-         *
-         * @private
-         * @param {number | string} overscroll
-         * Overscroll value in axis range, pixels or percentage value.
-         * @return {number}
-         * Overscroll value in axis range.
-         */
-        convertOverscroll(overscroll = 0) {
-            const ordinal = this, axis = ordinal.axis, calculateOverscroll = function (overscrollPercentage) {
-                return OrdinalAxis_pick(ordinal.originalOrdinalRange, OrdinalAxis_defined(axis.dataMax) && OrdinalAxis_defined(axis.dataMin) ?
-                    axis.dataMax - axis.dataMin : 0) * overscrollPercentage;
-            };
-            if (OrdinalAxis_isString(overscroll)) {
-                const overscrollValue = parseInt(overscroll, 10);
-                let isFullRange;
-                // #22334
-                if (OrdinalAxis_defined(axis.min) && OrdinalAxis_defined(axis.max) &&
-                    OrdinalAxis_defined(axis.dataMin) && OrdinalAxis_defined(axis.dataMax)) {
-                    isFullRange =
-                        axis.max - axis.min === axis.dataMax - axis.dataMin;
-                    if (!isFullRange) {
-                        this.originalOrdinalRange = axis.max - axis.min;
-                    }
-                }
-                if (/%$/.test(overscroll)) {
-                    // If overscroll is percentage
-                    return calculateOverscroll(overscrollValue / 100);
-                }
-                if (/px/.test(overscroll)) {
-                    // If overscroll is pixels, it is limited to 90% of the axis
-                    // length to prevent division by zero
-                    const limitedOverscrollValue = Math.min(overscrollValue, axis.len * 0.9), pixelToPercent = limitedOverscrollValue / axis.len;
-                    return calculateOverscroll(pixelToPercent /
-                        (isFullRange ? (1 - pixelToPercent) : 1));
-                }
-                // If overscroll is a string but not pixels or percentage,
-                // return 0 as no overscroll
-                return 0;
-            }
-            return overscroll;
-        }
-    }
-    OrdinalAxis.Additions = Additions;
-})(OrdinalAxis || (OrdinalAxis = {}));
-/* *
- *
- *  Default Export
- *
- * */
-/* harmony default export */ const Axis_OrdinalAxis = (OrdinalAxis);
-
 ;// ./code/es-modules/Stock/RangeSelector/RangeSelector.js
 /* *
  *
@@ -53752,8 +52926,7 @@ const { defaultOptions: RangeSelector_defaultOptions } = Defaults;
 
 const { format: RangeSelector_format } = Core_Templating;
 
-
-const { addEvent: RangeSelector_addEvent, createElement: RangeSelector_createElement, css: RangeSelector_css, defined: RangeSelector_defined, destroyObjectProperties: RangeSelector_destroyObjectProperties, diffObjects: RangeSelector_diffObjects, discardElement: RangeSelector_discardElement, extend: RangeSelector_extend, fireEvent: RangeSelector_fireEvent, isNumber: RangeSelector_isNumber, isString: RangeSelector_isString, merge: RangeSelector_merge, objectEach: RangeSelector_objectEach, pick: RangeSelector_pick, splat: RangeSelector_splat } = Core_Utilities;
+const { addEvent: RangeSelector_addEvent, createElement: RangeSelector_createElement, css: RangeSelector_css, defined: RangeSelector_defined, destroyObjectProperties: RangeSelector_destroyObjectProperties, discardElement: RangeSelector_discardElement, extend: RangeSelector_extend, fireEvent: RangeSelector_fireEvent, isNumber: RangeSelector_isNumber, isString: RangeSelector_isString, merge: RangeSelector_merge, objectEach: RangeSelector_objectEach, pick: RangeSelector_pick, splat: RangeSelector_splat } = Core_Utilities;
 /* *
  *
  *  Functions
@@ -54095,9 +53268,8 @@ class RangeSelector {
                 range &&
                 actualRange < range) {
                 // Handle ordinal ranges
-                const positions = baseAxis.ordinal.positions, prevOrdinalPosition = Axis_OrdinalAxis.Additions.findIndexOf(positions, baseAxis.min, true), nextOrdinalPosition = Math.min(Axis_OrdinalAxis.Additions.findIndexOf(positions, baseAxis.max, true) + 1, positions.length - 1);
-                if (positions[nextOrdinalPosition] -
-                    positions[prevOrdinalPosition] > range) {
+                const positions = baseAxis.ordinal.positions;
+                if (positions[positions.length - 1] - positions[0] > range) {
                     isSameRange = true;
                 }
             }
@@ -54938,14 +54110,11 @@ class RangeSelector {
             }
             // Update current buttons
             for (let i = btnLength - 1; i >= 0; i--) {
-                const diff = RangeSelector_diffObjects(newButtonsOptions[i], this.buttonOptions[i]);
-                if (Object.keys(diff).length !== 0) {
-                    const rangeOptions = newButtonsOptions[i];
-                    this.buttons[i].destroy();
-                    dropdown?.options.remove(i + 1);
-                    this.createButton(rangeOptions, i, width, states);
-                    this.computeButtonRange(rangeOptions);
-                }
+                const rangeOptions = newButtonsOptions[i];
+                this.buttons[i].destroy();
+                dropdown?.options.remove(i + 1);
+                this.createButton(rangeOptions, i, width, states);
+                this.computeButtonRange(rangeOptions);
             }
             // Create missing buttons
             if (newButtonsOptions.length > this.buttonOptions.length) {
@@ -55078,7 +54247,7 @@ class RangeSelector {
                 xOffsetForExportButton +
                 inputGroup.getBBox().width >
                 chart.plotWidth) {
-                if (dropdown === 'responsive') {
+                if (dropdown === 'responsive' || dropdown === 'always') {
                     this.collapseButtons();
                 }
                 else {
@@ -55165,9 +54334,7 @@ class RangeSelector {
         if (dropdown) {
             this.dropdownLabel.hide();
             RangeSelector_css(dropdown, {
-                visibility: 'hidden',
-                width: '1px',
-                height: '1px'
+                visibility: 'hidden'
             });
             this.hasVisibleDropdown = false;
         }
@@ -55232,7 +54399,7 @@ class RangeSelector {
             this.destroy();
             return this.init(chart);
         }
-        this.isDirty = !!options.buttons;
+        this.isDirty = !!options.buttons || !!options.buttonTheme;
         if (redraw) {
             this.render();
         }
@@ -55342,16 +54509,26 @@ RangeSelector_extend(RangeSelector.prototype, {
  * */
 
 const getLinkPath = {
-    'default': getDefaultPath,
+    'default': getOrthogonalPath,
+    orthogonal: getOrthogonalPath,
     straight: getStraightPath,
     curved: getCurvedPath
 };
 /**
  *
  */
-function getDefaultPath(pathParams) {
-    const { x1, y1, x2, y2, width = 0, inverted = false, radius, parentVisible } = pathParams;
-    const path = [
+function getOrthogonalPath(pathParams) {
+    const { x1, y1, x2, y2, bendAt, width = 0, inverted = false, radius, parentVisible } = pathParams;
+    if (parentVisible) {
+        const bend = bendAt ?? (width / 2);
+        return applyRadius([
+            ['M', x1, y1],
+            ['L', x1 + bend * (inverted ? -1 : 1), y1],
+            ['L', x1 + bend * (inverted ? -1 : 1), y2],
+            ['L', x2, y2]
+        ], radius);
+    }
+    return [
         ['M', x1, y1],
         ['L', x1, y1],
         ['C', x1, y1, x1, y2, x1, y2],
@@ -55359,14 +54536,6 @@ function getDefaultPath(pathParams) {
         ['C', x1, y1, x1, y2, x1, y2],
         ['L', x1, y2]
     ];
-    return parentVisible ?
-        applyRadius([
-            ['M', x1, y1],
-            ['L', x1 + width * (inverted ? -0.5 : 0.5), y1],
-            ['L', x1 + width * (inverted ? -0.5 : 0.5), y2],
-            ['L', x2, y2]
-        ], radius) :
-        path;
 }
 /**
  *
@@ -55499,7 +54668,7 @@ const { min: PathfinderAlgorithms_min, max: PathfinderAlgorithms_max, abs } = Ma
  * Get index of last obstacle before xMin. Employs a type of binary search, and
  * thus requires that obstacles are sorted by xMin value.
  *
- * @private
+ * @internal
  * @function findLastObstacleBefore
  *
  * @param {Array<object>} obstacles
@@ -55537,7 +54706,7 @@ function findLastObstacleBefore(obstacles, xMin, startIx) {
 /**
  * Test if a point lays within an obstacle.
  *
- * @private
+ * @internal
  * @function pointWithinObstacle
  *
  * @param {Object} obstacle
@@ -55559,7 +54728,7 @@ function pointWithinObstacle(obstacle, point) {
  * Find the index of an obstacle that wraps around a point.
  * Returns -1 if not found.
  *
- * @private
+ * @internal
  * @function findObstacleFromPoint
  *
  * @param {Array<object>} obstacles
@@ -55585,7 +54754,7 @@ function findObstacleFromPoint(obstacles, point) {
 /**
  * Get SVG path array from array of line segments.
  *
- * @private
+ * @internal
  * @function pathFromSegments
  *
  * @param {Array<object>} segments
@@ -55608,7 +54777,7 @@ function pathFromSegments(segments) {
  * Limits obstacle max/mins in all directions to bounds. Modifies input
  * obstacle.
  *
- * @private
+ * @internal
  * @function limitObstacleToBounds
  *
  * @param {Object} obstacle
@@ -55629,6 +54798,7 @@ function limitObstacleToBounds(obstacle, bounds) {
  * Get an SVG path from a starting coordinate to an ending coordinate.
  * Draws a straight line.
  *
+ * @internal
  * @function Highcharts.Pathfinder.algorithms.straight
  *
  * @param {Highcharts.PositionObject} start
@@ -55656,6 +54826,7 @@ function straight(start, end) {
  * right angles only, and taking only starting/ending obstacle into
  * consideration.
  *
+ * @internal
  * @function Highcharts.Pathfinder.algorithms.simpleConnect
  *
  * @param {Highcharts.PositionObject} start
@@ -55683,7 +54854,7 @@ const simpleConnect = function (start, end, options) {
     /**
      * Return a clone of a point with a property set from a target object,
      * optionally with an offset
-     * @private
+     * @internal
      */
     function copyFromPoint(from, fromKey, to, toKey, offset) {
         const point = {
@@ -55696,7 +54867,7 @@ const simpleConnect = function (start, end, options) {
     // eslint-disable-next-line valid-jsdoc
     /**
      * Return waypoint outside obstacle.
-     * @private
+     * @internal
      */
     function getMeOut(obstacle, point, direction) {
         const useMax = abs(point[direction] - obstacle[direction + 'Min']) >
@@ -55773,6 +54944,7 @@ simpleConnect.requiresObstacles = true;
  * obstacles into consideration. Might not always find the optimal path,
  * but is fast, and usually good enough.
  *
+ * @internal
  * @function Highcharts.Pathfinder.algorithms.fastAvoid
  *
  * @param {Highcharts.PositionObject} start
@@ -55832,7 +55004,7 @@ function fastAvoid(start, end, options) {
     /**
      * How far can you go between two points before hitting an obstacle?
      * Does not work for diagonal lines (because it doesn't have to).
-     * @private
+     * @internal
      */
     function pivotPoint(fromPoint, toPoint, directionIsX) {
         const searchDirection = fromPoint.x < toPoint.x ? 1 : -1;
@@ -55899,7 +55071,7 @@ function fastAvoid(start, end, options) {
      *
      * (? Returns a string, either xMin, xMax, yMin or yMax.)
      *
-     * @private
+     * @internal
      * @function
      *
      * @param {Object} obstacle
@@ -55960,7 +55132,7 @@ function fastAvoid(start, end, options) {
     // eslint-disable-next-line valid-jsdoc
     /**
      * Find a clear path between point.
-     * @private
+     * @internal
      */
     function clearPathTo(fromPoint, toPoint, dirIsX) {
         // Don't waste time if we've hit goal
@@ -56079,7 +55251,7 @@ function fastAvoid(start, end, options) {
     /**
      * Extract point to outside of obstacle in whichever direction is
      * closest. Returns new point outside obstacle.
-     * @private
+     * @internal
      */
     function extractFromObstacle(obstacle, point, goalPoint) {
         const dirIsX = PathfinderAlgorithms_min(obstacle.xMax - point.x, point.x - obstacle.xMin) <
@@ -56139,14 +55311,18 @@ fastAvoid.requiresObstacles = true;
  *  Default Export
  *
  * */
-// Define the available pathfinding algorithms.
-// Algorithms take up to 3 arguments: starting point, ending point, and an
-// options object.
+/**
+ * Defines the available pathfinding algorithms. Algorithms take up to 3
+ * arguments: starting point, ending point, and an options object.
+ *
+ * @internal
+ */
 const algorithms = {
     fastAvoid,
     straight,
     simpleConnect
 };
+/** @internal */
 /* harmony default export */ const PathfinderAlgorithms = (algorithms);
 
 ;// ./code/es-modules/Gantt/ConnectorsDefaults.js
@@ -56203,8 +55379,8 @@ const connectorsDefaults = {
         /**
          * Set the default dash style for this chart's connecting lines.
          *
-         * @type      {string}
-         * @default   solid
+         * @type      {Highcharts.DashStyleValue}
+         * @default   Solid
          * @since     6.2.0
          * @apioption connectors.dashStyle
          */
@@ -56461,7 +55637,7 @@ const { defined: PathfinderComposition_defined, error: PathfinderComposition_err
  * Get point bounding box using plotX/plotY and shapeArgs. If using
  * graphic.getBBox() directly, the bbox will be affected by animation.
  *
- * @private
+ * @internal
  * @function
  *
  * @param {Highcharts.Point} point
@@ -56493,7 +55669,7 @@ function getPointBB(point) {
 /**
  * Warn if using legacy options. Copy the options over. Note that this will
  * still break if using the legacy options in chart.update, addSeries etc.
- * @private
+ * @internal
  */
 function warnLegacy(chart) {
     if (chart.options.pathfinder ||
@@ -56514,6 +55690,7 @@ function warnLegacy(chart) {
  *  Composition
  *
  * */
+/** @internal */
 var ConnectionComposition;
 (function (ConnectionComposition) {
     /* *
@@ -56521,7 +55698,6 @@ var ConnectionComposition;
      *  Functions
      *
      * */
-    /** @private */
     function compose(ChartClass, PathfinderClass, PointClass) {
         const pointProto = PointClass.prototype;
         if (!pointProto.getPathfinderAnchorPoint) {
@@ -56545,7 +55721,6 @@ var ConnectionComposition;
     /**
      * Get coordinates of anchor point for pathfinder connection.
      *
-     * @private
      * @function Highcharts.Point#getPathfinderAnchorPoint
      *
      * @param {Highcharts.ConnectorsMarkerOptions} markerOptions
@@ -56580,7 +55755,6 @@ var ConnectionComposition;
     /**
      * Utility to get the angle from one point to another.
      *
-     * @private
      * @function Highcharts.Point#getRadiansToVector
      *
      * @param {Highcharts.PositionObject} v1
@@ -56609,7 +55783,6 @@ var ConnectionComposition;
      * Utility to get the position of the marker, based on the path angle and
      * the marker's radius.
      *
-     * @private
      * @function Highcharts.Point#getMarkerVector
      *
      * @param {number} radians
@@ -56683,6 +55856,7 @@ var ConnectionComposition;
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const PathfinderComposition = (ConnectionComposition);
 
 ;// ./code/es-modules/Gantt/Pathfinder.js
@@ -56718,7 +55892,7 @@ const Pathfinder_max = Math.max, Pathfinder_min = Math.min;
  * Get point bounding box using plotX/plotY and shapeArgs. If using
  * graphic.getBBox() directly, the bbox will be affected by animation.
  *
- * @private
+ * @internal
  * @function
  *
  * @param {Highcharts.Point} point
@@ -56749,7 +55923,7 @@ function Pathfinder_getPointBB(point) {
 }
 /**
  * Compute smallest distance between two rectangles.
- * @private
+ * @internal
  */
 function calculateObstacleDistance(a, b, bbMargin) {
     // Count the distance even if we are slightly off
@@ -56769,7 +55943,7 @@ function calculateObstacleDistance(a, b, bbMargin) {
  * Calculate margin to place around obstacles for the pathfinder in pixels.
  * Returns a minimum of 1 pixel margin.
  *
- * @private
+ * @internal
  * @function
  *
  * @param {Array<object>} obstacles
@@ -56813,7 +55987,7 @@ function calculateObstacleMargin(obstacles) {
 /**
  * The Pathfinder class.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.Pathfinder
  *
@@ -56988,15 +56162,14 @@ class Pathfinder {
      * @function Highcharts.Pathfinder#getChartObstacles
      *
      * @param {Object} options
-     *        Options for the calculation. Currently only
-     *        `options.algorithmMargin`.
+     * Options for the calculation. Currently only `options.algorithmMargin`.
      *
      * @param {number} options.algorithmMargin
-     *        The algorithm margin to use for the obstacles.
-
-    * @return {Array<object>}
-     *         An array of calculated obstacles. Each obstacle is defined as an
-     *         object with xMin, xMax, yMin and yMax properties.
+     * The algorithm margin to use for the obstacles.
+     *
+     * @return {Array<object>}
+     * An array of calculated obstacles. Each obstacle is defined as an object
+     * with xMin, xMax, yMin and yMax properties.
      */
     getChartObstacles(options) {
         const series = this.chart.series, margin = Pathfinder_pick(options.algorithmMargin, 0);
@@ -57064,8 +56237,8 @@ class Pathfinder {
             }
         }
         return {
-            maxHeight: maxHeight,
-            maxWidth: maxWidth
+            maxHeight,
+            maxWidth
         };
     }
     /**
@@ -57092,6 +56265,7 @@ class Pathfinder {
 /**
  * @name Highcharts.Pathfinder#algorithms
  * @type {Highcharts.Dictionary<Function>}
+ * @internal
  */
 Pathfinder.prototype.algorithms = PathfinderAlgorithms;
 /* *
@@ -57099,6 +56273,7 @@ Pathfinder.prototype.algorithms = PathfinderAlgorithms;
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Gantt_Pathfinder = (Pathfinder);
 /* *
  *
@@ -57131,7 +56306,7 @@ Pathfinder.prototype.algorithms = PathfinderAlgorithms;
 
 ;// ./code/es-modules/masters/modules/pathfinder.src.js
 /**
- * @license Highcharts Gantt JS v12.4.0 (2025-09-04)
+ * @license Highcharts Gantt JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/pathfinder
  * @requires highcharts
  *
@@ -57261,7 +56436,7 @@ const StaticScale = {
 
 ;// ./code/es-modules/masters/modules/static-scale.src.js
 /**
- * @license Highcharts Gantt JS v12.4.0 (2025-09-04)
+ * @license Highcharts Gantt JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/static-scale
  * @requires highcharts
  *
@@ -57590,6 +56765,7 @@ class XRangePoint extends ColumnPoint {
         super.applyOptions(options, x);
         this.x2 = this.series.chart.time.parse(this.x2);
         this.isNull = !this.isValid?.();
+        this.formatPrefix = this.isNull ? 'null' : 'point'; // #23605
         return this;
     }
     /**
@@ -58073,7 +57249,7 @@ Series_SeriesRegistry.registerSeriesType('xrange', XRangeSeries);
 
 ;// ./code/es-modules/masters/modules/xrange.src.js
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/xrange
  * @requires highcharts
  *
@@ -58150,6 +57326,7 @@ class GanttPoint extends GanttPoint_XRangePoint {
         const ganttPoint = super.applyOptions(options, x);
         GanttPoint.setGanttPointAliases(ganttPoint, ganttPoint.series.chart);
         this.isNull = !this.isValid?.();
+        this.formatPrefix = this.isNull ? 'null' : 'point'; // #23605
         return ganttPoint;
     }
     isValid() {
@@ -58661,7 +57838,7 @@ var BrokenAxis;
                     });
                     // For stacked chart generate empty stack items, #6546
                     if (yAxis.stacking && this.options.stacking) {
-                        stack = yAxis.stacking.stacks[this.stackKey][xRange] = new Stacking_StackItem(yAxis, yAxis.options.stackLabels, false, xRange, this.stack);
+                        stack = yAxis.stacking.stacks[this.stackKey][xRange] = new Stacking_StackItem(yAxis, yAxis.options.stackLabels, false, xRange, this.stack ?? '');
                         stack.total = 0;
                     }
                 }
@@ -60118,7 +59295,7 @@ const { extend: Tree_extend, isNumber: Tree_isNumber, pick: Tree_pick } = Core_U
 /**
  * Creates an object map from parent id to children's index.
  *
- * @private
+ * @internal
  * @function Highcharts.Tree#getListOfParents
  *
  * @param {Array<*>} data
@@ -60151,7 +59328,7 @@ function getListOfParents(data) {
     });
     return listOfParents;
 }
-/** @private */
+/** @internal */
 function getNode(id, parent, level, data, mapOfIdToChildren, options) {
     const after = options && options.after, before = options && options.before, node = {
         data,
@@ -60201,7 +59378,7 @@ function getNode(id, parent, level, data, mapOfIdToChildren, options) {
     }
     return node;
 }
-/** @private */
+/** @internal */
 function getTree(data, options) {
     return getNode('', null, 1, null, getListOfParents(data), options);
 }
@@ -60210,10 +59387,12 @@ function getTree(data, options) {
  *  Default Export
  *
  * */
+/** @internal */
 const Tree = {
     getNode,
     getTree
 };
+/** @internal */
 /* harmony default export */ const Gantt_Tree = (Tree);
 
 ;// ./code/es-modules/Core/Axis/TreeGrid/TreeGridTick.js
@@ -61647,7 +60826,7 @@ Series_SeriesRegistry.registerSeriesType('gantt', GanttSeries);
 
 ;// ./code/es-modules/masters/modules/gantt.src.js
 /**
- * @license Highcharts Gantt JS v12.4.0 (2025-09-04)
+ * @license Highcharts Gantt JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/gantt
  * @requires highcharts
  *

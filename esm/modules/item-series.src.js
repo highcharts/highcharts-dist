@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/item-series
  * @requires highcharts
  *
@@ -44,6 +44,7 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -541,6 +542,9 @@ const seriesDefaults = {
      * its own sorting definition, the linked series will be sorted in the
      * same order as the master one.
      *
+     * If a `compare` value is not set on a linked series, it will be inherited
+     * from the parent series.
+     *
      * @sample {highcharts|highstock} highcharts/demo/arearange-line/
      *         Linked series
      *
@@ -833,7 +837,7 @@ const seriesDefaults = {
      */
     /**
      * Whether to stack the values of each series on top of each other.
-     * Possible values are `undefined` to disable, `"normal"` to stack by
+     * Possible values are null to disable, `"normal"` to stack by
      * value or `"percent"`.
      *
      * When stacking is enabled, data must be sorted
@@ -870,8 +874,9 @@ const seriesDefaults = {
      *         Area
      *
      * @type       {string}
+     * @default    null
      * @product    highcharts highstock
-     * @validvalue ["normal", "overlap", "percent", "stream"]
+     * @validvalue ["normal", "overlap", "percent", "stream", null]
      * @apioption  plotOptions.series.stacking
      */
     /**
@@ -2009,8 +2014,11 @@ const seriesDefaults = {
          */
         x: 0,
         /**
-         * The z index of the data labels. Use a `zIndex` of 6 to display it above
-         * the series, or use a `zIndex` of 2 to display it behind the series.
+         * The z index of the data labels group. Does not apply below series
+         * level options.
+         *
+         * Use a `zIndex` of 6 to display it above the series,
+         * or use a `zIndex` of 2 to display it behind the series.
          *
          * @type      {number}
          * @default   6

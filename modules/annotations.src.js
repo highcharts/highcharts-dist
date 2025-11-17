@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/annotations
  * @requires highcharts
  *
@@ -751,6 +751,16 @@ const AnnotationDefaults = {
      * @apioption annotations.labels
      */
     /**
+     * The array of control points.
+     *
+     * @sample highcharts/annotations/ellipse
+     *         Ellipse annotation
+     *
+     * @extends annotations.controlPointOptions
+     * @type {Array<AnnotationControlPointOptionsObject>}
+     * @apioption annotations.labels.controlPoints
+     */
+    /**
      * This option defines the point to which the label will be
      * connected. It can be either the point which exists in the
      * series - it is referenced by the point's id - or a new point
@@ -778,6 +788,16 @@ const AnnotationDefaults = {
      * @type      {Array<*>}
      * @extends   annotations.shapeOptions
      * @apioption annotations.shapes
+     */
+    /**
+     * The array of control points.
+     *
+     * @sample highcharts/annotations-advanced/controllable-image
+     *         Controllable image annotation
+     *
+     * @extends annotations.controlPointOptions
+     * @type {Array<AnnotationControlPointOptionsObject>}
+     * @apioption annotations.shapes.controlPoints
      */
     /**
      * This option defines the point to which the shape will be
@@ -1044,6 +1064,73 @@ const AnnotationDefaults = {
      * @requires modules/annotations
      */
     events: {},
+    /**
+     *
+     * Additional options for an annotation with the type.
+     *
+     * @requires  modules/annotations
+     * @apioption annotations.typeOptions
+     */
+    typeOptions: {
+    /**
+     * Background shape options for the annotation.
+     *
+     * @extends annotations.shapeOptions
+     * @apioption annotations.typeOptions.background
+     */
+    /**
+     * Height of the annotation in pixels.
+     *
+     * @type {number}
+     * @apioption annotations.typeOptions.height
+     */
+    /**
+     * Line options.
+     *
+     * @extends annotations.shapeOptions
+     * @apioption annotations.typeOptions.line
+     */
+    /**
+     * A single point that the annotation is attached to. It can be either
+     * the point which exists in the series - it is referenced by the
+     * point's id - or a new point with defined x, y properties
+     * and optionally axes.
+     *
+     * @type {string|AnnotationMockPointFunction|AnnotationMockPointOptionsObject}
+     * @apioption annotations.typeOptions.point
+     */
+    /**
+     * An array of points that the annotation is attached to. Each point can
+     * the point which exists in the series - it is referenced by the
+     * point's id - or a new point with defined x, y properties
+     * and optionally axes.
+     *
+     * @type {Array<*>}
+     * @apioption annotations.typeOptions.points
+     */
+    /**
+     * The annotation type identifier.
+     *
+     * @type {string}
+     * @apioption annotations.typeOptions.type
+     */
+    /**
+     * This number defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis
+     * in the `xAxis` array.
+     *
+     * @type {number}
+     * @apioption annotations.typeOptions.xAxis
+     */
+    /**
+     * This number defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis
+     * in the `yAxis` array.
+     *
+     * @type {number}
+     * @apioption annotations.typeOptions.yAxis
+     */
+    },
     /**
      * Option override for specific advanced annotation types. This collection
      * is intended for general theming using `Highcharts.setOptions()`.
@@ -1919,8 +2006,8 @@ class MockPoint {
  *
  * @callback Highcharts.AnnotationMockPointFunction
  *
- * @param  {Highcharts.Annotation} annotation
- *         An annotation instance.
+ * @param {Highcharts.AnnotationControllable} controllable
+ *        Controllable shape or label.
  *
  * @return {Highcharts.AnnotationMockPointOptionsObject}
  *         Annotations shape point.
@@ -2072,7 +2159,7 @@ var ControlTarget;
     /**
      * Find point-like objects based on points options.
      * @private
-     * @return {Array<Annotation.PointLike>}
+     * @return {Array<Annotation.PointBase>}
      *         An array of point-like objects.
      */
     function linkPoints() {
@@ -5105,7 +5192,7 @@ function onNavigationBindingsShowPopup(config) {
         this.popup = new Popup_Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
             (this.chart.options.stockTools &&
                 this.chart.options.stockTools.gui.iconsURL) ||
-            'https://code.highcharts.com/12.4.0/gfx/stock-icons/'), this.chart);
+            'https://code.highcharts.com/12.4.0-modified/gfx/stock-icons/'), this.chart);
     }
     this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
 }
@@ -5525,6 +5612,7 @@ class Annotation extends Annotations_EventEmitter {
         const renderer = this.chart.renderer;
         this.graphic = renderer
             .g('annotation')
+            .addClass(this.options.className || '')
             .attr({
             opacity: 0,
             zIndex: this.options.zIndex,
@@ -6091,6 +6179,12 @@ const navigation = {
         circleAnnotation: {
             /** @ignore-option */
             className: 'highcharts-circle-annotation',
+            /**
+             * Options to customize the bindings' annotation shapes and labels.
+             * @type      {Highcharts.AnnotationsOptions}
+             * @extends   navigation.annotationsOptions
+             * @apioption navigation.bindings.circleAnnotation.annotationsOptions
+             */
             /** @ignore-option */
             start: function (e) {
                 const coords = this.chart.pointer?.getCoordinates(e), coordsX = coords && NavigationBindingsDefaults_getAssignedAxis(coords.xAxis), coordsY = coords && NavigationBindingsDefaults_getAssignedAxis(coords.yAxis), navigation = this.chart.options.navigation;
@@ -6137,7 +6231,7 @@ const navigation = {
             ]
         },
         /**
-         * A ellipse annotation bindings. Includes `start` and two events in
+         * An ellipse annotation bindings. Includes `start` and two events in
          * `steps` array. First updates the second point, responsible for a
          * rx width, and second updates the ry width.
          *
@@ -6146,6 +6240,12 @@ const navigation = {
          */
         ellipseAnnotation: {
             className: 'highcharts-ellipse-annotation',
+            /**
+             * Options to customize the bindings' annotation shapes and labels.
+             * @type      {Highcharts.AnnotationsOptions}
+             * @extends   navigation.annotationsOptions
+             * @apioption navigation.bindings.ellipseAnnotation.annotationsOptions
+             */
             start: function (e) {
                 const coords = this.chart.pointer?.getCoordinates(e), coordsX = coords && NavigationBindingsDefaults_getAssignedAxis(coords.xAxis), coordsY = coords && NavigationBindingsDefaults_getAssignedAxis(coords.yAxis), navigation = this.chart.options.navigation;
                 if (!coordsX || !coordsY) {
@@ -6195,6 +6295,12 @@ const navigation = {
         rectangleAnnotation: {
             /** @ignore-option */
             className: 'highcharts-rectangle-annotation',
+            /**
+             * Options to customize the bindings' annotation shapes and labels.
+             * @type      {Highcharts.AnnotationsOptions}
+             * @extends   navigation.annotationsOptions
+             * @apioption navigation.bindings.rectangleAnnotation.annotationsOptions
+             */
             /** @ignore-option */
             start: function (e) {
                 const coords = this.chart.pointer?.getCoordinates(e), coordsX = coords && NavigationBindingsDefaults_getAssignedAxis(coords.xAxis), coordsY = coords && NavigationBindingsDefaults_getAssignedAxis(coords.yAxis);
@@ -6254,6 +6360,12 @@ const navigation = {
         labelAnnotation: {
             /** @ignore-option */
             className: 'highcharts-label-annotation',
+            /**
+             * Options to customize the bindings' annotation shapes and labels.
+             * @type      {Highcharts.AnnotationsOptions}
+             * @extends   navigation.annotationsOptions
+             * @apioption navigation.bindings.labelAnnotation.annotationsOptions
+             */
             /** @ignore-option */
             start: function (e) {
                 const coords = this.chart.pointer?.getCoordinates(e), coordsX = coords && NavigationBindingsDefaults_getAssignedAxis(coords.xAxis), coordsY = coords && NavigationBindingsDefaults_getAssignedAxis(coords.yAxis), navigation = this.chart.options.navigation;
@@ -6290,7 +6402,7 @@ const navigation = {
      * from a different server.
      *
      * @type      {string}
-     * @default   https://code.highcharts.com/12.4.0/gfx/stock-icons/
+     * @default   https://code.highcharts.com/12.4.0-modified/gfx/stock-icons/
      * @since     7.1.3
      * @apioption navigation.iconsURL
      */
@@ -7011,7 +7123,9 @@ class NavigationBindings {
             }
         }
         NavigationBindings_objectEach(options, (option, key) => {
-            if (key === 'typeOptions') {
+            if (key === 'typeOptions' &&
+                visualOptions['type'] !== 'basicAnnotation' // #23575
+            ) {
                 visualOptions[key] = {};
                 NavigationBindings_objectEach(options[key], (typeOption, typeKey) => {
                     traverse(typeOption, typeKey, nestedEditables, visualOptions[key], typeKey);

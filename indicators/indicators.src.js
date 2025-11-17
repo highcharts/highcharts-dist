@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v12.4.0 (2025-09-04)
+ * @license Highstock JS v12.4.0-modified (2025-11-17)
  * @module highcharts/indicators/indicators
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -139,7 +139,7 @@ const { addEvent, fireEvent, error, extend, isArray, merge, pick } = (highcharts
  * @private
  */
 const tableToMultiYData = (series, processed) => {
-    const yData = [], pointArrayMap = series.pointArrayMap, table = processed && series.dataTable.modified || series.dataTable;
+    const yData = [], pointArrayMap = series.pointArrayMap, table = processed && series.dataTable.getModified() || series.dataTable;
     if (!pointArrayMap) {
         return series.getColumn('y', processed);
     }

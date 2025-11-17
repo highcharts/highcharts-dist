@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/sonification
  * @requires highcharts
  *
@@ -45,6 +45,7 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -3448,7 +3449,7 @@ function toMIDI(channels) {
 }
 /* harmony default export */ const MIDI = (toMIDI);
 
-;// ./code/es-modules/Extensions/DownloadURL.js
+;// ./code/es-modules/Shared/DownloadURL.js
 /* *
  *
  *  (c) 2015-2025 Oystein Moseng
@@ -3601,6 +3602,40 @@ function getScript(scriptLocation) {
         head.appendChild(script);
     });
 }
+/**
+ * Get a blob object from content, if blob is supported.
+ *
+ * @private
+ * @function Highcharts.getBlobFromContent
+ *
+ * @param {string} content
+ * The content to create the blob from.
+ * @param {string} type
+ * The type of the content.
+ *
+ * @return {string | undefined}
+ * The blob object, or undefined if not supported.
+ *
+ * @requires modules/exporting
+ * @requires modules/export-data
+ */
+function getBlobFromContent(content, type) {
+    const nav = win.navigator, domurl = win.URL || win.webkitURL || win;
+    try {
+        // MS specific
+        if ((nav.msSaveOrOpenBlob) && win.MSBlobBuilder) {
+            const blob = new win.MSBlobBuilder();
+            blob.append(content);
+            return blob.getBlob('image/svg+xml');
+        }
+        return domurl.createObjectURL(new win.Blob(['\uFEFF' + content], // #7084
+        { type: type }));
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    }
+    catch (e) {
+        // Ignore
+    }
+}
 /* *
  *
  *  Default Export
@@ -3609,9 +3644,10 @@ function getScript(scriptLocation) {
 const DownloadURL = {
     dataURLtoBlob,
     downloadURL,
+    getBlobFromContent,
     getScript
 };
-/* harmony default export */ const Extensions_DownloadURL = (DownloadURL);
+/* harmony default export */ const Shared_DownloadURL = (DownloadURL);
 
 ;// ./code/es-modules/Extensions/Sonification/SonificationTimeline.js
 /* *
@@ -3629,7 +3665,7 @@ const DownloadURL = {
 
 
 
-const { downloadURL: SonificationTimeline_downloadURL } = Extensions_DownloadURL;
+const { downloadURL: SonificationTimeline_downloadURL } = Shared_DownloadURL;
 
 const { defined: SonificationTimeline_defined, find, merge } = (external_highcharts_src_js_default_default());
 /**

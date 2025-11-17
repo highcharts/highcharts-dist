@@ -1,11 +1,11 @@
 /**
-* @license Highcharts JS v12.4.0 (2025-09-04)
+* @license Highcharts JS v12.4.0-modified (2025-11-17)
 * @module highcharts/i18n/zh-CN
 * @requires highcharts
 *
 * zh-CN language pack
 *
-* (c) 2009-2025 Torstein Honsi
+* (c) 2009-2025 Highsoft AS
 *
 * License: www.highcharts.com/license
 *

@@ -7,6 +7,7 @@
  *  Class
  *
  * */
+/** @internal */
 class LimaLabs {
     constructor() {
         /* *
@@ -32,4 +33,5 @@ class LimaLabs {
  *  Default Export
  *
  * */
+/** @internal */
 export default LimaLabs;

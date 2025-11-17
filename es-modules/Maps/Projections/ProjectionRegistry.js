@@ -1,6 +1,13 @@
 /* *
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+ *  Projection registry
+ *
+ *  (c) 2021-2025 Highsoft AS
+ *
+ *  License: www.highcharts.com/license
+ *
+ *  Authors:
+ *  - Torstein Honsi
  *
  * */
 'use strict';

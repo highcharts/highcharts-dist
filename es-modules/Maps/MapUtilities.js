@@ -8,7 +8,11 @@
  *
  * */
 'use strict';
-// Compute bounds from a path element
+/**
+ * Compute bounds from a path element.
+ *
+ * @internal
+ */
 const boundsFromPath = function (path) {
     let x2 = -Number.MAX_VALUE, x1 = Number.MAX_VALUE, y2 = -Number.MAX_VALUE, y1 = Number.MAX_VALUE, validBounds;
     path.forEach((seg) => {
@@ -31,7 +35,9 @@ const boundsFromPath = function (path) {
  *  Default Export
  *
  * */
+/** @internal */
 const MapUtilities = {
     boundsFromPath
 };
+/** @internal */
 export default MapUtilities;

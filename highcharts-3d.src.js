@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/highcharts-3d
  * @requires highcharts
  *
@@ -4324,7 +4324,7 @@ function onColumnSeriesAfterInit() {
         let z = 0;
         // @todo grouping === true ?
         if (!(typeof grouping !== 'undefined' && !grouping)) {
-            const stacks = retrieveStacks(this.chart, stacking), stack = seriesOptions.stack || 0;
+            const stacks = retrieveStacks(this.chart, stacking || void 0), stack = seriesOptions.stack || 0;
             let i; // Position within the stack
             for (i = 0; i < stacks[stack].series.length; i++) {
                 if (stacks[stack].series[i] === this) {

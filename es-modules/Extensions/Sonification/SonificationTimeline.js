@@ -12,7 +12,7 @@
 'use strict';
 import TimelineChannel from './TimelineChannel.js';
 import toMIDI from './MIDI.js';
-import DU from '../DownloadURL.js';
+import DU from '../../Shared/DownloadURL.js';
 const { downloadURL } = DU;
 import U from '../../Core/Utilities.js';
 const { defined, find, merge } = U;

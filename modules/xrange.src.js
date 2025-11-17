@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/xrange
  * @requires highcharts
  *
@@ -429,6 +429,7 @@ class XRangePoint extends ColumnPoint {
         super.applyOptions(options, x);
         this.x2 = this.series.chart.time.parse(this.x2);
         this.isNull = !this.isValid?.();
+        this.formatPrefix = this.isNull ? 'null' : 'point'; // #23605
         return this;
     }
     /**

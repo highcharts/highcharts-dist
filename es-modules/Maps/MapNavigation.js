@@ -22,9 +22,7 @@ const { addEvent, extend, merge, objectEach, pick, pushUnique } = U;
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function stopEvent(e) {
     if (e) {
         e.preventDefault?.();
@@ -41,7 +39,7 @@ function stopEvent(e) {
  * The MapNavigation handles buttons for navigation in addition to mousewheel
  * and doubleclick handlers for chart zooming.
  *
- * @private
+ * @internal
  * @class
  * @name MapNavigation
  *
@@ -277,4 +275,5 @@ class MapNavigation {
  *  Default Export
  *
  * */
+/** @internal */
 export default MapNavigation;

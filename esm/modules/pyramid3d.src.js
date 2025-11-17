@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/pyramid3d
  * @requires highcharts
  * @requires highcharts/highcharts-3d
@@ -13,9 +13,9 @@
  * License: www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
-import * as __WEBPACK_EXTERNAL_MODULE__highcharts_3d_src_js_d1e794f4__ from "../highcharts-3d.src.js";
-import * as __WEBPACK_EXTERNAL_MODULE__cylinder_src_js_a4a5ba4f__ from "./cylinder.src.js";
-import * as __WEBPACK_EXTERNAL_MODULE__funnel3d_src_js_945ef2a3__ from "./funnel3d.src.js";
+import "../highcharts-3d.src.js";
+import "./cylinder.src.js";
+import "./funnel3d.src.js";
 /******/ // The require scope
 /******/ var __webpack_require__ = {};
 /******/ 
@@ -50,31 +50,17 @@ import * as __WEBPACK_EXTERNAL_MODULE__funnel3d_src_js_945ef2a3__ from "./funnel
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
 ;// external "../highcharts-3d.src.js"
-var x = (y) => {
-	var x = {}; __webpack_require__.d(x,
-    	y); return x
-    } 
-    var y = (x) => (() => (x))
-    const external_highcharts_3d_src_js_namespaceObject = x({  });
+
 ;// external "./cylinder.src.js"
-var external_cylinder_src_js_x = (y) => {
-	var x = {}; __webpack_require__.d(x,
-    	y); return x
-    } 
-    var external_cylinder_src_js_y = (x) => (() => (x))
-    const external_cylinder_src_js_namespaceObject = external_cylinder_src_js_x({  });
+
 ;// external "./funnel3d.src.js"
-var external_funnel3d_src_js_x = (y) => {
-	var x = {}; __webpack_require__.d(x,
-    	y); return x
-    } 
-    var external_funnel3d_src_js_y = (x) => (() => (x))
-    const external_funnel3d_src_js_namespaceObject = external_funnel3d_src_js_x({  });
+
 ;// ./code/es-modules/Series/Pyramid3D/Pyramid3DSeriesDefaults.js
 /* *
  *

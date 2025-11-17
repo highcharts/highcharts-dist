@@ -20,6 +20,7 @@ import USGS from './USGS.js';
  *  Constants
  *
  * */
+/** @internal */
 const tilesProviderRegistry = {
     Esri,
     LimaLabs,
@@ -33,4 +34,5 @@ const tilesProviderRegistry = {
  *  Default Export
  *
  * */
+/** @internal */
 export default tilesProviderRegistry;

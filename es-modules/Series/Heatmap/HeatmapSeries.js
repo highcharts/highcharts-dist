@@ -267,6 +267,9 @@ HeatmapSeries.defaultOptions = merge(ScatterSeries.defaultOptions, HeatmapSeries
 addEvent(HeatmapSeries, 'afterDataClassLegendClick', function () {
     this.isDirtyCanvas = true;
     this.drawPoints();
+    if (this.options.enableMouseTracking) {
+        this.drawTracker(); // #23162, set tracker again after points redraw
+    }
 });
 extend(HeatmapSeries.prototype, {
     axisTypes: ColorMapComposition.seriesMembers.axisTypes,

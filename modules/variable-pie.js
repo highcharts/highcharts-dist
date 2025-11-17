@@ -1,5 +1,5 @@
 !/**
- * Highcharts JS v12.4.0 (2025-09-04)
+ * Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/variable-pie
  * @requires highcharts
  *

@@ -6,81 +6,10 @@
 import * as Highcharts from "../highcharts.src";
 declare module "../highcharts.src" {
     /**
-     * (Highcharts, Highstock) Point accessibility options for a series.
+     * (Highcharts, Highmaps) Options for the cluster data labels.
      */
-    interface PlotVectorAccessibilityPointOptions {
-        /**
-         * (Highcharts, Highstock) Date format to use for points on datetime
-         * axes when describing them to screen reader users.
-         *
-         * Defaults to the same format as in tooltip.
-         *
-         * For an overview of the replacement codes, see dateFormat.
-         */
-        dateFormat?: string;
-        /**
-         * (Highcharts, Highstock) Formatter function to determine the date/time
-         * format used with points on datetime axes when describing them to
-         * screen reader users. Receives one argument, `point`, referring to the
-         * point to describe. Should return a date format string compatible with
-         * dateFormat.
-         */
-        dateFormatter?: Highcharts.ScreenReaderFormatterCallbackFunction<Highcharts.Point>;
-        /**
-         * (Highcharts, Highstock) Whether or not to describe points with the
-         * value `null` to assistive technology, such as screen readers.
-         */
-        describeNull?: boolean;
-        /**
-         * (Highcharts, Highstock) A format string to use instead of the default
-         * for point descriptions.
-         *
-         * The context of the format string is the point instance.
-         *
-         * As opposed to accessibility.point.valueDescriptionFormat, this option
-         * replaces the whole description.
-         */
-        descriptionFormat?: string;
-        /**
-         * (Highcharts, Highstock) Formatter function to use instead of the
-         * default for point descriptions. Same as
-         * `accessibility.point.descriptionFormatter`, but applies to a series
-         * instead of the whole chart.
-         *
-         * Note: Prefer using accessibility.point.valueDescriptionFormat instead
-         * if possible, as default functionality such as describing annotations
-         * will be preserved.
-         */
-        descriptionFormatter?: Highcharts.ScreenReaderFormatterCallbackFunction<Highcharts.Point>;
-        /**
-         * (Highcharts, Highstock) Decimals to use for the values in the point
-         * descriptions. Uses tooltip.valueDecimals if not defined.
-         */
-        valueDecimals?: number;
-        /**
-         * (Highcharts, Highstock) Format to use for describing the values of
-         * data points to assistive technology - including screen readers. The
-         * point context is available as `{point}`.
-         *
-         * Other available context variables include `{index}`, `{value}`, and
-         * `{xDescription}`.
-         *
-         * Additionally, the series name, annotation info, and description added
-         * in `point.accessibility.description` is added by default if relevant.
-         * To override this, use the accessibility.point.descriptionFormatter
-         * option.
-         */
-        valueDescriptionFormat?: string;
-        /**
-         * (Highcharts, Highstock) Prefix to add to the values in the point
-         * descriptions. Uses tooltip.valuePrefix if not defined.
-         */
-        valuePrefix?: string;
-        /**
-         * (Highcharts, Highstock) Suffix to add to the values in the point
-         * descriptions. Uses tooltip.valueSuffix if not defined.
-         */
-        valueSuffix?: string;
+    interface PlotVectorClusterDataLabelsOptions {
+        style?: any;
     }
     /**
      * (Highcharts, Highmaps) Options for layout algorithm. Inside there are
@@ -458,8 +387,10 @@ declare module "../highcharts.src" {
         y?: number;
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) The z index of the data
-         * labels. Use a `zIndex` of 6 to display it above the series, or use a
-         * `zIndex` of 2 to display it behind the series.
+         * labels group. Does not apply below series level options.
+         *
+         * Use a `zIndex` of 6 to display it above the series, or use a `zIndex`
+         * of 2 to display it behind the series.
          */
         zIndex?: number;
     }
@@ -512,7 +443,8 @@ declare module "../highcharts.src" {
      *
      * **TypeScript:**
      *
-     * - the type option must always be set.
+     * - type option should always be set, otherwise a broad set of unsupported
+     * options is allowed.
      *
      * - when accessing an array of series, the combined set of all series types
      * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
@@ -642,7 +574,9 @@ declare module "../highcharts.src" {
          * percentage or absolute change depending on whether `compare` is set
          * to `"percent"` or `"value"`. When this is applied to multiple series,
          * it allows comparing the development of the series against each other.
-         * Adds a `change` field to every point object.
+         * Adds a `change` field to every point object. If a `compare` value is
+         * not set on a linked series, it will be inherited from the parent
+         * series.
          */
         compare?: Highcharts.OptionsCompareValue;
         /**
@@ -820,6 +754,9 @@ declare module "../highcharts.src" {
          * If master series uses data sorting and linked series does not have
          * its own sorting definition, the linked series will be sorted in the
          * same order as the master one.
+         *
+         * If a `compare` value is not set on a linked series, it will be
+         * inherited from the parent series.
          */
         linkedTo?: string;
         marker?: string;

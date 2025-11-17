@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v12.4.0 (2025-09-04)
+ * @license Highstock JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/stock-tools
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -438,6 +438,12 @@ const navigation = {
         circleAnnotation: {
             /** @ignore-option */
             className: 'highcharts-circle-annotation',
+            /**
+             * Options to customize the bindings' annotation shapes and labels.
+             * @type      {Highcharts.AnnotationsOptions}
+             * @extends   navigation.annotationsOptions
+             * @apioption navigation.bindings.circleAnnotation.annotationsOptions
+             */
             /** @ignore-option */
             start: function (e) {
                 const coords = this.chart.pointer?.getCoordinates(e), coordsX = coords && NavigationBindingsDefaults_getAssignedAxis(coords.xAxis), coordsY = coords && NavigationBindingsDefaults_getAssignedAxis(coords.yAxis), navigation = this.chart.options.navigation;
@@ -484,7 +490,7 @@ const navigation = {
             ]
         },
         /**
-         * A ellipse annotation bindings. Includes `start` and two events in
+         * An ellipse annotation bindings. Includes `start` and two events in
          * `steps` array. First updates the second point, responsible for a
          * rx width, and second updates the ry width.
          *
@@ -493,6 +499,12 @@ const navigation = {
          */
         ellipseAnnotation: {
             className: 'highcharts-ellipse-annotation',
+            /**
+             * Options to customize the bindings' annotation shapes and labels.
+             * @type      {Highcharts.AnnotationsOptions}
+             * @extends   navigation.annotationsOptions
+             * @apioption navigation.bindings.ellipseAnnotation.annotationsOptions
+             */
             start: function (e) {
                 const coords = this.chart.pointer?.getCoordinates(e), coordsX = coords && NavigationBindingsDefaults_getAssignedAxis(coords.xAxis), coordsY = coords && NavigationBindingsDefaults_getAssignedAxis(coords.yAxis), navigation = this.chart.options.navigation;
                 if (!coordsX || !coordsY) {
@@ -542,6 +554,12 @@ const navigation = {
         rectangleAnnotation: {
             /** @ignore-option */
             className: 'highcharts-rectangle-annotation',
+            /**
+             * Options to customize the bindings' annotation shapes and labels.
+             * @type      {Highcharts.AnnotationsOptions}
+             * @extends   navigation.annotationsOptions
+             * @apioption navigation.bindings.rectangleAnnotation.annotationsOptions
+             */
             /** @ignore-option */
             start: function (e) {
                 const coords = this.chart.pointer?.getCoordinates(e), coordsX = coords && NavigationBindingsDefaults_getAssignedAxis(coords.xAxis), coordsY = coords && NavigationBindingsDefaults_getAssignedAxis(coords.yAxis);
@@ -601,6 +619,12 @@ const navigation = {
         labelAnnotation: {
             /** @ignore-option */
             className: 'highcharts-label-annotation',
+            /**
+             * Options to customize the bindings' annotation shapes and labels.
+             * @type      {Highcharts.AnnotationsOptions}
+             * @extends   navigation.annotationsOptions
+             * @apioption navigation.bindings.labelAnnotation.annotationsOptions
+             */
             /** @ignore-option */
             start: function (e) {
                 const coords = this.chart.pointer?.getCoordinates(e), coordsX = coords && NavigationBindingsDefaults_getAssignedAxis(coords.xAxis), coordsY = coords && NavigationBindingsDefaults_getAssignedAxis(coords.yAxis), navigation = this.chart.options.navigation;
@@ -637,7 +661,7 @@ const navigation = {
      * from a different server.
      *
      * @type      {string}
-     * @default   https://code.highcharts.com/12.4.0/gfx/stock-icons/
+     * @default   https://code.highcharts.com/12.4.0-modified/gfx/stock-icons/
      * @since     7.1.3
      * @apioption navigation.iconsURL
      */
@@ -1358,7 +1382,9 @@ class NavigationBindings {
             }
         }
         objectEach(options, (option, key) => {
-            if (key === 'typeOptions') {
+            if (key === 'typeOptions' &&
+                visualOptions['type'] !== 'basicAnnotation' // #23575
+            ) {
                 visualOptions[key] = {};
                 objectEach(options[key], (typeOption, typeKey) => {
                     traverse(typeOption, typeKey, nestedEditables, visualOptions[key], typeKey);
@@ -2045,6 +2071,12 @@ const StockToolsBindings = {
     segment: {
         /** @ignore-option */
         className: 'highcharts-segment',
+        /**
+         * Options to customize the bindings' annotation shapes and labels.
+         * @type      {Highcharts.AnnotationsOptions}
+         * @extends   navigation.annotationsOptions
+         * @apioption navigation.bindings.segment.annotationsOptions
+         */
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
@@ -2086,6 +2118,12 @@ const StockToolsBindings = {
     arrowSegment: {
         /** @ignore-option */
         className: 'highcharts-arrow-segment',
+        /**
+         * Options to customize the bindings' annotation shapes and labels.
+         * @type      {Highcharts.AnnotationsOptions}
+         * @extends   navigation.annotationsOptions
+         * @apioption navigation.bindings.arrowSegment.annotationsOptions
+         */
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
@@ -2130,6 +2168,12 @@ const StockToolsBindings = {
     ray: {
         /** @ignore-option */
         className: 'highcharts-ray',
+        /**
+         * Options to customize the bindings' annotation shapes and labels.
+         * @type      {Highcharts.AnnotationsOptions}
+         * @extends   navigation.annotationsOptions
+         * @apioption navigation.bindings.ray.annotationsOptions
+         */
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
@@ -2172,6 +2216,12 @@ const StockToolsBindings = {
     arrowRay: {
         /** @ignore-option */
         className: 'highcharts-arrow-ray',
+        /**
+         * Options to customize the bindings' annotation shapes and labels.
+         * @type      {Highcharts.AnnotationsOptions}
+         * @extends   navigation.annotationsOptions
+         * @apioption navigation.bindings.arrowRay.annotationsOptions
+         */
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
@@ -2216,6 +2266,12 @@ const StockToolsBindings = {
     infinityLine: {
         /** @ignore-option */
         className: 'highcharts-infinity-line',
+        /**
+         * Options to customize the bindings' annotation shapes and labels.
+         * @type      {Highcharts.AnnotationsOptions}
+         * @extends   navigation.annotationsOptions
+         * @apioption navigation.bindings.infinityLine.annotationsOptions
+         */
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
@@ -2258,6 +2314,12 @@ const StockToolsBindings = {
     arrowInfinityLine: {
         /** @ignore-option */
         className: 'highcharts-arrow-infinity-line',
+        /**
+         * Options to customize the bindings' annotation shapes and labels.
+         * @type      {Highcharts.AnnotationsOptions}
+         * @extends   navigation.annotationsOptions
+         * @apioption navigation.bindings.arrowInfinityLine.annotationsOptions
+         */
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
@@ -2303,6 +2365,12 @@ const StockToolsBindings = {
     horizontalLine: {
         /** @ignore-option */
         className: 'highcharts-horizontal-line',
+        /**
+         * Options to customize the bindings' annotation shapes and labels.
+         * @type      {Highcharts.AnnotationsOptions}
+         * @extends   navigation.annotationsOptions
+         * @apioption navigation.bindings.horizontalLine.annotationsOptions
+         */
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
@@ -2338,6 +2406,12 @@ const StockToolsBindings = {
     verticalLine: {
         /** @ignore-option */
         className: 'highcharts-vertical-line',
+        /**
+         * Options to customize the bindings' annotation shapes and labels.
+         * @type      {Highcharts.AnnotationsOptions}
+         * @extends   navigation.annotationsOptions
+         * @apioption navigation.bindings.verticalLine.annotationsOptions
+         */
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
@@ -2375,6 +2449,12 @@ const StockToolsBindings = {
     crooked3: {
         /** @ignore-option */
         className: 'highcharts-crooked3',
+        /**
+         * Options to customize the bindings' annotation shapes and labels.
+         * @type      {Highcharts.AnnotationsOptions}
+         * @extends   navigation.annotationsOptions
+         * @apioption navigation.bindings.crooked3.annotationsOptions
+         */
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
@@ -2415,6 +2495,12 @@ const StockToolsBindings = {
     crooked5: {
         /** @ignore-option */
         className: 'highcharts-crooked5',
+        /**
+         * Options to customize the bindings' annotation shapes and labels.
+         * @type      {Highcharts.AnnotationsOptions}
+         * @extends   navigation.annotationsOptions
+         * @apioption navigation.bindings.crooked5.annotationsOptions
+         */
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
@@ -2459,6 +2545,12 @@ const StockToolsBindings = {
     elliott3: {
         /** @ignore-option */
         className: 'highcharts-elliott3',
+        /**
+         * Options to customize the bindings' annotation shapes and labels.
+         * @type      {Highcharts.AnnotationsOptions}
+         * @extends   navigation.annotationsOptions
+         * @apioption navigation.bindings.elliott3.annotationsOptions
+         */
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
@@ -2501,6 +2593,12 @@ const StockToolsBindings = {
     elliott5: {
         /** @ignore-option */
         className: 'highcharts-elliott5',
+        /**
+         * Options to customize the bindings' annotation shapes and labels.
+         * @type      {Highcharts.AnnotationsOptions}
+         * @extends   navigation.annotationsOptions
+         * @apioption navigation.bindings.elliott5.annotationsOptions
+         */
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
@@ -2547,6 +2645,12 @@ const StockToolsBindings = {
     measureX: {
         /** @ignore-option */
         className: 'highcharts-measure-x',
+        /**
+         * Options to customize the bindings' annotation shapes and labels.
+         * @type      {Highcharts.AnnotationsOptions}
+         * @extends   navigation.annotationsOptions
+         * @apioption navigation.bindings.measureX.annotationsOptions
+         */
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
@@ -2594,6 +2698,12 @@ const StockToolsBindings = {
     measureY: {
         /** @ignore-option */
         className: 'highcharts-measure-y',
+        /**
+         * Options to customize the bindings' annotation shapes and labels.
+         * @type      {Highcharts.AnnotationsOptions}
+         * @extends   navigation.annotationsOptions
+         * @apioption navigation.bindings.measureY.annotationsOptions
+         */
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
@@ -2642,6 +2752,12 @@ const StockToolsBindings = {
     measureXY: {
         /** @ignore-option */
         className: 'highcharts-measure-xy',
+        /**
+         * Options to customize the bindings' annotation shapes and labels.
+         * @type      {Highcharts.AnnotationsOptions}
+         * @extends   navigation.annotationsOptions
+         * @apioption navigation.bindings.measureXY.annotationsOptions
+         */
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
@@ -2692,6 +2808,12 @@ const StockToolsBindings = {
      */
     fibonacci: {
         className: 'highcharts-fibonacci',
+        /**
+         * Options to customize the bindings' annotation shapes and labels.
+         * @type      {Highcharts.AnnotationsOptions}
+         * @extends   navigation.annotationsOptions
+         * @apioption navigation.bindings.fibonacci.annotationsOptions
+         */
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
@@ -2731,6 +2853,12 @@ const StockToolsBindings = {
     parallelChannel: {
         /** @ignore-option */
         className: 'highcharts-parallel-channel',
+        /**
+         * Options to customize the bindings' annotation shapes and labels.
+         * @type      {Highcharts.AnnotationsOptions}
+         * @extends   navigation.annotationsOptions
+         * @apioption navigation.bindings.parallelChannel.annotationsOptions
+         */
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
@@ -2771,6 +2899,12 @@ const StockToolsBindings = {
     pitchfork: {
         /** @ignore-option */
         className: 'highcharts-pitchfork',
+        /**
+         * Options to customize the bindings' annotation shapes and labels.
+         * @type      {Highcharts.AnnotationsOptions}
+         * @extends   navigation.annotationsOptions
+         * @apioption navigation.bindings.pitchfork.annotationsOptions
+         */
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
@@ -2820,6 +2954,12 @@ const StockToolsBindings = {
     verticalCounter: {
         /** @ignore-option */
         className: 'highcharts-vertical-counter',
+        /**
+         * Options to customize the bindings' annotation shapes and labels.
+         * @type      {Highcharts.AnnotationsOptions}
+         * @extends   navigation.annotationsOptions
+         * @apioption navigation.bindings.verticalCounter.annotationsOptions
+         */
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
@@ -2860,6 +3000,12 @@ const StockToolsBindings = {
      */
     timeCycles: {
         className: 'highcharts-time-cycles',
+        /**
+         * Options to customize the bindings' annotation shapes and labels.
+         * @type      {Highcharts.AnnotationsOptions}
+         * @extends   navigation.annotationsOptions
+         * @apioption navigation.bindings.timeCycles.annotationsOptions
+         */
         start: function (e) {
             const closestPoint = StockToolsBindings_attractToPoint(e, this.chart);
             // Exit if clicked out of axes area
@@ -2889,6 +3035,12 @@ const StockToolsBindings = {
     verticalLabel: {
         /** @ignore-option */
         className: 'highcharts-vertical-label',
+        /**
+         * Options to customize the bindings' annotation shapes and labels.
+         * @type      {Highcharts.AnnotationsOptions}
+         * @extends   navigation.annotationsOptions
+         * @apioption navigation.bindings.verticalLabel.annotationsOptions
+         */
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
@@ -2929,6 +3081,12 @@ const StockToolsBindings = {
     verticalArrow: {
         /** @ignore-option */
         className: 'highcharts-vertical-arrow',
+        /**
+         * Options to customize the bindings' annotation shapes and labels.
+         * @type      {Highcharts.AnnotationsOptions}
+         * @extends   navigation.annotationsOptions
+         * @apioption navigation.bindings.verticalArrow.annotationsOptions
+         */
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
@@ -2973,6 +3131,12 @@ const StockToolsBindings = {
     fibonacciTimeZones: {
         /** @ignore-option */
         className: 'highcharts-fibonacci-time-zones',
+        /**
+         * Options to customize the bindings' annotation shapes and labels.
+         * @type      {Highcharts.AnnotationsOptions}
+         * @extends   navigation.annotationsOptions
+         * @apioption navigation.bindings.fibonacciTimeZones.annotationsOptions
+         */
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         start: function (e) {
@@ -5445,7 +5609,7 @@ class Toolbar {
     getIconsURL() {
         return this.chart.options.navigation.iconsURL ||
             this.options.iconsURL ||
-            'https://code.highcharts.com/12.4.0/gfx/stock-icons/';
+            'https://code.highcharts.com/12.4.0-modified/gfx/stock-icons/';
     }
 }
 Toolbar.prototype.classMapping = {

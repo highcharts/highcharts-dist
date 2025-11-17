@@ -173,7 +173,8 @@ declare module "../highcharts.src" {
      *
      * **TypeScript:**
      *
-     * - the type option must always be set.
+     * - type option should always be set, otherwise a broad set of unsupported
+     * options is allowed.
      *
      * - when accessing an array of series, the combined set of all series types
      * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
@@ -500,6 +501,9 @@ declare module "../highcharts.src" {
          * If master series uses data sorting and linked series does not have
          * its own sorting definition, the linked series will be sorted in the
          * same order as the master one.
+         *
+         * If a `compare` value is not set on a linked series, it will be
+         * inherited from the parent series.
          */
         linkedTo?: string;
         /**
@@ -685,8 +689,8 @@ declare module "../highcharts.src" {
         sonification?: Highcharts.SeriesSonificationOptions;
         /**
          * (Highcharts, Highstock) Whether to stack the values of each series on
-         * top of each other. Possible values are `undefined` to disable,
-         * `"normal"` to stack by value or `"percent"`.
+         * top of each other. Possible values are null to disable, `"normal"` to
+         * stack by value or `"percent"`.
          *
          * When stacking is enabled, data must be sorted in ascending X order.
          *

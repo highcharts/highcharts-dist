@@ -7,6 +7,7 @@
  *  Class
  *
  * */
+/** @internal */
 class Thunderforest {
     constructor() {
         /* *
@@ -74,4 +75,5 @@ class Thunderforest {
  *  Default Export
  *
  * */
+/** @internal */
 export default Thunderforest;

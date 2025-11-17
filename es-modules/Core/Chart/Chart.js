@@ -289,7 +289,7 @@ class Chart {
         });
     }
     /**
-     * Internal function to unitialize an individual series.
+     * Internal function to initialize an individual series.
      *
      * @private
      * @function Highcharts.Chart#initSeries
@@ -1669,34 +1669,29 @@ class Chart {
         });
         // Apply new links
         chartSeries.forEach(function (series) {
-            const { linkedTo } = series.options;
-            if (isString(linkedTo)) {
-                let linkedParent;
-                if (linkedTo === ':previous') {
-                    linkedParent = chart.series[series.index - 1];
-                }
-                else {
-                    linkedParent = chart.get(linkedTo);
-                }
+            const { linkedTo } = series.options, linkedParent = isString(linkedTo) && (linkedTo === ':previous' ?
+                chartSeries[series.index - 1] :
+                chart.get(linkedTo));
+            if (linkedParent &&
                 // #3341 avoid mutual linking
-                if (linkedParent &&
-                    linkedParent.linkedParent !== series) {
-                    linkedParent.linkedSeries.push(series);
-                    /**
-                     * The parent series of the current series, if the current
-                     * series has a [linkedTo](https://api.highcharts.com/highcharts/series.line.linkedTo)
-                     * setting.
-                     *
-                     * @name Highcharts.Series#linkedParent
-                     * @type {Highcharts.Series}
-                     * @readonly
-                     */
-                    series.linkedParent = linkedParent;
-                    if (linkedParent.enabledDataSorting) {
-                        series.setDataSortingOptions();
-                    }
-                    series.visible = pick(series.options.visible, linkedParent.options.visible, series.visible); // #3879
+                linkedParent.linkedParent !== series) {
+                linkedParent.linkedSeries.push(series);
+                /**
+                 * The parent series of the current series, if the current
+                 * series has a [linkedTo](https://api.highcharts.com/highcharts/series.line.linkedTo)
+                 * setting.
+                 *
+                 * @name Highcharts.Series#linkedParent
+                 * @type {Highcharts.Series}
+                 * @readonly
+                 */
+                series.linkedParent = linkedParent;
+                if (linkedParent.enabledDataSorting) {
+                    series.setDataSortingOptions();
                 }
+                series.visible = (series.options.visible ??
+                    linkedParent.options.visible ??
+                    series.visible); // #3879
             }
         });
         fireEvent(this, 'afterLinkSeries', { isUpdating });
@@ -1808,9 +1803,6 @@ class Chart {
         chart.seriesGroup || (chart.seriesGroup = renderer.g('series-group')
             .attr({ zIndex: 3 })
             .shadow(chart.options.chart.seriesGroupShadow)
-            .add());
-        chart.dataLabelsGroup || (chart.dataLabelsGroup = renderer.g('datalabels-group')
-            .attr({ zIndex: 6 })
             .add());
         chart.renderSeries();
         // Credits
@@ -2001,6 +1993,7 @@ class Chart {
             this.setReflow();
         }
         this.warnIfA11yModuleNotLoaded();
+        this.warnIfCSSNotLoaded();
         // Don't run again
         this.hasLoaded = true;
     }
@@ -2024,6 +2017,18 @@ class Chart {
                     'usable for people with disabilities. Set the ' +
                     '"accessibility.enabled" option to false to remove this ' +
                     'warning. See https://www.highcharts.com/docs/accessibility/accessibility-module.', false, this);
+            }
+        }
+    }
+    /**
+     * Emit console warning if the highcharts.css file is not loaded.
+     * @private
+     */
+    warnIfCSSNotLoaded() {
+        if (this.styledMode) {
+            const containerStyle = win.getComputedStyle(this.container);
+            if (containerStyle.zIndex !== '0') {
+                error(35, false, this);
             }
         }
     }
@@ -2642,7 +2647,7 @@ class Chart {
      * @function Highcharts.Chart#transform
      */
     transform(params) {
-        const { axes = this.axes, event, from = {}, reset, selection, to = {}, trigger } = params, { inverted, time } = this;
+        const { axes = this.axes, event, from = {}, reset, selection, to = {}, trigger, allowResetButton = true } = params, { inverted, time } = this;
         // Remove active points for shared tooltip
         this.hoverPoints?.forEach((point) => point.setState());
         fireEvent(this, 'transform', params);
@@ -2687,7 +2692,7 @@ class Chart {
                 !allExtremes) {
                 for (const series of axis.series) {
                     const seriesExtremes = series.getExtremes(series.getProcessedData(true).modified
-                        .getColumn('y') || [], true);
+                        .getColumn(series.pointValKey || 'y') || [], true);
                     allExtremes ?? (allExtremes = {
                         dataMin: Number.MAX_VALUE,
                         dataMax: -Number.MAX_VALUE
@@ -2747,24 +2752,21 @@ class Chart {
                         // panning/zooming hard. Reset and redraw after the
                         // operation has finished.
                         axis.isPanning = trigger !== 'zoom';
-                        if (axis.isPanning) {
+                        if (axis.isPanning && trigger !== 'mousewheel') {
                             isAnyAxisPanning = true; // #21319
                         }
                         axis.setExtremes(reset ? void 0 : newMin, reset ? void 0 : newMax, false, false, { move, trigger, scale });
                         if (!reset &&
-                            (newMin > floor || newMax < ceiling) &&
-                            trigger !== 'mousewheel') {
-                            displayButton = true;
+                            (newMin > floor || newMax < ceiling)) {
+                            displayButton = allowResetButton;
                         }
                     }
                     hasZoomed = true;
                 }
-                // Show the resetZoom button for non-cartesian series,
-                // except when triggered by mouse wheel zoom
+                // Show the resetZoom button for non-cartesian series.
                 if (!this.hasCartesianSeries &&
-                    !reset &&
-                    trigger !== 'mousewheel') {
-                    displayButton = true;
+                    !reset) {
+                    displayButton = allowResetButton;
                 }
                 if (event) {
                     this[horiz ? 'mouseDownX' : 'mouseDownY'] =

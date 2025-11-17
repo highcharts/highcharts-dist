@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v12.4.0 (2025-09-04)
+ * @license Highcharts Gantt JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/treegrid
  * @requires highcharts
  *
@@ -44,6 +44,7 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -322,7 +323,7 @@ var BrokenAxis;
                     });
                     // For stacked chart generate empty stack items, #6546
                     if (yAxis.stacking && this.options.stacking) {
-                        stack = yAxis.stacking.stacks[this.stackKey][xRange] = new (external_highcharts_src_js_default_StackItem_default())(yAxis, yAxis.options.stackLabels, false, xRange, this.stack);
+                        stack = yAxis.stacking.stacks[this.stackKey][xRange] = new (external_highcharts_src_js_default_StackItem_default())(yAxis, yAxis.options.stackLabels, false, xRange, this.stack ?? '');
                         stack.total = 0;
                     }
                 }
@@ -1782,7 +1783,7 @@ const { extend, isNumber: Tree_isNumber, pick: Tree_pick } = (external_highchart
 /**
  * Creates an object map from parent id to children's index.
  *
- * @private
+ * @internal
  * @function Highcharts.Tree#getListOfParents
  *
  * @param {Array<*>} data
@@ -1815,7 +1816,7 @@ function getListOfParents(data) {
     });
     return listOfParents;
 }
-/** @private */
+/** @internal */
 function getNode(id, parent, level, data, mapOfIdToChildren, options) {
     const after = options && options.after, before = options && options.before, node = {
         data,
@@ -1865,7 +1866,7 @@ function getNode(id, parent, level, data, mapOfIdToChildren, options) {
     }
     return node;
 }
-/** @private */
+/** @internal */
 function getTree(data, options) {
     return getNode('', null, 1, null, getListOfParents(data), options);
 }
@@ -1874,10 +1875,12 @@ function getTree(data, options) {
  *  Default Export
  *
  * */
+/** @internal */
 const Tree = {
     getNode,
     getTree
 };
+/** @internal */
 /* harmony default export */ const Gantt_Tree = (Tree);
 
 ;// ./code/es-modules/Core/Axis/TreeGrid/TreeGridTick.js

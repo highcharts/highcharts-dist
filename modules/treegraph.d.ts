@@ -47,7 +47,7 @@ declare module "../highcharts" {
         setTextPath(path: (SVGElement|undefined), textPathOptions: DataLabelsTextPathOptionsObject): SVGElement;
     }
     function getCurvedPath(): void;
-    function getDefaultPath(): void;
+    function getOrthogonalPath(): void;
     function getStraightPath(): void;
 }
 export default _Highcharts;

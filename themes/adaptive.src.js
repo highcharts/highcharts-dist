@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/themes/adaptive
  * @requires highcharts
  *
@@ -242,6 +242,18 @@ const styleSheet = `
 
 .highcharts-dark {
     ${darkRules}
+}
+
+.highcharts-container {
+    color-scheme: light dark;
+}
+
+.highcharts-light .highcharts-container {
+    color-scheme: light;
+}
+
+.highcharts-dark .highcharts-container {
+    color-scheme: dark;
 }
 `;
 var DynamicDefaultTheme;

@@ -50,9 +50,9 @@ class MapPointSeries extends ScatterSeries {
     /* eslint-disable valid-jsdoc */
     drawDataLabels() {
         super.drawDataLabels();
-        if (this.dataLabelsGroup) {
-            this.dataLabelsGroup.clip(this.chart.clipRect);
-        }
+        this.dataLabelsGroups?.forEach((g) => {
+            g?.clip(this.chart.clipRect);
+        });
     }
     /**
      * Resolve `lon`, `lat` or `geometry` options and project the resulted

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/cylinder
  * @requires highcharts
  * @requires highcharts/highcharts-3d
@@ -11,7 +11,7 @@
  * License: www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
-import * as __WEBPACK_EXTERNAL_MODULE__highcharts_3d_src_js_d1e794f4__ from "../highcharts-3d.src.js";
+import "../highcharts-3d.src.js";
 /******/ // The require scope
 /******/ var __webpack_require__ = {};
 /******/ 
@@ -46,6 +46,7 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_3d_src_js_d1e794f4__ from "../
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -882,12 +883,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 /* harmony default export */ const Cylinder_CylinderSeries = (CylinderSeries);
 
 ;// external "../highcharts-3d.src.js"
-var x = (y) => {
-	var x = {}; __webpack_require__.d(x,
-    	y); return x
-    } 
-    var y = (x) => (() => (x))
-    const external_highcharts_3d_src_js_namespaceObject = x({  });
+
 ;// ./code/es-modules/masters/modules/cylinder.src.js
 
 

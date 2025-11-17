@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/solid-gauge
  * @requires highcharts
  * @requires highcharts/highcharts-more
@@ -504,7 +504,7 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Color"],"commonjs":["highcharts","Color"],"commonjs2":["highcharts","Color"],"root":["Highcharts","Color"]}
 var highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_ = __webpack_require__(620);
 var highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_default = /*#__PURE__*/__webpack_require__.n(highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_);
-;// ./code/es-modules/Core/Axis/Color/ColorAxisLike.js
+;// ./code/es-modules/Core/Axis/Color/ColorAxisBase.js
 /* *
  *
  *  (c) 2010-2025 Torstein Honsi
@@ -518,14 +518,14 @@ var highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_H
 
 const { parse: color } = (highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_default());
 
-const { merge: ColorAxisLike_merge } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { merge: ColorAxisBase_merge } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
  *  Namespace
  *
  * */
-var ColorAxisLike;
-(function (ColorAxisLike) {
+var ColorAxisBase;
+(function (ColorAxisBase) {
     /* *
      *
      *  Declarations
@@ -547,7 +547,7 @@ var ColorAxisLike;
         legendItem.labels = [];
         for (let i = 0, iEnd = userDataClasses.length; i < iEnd; ++i) {
             dataClass = userDataClasses[i];
-            dataClass = ColorAxisLike_merge(dataClass);
+            dataClass = ColorAxisBase_merge(dataClass);
             dataClasses.push(dataClass);
             if (!chart.styledMode && dataClass.color) {
                 continue;
@@ -571,7 +571,7 @@ var ColorAxisLike;
             }
         }
     }
-    ColorAxisLike.initDataClasses = initDataClasses;
+    ColorAxisBase.initDataClasses = initDataClasses;
     /**
      * Create initial color stops.
      * @private
@@ -585,7 +585,7 @@ var ColorAxisLike;
             stops[i].color = color(stops[i][1]);
         }
     }
-    ColorAxisLike.initStops = initStops;
+    ColorAxisBase.initStops = initStops;
     /**
      * Normalize logarithmic values.
      * @private
@@ -598,7 +598,7 @@ var ColorAxisLike;
         return 1 - ((max - value) /
             ((max - min) || 1));
     }
-    ColorAxisLike.normalizedValue = normalizedValue;
+    ColorAxisBase.normalizedValue = normalizedValue;
     /**
      * Translate from a value to a color.
      * @private
@@ -641,14 +641,14 @@ var ColorAxisLike;
         }
         return color;
     }
-    ColorAxisLike.toColor = toColor;
-})(ColorAxisLike || (ColorAxisLike = {}));
+    ColorAxisBase.toColor = toColor;
+})(ColorAxisBase || (ColorAxisBase = {}));
 /* *
  *
  *  Default Export
  *
  * */
-/* harmony default export */ const Color_ColorAxisLike = (ColorAxisLike);
+/* harmony default export */ const Color_ColorAxisBase = (ColorAxisBase);
 
 ;// ./code/es-modules/Core/Axis/SolidGaugeAxis.js
 /* *
@@ -673,7 +673,7 @@ const { extend: SolidGaugeAxis_extend } = (highcharts_commonjs_highcharts_common
  * @private
  */
 function init(axis) {
-    SolidGaugeAxis_extend(axis, Color_ColorAxisLike);
+    SolidGaugeAxis_extend(axis, Color_ColorAxisBase);
 }
 /* *
  *

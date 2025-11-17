@@ -51,8 +51,8 @@ const connectorsDefaults = {
         /**
          * Set the default dash style for this chart's connecting lines.
          *
-         * @type      {string}
-         * @default   solid
+         * @type      {Highcharts.DashStyleValue}
+         * @default   Solid
          * @since     6.2.0
          * @apioption connectors.dashStyle
          */

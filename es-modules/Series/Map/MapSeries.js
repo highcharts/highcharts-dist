@@ -104,9 +104,7 @@ class MapSeries extends ScatterSeries {
      */
     drawMapDataLabels() {
         super.drawDataLabels();
-        if (this.dataLabelsGroup) {
-            this.dataLabelsGroup.clip(this.chart.clipRect);
-        }
+        this.dataLabelsGroups?.forEach((g) => g?.clip(this.chart.clipRect));
     }
     /**
      * Use the drawPoints method of column, that is able to handle simple

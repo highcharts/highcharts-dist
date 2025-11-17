@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/highcharts-more
  * @requires highcharts
  *
@@ -42,6 +42,7 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_c57973fa__ from "./high
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["./highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_c57973fa__["default"];
@@ -215,8 +216,28 @@ function chartGetHoverPane(eventArgs) {
     }
     return hoverPane;
 }
+/**
+ * Adjusts the clipBox based on the position of panes.
+ * @private
+ */
+function onSetClip({ clipBox }) {
+    if (!this.xAxis ||
+        !this.yAxis ||
+        (!this.chart.angular && !this.chart.polar)) {
+        return;
+    }
+    const { plotWidth, plotHeight } = this.chart, smallestSize = Math.min(plotWidth, plotHeight), xPane = this.xAxis.pane, yPane = this.yAxis.pane;
+    if (xPane && xPane.axis) {
+        clipBox.x += xPane.center[0] -
+            (xPane.center[2] / smallestSize) * plotWidth / 2;
+    }
+    if (yPane && yPane.axis) {
+        clipBox.y += yPane.center[1] -
+            (yPane.center[2] / smallestSize) * plotHeight / 2;
+    }
+}
 /** @private */
-function compose(ChartClass, PointerClass) {
+function compose(ChartClass, PointerClass, SeriesClass) {
     const chartProto = ChartClass.prototype;
     if (!chartProto.getHoverPane) {
         chartProto.collectionsWithUpdate.push('pane');
@@ -224,6 +245,7 @@ function compose(ChartClass, PointerClass) {
         addEvent(ChartClass, 'afterIsInsidePlot', onChartAfterIsInsiderPlot);
         addEvent(PointerClass, 'afterGetHoverData', onPointerAfterGetHoverData);
         addEvent(PointerClass, 'beforeGetHoverData', onPointerBeforeGetHoverData);
+        addEvent(SeriesClass, 'setClip', onSetClip);
     }
 }
 /**
@@ -7952,7 +7974,7 @@ Series_GraphLayoutComposition.layouts.packedbubble = PackedBubbleLayout;
  * */
 
 
-const { merge: SimulationSeriesUtilities_merge, syncTimeout } = (external_highcharts_src_js_default_default());
+const { syncTimeout } = (external_highcharts_src_js_default_default());
 
 const { animObject } = (external_highcharts_src_js_default_default());
 /**
@@ -7986,7 +8008,8 @@ function initDataLabelsDefer() {
 function initDataLabels() {
     const series = this, dlOptions = series.options.dataLabels;
     if (!series.dataLabelsGroup) {
-        const dataLabelsGroup = this.initDataLabelsGroup();
+        // Those series support only one group of data labels (index 0)
+        const dataLabelsGroup = this.initDataLabelsGroup(0, dlOptions);
         // Apply the dataLabels.style not only to the
         // individual dataLabels but also to the entire group
         if (!series.chart.styledMode && dlOptions?.style) {
@@ -7997,7 +8020,7 @@ function initDataLabels() {
         if (series.visible) { // #2597, #3023, #3024
             // #19663, initial data labels animation
             if (series.options.animation && dlOptions?.animation) {
-                dataLabelsGroup.animate({ opacity: 1 }, dlOptions?.animation);
+                dataLabelsGroup.animate({ opacity: 1 }, dlOptions.animation);
             }
             else {
                 dataLabelsGroup.attr({ opacity: 1 });
@@ -8007,7 +8030,10 @@ function initDataLabels() {
         return dataLabelsGroup;
     }
     // Place it on first and subsequent (redraw) calls
-    series.dataLabelsGroup.attr(SimulationSeriesUtilities_merge({ opacity: 1 }, this.getPlotBox('data-labels')));
+    series.dataLabelsGroup.attr({
+        opacity: 1,
+        ...this.getPlotBox('data-labels')
+    });
     return series.dataLabelsGroup;
 }
 const DataLabelsDeferUtils = {
@@ -11616,7 +11642,7 @@ class PolarAdditions {
      *
      * */
     static compose(AxisClass, ChartClass, PointerClass, SeriesClass, TickClass, PointClass, AreaSplineRangeSeriesClass, ColumnSeriesClass, LineSeriesClass, SplineSeriesClass) {
-        Pane_Pane.compose(ChartClass, PointerClass);
+        Pane_Pane.compose(ChartClass, PointerClass, SeriesClass);
         Axis_RadialAxis.compose(AxisClass, TickClass);
         if (PolarComposition_pushUnique(PolarComposition_composed, 'Polar')) {
             const chartProto = ChartClass.prototype, pointProto = PointClass.prototype, pointerProto = PointerClass.prototype, seriesProto = SeriesClass.prototype;
@@ -12708,7 +12734,7 @@ const G = (external_highcharts_src_js_default_default());
 G.RadialAxis = Axis_RadialAxis;
 Bubble_BubbleSeries.compose(G.Axis, G.Chart, G.Legend);
 PackedBubble_PackedBubbleSeries.compose(G.Axis, G.Chart, G.Legend);
-Pane_Pane.compose(G.Chart, G.Pointer);
+Pane_Pane.compose(G.Chart, G.Pointer, G.Series);
 PolarComposition.compose(G.Axis, G.Chart, G.Pointer, G.Series, G.Tick, G.Point, (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes.areasplinerange, (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes.column, (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes.line, (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes.spline);
 Waterfall_WaterfallSeries.compose(G.Axis, G.Chart);
 /* harmony default export */ const highcharts_more_src = (G);

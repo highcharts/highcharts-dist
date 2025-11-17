@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v12.4.0 (2025-09-04)
+ * @license Highstock JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/price-indicator
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -12,7 +12,7 @@
  * License: www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
-import * as __WEBPACK_EXTERNAL_MODULE__stock_src_js_3de69a45__ from "./stock.src.js";
+import "./stock.src.js";
 /******/ // The require scope
 /******/ var __webpack_require__ = {};
 /******/ 
@@ -47,17 +47,13 @@ import * as __WEBPACK_EXTERNAL_MODULE__stock_src_js_3de69a45__ from "./stock.src
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
 ;// external "./stock.src.js"
-var x = (y) => {
-	var x = {}; __webpack_require__.d(x,
-    	y); return x
-    } 
-    var y = (x) => (() => (x))
-    const external_stock_src_js_namespaceObject = x({  });
+
 ;// ./code/es-modules/Extensions/PriceIndication.js
 /**
  * (c) 2009-2025 Sebastian Bochann
@@ -82,13 +78,33 @@ const { addEvent, merge, pushUnique } = (external_highcharts_src_js_default_defa
 function compose(SeriesClass) {
     if (pushUnique(composed, 'PriceIndication')) {
         addEvent(SeriesClass, 'afterRender', onSeriesAfterRender);
+        addEvent(SeriesClass, 'hide', onSeriesHide);
     }
+}
+/**
+ * Hides price indication when parent series is hidden. Showing the indicator is
+ * handled by the `onSeriesAfterRender` function.
+ *
+ * @private
+ *
+ */
+function onSeriesHide() {
+    const series = this;
+    [
+        'lastPrice',
+        'lastPriceLabel',
+        'lastVisiblePrice',
+        'lastVisiblePriceLabel'
+    ].forEach((key) => {
+        series[key]?.hide();
+    });
 }
 /** @private */
 function onSeriesAfterRender() {
     const series = this, seriesOptions = series.options, lastVisiblePrice = seriesOptions.lastVisiblePrice, lastPrice = seriesOptions.lastPrice;
     if ((lastVisiblePrice || lastPrice) &&
-        seriesOptions.id !== 'highcharts-navigator-series') {
+        seriesOptions.id !== 'highcharts-navigator-series' &&
+        series.visible) {
         const xAxis = series.xAxis, yAxis = series.yAxis, origOptions = yAxis.crosshair, origGraphic = yAxis.cross, origLabel = yAxis.crossLabel, points = series.points, pLength = points.length, dataLength = series.dataTable.rowCount, x = series.getColumn('x')[dataLength - 1], y = series.getColumn('y')[dataLength - 1] ??
             series.getColumn('close')[dataLength - 1];
         let yValue;

@@ -364,7 +364,7 @@ var ColumnDataLabel;
             // Place the labels in the final position
             this.placeDataLabels();
             this.points.forEach((point) => {
-                (point.dataLabels || []).forEach((dataLabel) => {
+                point.dataLabels?.forEach((dataLabel, i) => {
                     // #8864: every connector can have individual options
                     const { connectorColor, connectorWidth = 1 } = (dataLabel.options || {}), labelPosition = dataLabel.dataLabelPosition;
                     // Draw the connector
@@ -382,7 +382,7 @@ var ColumnDataLabel;
                                     (point.className ?
                                         ' ' + point.className :
                                         ''))
-                                    .add(series.dataLabelsGroup);
+                                    .add(series.dataLabelsGroups?.[i]);
                             }
                             if (!chart.styledMode) {
                                 connector.attr({

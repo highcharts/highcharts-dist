@@ -15,7 +15,7 @@ import Chart from '../../Core/Chart/Chart.js';
 import ChartNavigationComposition from '../../Core/Chart/ChartNavigationComposition.js';
 import D from '../../Core/Defaults.js';
 const { defaultOptions, setOptions } = D;
-import DownloadURL from '../DownloadURL.js';
+import DownloadURL from '../../Shared/DownloadURL.js';
 const { downloadURL, getScript } = DownloadURL;
 import ExportingDefaults from './ExportingDefaults.js';
 import ExportingSymbols from './ExportingSymbols.js';

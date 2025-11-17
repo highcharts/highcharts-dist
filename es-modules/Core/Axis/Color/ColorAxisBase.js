@@ -17,8 +17,8 @@ const { merge } = U;
  *  Namespace
  *
  * */
-var ColorAxisLike;
-(function (ColorAxisLike) {
+var ColorAxisBase;
+(function (ColorAxisBase) {
     /* *
      *
      *  Declarations
@@ -64,7 +64,7 @@ var ColorAxisLike;
             }
         }
     }
-    ColorAxisLike.initDataClasses = initDataClasses;
+    ColorAxisBase.initDataClasses = initDataClasses;
     /**
      * Create initial color stops.
      * @private
@@ -78,7 +78,7 @@ var ColorAxisLike;
             stops[i].color = color(stops[i][1]);
         }
     }
-    ColorAxisLike.initStops = initStops;
+    ColorAxisBase.initStops = initStops;
     /**
      * Normalize logarithmic values.
      * @private
@@ -91,7 +91,7 @@ var ColorAxisLike;
         return 1 - ((max - value) /
             ((max - min) || 1));
     }
-    ColorAxisLike.normalizedValue = normalizedValue;
+    ColorAxisBase.normalizedValue = normalizedValue;
     /**
      * Translate from a value to a color.
      * @private
@@ -134,11 +134,11 @@ var ColorAxisLike;
         }
         return color;
     }
-    ColorAxisLike.toColor = toColor;
-})(ColorAxisLike || (ColorAxisLike = {}));
+    ColorAxisBase.toColor = toColor;
+})(ColorAxisBase || (ColorAxisBase = {}));
 /* *
  *
  *  Default Export
  *
  * */
-export default ColorAxisLike;
+export default ColorAxisBase;

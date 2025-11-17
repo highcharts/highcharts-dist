@@ -201,7 +201,15 @@ var DataLabel;
         return true;
     }
     /**
+     * Compose the data label composition onto a series class.
+     *
      * @private
+     * @function compose
+     *
+     * @param {Highcharts.Series} SeriesClass
+     * The series class to compose onto.
+     *
+     * @return {void}
      */
     function compose(SeriesClass) {
         const seriesProto = SeriesClass.prototype;
@@ -219,20 +227,53 @@ var DataLabel;
     DataLabel.compose = compose;
     /**
      * Create the SVGElement group for dataLabels
+     *
      * @private
+     * @function initDataLabelsGroup
+     *
+     * @param {number} index
+     * The index of the data labels group.
+     * @param {Highcharts.DataLabelOptions} [dataLabelsOptions]
+     * Data label options for the group.
+     *
+     * @return {Highcharts.SVGElement}
+     * The SVGElement group.
      */
-    function initDataLabelsGroup() {
-        return this.plotGroup('dataLabelsGroup', 'data-labels', this.hasRendered ? 'inherit' : 'hidden', // #5133, #10220
-        this.options.dataLabels.zIndex || 6, this.chart.dataLabelsGroup);
+    function initDataLabelsGroup(index, dataLabelsOptions) {
+        fireEvent(this, 'initDataLabelsGroup', {
+            index,
+            zIndex: dataLabelsOptions?.zIndex ?? 6
+        });
+        // Existing group or first time
+        this.dataLabelsGroup = this.dataLabelsGroups?.[index];
+        const group = this.plotGroup('dataLabelsGroup', 'data-labels', this.hasRendered ? 'inherit' : 'hidden', // #5133, #10220
+        dataLabelsOptions?.zIndex ?? 6, this.dataLabelsParentGroups?.[index]);
+        this.dataLabelsGroups || (this.dataLabelsGroups = []);
+        this.dataLabelsGroups[index] = group;
+        // Keep reference to the 1st group
+        this.dataLabelsGroup = this.dataLabelsGroups[0];
+        return group;
     }
     /**
-     * Init the data labels with the correct animation
+     * Init the data labels with the correct animation.
+     *
      * @private
+     * @function initDataLabels
+     *
+     * @param {number} index
+     * The index of the data labels group.
+     * @param {Highcharts.AnimationOptions} animationConfig
+     * The animation options.
+     * @param {Highcharts.DataLabelOptions} [dataLabelsOptions]
+     * Data label options for the group.
+     *
+     * @return {Highcharts.SVGElement}
+     * The SVGElement group.
      */
-    function initDataLabels(animationConfig) {
-        const series = this, hasRendered = series.hasRendered || 0;
+    function initDataLabels(index, animationConfig, dataLabelsOptions) {
+        const series = this, hasRendered = !!series.hasRendered;
         // Create a separate group for the data labels to avoid rotation
-        const dataLabelsGroup = this.initDataLabelsGroup()
+        const dataLabelsGroup = this.initDataLabelsGroup(index, dataLabelsOptions)
             .attr({ opacity: +hasRendered }); // #3300
         if (!hasRendered && dataLabelsGroup) {
             if (series.visible) { // #2597, #3023, #3024
@@ -263,7 +304,6 @@ var DataLabel;
             { defer: 0, duration: 0 };
         fireEvent(this, 'drawDataLabels');
         if (series.hasDataLabels?.()) {
-            dataLabelsGroup = this.initDataLabels(animationConfig);
             // Make the labels for each point
             points.forEach((point) => {
                 const dataLabels = point.dataLabels || [], pointColor = point.color || series.color;
@@ -275,6 +315,10 @@ var DataLabel;
                 point.dlOptions || point.options?.dataLabels));
                 // Handle each individual data label for this point
                 pointOptions.forEach((labelOptions, i) => {
+                    // Create dataLabelsGroup for each data labels config
+                    // (can be multiple)
+                    dataLabelsGroup =
+                        this.initDataLabels(i, animationConfig, labelOptions);
                     // Options for one datalabel
                     const labelEnabled = (labelOptions.enabled &&
                         (point.visible || point.dataLabelOnHidden) &&

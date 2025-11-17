@@ -18,7 +18,7 @@ import R from './Renderer/RendererUtilities.js';
 const { distribute } = R;
 import RendererRegistry from './Renderer/RendererRegistry.js';
 import U from './Utilities.js';
-const { addEvent, clamp, css, discardElement, extend, fireEvent, getAlignFactor, isArray, isNumber, isObject, isString, merge, pick, pushUnique, splat, syncTimeout } = U;
+const { addEvent, clamp, css, clearTimeout, discardElement, extend, fireEvent, getAlignFactor, isArray, isNumber, isObject, isString, merge, pick, pushUnique, splat, syncTimeout } = U;
 /* *
  *
  *  Class
@@ -149,7 +149,7 @@ class Tooltip {
             this.renderer = this.renderer.destroy();
             discardElement(this.container);
         }
-        U.clearTimeout(this.hideTimer);
+        clearTimeout(this.hideTimer);
     }
     /**
      * Extendable method to get the anchor position of the tooltip
@@ -530,7 +530,7 @@ class Tooltip {
     hide(delay) {
         const tooltip = this;
         // Disallow duplicate timers (#1728, #1766)
-        U.clearTimeout(this.hideTimer);
+        clearTimeout(this.hideTimer);
         delay = pick(delay, this.options.hideDelay);
         if (!this.isHidden) {
             this.hideTimer = syncTimeout(function () {
@@ -689,7 +689,7 @@ class Tooltip {
         if (!options.enabled || !point.series) { // #16820
             return;
         }
-        U.clearTimeout(this.hideTimer);
+        clearTimeout(this.hideTimer);
         // A switch saying if this specific tooltip configuration allows shared
         // or split modes
         tooltip.allowShared = !(!isArray(pointOrPoints) &&
@@ -1140,6 +1140,11 @@ class Tooltip {
                 .rect(box)
                 .addClass('highcharts-tracker')
                 .add(label);
+            // For a rapid move going outside of the elements keeping the
+            // tooltip visible, cancel the hide (#23512).
+            addEvent(tooltip.tracker.element, 'mouseenter', () => {
+                clearTimeout(tooltip.hideTimer);
+            });
             if (!chart.styledMode) {
                 tooltip.tracker.attr({
                     fill: 'rgba(0,0,0,0)'

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/accessibility
  * @requires highcharts
  *
@@ -848,9 +848,9 @@ function getAxisDescription(axis) {
     return axis && (axis.options.accessibility?.description ||
         axis.axisTitle?.textStr ||
         axis.options.id ||
-        axis.categories && 'categories' ||
-        axis.dateTime && 'Time' ||
-        'values');
+        axis.categories && axis.chart.langFormat('accessibility.axis.defaultAxisNames.categories', {}) ||
+        axis.dateTime && axis.chart.langFormat('accessibility.axis.defaultAxisNames.time', {}) ||
+        axis.chart.langFormat('accessibility.axis.defaultAxisNames.values', {}));
 }
 /**
  * Return string with text description of the axis range.
@@ -13009,7 +13009,12 @@ const langOptions = {
             timeRangeMinutes: 'Data range: {range} minutes.',
             timeRangeSeconds: 'Data range: {range} seconds.',
             rangeFromTo: 'Data ranges from {rangeFrom} to {rangeTo}.',
-            rangeCategories: 'Data range: {numCategories} categories.'
+            rangeCategories: 'Data range: {numCategories} categories.',
+            defaultAxisNames: {
+                categories: 'categories',
+                time: 'Time',
+                values: 'values'
+            }
         }, /* eslint-enable max-len */
         /**
          * Exporting menu format strings for accessibility module.

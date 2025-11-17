@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v12.4.0 (2025-09-04)
+ * @license Highstock JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/stock
  * @requires highcharts
  *
@@ -11,14 +11,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Point"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["RendererRegistry"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Templating"], root["_Highcharts"]["Chart"], root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"], root["_Highcharts"]["StackItem"]);
+		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Point"], root["_Highcharts"]["Series"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["RendererRegistry"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Templating"], root["_Highcharts"]["Chart"], root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["StackItem"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/stock", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Point"],amd1["Axis"],amd1["Color"],amd1["SeriesRegistry"],amd1["RendererRegistry"],amd1["SVGRenderer"],amd1["SVGElement"],amd1["Templating"],amd1["Chart"],amd1["Series"],["types"],["column"],amd1["Series"],amd1["StackItem"]);});
+		define("highcharts/modules/stock", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Point"],amd1["Series"],amd1["Axis"],amd1["Color"],amd1["SeriesRegistry"],amd1["RendererRegistry"],amd1["SVGRenderer"],amd1["SVGElement"],amd1["Templating"],amd1["Chart"],amd1["Series"],["types"],["column"],amd1["StackItem"]);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/stock"] = factory(root["_Highcharts"], root["_Highcharts"]["Point"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["RendererRegistry"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Templating"], root["_Highcharts"]["Chart"], root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"], root["_Highcharts"]["StackItem"]);
+		exports["highcharts/modules/stock"] = factory(root["_Highcharts"], root["_Highcharts"]["Point"], root["_Highcharts"]["Series"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["RendererRegistry"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Templating"], root["_Highcharts"]["Chart"], root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["StackItem"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Point"], root["Highcharts"]["Axis"], root["Highcharts"]["Color"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["RendererRegistry"], root["Highcharts"]["SVGRenderer"], root["Highcharts"]["SVGElement"], root["Highcharts"]["Templating"], root["Highcharts"]["Chart"], root["Highcharts"]["Series"]["types"]["column"], root["Highcharts"]["Series"], root["Highcharts"]["StackItem"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__532__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__608__, __WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__984__, __WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__448__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__184__) => {
+		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Point"], root["Highcharts"]["Series"], root["Highcharts"]["Axis"], root["Highcharts"]["Color"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["RendererRegistry"], root["Highcharts"]["SVGRenderer"], root["Highcharts"]["SVGElement"], root["Highcharts"]["Templating"], root["Highcharts"]["Chart"], root["Highcharts"]["Series"]["types"]["column"], root["Highcharts"]["StackItem"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__532__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__608__, __WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__984__, __WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__448__, __WEBPACK_EXTERNAL_MODULE__184__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -184,6 +184,9 @@ var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default 
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Point"],"commonjs":["highcharts","Point"],"commonjs2":["highcharts","Point"],"root":["Highcharts","Point"]}
 var highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_ = __webpack_require__(260);
 var highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_default = /*#__PURE__*/__webpack_require__.n(highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series"],"commonjs":["highcharts","Series"],"commonjs2":["highcharts","Series"],"root":["Highcharts","Series"]}
+var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_ = __webpack_require__(820);
+var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_);
 ;// ./code/es-modules/Series/DataModifyComposition.js
 /* *
  *
@@ -197,6 +200,7 @@ var highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_H
 
 
 const { tooltipFormatter: pointTooltipFormatter } = (highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_default()).prototype;
+
 
 const { addEvent, arrayMax, arrayMin, correctFloat, defined, isArray, isNumber, isString, pick } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
@@ -306,6 +310,17 @@ var DataModifyComposition;
      * @function Highcharts.Series#init
      */
     function afterInit() {
+        // If linked series does not have compare option set, use the parent
+        // series' compare option, #21119.
+        const linkedTo = this.options.linkedTo, chart = this.chart;
+        if (linkedTo) {
+            const linkedSeries = linkedTo === ':previous' ?
+                chart.series[this.index - 1] :
+                chart.get(linkedTo);
+            if (linkedSeries instanceof (highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default())) {
+                this.options.compare = pick(this.userOptions.compare, linkedSeries.options.compare);
+            }
+        }
         const compare = this.options.compare;
         let dataModify;
         if (compare === 'percent' ||
@@ -644,7 +659,8 @@ var DataModifyComposition;
  * or absolute change depending on whether `compare` is set to `"percent"`
  * or `"value"`. When this is applied to multiple series, it allows
  * comparing the development of the series against each other. Adds
- * a `change` field to every point object.
+ * a `change` field to every point object. If a `compare` value is not set on a
+ * linked series, it will be inherited from the parent series.
  *
  * @see [compareBase](#plotOptions.series.compareBase)
  * @see [Axis.setCompare()](/class-reference/Highcharts.Axis#setCompare)
@@ -4646,7 +4662,7 @@ var ColumnUtils;
      * @param {boolean} asSubarray
      * If column is a typed array, return a subarray instead of a new array. It
      * is faster `O(1)`, but the entire buffer will be kept in memory until all
-     * views to it are destroyed. Default is `false`.
+     * views of it are destroyed. Default is `false`.
      *
      * @return {DataTable.Column}
      * Modified column.
@@ -4712,6 +4728,33 @@ var ColumnUtils;
         };
     }
     ColumnUtils.splice = splice;
+    /**
+     * Converts a cell value to a number.
+     *
+     * @param {DataTable.CellType} value
+     * Cell value to convert to a number.
+     *
+     * @param {boolean} useNaN
+     * If `true`, returns `NaN` for non-numeric values; if `false`,
+     * returns `null` instead.
+     *
+     * @return {number | null}
+     * Number or `null` if the value is not a number.
+     *
+     * @private
+     */
+    function convertToNumber(value, useNaN) {
+        switch (typeof value) {
+            case 'boolean':
+                return (value ? 1 : 0);
+            case 'number':
+                return (isNaN(value) && !useNaN ? null : value);
+            default:
+                value = parseFloat(`${value ?? ''}`);
+                return (isNaN(value) && !useNaN ? null : value);
+        }
+    }
+    ColumnUtils.convertToNumber = convertToNumber;
 })(ColumnUtils || (ColumnUtils = {}));
 /* *
  *
@@ -4789,12 +4832,11 @@ class DataTableCore {
          * @type {string}
          */
         this.id = (options.id || uniqueKey());
-        this.modified = this;
         this.rowCount = 0;
         this.versionTag = uniqueKey();
         let rowCount = 0;
-        objectEach(options.columns || {}, (column, columnName) => {
-            this.columns[columnName] = column.slice();
+        objectEach(options.columns || {}, (column, columnId) => {
+            this.columns[columnId] = column.slice();
             rowCount = Math.max(rowCount, column.length);
         });
         this.applyRowCount(rowCount);
@@ -4813,9 +4855,9 @@ class DataTableCore {
      */
     applyRowCount(rowCount) {
         this.rowCount = rowCount;
-        objectEach(this.columns, (column, columnName) => {
+        objectEach(this.columns, (column, columnId) => {
             if (column.length !== rowCount) {
-                this.columns[columnName] = setLength(column, rowCount);
+                this.columns[columnId] = setLength(column, rowCount);
             }
         });
     }
@@ -4836,8 +4878,8 @@ class DataTableCore {
     deleteRows(rowIndex, rowCount = 1) {
         if (rowCount > 0 && rowIndex < this.rowCount) {
             let length = 0;
-            objectEach(this.columns, (column, columnName) => {
-                this.columns[columnName] =
+            objectEach(this.columns, (column, columnId) => {
+                this.columns[columnId] =
                     splice(column, rowIndex, rowCount).array;
                 length = column.length;
             });
@@ -4850,33 +4892,33 @@ class DataTableCore {
      * Fetches the given column by the canonical column name. Simplified version
      * of the full `DataTable.getRow` method, always returning by reference.
      *
-     * @param {string} columnName
+     * @param {string} columnId
      * Name of the column to get.
      *
      * @return {Highcharts.DataTableColumn|undefined}
      * A copy of the column, or `undefined` if not found.
      */
-    getColumn(columnName, 
+    getColumn(columnId, 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asReference) {
-        return this.columns[columnName];
+        return this.columns[columnId];
     }
     /**
      * Retrieves all or the given columns. Simplified version of the full
      * `DataTable.getColumns` method, always returning by reference.
      *
-     * @param {Array<string>} [columnNames]
-     * Column names to retrieve.
+     * @param {Array<string>} [columnIds]
+     * Column ids to retrieve.
      *
      * @return {Highcharts.DataTableColumnCollection}
      * Collection of columns. If a requested column was not found, it is
      * `undefined`.
      */
-    getColumns(columnNames, 
+    getColumns(columnIds, 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asReference) {
-        return (columnNames || Object.keys(this.columns)).reduce((columns, columnName) => {
-            columns[columnName] = this.columns[columnName];
+        return (columnIds || Object.keys(this.columns)).reduce((columns, columnId) => {
+            columns[columnId] = this.columns[columnId];
             return columns;
         }, {});
     }
@@ -4886,19 +4928,19 @@ class DataTableCore {
      * @param {number} rowIndex
      * Row index to retrieve. First row has index 0.
      *
-     * @param {Array<string>} [columnNames]
+     * @param {Array<string>} [columnIds]
      * Column names to retrieve.
      *
      * @return {Record<string, number|string|undefined>|undefined}
      * Returns the row values, or `undefined` if not found.
      */
-    getRow(rowIndex, columnNames) {
-        return (columnNames || Object.keys(this.columns)).map((key) => this.columns[key]?.[rowIndex]);
+    getRow(rowIndex, columnIds) {
+        return (columnIds || Object.keys(this.columns)).map((key) => this.columns[key]?.[rowIndex]);
     }
     /**
      * Sets cell values for a column. Will insert a new column, if not found.
      *
-     * @param {string} columnName
+     * @param {string} columnId
      * Column name to set.
      *
      * @param {Highcharts.DataTableColumn} [column]
@@ -4913,8 +4955,8 @@ class DataTableCore {
      * @emits #setColumns
      * @emits #afterSetColumns
      */
-    setColumn(columnName, column = [], rowIndex = 0, eventDetail) {
-        this.setColumns({ [columnName]: column }, rowIndex, eventDetail);
+    setColumn(columnId, column = [], rowIndex = 0, eventDetail) {
+        this.setColumns({ [columnId]: column }, rowIndex, eventDetail);
     }
     /**
      * Sets cell values for multiple columns. Will insert new columns, if not
@@ -4936,8 +4978,8 @@ class DataTableCore {
      */
     setColumns(columns, rowIndex, eventDetail) {
         let rowCount = this.rowCount;
-        objectEach(columns, (column, columnName) => {
-            this.columns[columnName] = column.slice();
+        objectEach(columns, (column, columnId) => {
+            this.columns[columnId] = column.slice();
             rowCount = column.length;
         });
         this.applyRowCount(rowCount);
@@ -4966,18 +5008,27 @@ class DataTableCore {
      * @emits #afterSetRows
      */
     setRow(row, rowIndex = this.rowCount, insert, eventDetail) {
-        const { columns } = this, indexRowCount = insert ? this.rowCount + 1 : rowIndex + 1;
-        objectEach(row, (cellValue, columnName) => {
-            let column = columns[columnName] ||
-                eventDetail?.addColumns !== false && new Array(indexRowCount);
+        const { columns } = this, indexRowCount = insert ? this.rowCount + 1 : rowIndex + 1, rowKeys = Object.keys(row);
+        if (eventDetail?.addColumns !== false) {
+            for (let i = 0, iEnd = rowKeys.length; i < iEnd; i++) {
+                const key = rowKeys[i];
+                if (!columns[key]) {
+                    columns[key] = [];
+                }
+            }
+        }
+        objectEach(columns, (column, columnId) => {
+            if (!column && eventDetail?.addColumns !== false) {
+                column = new Array(indexRowCount);
+            }
             if (column) {
                 if (insert) {
-                    column = splice(column, rowIndex, 0, true, [cellValue]).array;
+                    column = splice(column, rowIndex, 0, true, [row[columnId] ?? null]).array;
                 }
                 else {
-                    column[rowIndex] = cellValue;
+                    column[rowIndex] = row[columnId] ?? null;
                 }
-                columns[columnName] = column;
+                columns[columnId] = column;
             }
         });
         if (indexRowCount > this.rowCount) {
@@ -4987,6 +5038,16 @@ class DataTableCore {
             DataTableCore_fireEvent(this, 'afterSetRows');
             this.versionTag = uniqueKey();
         }
+    }
+    /**
+     * Returns the medified (clone) or the original data table if the modified
+     * one does not exist.
+     *
+     * @return {Highcharts.DataTableCore}
+     * The medified (clone) or the original data table.
+     */
+    getModified() {
+        return this.modified || this;
     }
 }
 /* *
@@ -6795,6 +6856,10 @@ function RangeSelectorComposition_onChartBeforeRender() {
         }
     }
 }
+/**
+ * Redraw rangeSelector on chart redraw event
+ * @private
+ */
 function redrawRangeSelector() {
     const chart = this;
     const rangeSelector = this.rangeSelector;
@@ -6840,11 +6905,19 @@ function onChartDestroy() {
     }
 }
 /**
- *
+ * Reflow rangeSelector and adjust chart layout
+ * @private
  */
 function onChartGetMargins() {
     const rangeSelector = this.rangeSelector;
     if (rangeSelector?.options?.enabled) {
+        // Rerender rangeSelector in order to return correct plotHeight, #23058
+        const { min, max } = this.xAxis[0].getExtremes();
+        if (RangeSelectorComposition_isNumber(min) &&
+            rangeSelector.inputGroup &&
+            rangeSelector.inputGroup.getBBox().width < 20) {
+            rangeSelector.render(min, max);
+        }
         const rangeSelectorHeight = rangeSelector.getHeight();
         const verticalAlign = rangeSelector.options.verticalAlign;
         if (!rangeSelector.options.floating) {
@@ -6925,8 +6998,7 @@ const { defaultOptions: RangeSelector_defaultOptions } = (highcharts_commonjs_hi
 
 const { format } = (highcharts_Templating_commonjs_highcharts_Templating_commonjs2_highcharts_Templating_root_Highcharts_Templating_default());
 
-
-const { addEvent: RangeSelector_addEvent, createElement, css: RangeSelector_css, defined: RangeSelector_defined, destroyObjectProperties: RangeSelector_destroyObjectProperties, diffObjects, discardElement, extend: RangeSelector_extend, fireEvent: RangeSelector_fireEvent, isNumber: RangeSelector_isNumber, isString: RangeSelector_isString, merge: RangeSelector_merge, objectEach: RangeSelector_objectEach, pick: RangeSelector_pick, splat: RangeSelector_splat } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { addEvent: RangeSelector_addEvent, createElement, css: RangeSelector_css, defined: RangeSelector_defined, destroyObjectProperties: RangeSelector_destroyObjectProperties, discardElement, extend: RangeSelector_extend, fireEvent: RangeSelector_fireEvent, isNumber: RangeSelector_isNumber, isString: RangeSelector_isString, merge: RangeSelector_merge, objectEach: RangeSelector_objectEach, pick: RangeSelector_pick, splat: RangeSelector_splat } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
  *  Functions
@@ -7268,9 +7340,8 @@ class RangeSelector {
                 range &&
                 actualRange < range) {
                 // Handle ordinal ranges
-                const positions = baseAxis.ordinal.positions, prevOrdinalPosition = Axis_OrdinalAxis.Additions.findIndexOf(positions, baseAxis.min, true), nextOrdinalPosition = Math.min(Axis_OrdinalAxis.Additions.findIndexOf(positions, baseAxis.max, true) + 1, positions.length - 1);
-                if (positions[nextOrdinalPosition] -
-                    positions[prevOrdinalPosition] > range) {
+                const positions = baseAxis.ordinal.positions;
+                if (positions[positions.length - 1] - positions[0] > range) {
                     isSameRange = true;
                 }
             }
@@ -8111,14 +8182,11 @@ class RangeSelector {
             }
             // Update current buttons
             for (let i = btnLength - 1; i >= 0; i--) {
-                const diff = diffObjects(newButtonsOptions[i], this.buttonOptions[i]);
-                if (Object.keys(diff).length !== 0) {
-                    const rangeOptions = newButtonsOptions[i];
-                    this.buttons[i].destroy();
-                    dropdown?.options.remove(i + 1);
-                    this.createButton(rangeOptions, i, width, states);
-                    this.computeButtonRange(rangeOptions);
-                }
+                const rangeOptions = newButtonsOptions[i];
+                this.buttons[i].destroy();
+                dropdown?.options.remove(i + 1);
+                this.createButton(rangeOptions, i, width, states);
+                this.computeButtonRange(rangeOptions);
             }
             // Create missing buttons
             if (newButtonsOptions.length > this.buttonOptions.length) {
@@ -8251,7 +8319,7 @@ class RangeSelector {
                 xOffsetForExportButton +
                 inputGroup.getBBox().width >
                 chart.plotWidth) {
-                if (dropdown === 'responsive') {
+                if (dropdown === 'responsive' || dropdown === 'always') {
                     this.collapseButtons();
                 }
                 else {
@@ -8338,9 +8406,7 @@ class RangeSelector {
         if (dropdown) {
             this.dropdownLabel.hide();
             RangeSelector_css(dropdown, {
-                visibility: 'hidden',
-                width: '1px',
-                height: '1px'
+                visibility: 'hidden'
             });
             this.hasVisibleDropdown = false;
         }
@@ -8405,7 +8471,7 @@ class RangeSelector {
             this.destroy();
             return this.init(chart);
         }
-        this.isDirty = !!options.buttons;
+        this.isDirty = !!options.buttons || !!options.buttonTheme;
         if (redraw) {
             this.render();
         }
@@ -10731,9 +10797,6 @@ var FlagsSymbols;
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","column"],"commonjs":["highcharts","Series","types","column"],"commonjs2":["highcharts","Series","types","column"],"root":["Highcharts","Series","types","column"]}
 var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_ = __webpack_require__(448);
 var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_);
-// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series"],"commonjs":["highcharts","Series"],"commonjs2":["highcharts","Series"],"root":["Highcharts","Series"]}
-var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_ = __webpack_require__(820);
-var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_);
 ;// ./code/es-modules/Series/OnSeriesComposition.js
 /* *
  *
@@ -11041,7 +11104,7 @@ class FlagsSeries extends FlagsSeries_ColumnSeries {
                 // Create the flag
                 if (!graphic) {
                     graphic = point.graphic = renderer.label('', 0, void 0, shape, void 0, void 0, options.useHTML)
-                        .addClass('highcharts-point')
+                        .addClass(point.getClassName())
                         .add(series.markerGroup);
                     // Add reference to the point for tracker (#6303)
                     if (point.graphic.div) {
@@ -11531,7 +11594,7 @@ var BrokenAxis;
                     });
                     // For stacked chart generate empty stack items, #6546
                     if (yAxis.stacking && this.options.stacking) {
-                        stack = yAxis.stacking.stacks[this.stackKey][xRange] = new (highcharts_StackItem_commonjs_highcharts_StackItem_commonjs2_highcharts_StackItem_root_Highcharts_StackItem_default())(yAxis, yAxis.options.stackLabels, false, xRange, this.stack);
+                        stack = yAxis.stacking.stacks[this.stackKey][xRange] = new (highcharts_StackItem_commonjs_highcharts_StackItem_commonjs2_highcharts_StackItem_root_Highcharts_StackItem_default())(yAxis, yAxis.options.stackLabels, false, xRange, this.stack ?? '');
                         stack.total = 0;
                     }
                 }
@@ -11897,7 +11960,7 @@ var BrokenAxis;
 
 ;// ./code/es-modules/masters/modules/broken-axis.src.js
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/broken-axis
  * @requires highcharts
  *
@@ -12339,7 +12402,7 @@ function getGroupPixelWidth() {
             groupPixelWidth = Math.max(groupPixelWidth, 
             // Fallback to commonOptions (#9693)
             DataGroupingAxisComposition_pick(dgOptions.groupPixelWidth, DataGrouping_DataGroupingDefaults.common.groupPixelWidth));
-            dataLength = (series[i].dataTable.modified ||
+            dataLength = (series[i].dataTable.getModified() ||
                 series[i].dataTable).rowCount;
             // Execute grouping if the amount of points is greater than the
             // limit defined in groupPixelWidth
@@ -12762,7 +12825,7 @@ function DataGroupingSeriesComposition_applyGrouping(hasExtremesChanged) {
     series.destroyGroupedData();
     const table = dataGroupingOptions.groupAll ?
         series.dataTable :
-        series.dataTable.modified || series.dataTable, processedXData = series.getColumn('x', !dataGroupingOptions.groupAll), xData = processedXData, plotSizeX = chart.plotSizeX, xAxis = series.xAxis, extremes = xAxis.getExtremes(), ordinal = xAxis.options.ordinal, groupPixelWidth = series.groupPixelWidth;
+        series.dataTable.getModified() || series.dataTable, processedXData = series.getColumn('x', !dataGroupingOptions.groupAll), xData = processedXData, plotSizeX = chart.plotSizeX, xAxis = series.xAxis, extremes = xAxis.getExtremes(), ordinal = xAxis.options.ordinal, groupPixelWidth = series.groupPixelWidth;
     let i, hasGroupedData;
     // Execute grouping if the amount of points is greater than the limit
     // defined in groupPixelWidth
@@ -13579,7 +13642,7 @@ const DataGroupingComposition = {
 
 ;// ./code/es-modules/masters/modules/datagrouping.src.js
 /**
- * @license Highstock JS v12.4.0 (2025-09-04)
+ * @license Highstock JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *
@@ -13725,7 +13788,8 @@ const { getAssignedAxis: MouseWheelZoom_getAssignedAxis } = NavigationBindingsUt
  * */
 const composedClasses = [], MouseWheelZoom_defaultOptions = {
     enabled: true,
-    sensitivity: 1.1
+    sensitivity: 1.1,
+    showResetButton: false
 };
 let wheelTimer;
 /* *
@@ -13777,7 +13841,8 @@ const zoomBy = function (chart, howMuch, xAxis, yAxis, mouseX, mouseY, options) 
             width: 10 * howMuch,
             height: 10 * howMuch
         },
-        trigger: 'mousewheel'
+        trigger: 'mousewheel',
+        allowResetButton: options.showResetButton
     });
     if (hasZoomed) {
         if (MouseWheelZoom_defined(wheelTimer)) {
@@ -13897,11 +13962,24 @@ const MouseWheelZoomComposition = {
  * @requires  modules/mouse-wheel-zoom
  * @apioption chart.zooming.mouseWheel.type
  */
+/**
+ * Whether to enable the reset zoom button when zooming with the mouse wheel.
+ *
+ * @type      {boolean}
+ * @default   false
+ * @since {next}
+ * @requires  modules/mouse-wheel-zoom
+ * @sample    {highcharts} highcharts/mouse-wheel-zoom/reset-zoom-button
+ *            Enable reset zoom button for mouse wheel zooming
+ * @sample    {highstock} stock/mouse-wheel-zoom/reset-zoom-button
+ *            Enable reset zoom button for mouse wheel zooming
+ * @apioption chart.zooming.mouseWheel.showResetButton
+ */
 (''); // Keeps doclets above in JS file
 
 ;// ./code/es-modules/masters/modules/mouse-wheel-zoom.src.js
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/mouse-wheel-zoom
  * @requires highcharts
  *

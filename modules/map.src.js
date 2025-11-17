@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v12.4.0 (2025-09-04)
+ * @license Highmaps JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/map
  * @requires highcharts
  *
@@ -919,7 +919,7 @@ const colorAxisDefaults = {
  * */
 /* harmony default export */ const ColorAxisDefaults = (colorAxisDefaults);
 
-;// ./code/es-modules/Core/Axis/Color/ColorAxisLike.js
+;// ./code/es-modules/Core/Axis/Color/ColorAxisBase.js
 /* *
  *
  *  (c) 2010-2025 Torstein Honsi
@@ -931,16 +931,16 @@ const colorAxisDefaults = {
  * */
 
 
-const { parse: ColorAxisLike_color } = (highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_default());
+const { parse: ColorAxisBase_color } = (highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_default());
 
-const { merge: ColorAxisLike_merge } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { merge: ColorAxisBase_merge } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
  *  Namespace
  *
  * */
-var ColorAxisLike;
-(function (ColorAxisLike) {
+var ColorAxisBase;
+(function (ColorAxisBase) {
     /* *
      *
      *  Declarations
@@ -962,7 +962,7 @@ var ColorAxisLike;
         legendItem.labels = [];
         for (let i = 0, iEnd = userDataClasses.length; i < iEnd; ++i) {
             dataClass = userDataClasses[i];
-            dataClass = ColorAxisLike_merge(dataClass);
+            dataClass = ColorAxisBase_merge(dataClass);
             dataClasses.push(dataClass);
             if (!chart.styledMode && dataClass.color) {
                 continue;
@@ -981,12 +981,12 @@ var ColorAxisLike;
                 }
             }
             else {
-                dataClass.color = ColorAxisLike_color(options.minColor).tweenTo(ColorAxisLike_color(options.maxColor), iEnd < 2 ? 0.5 : i / (iEnd - 1) // #3219
+                dataClass.color = ColorAxisBase_color(options.minColor).tweenTo(ColorAxisBase_color(options.maxColor), iEnd < 2 ? 0.5 : i / (iEnd - 1) // #3219
                 );
             }
         }
     }
-    ColorAxisLike.initDataClasses = initDataClasses;
+    ColorAxisBase.initDataClasses = initDataClasses;
     /**
      * Create initial color stops.
      * @private
@@ -997,10 +997,10 @@ var ColorAxisLike;
             [1, options.maxColor || '']
         ];
         for (let i = 0, iEnd = stops.length; i < iEnd; ++i) {
-            stops[i].color = ColorAxisLike_color(stops[i][1]);
+            stops[i].color = ColorAxisBase_color(stops[i][1]);
         }
     }
-    ColorAxisLike.initStops = initStops;
+    ColorAxisBase.initStops = initStops;
     /**
      * Normalize logarithmic values.
      * @private
@@ -1013,7 +1013,7 @@ var ColorAxisLike;
         return 1 - ((max - value) /
             ((max - min) || 1));
     }
-    ColorAxisLike.normalizedValue = normalizedValue;
+    ColorAxisBase.normalizedValue = normalizedValue;
     /**
      * Translate from a value to a color.
      * @private
@@ -1056,14 +1056,14 @@ var ColorAxisLike;
         }
         return color;
     }
-    ColorAxisLike.toColor = toColor;
-})(ColorAxisLike || (ColorAxisLike = {}));
+    ColorAxisBase.toColor = toColor;
+})(ColorAxisBase || (ColorAxisBase = {}));
 /* *
  *
  *  Default Export
  *
  * */
-/* harmony default export */ const Color_ColorAxisLike = (ColorAxisLike);
+/* harmony default export */ const Color_ColorAxisBase = (ColorAxisBase);
 
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","LegendSymbol"],"commonjs":["highcharts","LegendSymbol"],"commonjs2":["highcharts","LegendSymbol"],"root":["Highcharts","LegendSymbol"]}
 var highcharts_LegendSymbol_commonjs_highcharts_LegendSymbol_commonjs2_highcharts_LegendSymbol_root_Highcharts_LegendSymbol_ = __webpack_require__(500);
@@ -1613,7 +1613,7 @@ ColorAxis.defaultLegendLength = 200;
 ColorAxis.keepProps = [
     'legendItem'
 ];
-ColorAxis_extend(ColorAxis.prototype, Color_ColorAxisLike);
+ColorAxis_extend(ColorAxis.prototype, Color_ColorAxisBase);
 /* *
  *
  *  Registry
@@ -1641,7 +1641,7 @@ Array.prototype.push.apply((highcharts_Axis_commonjs_highcharts_Axis_commonjs2_h
 
 ;// ./code/es-modules/masters/modules/coloraxis.src.js
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -1774,10 +1774,9 @@ const mapNavigation = {
     /**
      * The individual buttons for the map navigation. This usually includes
      * the zoom in and zoom out buttons. Properties for each button is
-     * inherited from
-     * [mapNavigation.buttonOptions](#mapNavigation.buttonOptions), while
-     * individual options can be overridden. But default, the `onclick`, `text`
-     * and `y` options are individual.
+     * inherited from [mapNavigation.buttonOptions](#mapNavigation.buttonOptions),
+     * while individual options can be overridden. But default, the `onclick`,
+     * `text` and `y` options are individual.
      */
     buttons: {
         /**
@@ -1942,6 +1941,7 @@ const { defined: MapPointer_defined, extend: MapPointer_extend, pick: MapPointer
  *  Composition
  *
  * */
+/** @internal */
 var MapPointer;
 (function (MapPointer) {
     /* *
@@ -1958,7 +1958,7 @@ var MapPointer;
      * */
     /**
      * Extend the Pointer.
-     * @private
+     * @internal
      */
     function compose(PointerClass) {
         const pointerProto = PointerClass.prototype;
@@ -1974,7 +1974,7 @@ var MapPointer;
     MapPointer.compose = compose;
     /**
      * The event handler for the doubleclick event.
-     * @private
+     * @internal
      */
     function onContainerDblClick(e) {
         const chart = this.chart;
@@ -1991,7 +1991,7 @@ var MapPointer;
     }
     /**
      * The event handler for the mouse scroll event.
-     * @private
+     * @internal
      */
     function onContainerMouseWheel(e) {
         const chart = this.chart;
@@ -2025,7 +2025,7 @@ var MapPointer;
     }
     /**
      * Add lon and lat information to pointer events
-     * @private
+     * @internal
      */
     function wrapNormalize(proceed, e, chartPosition) {
         const chart = this.chart;
@@ -2043,7 +2043,7 @@ var MapPointer;
     }
     /**
      * The pinchType is inferred from mapNavigation options.
-     * @private
+     * @internal
      */
     function wrapZoomOption(proceed) {
         const mapNavigation = this.chart.options.mapNavigation;
@@ -2060,6 +2060,7 @@ var MapPointer;
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Maps_MapPointer = (MapPointer);
 
 ;// ./code/es-modules/Maps/MapSymbols.js
@@ -2084,9 +2085,7 @@ let symbols;
  *  Functions
  *
  * */
-/**
- *
- */
+/** @internal */
 function bottomButton(x, y, w, h, options) {
     if (options) {
         const r = options?.r || 0;
@@ -2095,17 +2094,13 @@ function bottomButton(x, y, w, h, options) {
     }
     return symbols.roundedRect(x, y, w, h, options);
 }
-/**
- *
- */
+/** @internal */
 function compose(SVGRendererClass) {
     symbols = SVGRendererClass.prototype.symbols;
     symbols.bottombutton = bottomButton;
     symbols.topbutton = topButton;
 }
-/**
- *
- */
+/** @internal */
 function topButton(x, y, w, h, options) {
     if (options) {
         const r = options?.r || 0;
@@ -2118,9 +2113,11 @@ function topButton(x, y, w, h, options) {
  *  Default Export
  *
  * */
+/** @internal */
 const MapSymbols = {
     compose
 };
+/** @internal */
 /* harmony default export */ const Maps_MapSymbols = (MapSymbols);
 
 ;// ./code/es-modules/Maps/MapNavigation.js
@@ -2148,9 +2145,7 @@ const { addEvent: MapNavigation_addEvent, extend: MapNavigation_extend, merge: M
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function stopEvent(e) {
     if (e) {
         e.preventDefault?.();
@@ -2167,7 +2162,7 @@ function stopEvent(e) {
  * The MapNavigation handles buttons for navigation in addition to mousewheel
  * and doubleclick handlers for chart zooming.
  *
- * @private
+ * @internal
  * @class
  * @name MapNavigation
  *
@@ -2403,6 +2398,7 @@ class MapNavigation {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Maps_MapNavigation = (MapNavigation);
 
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SVGElement"],"commonjs":["highcharts","SVGElement"],"commonjs2":["highcharts","SVGElement"],"root":["Highcharts","SVGElement"]}
@@ -2926,7 +2922,11 @@ class MapChart extends (highcharts_Chart_commonjs_highcharts_Chart_commonjs2_hig
  *
  * */
 
-// Compute bounds from a path element
+/**
+ * Compute bounds from a path element.
+ *
+ * @internal
+ */
 const boundsFromPath = function (path) {
     let x2 = -Number.MAX_VALUE, x1 = Number.MAX_VALUE, y2 = -Number.MAX_VALUE, y1 = Number.MAX_VALUE, validBounds;
     path.forEach((seg) => {
@@ -2949,9 +2949,11 @@ const boundsFromPath = function (path) {
  *  Default Export
  *
  * */
+/** @internal */
 const MapUtilities = {
     boundsFromPath
 };
+/** @internal */
 /* harmony default export */ const Maps_MapUtilities = (MapUtilities);
 
 ;// ./code/es-modules/Series/Map/MapPoint.js
@@ -3789,7 +3791,7 @@ const MapViewDefaults = {
      * @sample {highmaps} maps/demo/mappoint-mapmarker
      *         Padding for individual sides
      *
-     * @type  {number|string|Array<number|string>}
+     * @type  {Highcharts.MapViewPaddingType}
      */
     padding: 0,
     /**
@@ -3851,6 +3853,7 @@ const MapViewDefaults = {
          *         Projection explorer
          * @sample maps/mapview/projection-america-centric
          *         America-centric world map
+         * @type   {Highcharts.ProjectionRotationOption}
          */
         rotation: void 0
     },
@@ -4060,7 +4063,7 @@ var GeoJSONComposition;
      * X and Y coordinates in terms of projected values
      */
     function chartFromLatLonToPoint(lonLat) {
-        return this.mapView && this.mapView.lonLatToProjectedUnits(lonLat);
+        return this.mapView?.lonLatToProjectedUnits(lonLat);
     }
     /**
      * Deprecated. Use `MapView.projectedUnitsToLonLat` instead.
@@ -4079,7 +4082,7 @@ var GeoJSONComposition;
      * An object with `lat` and `lon` properties.
      */
     function chartFromPointToLatLon(point) {
-        return this.mapView && this.mapView.projectedUnitsToLonLat(point);
+        return this.mapView?.projectedUnitsToLonLat(point);
     }
     /**
      * Highcharts Maps only. Get point from latitude and longitude using
@@ -4176,7 +4179,7 @@ var GeoJSONComposition;
         } : normalized);
         return { lat: projected.y, lon: projected.x };
     }
-    /** @private */
+    /** @internal */
     function compose(ChartClass) {
         const chartProto = ChartClass.prototype;
         if (!chartProto.transformFromLatLon) {
@@ -4273,6 +4276,9 @@ var GeoJSONComposition;
      * Convert a TopoJSON topology to GeoJSON. By default the first object is
      * handled.
      * Based on https://github.com/topojson/topojson-specification
+     *
+     * @requires modules/map
+     * @internal
      */
     function topo2geo(topology, objectName) {
         // Decode first object/feature as default
@@ -4353,7 +4359,7 @@ var GeoJSONComposition;
     GeoJSONComposition.topo2geo = topo2geo;
     /**
      * Override addCredits to include map source by default.
-     * @private
+     * @internal
      */
     function wrapChartAddCredit(proceed, credits) {
         credits = GeoJSONComposition_merge(true, this.options.credits, credits);
@@ -4516,7 +4522,7 @@ var GeoJSONComposition;
  * An array of GeoJSON or TopoJSON objects or strings used as map data for
  * series.
  *
- * @typedef {Array<*>|GeoJSON|TopoJSON|string} Highcharts.MapDataType
+ * @typedef {Array<*>|Highcharts.GeoJSON|Highcharts.TopoJSON|string} Highcharts.MapDataType
  */
 /**
  * A TopoJSON object, see description on the
@@ -4524,6 +4530,44 @@ var GeoJSONComposition;
  *
  * @typedef {Object} Highcharts.TopoJSON
  */
+/**
+ * Rotation of the projection in terms of degrees `[lambda, phi, gamma]`.
+ * 1st number is mandatory, while 2nd and 3rd are optional.
+ *
+ * @typedef {"TypeScript: [number]|[number,number]|[number,number,number]"} Highcharts.ProjectionRotationOption
+ */
+/**
+ * The padding of the map view. Can be either a number of pixels, a percentage
+ * string, or an array of either. If an array is given, it sets the top, right,
+ * bottom, left paddings respectively.
+ *
+ * @interface Highcharts.MapViewPaddingType
+ * @typedef {number|string|Array<number|string>} Highcharts.MapViewPaddingType
+ */
+/**
+ * Object containing the bounds of the map.
+ * All coordinates are in projected units.
+ *
+ * @interface Highcharts.MapBounds
+ */ /**
+* The center of the bounding box.
+* @name Highcharts.MapBounds#midX
+*/ /**
+* The center of the bounding box.
+* @name Highcharts.MapBounds#midY
+*/ /**
+* First point's X of the bounding box.
+* @name Highcharts.MapBounds#x1
+*/ /**
+* First point's Y of the bounding box.
+* @name Highcharts.MapBounds#y1
+*/ /**
+* Second point's X of the bounding box.
+* @name Highcharts.MapBounds#x2
+*/ /**
+* Second point's Y of the bounding box.
+* @name Highcharts.MapBounds#y2
+*/
 ''; // Detach doclets above
 
 ;// ./code/es-modules/Core/Geometry/GeometryUtilities.js
@@ -4733,7 +4777,16 @@ const PolygonClip = {
 
 ;// ./code/es-modules/Maps/Projections/LambertConformalConic.js
 /* *
- * Lambert Conformal Conic projection
+ *
+ *  Lambert Conformal Conic projection
+ *
+ *  (c) 2021-2025 Highsoft AS
+ *
+ *  License: www.highcharts.com/license
+ *
+ *  Authors:
+ *  - Torstein Honsi
+ *
  * */
 
 /* *
@@ -4748,6 +4801,26 @@ const sign = Math.sign ||
  *  Class
  *
  * */
+/**
+ * The Lambert conformal conic projection (LCC) is a conic map projection used
+ * for many national and regional mapping systems.
+ *
+ * Its advantage lies in mapping smaller areas like countries or continents.
+ * Two standard parallels are given, and between these, the distortion is
+ * minimal.
+ *
+ * In Highcharts, LCC is the default projection when loading a map smaller than
+ * 180 degrees width and 90 degrees height.
+ *
+ * For custom use, `rotation` should be set to adjust the reference longitude,
+ * in addition to the `parallels` option.
+ *
+ * @class
+ * @name Highcharts.LambertConformalConic
+ *
+ * @param {Highcharts.MapViewProjectionOptions} options
+ * The projection options, with support for `parallels`.
+ */
 class LambertConformalConic {
     /* *
      *
@@ -4819,11 +4892,18 @@ class LambertConformalConic {
 ;// ./code/es-modules/Maps/Projections/EqualEarth.js
 /* *
  *
- * Equal Earth projection, an equal-area projection designed to minimize
- * distortion and remain pleasing to the eye.
+ *  Equal Earth projection, an equal-area projection designed to minimize
+ *  distortion and remain pleasing to the eye.
  *
- * Invented by Bojan Šavrič, Bernhard Jenny, and Tom Patterson in 2018. It is
- * inspired by the widely used Robinson projection.
+ *  Invented by Bojan Šavrič, Bernhard Jenny, and Tom Patterson in 2018. It is
+ *  inspired by the widely used Robinson projection.
+ *
+ *  (c) 2020-2025 Highsoft AS
+ *
+ *  License: www.highcharts.com/license
+ *
+ *  Authors:
+ *  - Torstein Honsi
  *
  * */
 
@@ -4838,6 +4918,21 @@ const A1 = 1.340264, A2 = -0.081106, A3 = 0.000893, A4 = 0.003796, M = Math.sqrt
  *  Class
  *
  * */
+/**
+ * The Equal Earth map projection is an equal-area pseudocylindrical projection
+ * for world maps, invented by Bojan Šavrič, Bernhard Jenny, and Tom Patterson
+ * in 2018. It is inspired by the widely used Robinson projection, but unlike
+ * the Robinson projection, retains the relative size of areas. The projection
+ * equations are simple to implement and fast to evaluate.
+ *
+ * We chose this as the default world map projection for Highcharts because it
+ * is visually pleasing like Robinson, but avoids the political problem of
+ * rendering high-latitude regions like Europe and North America larger than
+ * tropical regions.
+ *
+ * @class
+ * @name Highcharts.EqualEarth
+ */
 class EqualEarth {
     constructor() {
         /* *
@@ -4845,6 +4940,7 @@ class EqualEarth {
          *  Properties
          *
          * */
+        /** @internal */
         this.bounds = {
             x1: -200.37508342789243,
             x2: 200.37508342789243,
@@ -4898,7 +4994,16 @@ class EqualEarth {
 
 ;// ./code/es-modules/Maps/Projections/Miller.js
 /* *
- * Miller projection
+ *
+ *  Miller projection
+ *
+ *  (c) 2021-2025 Highsoft AS
+ *
+ *  License: www.highcharts.com/license
+ *
+ *  Authors:
+ *  - Torstein Honsi
+ *
  * */
 
 /* *
@@ -4912,6 +5017,19 @@ const quarterPI = Math.PI / 4, Miller_deg2rad = Math.PI / 180, Miller_scale = 63
  *  Class
  *
  * */
+/**
+ * The Miller cylindrical projection is a modified Mercator projection, proposed
+ * by Osborn Maitland Miller in 1942. Compared to Mercator, the vertical
+ * exaggeration of polar areas is smaller, so the relative size of areas is
+ * more correct.
+ *
+ * Highcharts used this as the default map projection for world maps until the
+ * Map Collection v2.0 and Highcharts v10.0, when projection math was moved to
+ * the client side and EqualEarth chosen as the default world map projection.
+ *
+ * @class
+ * @name Highcharts.Miller
+ */
 class Miller {
     constructor() {
         /* *
@@ -4919,6 +5037,7 @@ class Miller {
          *  Properties
          *
          * */
+        /** @internal */
         this.bounds = {
             x1: -200.37508342789243,
             x2: 200.37508342789243,
@@ -4953,7 +5072,16 @@ class Miller {
 
 ;// ./code/es-modules/Maps/Projections/Orthographic.js
 /* *
- * Orthographic projection
+ *
+ *  Orthographic projection
+ *
+ *  (c) 2021-2025 Highsoft AS
+ *
+ *  License: www.highcharts.com/license
+ *
+ *  Authors:
+ *  - Torstein Honsi
+ *
  * */
 
 /* *
@@ -4967,6 +5095,19 @@ const Orthographic_deg2rad = Math.PI / 180, Orthographic_scale = 63.784608267810
  *  Class
  *
  * */
+/**
+ * The orthographic projection is an azimuthal perspective projection,
+ * projecting the Earth's surface from an infinite distance to a plane.
+ * It gives the illusion of a three-dimensional globe.
+ *
+ * Its disadvantage is that it fails to render the whole world in one view.
+ * However, since the distortion is small at the center of the view, it is great
+ * at rendering limited areas of the globe, or at showing the positions of areas
+ * on the globe.
+ *
+ * @class
+ * @name Highcharts.Orthographic
+ */
 class Orthographic {
     constructor() {
         /* *
@@ -4974,7 +5115,9 @@ class Orthographic {
          *  Properties
          *
          * */
+        /** @internal */
         this.antimeridianCutting = false;
+        /** @internal */
         this.bounds = {
             x1: -Orthographic_scale,
             x2: Orthographic_scale,
@@ -5014,7 +5157,16 @@ class Orthographic {
 
 ;// ./code/es-modules/Maps/Projections/WebMercator.js
 /* *
- * Web Mercator projection, used for most online map tile services
+ *
+ *  Web Mercator projection, used for most online map tile services
+ *
+ *  (c) 2021-2025 Highsoft AS
+ *
+ *  License: www.highcharts.com/license
+ *
+ *  Authors:
+ *  - Torstein Honsi
+ *
  * */
 
 /* *
@@ -5028,6 +5180,22 @@ const r = 63.78137, WebMercator_deg2rad = Math.PI / 180;
  *  Class
  *
  * */
+/**
+ * Web Mercator is a variant of the Mercator map projection and is the de facto
+ * standard for Web mapping applications.
+ *
+ * Web Mercator is primarily created for tiled map services, as when zooming in
+ * to smaller scales, the angle between lines on the surface is approximately
+ * retained.
+ *
+ * The great disadvantage of Web Mercator is that areas inflate with distance
+ * from the equator. For example, in the world map, Greenland appears roughly
+ * the same size as Africa. In reality Africa is 14 times larger, as is apparent
+ * from the Equal Earth or Orthographic projections.
+ *
+ * @class
+ * @name Highcharts.WebMercator
+ */
 class WebMercator {
     constructor() {
         /* *
@@ -5035,13 +5203,18 @@ class WebMercator {
          *  Properties
          *
          * */
+        /** @internal */
         this.bounds = {
             x1: -200.37508342789243,
             x2: 200.37508342789243,
             y1: -200.3750834278071,
             y2: 200.3750834278071
         };
-        this.maxLatitude = 85.0511287798; // The latitude that defines a square
+        /**
+         * The latitude that defines a square.
+         * @internal
+         */
+        this.maxLatitude = 85.0511287798;
     }
     /* *
      *
@@ -5075,7 +5248,14 @@ class WebMercator {
 ;// ./code/es-modules/Maps/Projections/ProjectionRegistry.js
 /* *
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+ *  Projection registry
+ *
+ *  (c) 2021-2025 Highsoft AS
+ *
+ *  License: www.highcharts.com/license
+ *
+ *  Authors:
+ *  - Torstein Honsi
  *
  * */
 
@@ -5141,7 +5321,6 @@ floatCorrection = 0.000001;
 /**
  * Keep longitude within -180 and 180. This is faster than using the modulo
  * operator, and preserves the distinction between -180 and 180.
- * @private
  */
 const wrapLon = (lon) => {
     // Replacing the if's with while would increase the range, but make it prone
@@ -5156,12 +5335,10 @@ const wrapLon = (lon) => {
 };
 /**
  * Calculate the haversine of an angle.
- * @private
  */
 const hav = (radians) => (1 - Math.cos(radians)) / 2;
 /**
 * Calculate the haversine of an angle from two coordinates.
-* @private
 */
 const havFromCoords = (point1, point2) => {
     const cos = Math.cos, lat1 = point1[1] * Projection_deg2rad, lon1 = point1[0] * Projection_deg2rad, lat2 = point2[1] * Projection_deg2rad, lon2 = point2[0] * Projection_deg2rad, deltaLat = lat2 - lat1, deltaLon = lon2 - lon1, havFromCoords = hav(deltaLat) + cos(lat1) * cos(lat2) * hav(deltaLon);
@@ -5172,6 +5349,7 @@ const havFromCoords = (point1, point2) => {
  *  Class
  *
  * */
+/** @internal */
 class Projection {
     /* *
      *
@@ -5180,14 +5358,12 @@ class Projection {
      * */
     /**
      * Add a projection definition to the registry, accessible by its `name`.
-     * @private
      */
     static add(name, definition) {
         Projection.registry[name] = definition;
     }
     /**
      * Calculate the distance in meters between two given coordinates.
-     * @private
      */
     static distance(point1, point2) {
         const { atan2, sqrt } = Math, hav = havFromCoords(point1, point2), angularDistance = 2 * atan2(sqrt(hav), sqrt(1 - hav)), distance = angularDistance * 6371e3;
@@ -5195,7 +5371,6 @@ class Projection {
     }
     /**
      * Calculate the geodesic line string between two given coordinates.
-     * @private
      */
     static geodesic(point1, point2, inclusive, stepDistance = 500000) {
         const { atan2, cos, sin, sqrt } = Math, distance = Projection.distance, lat1 = point1[1] * Projection_deg2rad, lon1 = point1[0] * Projection_deg2rad, lat2 = point2[1] * Projection_deg2rad, lon2 = point2[0] * Projection_deg2rad, cosLat1CosLon1 = cos(lat1) * cos(lon1), cosLat2CosLon2 = cos(lat2) * cos(lon2), cosLat1SinLon1 = cos(lat1) * sin(lon1), cosLat2SinLon2 = cos(lat2) * sin(lon2), sinLat1 = sin(lat1), sinLat2 = sin(lat2), pointDistance = distance(point1, point2), angDistance = pointDistance / 6371e3, sinAng = sin(angDistance), jumps = Math.round(pointDistance / stepDistance), lineString = [];
@@ -5240,12 +5415,16 @@ class Projection {
      *
      * */
     constructor(options = {}) {
-        // Whether the chart has points, lines or polygons given as coordinates
-        // with positive up, as opposed to paths in the SVG plane with positive
-        // down.
+        /**
+         * Whether the chart has points, lines or polygons given as coordinates
+         * with positive up, as opposed to paths in the SVG plane with positive
+         * down.
+         */
         this.hasCoordinates = false;
-        // Whether the chart has true projection as opposed to pre-projected geojson
-        // as in the legacy map collection.
+        /**
+         * Whether the chart has true projection as opposed to pre-projected geojson
+         * as in the legacy map collection.
+         */
         this.hasGeoProjection = false;
         this.maxLatitude = 90;
         this.options = options;
@@ -5316,7 +5495,6 @@ class Projection {
     /**
      * Take the rotation options and returns the appropriate projection
      * functions.
-     * @private
      */
     getRotator(rotation) {
         const deltaLambda = rotation[0] * Projection_deg2rad, deltaPhi = (rotation[1] || 0) * Projection_deg2rad, deltaGamma = (rotation[2] || 0) * Projection_deg2rad;
@@ -5351,7 +5529,6 @@ class Projection {
     /**
      * Project a lonlat coordinate position to xy. Dynamically overridden when
      * projection is set.
-     * @private
      */
     forward(lonLat) {
         return lonLat;
@@ -5359,7 +5536,6 @@ class Projection {
     /**
      * Unproject an xy chart coordinate position to lonlat. Dynamically
      * overridden when projection is set.
-     * @private
      */
     inverse(xy) {
         return xy;
@@ -5478,7 +5654,6 @@ class Projection {
     }
     /**
      * Take a GeoJSON geometry and return a translated SVGPath.
-     * @private
      */
     path(geometry) {
         const { bounds, def, rotator } = this;
@@ -5684,6 +5859,7 @@ Projection.registry = ProjectionRegistry;
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Maps_Projection = (Projection);
 
 ;// ./code/es-modules/Maps/MapView.js
@@ -5718,7 +5894,7 @@ const tileSize = 256;
 /**
  * The world size in terms of 10k meters in the Web Mercator projection, to
  * match a 256 square tile to zoom level 0.
- * @private
+ * @internal
  */
 const worldSize = 400.979322;
 /* *
@@ -5735,7 +5911,7 @@ let maps = {};
 /**
  * Compute the zoom from given bounds and the size of the playing field. Used in
  * two places, hence the local function.
- * @private
+ * @internal
  */
 function zoomFromBounds(b, playingField) {
     const { width, height } = playingField, scaleToField = Math.max((b.x2 - b.x1) / (width / tileSize), (b.y2 - b.y1) / (height / tileSize));
@@ -5744,7 +5920,7 @@ function zoomFromBounds(b, playingField) {
 /**
  * Calculate and set the recommended map view drilldown or drillup if mapData
  * is set for the series.
- * @private
+ * @internal
  */
 function recommendedMapViewAfterDrill(e) {
     if (e.seriesOptions.mapData) {
@@ -5802,6 +5978,7 @@ class MapView {
      *  Static Functions
      *
      * */
+    /** @internal */
     static compose(MapChartClass) {
         if (MapView_pushUnique(MapView_composed, 'MapView')) {
             maps = MapChartClass.maps;
@@ -5822,7 +5999,7 @@ class MapView {
     }
     /**
      * Return the composite bounding box of a collection of bounding boxes
-     * @private
+     * @internal
      */
     static compositeBounds(arrayOfBounds) {
         if (arrayOfBounds.length) {
@@ -5840,7 +6017,7 @@ class MapView {
     }
     /**
      * Merge two collections of insets by the id.
-     * @private
+     * @internal
      */
     static mergeInsets(a, b) {
         const toObject = (insets) => {
@@ -5866,10 +6043,15 @@ class MapView {
          *  Properties
          *
          * */
+        /** @internal */
         this.allowTransformAnimation = true;
+        /** @internal */
         this.eventsToUnbind = [];
+        /** @internal */
         this.insets = [];
+        /** @internal */
         this.padding = [0, 0, 0, 0];
+        /** @internal */
         this.recommendedMapView = {};
         if (!(this instanceof MapViewInset)) {
             this.recommendMapView(chart, [
@@ -5935,7 +6117,7 @@ class MapView {
      * */
     /**
      * Create MapViewInset instances from insets options
-     * @private
+     * @internal
      */
     createInsets() {
         const options = this.options, insets = options.insets;
@@ -5947,13 +6129,13 @@ class MapView {
         }
     }
     /**
-     * Fit the view to given bounds
+     * Fit the view to the given bounds.
      *
      * @function Highcharts.MapView#fitToBounds
-     * @param {Object} bounds
+     * @param {Highcharts.MapBounds} bounds
      *        Bounds in terms of projected units given as  `{ x1, y1, x2, y2 }`.
      *        If not set, fit to the bounds of the current data set
-     * @param {number|string} [padding=0]
+     * @param {Highcharts.MapViewPaddingType} [padding=0]
      *        Padding inside the bounds. A number signifies pixels, while a
      *        percentage string (like `5%`) can be used as a fraction of the
      *        plot area size.
@@ -5986,6 +6168,7 @@ class MapView {
             this.setView(center, zoom, redraw, animation);
         }
     }
+    /** @internal */
     getField(padded = true) {
         const padding = padded ? this.padding : [0, 0, 0, 0];
         return {
@@ -5995,6 +6178,7 @@ class MapView {
             height: this.chart.plotHeight - padding[0] - padding[2]
         };
     }
+    /** @internal */
     getGeoMap(map) {
         if (isString(map)) {
             if (maps[map] && maps[map].type === 'Topology') {
@@ -6011,6 +6195,7 @@ class MapView {
             }
         }
     }
+    /** @internal */
     getMapBBox() {
         const bounds = this.getProjectedBounds(), scale = this.getScale();
         if (bounds) {
@@ -6028,6 +6213,7 @@ class MapView {
             };
         }
     }
+    /** @internal */
     getProjectedBounds() {
         const projection = this.projection;
         const allBounds = this.chart.series.reduce((acc, s) => {
@@ -6060,12 +6246,16 @@ class MapView {
         }
         return this.projection.bounds || MapView.compositeBounds(allBounds);
     }
+    /** @internal */
     getScale() {
         // A zoom of 0 means the world (360x360 degrees) fits in a 256x256 px
         // tile
         return (tileSize / worldSize) * Math.pow(2, this.zoom);
     }
-    // Calculate the SVG transform to be applied to series groups
+    /**
+     * Calculate the SVG transform to be applied to series groups.
+     * @internal
+     */
     getSVGTransform() {
         const { x, y, width, height } = this.playingField, projectedCenter = this.projection.forward(this.center), flipFactor = this.projection.hasCoordinates ? -1 : 1, scaleX = this.getScale(), scaleY = scaleX * flipFactor, translateX = x + width / 2 - projectedCenter[0] * scaleX, translateY = y + height / 2 - projectedCenter[1] * scaleY;
         return { scaleX, scaleY, translateX, translateY };
@@ -6133,6 +6323,33 @@ class MapView {
         }
     }
     /**
+     * Convert pixel position to longitude and latitude.
+     *
+     * @function Highcharts.MapView#pixelsToLonLat
+     * @since 10.0.0
+     * @param  {Highcharts.PositionObject} pos
+     *         The position in pixels
+     * @return {Highcharts.MapLonLatObject|undefined}
+     *         The map coordinates
+     */
+    pixelsToLonLat(pos) {
+        return this.projectedUnitsToLonLat(this.pixelsToProjectedUnits(pos));
+    }
+    /**
+     * Convert pixel position to projected units
+     *
+     * @function Highcharts.MapView#pixelsToProjectedUnits
+     * @param {Highcharts.PositionObject} pos
+     *        The position in pixels
+     * @return {Highcharts.PositionObject} The position in projected units
+     */
+    pixelsToProjectedUnits(pos) {
+        const { x, y } = pos, scale = this.getScale(), projectedCenter = this.projection.forward(this.center), field = this.playingField, centerPxX = field.x + field.width / 2, centerPxY = field.y + field.height / 2;
+        const projectedX = projectedCenter[0] + (x - centerPxX) / scale;
+        const projectedY = projectedCenter[1] - (y - centerPxY) / scale;
+        return { x: projectedX, y: projectedY };
+    }
+    /**
      * Calculate longitude/latitude values for a point or position. Returns an
      * object with the numeric properties `lon` and `lat`.
      *
@@ -6176,6 +6393,20 @@ class MapView {
         }
         const coordinates = this.projection.inverse([point.x, point.y]);
         return { lon: coordinates[0], lat: coordinates[1] };
+    }
+    /**
+     * Convert projected units to pixel position
+     *
+     * @function Highcharts.MapView#projectedUnitsToPixels
+     * @param {Highcharts.PositionObject} pos
+     *        The position in projected units
+     * @return {Highcharts.PositionObject} The position in pixels
+     */
+    projectedUnitsToPixels(pos) {
+        const scale = this.getScale(), projectedCenter = this.projection.forward(this.center), field = this.playingField, centerPxX = field.x + field.width / 2, centerPxY = field.y + field.height / 2;
+        const x = centerPxX - scale * (projectedCenter[0] - pos.x);
+        const y = centerPxY + scale * (projectedCenter[1] - pos.y);
+        return { x, y };
     }
     /**
      * Calculate and set the recommended map view based on provided map data
@@ -6261,6 +6492,7 @@ class MapView {
             this.update(this.recommendedMapView);
         }
     }
+    /** @internal */
     redraw(animation) {
         this.chart.series.forEach((s) => {
             if (s.useMapGeometry) {
@@ -6363,47 +6595,7 @@ class MapView {
             this.redraw(animation);
         }
     }
-    /**
-     * Convert projected units to pixel position
-     *
-     * @function Highcharts.MapView#projectedUnitsToPixels
-     * @param {Highcharts.PositionObject} pos
-     *        The position in projected units
-     * @return {Highcharts.PositionObject} The position in pixels
-     */
-    projectedUnitsToPixels(pos) {
-        const scale = this.getScale(), projectedCenter = this.projection.forward(this.center), field = this.playingField, centerPxX = field.x + field.width / 2, centerPxY = field.y + field.height / 2;
-        const x = centerPxX - scale * (projectedCenter[0] - pos.x);
-        const y = centerPxY + scale * (projectedCenter[1] - pos.y);
-        return { x, y };
-    }
-    /**
-     * Convert pixel position to longitude and latitude.
-     *
-     * @function Highcharts.MapView#pixelsToLonLat
-     * @since 10.0.0
-     * @param  {Highcharts.PositionObject} pos
-     *         The position in pixels
-     * @return {Highcharts.MapLonLatObject|undefined}
-     *         The map coordinates
-     */
-    pixelsToLonLat(pos) {
-        return this.projectedUnitsToLonLat(this.pixelsToProjectedUnits(pos));
-    }
-    /**
-     * Convert pixel position to projected units
-     *
-     * @function Highcharts.MapView#pixelsToProjectedUnits
-     * @param {Highcharts.PositionObject} pos
-     *        The position in pixels
-     * @return {Highcharts.PositionObject} The position in projected units
-     */
-    pixelsToProjectedUnits(pos) {
-        const { x, y } = pos, scale = this.getScale(), projectedCenter = this.projection.forward(this.center), field = this.playingField, centerPxX = field.x + field.width / 2, centerPxY = field.y + field.height / 2;
-        const projectedX = projectedCenter[0] + (x - centerPxX) / scale;
-        const projectedY = projectedCenter[1] - (y - centerPxY) / scale;
-        return { x: projectedX, y: projectedY };
-    }
+    /** @internal */
     setUpEvents() {
         const { chart } = this;
         // Set up panning and touch zoom for maps. In orthographic projections
@@ -6515,6 +6707,7 @@ class MapView {
             }
         });
     }
+    /** @internal */
     render() {
         // We need a group for the insets
         if (!this.group) {
@@ -6672,7 +6865,7 @@ class MapViewInset extends MapView {
      * */
     /**
      * Get the playing field in pixels
-     * @private
+     * @internal
      */
     getField(padded = true) {
         const hitZone = this.hitZone;
@@ -6692,7 +6885,7 @@ class MapViewInset extends MapView {
     }
     /**
      * Get the hit zone in pixels.
-     * @private
+     * @internal
      */
     getHitZone() {
         const { chart, mapView, options } = this, { coordinates } = options.field || {};
@@ -6713,13 +6906,14 @@ class MapViewInset extends MapView {
             };
         }
     }
+    /** @internal */
     getProjectedBounds() {
         return MapView.compositeBounds(this.allBounds);
     }
     /**
      * Determine whether a point on the main projected plane is inside the
      * geoBounds of the inset.
-     * @private
+     * @internal
      */
     isInside(point) {
         const { geoBoundsProjectedBox, geoBoundsProjectedPolygon } = this;
@@ -6739,7 +6933,7 @@ class MapViewInset extends MapView {
     }
     /**
      * Render the map view inset with the border path
-     * @private
+     * @internal
      */
     render() {
         const { chart, mapView, options } = this, borderPath = options.borderPath || options.field;
@@ -6775,6 +6969,7 @@ class MapViewInset extends MapView {
             this.border[animate ? 'animate' : 'attr']({ d });
         }
     }
+    /** @internal */
     destroy() {
         if (this.border) {
             this.border = this.border.destroy();
@@ -6783,7 +6978,7 @@ class MapViewInset extends MapView {
     }
     /**
      * No chart-level events for insets
-     * @private
+     * @internal
      */
     setUpEvents() { }
 }
@@ -6901,9 +7096,7 @@ class MapSeries extends ScatterSeries {
      */
     drawMapDataLabels() {
         super.drawDataLabels();
-        if (this.dataLabelsGroup) {
-            this.dataLabelsGroup.clip(this.chart.clipRect);
-        }
+        this.dataLabelsGroups?.forEach((g) => g?.clip(this.chart.clipRect));
     }
     /**
      * Use the drawPoints method of column, that is able to handle simple
@@ -8019,9 +8212,9 @@ class MapPointSeries extends MapPointSeries_ScatterSeries {
     /* eslint-disable valid-jsdoc */
     drawDataLabels() {
         super.drawDataLabels();
-        if (this.dataLabelsGroup) {
-            this.dataLabelsGroup.clip(this.chart.clipRect);
-        }
+        this.dataLabelsGroups?.forEach((g) => {
+            g?.clip(this.chart.clipRect);
+        });
     }
     /**
      * Resolve `lon`, `lat` or `geometry` options and project the resulted
@@ -11392,6 +11585,9 @@ HeatmapSeries.defaultOptions = HeatmapSeries_merge(HeatmapSeries_ScatterSeries.d
 HeatmapSeries_addEvent(HeatmapSeries, 'afterDataClassLegendClick', function () {
     this.isDirtyCanvas = true;
     this.drawPoints();
+    if (this.options.enableMouseTracking) {
+        this.drawTracker(); // #23162, set tracker again after points redraw
+    }
 });
 HeatmapSeries_extend(HeatmapSeries.prototype, {
     axisTypes: Series_ColorMapComposition.seriesMembers.axisTypes,

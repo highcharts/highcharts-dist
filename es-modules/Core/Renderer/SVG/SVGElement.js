@@ -245,9 +245,11 @@ class SVGElement {
         // Default: top align
         y = (alignToBox.y || 0) + (alignOptions.y || 0) +
             ((alignToBox.height || 0) - (alignOptions.height || 0)) *
-                getAlignFactor(alignOptions.verticalAlign), attribs = {
-            'text-align': alignOptions?.align
-        };
+                getAlignFactor(alignOptions.verticalAlign), attribs = {};
+        // Add text-align attribute only if option is defined, #22698
+        if (alignOptions.align) {
+            attribs['text-align'] = alignOptions.align;
+        }
         attribs[alignByTranslate ? 'translateX' : 'x'] = Math.round(x);
         attribs[alignByTranslate ? 'translateY' : 'y'] = Math.round(y);
         // Animate only if already placed
@@ -1086,19 +1088,21 @@ class SVGElement {
         aX = pX + baseline * cosRad90, bX = aX + wCosRad, cX = bX - height * cosRad90, dX = cX - wCosRad, aY = pY + baseline * sinRad90, bY = aY + wSinRad, cY = bY - height * sinRad90, dY = cY - wSinRad;
         // Deduct the bounding box from the corners
         const x = Math.min(aX, bX, cX, dX), y = Math.min(aY, bY, cY, dY), boxWidth = Math.max(aX, bX, cX, dX) - x, boxHeight = Math.max(aY, bY, cY, dY) - y;
-        /* Uncomment to debug boxes
-        this.renderer.path([
+        /* Uncomment to visualize boxes
+        this.bBoxViz ??= this.renderer.path()
+            .attr({
+                stroke: 'red',
+                'stroke-width': 1,
+                zIndex: 20
+            })
+            .add();
+        this.bBoxViz.attr('d', [
             ['M', aX, aY],
             ['L', bX, bY],
             ['L', cX, cY],
             ['L', dX, dY],
             ['Z']
-        ])
-            .attr({
-                stroke: 'red',
-                'stroke-width': 1
-            })
-            .add();
+        ]);
         // */
         return {
             x,

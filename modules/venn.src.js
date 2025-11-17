@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/venn
  * @requires highcharts
  *
@@ -1576,7 +1576,7 @@ const VennUtils = {
 ;// ./code/es-modules/Series/Venn/VennSeries.js
 /* *
  *
- *  Experimental Highcharts module which enables visualization of a Venn
+ *  Highcharts module which enables visualization of a Venn
  *  diagram.
  *
  *  (c) 2016-2025 Highsoft AS
@@ -1993,7 +1993,7 @@ class VennSeries extends ScatterSeries {
                     style: {
                         width: dataLabelWidth
                     }
-                }, VennSeries_isObject(dlOptions, true) ? dlOptions : void 0);
+                }, VennSeries_isObject(dlOptions, true) ? dlOptions : void 0, { zIndex: void 0 });
             }
             // Set name for usage in tooltip and in data label.
             point.name = point.options.name || sets.join('∩');

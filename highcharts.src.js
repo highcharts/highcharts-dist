@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/highcharts
  *
  * (c) 2009-2025 Highsoft AS
@@ -74,7 +74,7 @@ var Globals;
      *  Constants
      *
      * */
-    Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '12.4.0', Globals.win = (typeof window !== 'undefined' ?
+    Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '12.4.0-modified', Globals.win = (typeof window !== 'undefined' ?
         window :
         {}), // eslint-disable-line node/no-unsupported-features/es-builtins
     Globals.doc = Globals.win.document, Globals.svg = !!Globals.doc?.createElementNS?.(Globals.SVG_NS, 'svg')?.createSVGRect, Globals.pageLang = Globals.doc?.documentElement?.closest('[lang]')?.lang, Globals.userAgent = Globals.win.navigator?.userAgent || '', Globals.isChrome = Globals.win.chrome, Globals.isFirefox = Globals.userAgent.indexOf('Firefox') !== -1, Globals.isMS = /(edge|msie|trident)/i.test(Globals.userAgent) && !Globals.win.opera, Globals.isSafari = !Globals.isChrome && Globals.userAgent.indexOf('Safari') !== -1, Globals.isTouchDevice = /(Mobile|Android|Windows Phone)/.test(Globals.userAgent), Globals.isWebKit = Globals.userAgent.indexOf('AppleWebKit') !== -1, Globals.deg2rad = Math.PI * 2 / 360, Globals.marginNames = [
@@ -5706,6 +5706,16 @@ const defaultOptions = {
          * @apioption legend.margin
          */
         /**
+         * Maximum width for the legend. Can be a percentage of the chart width,
+         * or an integer representing how many pixels wide the legend can be.
+         *
+         * @sample {highcharts} highcharts/legend/maxwidth/
+         *         Max width set to 7%
+         *
+         * @type      {number|string}
+         * @apioption legend.maxWidth
+         */
+        /**
          * Maximum pixel height for the legend. When the maximum height is
          * extended, navigation will show.
          *
@@ -9173,18 +9183,19 @@ function dateFormat(format, timestamp, upperCaseFirst) {
  *        replaced by its value.
  *
  * @param {Highcharts.Chart} [owner]
- *        A `Chart` or `DataGrid` instance used to get numberFormatter and time.
+ *        A `Chart` or `Grid` instance used to get numberFormatter and time.
  *
  * @return {string}
  *         The formatted string.
  */
 function format(str = '', ctx, owner) {
-    // Notice: using u flag will require a refactor for ES5 (#22450).
-    const regex = /\{([a-zA-Z\u00C0-\u017F\d:\.,;\-\/<>\[\]%_@+"'’= #\(\)]+)\}/g, // eslint-disable-line max-len
+    // eslint-disable-next-line prefer-regex-literals
+    const regex = new RegExp('\\{([\\p{L}\\d:\\.,;\\-\\/<>\\[\\]%_@+"\'’= #\\(\\)]+)\\}', 'gu'), 
     // The sub expression regex is the same as the top expression regex,
     // but except parens and block helpers (#), and surrounded by parens
     // instead of curly brackets.
-    subRegex = /\(([a-zA-Z\u00C0-\u017F\d:\.,;\-\/<>\[\]%_@+"'= ]+)\)/g, matches = [], floatRegex = /f$/, decRegex = /\.(\d)/, lang = owner?.options?.lang || Templating_defaultOptions.lang, time = owner?.time || Templating_defaultTime, numberFormatter = owner?.numberFormatter || numberFormat.bind(owner);
+    // eslint-disable-next-line prefer-regex-literals
+    subRegex = new RegExp('\\(([\\p{L}\\d:\\.,;\\-\\/<>\\[\\]%_@+"\'= ]+)\\)', 'gu'), matches = [], floatRegex = /f$/, decRegex = /\.(\d)/, lang = owner?.options?.lang || Templating_defaultOptions.lang, time = owner?.time || Templating_defaultTime, numberFormatter = owner?.numberFormatter || numberFormat.bind(owner);
     /*
      * Get a literal or variable value inside a template expression. May be
      * extended with other types like string or null if needed, but keep it
@@ -9979,9 +9990,11 @@ class SVGElement {
         // Default: top align
         y = (alignToBox.y || 0) + (alignOptions.y || 0) +
             ((alignToBox.height || 0) - (alignOptions.height || 0)) *
-                SVGElement_getAlignFactor(alignOptions.verticalAlign), attribs = {
-            'text-align': alignOptions?.align
-        };
+                SVGElement_getAlignFactor(alignOptions.verticalAlign), attribs = {};
+        // Add text-align attribute only if option is defined, #22698
+        if (alignOptions.align) {
+            attribs['text-align'] = alignOptions.align;
+        }
         attribs[alignByTranslate ? 'translateX' : 'x'] = Math.round(x);
         attribs[alignByTranslate ? 'translateY' : 'y'] = Math.round(y);
         // Animate only if already placed
@@ -10820,19 +10833,21 @@ class SVGElement {
         aX = pX + baseline * cosRad90, bX = aX + wCosRad, cX = bX - height * cosRad90, dX = cX - wCosRad, aY = pY + baseline * sinRad90, bY = aY + wSinRad, cY = bY - height * sinRad90, dY = cY - wSinRad;
         // Deduct the bounding box from the corners
         const x = Math.min(aX, bX, cX, dX), y = Math.min(aY, bY, cY, dY), boxWidth = Math.max(aX, bX, cX, dX) - x, boxHeight = Math.max(aY, bY, cY, dY) - y;
-        /* Uncomment to debug boxes
-        this.renderer.path([
+        /* Uncomment to visualize boxes
+        this.bBoxViz ??= this.renderer.path()
+            .attr({
+                stroke: 'red',
+                'stroke-width': 1,
+                zIndex: 20
+            })
+            .add();
+        this.bBoxViz.attr('d', [
             ['M', aX, aY],
             ['L', bX, bY],
             ['L', cX, cY],
             ['L', dX, dY],
             ['Z']
-        ])
-            .attr({
-                stroke: 'red',
-                'stroke-width': 1
-            })
-            .add();
+        ]);
         // */
         return {
             x,
@@ -11779,7 +11794,7 @@ class SVGLabel extends SVG_SVGElement {
         // If we have a text string and the DOM bBox was 0, it typically means
         // that the label was first rendered hidden, so we need to update the
         // bBox (#15246)
-        if (this.textStr && this.bBox.width === 0 && this.bBox.height === 0) {
+        if ((this.textStr && this.bBox.width === 0 && this.bBox.height === 0) || this.rotation) {
             this.updateBoxSize();
         }
         const { padding, height = 0, translateX = 0, translateY = 0, width = 0 } = this, paddingLeft = SVGLabel_pick(this.paddingLeft, padding), rotation = rot ?? (this.rotation || 0);
@@ -12541,7 +12556,7 @@ class TextBuilder {
     /**
      * Get the rendered line height of a <text>, <tspan> or pure text node.
      * @private
-     * @param {DOMElementType|Text} node The node to check for
+     * @param {Highcharts.DOMElementType|Text} node The node to check for
      * @return {number} The rendered line height
      */
     getLineHeight(node) {
@@ -12913,7 +12928,7 @@ class SVGRenderer {
         this.url = this.getReferenceURL();
         // Add description
         const desc = this.createElement('desc').add();
-        desc.element.appendChild(SVGRenderer_doc.createTextNode('Created with Highcharts 12.4.0'));
+        desc.element.appendChild(SVGRenderer_doc.createTextNode('Created with Highcharts 12.4.0-modified'));
         this.defs = this.createElement('defs').add();
         this.allowHTML = allowHTML;
         this.forExport = forExport;
@@ -20501,7 +20516,9 @@ class Axis {
     getThresholdAlignment(callerAxis) {
         if (!Axis_isNumber(this.dataMin) ||
             (this !== callerAxis &&
-                this.series.some((s) => (s.isDirty || s.isDirtyData)))) {
+                this.series.some((s) => 
+                // The xAxis.isDirty check is for setExtremes (#23677)
+                s.isDirty || s.isDirtyData || s.xAxis?.isDirty))) {
             this.getSeriesExtremes();
         }
         if (Axis_isNumber(this.threshold)) {
@@ -20569,9 +20586,11 @@ class Axis {
         // tick index. Unless `thresholdAlignment` is exactly 0 or 1, avoid the
         // first or last tick because that would lead to series being clipped.
         if (Axis_isNumber(thresholdAlignment)) {
-            thresholdTickIndex = thresholdAlignment < 0.5 ?
-                Math.ceil(thresholdAlignment * (tickAmount - 1)) :
-                Math.floor(thresholdAlignment * (tickAmount - 1));
+            thresholdTickIndex = thresholdAlignment === 0 ? 0 :
+                thresholdAlignment === 1 ? tickAmount - 1 :
+                    // Get the closest integer between 1 and
+                    // `tickAmount - 2` (#23787)
+                    Math.round(Axis_clamp(thresholdAlignment * (tickAmount - 1), 1, tickAmount - 2));
             if (options.reversed) {
                 thresholdTickIndex = tickAmount - 1 - thresholdTickIndex;
             }
@@ -20875,7 +20894,7 @@ class Axis {
      * Can be `"center"`, `"left"` or `"right"`.
      */
     autoLabelAlign(rotation) {
-        const angle = (Axis_pick(rotation, 0) - (this.side * 90) + 720) % 360, evt = { align: 'center' };
+        const angle = ((rotation - this.side * 90) % 360 + 360) % 360, evt = { align: 'center' };
         Axis_fireEvent(this, 'autoLabelAlign', evt, function (e) {
             if (angle > 15 && angle < 165) {
                 e.align = 'right';
@@ -21093,7 +21112,7 @@ class Axis {
         }
         // Set the explicit or automatic label alignment
         this.labelAlign = labelOptions.align ||
-            this.autoLabelAlign(this.labelRotation);
+            this.autoLabelAlign(this.labelRotation || 0);
         if (this.labelAlign) {
             attr.align = this.labelAlign;
         }
@@ -23850,7 +23869,7 @@ const { composed: Tooltip_composed, dateFormats, doc: Tooltip_doc, isSafari } = 
 const { distribute } = Renderer_RendererUtilities;
 
 
-const { addEvent: Tooltip_addEvent, clamp: Tooltip_clamp, css: Tooltip_css, discardElement: Tooltip_discardElement, extend: Tooltip_extend, fireEvent: Tooltip_fireEvent, getAlignFactor: Tooltip_getAlignFactor, isArray: Tooltip_isArray, isNumber: Tooltip_isNumber, isObject: Tooltip_isObject, isString: Tooltip_isString, merge: Tooltip_merge, pick: Tooltip_pick, pushUnique: Tooltip_pushUnique, splat: Tooltip_splat, syncTimeout: Tooltip_syncTimeout } = Core_Utilities;
+const { addEvent: Tooltip_addEvent, clamp: Tooltip_clamp, css: Tooltip_css, clearTimeout: Tooltip_clearTimeout, discardElement: Tooltip_discardElement, extend: Tooltip_extend, fireEvent: Tooltip_fireEvent, getAlignFactor: Tooltip_getAlignFactor, isArray: Tooltip_isArray, isNumber: Tooltip_isNumber, isObject: Tooltip_isObject, isString: Tooltip_isString, merge: Tooltip_merge, pick: Tooltip_pick, pushUnique: Tooltip_pushUnique, splat: Tooltip_splat, syncTimeout: Tooltip_syncTimeout } = Core_Utilities;
 /* *
  *
  *  Class
@@ -23981,7 +24000,7 @@ class Tooltip {
             this.renderer = this.renderer.destroy();
             Tooltip_discardElement(this.container);
         }
-        Core_Utilities.clearTimeout(this.hideTimer);
+        Tooltip_clearTimeout(this.hideTimer);
     }
     /**
      * Extendable method to get the anchor position of the tooltip
@@ -24362,7 +24381,7 @@ class Tooltip {
     hide(delay) {
         const tooltip = this;
         // Disallow duplicate timers (#1728, #1766)
-        Core_Utilities.clearTimeout(this.hideTimer);
+        Tooltip_clearTimeout(this.hideTimer);
         delay = Tooltip_pick(delay, this.options.hideDelay);
         if (!this.isHidden) {
             this.hideTimer = Tooltip_syncTimeout(function () {
@@ -24521,7 +24540,7 @@ class Tooltip {
         if (!options.enabled || !point.series) { // #16820
             return;
         }
-        Core_Utilities.clearTimeout(this.hideTimer);
+        Tooltip_clearTimeout(this.hideTimer);
         // A switch saying if this specific tooltip configuration allows shared
         // or split modes
         tooltip.allowShared = !(!Tooltip_isArray(pointOrPoints) &&
@@ -24972,6 +24991,11 @@ class Tooltip {
                 .rect(box)
                 .addClass('highcharts-tracker')
                 .add(label);
+            // For a rapid move going outside of the elements keeping the
+            // tooltip visible, cancel the hide (#23512).
+            Tooltip_addEvent(tooltip.tracker.element, 'mouseenter', () => {
+                Tooltip_clearTimeout(tooltip.hideTimer);
+            });
             if (!chart.styledMode) {
                 tooltip.tracker.attr({
                     fill: 'rgba(0,0,0,0)'
@@ -25509,7 +25533,9 @@ class Point {
      *
      * @private
      * @function Highcharts.Point#destroyElements
+     *
      * @param {Highcharts.Dictionary<number>} [kinds]
+     * Kinds of elements to destroy
      */
     destroyElements(kinds) {
         const point = this, props = point.getGraphicalProps(kinds);
@@ -25816,6 +25842,8 @@ class Point {
         }
     }
     /**
+     * Resolve the color of a point.
+     *
      * @private
      * @function Highcharts.Point#resolveColor
      */
@@ -25961,6 +25989,8 @@ class Point {
         let i;
         redraw = Point_pick(redraw, true);
         /**
+         * Perform the actual update of the point.
+         *
          * @private
          */
         function update() {
@@ -26643,8 +26673,6 @@ class Pointer {
                 Pointer.unbindDocumentTouchEnd = (Pointer.unbindDocumentTouchEnd());
             }
         }
-        // Memory and CPU leak
-        clearInterval(pointer.tooltipTimeout);
         Pointer_objectEach(pointer, function (_val, prop) {
             pointer[prop] = void 0;
         });
@@ -27826,7 +27854,9 @@ class Pointer {
      * @function Highcharts.Pointer#setDOMEvents
      */
     setDOMEvents() {
-        const container = this.chart.container, ownerDoc = container.ownerDocument;
+        const container = this.chart.container, ownerDoc = container.ownerDocument, 
+        // Get the parent element, including handling Shadow DOM (#23450)
+        getParent = (el) => el.parentElement || el.getRootNode()?.host?.parentElement;
         container.onmousedown = this.onContainerMouseDown.bind(this);
         container.onmousemove = this.onContainerMouseMove.bind(this);
         container.onclick = this.onContainerClick.bind(this);
@@ -27839,12 +27869,12 @@ class Pointer {
         }
         // In case we are dealing with overflow, reset the chart position when
         // scrolling parent elements
-        let parent = this.chart.renderTo.parentElement;
+        let parent = getParent(this.chart.renderTo);
         while (parent && parent.tagName !== 'BODY') {
             this.eventsToUnbind.push(Pointer_addEvent(parent, 'scroll', () => {
                 delete this.chartPosition;
             }));
-            parent = parent.parentElement;
+            parent = getParent(parent);
         }
         this.eventsToUnbind.push(Pointer_addEvent(container, 'touchstart', this.onContainerTouchStart.bind(this), { passive: false }), Pointer_addEvent(container, 'touchmove', this.onContainerTouchMove.bind(this), { passive: false }));
         if (!Pointer.unbindDocumentTouchEnd) {
@@ -28208,7 +28238,7 @@ var ColumnUtils;
      * @param {boolean} asSubarray
      * If column is a typed array, return a subarray instead of a new array. It
      * is faster `O(1)`, but the entire buffer will be kept in memory until all
-     * views to it are destroyed. Default is `false`.
+     * views of it are destroyed. Default is `false`.
      *
      * @return {DataTable.Column}
      * Modified column.
@@ -28274,6 +28304,33 @@ var ColumnUtils;
         };
     }
     ColumnUtils.splice = splice;
+    /**
+     * Converts a cell value to a number.
+     *
+     * @param {DataTable.CellType} value
+     * Cell value to convert to a number.
+     *
+     * @param {boolean} useNaN
+     * If `true`, returns `NaN` for non-numeric values; if `false`,
+     * returns `null` instead.
+     *
+     * @return {number | null}
+     * Number or `null` if the value is not a number.
+     *
+     * @private
+     */
+    function convertToNumber(value, useNaN) {
+        switch (typeof value) {
+            case 'boolean':
+                return (value ? 1 : 0);
+            case 'number':
+                return (isNaN(value) && !useNaN ? null : value);
+            default:
+                value = parseFloat(`${value ?? ''}`);
+                return (isNaN(value) && !useNaN ? null : value);
+        }
+    }
+    ColumnUtils.convertToNumber = convertToNumber;
 })(ColumnUtils || (ColumnUtils = {}));
 /* *
  *
@@ -28351,12 +28408,11 @@ class DataTableCore {
          * @type {string}
          */
         this.id = (options.id || DataTableCore_uniqueKey());
-        this.modified = this;
         this.rowCount = 0;
         this.versionTag = DataTableCore_uniqueKey();
         let rowCount = 0;
-        DataTableCore_objectEach(options.columns || {}, (column, columnName) => {
-            this.columns[columnName] = column.slice();
+        DataTableCore_objectEach(options.columns || {}, (column, columnId) => {
+            this.columns[columnId] = column.slice();
             rowCount = Math.max(rowCount, column.length);
         });
         this.applyRowCount(rowCount);
@@ -28375,9 +28431,9 @@ class DataTableCore {
      */
     applyRowCount(rowCount) {
         this.rowCount = rowCount;
-        DataTableCore_objectEach(this.columns, (column, columnName) => {
+        DataTableCore_objectEach(this.columns, (column, columnId) => {
             if (column.length !== rowCount) {
-                this.columns[columnName] = setLength(column, rowCount);
+                this.columns[columnId] = setLength(column, rowCount);
             }
         });
     }
@@ -28398,8 +28454,8 @@ class DataTableCore {
     deleteRows(rowIndex, rowCount = 1) {
         if (rowCount > 0 && rowIndex < this.rowCount) {
             let length = 0;
-            DataTableCore_objectEach(this.columns, (column, columnName) => {
-                this.columns[columnName] =
+            DataTableCore_objectEach(this.columns, (column, columnId) => {
+                this.columns[columnId] =
                     splice(column, rowIndex, rowCount).array;
                 length = column.length;
             });
@@ -28412,33 +28468,33 @@ class DataTableCore {
      * Fetches the given column by the canonical column name. Simplified version
      * of the full `DataTable.getRow` method, always returning by reference.
      *
-     * @param {string} columnName
+     * @param {string} columnId
      * Name of the column to get.
      *
      * @return {Highcharts.DataTableColumn|undefined}
      * A copy of the column, or `undefined` if not found.
      */
-    getColumn(columnName, 
+    getColumn(columnId, 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asReference) {
-        return this.columns[columnName];
+        return this.columns[columnId];
     }
     /**
      * Retrieves all or the given columns. Simplified version of the full
      * `DataTable.getColumns` method, always returning by reference.
      *
-     * @param {Array<string>} [columnNames]
-     * Column names to retrieve.
+     * @param {Array<string>} [columnIds]
+     * Column ids to retrieve.
      *
      * @return {Highcharts.DataTableColumnCollection}
      * Collection of columns. If a requested column was not found, it is
      * `undefined`.
      */
-    getColumns(columnNames, 
+    getColumns(columnIds, 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asReference) {
-        return (columnNames || Object.keys(this.columns)).reduce((columns, columnName) => {
-            columns[columnName] = this.columns[columnName];
+        return (columnIds || Object.keys(this.columns)).reduce((columns, columnId) => {
+            columns[columnId] = this.columns[columnId];
             return columns;
         }, {});
     }
@@ -28448,19 +28504,19 @@ class DataTableCore {
      * @param {number} rowIndex
      * Row index to retrieve. First row has index 0.
      *
-     * @param {Array<string>} [columnNames]
+     * @param {Array<string>} [columnIds]
      * Column names to retrieve.
      *
      * @return {Record<string, number|string|undefined>|undefined}
      * Returns the row values, or `undefined` if not found.
      */
-    getRow(rowIndex, columnNames) {
-        return (columnNames || Object.keys(this.columns)).map((key) => this.columns[key]?.[rowIndex]);
+    getRow(rowIndex, columnIds) {
+        return (columnIds || Object.keys(this.columns)).map((key) => this.columns[key]?.[rowIndex]);
     }
     /**
      * Sets cell values for a column. Will insert a new column, if not found.
      *
-     * @param {string} columnName
+     * @param {string} columnId
      * Column name to set.
      *
      * @param {Highcharts.DataTableColumn} [column]
@@ -28475,8 +28531,8 @@ class DataTableCore {
      * @emits #setColumns
      * @emits #afterSetColumns
      */
-    setColumn(columnName, column = [], rowIndex = 0, eventDetail) {
-        this.setColumns({ [columnName]: column }, rowIndex, eventDetail);
+    setColumn(columnId, column = [], rowIndex = 0, eventDetail) {
+        this.setColumns({ [columnId]: column }, rowIndex, eventDetail);
     }
     /**
      * Sets cell values for multiple columns. Will insert new columns, if not
@@ -28498,8 +28554,8 @@ class DataTableCore {
      */
     setColumns(columns, rowIndex, eventDetail) {
         let rowCount = this.rowCount;
-        DataTableCore_objectEach(columns, (column, columnName) => {
-            this.columns[columnName] = column.slice();
+        DataTableCore_objectEach(columns, (column, columnId) => {
+            this.columns[columnId] = column.slice();
             rowCount = column.length;
         });
         this.applyRowCount(rowCount);
@@ -28528,18 +28584,27 @@ class DataTableCore {
      * @emits #afterSetRows
      */
     setRow(row, rowIndex = this.rowCount, insert, eventDetail) {
-        const { columns } = this, indexRowCount = insert ? this.rowCount + 1 : rowIndex + 1;
-        DataTableCore_objectEach(row, (cellValue, columnName) => {
-            let column = columns[columnName] ||
-                eventDetail?.addColumns !== false && new Array(indexRowCount);
+        const { columns } = this, indexRowCount = insert ? this.rowCount + 1 : rowIndex + 1, rowKeys = Object.keys(row);
+        if (eventDetail?.addColumns !== false) {
+            for (let i = 0, iEnd = rowKeys.length; i < iEnd; i++) {
+                const key = rowKeys[i];
+                if (!columns[key]) {
+                    columns[key] = [];
+                }
+            }
+        }
+        DataTableCore_objectEach(columns, (column, columnId) => {
+            if (!column && eventDetail?.addColumns !== false) {
+                column = new Array(indexRowCount);
+            }
             if (column) {
                 if (insert) {
-                    column = splice(column, rowIndex, 0, true, [cellValue]).array;
+                    column = splice(column, rowIndex, 0, true, [row[columnId] ?? null]).array;
                 }
                 else {
-                    column[rowIndex] = cellValue;
+                    column[rowIndex] = row[columnId] ?? null;
                 }
-                columns[columnName] = column;
+                columns[columnId] = column;
             }
         });
         if (indexRowCount > this.rowCount) {
@@ -28549,6 +28614,16 @@ class DataTableCore {
             DataTableCore_fireEvent(this, 'afterSetRows');
             this.versionTag = DataTableCore_uniqueKey();
         }
+    }
+    /**
+     * Returns the medified (clone) or the original data table if the modified
+     * one does not exist.
+     *
+     * @return {Highcharts.DataTableCore}
+     * The medified (clone) or the original data table.
+     */
+    getModified() {
+        return this.modified || this;
     }
 }
 /* *
@@ -29193,6 +29268,9 @@ const seriesDefaults = {
      * its own sorting definition, the linked series will be sorted in the
      * same order as the master one.
      *
+     * If a `compare` value is not set on a linked series, it will be inherited
+     * from the parent series.
+     *
      * @sample {highcharts|highstock} highcharts/demo/arearange-line/
      *         Linked series
      *
@@ -29485,7 +29563,7 @@ const seriesDefaults = {
      */
     /**
      * Whether to stack the values of each series on top of each other.
-     * Possible values are `undefined` to disable, `"normal"` to stack by
+     * Possible values are null to disable, `"normal"` to stack by
      * value or `"percent"`.
      *
      * When stacking is enabled, data must be sorted
@@ -29522,8 +29600,9 @@ const seriesDefaults = {
      *         Area
      *
      * @type       {string}
+     * @default    null
      * @product    highcharts highstock
-     * @validvalue ["normal", "overlap", "percent", "stream"]
+     * @validvalue ["normal", "overlap", "percent", "stream", null]
      * @apioption  plotOptions.series.stacking
      */
     /**
@@ -30661,8 +30740,11 @@ const seriesDefaults = {
          */
         x: 0,
         /**
-         * The z index of the data labels. Use a `zIndex` of 6 to display it above
-         * the series, or use a `zIndex` of 2 to display it behind the series.
+         * The z index of the data labels group. Does not apply below series
+         * level options.
+         *
+         * Use a `zIndex` of 6 to display it above the series,
+         * or use a `zIndex` of 2 to display it behind the series.
          *
          * @type      {number}
          * @default   6
@@ -31189,12 +31271,6 @@ const seriesDefaults = {
  *
  * */
 
-/* *
- *
- *  Imports
- *
- * */
-
 
 
 const { defaultOptions: SeriesRegistry_defaultOptions } = Defaults;
@@ -31278,7 +31354,8 @@ var SeriesRegistry;
         defaultPlotOptions[type] = SeriesRegistry_merge(defaultPlotOptions[parent], options);
         // Create the class
         delete SeriesRegistry.seriesTypes[type];
-        const parentClass = SeriesRegistry.seriesTypes[parent] || Series_Series, childClass = SeriesRegistry_extendClass(parentClass, seriesProto);
+        const parentClass = (SeriesRegistry.seriesTypes[parent] ||
+            Core_Globals.Series), childClass = SeriesRegistry_extendClass(parentClass, seriesProto);
         registerSeriesType(type, childClass);
         SeriesRegistry.seriesTypes[type].prototype.type = type;
         // Create the point class if needed
@@ -31764,8 +31841,18 @@ class Series {
             Series_format(this.chart.options.lang.seriesName, this, this.chart);
     }
     /**
+     * Set series-specific properties for color and symbol. Called internally
+     * from Series.update().
+     *
      * @private
      * @function Highcharts.Series#getCyclic
+     *
+     * @param {'color'|'symbol'} prop
+     *        The property to set, either `color` or `symbol`.
+     * @param {*} [value]
+     *        The value to set. If not given, the next available value is used.
+     * @param {Highcharts.Dictionary<*>} [defaults]
+     *        The default values.
      */
     getCyclic(prop, value, defaults) {
         const chart = this.chart, indexName = `${prop}Index`, counterName = `${prop}Counter`, len = (
@@ -31844,9 +31931,9 @@ class Series {
      * @private
      * @function Highcharts.Series#getColumn
      */
-    getColumn(columnName, modified) {
-        return (modified ? this.dataTable.modified : this.dataTable)
-            .getColumn(columnName, true) || [];
+    getColumn(columnId, modified) {
+        return (modified ? this.dataTable.getModified() : this.dataTable)
+            .getColumn(columnId, true) || [];
     }
     /**
      * Finds the index of an existing point that matches the given point
@@ -31925,7 +32012,7 @@ class Series {
      * @function Highcharts.Series#updateData
      */
     updateData(data, animation) {
-        const { options, requireSorting } = this, dataSorting = options.dataSorting, oldData = this.points, pointsToAdd = [], equalLength = data.length === oldData.length;
+        const { options, requireSorting } = this, dataSorting = options.dataSorting, oldData = this.points, pointsToAdd = [], equalLength = data.length === oldData.length, oldXIncrement = this.xIncrement;
         let hasUpdatedByKey, i, point, lastIndex, succeeded = true;
         this.xIncrement = null;
         // Iterate the new data
@@ -32013,7 +32100,8 @@ class Series {
             this.addPoint(point, false, void 0, void 0, false);
         }, this);
         const xData = this.getColumn('x');
-        if (this.xIncrement === null &&
+        if (oldXIncrement !== null &&
+            this.xIncrement === null &&
             xData.length) {
             this.xIncrement = Series_arrayMax(xData);
             this.autoIncrement();
@@ -32145,8 +32233,8 @@ class Series {
                                 colArray[j]?.push(pt[j - autoX]);
                             }
                         }
-                        table.setColumns(dataColumnKeys.reduce((columns, columnName, i) => {
-                            columns[columnName] = colArray[i];
+                        table.setColumns(dataColumnKeys.reduce((columns, columnId, i) => {
+                            columns[columnId] = colArray[i];
                             return columns;
                         }, {}));
                     }
@@ -32186,8 +32274,8 @@ class Series {
                 }
             }
             if (!runTurbo) {
-                const columns = dataColumnKeys.reduce((columns, columnName) => {
-                    columns[columnName] = [];
+                const columns = dataColumnKeys.reduce((columns, columnId) => {
+                    columns[columnId] = [];
                     return columns;
                 }, {});
                 for (i = 0; i < dataLength; i++) {
@@ -32418,7 +32506,7 @@ class Series {
      * @function Highcharts.Series#generatePoints
      */
     generatePoints() {
-        const series = this, options = series.options, dataOptions = series.processedData || options.data, table = series.dataTable.modified, xData = series.getColumn('x', true), PointClass = series.pointClass, processedDataLength = table.rowCount, cropStart = series.cropStart || 0, hasGroupedData = series.hasGroupedData, keys = options.keys, points = [], groupCropStartIndex = (options.dataGrouping?.groupAll ?
+        const series = this, options = series.options, dataOptions = series.processedData || options.data, table = series.dataTable.getModified(), xData = series.getColumn('x', true), PointClass = series.pointClass, processedDataLength = table.rowCount, cropStart = series.cropStart || 0, hasGroupedData = series.hasGroupedData, keys = options.keys, points = [], groupCropStartIndex = (options.dataGrouping?.groupAll ?
             cropStart :
             0), categories = series.xAxis?.categories, pointArrayMap = series.pointArrayMap || ['y'], 
         // Create a configuration object out of a data row
@@ -32561,7 +32649,7 @@ class Series {
             this.options.getExtremesFromAll, // #4599, #21003
         table = getExtremesFromAll && this.cropped ?
             this.dataTable :
-            this.dataTable.modified, rowCount = table.rowCount, customData = yData || this.stackedYData, yAxisData = customData ?
+            this.dataTable.getModified(), rowCount = table.rowCount, customData = yData || this.stackedYData, yAxisData = customData ?
             [customData] :
             (this.keysAffectYAxis || this.pointArrayMap || ['y'])?.map((key) => table.getColumn(key, true) || []) || [], xData = this.getColumn('x', true), activeYData = [], 
         // Handle X outside the viewed area. This does not work with
@@ -32854,6 +32942,7 @@ class Series {
     setClip() {
         const { chart, group, markerGroup } = this, sharedClips = chart.sharedClips, renderer = chart.renderer, clipBox = chart.getClipBox(this), sharedClipKey = this.getSharedClipKey(); // #4526
         let clipRect = sharedClips[sharedClipKey];
+        Series_fireEvent(this, 'setClip', { clipBox });
         // If a clipping rectangle for the same set of axes does not exist,
         // create it
         if (!clipRect) {
@@ -33677,8 +33766,24 @@ class Series {
         Series_syncTimeout(startRecursive, seriesOptions.kdNow || e?.type === 'touchstart' ? 0 : 1);
     }
     /**
+     * Search the k-d-tree for the point closest to the given point.
+     *
      * @private
      * @function Highcharts.Series#searchKDTree
+     *
+     * @param {Highcharts.KDPointSearchObject} point
+     *        The point to search for.
+     * @param {boolean} [compareX=false]
+     *        Search only by the X value, not Y.
+     * @param {Highcharts.PointerEvent} [e]
+     *        The normalized pointer event.
+     * @param {Function} [suppliedPointEvaluator]
+     *        A custom point evaluator function.
+     * @param {Function} [suppliedBSideCheckEvaluator]
+     *        A custom b-side check evaluator function.
+     *
+     * @return {Highcharts.Point|undefined}
+     *         The closest point found.
      */
     searchKDTree(point, compareX, e, suppliedPointEvaluator, suppliedBSideCheckEvaluator) {
         const series = this, [kdX, kdY] = this.kdAxisArray, kdComparer = compareX ? 'distX' : 'dist', kdDimensions = (series.options.findNearestPointBy || '')
@@ -33702,7 +33807,22 @@ class Series {
             p2.distX = Series_defined(x) ? (Math.abs(x) - radius) : Number.MAX_VALUE;
         }
         /**
+         * Search the kd-tree.
+         *
          * @private
+         * @function doSearch
+         *
+         * @param {Highcharts.KDPointSearchObject} search
+         *        The point to search for.
+         * @param {Highcharts.KDNode} tree
+         *        The kd-tree structure to search.
+         * @param {number} depth
+         *        The depth in the tree.
+         * @param {number} dimensions
+         *        The dimensions in the tree.
+         *
+         * @return {Highcharts.Point}
+         *         The closest point found.
          */
         function doSearch(search, tree, depth, dimensions) {
             const point = tree.point, axis = series.kdAxisArray[depth % dimensions];
@@ -33733,6 +33853,8 @@ class Series {
         }
     }
     /**
+     * Return the value of pointPlacement relative to the point's x value.
+     *
      * @private
      * @function Highcharts.Series#pointPlacementToXValue
      */
@@ -33748,8 +33870,16 @@ class Series {
             0;
     }
     /**
+     * Check whether a point is inside the plot area.
+     *
      * @private
      * @function Highcharts.Series#isPointInside
+     *
+     * @param {Highcharts.Dictionary<number>|Highcharts.Point} point
+     * A point-like object with `plotX` and `plotY` properties.
+     *
+     * @return {boolean}
+     * True if the point is inside the plot area.
      */
     isPointInside(point) {
         const { chart, xAxis, yAxis } = this, { plotX = -1, plotY = -1 } = point, isInside = (plotY >= 0 &&
@@ -33814,7 +33944,7 @@ class Series {
             [
                 series.tracker,
                 series.markerGroup,
-                series.dataLabelsGroup
+                ...(series.dataLabelsGroups || [])
             ].forEach((tracker) => {
                 if (tracker) {
                     tracker.addClass('highcharts-tracker')
@@ -34023,6 +34153,8 @@ class Series {
     remove(redraw, animation, withEvent, keepEvents) {
         const series = this, chart = series.chart;
         /**
+         * Remove the series.
+         *
          * @private
          */
         function remove() {
@@ -34077,9 +34209,11 @@ class Series {
         // Must use user options when changing type because series.options
         // is merged in with type specific plotOptions
         oldOptions = series.userOptions, initialType = series.initialType || series.type, plotOptions = chart.options.plotOptions, initialSeriesProto = seriesTypes[initialType].prototype, groups = [
+            'dataLabelsGroup',
+            'dataLabelsGroups',
+            'dataLabelsParentGroups',
             'group',
             'markerGroup',
-            'dataLabelsGroup',
             'transformGroup'
         ], optionsToCheck = [
             'dataGrouping',
@@ -34131,6 +34265,10 @@ class Series {
         }
         else {
             this.dataTable.modified = this.dataTable;
+        }
+        // Merge in multiple data label options (#23560)
+        if (options.dataLabels && oldOptions.dataLabels) {
+            options.dataLabels = this.mergeArrays(oldOptions.dataLabels, options.dataLabels);
         }
         // Do the merge, with some forced options
         options = Series_merge(oldOptions, {
@@ -34340,19 +34478,18 @@ class Series {
      *        Determines if state should be inherited by points too.
      */
     setState(state, inherit) {
-        const series = this, options = series.options, graph = series.graph, inactiveOtherPoints = options.inactiveOtherPoints, stateOptions = options.states, 
+        const series = this, { graph, options } = series, { inactiveOtherPoints, states: stateOptions } = options, 
         // By default a quick animation to hover/inactive,
         // slower to un-hover
-        stateAnimation = Series_pick((stateOptions[state || 'normal'] &&
-            stateOptions[state || 'normal'].animation), series.chart.options.chart.animation);
-        let lineWidth = options.lineWidth, opacity = options.opacity;
+        stateAnimation = Series_pick(stateOptions?.[state || 'normal']?.animation, series.chart.options.chart.animation);
+        let { lineWidth, opacity } = options;
         state = state || '';
         if (series.state !== state) {
             // Toggle class names
             [
                 series.group,
                 series.markerGroup,
-                series.dataLabelsGroup
+                ...(series.dataLabelsGroups || [])
             ].forEach(function (group) {
                 if (group) {
                     // Old state
@@ -34367,8 +34504,7 @@ class Series {
             });
             series.state = state;
             if (!series.chart.styledMode) {
-                if (stateOptions[state] &&
-                    stateOptions[state].enabled === false) {
+                if (stateOptions[state]?.enabled === false) {
                     return;
                 }
                 if (state) {
@@ -34393,14 +34529,10 @@ class Series {
                     [
                         series.group,
                         series.markerGroup,
-                        series.dataLabelsGroup,
+                        ...(series.dataLabelsGroups || []),
                         series.labelBySeries
                     ].forEach(function (group) {
-                        if (group) {
-                            group.animate({
-                                opacity: opacity
-                            }, stateAnimation);
-                        }
+                        group?.animate({ opacity }, stateAnimation);
                     });
                 }
             }
@@ -34445,24 +34577,25 @@ class Series {
      * @emits Highcharts.Series#event:hide
      * @emits Highcharts.Series#event:show
      */
-    setVisible(vis, redraw) {
+    setVisible(visible, redraw) {
         const series = this, chart = series.chart, ignoreHiddenSeries = chart.options.chart.ignoreHiddenSeries, oldVisibility = series.visible;
         // If called without an argument, toggle visibility
         series.visible =
-            vis =
+            visible =
                 series.options.visible =
                     series.userOptions.visible =
-                        typeof vis === 'undefined' ? !oldVisibility : vis; // #5618
-        const showOrHide = vis ? 'show' : 'hide';
-        // Show or hide elements
+                        typeof visible === 'undefined' ? !oldVisibility : visible; // #5618
+        const showOrHide = visible ? 'show' : 'hide';
         [
             'group',
-            'dataLabelsGroup',
             'markerGroup',
             'tracker',
             'tt'
         ].forEach((key) => {
             series[key]?.[showOrHide]();
+        });
+        series.dataLabelsGroups?.forEach((g) => {
+            g?.[showOrHide]();
         });
         // Hide tooltip (#1361)
         if (chart.hoverSeries === series ||
@@ -34470,7 +34603,7 @@ class Series {
             series.onMouseOut();
         }
         if (series.legendItem) {
-            chart.legend.colorizeItem(series, vis);
+            chart.legend.colorizeItem(series, visible);
         }
         // Rescale or adapt to resized chart
         series.isDirty = true;
@@ -34484,7 +34617,7 @@ class Series {
         }
         // Show or hide linked series
         series.linkedSeries.forEach((otherSeries) => {
-            otherSeries.setVisible(vis, false);
+            otherSeries.setVisible(visible, false);
         });
         if (ignoreHiddenSeries) {
             chart.isDirtyBox = true;
@@ -34825,6 +34958,10 @@ Series_SeriesRegistry.series = Series;
 * Related browser event.
 * @name Highcharts.SeriesLegendItemClickEventObject#browserEvent
 * @type {global.PointerEvent}
+*/ /**
+* Whether the default action has been prevented (`true`) or not.
+* @name Highcharts.SeriesLegendItemClickEventObject#defaultPrevented
+* @type {boolean|undefined}
 */ /**
 * Prevent the default action of toggle the visibility of the series.
 * @name Highcharts.SeriesLegendItemClickEventObject#preventDefault
@@ -35511,9 +35648,9 @@ class Legend {
         // Take care of max width and text overflow (#6659)
         if (chart.styledMode || !itemStyle.width) {
             label.css({
-                width: ((options.itemWidth ||
+                width: (Math.min(options.itemWidth ||
                     legend.widthOption ||
-                    chart.spacingBox.width) - itemExtraWidth) + 'px'
+                    chart.spacingBox.width, options.maxWidth ? Legend_relativeLength(options.maxWidth, chart.chartWidth) : Infinity) - itemExtraWidth) + 'px'
             });
         }
         // Always update the text
@@ -35713,7 +35850,7 @@ class Legend {
      * @function Highcharts.Legend#render
      */
     render() {
-        const legend = this, chart = legend.chart, renderer = chart.renderer, options = legend.options, padding = legend.padding, 
+        const legend = this, chart = legend.chart, chartSpacingBoxWidth = chart.spacingBox.width, renderer = chart.renderer, options = legend.options, padding = legend.padding, 
         // Add each series or point
         allItems = legend.getAllItems();
         let display, legendWidth, legendHeight, legendGroup = legend.group, allowedWidth, box = legend.box;
@@ -35721,9 +35858,9 @@ class Legend {
         legend.itemY = legend.initialItemY;
         legend.offsetWidth = 0;
         legend.lastItemY = 0;
-        legend.widthOption = Legend_relativeLength(options.width, chart.spacingBox.width - padding);
+        legend.widthOption = Legend_relativeLength(options.width, chartSpacingBoxWidth - padding);
         // Compute how wide the legend is allowed to be
-        allowedWidth = chart.spacingBox.width - 2 * padding - options.x;
+        allowedWidth = chartSpacingBoxWidth - 2 * padding - options.x;
         if (['rm', 'lm'].indexOf(legend.getAlignment().substring(0, 2)) > -1) {
             allowedWidth /= 2;
         }
@@ -35777,7 +35914,11 @@ class Legend {
         allItems.forEach(legend.renderItem, legend);
         allItems.forEach(legend.layoutItem, legend);
         // Get the box
-        legendWidth = (legend.widthOption || legend.offsetWidth) + padding;
+        legendWidth = (options.maxWidth ?
+            Math.min(legend.widthOption ||
+                allowedWidth, Legend_relativeLength(options.maxWidth, chart.chartWidth) ||
+                Infinity) :
+            (legend.widthOption || legend.offsetWidth)) + padding;
         legendHeight = legend.lastItemY + legend.lastLineHeight +
             legend.titleHeight;
         legendHeight = legend.handleOverflow(legendHeight);
@@ -36336,6 +36477,10 @@ class Legend {
 * @name Highcharts.PointLegendItemClickEventObject#browserEvent
 * @type {Highcharts.PointerEvent}
 */ /**
+* Whether the default action has been prevented (`true`) or not.
+* @name Highcharts.PointLegendItemClickEventObject#defaultPrevented
+* @type {boolean|undefined}
+*/ /**
 * Prevent the default action of toggle the visibility of the point.
 * @name Highcharts.PointLegendItemClickEventObject#preventDefault
 * @type {Function}
@@ -36387,6 +36532,10 @@ class Legend {
 * Related browser event.
 * @name Highcharts.SeriesLegendItemClickEventObject#browserEvent
 * @type {Highcharts.PointerEvent}
+*/ /**
+* Whether the default action has been prevented (`true`) or not.
+* @name Highcharts.SeriesLegendItemClickEventObject#defaultPrevented
+* @type {boolean|undefined}
 */ /**
 * Prevent the default action of toggle the visibility of the series.
 * @name Highcharts.SeriesLegendItemClickEventObject#preventDefault
@@ -36694,7 +36843,7 @@ class Chart {
         });
     }
     /**
-     * Internal function to unitialize an individual series.
+     * Internal function to initialize an individual series.
      *
      * @private
      * @function Highcharts.Chart#initSeries
@@ -38074,34 +38223,29 @@ class Chart {
         });
         // Apply new links
         chartSeries.forEach(function (series) {
-            const { linkedTo } = series.options;
-            if (Chart_isString(linkedTo)) {
-                let linkedParent;
-                if (linkedTo === ':previous') {
-                    linkedParent = chart.series[series.index - 1];
-                }
-                else {
-                    linkedParent = chart.get(linkedTo);
-                }
+            const { linkedTo } = series.options, linkedParent = Chart_isString(linkedTo) && (linkedTo === ':previous' ?
+                chartSeries[series.index - 1] :
+                chart.get(linkedTo));
+            if (linkedParent &&
                 // #3341 avoid mutual linking
-                if (linkedParent &&
-                    linkedParent.linkedParent !== series) {
-                    linkedParent.linkedSeries.push(series);
-                    /**
-                     * The parent series of the current series, if the current
-                     * series has a [linkedTo](https://api.highcharts.com/highcharts/series.line.linkedTo)
-                     * setting.
-                     *
-                     * @name Highcharts.Series#linkedParent
-                     * @type {Highcharts.Series}
-                     * @readonly
-                     */
-                    series.linkedParent = linkedParent;
-                    if (linkedParent.enabledDataSorting) {
-                        series.setDataSortingOptions();
-                    }
-                    series.visible = Chart_pick(series.options.visible, linkedParent.options.visible, series.visible); // #3879
+                linkedParent.linkedParent !== series) {
+                linkedParent.linkedSeries.push(series);
+                /**
+                 * The parent series of the current series, if the current
+                 * series has a [linkedTo](https://api.highcharts.com/highcharts/series.line.linkedTo)
+                 * setting.
+                 *
+                 * @name Highcharts.Series#linkedParent
+                 * @type {Highcharts.Series}
+                 * @readonly
+                 */
+                series.linkedParent = linkedParent;
+                if (linkedParent.enabledDataSorting) {
+                    series.setDataSortingOptions();
                 }
+                series.visible = (series.options.visible ??
+                    linkedParent.options.visible ??
+                    series.visible); // #3879
             }
         });
         Chart_fireEvent(this, 'afterLinkSeries', { isUpdating });
@@ -38213,9 +38357,6 @@ class Chart {
         chart.seriesGroup || (chart.seriesGroup = renderer.g('series-group')
             .attr({ zIndex: 3 })
             .shadow(chart.options.chart.seriesGroupShadow)
-            .add());
-        chart.dataLabelsGroup || (chart.dataLabelsGroup = renderer.g('datalabels-group')
-            .attr({ zIndex: 6 })
             .add());
         chart.renderSeries();
         // Credits
@@ -38406,6 +38547,7 @@ class Chart {
             this.setReflow();
         }
         this.warnIfA11yModuleNotLoaded();
+        this.warnIfCSSNotLoaded();
         // Don't run again
         this.hasLoaded = true;
     }
@@ -38429,6 +38571,18 @@ class Chart {
                     'usable for people with disabilities. Set the ' +
                     '"accessibility.enabled" option to false to remove this ' +
                     'warning. See https://www.highcharts.com/docs/accessibility/accessibility-module.', false, this);
+            }
+        }
+    }
+    /**
+     * Emit console warning if the highcharts.css file is not loaded.
+     * @private
+     */
+    warnIfCSSNotLoaded() {
+        if (this.styledMode) {
+            const containerStyle = Chart_win.getComputedStyle(this.container);
+            if (containerStyle.zIndex !== '0') {
+                Chart_error(35, false, this);
             }
         }
     }
@@ -39047,7 +39201,7 @@ class Chart {
      * @function Highcharts.Chart#transform
      */
     transform(params) {
-        const { axes = this.axes, event, from = {}, reset, selection, to = {}, trigger } = params, { inverted, time } = this;
+        const { axes = this.axes, event, from = {}, reset, selection, to = {}, trigger, allowResetButton = true } = params, { inverted, time } = this;
         // Remove active points for shared tooltip
         this.hoverPoints?.forEach((point) => point.setState());
         Chart_fireEvent(this, 'transform', params);
@@ -39092,7 +39246,7 @@ class Chart {
                 !allExtremes) {
                 for (const series of axis.series) {
                     const seriesExtremes = series.getExtremes(series.getProcessedData(true).modified
-                        .getColumn('y') || [], true);
+                        .getColumn(series.pointValKey || 'y') || [], true);
                     allExtremes ?? (allExtremes = {
                         dataMin: Number.MAX_VALUE,
                         dataMax: -Number.MAX_VALUE
@@ -39152,24 +39306,21 @@ class Chart {
                         // panning/zooming hard. Reset and redraw after the
                         // operation has finished.
                         axis.isPanning = trigger !== 'zoom';
-                        if (axis.isPanning) {
+                        if (axis.isPanning && trigger !== 'mousewheel') {
                             isAnyAxisPanning = true; // #21319
                         }
                         axis.setExtremes(reset ? void 0 : newMin, reset ? void 0 : newMax, false, false, { move, trigger, scale });
                         if (!reset &&
-                            (newMin > floor || newMax < ceiling) &&
-                            trigger !== 'mousewheel') {
-                            displayButton = true;
+                            (newMin > floor || newMax < ceiling)) {
+                            displayButton = allowResetButton;
                         }
                     }
                     hasZoomed = true;
                 }
-                // Show the resetZoom button for non-cartesian series,
-                // except when triggered by mouse wheel zoom
+                // Show the resetZoom button for non-cartesian series.
                 if (!this.hasCartesianSeries &&
-                    !reset &&
-                    trigger !== 'mousewheel') {
-                    displayButton = true;
+                    !reset) {
+                    displayButton = allowResetButton;
                 }
                 if (event) {
                     this[horiz ? 'mouseDownX' : 'mouseDownY'] =
@@ -40858,7 +41009,7 @@ Series_SeriesRegistry.registerSeriesType('line', LineSeries);
  *
  * @type      {string}
  * @since     5.0.0
- * @product   highcharts gantt
+ * @product   highcharts highstock gantt
  * @apioption series.line.data.className
  */
 /**
@@ -40907,7 +41058,8 @@ Series_SeriesRegistry.registerSeriesType('line', LineSeries);
 /**
  * Individual data label for each point. The options are the same as
  * the ones for [plotOptions.series.dataLabels](
- * #plotOptions.series.dataLabels).
+ * #plotOptions.series.dataLabels) with exception of `zIndex` which is applied
+ * on the data label's parent group.
  *
  * @sample highcharts/point/datalabels/
  *         Show a label for the last value
@@ -40915,6 +41067,7 @@ Series_SeriesRegistry.registerSeriesType('line', LineSeries);
  * @type      {*|Array<*>}
  * @declare   Highcharts.DataLabelsOptions
  * @extends   plotOptions.line.dataLabels
+ * @excluding zIndex
  * @product   highcharts highstock gantt
  * @apioption series.line.data.dataLabels
  */
@@ -43099,20 +43252,27 @@ class ColumnSeries extends Series_Series {
         });
         // Add the event listeners, we need to do this only once
         if (!series._hasTracking) {
-            series.trackerGroups.forEach(function (key) {
-                if (series[key]) {
-                    // We don't always have dataLabelsGroup
-                    series[key]
-                        .addClass('highcharts-tracker')
-                        .on('mouseover', onMouseOver)
-                        .on('mouseout', function (e) {
-                        pointer?.onTrackerMouseOut(e);
-                    })
-                        .on('touchstart', onMouseOver);
-                    if (!chart.styledMode && series.options.cursor) {
-                        series[key]
-                            .css({ cursor: series.options.cursor });
-                    }
+            series.trackerGroups?.reduce((acc, key) => {
+                if (key === 'dataLabelsGroup') {
+                    acc.push(...(series.dataLabelsGroups || []));
+                }
+                else {
+                    acc.push(series[key]);
+                }
+                return acc;
+            }, []).forEach((group) => {
+                if (!group) {
+                    // Skip undefined
+                    return;
+                }
+                group.addClass('highcharts-tracker')
+                    .on('mouseover', onMouseOver)
+                    .on('mouseout', function (e) {
+                    pointer?.onTrackerMouseOut(e);
+                })
+                    .on('touchstart', onMouseOver);
+                if (!chart.styledMode && series.options.cursor) {
+                    group.css({ cursor: series.options.cursor });
                 }
             });
             series._hasTracking = true;
@@ -43387,7 +43547,15 @@ var DataLabel;
         return true;
     }
     /**
+     * Compose the data label composition onto a series class.
+     *
      * @private
+     * @function compose
+     *
+     * @param {Highcharts.Series} SeriesClass
+     * The series class to compose onto.
+     *
+     * @return {void}
      */
     function compose(SeriesClass) {
         const seriesProto = SeriesClass.prototype;
@@ -43405,20 +43573,53 @@ var DataLabel;
     DataLabel.compose = compose;
     /**
      * Create the SVGElement group for dataLabels
+     *
      * @private
+     * @function initDataLabelsGroup
+     *
+     * @param {number} index
+     * The index of the data labels group.
+     * @param {Highcharts.DataLabelOptions} [dataLabelsOptions]
+     * Data label options for the group.
+     *
+     * @return {Highcharts.SVGElement}
+     * The SVGElement group.
      */
-    function initDataLabelsGroup() {
-        return this.plotGroup('dataLabelsGroup', 'data-labels', this.hasRendered ? 'inherit' : 'hidden', // #5133, #10220
-        this.options.dataLabels.zIndex || 6, this.chart.dataLabelsGroup);
+    function initDataLabelsGroup(index, dataLabelsOptions) {
+        DataLabel_fireEvent(this, 'initDataLabelsGroup', {
+            index,
+            zIndex: dataLabelsOptions?.zIndex ?? 6
+        });
+        // Existing group or first time
+        this.dataLabelsGroup = this.dataLabelsGroups?.[index];
+        const group = this.plotGroup('dataLabelsGroup', 'data-labels', this.hasRendered ? 'inherit' : 'hidden', // #5133, #10220
+        dataLabelsOptions?.zIndex ?? 6, this.dataLabelsParentGroups?.[index]);
+        this.dataLabelsGroups || (this.dataLabelsGroups = []);
+        this.dataLabelsGroups[index] = group;
+        // Keep reference to the 1st group
+        this.dataLabelsGroup = this.dataLabelsGroups[0];
+        return group;
     }
     /**
-     * Init the data labels with the correct animation
+     * Init the data labels with the correct animation.
+     *
      * @private
+     * @function initDataLabels
+     *
+     * @param {number} index
+     * The index of the data labels group.
+     * @param {Highcharts.AnimationOptions} animationConfig
+     * The animation options.
+     * @param {Highcharts.DataLabelOptions} [dataLabelsOptions]
+     * Data label options for the group.
+     *
+     * @return {Highcharts.SVGElement}
+     * The SVGElement group.
      */
-    function initDataLabels(animationConfig) {
-        const series = this, hasRendered = series.hasRendered || 0;
+    function initDataLabels(index, animationConfig, dataLabelsOptions) {
+        const series = this, hasRendered = !!series.hasRendered;
         // Create a separate group for the data labels to avoid rotation
-        const dataLabelsGroup = this.initDataLabelsGroup()
+        const dataLabelsGroup = this.initDataLabelsGroup(index, dataLabelsOptions)
             .attr({ opacity: +hasRendered }); // #3300
         if (!hasRendered && dataLabelsGroup) {
             if (series.visible) { // #2597, #3023, #3024
@@ -43449,7 +43650,6 @@ var DataLabel;
             { defer: 0, duration: 0 };
         DataLabel_fireEvent(this, 'drawDataLabels');
         if (series.hasDataLabels?.()) {
-            dataLabelsGroup = this.initDataLabels(animationConfig);
             // Make the labels for each point
             points.forEach((point) => {
                 const dataLabels = point.dataLabels || [], pointColor = point.color || series.color;
@@ -43461,6 +43661,10 @@ var DataLabel;
                 point.dlOptions || point.options?.dataLabels));
                 // Handle each individual data label for this point
                 pointOptions.forEach((labelOptions, i) => {
+                    // Create dataLabelsGroup for each data labels config
+                    // (can be multiple)
+                    dataLabelsGroup =
+                        this.initDataLabels(i, animationConfig, labelOptions);
                     // Options for one datalabel
                     const labelEnabled = (labelOptions.enabled &&
                         (point.visible || point.dataLabelOnHidden) &&
@@ -46124,7 +46328,7 @@ var PieDataLabel_ColumnDataLabel;
             // Place the labels in the final position
             this.placeDataLabels();
             this.points.forEach((point) => {
-                (point.dataLabels || []).forEach((dataLabel) => {
+                point.dataLabels?.forEach((dataLabel, i) => {
                     // #8864: every connector can have individual options
                     const { connectorColor, connectorWidth = 1 } = (dataLabel.options || {}), labelPosition = dataLabel.dataLabelPosition;
                     // Draw the connector
@@ -46142,7 +46346,7 @@ var PieDataLabel_ColumnDataLabel;
                                     (point.className ?
                                         ' ' + point.className :
                                         ''))
-                                    .add(series.dataLabelsGroup);
+                                    .add(series.dataLabelsGroups?.[i]);
                             }
                             if (!chart.styledMode) {
                                 connector.attr({

@@ -106,8 +106,6 @@ class Pointer {
                 Pointer.unbindDocumentTouchEnd = (Pointer.unbindDocumentTouchEnd());
             }
         }
-        // Memory and CPU leak
-        clearInterval(pointer.tooltipTimeout);
         objectEach(pointer, function (_val, prop) {
             pointer[prop] = void 0;
         });
@@ -1289,7 +1287,9 @@ class Pointer {
      * @function Highcharts.Pointer#setDOMEvents
      */
     setDOMEvents() {
-        const container = this.chart.container, ownerDoc = container.ownerDocument;
+        const container = this.chart.container, ownerDoc = container.ownerDocument, 
+        // Get the parent element, including handling Shadow DOM (#23450)
+        getParent = (el) => el.parentElement || el.getRootNode()?.host?.parentElement;
         container.onmousedown = this.onContainerMouseDown.bind(this);
         container.onmousemove = this.onContainerMouseMove.bind(this);
         container.onclick = this.onContainerClick.bind(this);
@@ -1302,12 +1302,12 @@ class Pointer {
         }
         // In case we are dealing with overflow, reset the chart position when
         // scrolling parent elements
-        let parent = this.chart.renderTo.parentElement;
+        let parent = getParent(this.chart.renderTo);
         while (parent && parent.tagName !== 'BODY') {
             this.eventsToUnbind.push(addEvent(parent, 'scroll', () => {
                 delete this.chartPosition;
             }));
-            parent = parent.parentElement;
+            parent = getParent(parent);
         }
         this.eventsToUnbind.push(addEvent(container, 'touchstart', this.onContainerTouchStart.bind(this), { passive: false }), addEvent(container, 'touchmove', this.onContainerTouchMove.bind(this), { passive: false }));
         if (!Pointer.unbindDocumentTouchEnd) {

@@ -17,8 +17,7 @@ import SVGElement from '../../Core/Renderer/SVG/SVGElement.js';
 import T from '../../Core/Templating.js';
 const { format } = T;
 import U from '../../Core/Utilities.js';
-import OrdinalAxis from '../../Core/Axis/OrdinalAxis.js';
-const { addEvent, createElement, css, defined, destroyObjectProperties, diffObjects, discardElement, extend, fireEvent, isNumber, isString, merge, objectEach, pick, splat } = U;
+const { addEvent, createElement, css, defined, destroyObjectProperties, discardElement, extend, fireEvent, isNumber, isString, merge, objectEach, pick, splat } = U;
 /* *
  *
  *  Functions
@@ -360,9 +359,8 @@ class RangeSelector {
                 range &&
                 actualRange < range) {
                 // Handle ordinal ranges
-                const positions = baseAxis.ordinal.positions, prevOrdinalPosition = OrdinalAxis.Additions.findIndexOf(positions, baseAxis.min, true), nextOrdinalPosition = Math.min(OrdinalAxis.Additions.findIndexOf(positions, baseAxis.max, true) + 1, positions.length - 1);
-                if (positions[nextOrdinalPosition] -
-                    positions[prevOrdinalPosition] > range) {
+                const positions = baseAxis.ordinal.positions;
+                if (positions[positions.length - 1] - positions[0] > range) {
                     isSameRange = true;
                 }
             }
@@ -1203,14 +1201,11 @@ class RangeSelector {
             }
             // Update current buttons
             for (let i = btnLength - 1; i >= 0; i--) {
-                const diff = diffObjects(newButtonsOptions[i], this.buttonOptions[i]);
-                if (Object.keys(diff).length !== 0) {
-                    const rangeOptions = newButtonsOptions[i];
-                    this.buttons[i].destroy();
-                    dropdown?.options.remove(i + 1);
-                    this.createButton(rangeOptions, i, width, states);
-                    this.computeButtonRange(rangeOptions);
-                }
+                const rangeOptions = newButtonsOptions[i];
+                this.buttons[i].destroy();
+                dropdown?.options.remove(i + 1);
+                this.createButton(rangeOptions, i, width, states);
+                this.computeButtonRange(rangeOptions);
             }
             // Create missing buttons
             if (newButtonsOptions.length > this.buttonOptions.length) {
@@ -1343,7 +1338,7 @@ class RangeSelector {
                 xOffsetForExportButton +
                 inputGroup.getBBox().width >
                 chart.plotWidth) {
-                if (dropdown === 'responsive') {
+                if (dropdown === 'responsive' || dropdown === 'always') {
                     this.collapseButtons();
                 }
                 else {
@@ -1430,9 +1425,7 @@ class RangeSelector {
         if (dropdown) {
             this.dropdownLabel.hide();
             css(dropdown, {
-                visibility: 'hidden',
-                width: '1px',
-                height: '1px'
+                visibility: 'hidden'
             });
             this.hasVisibleDropdown = false;
         }
@@ -1497,7 +1490,7 @@ class RangeSelector {
             this.destroy();
             return this.init(chart);
         }
-        this.isDirty = !!options.buttons;
+        this.isDirty = !!options.buttons || !!options.buttonTheme;
         if (redraw) {
             this.render();
         }

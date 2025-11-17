@@ -56,7 +56,7 @@ class RenkoSeries extends ColumnSeries {
         };
     }
     getProcessedData() {
-        const modified = this.dataTable.modified;
+        const modified = this.dataTable.getModified();
         const processedXData = [];
         const processedYData = [];
         const processedLowData = [];

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v12.4.0 (2025-09-04)
+ * @license Highstock JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/renko
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -336,7 +336,7 @@ class RenkoSeries extends (highcharts_Series_types_column_commonjs_highcharts_Se
         };
     }
     getProcessedData() {
-        const modified = this.dataTable.modified;
+        const modified = this.dataTable.getModified();
         const processedXData = [];
         const processedYData = [];
         const processedLowData = [];

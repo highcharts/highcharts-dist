@@ -392,6 +392,7 @@ class Annotation extends EventEmitter {
         const renderer = this.chart.renderer;
         this.graphic = renderer
             .g('annotation')
+            .addClass(this.options.className || '')
             .attr({
             opacity: 0,
             zIndex: this.options.zIndex,

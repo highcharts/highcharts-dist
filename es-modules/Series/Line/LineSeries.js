@@ -354,7 +354,7 @@ export default LineSeries;
  *
  * @type      {string}
  * @since     5.0.0
- * @product   highcharts gantt
+ * @product   highcharts highstock gantt
  * @apioption series.line.data.className
  */
 /**
@@ -403,7 +403,8 @@ export default LineSeries;
 /**
  * Individual data label for each point. The options are the same as
  * the ones for [plotOptions.series.dataLabels](
- * #plotOptions.series.dataLabels).
+ * #plotOptions.series.dataLabels) with exception of `zIndex` which is applied
+ * on the data label's parent group.
  *
  * @sample highcharts/point/datalabels/
  *         Show a label for the last value
@@ -411,6 +412,7 @@ export default LineSeries;
  * @type      {*|Array<*>}
  * @declare   Highcharts.DataLabelsOptions
  * @extends   plotOptions.line.dataLabels
+ * @excluding zIndex
  * @product   highcharts highstock gantt
  * @apioption series.line.data.dataLabels
  */

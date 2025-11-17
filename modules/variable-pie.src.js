@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/variable-pie
  * @requires highcharts
  *
@@ -268,6 +268,15 @@ const VariablePieSeriesDefaults = {
  * @product   highcharts
  * @apioption series.variablepie.data
  */
+/**
+* The z value of the point.
+*
+* @type {(number| null)}
+*
+* @product highcharts
+*
+* @apioption series.variablepie.data.z
+*/
 ''; // Keeps doclets above separate
 /* *
  *

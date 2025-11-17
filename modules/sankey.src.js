@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/sankey
  * @requires highcharts
  *
@@ -1826,7 +1826,10 @@ class SankeySeries extends SankeySeries_ColumnSeries {
             params.level.dataLabels :
             {}), options = SankeySeries_merge({
             style: {}
-        }, optionsLevel, optionsPoint);
+        }, optionsLevel, optionsPoint, {
+            // Not a point option. zIndex is set for the data labels group.
+            zIndex: optionsLevel?.zIndex
+        });
         return options;
     }
     /* *
@@ -2186,10 +2189,13 @@ class SankeySeries extends SankeySeries_ColumnSeries {
                 height = node.options.width || options.width || nodeHeight;
             }
             // Calculate data label options for the point
-            node.dlOptions = SankeySeries.getDLOptions({
-                level: this.mapOptionsToLevel[node.level],
-                optionsPoint: node.options
-            });
+            node.dlOptions = {
+                ...SankeySeries.getDLOptions({
+                    level: this.mapOptionsToLevel[node.level],
+                    optionsPoint: node.options
+                }),
+                zIndex: void 0
+            };
             // Pass test in drawPoints
             node.plotX = 1;
             node.plotY = 1;

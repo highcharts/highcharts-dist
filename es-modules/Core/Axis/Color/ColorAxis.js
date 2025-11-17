@@ -11,7 +11,7 @@
 import Axis from '../Axis.js';
 import ColorAxisComposition from './ColorAxisComposition.js';
 import ColorAxisDefaults from './ColorAxisDefaults.js';
-import ColorAxisLike from './ColorAxisLike.js';
+import ColorAxisBase from './ColorAxisBase.js';
 import D from '../../Defaults.js';
 const { defaultOptions } = D;
 import LegendSymbol from '../../Legend/LegendSymbol.js';
@@ -539,7 +539,7 @@ ColorAxis.defaultLegendLength = 200;
 ColorAxis.keepProps = [
     'legendItem'
 ];
-extend(ColorAxis.prototype, ColorAxisLike);
+extend(ColorAxis.prototype, ColorAxisBase);
 /* *
  *
  *  Registry

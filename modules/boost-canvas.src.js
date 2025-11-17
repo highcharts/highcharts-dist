@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/boost-canvas
  * @requires highcharts
  *
@@ -2410,7 +2410,7 @@ var ColumnUtils;
      * @param {boolean} asSubarray
      * If column is a typed array, return a subarray instead of a new array. It
      * is faster `O(1)`, but the entire buffer will be kept in memory until all
-     * views to it are destroyed. Default is `false`.
+     * views of it are destroyed. Default is `false`.
      *
      * @return {DataTable.Column}
      * Modified column.
@@ -2476,6 +2476,33 @@ var ColumnUtils;
         };
     }
     ColumnUtils.splice = splice;
+    /**
+     * Converts a cell value to a number.
+     *
+     * @param {DataTable.CellType} value
+     * Cell value to convert to a number.
+     *
+     * @param {boolean} useNaN
+     * If `true`, returns `NaN` for non-numeric values; if `false`,
+     * returns `null` instead.
+     *
+     * @return {number | null}
+     * Number or `null` if the value is not a number.
+     *
+     * @private
+     */
+    function convertToNumber(value, useNaN) {
+        switch (typeof value) {
+            case 'boolean':
+                return (value ? 1 : 0);
+            case 'number':
+                return (isNaN(value) && !useNaN ? null : value);
+            default:
+                value = parseFloat(`${value ?? ''}`);
+                return (isNaN(value) && !useNaN ? null : value);
+        }
+    }
+    ColumnUtils.convertToNumber = convertToNumber;
 })(ColumnUtils || (ColumnUtils = {}));
 /* *
  *
@@ -2553,12 +2580,11 @@ class DataTableCore {
          * @type {string}
          */
         this.id = (options.id || uniqueKey());
-        this.modified = this;
         this.rowCount = 0;
         this.versionTag = uniqueKey();
         let rowCount = 0;
-        DataTableCore_objectEach(options.columns || {}, (column, columnName) => {
-            this.columns[columnName] = column.slice();
+        DataTableCore_objectEach(options.columns || {}, (column, columnId) => {
+            this.columns[columnId] = column.slice();
             rowCount = Math.max(rowCount, column.length);
         });
         this.applyRowCount(rowCount);
@@ -2577,9 +2603,9 @@ class DataTableCore {
      */
     applyRowCount(rowCount) {
         this.rowCount = rowCount;
-        DataTableCore_objectEach(this.columns, (column, columnName) => {
+        DataTableCore_objectEach(this.columns, (column, columnId) => {
             if (column.length !== rowCount) {
-                this.columns[columnName] = setLength(column, rowCount);
+                this.columns[columnId] = setLength(column, rowCount);
             }
         });
     }
@@ -2600,8 +2626,8 @@ class DataTableCore {
     deleteRows(rowIndex, rowCount = 1) {
         if (rowCount > 0 && rowIndex < this.rowCount) {
             let length = 0;
-            DataTableCore_objectEach(this.columns, (column, columnName) => {
-                this.columns[columnName] =
+            DataTableCore_objectEach(this.columns, (column, columnId) => {
+                this.columns[columnId] =
                     splice(column, rowIndex, rowCount).array;
                 length = column.length;
             });
@@ -2614,33 +2640,33 @@ class DataTableCore {
      * Fetches the given column by the canonical column name. Simplified version
      * of the full `DataTable.getRow` method, always returning by reference.
      *
-     * @param {string} columnName
+     * @param {string} columnId
      * Name of the column to get.
      *
      * @return {Highcharts.DataTableColumn|undefined}
      * A copy of the column, or `undefined` if not found.
      */
-    getColumn(columnName, 
+    getColumn(columnId, 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asReference) {
-        return this.columns[columnName];
+        return this.columns[columnId];
     }
     /**
      * Retrieves all or the given columns. Simplified version of the full
      * `DataTable.getColumns` method, always returning by reference.
      *
-     * @param {Array<string>} [columnNames]
-     * Column names to retrieve.
+     * @param {Array<string>} [columnIds]
+     * Column ids to retrieve.
      *
      * @return {Highcharts.DataTableColumnCollection}
      * Collection of columns. If a requested column was not found, it is
      * `undefined`.
      */
-    getColumns(columnNames, 
+    getColumns(columnIds, 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asReference) {
-        return (columnNames || Object.keys(this.columns)).reduce((columns, columnName) => {
-            columns[columnName] = this.columns[columnName];
+        return (columnIds || Object.keys(this.columns)).reduce((columns, columnId) => {
+            columns[columnId] = this.columns[columnId];
             return columns;
         }, {});
     }
@@ -2650,19 +2676,19 @@ class DataTableCore {
      * @param {number} rowIndex
      * Row index to retrieve. First row has index 0.
      *
-     * @param {Array<string>} [columnNames]
+     * @param {Array<string>} [columnIds]
      * Column names to retrieve.
      *
      * @return {Record<string, number|string|undefined>|undefined}
      * Returns the row values, or `undefined` if not found.
      */
-    getRow(rowIndex, columnNames) {
-        return (columnNames || Object.keys(this.columns)).map((key) => this.columns[key]?.[rowIndex]);
+    getRow(rowIndex, columnIds) {
+        return (columnIds || Object.keys(this.columns)).map((key) => this.columns[key]?.[rowIndex]);
     }
     /**
      * Sets cell values for a column. Will insert a new column, if not found.
      *
-     * @param {string} columnName
+     * @param {string} columnId
      * Column name to set.
      *
      * @param {Highcharts.DataTableColumn} [column]
@@ -2677,8 +2703,8 @@ class DataTableCore {
      * @emits #setColumns
      * @emits #afterSetColumns
      */
-    setColumn(columnName, column = [], rowIndex = 0, eventDetail) {
-        this.setColumns({ [columnName]: column }, rowIndex, eventDetail);
+    setColumn(columnId, column = [], rowIndex = 0, eventDetail) {
+        this.setColumns({ [columnId]: column }, rowIndex, eventDetail);
     }
     /**
      * Sets cell values for multiple columns. Will insert new columns, if not
@@ -2700,8 +2726,8 @@ class DataTableCore {
      */
     setColumns(columns, rowIndex, eventDetail) {
         let rowCount = this.rowCount;
-        DataTableCore_objectEach(columns, (column, columnName) => {
-            this.columns[columnName] = column.slice();
+        DataTableCore_objectEach(columns, (column, columnId) => {
+            this.columns[columnId] = column.slice();
             rowCount = column.length;
         });
         this.applyRowCount(rowCount);
@@ -2730,18 +2756,27 @@ class DataTableCore {
      * @emits #afterSetRows
      */
     setRow(row, rowIndex = this.rowCount, insert, eventDetail) {
-        const { columns } = this, indexRowCount = insert ? this.rowCount + 1 : rowIndex + 1;
-        DataTableCore_objectEach(row, (cellValue, columnName) => {
-            let column = columns[columnName] ||
-                eventDetail?.addColumns !== false && new Array(indexRowCount);
+        const { columns } = this, indexRowCount = insert ? this.rowCount + 1 : rowIndex + 1, rowKeys = Object.keys(row);
+        if (eventDetail?.addColumns !== false) {
+            for (let i = 0, iEnd = rowKeys.length; i < iEnd; i++) {
+                const key = rowKeys[i];
+                if (!columns[key]) {
+                    columns[key] = [];
+                }
+            }
+        }
+        DataTableCore_objectEach(columns, (column, columnId) => {
+            if (!column && eventDetail?.addColumns !== false) {
+                column = new Array(indexRowCount);
+            }
             if (column) {
                 if (insert) {
-                    column = splice(column, rowIndex, 0, true, [cellValue]).array;
+                    column = splice(column, rowIndex, 0, true, [row[columnId] ?? null]).array;
                 }
                 else {
-                    column[rowIndex] = cellValue;
+                    column[rowIndex] = row[columnId] ?? null;
                 }
-                columns[columnName] = column;
+                columns[columnId] = column;
             }
         });
         if (indexRowCount > this.rowCount) {
@@ -2751,6 +2786,16 @@ class DataTableCore {
             fireEvent(this, 'afterSetRows');
             this.versionTag = uniqueKey();
         }
+    }
+    /**
+     * Returns the medified (clone) or the original data table if the modified
+     * one does not exist.
+     *
+     * @return {Highcharts.DataTableCore}
+     * The medified (clone) or the original data table.
+     */
+    getModified() {
+        return this.modified || this;
     }
 }
 /* *
@@ -3076,7 +3121,8 @@ function createAndAttachRenderer(chart, series) {
         // When using panes, the image itself must be clipped. When not
         // using panes, it is better to clip the target group, because then
         // we preserve clipping on touch- and mousewheel zoom preview.
-        if (box.width === chart.clipBox.width &&
+        if (!chart.navigator &&
+            box.width === chart.clipBox.width &&
             box.height === chart.clipBox.height) {
             targetGroup?.clip(chart.renderer.clipRect(box.x - 4, box.y, box.width + 4, box.height + 4)); // #9799
         }
@@ -3265,7 +3311,7 @@ function exitBoost(series) {
  * @function Highcharts.Series#hasExtremes
  */
 function hasExtremes(series, checkX) {
-    const options = series.options, dataLength = series.dataTable.modified.rowCount, xAxis = series.xAxis && series.xAxis.options, yAxis = series.yAxis && series.yAxis.options, colorAxis = series.colorAxis && series.colorAxis.options;
+    const options = series.options, dataLength = series.dataTable.getModified().rowCount, xAxis = series.xAxis && series.xAxis.options, yAxis = series.yAxis && series.yAxis.options, colorAxis = series.colorAxis && series.colorAxis.options;
     return dataLength > BoostSeries_pick(options.boostThreshold, Number.MAX_VALUE) &&
         // Defined yAxis extremes
         BoostSeries_isNumber(yAxis.min) &&
@@ -3418,7 +3464,7 @@ function scatterProcessData(force) {
         xMax <= (xAxis.old.max ?? Number.MAX_VALUE) &&
         yMin >= (yAxis.old.min ?? -Number.MAX_VALUE) &&
         yMax <= (yAxis.old.max ?? Number.MAX_VALUE)) {
-        series.dataTable.modified.setColumns({
+        series.dataTable.getModified().setColumns({
             x: xData,
             y: yData
         });
@@ -3433,7 +3479,7 @@ function scatterProcessData(force) {
             !series.getExtremesFromAll &&
             !options.getExtremesFromAll &&
             dataLength < cropThreshold)) {
-        series.dataTable.modified.setColumns({
+        series.dataTable.getModified().setColumns({
             x: xData,
             y: yData
         });
@@ -3475,12 +3521,12 @@ function scatterProcessData(force) {
     series.cropped = cropped;
     series.cropStart = 0;
     // For boosted points rendering
-    if (cropped && series.dataTable.modified === series.dataTable) {
+    if (cropped && !series.dataTable.modified) {
         // Calling setColumns with cropped data must be done on a new instance
         // to avoid modification of the original (complete) data
         series.dataTable.modified = new Data_DataTableCore();
     }
-    series.dataTable.modified.setColumns({
+    series.dataTable.getModified().setColumns({
         x: processedXData,
         y: processedYData
     });

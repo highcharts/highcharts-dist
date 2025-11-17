@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/pictorial
  * @requires highcharts
  *
@@ -227,11 +227,10 @@ function createPatterns() {
     ]) {
         patterns.push({
             path: pattern,
-            color: colors[i],
+            color: colors[i++],
             width: 10,
             height: 10
         });
-        i = i + 5;
     }
     return patterns;
 }

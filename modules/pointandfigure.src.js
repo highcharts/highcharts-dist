@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v12.4.0 (2025-09-04)
+ * @license Highstock JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/pointandfigure
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -466,13 +466,13 @@ class PointAndFigureSeries extends ScatterSeries {
     getProcessedData() {
         if (!this.pnfDataGroups) {
             return {
-                modified: this.dataTable.modified,
+                modified: this.dataTable.getModified(),
                 cropped: false,
                 cropStart: 0,
                 closestPointRange: 1
             };
         }
-        const series = this, modified = this.dataTable.modified, options = series.options, xData = series.getColumn('x', true), yData = series.getColumn('y', true), boxSize = options.boxSize, calculatedBoxSize = isNumber(boxSize) ?
+        const series = this, modified = this.dataTable.getModified(), options = series.options, xData = series.getColumn('x', true), yData = series.getColumn('y', true), boxSize = options.boxSize, calculatedBoxSize = isNumber(boxSize) ?
             boxSize : relativeLength(boxSize, yData[0]), pnfDataGroups = series.pnfDataGroups, reversal = calculatedBoxSize * options.reversalAmount;
         series.calculatedBoxSize = calculatedBoxSize;
         let upTrend;

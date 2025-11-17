@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v12.4.0 (2025-09-04)
+ * @license Highmaps JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/heatmap
  * @requires highcharts
  *
@@ -882,7 +882,7 @@ const colorAxisDefaults = {
  * */
 /* harmony default export */ const ColorAxisDefaults = (colorAxisDefaults);
 
-;// ./code/es-modules/Core/Axis/Color/ColorAxisLike.js
+;// ./code/es-modules/Core/Axis/Color/ColorAxisBase.js
 /* *
  *
  *  (c) 2010-2025 Torstein Honsi
@@ -894,16 +894,16 @@ const colorAxisDefaults = {
  * */
 
 
-const { parse: ColorAxisLike_color } = (highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_default());
+const { parse: ColorAxisBase_color } = (highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_default());
 
-const { merge: ColorAxisLike_merge } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { merge: ColorAxisBase_merge } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
  *  Namespace
  *
  * */
-var ColorAxisLike;
-(function (ColorAxisLike) {
+var ColorAxisBase;
+(function (ColorAxisBase) {
     /* *
      *
      *  Declarations
@@ -925,7 +925,7 @@ var ColorAxisLike;
         legendItem.labels = [];
         for (let i = 0, iEnd = userDataClasses.length; i < iEnd; ++i) {
             dataClass = userDataClasses[i];
-            dataClass = ColorAxisLike_merge(dataClass);
+            dataClass = ColorAxisBase_merge(dataClass);
             dataClasses.push(dataClass);
             if (!chart.styledMode && dataClass.color) {
                 continue;
@@ -944,12 +944,12 @@ var ColorAxisLike;
                 }
             }
             else {
-                dataClass.color = ColorAxisLike_color(options.minColor).tweenTo(ColorAxisLike_color(options.maxColor), iEnd < 2 ? 0.5 : i / (iEnd - 1) // #3219
+                dataClass.color = ColorAxisBase_color(options.minColor).tweenTo(ColorAxisBase_color(options.maxColor), iEnd < 2 ? 0.5 : i / (iEnd - 1) // #3219
                 );
             }
         }
     }
-    ColorAxisLike.initDataClasses = initDataClasses;
+    ColorAxisBase.initDataClasses = initDataClasses;
     /**
      * Create initial color stops.
      * @private
@@ -960,10 +960,10 @@ var ColorAxisLike;
             [1, options.maxColor || '']
         ];
         for (let i = 0, iEnd = stops.length; i < iEnd; ++i) {
-            stops[i].color = ColorAxisLike_color(stops[i][1]);
+            stops[i].color = ColorAxisBase_color(stops[i][1]);
         }
     }
-    ColorAxisLike.initStops = initStops;
+    ColorAxisBase.initStops = initStops;
     /**
      * Normalize logarithmic values.
      * @private
@@ -976,7 +976,7 @@ var ColorAxisLike;
         return 1 - ((max - value) /
             ((max - min) || 1));
     }
-    ColorAxisLike.normalizedValue = normalizedValue;
+    ColorAxisBase.normalizedValue = normalizedValue;
     /**
      * Translate from a value to a color.
      * @private
@@ -1019,14 +1019,14 @@ var ColorAxisLike;
         }
         return color;
     }
-    ColorAxisLike.toColor = toColor;
-})(ColorAxisLike || (ColorAxisLike = {}));
+    ColorAxisBase.toColor = toColor;
+})(ColorAxisBase || (ColorAxisBase = {}));
 /* *
  *
  *  Default Export
  *
  * */
-/* harmony default export */ const Color_ColorAxisLike = (ColorAxisLike);
+/* harmony default export */ const Color_ColorAxisBase = (ColorAxisBase);
 
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","LegendSymbol"],"commonjs":["highcharts","LegendSymbol"],"commonjs2":["highcharts","LegendSymbol"],"root":["Highcharts","LegendSymbol"]}
 var highcharts_LegendSymbol_commonjs_highcharts_LegendSymbol_commonjs2_highcharts_LegendSymbol_root_Highcharts_LegendSymbol_ = __webpack_require__(500);
@@ -1576,7 +1576,7 @@ ColorAxis.defaultLegendLength = 200;
 ColorAxis.keepProps = [
     'legendItem'
 ];
-ColorAxis_extend(ColorAxis.prototype, Color_ColorAxisLike);
+ColorAxis_extend(ColorAxis.prototype, Color_ColorAxisBase);
 /* *
  *
  *  Registry
@@ -1604,7 +1604,7 @@ Array.prototype.push.apply((highcharts_Axis_commonjs_highcharts_Axis_commonjs2_h
 
 ;// ./code/es-modules/masters/modules/coloraxis.src.js
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -2853,6 +2853,9 @@ HeatmapSeries.defaultOptions = HeatmapSeries_merge(ScatterSeries.defaultOptions,
 HeatmapSeries_addEvent(HeatmapSeries, 'afterDataClassLegendClick', function () {
     this.isDirtyCanvas = true;
     this.drawPoints();
+    if (this.options.enableMouseTracking) {
+        this.drawTracker(); // #23162, set tracker again after points redraw
+    }
 });
 HeatmapSeries_extend(HeatmapSeries.prototype, {
     axisTypes: Series_ColorMapComposition.seriesMembers.axisTypes,

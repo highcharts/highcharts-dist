@@ -151,7 +151,8 @@ declare module "../highcharts.src" {
      *
      * **TypeScript:**
      *
-     * - the type option must always be set.
+     * - type option should always be set, otherwise a broad set of unsupported
+     * options is allowed.
      *
      * - when accessing an array of series, the combined set of all series types
      * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
@@ -337,7 +338,9 @@ declare module "../highcharts.src" {
          * percentage or absolute change depending on whether `compare` is set
          * to `"percent"` or `"value"`. When this is applied to multiple series,
          * it allows comparing the development of the series against each other.
-         * Adds a `change` field to every point object.
+         * Adds a `change` field to every point object. If a `compare` value is
+         * not set on a linked series, it will be inherited from the parent
+         * series.
          */
         compare?: Highcharts.OptionsCompareValue;
         /**
@@ -583,6 +586,9 @@ declare module "../highcharts.src" {
          * If master series uses data sorting and linked series does not have
          * its own sorting definition, the linked series will be sorted in the
          * same order as the master one.
+         *
+         * If a `compare` value is not set on a linked series, it will be
+         * inherited from the parent series.
          */
         linkedTo?: string;
         /**
@@ -890,7 +896,8 @@ declare module "../highcharts.src" {
      *
      * **TypeScript:**
      *
-     * - the type option must always be set.
+     * - type option should always be set, otherwise a broad set of unsupported
+     * options is allowed.
      *
      * - when accessing an array of series, the combined set of all series types
      * is represented by Highcharts.SeriesOptionsType . Narrowing down to the

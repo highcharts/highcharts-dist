@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/export-data
  * @requires highcharts
  * @requires highcharts/modules/exporting
@@ -12,7 +12,7 @@
  */
 'use strict';
 import Highcharts from '../../Core/Globals.js';
-import DownloadURL from '../../Extensions/DownloadURL.js';
+import DownloadURL from '../../Shared/DownloadURL.js';
 import ExportData from '../../Extensions/ExportData/ExportData.js';
 const G = Highcharts;
 // Compatibility

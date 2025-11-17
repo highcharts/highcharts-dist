@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.4.0-modified (2025-11-17)
  * @module highcharts/modules/tiledwebmap
  * @requires highcharts
  *
@@ -112,6 +112,7 @@ var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default 
  *  Class
  *
  * */
+/** @internal */
 class OpenStreetMap {
     constructor() {
         /* *
@@ -151,6 +152,7 @@ class OpenStreetMap {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const TilesProviders_OpenStreetMap = (OpenStreetMap);
 
 ;// ./code/es-modules/Maps/TilesProviders/Stamen.js
@@ -163,6 +165,7 @@ class OpenStreetMap {
  *  Class
  *
  * */
+/** @internal */
 class Stamen {
     constructor() {
         /* *
@@ -220,6 +223,7 @@ class Stamen {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const TilesProviders_Stamen = (Stamen);
 
 ;// ./code/es-modules/Maps/TilesProviders/LimaLabs.js
@@ -232,6 +236,7 @@ class Stamen {
  *  Class
  *
  * */
+/** @internal */
 class LimaLabs {
     constructor() {
         /* *
@@ -257,6 +262,7 @@ class LimaLabs {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const TilesProviders_LimaLabs = (LimaLabs);
 
 ;// ./code/es-modules/Maps/TilesProviders/Thunderforest.js
@@ -269,6 +275,7 @@ class LimaLabs {
  *  Class
  *
  * */
+/** @internal */
 class Thunderforest {
     constructor() {
         /* *
@@ -336,6 +343,7 @@ class Thunderforest {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const TilesProviders_Thunderforest = (Thunderforest);
 
 ;// ./code/es-modules/Maps/TilesProviders/Esri.js
@@ -348,6 +356,7 @@ class Thunderforest {
  *  Class
  *
  * */
+/** @internal */
 class Esri {
     constructor() {
         /* *
@@ -429,6 +438,7 @@ class Esri {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const TilesProviders_Esri = (Esri);
 
 ;// ./code/es-modules/Maps/TilesProviders/USGS.js
@@ -441,6 +451,7 @@ class Esri {
  *  Class
  *
  * */
+/** @internal */
 class USGS {
     constructor() {
         /* *
@@ -475,6 +486,7 @@ class USGS {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const TilesProviders_USGS = (USGS);
 
 ;// ./code/es-modules/Maps/TilesProviders/TilesProviderRegistry.js
@@ -500,6 +512,7 @@ class USGS {
  *  Constants
  *
  * */
+/** @internal */
 const tilesProviderRegistry = {
     Esri: TilesProviders_Esri,
     LimaLabs: TilesProviders_LimaLabs,
@@ -513,6 +526,7 @@ const tilesProviderRegistry = {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const TilesProviderRegistry = (tilesProviderRegistry);
 
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
@@ -1128,8 +1142,8 @@ class TiledWebMapSeries extends MapSeries {
                 'Provider Registry.', false);
         }
     }
-    update() {
-        const series = this, { transformGroups } = series, chart = this.chart, mapView = chart.mapView, options = arguments[0], { provider } = options;
+    update(options) {
+        const { transformGroups } = this, chart = this.chart, mapView = chart.mapView, { provider } = options;
         if (transformGroups) {
             transformGroups.forEach((group) => {
                 if (Object.keys(group).length !== 0) {
@@ -1140,19 +1154,17 @@ class TiledWebMapSeries extends MapSeries {
         }
         if (mapView &&
             !defined(chart.userOptions.mapView?.projection) &&
-            provider &&
-            provider.type) {
+            provider?.type) {
             const ProviderDefinition = TilesProviderRegistry[provider.type];
             if (ProviderDefinition) {
-                const def = new ProviderDefinition(), { initialProjectionName: providerProjectionName } = def;
                 mapView.update({
                     projection: {
-                        name: providerProjectionName
+                        name: (new ProviderDefinition()).initialProjectionName
                     }
                 });
             }
         }
-        super.update.apply(series, arguments);
+        super.update.apply(this, arguments);
     }
 }
 TiledWebMapSeries.defaultOptions = merge(MapSeries.defaultOptions, TiledWebMap_TiledWebMapSeriesDefaults);
