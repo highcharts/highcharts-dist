@@ -41,7 +41,7 @@ We love to learn how you are using Highcharts, and what you would like to see fr
 Highcharts is front-end tech that works with any back-end database or server stack, and is available for popular frameworks and technologies including React, Angular, Vue, Svelte, Node.js, Flutter, and Python.
 
 ## License
-A commercial license may be needed depending on your use case. Visit [highcharts.com/license](https://www.highcharts.com/license) for complete licensing information.
+SEE LICENSE IN [LICENSE.md](https://github.com/highcharts/highcharts-dist/blob/master/LICENSE.md).
 
 ## Installation
 
