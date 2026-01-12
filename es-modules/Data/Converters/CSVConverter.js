@@ -1,20 +1,22 @@
 /* *
  *
- *  (c) 2009-2025 Highsoft AS
+ *  (c) 2009-2026 Highsoft AS
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  *  Authors:
  *  - Torstein Hønsi
  *  - Christer Vasseng
  *  - Gøran Slettemark
  *  - Sophie Bremer
+ *  - Kamil Kubik
  *
  * */
 'use strict';
 import DataConverter from './DataConverter.js';
+import DataConverterUtils from './DataConverterUtils.js';
 import U from '../../Core/Utilities.js';
 const { merge } = U;
 /* *
@@ -36,7 +38,7 @@ class CSVConverter extends DataConverter {
     /**
      * Constructs an instance of the CSV parser.
      *
-     * @param {CSVConverter.UserOptions} [options]
+     * @param {Partial<CSVConverterOptions>} [options]
      * Options for the CSV parser.
      */
     constructor(options) {
@@ -47,7 +49,6 @@ class CSVConverter extends DataConverter {
          *  Properties
          *
          * */
-        this.columns = [];
         this.headers = [];
         this.dataTypes = [];
         this.options = mergedOptions;
@@ -58,85 +59,16 @@ class CSVConverter extends DataConverter {
      *
      * */
     /**
-     * Creates a CSV string from the datatable on the connector instance.
+     * Parses the CSV string into a DataTable column collection.
+     * Handles line and item delimiters, optional header row, and
+     * applies pre-processing if a beforeParse callback is provided.
      *
-     * @param {DataConnector} connector
-     * Connector instance to export from.
-     *
-     * @param {CSVConverter.Options} [options]
-     * Options used for the export.
-     *
-     * @return {string}
-     * CSV string from the connector table.
-     */
-    export(connector, options = this.options) {
-        const { useLocalDecimalPoint, lineDelimiter } = options, exportNames = (this.options.firstRowAsNames !== false);
-        let { decimalPoint, itemDelimiter } = options;
-        if (!decimalPoint) {
-            decimalPoint = (itemDelimiter !== ',' && useLocalDecimalPoint ?
-                (1.1).toLocaleString()[1] :
-                '.');
-        }
-        if (!itemDelimiter) {
-            itemDelimiter = (decimalPoint === ',' ? ';' : ',');
-        }
-        const columns = connector.getSortedColumns(options.usePresentationOrder), columnNames = Object.keys(columns), csvRows = [], columnsCount = columnNames.length;
-        const rowArray = [];
-        // Add the names as the first row if they should be exported
-        if (exportNames) {
-            csvRows.push(columnNames.map((columnName) => `"${columnName}"`).join(itemDelimiter));
-        }
-        for (let columnIndex = 0; columnIndex < columnsCount; columnIndex++) {
-            const columnName = columnNames[columnIndex], column = columns[columnName], columnLength = column.length;
-            const columnMeta = connector.whatIs(columnName);
-            let columnDataType;
-            if (columnMeta) {
-                columnDataType = columnMeta.dataType;
-            }
-            for (let rowIndex = 0; rowIndex < columnLength; rowIndex++) {
-                let cellValue = column[rowIndex];
-                if (!rowArray[rowIndex]) {
-                    rowArray[rowIndex] = [];
-                }
-                // Prefer datatype from metadata
-                if (columnDataType === 'string') {
-                    cellValue = '"' + cellValue + '"';
-                }
-                else if (typeof cellValue === 'number') {
-                    cellValue = String(cellValue).replace('.', decimalPoint);
-                }
-                else if (typeof cellValue === 'string') {
-                    cellValue = `"${cellValue}"`;
-                }
-                rowArray[rowIndex][columnIndex] = cellValue;
-                // On the final column, push the row to the CSV
-                if (columnIndex === columnsCount - 1) {
-                    // Trim repeated undefined values starting at the end
-                    // Currently, we export the first "comma" even if the
-                    // second value is undefined
-                    let i = columnIndex;
-                    while (rowArray[rowIndex].length > 2) {
-                        const cellVal = rowArray[rowIndex][i];
-                        if (cellVal !== void 0) {
-                            break;
-                        }
-                        rowArray[rowIndex].pop();
-                        i--;
-                    }
-                    csvRows.push(rowArray[rowIndex].join(itemDelimiter));
-                }
-            }
-        }
-        return csvRows.join(lineDelimiter);
-    }
-    /**
-     * Initiates parsing of CSV
-     *
-     * @param {CSVConverter.UserOptions}[options]
-     * Options for the parser
-     *
+     * @param {Partial<CSVConverterOptions>} [options]
+     * Options for the parser.
      * @param {DataEvent.Detail} [eventDetail]
      * Custom information for pending events.
+     * @return {DataTable.ColumnCollection}
+     * The parsed column collection.
      *
      * @emits CSVDataParser#parse
      * @emits CSVDataParser#afterParse
@@ -144,10 +76,10 @@ class CSVConverter extends DataConverter {
     parse(options, eventDetail) {
         const converter = this, dataTypes = converter.dataTypes, parserOptions = merge(this.options, options), { beforeParse, lineDelimiter, firstRowAsNames, itemDelimiter } = parserOptions;
         let lines, rowIt = 0, { csv, startRow, endRow } = parserOptions, column;
-        converter.columns = [];
+        const columnsArray = [];
         converter.emit({
             type: 'parse',
-            columns: converter.columns,
+            columns: columnsArray,
             detail: eventDetail,
             headers: converter.headers
         });
@@ -185,42 +117,47 @@ class CSVConverter extends DataConverter {
                     offset++;
                 }
                 else {
-                    converter
-                        .parseCSVRow(lines[rowIt], rowIt - startRow - offset);
+                    converter.parseCSVRow(columnsArray, lines[rowIt], rowIt - startRow - offset);
                 }
             }
             if (dataTypes.length &&
                 dataTypes[0].length &&
                 dataTypes[0][1] === 'date' && // Format is a string date
                 !converter.options.dateFormat) {
-                converter.deduceDateFormat(converter.columns[0], null, true);
+                converter.deduceDateFormat(columnsArray[0], null, true);
             }
             // Guess types.
-            for (let i = 0, iEnd = converter.columns.length; i < iEnd; ++i) {
-                column = converter.columns[i];
+            for (let i = 0, iEnd = columnsArray.length; i < iEnd; ++i) {
+                column = columnsArray[i];
                 for (let j = 0, jEnd = column.length; j < jEnd; ++j) {
                     if (column[j] && typeof column[j] === 'string') {
-                        let cellValue = converter.asGuessedType(column[j]);
+                        let cellValue = converter.convertByType(column[j]);
                         if (cellValue instanceof Date) {
                             cellValue = cellValue.getTime();
                         }
-                        converter.columns[i][j] = cellValue;
+                        columnsArray[i][j] = cellValue;
                     }
                 }
             }
         }
+        // Normalize columns to same length to avoid truncation.
+        columnsArray.forEach((col) => {
+            col.length = Math.max(...columnsArray.map((c) => c.length));
+        });
         converter.emit({
             type: 'afterParse',
-            columns: converter.columns,
+            columns: columnsArray,
             detail: eventDetail,
             headers: converter.headers
         });
+        return DataConverterUtils.getColumnsCollection(columnsArray, converter.headers);
     }
     /**
-     * Internal method that parses a single CSV row
+     * Parses a single CSV row string into columns, handling delimiters,
+     * quoted values, data type inference, and column range selection.
      */
-    parseCSVRow(columnStr, rowNumber) {
-        const converter = this, columns = converter.columns || [], dataTypes = converter.dataTypes, { startColumn, endColumn } = converter.options, itemDelimiter = (converter.options.itemDelimiter ||
+    parseCSVRow(columns, columnStr, rowNumber) {
+        const converter = this, dataTypes = converter.dataTypes, { startColumn, endColumn } = converter.options, itemDelimiter = (converter.options.itemDelimiter ||
             converter.guessedItemDelimiter);
         let { decimalPoint } = converter.options;
         if (!decimalPoint || decimalPoint === itemDelimiter) {
@@ -247,8 +184,9 @@ class CSVConverter extends DataConverter {
             }
             // Save the type of the token.
             if (typeof token === 'string') {
-                if (!isNaN(parseFloat(token)) && isFinite(token)) {
-                    token = parseFloat(token);
+                const parsedNumber = parseFloat(token);
+                if (!isNaN(parsedNumber) && isFinite(Number(token))) {
+                    token = parsedNumber;
                     pushType('number');
                 }
                 else if (!isNaN(Date.parse(token))) {
@@ -268,11 +206,11 @@ class CSVConverter extends DataConverter {
             // Try to apply the decimal point, and check if the token then is a
             // number. If not, reapply the initial value
             if (typeof token !== 'number' &&
-                converter.guessType(token) !== 'number' &&
+                DataConverterUtils.guessType(token, converter) !== 'number' &&
                 decimalPoint) {
                 const initialValue = token;
                 token = token.replace(decimalPoint, '.');
-                if (converter.guessType(token) !== 'number') {
+                if (DataConverterUtils.guessType(token, converter) !== 'number') {
                     token = initialValue;
                 }
             }
@@ -321,7 +259,7 @@ class CSVConverter extends DataConverter {
     /**
      * Internal method that guesses the delimiter from the first
      * 13 lines of the CSV
-     * @param {Array<string>} lines
+     * @param {string[]} lines
      * The CSV, split into lines
      */
     guessDelimiter(lines) {
@@ -410,15 +348,6 @@ class CSVConverter extends DataConverter {
         }
         return guessed;
     }
-    /**
-     * Handles converting the parsed data to a table.
-     *
-     * @return {DataTable}
-     * Table from the parsed CSV.
-     */
-    getTable() {
-        return DataConverter.getTableFromColumns(this.columns, this.headers);
-    }
 }
 /* *
  *
@@ -430,7 +359,11 @@ class CSVConverter extends DataConverter {
  */
 CSVConverter.defaultOptions = {
     ...DataConverter.defaultOptions,
-    lineDelimiter: '\n'
+    lineDelimiter: '\n',
+    startColumn: 0,
+    endColumn: Number.MAX_VALUE,
+    startRow: 0,
+    endRow: Number.MAX_VALUE
 };
 DataConverter.registerType('CSV', CSVConverter);
 /* *

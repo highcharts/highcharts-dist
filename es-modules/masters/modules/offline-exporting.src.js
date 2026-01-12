@@ -1,18 +1,21 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.5.0 (2026-01-12)
  * @module highcharts/modules/offline-exporting
  * @requires highcharts
  * @requires highcharts/modules/exporting
  *
  * Client side exporting module
  *
- * (c) 2015-2025 Torstein Honsi / Oystein Moseng
+ * (c) 2015-2026 Highsoft AS
+ * Author: Torstein Honsi / Oystein Moseng
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 'use strict';
 import Highcharts from '../../Core/Globals.js';
-import DownloadURL from '../../Extensions/DownloadURL.js';
+import DownloadURL from '../../Shared/DownloadURL.js';
 import OfflineExporting from '../../Extensions/OfflineExporting/OfflineExporting.js';
 const G = Highcharts;
 // Compatibility

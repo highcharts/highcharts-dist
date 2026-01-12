@@ -1,10 +1,10 @@
 /* *
  *
- *  (c) 2009-2025 Highsoft AS
+ *  (c) 2009-2026 Highsoft AS
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  *  Authors:
  *  - Sophie Bremer
@@ -237,18 +237,18 @@ function getArgumentsValues(args, table) {
  * Extracted values.
  */
 function getRangeValues(range, table) {
-    const columnNames = table
-        .getColumnNames()
+    const columnIds = table
+        .getColumnIds()
         .slice(range.beginColumn, range.endColumn + 1), values = [];
-    for (let i = 0, iEnd = columnNames.length, cell; i < iEnd; ++i) {
-        const cells = table.getColumn(columnNames[i], true) || [];
+    for (let i = 0, iEnd = columnIds.length, cell; i < iEnd; ++i) {
+        const cells = table.getColumn(columnIds[i], true) || [];
         for (let j = range.beginRow, jEnd = range.endRow + 1; j < jEnd; ++j) {
             cell = cells[j];
             if (typeof cell === 'string' &&
                 cell[0] === '=' &&
-                table !== table.modified) {
+                table !== table.getModified()) {
                 // Look in the modified table for formula result
-                cell = table.modified.getCell(columnNames[i], j);
+                cell = table.getModified().getCell(columnIds[i], j);
             }
             values.push(isValue(cell) ? cell : NaN);
         }
@@ -270,14 +270,14 @@ function getRangeValues(range, table) {
  * Extracted value. 'undefined' might also indicate that the cell was not found.
  */
 function getReferenceValue(reference, table) {
-    const columnName = table.getColumnNames()[reference.column];
-    if (columnName) {
-        const cell = table.getCell(columnName, reference.row);
+    const columnId = table.getColumnIds()[reference.column];
+    if (columnId) {
+        const cell = table.getCell(columnId, reference.row);
         if (typeof cell === 'string' &&
             cell[0] === '=' &&
-            table !== table.modified) {
+            table !== table.getModified()) {
             // Look in the modified table for formula result
-            const result = table.modified.getCell(columnName, reference.row);
+            const result = table.getModified().getCell(columnId, reference.row);
             return isValue(result) ? result : NaN;
         }
         if (isValue(cell)) {
@@ -479,7 +479,7 @@ function registerProcessorFunction(name, processorFunction) {
 function translateReferences(formula, columnDelta = 0, rowDelta = 0) {
     for (let i = 0, iEnd = formula.length, item; i < iEnd; ++i) {
         item = formula[i];
-        if (item instanceof Array) {
+        if (Array.isArray(item)) {
             translateReferences(item, columnDelta, rowDelta);
         }
         else if (isFunction(item)) {

@@ -1,11 +1,13 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.5.0 (2026-01-12)
  * @module highcharts/highcharts-more
  * @requires highcharts
  *
- * (c) 2009-2025 Highsoft AS
+ * (c) 2009-2026 Highsoft AS
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 'use strict';
 import Highcharts from '../Core/Globals.js';
@@ -28,7 +30,7 @@ const G = Highcharts;
 G.RadialAxis = RadialAxis;
 BubbleSeries.compose(G.Axis, G.Chart, G.Legend);
 PackedBubbleSeries.compose(G.Axis, G.Chart, G.Legend);
-Pane.compose(G.Chart, G.Pointer);
+Pane.compose(G.Chart, G.Pointer, G.Series);
 PolarAdditions.compose(G.Axis, G.Chart, G.Pointer, G.Series, G.Tick, G.Point, SeriesRegistry.seriesTypes.areasplinerange, SeriesRegistry.seriesTypes.column, SeriesRegistry.seriesTypes.line, SeriesRegistry.seriesTypes.spline);
 WaterfallSeries.compose(G.Axis, G.Chart);
 export default G;

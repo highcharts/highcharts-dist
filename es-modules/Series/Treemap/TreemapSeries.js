@@ -1,12 +1,12 @@
 /* *
  *
- *  (c) 2014-2025 Highsoft AS
+ *  (c) 2014-2026 Highsoft AS
  *
  *  Authors: Jon Arild Nygard / Oystein Moseng
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -49,23 +49,31 @@ let treemapAxisDefaultValues = false;
 /** @private */
 function onSeriesAfterBindAxes() {
     const series = this, xAxis = series.xAxis, yAxis = series.yAxis;
-    let treeAxis;
     if (xAxis && yAxis) {
         if (series.is('treemap')) {
-            treeAxis = {
+            // Treemap and treegraph axes are used for the layout, but are
+            // hidden by default.
+            const treeAxisDefaults = {
                 endOnTick: false,
-                gridLineWidth: 0,
-                lineWidth: 0,
-                min: 0,
-                minPadding: 0,
-                max: axisMax,
-                maxPadding: 0,
                 startOnTick: false,
-                title: void 0,
-                tickPositions: []
+                visible: false
             };
-            extend(yAxis.options, treeAxis);
-            extend(xAxis.options, treeAxis);
+            // Treemap layout depends on specific scaling of both axes
+            if (!series.is('treegraph')) {
+                treeAxisDefaults.min = 0;
+                treeAxisDefaults.max = axisMax;
+                treeAxisDefaults.tickPositions = [];
+            }
+            merge(true, xAxis.options, treeAxisDefaults, xAxis.userOptions);
+            merge(true, yAxis.options, treeAxisDefaults, yAxis.userOptions);
+            // Set the propertys on the axis object
+            xAxis.visible = xAxis.options.visible;
+            yAxis.visible = yAxis.options.visible;
+            // Set `isCartesian` conditionally. Because non-cartesian zoom won't
+            // work if it is true, and the axis will not show if it is false.
+            if (series.is('treegraph')) {
+                this.isCartesian = xAxis.visible;
+            }
             treemapAxisDefaultValues = true;
         }
         else if (treemapAxisDefaultValues) {
@@ -571,7 +579,9 @@ class TreemapSeries extends ScatterSeries {
                 }
             }
             // Merge custom options with point options
-            point.dlOptions = merge(options, point.options.dataLabels);
+            point.dlOptions = merge(options, point.options.dataLabels, {
+                zIndex: void 0
+            });
         }
         super.drawDataLabels(points);
     }
@@ -754,6 +764,9 @@ class TreemapSeries extends ScatterSeries {
             child = series.buildTree(series.points[i].id, i, level + 1, list, id);
             height = Math.max(child.height + 1, height);
             children.push(child);
+            if (series.is('treegraph')) {
+                child.visible = true;
+            }
         }
         const node = new series.NodeClass().init(id, index, children, height, level, series, parent);
         for (const child of children) {
@@ -764,6 +777,10 @@ class TreemapSeries extends ScatterSeries {
         if (point) {
             point.node = node;
             node.point = point;
+            // Handle x-axis value for treegraph
+            if (!defined(point.options.x)) {
+                point.x = level;
+            }
         }
         return node;
     }
@@ -1077,7 +1094,9 @@ class TreemapSeries extends ScatterSeries {
             childrenTotal: childrenTotal,
             // Ignore this node if point is not visible
             ignore: !(pick(point?.visible, true) && (val > 0)),
-            isLeaf: tree.visible && !childrenTotal,
+            isLeaf: tree.visible && !(series.type === 'treegraph' ?
+                children.length > 0 :
+                childrenTotal),
             isGroup: point?.isGroup,
             levelDynamic: (tree.level - (levelIsConstant ? 0 : nodeRoot.level)),
             name: pick(point?.name, ''),

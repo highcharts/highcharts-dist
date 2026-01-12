@@ -1,11 +1,11 @@
 /* *
  *
- *  (c) 2016 Highsoft AS
+ *  (c) 2016-2026 Highsoft AS
  *  Authors: Jon Arild Nygard
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -22,6 +22,7 @@ const { addEvent, isArray, splat, find, fireEvent, isObject, isString, merge, re
  *  Variables
  *
  * */
+/** @internal */
 let TickConstructor;
 /* *
  *
@@ -30,11 +31,9 @@ let TickConstructor;
  * */
 /**
  * Creates a break object from a node.
- *
+ * @internal
  * @param {Object} node
  * The node to create a break object from.
- *
- * @private
  */
 function getBreakFromNode(node) {
     return {
@@ -47,7 +46,7 @@ function getBreakFromNode(node) {
  * Creates a tree structure of the data, and the treegrid. Calculates
  * categories, and y-values of points based on the tree.
  *
- * @private
+ * @internal
  * @function getTreeGridFromData
  *
  * @param {Array<Highcharts.GanttPointOptions>} data
@@ -186,7 +185,7 @@ function getTreeGridFromData(data, uniqueNames, numberOfSeries) {
 }
 /**
  * Builds the tree of categories and calculates its positions.
- * @private
+ * @internal
  * @param {Object} e Event object
  * @param {Object} e.target The chart instance which the event was fired on.
  * @param {object[]} e.target.axes The axes of the chart.
@@ -300,7 +299,7 @@ function onBeforeRender(e) {
 /**
  * Generates a tick for initial positioning.
  *
- * @private
+ * @internal
  * @function Highcharts.GridAxis#generateTick
  *
  * @param {Function} proceed
@@ -341,9 +340,7 @@ function wrapGenerateTick(proceed, pos) {
         proceed.apply(axis, Array.prototype.slice.call(arguments, 1));
     }
 }
-/**
- * @private
- */
+/** @internal */
 function wrapInit(proceed, chart, userOptions, coll) {
     const axis = this, isTreeGrid = userOptions.type === 'treegrid';
     if (!axis.treeGrid) {
@@ -399,18 +396,16 @@ function wrapInit(proceed, chart, userOptions, coll) {
             labels: {
                 align: 'left',
                 /**
-                * Set options on specific levels in a tree grid axis. Takes
-                * precedence over labels options.
-                *
-                * @sample {gantt} gantt/treegrid-axis/labels-levels
-                *         Levels on TreeGrid Labels
-                *
-                * @type      {Array<*>}
-                * @product   gantt
-                * @apioption yAxis.labels.levels
-                *
-                * @private
-                */
+                 * Set options on specific levels in a tree grid axis. Takes
+                 * precedence over labels options.
+                 *
+                 * @sample {gantt} gantt/treegrid-axis/labels-levels
+                 *         Levels on TreeGrid Labels
+                 *
+                 * @type      {Array<*>}
+                 * @product   gantt
+                 * @apioption yAxis.labels.levels
+                 */
                 levels: [{
                         /**
                         * Specify the level which the options within this object
@@ -420,7 +415,7 @@ function wrapInit(proceed, chart, userOptions, coll) {
                         * @product   gantt
                         * @apioption yAxis.labels.levels.level
                         *
-                        * @private
+                        * @internal
                         */
                         level: void 0
                     }, {
@@ -430,7 +425,7 @@ function wrapInit(proceed, chart, userOptions, coll) {
                          * @product   gantt
                          * @apioption yAxis.labels.levels.style
                          *
-                         * @private
+                         * @internal
                          */
                         style: {
                             /** @ignore-option */
@@ -444,7 +439,7 @@ function wrapInit(proceed, chart, userOptions, coll) {
                  * @product      gantt
                  * @optionparent yAxis.labels.symbol
                  *
-                 * @private
+                 * @internal
                  */
                 symbol: {
                     /**
@@ -453,7 +448,7 @@ function wrapInit(proceed, chart, userOptions, coll) {
                      *
                      * @type {Highcharts.SymbolKeyValue}
                      *
-                     * @private
+                     * @internal
                      */
                     type: 'triangle',
                     x: -5,
@@ -479,7 +474,7 @@ function wrapInit(proceed, chart, userOptions, coll) {
 /**
  * Set the tick positions, tickInterval, axis min and max.
  *
- * @private
+ * @internal
  * @function Highcharts.GridAxis#setTickInterval
  *
  * @param {Function} proceed
@@ -516,7 +511,7 @@ function wrapSetTickInterval(proceed) {
 /**
  * Wrap axis redraw to remove TreeGrid events from ticks
  *
- * @private
+ * @internal
  * @function Highcharts.GridAxis#redraw
  *
  * @param {Function} proceed
@@ -541,7 +536,7 @@ function wrapRedraw(proceed) {
  *
  * */
 /**
- * @private
+ * @internal
  * @class
  */
 class TreeGridAxisAdditions {
@@ -550,9 +545,7 @@ class TreeGridAxisAdditions {
      *  Static Functions
      *
      * */
-    /**
-     * @private
-     */
+    /** @internal */
     static compose(AxisClass, ChartClass, SeriesClass, TickClass) {
         if (!AxisClass.keepProps.includes('treeGrid')) {
             const axisProps = AxisClass.prototype;
@@ -579,10 +572,9 @@ class TreeGridAxisAdditions {
      *  Constructors
      *
      * */
-    /**
-     * @private
-     */
+    /** @internal */
     constructor(axis) {
+        /** @internal */
         this.pendingSizeAdjustment = 0;
         this.axis = axis;
     }
@@ -594,7 +586,7 @@ class TreeGridAxisAdditions {
     /**
      * Set the collapse status.
      *
-     * @private
+     * @internal
      *
      * @param {Highcharts.Axis} axis
      * The axis to check against.
@@ -618,7 +610,7 @@ class TreeGridAxisAdditions {
     /**
      * Calculates the new axis breaks to collapse a node.
      *
-     * @private
+     * @internal
      *
      * @param {Highcharts.Axis} axis
      * The axis to check against.
@@ -643,7 +635,7 @@ class TreeGridAxisAdditions {
     /**
      * Calculates the new axis breaks to expand a node.
      *
-     * @private
+     * @internal
      *
      * @param {Highcharts.Axis} axis
      * The axis to check against.
@@ -674,7 +666,7 @@ class TreeGridAxisAdditions {
      * Creates a list of positions for the ticks on the axis. Filters out
      * positions that are outside min and max, or is inside an axis break.
      *
-     * @private
+     * @internal
      *
      * @return {Array<number>}
      * List of positions.
@@ -694,7 +686,7 @@ class TreeGridAxisAdditions {
     /**
      * Check if a node is collapsed.
      *
-     * @private
+     * @internal
      *
      * @param {Object} node
      * The node to check if is collapsed.
@@ -713,7 +705,7 @@ class TreeGridAxisAdditions {
      * state of a node. If it is collapsed it will be expanded, and if it is
      * expanded it will be collapsed.
      *
-     * @private
+     * @internal
      *
      * @param {Highcharts.Axis} axis
      * The axis to check against.
@@ -735,4 +727,5 @@ class TreeGridAxisAdditions {
  *  Default Export
  *
  * */
+/** @internal */
 export default TreeGridAxisAdditions;

@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -27,7 +28,7 @@ const hasPointerEvent = !!win.PointerEvent;
  *
  * */
 /* eslint-disable valid-jsdoc */
-/** @private */
+/** @internal */
 function getWebkitTouches() {
     const fake = [];
     fake.item = function (i) {
@@ -42,7 +43,7 @@ function getWebkitTouches() {
     });
     return fake;
 }
-/** @private */
+/** @internal */
 function translateMSPointer(e, method, wktype, func) {
     const pointer = charts[Pointer.hoverChartIndex ?? -1]?.pointer;
     if (pointer &&
@@ -62,13 +63,22 @@ function translateMSPointer(e, method, wktype, func) {
  *  Class
  *
  * */
-/** @private */
+/** @internal */
 class MSPointer extends Pointer {
     /* *
      *
      *  Static Functions
      *
      * */
+    /**
+     * The isRequired method is required for Highcharts to decide whether to use
+     * this module.
+     *
+     * @internal
+     *
+     * @return {boolean}
+     * Returns true if the module is required.
+     */
     static isRequired() {
         return !!(!win.TouchEvent && (win.PointerEvent || win.MSPointerEvent));
     }
@@ -79,7 +89,7 @@ class MSPointer extends Pointer {
      * */
     /**
      * Add or remove the MS Pointer specific events
-     * @private
+     * @internal
      * @function Highcharts.Pointer#batchMSEvents
      */
     batchMSEvents(fn) {
@@ -144,7 +154,7 @@ class MSPointer extends Pointer {
         }
     }
     /**
-     * @private
+     * @internal
      * @function Highcharts.Pointer#onContainerPointerDown
      */
     onContainerPointerDown(e) {
@@ -157,7 +167,7 @@ class MSPointer extends Pointer {
         });
     }
     /**
-     * @private
+     * @internal
      * @function Highcharts.Pointer#onContainerPointerMove
      */
     onContainerPointerMove(e) {
@@ -169,7 +179,7 @@ class MSPointer extends Pointer {
         });
     }
     /**
-     * @private
+     * @internal
      * @function Highcharts.Pointer#onDocumentPointerUp
      */
     onDocumentPointerUp(e) {
@@ -192,15 +202,14 @@ class MSPointer extends Pointer {
  *  Class Namespace
  *
  * */
+/** @internal */
 (function (MSPointer) {
     /* *
      *
      *  Functions
      *
      * */
-    /**
-     * @private
-     */
+    /** @internal */
     function compose(ChartClass) {
         if (pushUnique(composed, 'Core.MSPointer')) {
             addEvent(ChartClass, 'beforeRender', function () {
@@ -215,4 +224,5 @@ class MSPointer extends Pointer {
  *  Default Export
  *
  * */
+/** @internal */
 export default MSPointer;

@@ -222,6 +222,12 @@ declare module "../highcharts.src" {
          */
         inside?: boolean;
         /**
+         * (Highcharts, Highstock, Highmaps, Gantt) The rank for this point's
+         * data label in case of collision. If two data labels are about to
+         * overlap, only the one with the highest `labelrank` will be drawn.
+         */
+        labelrank?: number;
+        /**
          * (Highcharts, Highstock, Highmaps, Gantt) Format for points with the
          * value of null. Works analogously to format. `nullFormat` can be
          * applied only to series which support displaying null points.
@@ -238,9 +244,10 @@ declare module "../highcharts.src" {
          * analogously to formatter. `nullFormatter` can be applied only to
          * series which support displaying null points. `heatmap` and `tilemap`
          * supports `nullFormatter` by default while the following series
-         * requires [#series.nullInteraction] set to `true`: `line`, `spline`,
-         * `area`, `area-spline`, `column`, `bar`, and `timeline`. Does not work
-         * with series that don't display null points, like `pie`.
+         * requires (series.nullInteraction)[#series.nullInteraction] set to
+         * `true`: `line`, `spline`, `area`, `area-spline`, `column`, `bar`, and
+         * `timeline`. Does not work with series that don't display null points,
+         * like `pie`.
          */
         nullFormatter?: Highcharts.DataLabelsFormatterCallbackFunction;
         /**
@@ -339,8 +346,10 @@ declare module "../highcharts.src" {
         y?: number;
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) The z index of the data
-         * labels. Use a `zIndex` of 6 to display it above the series, or use a
-         * `zIndex` of 2 to display it behind the series.
+         * labels group. Does not apply below series level options.
+         *
+         * Use a `zIndex` of 6 to display it above the series, or use a `zIndex`
+         * of 2 to display it behind the series.
          */
         zIndex?: number;
     }
@@ -393,7 +402,8 @@ declare module "../highcharts.src" {
      *
      * **TypeScript:**
      *
-     * - the type option must always be set.
+     * - type option should always be set, otherwise a broad set of unsupported
+     * options is allowed.
      *
      * - when accessing an array of series, the combined set of all series types
      * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
@@ -559,7 +569,9 @@ declare module "../highcharts.src" {
          * percentage or absolute change depending on whether `compare` is set
          * to `"percent"` or `"value"`. When this is applied to multiple series,
          * it allows comparing the development of the series against each other.
-         * Adds a `change` field to every point object.
+         * Adds a `change` field to every point object. If a `compare` value is
+         * not set on a linked series, it will be inherited from the parent
+         * series.
          */
         compare?: Highcharts.OptionsCompareValue;
         /**
@@ -777,6 +789,9 @@ declare module "../highcharts.src" {
          * If master series uses data sorting and linked series does not have
          * its own sorting definition, the linked series will be sorted in the
          * same order as the master one.
+         *
+         * If a `compare` value is not set on a linked series, it will be
+         * inherited from the parent series.
          */
         linkedTo?: string;
         /**
@@ -1007,6 +1022,10 @@ declare module "../highcharts.src" {
          * series.
          */
         sonification?: Highcharts.SeriesSonificationOptions;
+        /**
+         * (Highcharts, Highstock) A collection of options for different series
+         * states.
+         */
         states?: Highcharts.SeriesStatesOptionsObject;
         /**
          * (Highcharts, Highstock) Sticky tracking of mouse events. When true,
@@ -1104,22 +1123,51 @@ declare module "../highcharts.src" {
         zoomEnabled?: boolean;
     }
     /**
-     * (Highcharts, Highstock, Gantt) Enable or disable the initial animation
-     * when a series is displayed for the `dataLabels`. The animation can also
-     * be set as a configuration object. Please note that this option only
-     * applies to the initial animation.
-     *
-     * For other animations, see chart.animation and the animation parameter
-     * under the API methods. The following properties are supported:
-     *
-     * - `defer`: The animation delay time in milliseconds.
+     * (Highcharts, Highstock) Animation when not hovering over the marker.
      */
-    interface SeriesWindbarbDataDataLabelsAnimationOptions {
+    interface PlotWindbarbStatesInactiveAnimationOptions {
+        duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock) Positioning options for fixed tooltip, taking
+     * effect only when tooltip.fixed is `true`.
+     */
+    interface PlotWindbarbTooltipPositionOptions {
         /**
-         * (Highcharts, Highstock, Gantt) The animation delay time in
-         * milliseconds. Set to `0` to render the data labels immediately. As
-         * `undefined` inherits defer time from the series.animation.defer.
+         * (Highcharts, Highstock) The horizontal alignment of the fixed
+         * tooltip.
          */
-        defer?: number;
+        align?: Highcharts.AlignValue;
+        /**
+         * (Highcharts, Highstock) What the fixed tooltip alignment should be
+         * relative to.
+         *
+         * The default, `pane`, means that it is aligned within the plot area
+         * for that given series. If the tooltip is split (as default in Stock
+         * charts), each partial tooltip is aligned within the series' pane.
+         */
+        relativeTo?: Highcharts.OptionsRelativeToValue;
+        /**
+         * (Highcharts, Highstock) The vertical alignment of the fixed tooltip.
+         */
+        verticalAlign?: Highcharts.VerticalAlignValue;
+        /**
+         * (Highcharts, Highstock) X pixel offset from the given position. Can
+         * be used to shy away from axis lines, grid lines etc to avoid the
+         * tooltip overlapping other elements.
+         */
+        x?: number;
+        /**
+         * (Highcharts, Highstock) Y pixel offset from the given position. Can
+         * be used to shy away from axis lines, grid lines etc to avoid the
+         * tooltip overlapping other elements.
+         */
+        y?: number;
+    }
+    /**
+     * (Highcharts, Highstock) Animation when hovering over the marker.
+     */
+    interface SeriesWindbarbDataMarkerStatesHoverAnimationOptions {
+        duration?: number;
     }
 }

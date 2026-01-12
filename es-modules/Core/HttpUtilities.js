@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Christer Vasseng, Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Christer Vasseng, Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -37,9 +38,7 @@ function ajax(settings) {
     }, r = new XMLHttpRequest();
     /**
      * Private error handler.
-     *
-     * @private
-     *
+     * @internal
      * @param {XMLHttpRequest} xhr
      * Internal request object.
      * @param {string | Error} err
@@ -120,13 +119,15 @@ function getJSON(url, success) {
 /**
  * The post utility.
  *
- * @private
+ * @internal
  * @function Highcharts.post
  *
  * @param {string} url
  * Post URL.
+ *
  * @param {Object} data
  * Post data.
+ *
  * @param {RequestInit} [fetchOptions]
  * Additional attributes for the post request.
  */
@@ -157,16 +158,16 @@ async function post(url, data, fetchOptions) {
         discardElement(link);
     }
 }
-/* *
- *
- *  Default Export
- *
- * */
+/**
+ * Utility functions for Ajax.
+ * @class
+ * @name Highcharts.HttpUtilities
+ */
 const HttpUtilities = {
     ajax,
-    getJSON,
-    post
+    getJSON
 };
+HttpUtilities.post = post;
 export default HttpUtilities;
 /* *
  *

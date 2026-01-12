@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -20,6 +21,7 @@ const { addEvent, correctFloat, defined, extend, fireEvent, isObject, merge, pic
  *  Composition
  *
  * */
+/** @internal */
 var RadialAxis;
 (function (RadialAxis) {
     /* *
@@ -38,7 +40,7 @@ var RadialAxis;
      * In case of auto connect, add one closestPointRange to the max value
      * right before tickPositions are computed, so that ticks will extend
      * passed the real max.
-     * @private
+     * @internal
      */
     function beforeSetTickPositions() {
         // If autoConnect is true, polygonal grid lines are connected, and
@@ -63,7 +65,7 @@ var RadialAxis;
     /**
      * Augments methods for the value axis.
      *
-     * @private
+     * @internal
      *
      * @param {Highcharts.Axis} AxisClass
      * Axis class to extend.
@@ -93,7 +95,7 @@ var RadialAxis;
      * Attach and return collecting function for labels in radial axis for
      * anti-collision.
      *
-     * @private
+     * @internal
      */
     function createLabelCollector() {
         return () => {
@@ -110,14 +112,14 @@ var RadialAxis;
     }
     /**
      * Creates an empty collector function.
-     * @private
+     * @internal
      */
     function createLabelCollectorHidden() {
         return noop;
     }
     /**
      * Find the correct end values of crosshair in polar.
-     * @private
+     * @internal
      */
     function getCrosshairPosition(options, x1, y1) {
         const center = this.pane.center;
@@ -161,7 +163,7 @@ var RadialAxis;
      * Get the path for the axis line. This method is also referenced in the
      * getPlotLinePath method.
      *
-     * @private
+     * @internal
      * @param {number} _lineWidth
      * Line width is not used.
      * @param {number} [radius]
@@ -219,7 +221,7 @@ var RadialAxis;
     /**
      * Find the path for plot bands along the radial axis.
      *
-     * @private
+     * @internal
      */
     function getPlotBandPath(from, to, options) {
         const chart = this.chart, radiusToPixels = (radius) => {
@@ -403,7 +405,7 @@ var RadialAxis;
      * Returns the x, y coordinate of a point given by a value and a pixel
      * distance from center.
      *
-     * @private
+     * @internal
      * @param {number} value
      * Point value.
      * @param {number} [length]
@@ -439,7 +441,7 @@ var RadialAxis;
     }
     /**
      * Modify radial axis.
-     * @private
+     * @internal
      *
      * @param {Highcharts.Axis} radialAxis
      * Radial axis to modify.
@@ -461,7 +463,7 @@ var RadialAxis;
     }
     /**
      * Modify radial axis as hidden.
-     * @private
+     * @internal
      *
      * @param {Highcharts.Axis} radialAxis
      * Radial axis to modify.
@@ -731,7 +733,7 @@ var RadialAxis;
      * Translate from intermediate plotX (angle), plotY (axis.len - radius)
      * to final chart coordinates.
      *
-     * @private
+     * @internal
      * @param {number} angle
      * Translation angle.
      * @param {number} radius
@@ -755,7 +757,7 @@ var RadialAxis;
      * Override the setAxisSize method to use the arc's circumference as
      * length. This allows tickPixelInterval to apply to pixel lengths along
      * the perimeter.
-     * @private
+     * @internal
      */
     function setAxisSize() {
         const axisProto = this.constructor.prototype;
@@ -790,7 +792,7 @@ var RadialAxis;
      * difference in rotation. This allows the translate method to return
      * angle for any given value.
      *
-     * @private
+     * @internal
      */
     function setAxisTranslation() {
         const axisProto = this.constructor.prototype;
@@ -878,4 +880,5 @@ var RadialAxis;
  *  Default Export
  *
  * */
+/** @internal */
 export default RadialAxis;

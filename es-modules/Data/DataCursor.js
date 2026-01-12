@@ -1,10 +1,10 @@
 /* *
  *
- *  (c) 2020-2025 Highsoft AS
+ *  (c) 2020-2026 Highsoft AS
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  *  Authors:
  *  - Sophie Bremer
@@ -25,6 +25,11 @@
  * @name Data.DataCursor
  */
 class DataCursor {
+    /* *
+     *
+     *  Static Properties
+     *
+     * */
     /* *
      *
      *  Constructor
@@ -221,16 +226,6 @@ class DataCursor {
         return this;
     }
 }
-/* *
- *
- *  Static Properties
- *
- * */
-/**
- * Semantic version string of the DataCursor class.
- * @internal
- */
-DataCursor.version = '1.0.0';
 /* *
  *
  *  Class Namespace

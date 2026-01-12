@@ -38,9 +38,8 @@ declare module "../highcharts.src" {
      * (Highstock) Highcharts Stock only.
      */
     interface DataGroupingResultObject {
-        groupedXData: Array<number>;
-        groupedYData: (Array<(number|null|undefined)>|Array<Array<(number|null|undefined)>>);
         groupMap: Array<DataGroupingInfoObject>;
+        modified: DataTableCore;
     }
     interface DataTableOptions {
         columns?: DataTableColumnCollection;
@@ -79,5 +78,15 @@ declare module "../highcharts.src" {
          */
         groupData(table: DataTable, groupPositions: Array<number>, approximation?: (string|Function)): DataGroupingResultObject;
     }
+    /**
+     * The same as average, but for series with multiple values, like area
+     * ranges.
+     */
+    function averages(): void;
+    /**
+     * HLC, OHLC and range are special cases where a multidimensional array is
+     * input and an array is output.
+     */
+    function hlc(): void;
 }
 export default _Highcharts;

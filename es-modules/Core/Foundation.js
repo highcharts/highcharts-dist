@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -15,6 +16,7 @@ const { addEvent, isFunction, objectEach, removeEvent } = U;
  *  Class Namespace
  *
  * */
+/** @internal */
 var Foundation;
 (function (Foundation) {
     /* *
@@ -28,7 +30,7 @@ var Foundation;
      * should be subject to Chart.update, Axis.update and Series.update. This is
      * contrary to general handlers that are set directly using addEvent either
      * on the class or on the instance. #6538, #6943, #10861.
-     * @private
+     * @internal
      */
     function registerEventOptions(component, options) {
         // A lookup over those events that are added by _options_ (not
@@ -60,4 +62,5 @@ var Foundation;
  *  Default Export
  *
  * */
+/** @internal */
 export default Foundation;

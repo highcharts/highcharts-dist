@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -17,9 +18,7 @@ const { addEvent, correctFloat, defined, isNumber, pick } = U;
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function onAxisInit() {
     const axis = this;
     if (!axis.navigatorAxis) {
@@ -30,7 +29,7 @@ function onAxisInit() {
  * For Stock charts, override selection zooming with some special features
  * because X axis zooming is already allowed by the Navigator and Range
  * selector.
- * @private
+ * @internal
  */
 function onAxisSetExtremes(e) {
     const axis = this, chart = axis.chart, chartOptions = chart.options, navigator = chartOptions.navigator, navigatorAxis = axis.navigatorAxis, pinchType = chart.zooming.pinchType, rangeSelector = chartOptions.rangeSelector, zoomType = chart.zooming.type;
@@ -70,19 +69,13 @@ function onAxisSetExtremes(e) {
  *  Class
  *
  * */
-/**
- * @private
- * @class
- */
+/** @internal */
 class NavigatorAxisAdditions {
     /* *
      *
      *  Static Functions
      *
      * */
-    /**
-     * @private
-     */
     static compose(AxisClass) {
         if (!AxisClass.keepProps.includes('navigatorAxis')) {
             AxisClass.keepProps.push('navigatorAxis');
@@ -103,9 +96,6 @@ class NavigatorAxisAdditions {
      *  Functions
      *
      * */
-    /**
-     * @private
-     */
     destroy() {
         this.axis = void 0;
     }
@@ -113,7 +103,7 @@ class NavigatorAxisAdditions {
      * Add logic to normalize the zoomed range in order to preserve the pressed
      * state of range selector buttons
      *
-     * @private
+     * @internal
      * @function Highcharts.Axis#toFixedRange
      */
     toFixedRange(pxMin, pxMax, fixedMin, fixedMax) {
@@ -140,4 +130,5 @@ class NavigatorAxisAdditions {
  *  Default Export
  *
  * */
+/** @internal */
 export default NavigatorAxisAdditions;

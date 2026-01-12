@@ -136,6 +136,18 @@ declare module "../highcharts.src" {
         states?: Highcharts.SeriesStatesOptionsObject;
     }
     /**
+     * (Highcharts) Animation when not hovering over the marker.
+     */
+    interface PlotArcdiagramLevelsStatesInactiveAnimationOptions {
+        duration?: number;
+    }
+    /**
+     * (Highcharts) Animation when hovering over the marker.
+     */
+    interface PlotArcdiagramMarkerStatesHoverAnimationOptions {
+        duration?: number;
+    }
+    /**
      * (Highcharts) Options for the _Series on point_ feature. Only `pie` and
      * `sunburst` series are supported at this moment.
      */
@@ -180,7 +192,8 @@ declare module "../highcharts.src" {
      *
      * **TypeScript:**
      *
-     * - the type option must always be set.
+     * - type option should always be set, otherwise a broad set of unsupported
+     * options is allowed.
      *
      * - when accessing an array of series, the combined set of all series types
      * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
@@ -422,6 +435,9 @@ declare module "../highcharts.src" {
          * If master series uses data sorting and linked series does not have
          * its own sorting definition, the linked series will be sorted in the
          * same order as the master one.
+         *
+         * If a `compare` value is not set on a linked series, it will be
+         * inherited from the parent series.
          */
         linkedTo?: string;
         /**
@@ -430,11 +446,10 @@ declare module "../highcharts.src" {
          */
         linkOpacity?: number;
         /**
-         * (Highcharts) Options for the point markers of line and scatter-like
-         * series. Properties like `fillColor`, `lineColor` and `lineWidth`
-         * define the visual appearance of the markers. The `symbol` option
-         * defines the shape. Other series types, like column series, don't have
-         * markers, but have visual options on the series level instead.
+         * (Highcharts) Options for the point markers of arc diagram series.
+         * Properties like `fillColor`, `lineColor` and `lineWidth` define the
+         * visual appearance of the markers, while the `symbol` option defines
+         * their shape.
          *
          * In styled mode, the markers can be styled with the
          * `.highcharts-point`, `.highcharts-point-hover` and
@@ -538,6 +553,9 @@ declare module "../highcharts.src" {
          * (Highcharts) Sonification/audio chart options for a series.
          */
         sonification?: Highcharts.SeriesSonificationOptions;
+        /**
+         * (Highcharts) A collection of options for different series states.
+         */
         states?: Highcharts.SeriesStatesOptionsObject;
         /**
          * (Highcharts) Sticky tracking of mouse events. When true, the
@@ -592,6 +610,46 @@ declare module "../highcharts.src" {
          * Note: This option works only for non-cartesian series.
          */
         zoomEnabled?: boolean;
+    }
+    /**
+     * (Highcharts) Animation when not hovering over the marker.
+     */
+    interface PlotArcdiagramStatesInactiveAnimationOptions {
+        duration?: number;
+    }
+    /**
+     * (Highcharts) Positioning options for fixed tooltip, taking effect only
+     * when tooltip.fixed is `true`.
+     */
+    interface PlotArcdiagramTooltipPositionOptions {
+        /**
+         * (Highcharts) The horizontal alignment of the fixed tooltip.
+         */
+        align?: Highcharts.AlignValue;
+        /**
+         * (Highcharts) What the fixed tooltip alignment should be relative to.
+         *
+         * The default, `pane`, means that it is aligned within the plot area
+         * for that given series. If the tooltip is split (as default in Stock
+         * charts), each partial tooltip is aligned within the series' pane.
+         */
+        relativeTo?: Highcharts.OptionsRelativeToValue;
+        /**
+         * (Highcharts) The vertical alignment of the fixed tooltip.
+         */
+        verticalAlign?: Highcharts.VerticalAlignValue;
+        /**
+         * (Highcharts) X pixel offset from the given position. Can be used to
+         * shy away from axis lines, grid lines etc to avoid the tooltip
+         * overlapping other elements.
+         */
+        x?: number;
+        /**
+         * (Highcharts) Y pixel offset from the given position. Can be used to
+         * shy away from axis lines, grid lines etc to avoid the tooltip
+         * overlapping other elements.
+         */
+        y?: number;
     }
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable the initial

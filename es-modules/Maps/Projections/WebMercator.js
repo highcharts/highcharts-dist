@@ -1,5 +1,15 @@
 /* *
- * Web Mercator projection, used for most online map tile services
+ *
+ *  Web Mercator projection, used for most online map tile services
+ *
+ *  (c) 2021-2026 Highsoft AS
+ *
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
+ *
+ *  Authors:
+ *  - Torstein Honsi
+ *
  * */
 'use strict';
 /* *
@@ -13,6 +23,22 @@ const r = 63.78137, deg2rad = Math.PI / 180;
  *  Class
  *
  * */
+/**
+ * Web Mercator is a variant of the Mercator map projection and is the de facto
+ * standard for Web mapping applications.
+ *
+ * Web Mercator is primarily created for tiled map services, as when zooming in
+ * to smaller scales, the angle between lines on the surface is approximately
+ * retained.
+ *
+ * The great disadvantage of Web Mercator is that areas inflate with distance
+ * from the equator. For example, in the world map, Greenland appears roughly
+ * the same size as Africa. In reality Africa is 14 times larger, as is apparent
+ * from the Equal Earth or Orthographic projections.
+ *
+ * @class
+ * @name Highcharts.WebMercator
+ */
 class WebMercator {
     constructor() {
         /* *
@@ -20,13 +46,18 @@ class WebMercator {
          *  Properties
          *
          * */
+        /** @internal */
         this.bounds = {
             x1: -200.37508342789243,
             x2: 200.37508342789243,
             y1: -200.3750834278071,
             y2: 200.3750834278071
         };
-        this.maxLatitude = 85.0511287798; // The latitude that defines a square
+        /**
+         * The latitude that defines a square.
+         * @internal
+         */
+        this.maxLatitude = 85.0511287798;
     }
     /* *
      *

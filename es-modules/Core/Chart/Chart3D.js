@@ -1,12 +1,13 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
  *  Extension for 3D charts
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -37,7 +38,7 @@ var Chart3D;
      * */
     /**
      * @optionparent
-     * @private
+     * @internal
      */
     Chart3D.defaultOptions = {
         chart: {
@@ -206,15 +207,13 @@ var Chart3D;
      *  Functions
      *
      * */
-    /**
-     * @private
-     */
+    /** @internal */
     function compose(ChartClass, FxClass) {
         const chartProto = ChartClass.prototype;
         const fxProto = FxClass.prototype;
         /**
          * Shorthand to check the is3d flag.
-         * @private
+         * @internal
          * @return {boolean}
          * Whether it is a 3D chart.
          */
@@ -225,7 +224,7 @@ var Chart3D;
         chartProto.propsRequireUpdateSeries.push('chart.options3d');
         /**
          * Animation setter for matrix property.
-         * @private
+         * @internal
          */
         fxProto.matrixSetter = function () {
             let interpolated;
@@ -260,7 +259,7 @@ var Chart3D;
     /**
      * Legacy support for HC < 6 to make 'scatter' series in a 3D chart route to
      * the real 'scatter3d' series type. (#8407)
-     * @private
+     * @internal
      */
     function onAddSeries(e) {
         if (this.is3d()) {
@@ -269,9 +268,7 @@ var Chart3D;
             }
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function onAfterDrawChartBox() {
         if (this.chart3d &&
             this.is3d()) {
@@ -1071,7 +1068,7 @@ var Chart3D;
     }
     /**
      * Add the required CSS classes for column sides (#6018)
-     * @private
+     * @internal
      */
     function onAfterGetContainer() {
         if (this.styledMode) {
@@ -1117,7 +1114,7 @@ var Chart3D;
     /**
      * Legacy support for HC < 6 to make 'scatter' series in a 3D chart route to
      * the real 'scatter3d' series type. (#8407)
-     * @private
+     * @internal
      */
     function onAfterInit() {
         const options = this.options;
@@ -1132,9 +1129,7 @@ var Chart3D;
             });
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function onAfterSetChartSize() {
         const chart = this, options3d = chart.options.chart.options3d;
         if (chart.chart3d &&
@@ -1163,40 +1158,32 @@ var Chart3D;
             chart.chart3d.frame3d = chart.chart3d.get3dFrame(); // #7942
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function onBeforeRedraw() {
         if (this.is3d()) {
             // Set to force a redraw of all elements
             this.isDirtyBox = true;
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function onBeforeRender() {
         if (this.chart3d && this.is3d()) {
             this.chart3d.frame3d = this.chart3d.get3dFrame();
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function onInit() {
         if (!this.chart3d) {
             this.chart3d = new Additions(this);
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function wrapIsInsidePlot(proceed) {
         return this.is3d() || proceed.apply(this, [].slice.call(arguments, 1));
     }
     /**
      * Draw the series in the reverse order (#3803, #3917)
-     * @private
+     * @internal
      */
     function wrapRenderSeries(proceed) {
         let series, i = this.series.length;
@@ -1211,9 +1198,7 @@ var Chart3D;
             proceed.call(this);
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function wrapSetClassName(proceed) {
         proceed.apply(this, [].slice.call(arguments, 1));
         if (this.is3d()) {
@@ -1231,6 +1216,7 @@ var Chart3D;
          *  Constructors
          *
          * */
+        /** @internal */
         constructor(chart) {
             this.chart = chart;
         }
@@ -1239,6 +1225,7 @@ var Chart3D;
          *  Functions
          *
          * */
+        /** @internal */
         get3dFrame() {
             const chart = this.chart, options3d = chart.options.chart.options3d, frameOptions = options3d.frame, xm = chart.plotLeft, xp = chart.plotLeft + chart.plotWidth, ym = chart.plotTop, yp = chart.plotTop + chart.plotHeight, zm = 0, zp = options3d.depth, faceOrientation = function (vertexes) {
                 const area = shapeArea3D(vertexes, chart);
@@ -1561,7 +1548,7 @@ var Chart3D;
          * not practical. Possible to make both getScale and perspective more
          * logical and also immutable.
          *
-         * @private
+         * @internal
          * @function getScale
          *
          * @param {number} depth

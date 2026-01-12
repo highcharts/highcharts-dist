@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2009-2025 Highsoft, Black Label
+ *  (c) 2009-2026 Highsoft AS
+ *  Author: Highsoft, Black Label
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -18,7 +19,7 @@ const { defined, isNumber, pick } = U;
 /**
  * Define types for editable fields per annotation. There is no need to define
  * numbers, because they won't change their type to string.
- * @private
+ * @internal
  */
 const annotationsFieldsTypes = {
     backgroundColor: 'string',
@@ -40,7 +41,7 @@ const annotationsFieldsTypes = {
 /**
  * Returns the first xAxis or yAxis that was clicked with its value.
  *
- * @private
+ * @internal
  *
  * @param {Array<Highcharts.PointerAxisCoordinateObject>} coords
  *        All the chart's x or y axes with a current pointer's axis value.
@@ -65,7 +66,7 @@ function getAssignedAxis(coords) {
 /**
  * Get field type according to value
  *
- * @private
+ * @internal
  *
  * @param {'boolean'|'number'|'string'} value
  * Atomic type (one of: string, number, boolean)
@@ -90,9 +91,11 @@ function getFieldType(key, value) {
  *  Default Export
  *
  * */
+/** @internal */
 const NavigationBindingUtilities = {
     annotationsFieldsTypes,
     getAssignedAxis,
     getFieldType
 };
+/** @internal */
 export default NavigationBindingUtilities;

@@ -1,14 +1,16 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v12.4.0 (2025-09-04)
+ * @license Highstock JS v12.5.0 (2026-01-12)
  * @module highcharts/modules/full-screen
  * @requires highcharts
  *
  * Advanced Highcharts Stock tools
  *
- * (c) 2010-2025 Highsoft AS
+ * (c) 2010-2026 Highsoft AS
  * Author: Torstein Honsi
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -45,6 +47,7 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -55,13 +58,14 @@ var external_highcharts_src_js_default_AST_default = /*#__PURE__*/__webpack_requ
 ;// ./code/es-modules/Extensions/Exporting/Fullscreen.js
 /* *
  *
- *  (c) 2009-2025 Rafal Sebestjanski
+ *  (c) 2009-2026 Highsoft AS
+ *  Author: Rafal Sebestjanski
  *
  *  Full screen for Highcharts
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 /**
@@ -80,9 +84,7 @@ const { addEvent, fireEvent, pushUnique } = (external_highcharts_src_js_default_
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function onChartBeforeRender() {
     /**
      * @name Highcharts.Chart#fullscreen
@@ -104,6 +106,8 @@ function onChartBeforeRender() {
  * @class
  * @name Highcharts.Fullscreen
  *
+ * @param {Highcharts.Chart} chart
+ *
  * @requires modules/exporting
  */
 class Fullscreen {
@@ -115,6 +119,7 @@ class Fullscreen {
     /**
      * Prepares the chart class to support fullscreen.
      *
+     * @internal
      * @param {typeof_Highcharts.Chart} ChartClass
      * The chart class to decorate with fullscreen support.
      */
@@ -195,7 +200,7 @@ class Fullscreen {
      */
     close() {
         const fullscreen = this, chart = fullscreen.chart, optionsChart = chart.options.chart;
-        fireEvent(chart, 'fullscreenClose', null, function () {
+        fireEvent(chart, 'fullscreenClose', void 0, function () {
             // Don't fire exitFullscreen() when user exited
             // using 'Escape' button.
             if (fullscreen.isOpen &&
@@ -234,7 +239,7 @@ class Fullscreen {
      */
     open() {
         const fullscreen = this, chart = fullscreen.chart, optionsChart = chart.options.chart;
-        fireEvent(chart, 'fullscreenOpen', null, function () {
+        fireEvent(chart, 'fullscreenOpen', void 0, function () {
             if (optionsChart) {
                 fullscreen.origWidthOption = optionsChart.width;
                 fullscreen.origHeightOption = optionsChart.height;
@@ -273,10 +278,10 @@ class Fullscreen {
         });
     }
     /**
-     * Replaces the exporting context button's text when toogling the
+     * Replaces the exporting context button's text when toggling the
      * fullscreen mode.
      *
-     * @private
+     * @internal
      *
      * @since 8.0.1
      *
@@ -286,10 +291,8 @@ class Fullscreen {
         const chart = this.chart, exportDivElements = chart.exporting?.divElements, exportingOptions = chart.options.exporting, menuItems = (exportingOptions &&
             exportingOptions.buttons &&
             exportingOptions.buttons.contextButton.menuItems), lang = chart.options.lang;
-        if (exportingOptions &&
-            exportingOptions.menuItemDefinitions &&
-            lang &&
-            lang.exitFullscreen &&
+        if (exportingOptions?.menuItemDefinitions &&
+            lang?.exitFullscreen &&
             lang.viewFullscreen &&
             menuItems &&
             exportDivElements) {
@@ -297,7 +300,7 @@ class Fullscreen {
             if (exportDivElement) {
                 external_highcharts_src_js_default_AST_default().setElementHTML(exportDivElement, !this.isOpen ?
                     (exportingOptions.menuItemDefinitions.viewFullscreen
-                        .text ||
+                        ?.textKey ||
                         lang.viewFullscreen) : lang.exitFullscreen);
             }
         }
@@ -338,7 +341,7 @@ class Fullscreen {
  *
  * */
 /**
- * Gets fired when closing the fullscreen
+ * Gets fired when closing the fullscreen.
  *
  * @callback Highcharts.FullScreenfullscreenCloseCallbackFunction
  *
@@ -349,7 +352,7 @@ class Fullscreen {
  *        The event that occurred.
  */
 /**
- * Gets fired when opening the fullscreen
+ * Gets fired when opening the fullscreen.
  *
  * @callback Highcharts.FullScreenfullscreenOpenCallbackFunction
  *

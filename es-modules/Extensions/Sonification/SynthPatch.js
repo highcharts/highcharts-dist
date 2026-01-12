@@ -1,13 +1,14 @@
 /* *
  *
- *  (c) 2009-2025 Øystein Moseng
+ *  (c) 2009-2026 Highsoft AS
+ *  Author: Øystein Moseng
  *
  *  Class representing a Synth Patch, used by Instruments in the
  *  sonification.js module.
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -17,7 +18,7 @@ const { clamp, defined, pick } = U;
  * Get the multiplier value from a pitch tracked multiplier. The parameter
  * specifies the multiplier at ca 3200Hz. It is 1 at ca 50Hz. In between
  * it is mapped logarithmically.
- * @private
+ * @internal
  * @param {number} multiplier The multiplier to track.
  * @param {number} freq The current frequency.
  */
@@ -27,7 +28,7 @@ function getPitchTrackedMultiplierVal(multiplier, freq) {
 }
 /**
  * Schedule a mini ramp to volume at time - avoid clicks/pops.
- * @private
+ * @internal
  * @param {Object} gainNode The gain node to schedule for.
  * @param {number} time The time in seconds to start ramp.
  * @param {number} vol The volume to ramp to.
@@ -39,7 +40,7 @@ function miniRampToVolAtTime(gainNode, time, vol) {
 }
 /**
  * Schedule a gain envelope for a gain node.
- * @private
+ * @internal
  * @param {Array<Object>} envelope The envelope to schedule.
  * @param {string} type Type of envelope, attack or release.
  * @param {number} time At what time (in seconds) to start envelope.
@@ -66,7 +67,7 @@ function scheduleGainEnvelope(envelope, type, time, gainNode, volumeMultiplier =
  * Combines two sawtooth oscillators to create a pulse by phase inverting and
  * delaying one of them.
  * @class
- * @private
+ * @internal
  */
 class PulseOscNode {
     constructor(context, options) {
@@ -134,7 +135,7 @@ class PulseOscNode {
 /**
  * Internal class used by SynthPatch
  * @class
- * @private
+ * @internal
  */
 class Oscillator {
     constructor(audioContext, options, destination) {
@@ -478,7 +479,7 @@ class SynthPatch {
     }
     /**
      * Create nodes for master EQ
-     * @private
+     * @internal
      */
     createEqChain(outputNode) {
         this.eqNodes = (this.options.eq || []).map((eqDef) => new BiquadFilterNode(this.audioContext, {
@@ -493,7 +494,7 @@ class SynthPatch {
     }
     /**
      * Fade by release envelopes at time
-     * @private
+     * @internal
      */
     releaseAtTime(time) {
         let maxReleaseDuration = 0;

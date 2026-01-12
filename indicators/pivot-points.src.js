@@ -1,14 +1,17 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v12.4.0 (2025-09-04)
+ * @license Highstock JS v12.5.0 (2026-01-12)
  * @module highcharts/indicators/pivot-points
  * @requires highcharts
  * @requires highcharts/modules/stock
  *
  * Indicator series type for Highcharts Stock
  *
- * (c) 2010-2025 Paweł Fus
+ * (c) 2010-2026 Highsoft AS
+ * Author: Paweł Fus
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -111,9 +114,9 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
 ;// ./code/es-modules/Stock/Indicators/PivotPoints/PivotPointsPoint.js
 /* *
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -169,9 +172,9 @@ class PivotPointsPoint extends SMAPoint {
 ;// ./code/es-modules/Stock/Indicators/PivotPoints/PivotPointsIndicator.js
 /* *
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 

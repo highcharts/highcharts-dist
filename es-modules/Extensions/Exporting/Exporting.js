@@ -2,11 +2,12 @@
  *
  *  Exporting module
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -15,8 +16,7 @@ import Chart from '../../Core/Chart/Chart.js';
 import ChartNavigationComposition from '../../Core/Chart/ChartNavigationComposition.js';
 import D from '../../Core/Defaults.js';
 const { defaultOptions, setOptions } = D;
-import DownloadURL from '../DownloadURL.js';
-const { downloadURL, getScript } = DownloadURL;
+import { downloadURL, getScript } from '../../Shared/DownloadURL.js';
 import ExportingDefaults from './ExportingDefaults.js';
 import ExportingSymbols from './ExportingSymbols.js';
 import Fullscreen from './Fullscreen.js';
@@ -32,7 +32,7 @@ AST.allowedTags.push('desc', 'clippath', 'fedropshadow', 'femorphology', 'g', 'i
  *  Constants
  *
  * */
-export const domurl = win.URL || win.webkitURL || win;
+const domurl = win.URL || win.webkitURL || win;
 /* *
  *
  *  Class
@@ -49,7 +49,6 @@ export const domurl = win.URL || win.webkitURL || win;
  *
  * @param {Highcharts.Chart} chart
  * The chart instance.
- *
  */
 class Exporting {
     /* *
@@ -58,6 +57,7 @@ class Exporting {
      *
      * */
     constructor(chart, options) {
+        /** @internal */
         this.options = {};
         this.chart = chart;
         this.options = options;
@@ -74,7 +74,7 @@ class Exporting {
     /**
      * Make hyphenated property names out of camelCase.
      *
-     * @private
+     * @internal
      * @static
      * @function Highcharts.Exporting#hyphenate
      *
@@ -94,7 +94,7 @@ class Exporting {
     /**
      * Get data:URL from image URL.
      *
-     * @private
+     * @internal
      * @static
      * @async
      * @function Highcharts.Exporting#imageToDataURL
@@ -122,6 +122,7 @@ class Exporting {
             return canvas.toDataURL(imageType);
         }
     }
+    /** @internal */
     static async fetchCSS(href) {
         const content = await fetch(href)
             .then((res) => res.text());
@@ -129,6 +130,7 @@ class Exporting {
         newSheet.replaceSync(content);
         return newSheet;
     }
+    /** @internal */
     static async handleStyleSheet(sheet, resultArray) {
         try {
             for (const rule of Array.from(sheet.cssRules)) {
@@ -157,6 +159,7 @@ class Exporting {
             }
         }
     }
+    /** @internal */
     static async fetchStyleSheets() {
         const cssTexts = [];
         for (const sheet of Array.from(doc.styleSheets)) {
@@ -164,6 +167,7 @@ class Exporting {
         }
         return cssTexts;
     }
+    /** @internal */
     static async inlineFonts(svg) {
         const cssTexts = await Exporting.fetchStyleSheets(), urlRegex = /url\(([^)]+)\)/g, urls = [];
         let cssText = cssTexts.join('\n'), match;
@@ -204,7 +208,7 @@ class Exporting {
     /**
      * Loads an image from the provided URL.
      *
-     * @private
+     * @internal
      * @static
      * @function Highcharts.Exporting#loadImage
      *
@@ -242,7 +246,7 @@ class Exporting {
      * Prepares and returns the image export options with default values where
      * necessary.
      *
-     * @private
+     * @internal
      * @static
      * @function Highcharts.Exporting#prepareImageOptions
      *
@@ -271,7 +275,7 @@ class Exporting {
      * A collection of fixes on the produced SVG to account for expand
      * properties and browser bugs. Returns a cleaned SVG.
      *
-     * @private
+     * @internal
      * @static
      * @function Highcharts.Exporting#sanitizeSVG
      *
@@ -285,7 +289,9 @@ class Exporting {
      *
      * @requires modules/exporting
      */
-    static sanitizeSVG(svg, options) {
+    static sanitizeSVG(svg, 
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    options) {
         const split = svg.indexOf('</svg>') + 6, useForeignObject = svg.indexOf('<foreignObject') > -1;
         let html = svg.substr(split);
         // Remove any HTML added to the container after the SVG (#894, #9087)
@@ -323,7 +329,7 @@ class Exporting {
     /**
      * Get blob URL from SVG code. Falls back to normal data URI.
      *
-     * @private
+     * @internal
      * @static
      * @function Highcharts.Exporting#svgToDataURL
      *
@@ -363,7 +369,7 @@ class Exporting {
     /**
      * Add the export button to the chart, with options.
      *
-     * @private
+     * @internal
      * @function Highcharts.Exporting#addButton
      *
      * @param {Highcharts.ExportingButtonOptions} options
@@ -450,7 +456,7 @@ class Exporting {
     /**
      * Clean up after printing a chart.
      *
-     * @private
+     * @internal
      * @function Highcharts.Exporting#afterPrint
      *
      * @emits Highcharts.Chart#event:afterPrint
@@ -483,7 +489,7 @@ class Exporting {
     /**
      * Prepare chart and document before printing a chart.
      *
-     * @private
+     * @internal
      * @function Highcharts.Exporting#beforePrint
      *
      * @emits Highcharts.Chart#event:beforePrint
@@ -523,7 +529,7 @@ class Exporting {
     /**
      * Display a popup menu for choosing the export type.
      *
-     * @private
+     * @internal
      * @function Highcharts.Exporting#contextMenu
      *
      * @param {string} className
@@ -693,7 +699,7 @@ class Exporting {
     /**
      * Destroy the export buttons.
      *
-     * @private
+     * @internal
      * @function Highcharts.Exporting#destroy
      *
      * @param {global.Event} [e]
@@ -760,7 +766,7 @@ class Exporting {
      * Highcharts options pointing to our server.
      *
      * @async
-     * @private
+     * @internal
      * @function Highcharts.Exporting#downloadSVG
      *
      * @param {string} svg
@@ -921,7 +927,7 @@ class Exporting {
     /**
      * Handles the fallback to the export server when a local export fails.
      *
-     * @private
+     * @internal
      * @async
      * @function Highcharts.Exporting#fallbackToServer
      *
@@ -1154,7 +1160,7 @@ class Exporting {
      * Gets the SVG for export using the getSVG function with additional
      * options.
      *
-     * @private
+     * @internal
      * @function Highcharts.Exporting#getSVGForExport
      *
      * @param {Highcharts.ExportingOptions} [exportingOptions]
@@ -1181,7 +1187,7 @@ class Exporting {
     /**
      * Analyze inherited styles from stylesheets and add them inline.
      *
-     * @private
+     * @internal
      * @function Highcharts.Exporting#inlineStyles
      *
      * @todo What are the border styles for text about? In general, text has a
@@ -1209,7 +1215,7 @@ class Exporting {
         /**
          * Call this on all elements and recurse to children.
          *
-         * @private
+         * @internal
          * @function recurse
          *
          * @param {Highcharts.HTMLDOMElement | Highcharts.SVGSVGElement} node
@@ -1222,7 +1228,7 @@ class Exporting {
              * Check computed styles and whether they are in the allow/denylist
              * for styles or attributes.
              *
-             * @private
+             * @internal
              * @function filterStyles
              *
              * @param {string | number | Highcharts.GradientColor | Highcharts.PatternObject | undefined} val
@@ -1344,7 +1350,7 @@ class Exporting {
         /**
          * Remove the dummy objects used to get defaults.
          *
-         * @private
+         * @internal
          * @function tearDown
          */
         function tearDown() {
@@ -1361,7 +1367,7 @@ class Exporting {
      * The options and chartOptions arguments are passed to the getSVGForExport
      * function.
      *
-     * @private
+     * @internal
      * @async
      * @function Highcharts.Exporting#localExport
      *
@@ -1471,7 +1477,7 @@ class Exporting {
     /**
      * Move the chart container(s) to another div.
      *
-     * @private
+     * @internal
      * @function Highcharts.Exporting#moveContainers
      *
      * @param {Highcharts.HTMLDOMElement} moveTo
@@ -1534,7 +1540,7 @@ class Exporting {
     /**
      * Add the buttons on chart load.
      *
-     * @private
+     * @internal
      * @function Highcharts.Exporting#render
      *
      * @requires modules/exporting
@@ -1559,7 +1565,7 @@ class Exporting {
     /**
      * Resolve CSS variables into hex colors.
      *
-     * @private
+     * @internal
      * @function Highcharts.Exporting#resolveCSSVariables
      *
      * @requires modules/exporting
@@ -1582,7 +1588,7 @@ class Exporting {
     /**
      * Updates the exporting object with the provided exporting options.
      *
-     * @private
+     * @internal
      * @function Highcharts.Exporting#update
      *
      * @param {Highcharts.ExportingOptions} exportingOptions
@@ -1605,8 +1611,13 @@ class Exporting {
  *  Static Properties
  *
  * */
+/** @internal */
 Exporting.inlineAllowlist = [];
-// These CSS properties are not inlined. Remember camelCase.
+/**
+ * These CSS properties are not inlined. Remember camelCase.
+ *
+ * @internal
+ */
 Exporting.inlineDenylist = [
     /-/, // In Firefox, both hyphened and camelCased names are listed
     /^(clipPath|cssText|d|height|width)$/, // Full words
@@ -1620,7 +1631,11 @@ Exporting.inlineDenylist = [
     /^length$/, // #7700
     /^\d+$/ // #17538
 ];
-// These ones are translated to attributes rather than styles
+/**
+ * These ones are translated to attributes rather than styles.
+ *
+ * @internal
+ */
 Exporting.inlineToAttributes = [
     'fill',
     'stroke',
@@ -1631,8 +1646,13 @@ Exporting.inlineToAttributes = [
     'x',
     'y'
 ];
-// Milliseconds to defer image load event handlers to offset IE bug
+/**
+ * Milliseconds to defer image load event handlers to offset IE bug
+ *
+ * @internal
+ */
 Exporting.loadEventDeferDelay = isMS ? 150 : 0;
+/** @internal */
 Exporting.unstyledElements = [
     'clipPath',
     'defs',
@@ -1657,7 +1677,7 @@ Exporting.unstyledElements = [
     /**
      * Composition function.
      *
-     * @private
+     * @internal
      * @function Highcharts.Exporting#compose
      *
      * @param {ChartClass} ChartClass
@@ -1716,7 +1736,7 @@ Exporting.unstyledElements = [
     /**
      * Function that is added to the callbacks array that runs on chart load.
      *
-     * @private
+     * @internal
      * @function Highcharts#chartCallback
      *
      * @param {Highcharts.Chart} chart
@@ -1772,7 +1792,7 @@ Exporting.unstyledElements = [
      * than the Chart prototype in order to use the chart instance inside the
      * update function.
      *
-     * @private
+     * @internal
      * @function Highcharts#onChartAfterInit
      *
      * @requires modules/exporting
@@ -1808,7 +1828,7 @@ Exporting.unstyledElements = [
      * On layout of titles (title, subtitle and caption), adjust the `alignTo`
      * box to avoid the context menu button.
      *
-     * @private
+     * @internal
      * @function Highcharts#onChartLayOutTitle
      *
      * @requires modules/exporting

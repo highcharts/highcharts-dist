@@ -1,10 +1,10 @@
 /* *
  *
- *  (c) 2009-2025 Highsoft AS
+ *  (c) 2009-2026 Highsoft AS
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  *  Authors:
  *  - Torstein Hønsi
@@ -12,13 +12,14 @@
  *  - Wojciech Chmiel
  *  - Sophie Bremer
  *  - Jomar Hønsi
+ *  - Kamil Kubik
  *
  * */
 'use strict';
 import DataConnector from './DataConnector.js';
 import GoogleSheetsConverter from '../Converters/GoogleSheetsConverter.js';
 import U from '../../Core/Utilities.js';
-const { merge, pick, defined } = U;
+const { merge, pick, fireEvent } = U;
 /* *
  *
  *  Functions
@@ -53,24 +54,29 @@ class GoogleSheetsConnector extends DataConnector {
     /**
      * Constructs an instance of GoogleSheetsConnector
      *
-     * @param {GoogleSheetsConnector.UserOptions} [options]
+     * @param {Partial<GoogleSheetsConnectorOptions>} [options]
      * Options for the connector and converter.
-     *
-     * @param {Array<DataTableOptions>} [dataTables]
-     * Multiple connector data tables options.
-     *
      */
-    constructor(options, dataTables) {
+    constructor(options) {
         const mergedOptions = merge(GoogleSheetsConnector.defaultOptions, options);
-        super(mergedOptions, dataTables);
-        this.options = defined(dataTables) ?
-            merge(mergedOptions, { dataTables }) : mergedOptions;
+        super(mergedOptions);
+        this.options = mergedOptions;
     }
     /* *
      *
      *  Functions
      *
      * */
+    /**
+     * Overrides the DataConnector method. Emits an event on the connector to
+     * all registered callbacks of this event.
+     *
+     * @param {GoogleSheetsConnector.Event} e
+     * Event object containing additional event information.
+     */
+    emit(e) {
+        fireEvent(this, e.type, e);
+    }
     /**
      * Loads data from a Google Spreadsheet.
      *
@@ -81,11 +87,13 @@ class GoogleSheetsConnector extends DataConnector {
      * Same connector instance with modified table.
      */
     load(eventDetail) {
-        const connector = this, tables = connector.dataTables, { dataModifier, dataRefreshRate, enablePolling, googleAPIKey, googleSpreadsheetKey, dataTables } = connector.options, url = GoogleSheetsConnector.buildFetchURL(googleAPIKey, googleSpreadsheetKey, connector.options);
+        const connector = this;
+        const options = connector.options;
+        const { dataRefreshRate, enablePolling, googleAPIKey, googleSpreadsheetKey, dataTables } = options;
+        const url = GoogleSheetsConnector.buildFetchURL(googleAPIKey, googleSpreadsheetKey, options);
         connector.emit({
             type: 'load',
             detail: eventDetail,
-            tables,
             url
         });
         if (!URL.canParse(url)) {
@@ -98,27 +106,22 @@ class GoogleSheetsConnector extends DataConnector {
                 throw new Error(json.error.message);
             }
             this.initConverters(json, (key) => {
-                const options = this.options;
                 const tableOptions = dataTables?.find((dataTable) => dataTable.key === key);
-                // Takes over the connector default options.
-                const mergedTableOptions = {
-                    dataTableKey: key,
-                    firstRowAsNames: tableOptions?.firstRowAsNames ??
-                        options.firstRowAsNames,
-                    beforeParse: tableOptions?.beforeParse ??
-                        options.beforeParse
+                // The data table options takes precedence over the
+                // connector options.
+                const { firstRowAsNames = options.firstRowAsNames, beforeParse = options.beforeParse } = tableOptions || {};
+                const converterOptions = {
+                    firstRowAsNames,
+                    beforeParse
                 };
-                return new GoogleSheetsConverter(merge(this.options, mergedTableOptions));
-            }, (converter, data) => {
-                converter.parse({ json: data });
-            });
-            return connector.setModifierOptions(dataModifier, dataTables);
+                return new GoogleSheetsConverter(converterOptions);
+            }, (converter, data) => converter.parse({ json: data }));
+            return connector.applyTableModifiers();
         })
             .then(() => {
             connector.emit({
                 type: 'afterLoad',
                 detail: eventDetail,
-                tables,
                 url
             });
             // Polling
@@ -130,8 +133,7 @@ class GoogleSheetsConnector extends DataConnector {
             connector.emit({
                 type: 'loadError',
                 detail: eventDetail,
-                error,
-                tables
+                error
             });
             throw error;
         });
@@ -143,6 +145,8 @@ class GoogleSheetsConnector extends DataConnector {
  *
  * */
 GoogleSheetsConnector.defaultOptions = {
+    id: 'google-sheets-connector',
+    type: 'GoogleSheets',
     googleAPIKey: '',
     googleSpreadsheetKey: '',
     enablePolling: false,
@@ -177,12 +181,12 @@ GoogleSheetsConnector.defaultOptions = {
      */
     function buildFetchURL(apiKey, sheetKey, options = {}) {
         const url = new URL(`https://sheets.googleapis.com/v4/spreadsheets/${sheetKey}/values/`);
-        const range = options.onlyColumnNames ?
+        const range = options.onlyColumnIds ?
             'A1:Z1' : buildQueryRange(options);
         url.pathname += range;
         const searchParams = url.searchParams;
         searchParams.set('alt', 'json');
-        if (!options.onlyColumnNames) {
+        if (!options.onlyColumnIds) {
             searchParams.set('dateTimeRenderOption', 'FORMATTED_STRING');
             searchParams.set('majorDimension', 'COLUMNS');
             searchParams.set('valueRenderOption', 'UNFORMATTED_VALUE');
@@ -208,6 +212,11 @@ GoogleSheetsConnector.defaultOptions = {
     }
     GoogleSheetsConnector.buildQueryRange = buildQueryRange;
 })(GoogleSheetsConnector || (GoogleSheetsConnector = {}));
+/* *
+ *
+ *  Registry
+ *
+ * */
 DataConnector.registerType('GoogleSheets', GoogleSheetsConnector);
 /* *
  *

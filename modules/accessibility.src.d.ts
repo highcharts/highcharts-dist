@@ -58,6 +58,7 @@ declare module "../highcharts.src" {
     interface PointOptionsObject {
         accessibility?: PointAccessibilityOptionsObject;
     }
+    interface SymbolOptions {}
     /**
      * The AccessibilityComponent base class, representing a part of the chart
      * that has accessibility logic connected to it. This class can be inherited
@@ -195,9 +196,43 @@ declare module "../highcharts.src" {
     function swapXY(path: SVGPathArray, vertical?: boolean): SVGPathArray;
     /**
      * Callout shape used for default tooltips.
+     *
+     * @param cx
+     *        Center X
+     *
+     * @param cy
+     *        Center Y
+     *
+     * @param w
+     *        Width
+     *
+     * @param h
+     *        Height
+     *
+     * @param options
+     *        Options
+     *
+     * @return Path
      */
-    function callout(): void;
-    function circle(): void;
+    function callout(cx: number, cy: number, w: number, h: number, options?: SymbolOptions): SVGPathArray;
+    /**
+     * Circle symbol path.
+     *
+     * @param x
+     *        X coordinate
+     *
+     * @param y
+     *        Y coordinate
+     *
+     * @param w
+     *        Width
+     *
+     * @param h
+     *        Height
+     *
+     * @return Path
+     */
+    function circle(x: number, y: number, w: number, h: number): SVGPathArray;
     /**
      * If we have a clear root option node for old and new options and a mapping
      * between, we can use this generic function for the copy and warn logic.
@@ -210,9 +245,80 @@ declare module "../highcharts.src" {
      *        The series to add info on.
      */
     function describeSeries(series: Series): void;
-    function diamond(): void;
-    function rect(): void;
-    function triangle(): void;
-    function triangleDown(): void;
+    /**
+     * Diamond symbol path.
+     *
+     * @param x
+     *        X coordinate
+     *
+     * @param y
+     *        Y coordinate
+     *
+     * @param w
+     *        Width
+     *
+     * @param h
+     *        Height
+     *
+     * @return Path
+     */
+    function diamond(x: number, y: number, w: number, h: number): SVGPathArray;
+    /**
+     * Rect symbol path.
+     *
+     * @param x
+     *        X coordinate
+     *
+     * @param y
+     *        Y coordinate
+     *
+     * @param w
+     *        Width
+     *
+     * @param h
+     *        Height
+     *
+     * @param options
+     *        Options
+     *
+     * @return Path
+     */
+    function rect(x: number, y: number, w: number, h: number, options?: SymbolOptions): SVGPathArray;
+    /**
+     * Triangle symbol path.
+     *
+     * @param x
+     *        X coordinate
+     *
+     * @param y
+     *        Y coordinate
+     *
+     * @param w
+     *        Width
+     *
+     * @param h
+     *        Height
+     *
+     * @return Path
+     */
+    function triangle(x: number, y: number, w: number, h: number): SVGPathArray;
+    /**
+     * Inverted triangle symbol path.
+     *
+     * @param x
+     *        X coordinate
+     *
+     * @param y
+     *        Y coordinate
+     *
+     * @param w
+     *        Width
+     *
+     * @param h
+     *        Height
+     *
+     * @return Path
+     */
+    function triangleDown(x: number, y: number, w: number, h: number): SVGPathArray;
 }
 export default _Highcharts;

@@ -1,10 +1,10 @@
 /* *
  *
- *  (c) 2009-2025 Highsoft AS
+ *  (c) 2009-2026 Highsoft AS
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  *  Authors:
  *  - Sophie Bremer
@@ -14,7 +14,7 @@
 'use strict';
 import DataModifier from './DataModifier.js';
 import U from '../../Core/Utilities.js';
-const { merge } = U;
+const { addEvent, fireEvent, merge } = U;
 /* *
  *
  *  Class
@@ -101,8 +101,10 @@ class ChainModifier extends DataModifier {
         });
     }
     /**
-     * Applies several modifications to the table and returns a modified copy of
-     * the given table.
+     * Sequentially applies all modifiers in the chain to the given table,
+     * updating its `modified` property with the final result.
+     *
+     * *Note:* The `modified` property reference of the table gets replaced.
      *
      * @param {Highcharts.DataTable} table
      * Table to modify.
@@ -117,7 +119,7 @@ class ChainModifier extends DataModifier {
         const modifiers = (this.options.reverse ?
             this.chain.slice().reverse() :
             this.chain.slice());
-        if (table.modified === table) {
+        if (!table.modified) {
             table.modified = table.clone(false, eventDetail);
         }
         let modified = table;
@@ -133,123 +135,15 @@ class ChainModifier extends DataModifier {
                 });
                 throw error;
             }
-            modified = modified.modified;
+            modified = modified.getModified();
         }
         table.modified = modified;
         return table;
     }
     /**
-     * Applies partial modifications of a cell change to the property `modified`
-     * of the given modified table.
-     *
-     * *Note:* The `modified` property of the table gets replaced.
-     *
-     * @param {Highcharts.DataTable} table
-     * Modified table.
-     *
-     * @param {string} columnName
-     * Column name of changed cell.
-     *
-     * @param {number|undefined} rowIndex
-     * Row index of changed cell.
-     *
-     * @param {Highcharts.DataTableCellType} cellValue
-     * Changed cell value.
-     *
-     * @param {Highcharts.DataTableEventDetail} [eventDetail]
-     * Custom information for pending events.
-     *
-     * @return {Highcharts.DataTable}
-     * Table with `modified` property as a reference.
-     */
-    modifyCell(table, columnName, rowIndex, cellValue, eventDetail) {
-        const modifiers = (this.options.reverse ?
-            this.chain.reverse() :
-            this.chain);
-        if (modifiers.length) {
-            let clone = table.clone();
-            for (let i = 0, iEnd = modifiers.length; i < iEnd; ++i) {
-                modifiers[i].modifyCell(clone, columnName, rowIndex, cellValue, eventDetail);
-                clone = clone.modified;
-            }
-            table.modified = clone;
-        }
-        return table;
-    }
-    /**
-     * Applies partial modifications of column changes to the property
-     * `modified` of the given table.
-     *
-     * *Note:* The `modified` property of the table gets replaced.
-     *
-     * @param {Highcharts.DataTable} table
-     * Modified table.
-     *
-     * @param {Highcharts.DataTableColumnCollection} columns
-     * Changed columns as a collection, where the keys are the column names.
-     *
-     * @param {number} [rowIndex=0]
-     * Index of the first changed row.
-     *
-     * @param {Highcharts.DataTableEventDetail} [eventDetail]
-     * Custom information for pending events.
-     *
-     * @return {Highcharts.DataTable}
-     * Table with `modified` property as a reference.
-     */
-    modifyColumns(table, columns, rowIndex, eventDetail) {
-        const modifiers = (this.options.reverse ?
-            this.chain.reverse() :
-            this.chain.slice());
-        if (modifiers.length) {
-            let clone = table.clone();
-            for (let i = 0, iEnd = modifiers.length; i < iEnd; ++i) {
-                modifiers[i].modifyColumns(clone, columns, rowIndex, eventDetail);
-                clone = clone.modified;
-            }
-            table.modified = clone;
-        }
-        return table;
-    }
-    /**
-     * Applies partial modifications of row changes to the property `modified`
-     * of the given table.
-     *
-     * *Note:* The `modified` property of the table gets replaced.
-     *
-     * @param {Highcharts.DataTable} table
-     * Modified table.
-     *
-     * @param {Array<(Highcharts.DataTableRow|Highcharts.DataTableRowObject)>} rows
-     * Changed rows.
-     *
-     * @param {number} [rowIndex]
-     * Index of the first changed row.
-     *
-     * @param {Highcharts.DataTableEventDetail} [eventDetail]
-     * Custom information for pending events.
-     *
-     * @return {Highcharts.DataTable}
-     * Table with `modified` property as a reference.
-     */
-    modifyRows(table, rows, rowIndex, eventDetail) {
-        const modifiers = (this.options.reverse ?
-            this.chain.reverse() :
-            this.chain.slice());
-        if (modifiers.length) {
-            let clone = table.clone();
-            for (let i = 0, iEnd = modifiers.length; i < iEnd; ++i) {
-                modifiers[i].modifyRows(clone, rows, rowIndex, eventDetail);
-                clone = clone.modified;
-            }
-            table.modified = clone;
-        }
-        return table;
-    }
-    /**
      * Applies several modifications to the table.
      *
-     * *Note:* The `modified` property of the table gets replaced.
+     * *Note:* The `modified` property reference of the table gets replaced.
      *
      * @param {DataTable} table
      * Table to modify.
@@ -273,10 +167,11 @@ class ChainModifier extends DataModifier {
         const modifiers = (chain.options.reverse ?
             chain.chain.reverse() :
             chain.chain.slice());
-        let modified = table.modified;
+        let modified = table.getModified();
         for (let i = 0, iEnd = modifiers.length, modifier; i < iEnd; ++i) {
             modifier = modifiers[i];
-            modified = modifier.modifyTable(modified, eventDetail).modified;
+            modified =
+                modifier.modifyTable(modified, eventDetail).getModified();
         }
         table.modified = modified;
         chain.emit({
@@ -308,6 +203,12 @@ class ChainModifier extends DataModifier {
             detail: eventDetail,
             modifier
         });
+    }
+    emit(e) {
+        fireEvent(this, e.type, e);
+    }
+    on(type, callback) {
+        return addEvent(this, type, callback);
     }
 }
 /* *

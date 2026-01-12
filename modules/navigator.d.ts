@@ -10,6 +10,7 @@ declare module "../highcharts" {
      * Standalone Navigator options.
      */
     interface StandaloneNavigatorOptions {}
+    interface SymbolOptions {}
     /**
      * The StandaloneNavigator class. The StandaloneNavigator class allows for
      * creating a standalone navigator component that synchronizes the extremes
@@ -138,12 +139,117 @@ declare module "../highcharts" {
     function swapXY(path: SVGPathArray, vertical?: boolean): SVGPathArray;
     /**
      * Callout shape used for default tooltips.
+     *
+     * @param cx
+     *        Center X
+     *
+     * @param cy
+     *        Center Y
+     *
+     * @param w
+     *        Width
+     *
+     * @param h
+     *        Height
+     *
+     * @param options
+     *        Options
+     *
+     * @return Path
      */
-    function callout(): void;
-    function circle(): void;
-    function diamond(): void;
-    function rect(): void;
-    function triangle(): void;
-    function triangleDown(): void;
+    function callout(cx: number, cy: number, w: number, h: number, options?: SymbolOptions): SVGPathArray;
+    /**
+     * Circle symbol path.
+     *
+     * @param x
+     *        X coordinate
+     *
+     * @param y
+     *        Y coordinate
+     *
+     * @param w
+     *        Width
+     *
+     * @param h
+     *        Height
+     *
+     * @return Path
+     */
+    function circle(x: number, y: number, w: number, h: number): SVGPathArray;
+    /**
+     * Diamond symbol path.
+     *
+     * @param x
+     *        X coordinate
+     *
+     * @param y
+     *        Y coordinate
+     *
+     * @param w
+     *        Width
+     *
+     * @param h
+     *        Height
+     *
+     * @return Path
+     */
+    function diamond(x: number, y: number, w: number, h: number): SVGPathArray;
+    /**
+     * Rect symbol path.
+     *
+     * @param x
+     *        X coordinate
+     *
+     * @param y
+     *        Y coordinate
+     *
+     * @param w
+     *        Width
+     *
+     * @param h
+     *        Height
+     *
+     * @param options
+     *        Options
+     *
+     * @return Path
+     */
+    function rect(x: number, y: number, w: number, h: number, options?: SymbolOptions): SVGPathArray;
+    /**
+     * Triangle symbol path.
+     *
+     * @param x
+     *        X coordinate
+     *
+     * @param y
+     *        Y coordinate
+     *
+     * @param w
+     *        Width
+     *
+     * @param h
+     *        Height
+     *
+     * @return Path
+     */
+    function triangle(x: number, y: number, w: number, h: number): SVGPathArray;
+    /**
+     * Inverted triangle symbol path.
+     *
+     * @param x
+     *        X coordinate
+     *
+     * @param y
+     *        Y coordinate
+     *
+     * @param w
+     *        Width
+     *
+     * @param h
+     *        Height
+     *
+     * @return Path
+     */
+    function triangleDown(x: number, y: number, w: number, h: number): SVGPathArray;
 }
 export default _Highcharts;

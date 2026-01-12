@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -20,6 +21,7 @@ const { clamp, pick, pushUnique, stableSort } = U;
  *  Namespace
  *
  * */
+/** @internal */
 var RendererUtilities;
 (function (RendererUtilities) {
     /* *
@@ -39,7 +41,7 @@ var RendererUtilities;
      * of objects containing a size, a target and a rank. It will place the
      * labels as close as possible to their targets, skipping the lowest ranked
      * labels if necessary.
-     * @private
+     * @internal
      */
     function distribute(boxes, len, maxDistance) {
         // Original array will be altered with added .pos
@@ -169,4 +171,5 @@ var RendererUtilities;
  *  Default Export
  *
  * */
+/** @internal */
 export default RendererUtilities;

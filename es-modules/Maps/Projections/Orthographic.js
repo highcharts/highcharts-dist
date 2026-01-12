@@ -1,5 +1,15 @@
 /* *
- * Orthographic projection
+ *
+ *  Orthographic projection
+ *
+ *  (c) 2021-2026 Highsoft AS
+ *
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
+ *
+ *  Authors:
+ *  - Torstein Honsi
+ *
  * */
 'use strict';
 /* *
@@ -13,6 +23,19 @@ const deg2rad = Math.PI / 180, scale = 63.78460826781007;
  *  Class
  *
  * */
+/**
+ * The orthographic projection is an azimuthal perspective projection,
+ * projecting the Earth's surface from an infinite distance to a plane.
+ * It gives the illusion of a three-dimensional globe.
+ *
+ * Its disadvantage is that it fails to render the whole world in one view.
+ * However, since the distortion is small at the center of the view, it is great
+ * at rendering limited areas of the globe, or at showing the positions of areas
+ * on the globe.
+ *
+ * @class
+ * @name Highcharts.Orthographic
+ */
 class Orthographic {
     constructor() {
         /* *
@@ -20,7 +43,9 @@ class Orthographic {
          *  Properties
          *
          * */
+        /** @internal */
         this.antimeridianCutting = false;
+        /** @internal */
         this.bounds = {
             x1: -scale,
             x2: scale,

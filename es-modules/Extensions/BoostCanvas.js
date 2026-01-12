@@ -1,6 +1,7 @@
 /* *
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *  Author: Torstein Honsi, Christer Vasseng
  *
  *  This module serves as a fallback for the Boost module in IE9 and IE10. Newer
@@ -9,7 +10,6 @@
  *  It is recommended to include this module in conditional comments targeting
  *  IE9 and IE10.
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -51,7 +51,7 @@ var BoostCanvas;
      *
      * */
     /**
-     * @private
+     * @internal
      */
     function areaCvsDrawPoint(ctx, clientX, plotY, yBottom, lastPoint) {
         if (lastPoint && clientX !== lastPoint.clientX) {
@@ -62,20 +62,20 @@ var BoostCanvas;
         }
     }
     /**
-     * @private
+     * @internal
      */
     function bubbleCvsMarkerCircle(ctx, clientX, plotY, r, i) {
         ctx.moveTo(clientX, plotY);
         ctx.arc(clientX, plotY, this.radii && this.radii[i], 0, 2 * Math.PI, false);
     }
     /**
-     * @private
+     * @internal
      */
     function columnCvsDrawPoint(ctx, clientX, plotY, yBottom) {
         ctx.rect(clientX - 1, plotY, 1, yBottom - plotY);
     }
     /**
-     * @private
+     * @internal
      */
     function compose(ChartClass, SeriesClass, seriesTypes) {
         const seriesProto = SeriesClass.prototype;
@@ -121,7 +121,7 @@ var BoostCanvas;
     }
     BoostCanvas.compose = compose;
     /**
-     * @private
+     * @internal
      */
     function onChartCanvasToSVG() {
         if (this.boost && this.boost.copy) {
@@ -129,7 +129,7 @@ var BoostCanvas;
         }
     }
     /**
-     * @private
+     * @internal
      */
     function onChartClear() {
         const boost = this.boost || {};
@@ -143,7 +143,7 @@ var BoostCanvas;
     /**
      * Draw the canvas image inside an SVG image
      *
-     * @private
+     * @internal
      * @function Highcharts.Series#canvasToSVG
      */
     function seriesCanvasToSVG() {
@@ -160,7 +160,7 @@ var BoostCanvas;
         }
     }
     /**
-     * @private
+     * @internal
      */
     function seriesCvsLineTo(ctx, clientX, plotY) {
         ctx.lineTo(clientX, plotY);
@@ -169,7 +169,7 @@ var BoostCanvas;
      * Create a hidden canvas to draw the graph on. The contents is later
      * copied over to an SVG image element.
      *
-     * @private
+     * @internal
      * @function Highcharts.Series#getContext
      */
     function seriesGetContext() {
@@ -232,7 +232,7 @@ var BoostCanvas;
         return ctx;
     }
     /**
-     * @private
+     * @internal
      */
     function seriesRenderCanvas() {
         const series = this, options = series.options, chart = series.chart, xAxis = series.xAxis, yAxis = series.yAxis, activeBoostSettings = chart.options.boost || {}, boostSettings = {
@@ -528,7 +528,7 @@ var BoostCanvas;
         }, chart.renderer.forExport ? Number.MAX_VALUE : void 0);
     }
     /**
-     * @private
+     * @internal
      */
     function scatterCvsMarkerCircle(ctx, clientX, plotY, r) {
         ctx.moveTo(clientX, plotY);
@@ -536,13 +536,13 @@ var BoostCanvas;
     }
     /**
      * Rect is twice as fast as arc, should be used for small markers.
-     * @private
+     * @internal
      */
     function scatterCvsMarkerSquare(ctx, clientX, plotY, r) {
         ctx.rect(clientX - r, plotY - r, r * 2, r * 2);
     }
     /**
-     * @private
+     * @internal
      */
     function wrapHeatmapDrawPoints() {
         const chart = this.chart, ctx = this.getContext(), inverted = this.chart.inverted, xAxis = this.xAxis, yAxis = this.yAxis;

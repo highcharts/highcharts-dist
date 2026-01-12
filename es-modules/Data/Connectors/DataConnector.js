@@ -1,15 +1,17 @@
 /* *
  *
- *  (c) 2009-2025 Highsoft AS
+ *  (c) 2009-2026 Highsoft AS
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  *  Authors:
  *  - Sophie Bremer
  *  - Wojciech Chmiel
  *  - Gøran Slettemark
+ *  - Dawid Dragula
+ *  - Kamil Kubik
  *
  * */
 'use strict';
@@ -24,10 +26,14 @@ const { addEvent, fireEvent, merge, pick } = U;
  * */
 /**
  * Abstract class providing an interface for managing a DataConnector.
- *
- * @private
  */
 class DataConnector {
+    /**
+     * Whether the connector is currently polling for new data.
+     */
+    get polling() {
+        return !!this._polling;
+    }
     /* *
      *
      *  Constructor
@@ -36,13 +42,10 @@ class DataConnector {
     /**
      * Constructor for the connector class.
      *
-     * @param {DataConnector.UserOptions} [options]
+     * @param {DataConnectorOptions} [options]
      * Options to use in the connector.
-     *
-     * @param {Array<DataTableOptions>} [dataTables]
-     * Multiple connector data tables options.
      */
-    constructor(options = {}, dataTables = []) {
+    constructor(options) {
         /**
          * Tables managed by this DataConnector instance.
          */
@@ -53,9 +56,15 @@ class DataConnector {
          */
         this.loaded = false;
         this.metadata = options.metadata || { columns: {} };
+        this.options = options;
         // Create a data table for each defined in the dataTables user options.
+        const dataTables = options?.dataTables;
         let dataTableIndex = 0;
-        if (dataTables?.length > 0) {
+        if (options.options) {
+            // eslint-disable-next-line no-console
+            console.error('The `DataConnectorOptions.options` property was removed in Dashboards v4.0.0. Check how to upgrade your connector to use the new options structure here: https://api.highcharts.com/dashboards/#interfaces/Data_DataTableOptions.DataTableOptions');
+        }
+        if (dataTables && dataTables?.length > 0) {
             for (let i = 0, iEnd = dataTables.length; i < iEnd; ++i) {
                 const dataTable = dataTables[i];
                 const key = dataTable?.key;
@@ -65,85 +74,20 @@ class DataConnector {
                     dataTableIndex++;
                 }
             }
-            // If user options dataTables is not defined, generate a default table.
         }
         else {
-            this.dataTables[0] = new DataTable(options.dataTable);
+            // If user options dataTables is not defined, generate a default
+            // table.
+            this.dataTables[0] = new DataTable({
+                id: options.id // Required by DataTableCore
+            });
         }
-    }
-    /**
-     * Poll timer ID, if active.
-     */
-    get polling() {
-        return !!this._polling;
-    }
-    /**
-     * Gets the first data table.
-     *
-     * @return {DataTable}
-     * The data table instance.
-     */
-    get table() {
-        return this.getTable();
     }
     /* *
      *
-     *  Functions
+     *  Methods
      *
      * */
-    /**
-     * Method for adding metadata for a single column.
-     *
-     * @param {string} name
-     * The name of the column to be described.
-     *
-     * @param {DataConnector.MetaColumn} columnMeta
-     * The metadata to apply to the column.
-     */
-    describeColumn(name, columnMeta) {
-        const connector = this, columns = connector.metadata.columns;
-        columns[name] = merge(columns[name] || {}, columnMeta);
-    }
-    /**
-     * Method for applying columns meta information to the whole DataConnector.
-     *
-     * @param {Highcharts.Dictionary<DataConnector.MetaColumn>} columns
-     * Pairs of column names and MetaColumn objects.
-     */
-    describeColumns(columns) {
-        const connector = this, columnNames = Object.keys(columns);
-        let columnName;
-        while (typeof (columnName = columnNames.pop()) === 'string') {
-            connector.describeColumn(columnName, columns[columnName]);
-        }
-    }
-    /**
-     * Emits an event on the connector to all registered callbacks of this
-     * event.
-     *
-     * @param {DataConnector.Event} [e]
-     * Event object containing additional event information.
-     */
-    emit(e) {
-        fireEvent(this, e.type, e);
-    }
-    /**
-     * Returns the order of columns.
-     *
-     * @param {boolean} [usePresentationState]
-     * Whether to use the column order of the presentation state of the table.
-     *
-     * @return {Array<string>|undefined}
-     * Order of columns.
-     */
-    getColumnOrder(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    usePresentationState) {
-        const connector = this, columns = connector.metadata.columns, names = Object.keys(columns || {});
-        if (names.length) {
-            return names.sort((a, b) => (pick(columns[a].index, 0) - pick(columns[b].index, 0)));
-        }
-    }
     /**
      * Returns a single data table instance based on the provided key.
      * Otherwise, returns the first data table.
@@ -161,17 +105,94 @@ class DataConnector {
         return Object.values(this.dataTables)[0];
     }
     /**
+     * Method for adding metadata for a single column.
+     *
+     * @param {string} name
+     * The name of the column to be described.
+     *
+     * @param {DataConnector.MetaColumn} columnMeta
+     * The metadata to apply to the column.
+     */
+    describeColumn(name, columnMeta) {
+        const connector = this;
+        const columns = connector.metadata.columns;
+        columns[name] = merge(columns[name] || {}, columnMeta);
+    }
+    /**
+     * Method for applying columns meta information to the whole DataConnector.
+     *
+     * @param {Highcharts.Dictionary<DataConnector.MetaColumn>} columns
+     * Pairs of column names and MetaColumn objects.
+     */
+    describeColumns(columns) {
+        const connector = this;
+        const columnIds = Object.keys(columns);
+        let columnId;
+        while (typeof (columnId = columnIds.pop()) === 'string') {
+            connector.describeColumn(columnId, columns[columnId]);
+        }
+    }
+    /**
+     * Returns the order of columns.
+     *
+     * @return {string[] | undefined}
+     * Order of columns.
+     */
+    getColumnOrder() {
+        const connector = this, columns = connector.metadata.columns, names = Object.keys(columns || {});
+        if (names.length) {
+            return names.sort((a, b) => (pick(columns[a].index, 0) - pick(columns[b].index, 0)));
+        }
+    }
+    /**
      * Retrieves the columns of the dataTable,
      * applies column order from meta.
      *
-     * @param {boolean} [usePresentationOrder]
-     * Whether to use the column order of the presentation state of the table.
-     *
      * @return {Highcharts.DataTableColumnCollection}
-     * An object with the properties `columnNames` and `columnValues`
+     * An object with the properties `columnIds` and `columnValues`
      */
-    getSortedColumns(usePresentationOrder) {
-        return this.table.getColumns(this.getColumnOrder(usePresentationOrder));
+    getSortedColumns() {
+        return this.getTable().getColumns(this.getColumnOrder());
+    }
+    /**
+     * Sets the index and order of columns.
+     *
+     * @param {Array<string>} columnIds
+     * Order of columns.
+     */
+    setColumnOrder(columnIds) {
+        const connector = this;
+        for (let i = 0, iEnd = columnIds.length; i < iEnd; ++i) {
+            connector.describeColumn(columnIds[i], { index: i });
+        }
+    }
+    /**
+     * Updates the connector with new options.
+     *
+     * @param newOptions
+     * The new options to be applied to the connector.
+     *
+     * @param reload
+     * Whether to reload the connector after applying the new options.
+     */
+    async update(newOptions, reload = true) {
+        this.emit({ type: 'beforeUpdate' });
+        merge(true, this.options, newOptions);
+        const { options } = this;
+        if ('enablePolling' in newOptions || 'dataRefreshRate' in newOptions) {
+            if ('enablePolling' in options && options.enablePolling) {
+                this.stopPolling();
+                this.startPolling(('dataRefreshRate' in options &&
+                    typeof options.dataRefreshRate === 'number') ? Math.max(options.dataRefreshRate, 1) * 1000 : 1000);
+            }
+            else {
+                this.stopPolling();
+            }
+        }
+        if (reload) {
+            await this.load();
+        }
+        this.emit({ type: 'afterUpdate' });
     }
     /**
      * The default load method, which fires the `afterLoad` event
@@ -182,57 +203,24 @@ class DataConnector {
      * @emits DataConnector#afterLoad
      */
     load() {
-        fireEvent(this, 'afterLoad', { table: this.table });
+        this.emit({ type: 'afterLoad' });
         return Promise.resolve(this);
     }
     /**
-     * Registers a callback for a specific connector event.
-     *
-     * @param {string} type
-     * Event type as a string.
-     *
-     * @param {DataEventEmitter.Callback} callback
-     * Function to register for the connector callback.
-     *
-     * @return {Function}
-     * Function to unregister callback from the connector event.
+     * Applies the data modifiers to the data tables according to the
+     * connector data tables options.
      */
-    on(type, callback) {
-        return addEvent(this, type, callback);
-    }
-    /**
-     * The default save method, which fires the `afterSave` event.
-     *
-     * @return {Promise<DataConnector>}
-     * The saved connector.
-     *
-     * @emits DataConnector#afterSave
-     * @emits DataConnector#saveError
-     */
-    save() {
-        fireEvent(this, 'saveError', { table: this.table });
-        return Promise.reject(new Error('Not implemented'));
-    }
-    /**
-     * Sets the index and order of columns.
-     *
-     * @param {Array<string>} columnNames
-     * Order of columns.
-     */
-    setColumnOrder(columnNames) {
-        const connector = this;
-        for (let i = 0, iEnd = columnNames.length; i < iEnd; ++i) {
-            connector.describeColumn(columnNames[i], { index: i });
-        }
-    }
-    async setModifierOptions(modifierOptions, tablesOptions) {
+    async applyTableModifiers() {
+        const tableOptionsArray = this.options?.dataTables;
         for (const [key, table] of Object.entries(this.dataTables)) {
-            const tableOptions = tablesOptions?.find((dataTable) => dataTable.key === key);
-            const mergedModifierOptions = merge(tableOptions?.dataModifier, modifierOptions);
-            const ModifierClass = (mergedModifierOptions &&
-                DataModifier.types[mergedModifierOptions.type]);
+            // Take data modifier options from the corresponsing data table
+            // options, otherwise take the data modifier options from the
+            // connector options.
+            const dataModifierOptions = tableOptionsArray?.find((dataTable) => dataTable.key === key)?.dataModifier ?? this.options?.dataModifier;
+            const ModifierClass = (dataModifierOptions &&
+                DataModifier.types[dataModifierOptions.type]);
             await table.setModifier(ModifierClass ?
-                new ModifierClass(mergedModifierOptions) :
+                new ModifierClass(dataModifierOptions) :
                 void 0);
         }
         return this;
@@ -245,16 +233,16 @@ class DataConnector {
      */
     startPolling(refreshTime = 1000) {
         const connector = this;
-        const tables = connector.dataTables;
         // Assign a new abort controller.
         this.pollingController = new AbortController();
         // Clear the polling timeout.
         window.clearTimeout(connector._polling);
-        connector._polling = window.setTimeout(() => connector
+        connector._polling = window.setTimeout(
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        () => connector
             .load()['catch']((error) => connector.emit({
             type: 'loadError',
-            error,
-            tables
+            error
         }))
             .then(() => {
             if (connector._polling) {
@@ -277,16 +265,29 @@ class DataConnector {
         delete connector._polling;
     }
     /**
-     * Retrieves metadata from a single column.
+     * Emits an event on the connector to all registered callbacks of this
+     * event.
      *
-     * @param {string} name
-     * The identifier for the column that should be described
-     *
-     * @return {DataConnector.MetaColumn|undefined}
-     * Returns a MetaColumn object if found.
+     * @param {DataConnector.Event} e
+     * Event object containing additional event information.
      */
-    whatIs(name) {
-        return this.metadata.columns[name];
+    emit(e) {
+        fireEvent(this, e.type, e);
+    }
+    /**
+     * Registers a callback for a specific connector event.
+     *
+     * @param type
+     * Event type.
+     *
+     * @param callback
+     * Function to register for the connector callback.
+     *
+     * @return {Function}
+     * Function to unregister callback from the connector event.
+     */
+    on(type, callback) {
+        return addEvent(this, type, callback);
     }
     /**
      * Iterates over the dataTables and initiates the corresponding converters.
@@ -305,11 +306,11 @@ class DataConnector {
         let index = 0;
         for (const [key, table] of Object.entries(this.dataTables)) {
             // Create a proper converter and parse its data.
-            const converter = createConverter(key, table);
-            parseData(converter, data);
+            const converter = createConverter(key);
+            const columns = parseData(converter, data);
             // Update the dataTable.
             table.deleteColumns();
-            table.setColumns(converter.getTable().getColumns());
+            table.setColumns(columns);
             // Assign the first converter.
             if (index === 0) {
                 this.converter = converter;

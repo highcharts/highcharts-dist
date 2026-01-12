@@ -1,17 +1,19 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v12.4.0 (2025-09-04)
+ * @license Highstock JS v12.5.0 (2026-01-12)
  * @module highcharts/modules/pointandfigure
  * @requires highcharts
  * @requires highcharts/modules/stock
  *
  * Point and figure series type for Highcharts Stock
  *
- * (c) 2010-2025 Kamil Musialowski
+ * (c) 2010-2026 Highsoft AS
+ * Author: Kamil Musialowski
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
-import * as __WEBPACK_EXTERNAL_MODULE__stock_src_js_3de69a45__ from "./stock.src.js";
 /******/ // The require scope
 /******/ var __webpack_require__ = {};
 /******/ 
@@ -46,28 +48,23 @@ import * as __WEBPACK_EXTERNAL_MODULE__stock_src_js_3de69a45__ from "./stock.src
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
-;// external "./stock.src.js"
-var x = (y) => {
-	var x = {}; __webpack_require__.d(x,
-    	y); return x
-    } 
-    var y = (x) => (() => (x))
-    const external_stock_src_js_namespaceObject = x({  });
 ;// external ["../highcharts.src.js","default","SeriesRegistry"]
 const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
 var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
 ;// ./code/es-modules/Series/PointAndFigure/PointAndFigurePoint.js
 /* *
  *
- *  (c) 2010-2025 Kamil Musialowski
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Kamil Musialowski
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -125,11 +122,12 @@ class PointAndFigurePoint extends ScatterPoint {
 ;// ./code/es-modules/Series/PointAndFigure/PointAndFigureSeriesDefaults.js
 /* *
  *
- *  (c) 2010-2025 Kamil Musialowski
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Kamil Musialowski
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -334,11 +332,12 @@ var PointAndFigureSymbols;
 ;// ./code/es-modules/Series/PointAndFigure/PointAndFigureSeries.js
 /* *
  *
- *  (c) 2010-2025 Kamil Musialowski
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Kamil Musialowski
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -411,13 +410,13 @@ class PointAndFigureSeries extends ScatterSeries {
     getProcessedData() {
         if (!this.pnfDataGroups) {
             return {
-                modified: this.dataTable.modified,
+                modified: this.dataTable.getModified(),
                 cropped: false,
                 cropStart: 0,
                 closestPointRange: 1
             };
         }
-        const series = this, modified = this.dataTable.modified, options = series.options, xData = series.getColumn('x', true), yData = series.getColumn('y', true), boxSize = options.boxSize, calculatedBoxSize = isNumber(boxSize) ?
+        const series = this, modified = this.dataTable.getModified(), options = series.options, xData = series.getColumn('x', true), yData = series.getColumn('y', true), boxSize = options.boxSize, calculatedBoxSize = isNumber(boxSize) ?
             boxSize : relativeLength(boxSize, yData[0]), pnfDataGroups = series.pnfDataGroups, reversal = calculatedBoxSize * options.reversalAmount;
         series.calculatedBoxSize = calculatedBoxSize;
         let upTrend;
@@ -550,7 +549,6 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 /* harmony default export */ const PointAndFigure_PointAndFigureSeries = (PointAndFigureSeries);
 
 ;// ./code/es-modules/masters/modules/pointandfigure.src.js
-
 
 
 

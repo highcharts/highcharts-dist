@@ -1,23 +1,24 @@
 /* *
  *
- *  (c) 2009-2025 Highsoft AS
+ *  (c) 2009-2026 Highsoft AS
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  *  Authors:
  *  - Torstein Hønsi
  *  - Christer Vasseng
  *  - Gøran Slettemark
  *  - Sophie Bremer
+ *  - Kamil Kubik
  *
  * */
 'use strict';
 import CSVConverter from '../Converters/CSVConverter.js';
 import DataConnector from './DataConnector.js';
 import U from '../../Core/Utilities.js';
-const { merge, defined } = U;
+const { merge, fireEvent } = U;
 /* *
  *
  *  Class
@@ -37,18 +38,13 @@ class CSVConnector extends DataConnector {
     /**
      * Constructs an instance of CSVConnector.
      *
-     * @param {CSVConnector.UserOptions} [options]
+     * @param {Partial<CSVConnectorOptions>} [options]
      * Options for the connector and converter.
-     *
-     * @param {Array<DataTableOptions>} [dataTables]
-     * Multiple connector data tables options.
-     *
      */
-    constructor(options, dataTables) {
+    constructor(options) {
         const mergedOptions = merge(CSVConnector.defaultOptions, options);
-        super(mergedOptions, dataTables);
-        this.options = defined(dataTables) ?
-            merge(mergedOptions, { dataTables }) : mergedOptions;
+        super(mergedOptions);
+        this.options = mergedOptions;
         if (mergedOptions.enablePolling) {
             this.startPolling(Math.max(mergedOptions.dataRefreshRate || 0, 1) * 1000);
         }
@@ -59,6 +55,16 @@ class CSVConnector extends DataConnector {
      *
      * */
     /**
+     * Overrides the DataConnector method. Emits an event on the connector to
+     * all registered callbacks of this event.
+     *
+     * @param {CSVConnector.Event} e
+     * Event object containing additional event information.
+     */
+    emit(e) {
+        fireEvent(this, e.type, e);
+    }
+    /**
      * Initiates the loading of the CSV source to the connector
      *
      * @param {DataEvent.Detail} [eventDetail]
@@ -68,12 +74,12 @@ class CSVConnector extends DataConnector {
      * @emits CSVConnector#afterLoad
      */
     load(eventDetail) {
-        const connector = this, tables = connector.dataTables, { csv, csvURL, dataModifier, dataTables } = connector.options;
+        const connector = this;
+        const options = connector.options;
+        const { csv, csvURL, dataTables, decimalPoint } = options;
         connector.emit({
             type: 'load',
-            csv,
-            detail: eventDetail,
-            tables
+            csv
         });
         return Promise
             .resolve(csvURL ?
@@ -84,39 +90,32 @@ class CSVConnector extends DataConnector {
             .then((csv) => {
             if (csv) {
                 this.initConverters(csv, (key) => {
-                    const options = this.options;
                     const tableOptions = dataTables?.find((dataTable) => dataTable.key === key);
-                    // Takes over the connector default options.
-                    const mergedTableOptions = {
-                        dataTableKey: key,
-                        firstRowAsNames: tableOptions?.firstRowAsNames ??
-                            options.firstRowAsNames,
-                        beforeParse: tableOptions?.beforeParse ??
-                            options.beforeParse
+                    // The data table options takes precedence over the
+                    // connector options.
+                    const { firstRowAsNames = options.firstRowAsNames, beforeParse = options.beforeParse } = tableOptions || {};
+                    const converterOptions = {
+                        decimalPoint,
+                        firstRowAsNames,
+                        beforeParse
                     };
-                    return new CSVConverter(merge(this.options, mergedTableOptions));
-                }, (converter, data) => {
-                    converter.parse({ csv: data });
-                });
+                    return new CSVConverter(merge(options, converterOptions));
+                }, (converter, data) => converter.parse({ csv: data }));
             }
-            return connector
-                .setModifierOptions(dataModifier, dataTables)
-                .then(() => csv);
+            return connector.applyTableModifiers().then(() => csv);
         })
             .then((csv) => {
             connector.emit({
                 type: 'afterLoad',
-                csv,
                 detail: eventDetail,
-                tables
+                csv
             });
             return connector;
         })['catch']((error) => {
             connector.emit({
                 type: 'loadError',
                 detail: eventDetail,
-                error,
-                tables
+                error
             });
             throw error;
         });
@@ -128,12 +127,19 @@ class CSVConnector extends DataConnector {
  *
  * */
 CSVConnector.defaultOptions = {
+    id: 'csv-connector',
+    type: 'CSV',
     csv: '',
     csvURL: '',
     enablePolling: false,
     dataRefreshRate: 1,
     firstRowAsNames: true
 };
+/* *
+ *
+ *  Registry
+ *
+ * */
 DataConnector.registerType('CSV', CSVConnector);
 /* *
  *

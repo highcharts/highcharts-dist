@@ -1,12 +1,13 @@
 /* *
  *
- *  (c) 2009-2025 Øystein Moseng
+ *  (c) 2009-2026 Highsoft AS
+ *  Author: Øystein Moseng
  *
  *  Small MIDI file writer for sonification export.
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 /* eslint-disable no-multi-spaces */
@@ -133,7 +134,7 @@ varLenEnc = (n) => {
  *
  * Outputs multi-track MIDI for Timelines with multiple channels.
  *
- * @private
+ * @internal
  */
 function toMIDI(channels) {
     const channelsToAdd = channels.filter((c) => !!c.events.length), numCh = channelsToAdd.length, multiCh = numCh > 1;

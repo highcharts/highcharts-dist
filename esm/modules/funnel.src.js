@@ -1,13 +1,16 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.5.0 (2026-01-12)
  * @module highcharts/modules/funnel
  * @requires highcharts
  *
  * Highcharts funnel module
  *
- * (c) 2010-2025 Torstein Honsi
+ * (c) 2010-2026 Highsoft AS
+ * Author: Torstein Honsi
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -44,6 +47,7 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -53,11 +57,12 @@ var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require_
  *
  *  Highcharts funnel module
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -259,9 +264,9 @@ const FunnelSeriesDefaults = {
  *
  *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -293,9 +298,7 @@ let oldRoundedRect = noop;
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function applyBorderRadius(path, i, r) {
     const a = path[i];
     let b = path[i + 1];
@@ -377,7 +380,7 @@ function applyBorderRadius(path, i, r) {
 }
 /**
  * Extend arc with borderRadius.
- * @private
+ * @internal
  */
 function arc(x, y, w, h, options = {}) {
     const path = oldArc(x, y, w, h, options), { brStart = true, brEnd = true, innerR = 0, r = w, start = 0, end = 0 } = options;
@@ -405,7 +408,7 @@ function arc(x, y, w, h, options = {}) {
     }
     return path;
 }
-/** @private */
+/** @internal */
 function seriesOnAfterColumnTranslate() {
     if (this.options.borderRadius &&
         !(this.chart.is3d && this.chart.is3d())) {
@@ -465,7 +468,7 @@ function seriesOnAfterColumnTranslate() {
         }
     }
 }
-/** @private */
+/** @internal */
 function compose(SeriesClass, SVGElementClass, SVGRendererClass) {
     const PieSeriesClass = SeriesClass.types.pie;
     if (!SVGElementClass.symbolCustomAttribs.includes('borderRadius')) {
@@ -482,14 +485,14 @@ function compose(SeriesClass, SVGElementClass, SVGRendererClass) {
         symbols.roundedRect = roundedRect;
     }
 }
-/** @private */
+/** @internal */
 function optionsToObject(options, seriesBROptions) {
     if (!isObject(options)) {
         options = { radius: options || 0 };
     }
     return merge(defaultBorderRadiusOptions, seriesBROptions, options);
 }
-/** @private */
+/** @internal */
 function pieSeriesOnAfterTranslate() {
     const borderRadius = optionsToObject(this.options.borderRadius);
     for (const point of this.points) {
@@ -501,7 +504,7 @@ function pieSeriesOnAfterTranslate() {
 }
 /**
  * Extend roundedRect with individual cutting through rOffset.
- * @private
+ * @internal
  */
 function roundedRect(x, y, width, height, options = {}) {
     const path = oldRoundedRect(x, y, width, height, options), { r = 0, brBoxHeight = height, brBoxY = y } = options, brOffsetTop = y - brBoxY, brOffsetBtm = (brBoxY + brBoxHeight) - (y + height), 
@@ -646,11 +649,12 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  *
  *  Highcharts funnel module
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -1120,11 +1124,12 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *
  *  Highcharts funnel module
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -1218,11 +1223,12 @@ const PyramidSeriesDefaults = {
  *
  *  Highcharts funnel module
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 

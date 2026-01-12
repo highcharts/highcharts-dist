@@ -1,13 +1,16 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.5.0 (2026-01-12)
  * @module highcharts/modules/bullet
  * @requires highcharts
  *
  * Bullet graph series type for Highcharts
  *
- * (c) 2010-2025 Kacper Madej
+ * (c) 2010-2026 Highsoft AS
+ * Author: Kacper Madej
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -44,6 +47,7 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -54,11 +58,12 @@ var external_highcharts_src_js_default_Series_types_column_default = /*#__PURE__
 ;// ./code/es-modules/Series/Bullet/BulletPoint.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -285,11 +290,12 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
 ;// ./code/es-modules/Series/Bullet/BulletSeries.js
 /* *
  *
- *  (c) 2010-2025 Kacper Madej
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Kacper Madej
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 

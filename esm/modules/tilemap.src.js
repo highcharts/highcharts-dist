@@ -1,17 +1,18 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v12.4.0 (2025-09-04)
+ * @license Highmaps JS v12.5.0 (2026-01-12)
  * @module highcharts/modules/tilemap
  * @requires highcharts
  * @requires highcharts/modules/map
  *
  * Tilemap module
  *
- * (c) 2010-2025 Highsoft AS
+ * (c) 2010-2026 Highsoft AS
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
-import * as __WEBPACK_EXTERNAL_MODULE__map_src_js_a3a01721__ from "./map.src.js";
 /******/ // The require scope
 /******/ var __webpack_require__ = {};
 /******/ 
@@ -46,17 +47,11 @@ import * as __WEBPACK_EXTERNAL_MODULE__map_src_js_a3a01721__ from "./map.src.js"
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
-;// external "./map.src.js"
-var x = (y) => {
-	var x = {}; __webpack_require__.d(x,
-    	y); return x
-    } 
-    var y = (x) => (() => (x))
-    const external_map_src_js_namespaceObject = x({  });
 ;// external ["../highcharts.src.js","default","SeriesRegistry"]
 const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
 var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
@@ -66,11 +61,12 @@ var external_highcharts_src_js_default_Color_default = /*#__PURE__*/__webpack_re
 ;// ./code/es-modules/Core/Axis/Color/ColorAxisComposition.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -101,9 +97,7 @@ var ColorAxisComposition;
      *  Functions
      *
      * */
-    /**
-     * @private
-     */
+    /** @internal */
     function compose(ColorAxisClass, ChartClass, FxClass, LegendClass, SeriesClass) {
         const chartProto = ChartClass.prototype, fxProto = FxClass.prototype, seriesProto = SeriesClass.prototype;
         if (!chartProto.collectionsWithUpdate.includes('colorAxis')) {
@@ -133,7 +127,7 @@ var ColorAxisComposition;
     ColorAxisComposition.compose = compose;
     /**
      * Extend the chart createAxes method to also make the color axis.
-     * @private
+     * @internal
      */
     function onChartAfterCreateAxes() {
         const { userOptions } = this;
@@ -148,7 +142,7 @@ var ColorAxisComposition;
     /**
      * Add the color axis. This also removes the axis' own series to prevent
      * them from showing up individually.
-     * @private
+     * @internal
      */
     function onLegendAfterGetAllItems(e) {
         const colorAxes = this.chart.colorAxis || [], destroyItem = (item) => {
@@ -193,9 +187,7 @@ var ColorAxisComposition;
             e.allItems.unshift(colorAxisItems[i]);
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function onLegendAfterColorizeItem(e) {
         if (e.visible && e.item.legendColor) {
             e.item.legendItem.symbol.attr({
@@ -205,7 +197,7 @@ var ColorAxisComposition;
     }
     /**
      * Updates in the legend need to be reflected in the color axis. (#6888)
-     * @private
+     * @internal
      */
     function onLegendAfterUpdate(e) {
         this.chart.colorAxis?.forEach((colorAxis) => {
@@ -214,7 +206,7 @@ var ColorAxisComposition;
     }
     /**
      * Calculate and set colors for points.
-     * @private
+     * @internal
      */
     function onSeriesAfterTranslate() {
         if (this.chart.colorAxis?.length ||
@@ -224,7 +216,7 @@ var ColorAxisComposition;
     }
     /**
      * Add colorAxis to series axisTypes.
-     * @private
+     * @internal
      */
     function onSeriesBindAxes() {
         const axisTypes = this.axisTypes;
@@ -237,7 +229,7 @@ var ColorAxisComposition;
     }
     /**
      * Set the visibility of a single point
-     * @private
+     * @internal
      * @function Highcharts.colorPointMixin.setVisible
      * @param {boolean} visible
      */
@@ -256,7 +248,7 @@ var ColorAxisComposition;
     /**
      * In choropleth maps, the color is a result of the value, so this needs
      * translation too
-     * @private
+     * @internal
      * @function Highcharts.colorSeriesMixin.translateColors
      */
     function seriesTranslateColors() {
@@ -278,9 +270,7 @@ var ColorAxisComposition;
             }
         });
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function wrapChartCreateAxis(ChartClass) {
         const superCreateAxis = ChartClass.prototype.createAxis;
         ChartClass.prototype.createAxis = function (type, options) {
@@ -309,14 +299,14 @@ var ColorAxisComposition;
     }
     /**
      * Handle animation of the color attributes directly.
-     * @private
+     * @internal
      */
     function wrapFxFillSetter() {
         this.elem.attr('fill', color(this.start).tweenTo(color(this.end), this.pos), void 0, true);
     }
     /**
      * Handle animation of the color attributes directly.
-     * @private
+     * @internal
      */
     function wrapFxStrokeSetter() {
         this.elem.attr('stroke', color(this.start).tweenTo(color(this.end), this.pos), void 0, true);
@@ -334,12 +324,12 @@ var ColorAxisComposition;
  *
  *  Tilemaps module
  *
- *  (c) 2010-2025 Highsoft AS
+ *  (c) 2010-2026 Highsoft AS
  *  Author: Øystein Moseng
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -383,12 +373,12 @@ TilemapPoint_extend(TilemapPoint.prototype, {
  *
  *  Tilemaps module
  *
- *  (c) 2010-2025 Highsoft AS
+ *  (c) 2010-2026 Highsoft AS
  *  Author: Øystein Moseng
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -605,12 +595,12 @@ const TilemapSeriesDefaults = {
  *
  *  Tilemaps module
  *
- *  (c) 2010-2025 Highsoft AS
+ *  (c) 2010-2026 Highsoft AS
  *  Author: Øystein Moseng
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -893,12 +883,12 @@ const TilemapShapes = {
  *
  *  Tilemaps module
  *
- *  (c) 2010-2025 Highsoft AS
+ *  (c) 2010-2026 Highsoft AS
  *  Author: Øystein Moseng
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -1083,7 +1073,6 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ''; // Keeps doclets above in JS file
 
 ;// ./code/es-modules/masters/modules/tilemap.src.js
-
 
 
 

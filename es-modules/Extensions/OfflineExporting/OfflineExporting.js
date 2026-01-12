@@ -2,11 +2,12 @@
  *
  *  Client side exporting module
  *
- *  (c) 2015 Torstein Honsi / Oystein Moseng
+ *  (c) 2015-2026 Highsoft AS
+ *  Author: Torstein Honsi / Oystein Moseng
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -14,8 +15,7 @@ import AST from '../../Core/Renderer/HTML/AST.js';
 import Chart from '../../Core/Chart/Chart.js';
 import D from '../../Core/Defaults.js';
 const { getOptions, setOptions } = D;
-import DownloadURL from '../DownloadURL.js';
-const { downloadURL, getScript } = DownloadURL;
+import { downloadURL, getScript } from '../../Shared/DownloadURL.js';
 import G from '../../Core/Globals.js';
 const { composed, doc, win } = G;
 import OfflineExportingDefaults from './OfflineExportingDefaults.js';
@@ -36,7 +36,7 @@ var OfflineExporting;
     /**
      * Composition function.
      *
-     * @private
+     * @internal
      * @function compose
      *
      * @param {ExportingClass} ExportingClass
@@ -129,7 +129,7 @@ var OfflineExporting;
      * function processes the SVG, applies necessary font adjustments, converts
      * it to a PDF, and initiates the file download.
      *
-     * @private
+     * @internal
      * @async
      * @function downloadPDF
      *
@@ -169,7 +169,7 @@ var OfflineExporting;
      * It fetches font files (if provided in `pdfFont`), converts them to
      * base64, and registers them with jsPDF.
      *
-     * @private
+     * @internal
      * @function loadPdfFonts
      *
      * @param {SVGElement} svgElement
@@ -253,7 +253,7 @@ var OfflineExporting;
      * a given SVG string, applies font styles inherited from parent elements,
      * and removes text outlines and title elements to improve PDF rendering.
      *
-     * @private
+     * @internal
      * @function preparePDF
      *
      * @param {string} svg
@@ -329,7 +329,7 @@ var OfflineExporting;
      * Transform from PDF to SVG.
      *
      * @async
-     * @private
+     * @internal
      * @function svgToPdf
      *
      * @param {Highcharts.SVGElement} svgElement

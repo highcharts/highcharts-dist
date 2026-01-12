@@ -2,11 +2,12 @@
  *
  *  Popup generator for Stock tools
  *
- *  (c) 2009-2025 Sebastian Bochan
+ *  (c) 2009-2026 Highsoft AS
+ *  Author: Sebastian Bochan
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -20,9 +21,7 @@ const { addEvent, pushUnique, wrap } = U;
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function compose(NagivationBindingsClass, PointerClass) {
     if (pushUnique(composed, 'Popup')) {
         addEvent(NagivationBindingsClass, 'closePopup', onNavigationBindingsClosePopup);
@@ -30,31 +29,27 @@ function compose(NagivationBindingsClass, PointerClass) {
         wrap(PointerClass.prototype, 'onContainerMouseDown', wrapPointerOnContainerMouserDown);
     }
 }
-/**
- * @private
- */
+/** @internal */
 function onNavigationBindingsClosePopup() {
     if (this.popup) {
         this.popup.closePopup();
     }
 }
-/**
- * @private
- */
+/** @internal */
 function onNavigationBindingsShowPopup(config) {
     if (!this.popup) {
         // Add popup to main container
         this.popup = new Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
             (this.chart.options.stockTools &&
                 this.chart.options.stockTools.gui.iconsURL) ||
-            'https://code.highcharts.com/12.4.0/gfx/stock-icons/'), this.chart);
+            'https://code.highcharts.com/12.5.0/gfx/stock-icons/'), this.chart);
     }
     this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
 }
 /**
  * `onContainerMouseDown` blocks internal popup events, due to e.preventDefault.
  * Related issue #4606
- * @private
+ * @internal
  */
 function wrapPointerOnContainerMouserDown(proceed, e) {
     // Elements is not in popup
@@ -67,7 +62,9 @@ function wrapPointerOnContainerMouserDown(proceed, e) {
  *  Default Export
  *
  * */
+/** @internal */
 const PopupComposition = {
     compose
 };
+/** @internal */
 export default PopupComposition;

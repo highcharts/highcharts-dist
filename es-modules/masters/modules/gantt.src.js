@@ -1,13 +1,16 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v12.4.0 (2025-09-04)
+ * @license Highcharts Gantt JS v12.5.0 (2026-01-12)
  * @module highcharts/modules/gantt
  * @requires highcharts
  *
  * Gantt series
  *
- * (c) 2016-2025 Lars A. V. Cabrera
+ * (c) 2016-2026 Highsoft AS
+ * Author: Lars A. V. Cabrera
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 'use strict';
 import Highcharts from '../../Core/Globals.js';

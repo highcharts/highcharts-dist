@@ -2,13 +2,13 @@
  *
  *  Plugin for resizing axes / panes in a chart.
  *
- *  (c) 2010-2025 Highsoft AS
+ *  (c) 2010-2026 Highsoft AS
  *
  *  Author: Kacper Madej
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 /* *
@@ -16,6 +16,7 @@
  *  API Options
  *
  * */
+/** @internal */
 const AxisResizerDefaults = {
     /**
      * Minimal size of a resizable axis. Could be set as a percent
@@ -170,4 +171,5 @@ const AxisResizerDefaults = {
  *  Default Export
  *
  * */
+/** @internal */
 export default AxisResizerDefaults;

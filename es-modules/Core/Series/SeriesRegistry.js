@@ -1,19 +1,14 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
-/* *
- *
- *  Imports
- *
- * */
-import Series from './Series.js';
 import H from '../Globals.js';
 import D from '../Defaults.js';
 const { defaultOptions } = D;
@@ -45,7 +40,7 @@ var SeriesRegistry;
     /**
      * Registers class pattern of a series.
      *
-     * @private
+     * @internal
      */
     function registerSeriesType(seriesType, SeriesClass) {
         const defaultPlotOptions = defaultOptions.plotOptions || {}, seriesOptions = SeriesClass.defaultOptions, seriesProto = SeriesClass.prototype;
@@ -97,7 +92,8 @@ var SeriesRegistry;
         defaultPlotOptions[type] = merge(defaultPlotOptions[parent], options);
         // Create the class
         delete SeriesRegistry.seriesTypes[type];
-        const parentClass = SeriesRegistry.seriesTypes[parent] || Series, childClass = extendClass(parentClass, seriesProto);
+        const parentClass = (SeriesRegistry.seriesTypes[parent] ||
+            H.Series), childClass = extendClass(parentClass, seriesProto);
         registerSeriesType(type, childClass);
         SeriesRegistry.seriesTypes[type].prototype.type = type;
         // Create the point class if needed

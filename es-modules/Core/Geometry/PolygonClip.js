@@ -1,10 +1,10 @@
 /* *
  *
- *  (c) 2010-2025 Highsoft AS
+ *  (c) 2010-2026 Highsoft AS
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -15,7 +15,7 @@
  * */
 /**
  * Simple line string clipping. Clip to bounds and insert intersection points.
- * @private
+ * @internal
  */
 function clipLineString(line, boundsPolygon) {
     const ret = [], l = clipPolygon(line, boundsPolygon, false);
@@ -34,7 +34,7 @@ function clipLineString(line, boundsPolygon) {
 }
 /**
  * Clip a polygon to another polygon using the Sutherland/Hodgman algorithm.
- * @private
+ * @internal
  */
 function clipPolygon(subjectPolygon, boundsPolygon, closed = true) {
     let clipEdge1 = boundsPolygon[boundsPolygon.length - 1], clipEdge2, prevPoint, currentPoint, outputList = subjectPolygon;
@@ -64,12 +64,12 @@ function clipPolygon(subjectPolygon, boundsPolygon, closed = true) {
     }
     return outputList;
 }
-/** @private */
+/** @internal */
 function isInside(clipEdge1, clipEdge2, p) {
     return ((clipEdge2[0] - clipEdge1[0]) * (p[1] - clipEdge1[1]) >
         (clipEdge2[1] - clipEdge1[1]) * (p[0] - clipEdge1[0]));
 }
-/** @private */
+/** @internal */
 function intersection(clipEdge1, clipEdge2, prevPoint, currentPoint) {
     const dc = [
         clipEdge1[0] - clipEdge2[0],
@@ -89,8 +89,10 @@ function intersection(clipEdge1, clipEdge2, prevPoint, currentPoint) {
  *  Default Export
  *
  * */
+/** @internal */
 const PolygonClip = {
     clipLineString,
     clipPolygon
 };
+/** @internal */
 export default PolygonClip;

@@ -95,91 +95,27 @@ declare module "../highcharts.src" {
         y?: number;
     }
     /**
-     * (Highcharts) Positioning options for fixed tooltip, taking effect only
-     * when tooltip.fixed is `true`.
+     * (Highcharts, Highstock) Animation setting for hovering the graph in
+     * line-type series.
      */
-    interface PlotHistogramTooltipPositionOptions {
+    interface PlotHistogramStatesHoverAnimationOptions {
         /**
-         * (Highcharts) The horizontal alignment of the fixed tooltip.
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
          */
-        align?: Highcharts.AlignValue;
-        /**
-         * (Highcharts) What the fixed tooltip alignment should be relative to.
-         *
-         * The default, `pane`, means that it is aligned within the plot area
-         * for that given series. If the tooltip is split (as default in Stock
-         * charts), each partial tooltip is aligned within the series' pane.
-         */
-        relativeTo?: Highcharts.OptionsRelativeToValue;
-        /**
-         * (Highcharts) The vertical alignment of the fixed tooltip.
-         */
-        verticalAlign?: Highcharts.VerticalAlignValue;
-        /**
-         * (Highcharts) X pixel offset from the given position. Can be used to
-         * shy away from axis lines, grid lines etc to avoid the tooltip
-         * overlapping other elements.
-         */
-        x?: number;
-        /**
-         * (Highcharts) Y pixel offset from the given position. Can be used to
-         * shy away from axis lines, grid lines etc to avoid the tooltip
-         * overlapping other elements.
-         */
-        y?: number;
+        duration?: number;
     }
     /**
-     * (Highcharts) A `histogram` series. If the type option is not specified,
-     * it is inherited from chart.type.
-     *
-     * Configuration options for the series are given in three levels:
-     *
-     * 1. Options for all series in a chart are defined in the
-     * plotOptions.series object.
-     *
-     * 2. Options for all `histogram` series are defined in
-     * plotOptions.histogram.
-     *
-     * 3. Options for one single series are given in the series instance array.
-     * (see online documentation for example)
-     *
-     * **TypeScript:**
-     *
-     * - the type option must always be set.
-     *
-     * - when accessing an array of series, the combined set of all series types
-     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
-     * specific type can be done by checking the `type` property. (see online
-     * documentation for example)
-     *
-     * You have to extend the `SeriesHistogramOptions` via an interface to allow
-     * custom properties: ``` declare interface SeriesHistogramOptions {
-     * customProperty: string; }
-     *
+     * (Highcharts, Highstock) Animation setting for hovering the graph in
+     * line-type series.
      */
-    interface SeriesHistogramOptions extends Highcharts.PlotHistogramOptions, Highcharts.SeriesOptions {
+    interface PlotHistogramStatesSelectAnimationOptions {
         /**
-         * (Highcharts) An integer identifying the index to use for the base
-         * series, or a string representing the id of the series.
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
          */
-        baseSeries?: (number|string);
-        /**
-         * Not available
-         */
-        data?: undefined;
-        /**
-         * Not available
-         */
-        dataParser?: undefined;
-        /**
-         * Not available
-         */
-        dataURL?: undefined;
-        /**
-         * (Highcharts, Highstock, Highmaps, Gantt) This property is only in
-         * TypeScript non-optional and might be `undefined` in series objects
-         * from unknown sources.
-         */
-        type: "histogram";
+        duration?: number;
     }
 }

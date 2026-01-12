@@ -4,9 +4,9 @@
  *
  *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -39,13 +39,15 @@ let ddSeriesId = 1;
  *
  * @function Highcharts.Axis#drilldownCategory
  *
- * @sample {highcharts} highcharts/drilldown/programmatic
+ * @sample highcharts/drilldown/programmatic
  *         Programmatic drilldown
  *
  * @param {number} x
  *        The index of the category
  * @param {global.MouseEvent} [originalEvent]
  *        The original event, used internally.
+ *
+ * @requires modules/drilldown
  */
 function axisDrilldownCategory(x, originalEvent) {
     this.getDDPoints(x).forEach(function (point) {
@@ -61,7 +63,7 @@ function axisDrilldownCategory(x, originalEvent) {
 /**
  * Return drillable points for this specific X value.
  *
- * @private
+ * @internal
  * @function Highcharts.Axis#getDDPoints
  * @param {number} x
  *        Tick position
@@ -75,7 +77,7 @@ function axisGetDDPoints(x) {
  * This method creates an array of arrays containing a level number
  * with the corresponding series/point.
  *
- * @private
+ * @internal
  * @param {Highcharts.Chart} chart
  *        Highcharts Chart object.
  * @return {Array<Breadcrumbs.BreadcrumbOptions>}
@@ -115,9 +117,7 @@ function createBreadcrumbsList(chart) {
  *  Class
  *
  * */
-/**
- * @private
- */
+/** @internal */
 class ChartAdditions {
     /* *
      *
@@ -150,6 +150,8 @@ class ChartAdditions {
      *
      * @param {Highcharts.SeriesOptionsType} options
      * The series options for the new, detailed series.
+     *
+     * @requires modules/drilldown
      */
     addSeriesAsDrilldown(point, options) {
         const chart = (this.chart ||
@@ -162,8 +164,8 @@ class ChartAdditions {
                 // Stop duplicating and overriding animations
                 series.options.inactiveOtherPoints = true;
                 // Hide and disable dataLabels
-                series.dataLabelsGroup?.destroy();
-                delete series.dataLabelsGroup;
+                series.dataLabelsGroups?.forEach((g) => g?.destroy());
+                series.dataLabelsGroups = [];
             });
             // #18925 map zooming is not working with geoJSON maps
             if (chart.options.drilldown &&
@@ -211,7 +213,7 @@ class ChartAdditions {
             chart.applyDrilldown();
         }
     }
-    /** @private */
+    /** @internal */
     addSingleSeriesAsDrilldown(point, ddOptions) {
         const chart = (this.chart ||
             this), oldSeries = point.series, xAxis = oldSeries.xAxis, yAxis = oldSeries.yAxis, colorProp = chart.styledMode ?
@@ -392,12 +394,12 @@ class ChartAdditions {
      * When the chart is drilled down to a child series, calling
      * `chart.drillUp()` will drill up to the parent series.
      *
-     * @requires  modules/drilldown
-     *
      * @function Highcharts.Chart#drillUp
      *
-     * @sample {highcharts} highcharts/drilldown/programmatic
+     * @sample highcharts/drilldown/programmatic
      *         Programmatic drilldown
+     *
+     * @requires modules/drilldown
      */
     drillUp(isMultipleDrillUp) {
         const chart = (this.chart ||
@@ -518,10 +520,10 @@ class ChartAdditions {
                     }
                     else {
                         // Hide and disable dataLabels
-                        if (oldSeries.dataLabelsGroup) {
-                            oldSeries.dataLabelsGroup.destroy();
-                            delete oldSeries.dataLabelsGroup;
-                        }
+                        oldSeries.dataLabelsGroups?.forEach((g) => {
+                            g?.destroy();
+                        });
+                        oldSeries.dataLabelsGroups = [];
                         if (chart.mapView && newSeries) {
                             if (zoomingDrill) {
                                 // Stop hovering while drilling down
@@ -594,7 +596,7 @@ class ChartAdditions {
      *
      * @requires modules/drilldown
      *
-     * @private
+     * @internal
      * @param {SVGElement} [group]
      *        The SVG element to be faded in.
      */
@@ -612,7 +614,7 @@ class ChartAdditions {
     }
     /**
      * Update function to be called internally from Chart.update (#7600, #12855)
-     * @private
+     * @internal
      */
     update(options, redraw) {
         const chart = this.chart;
@@ -639,7 +641,7 @@ var Drilldown;
      *  Functions
      *
      * */
-    /** @private */
+    /** @internal */
     function compose(AxisClass, ChartClass, highchartsDefaultOptions, SeriesClass, seriesTypes, SVGRendererClass, TickClass) {
         DrilldownSeries.compose(SeriesClass, seriesTypes);
         const DrilldownChart = ChartClass, chartProto = DrilldownChart.prototype;
@@ -667,7 +669,7 @@ var Drilldown;
         }
     }
     Drilldown.compose = compose;
-    /** @private */
+    /** @internal */
     function onBreadcrumbsUp(e) {
         const chart = this.chart, drillUpsNumber = this.getLevel() - e.newLevel;
         let isMultipleDrillUp = drillUpsNumber > 1;
@@ -678,7 +680,7 @@ var Drilldown;
             chart.drillUp(isMultipleDrillUp);
         }
     }
-    /** @private */
+    /** @internal */
     function onChartAfterDrilldown() {
         const chart = this, drilldownOptions = chart.options.drilldown, breadcrumbsOptions = drilldownOptions && drilldownOptions.breadcrumbs;
         if (!chart.breadcrumbs) {
@@ -686,7 +688,7 @@ var Drilldown;
         }
         chart.breadcrumbs.updateProperties(createBreadcrumbsList(chart));
     }
-    /** @private */
+    /** @internal */
     function onChartAfterDrillUp() {
         const chart = this;
         if (chart.breadcrumbs) {
@@ -696,26 +698,26 @@ var Drilldown;
     /**
      * Add update function to be called internally from Chart.update (#7600,
      * #12855)
-     * @private
+     * @internal
      */
     function onChartAfterInit() {
         this.drilldown = new ChartAdditions(this);
     }
-    /** @private */
+    /** @internal */
     function onChartDrillup() {
         const chart = this;
         if (chart.resetZoomButton) {
             chart.resetZoomButton = chart.resetZoomButton.destroy();
         }
     }
-    /** @private */
+    /** @internal */
     function onChartDrillupall() {
         const chart = this;
         if (chart.resetZoomButton) {
             chart.showResetZoom();
         }
     }
-    /** @private */
+    /** @internal */
     function onChartRender() {
         (this.xAxis || []).forEach((axis) => {
             axis.ddPoints = {};
@@ -746,7 +748,7 @@ var Drilldown;
             objectEach(axis.ticks, (tick) => tick.drillable());
         });
     }
-    /** @private */
+    /** @internal */
     function onChartUpdate(e) {
         const breadcrumbs = this.breadcrumbs, breadcrumbOptions = e.options.drilldown && e.options.drilldown.breadcrumbs;
         if (breadcrumbs && breadcrumbOptions) {
@@ -778,7 +780,7 @@ var Drilldown;
     }
     /**
      * Make a tick label drillable, or remove drilling on update.
-     * @private
+     * @internal
      */
     function tickDrillable() {
         const pos = this.pos, label = this.label, axis = this.axis, isDrillable = axis.coll === 'xAxis' && axis.getDDPoints, ddPointsX = isDrillable && axis.getDDPoints(pos), styledMode = axis.chart.styledMode;
@@ -851,7 +853,7 @@ export default Drilldown;
 * @name Highcharts.DrilldownEventObject#originalEvent
 * @type {global.Event|undefined}
 */ /**
-* Prevents the default behaviour of the event.
+* Prevents the default behavior of the event.
 * @name Highcharts.DrilldownEventObject#preventDefault
 * @type {Function}
 */ /**
@@ -879,7 +881,7 @@ export default Drilldown;
 */
 /**
  * This gets fired after all the series have been drilled up. This is especially
- * usefull in a chart with multiple drilldown series.
+ * useful in a chart with multiple drilldown series.
  *
  * @callback Highcharts.DrillupAllCallbackFunction
  *
@@ -894,7 +896,7 @@ export default Drilldown;
  *
  * @interface Highcharts.DrillupAllEventObject
  */ /**
-* Prevents the default behaviour of the event.
+* Prevents the default behavior of the event.
 * @name Highcharts.DrillupAllEventObject#preventDefault
 * @type {Function}
 */ /**
@@ -922,7 +924,7 @@ export default Drilldown;
  *
  * @interface Highcharts.DrillupEventObject
  */ /**
-* Prevents the default behaviour of the event.
+* Prevents the default behavior of the event.
 * @name Highcharts.DrillupEventObject#preventDefault
 * @type {Function}
 */ /**

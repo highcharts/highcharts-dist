@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -444,9 +445,7 @@ class ColumnSeries extends Series {
         if (state && point) {
             stateOptions = merge(options.states[state], 
             // #6401
-            point.options.states &&
-                point.options.states[state] ||
-                {});
+            point.options.states?.[state] || {});
             brightness = stateOptions.brightness;
             fill =
                 stateOptions.color || (typeof brightness !== 'undefined' &&
@@ -571,20 +570,27 @@ class ColumnSeries extends Series {
         });
         // Add the event listeners, we need to do this only once
         if (!series._hasTracking) {
-            series.trackerGroups.forEach(function (key) {
-                if (series[key]) {
-                    // We don't always have dataLabelsGroup
-                    series[key]
-                        .addClass('highcharts-tracker')
-                        .on('mouseover', onMouseOver)
-                        .on('mouseout', function (e) {
-                        pointer?.onTrackerMouseOut(e);
-                    })
-                        .on('touchstart', onMouseOver);
-                    if (!chart.styledMode && series.options.cursor) {
-                        series[key]
-                            .css({ cursor: series.options.cursor });
-                    }
+            series.trackerGroups?.reduce((acc, key) => {
+                if (key === 'dataLabelsGroup') {
+                    acc.push(...(series.dataLabelsGroups || []));
+                }
+                else {
+                    acc.push(series[key]);
+                }
+                return acc;
+            }, []).forEach((group) => {
+                if (!group) {
+                    // Skip undefined
+                    return;
+                }
+                group.addClass('highcharts-tracker')
+                    .on('mouseover', onMouseOver)
+                    .on('mouseout', function (e) {
+                    pointer?.onTrackerMouseOut(e);
+                })
+                    .on('touchstart', onMouseOver);
+                if (!chart.styledMode && series.options.cursor) {
+                    group.css({ cursor: series.options.cursor });
                 }
             });
             series._hasTracking = true;

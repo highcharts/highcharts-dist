@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -104,9 +105,7 @@ class MapSeries extends ScatterSeries {
      */
     drawMapDataLabels() {
         super.drawDataLabels();
-        if (this.dataLabelsGroup) {
-            this.dataLabelsGroup.clip(this.chart.clipRect);
-        }
+        this.dataLabelsGroups?.forEach((g) => g?.clip(this.chart.clipRect));
     }
     /**
      * Use the drawPoints method of column, that is able to handle simple
@@ -380,10 +379,7 @@ class MapSeries extends ScatterSeries {
         let pointStrokeWidth = this.getStrokeWidth(point.options);
         // Handle state specific border or line width
         if (state) {
-            const stateOptions = merge(this.options.states &&
-                this.options.states[state], point.options.states &&
-                point.options.states[state] ||
-                {}), stateStrokeWidth = this.getStrokeWidth(stateOptions);
+            const stateOptions = merge(this.options.states?.[state], point.options.states?.[state] || {}), stateStrokeWidth = this.getStrokeWidth(stateOptions);
             if (defined(stateStrokeWidth)) {
                 pointStrokeWidth = stateStrokeWidth;
             }
@@ -406,6 +402,11 @@ class MapSeries extends ScatterSeries {
         // mapData.
         if (!point.visible) {
             attr.fill = this.options.nullColor;
+        }
+        // Set opacity: if point is null and nullInteraction is true, force
+        // opacity 1. Otherwise use point/series opacity or default 1 (#23019)
+        if (point.isNull && this.options.nullInteraction) {
+            attr.opacity = 1;
         }
         if (defined(pointStrokeWidth)) {
             attr['stroke-width'] = pointStrokeWidth;

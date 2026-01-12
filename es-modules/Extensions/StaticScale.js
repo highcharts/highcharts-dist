@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2016-2025 Torstein Honsi, Lars Cabrera
+ *  (c) 2016-2026 Highsoft AS
+ *  Author: Torstein Honsi, Lars Cabrera
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -15,7 +16,7 @@ const { addEvent, defined, isNumber } = U;
  *  Composition
  *
  * */
-/** @private */
+/** @internal */
 function compose(AxisClass, ChartClass) {
     const chartProto = ChartClass.prototype;
     if (!chartProto.adjustHeight) {
@@ -24,7 +25,7 @@ function compose(AxisClass, ChartClass) {
         addEvent(ChartClass, 'render', chartProto.adjustHeight);
     }
 }
-/** @private */
+/** @internal */
 function onAxisAfterSetOptions() {
     const chartOptions = this.chart.userOptions.chart;
     if (!this.horiz &&
@@ -34,7 +35,7 @@ function onAxisAfterSetOptions() {
         this.staticScale = this.options.staticScale;
     }
 }
-/** @private */
+/** @internal */
 function chartAdjustHeight() {
     const chart = this;
     if (chart.redrawTrigger !== 'adjustHeight') {

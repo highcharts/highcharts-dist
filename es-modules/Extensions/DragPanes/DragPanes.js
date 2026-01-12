@@ -2,17 +2,18 @@
  *
  *  Plugin for resizing axes / panes in a chart.
  *
- *  (c) 2010-2025 Highsoft AS
+ *  (c) 2010-2026 Highsoft AS
  *
  *  Author: Kacper Madej
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
 import AxisResizer from './AxisResizer.js';
+import AxisResizerDefaults from './AxisResizerDefaults.js';
 import D from '../../Core/Defaults.js';
 const { defaultOptions } = D;
 import U from '../../Core/Utilities.js';
@@ -22,12 +23,10 @@ const { addEvent, merge, wrap } = U;
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function compose(AxisClass, PointerClass) {
     if (!AxisClass.keepProps.includes('resizer')) {
-        merge(true, defaultOptions.yAxis, AxisResizer.resizerOptions);
+        merge(true, defaultOptions.yAxis, AxisResizerDefaults);
         // Keep resizer reference on axis update
         AxisClass.keepProps.push('resizer');
         addEvent(AxisClass, 'afterRender', onAxisAfterRender);
@@ -38,7 +37,7 @@ function compose(AxisClass, PointerClass) {
 }
 /**
  * Add new AxisResizer, update or remove it
- * @private
+ * @internal
  */
 function onAxisAfterRender() {
     const axis = this, resizer = axis.resizer, resizerOptions = axis.options.resize;
@@ -68,7 +67,7 @@ function onAxisAfterRender() {
 }
 /**
  * Clear resizer on axis remove.
- * @private
+ * @internal
  */
 function onAxisDestroy(e) {
     const axis = this;
@@ -79,7 +78,7 @@ function onAxisDestroy(e) {
 /**
  * Prevent default drag action detection while dragging a control line of
  * AxisResizer. (#7563)
- * @private
+ * @internal
  */
 function wrapPointerDrag(proceed) {
     const pointer = this;
@@ -89,7 +88,7 @@ function wrapPointerDrag(proceed) {
 }
 /**
  * Prevent any hover effects while dragging a control line of AxisResizer.
- * @private
+ * @internal
  */
 function wrapPointerRunPointActions(proceed) {
     const pointer = this;
@@ -102,7 +101,9 @@ function wrapPointerRunPointActions(proceed) {
  *  Default Export
  *
  * */
+/** @internal */
 const DragPanes = {
     compose
 };
+/** @internal */
 export default DragPanes;

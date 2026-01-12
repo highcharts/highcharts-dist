@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -14,6 +15,7 @@ import H from '../Globals.js';
  *  Namespace
  *
  * */
+/** @internal */
 var RendererRegistry;
 (function (RendererRegistry) {
     /* *
@@ -73,4 +75,5 @@ var RendererRegistry;
  *  Default Export
  *
  * */
+/** @internal */
 export default RendererRegistry;

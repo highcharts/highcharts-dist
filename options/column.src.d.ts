@@ -97,105 +97,51 @@ declare module "../highcharts.src" {
         y?: number;
     }
     /**
-     * (Highcharts, Highstock) Positioning options for fixed tooltip, taking
-     * effect only when tooltip.fixed is `true`.
+     * (Highcharts, Highstock) Animation setting for hovering the graph in
+     * line-type series.
      */
-    interface PlotColumnTooltipPositionOptions {
+    interface PlotColumnStatesHoverAnimationOptions {
         /**
-         * (Highcharts, Highstock) The horizontal alignment of the fixed
-         * tooltip.
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
          */
-        align?: Highcharts.AlignValue;
-        /**
-         * (Highcharts, Highstock) What the fixed tooltip alignment should be
-         * relative to.
-         *
-         * The default, `pane`, means that it is aligned within the plot area
-         * for that given series. If the tooltip is split (as default in Stock
-         * charts), each partial tooltip is aligned within the series' pane.
-         */
-        relativeTo?: Highcharts.OptionsRelativeToValue;
-        /**
-         * (Highcharts, Highstock) The vertical alignment of the fixed tooltip.
-         */
-        verticalAlign?: Highcharts.VerticalAlignValue;
-        /**
-         * (Highcharts, Highstock) X pixel offset from the given position. Can
-         * be used to shy away from axis lines, grid lines etc to avoid the
-         * tooltip overlapping other elements.
-         */
-        x?: number;
-        /**
-         * (Highcharts, Highstock) Y pixel offset from the given position. Can
-         * be used to shy away from axis lines, grid lines etc to avoid the
-         * tooltip overlapping other elements.
-         */
-        y?: number;
+        duration?: number;
     }
     /**
-     * (Highcharts, Highstock) A `column` series. If the type option is not
-     * specified, it is inherited from chart.type.
-     *
-     * Configuration options for the series are given in three levels:
-     *
-     * 1. Options for all series in a chart are defined in the
-     * plotOptions.series object.
-     *
-     * 2. Options for all `column` series are defined in plotOptions.column.
-     *
-     * 3. Options for one single series are given in the series instance array.
-     * (see online documentation for example)
-     *
-     * **TypeScript:**
-     *
-     * - the type option must always be set.
-     *
-     * - when accessing an array of series, the combined set of all series types
-     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
-     * specific type can be done by checking the `type` property. (see online
-     * documentation for example)
-     *
-     * You have to extend the `SeriesColumnOptions` via an interface to allow
-     * custom properties: ``` declare interface SeriesColumnOptions {
-     * customProperty: string; }
-     *
+     * (Highcharts, Highstock) Animation setting for hovering the graph in
+     * line-type series.
      */
-    interface SeriesColumnOptions extends Highcharts.PlotColumnOptions, Highcharts.SeriesOptions {
+    interface PlotColumnStatesSelectAnimationOptions {
         /**
-         * (Highcharts, Highstock) An array of data points for the series. For
-         * the `column` series type, points can be given in the following ways:
-         *
-         * 1. An array of numerical values. In this case, the numerical values
-         * will be interpreted as `y` options. The `x` values will be
-         * automatically calculated, either starting at 0 and incremented by 1,
-         * or from `pointStart` and `pointInterval` given in the series options.
-         * If the axis has categories, these will be used. Example: (see online
-         * documentation for example)
-         *
-         * 2. An array of arrays with 2 values. In this case, the values
-         * correspond to `x,y`. If the first value is a string, it is applied as
-         * the name of the point, and the `x` value is inferred. (see online
-         * documentation for example)
-         *
-         * 3. An array of objects with named values. The following snippet shows
-         * only a few settings, see the complete options set below. If the total
-         * number of data points exceeds the series' turboThreshold, this option
-         * is not available. (see online documentation for example)
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
          */
-        data?: Array<(number|[(number|string), (number|null)]|null|Highcharts.PointOptionsObject)>;
+        duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock) Animation setting for hovering the graph in
+     * line-type series.
+     */
+    interface SeriesColumnDataStatesHoverAnimationOptions {
         /**
-         * Not available
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
          */
-        dataParser?: undefined;
+        duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock) Animation setting for hovering the graph in
+     * line-type series.
+     */
+    interface SeriesColumnDataStatesSelectAnimationOptions {
         /**
-         * Not available
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
          */
-        dataURL?: undefined;
-        /**
-         * (Highcharts, Highstock, Highmaps, Gantt) This property is only in
-         * TypeScript non-optional and might be `undefined` in series objects
-         * from unknown sources.
-         */
-        type: "column";
+        duration?: number;
     }
 }

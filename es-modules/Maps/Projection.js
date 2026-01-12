@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2021 Torstein Honsi
+ *  (c) 2021-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -30,7 +31,6 @@ floatCorrection = 0.000001;
 /**
  * Keep longitude within -180 and 180. This is faster than using the modulo
  * operator, and preserves the distinction between -180 and 180.
- * @private
  */
 const wrapLon = (lon) => {
     // Replacing the if's with while would increase the range, but make it prone
@@ -45,12 +45,10 @@ const wrapLon = (lon) => {
 };
 /**
  * Calculate the haversine of an angle.
- * @private
  */
 const hav = (radians) => (1 - Math.cos(radians)) / 2;
 /**
 * Calculate the haversine of an angle from two coordinates.
-* @private
 */
 const havFromCoords = (point1, point2) => {
     const cos = Math.cos, lat1 = point1[1] * deg2rad, lon1 = point1[0] * deg2rad, lat2 = point2[1] * deg2rad, lon2 = point2[0] * deg2rad, deltaLat = lat2 - lat1, deltaLon = lon2 - lon1, havFromCoords = hav(deltaLat) + cos(lat1) * cos(lat2) * hav(deltaLon);
@@ -61,6 +59,7 @@ const havFromCoords = (point1, point2) => {
  *  Class
  *
  * */
+/** @internal */
 class Projection {
     /* *
      *
@@ -69,14 +68,12 @@ class Projection {
      * */
     /**
      * Add a projection definition to the registry, accessible by its `name`.
-     * @private
      */
     static add(name, definition) {
         Projection.registry[name] = definition;
     }
     /**
      * Calculate the distance in meters between two given coordinates.
-     * @private
      */
     static distance(point1, point2) {
         const { atan2, sqrt } = Math, hav = havFromCoords(point1, point2), angularDistance = 2 * atan2(sqrt(hav), sqrt(1 - hav)), distance = angularDistance * 6371e3;
@@ -84,7 +81,6 @@ class Projection {
     }
     /**
      * Calculate the geodesic line string between two given coordinates.
-     * @private
      */
     static geodesic(point1, point2, inclusive, stepDistance = 500000) {
         const { atan2, cos, sin, sqrt } = Math, distance = Projection.distance, lat1 = point1[1] * deg2rad, lon1 = point1[0] * deg2rad, lat2 = point2[1] * deg2rad, lon2 = point2[0] * deg2rad, cosLat1CosLon1 = cos(lat1) * cos(lon1), cosLat2CosLon2 = cos(lat2) * cos(lon2), cosLat1SinLon1 = cos(lat1) * sin(lon1), cosLat2SinLon2 = cos(lat2) * sin(lon2), sinLat1 = sin(lat1), sinLat2 = sin(lat2), pointDistance = distance(point1, point2), angDistance = pointDistance / 6371e3, sinAng = sin(angDistance), jumps = Math.round(pointDistance / stepDistance), lineString = [];
@@ -129,12 +125,16 @@ class Projection {
      *
      * */
     constructor(options = {}) {
-        // Whether the chart has points, lines or polygons given as coordinates
-        // with positive up, as opposed to paths in the SVG plane with positive
-        // down.
+        /**
+         * Whether the chart has points, lines or polygons given as coordinates
+         * with positive up, as opposed to paths in the SVG plane with positive
+         * down.
+         */
         this.hasCoordinates = false;
-        // Whether the chart has true projection as opposed to pre-projected geojson
-        // as in the legacy map collection.
+        /**
+         * Whether the chart has true projection as opposed to pre-projected geojson
+         * as in the legacy map collection.
+         */
         this.hasGeoProjection = false;
         this.maxLatitude = 90;
         this.options = options;
@@ -205,7 +205,6 @@ class Projection {
     /**
      * Take the rotation options and returns the appropriate projection
      * functions.
-     * @private
      */
     getRotator(rotation) {
         const deltaLambda = rotation[0] * deg2rad, deltaPhi = (rotation[1] || 0) * deg2rad, deltaGamma = (rotation[2] || 0) * deg2rad;
@@ -240,7 +239,6 @@ class Projection {
     /**
      * Project a lonlat coordinate position to xy. Dynamically overridden when
      * projection is set.
-     * @private
      */
     forward(lonLat) {
         return lonLat;
@@ -248,7 +246,6 @@ class Projection {
     /**
      * Unproject an xy chart coordinate position to lonlat. Dynamically
      * overridden when projection is set.
-     * @private
      */
     inverse(xy) {
         return xy;
@@ -367,7 +364,6 @@ class Projection {
     }
     /**
      * Take a GeoJSON geometry and return a translated SVGPath.
-     * @private
      */
     path(geometry) {
         const { bounds, def, rotator } = this;
@@ -573,4 +569,5 @@ Projection.registry = ProjectionRegistry;
  *  Default Export
  *
  * */
+/** @internal */
 export default Projection;

@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -16,9 +17,6 @@ const { arrayMax, arrayMin, correctFloat, extend, isNumber } = U;
  *  Functions
  *
  * */
-/**
- * @private
- */
 function average(arr) {
     const len = arr.length;
     let ret = sum(arr);
@@ -31,7 +29,6 @@ function average(arr) {
 }
 /**
  * The same as average, but for series with multiple values, like area ranges.
- * @private
  */
 function averages() {
     const ret = [];
@@ -42,17 +39,11 @@ function averages() {
     // sum method handle null (#7377)
     return typeof ret[0] === 'undefined' ? void 0 : ret;
 }
-/**
- * @private
- */
 function close(arr) {
     return arr.length ?
         arr[arr.length - 1] :
         (arr.hasNulls ? null : void 0);
 }
-/**
- * @private
- */
 function high(arr) {
     return arr.length ?
         arrayMax(arr) :
@@ -61,7 +52,6 @@ function high(arr) {
 /**
  * HLC, OHLC and range are special cases where a multidimensional array is input
  * and an array is output.
- * @private
  */
 function hlc(high, low, close) {
     high = ApproximationRegistry.high(high);
@@ -73,17 +63,11 @@ function hlc(high, low, close) {
         return [high, low, close];
     }
 }
-/**
- * @private
- */
 function low(arr) {
     return arr.length ?
         arrayMin(arr) :
         (arr.hasNulls ? null : void 0);
 }
-/**
- * @private
- */
 function ohlc(open, high, low, close) {
     open = ApproximationRegistry.open(open);
     high = ApproximationRegistry.high(high);
@@ -96,15 +80,9 @@ function ohlc(open, high, low, close) {
         return [open, high, low, close];
     }
 }
-/**
- * @private
- */
 function open(arr) {
     return arr.length ? arr[0] : (arr.hasNulls ? null : void 0);
 }
-/**
- * @private
- */
 function range(low, high) {
     low = ApproximationRegistry.low(low);
     high = ApproximationRegistry.high(high);
@@ -116,9 +94,6 @@ function range(low, high) {
     }
     // Else, return is undefined
 }
-/**
- * @private
- */
 function sum(arr) {
     let len = arr.length, ret;
     // 1. it consists of nulls exclusive
@@ -141,6 +116,7 @@ function sum(arr) {
  *  Default Export
  *
  * */
+/** @internal */
 const ApproximationDefaults = {
     average,
     averages,
@@ -154,4 +130,5 @@ const ApproximationDefaults = {
     sum
 };
 extend(ApproximationRegistry, ApproximationDefaults);
+/** @internal */
 export default ApproximationDefaults;

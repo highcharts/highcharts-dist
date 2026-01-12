@@ -1,22 +1,25 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.5.0 (2026-01-12)
  * @module highcharts/themes/adaptive
  * @requires highcharts
  *
- * (c) 2009-2025 Torstein Honsi
+ * (c) 2009-2026 Highsoft AS
+ * Author: Torstein Honsi
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"]);
+		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Chart"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/themes/adaptive", ["highcharts/highcharts"], function (amd1) {return factory(amd1);});
+		define("highcharts/themes/adaptive", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Chart"]);});
 	else if(typeof exports === 'object')
-		exports["highcharts/themes/adaptive"] = factory(root["_Highcharts"]);
+		exports["highcharts/themes/adaptive"] = factory(root["_Highcharts"], root["_Highcharts"]["Chart"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__) => {
+		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Chart"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__960__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -25,6 +28,13 @@ return /******/ (() => { // webpackBootstrap
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
+
+/***/ }),
+
+/***/ 960:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__960__;
 
 /***/ })
 
@@ -95,23 +105,29 @@ __webpack_require__.d(__webpack_exports__, {
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts"],"commonjs":["highcharts"],"commonjs2":["highcharts"],"root":["Highcharts"]}
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_ = __webpack_require__(944);
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default = /*#__PURE__*/__webpack_require__.n(highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Chart"],"commonjs":["highcharts","Chart"],"commonjs2":["highcharts","Chart"],"root":["Highcharts","Chart"]}
+var highcharts_Chart_commonjs_highcharts_Chart_commonjs2_highcharts_Chart_root_Highcharts_Chart_ = __webpack_require__(960);
+var highcharts_Chart_commonjs_highcharts_Chart_commonjs2_highcharts_Chart_root_Highcharts_Chart_default = /*#__PURE__*/__webpack_require__.n(highcharts_Chart_commonjs_highcharts_Chart_commonjs2_highcharts_Chart_root_Highcharts_Chart_);
 ;// ./code/es-modules/Extensions/Themes/Adaptive.js
 /* *
  *
- *   (c) 2010-2025 Highsoft AS
+ *   (c) 2010-2026 Highsoft AS
  *
  *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *  Dynamic light/dark theme based on CSS variables
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
 
+
 const { setOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+
+const { addEvent } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
  *  Theme
@@ -242,6 +258,18 @@ const styleSheet = `
 
 .highcharts-dark {
     ${darkRules}
+}
+
+.highcharts-container {
+    color-scheme: light dark;
+}
+
+.highcharts-light .highcharts-container {
+    color-scheme: light;
+}
+
+.highcharts-dark .highcharts-container {
+    color-scheme: dark;
 }
 `;
 var DynamicDefaultTheme;
@@ -1093,9 +1121,20 @@ var DynamicDefaultTheme;
         const style = document.createElement('style');
         style.nonce = 'highcharts';
         style.innerText = styleSheet;
+        style.id = 'highcharts-adaptive-theme';
         document.getElementsByTagName('head')[0].appendChild(style);
         // Apply the theme
         setOptions(DynamicDefaultTheme.options);
+        // Copy it over to the shadow DOM of each chart (#23967)
+        addEvent((highcharts_Chart_commonjs_highcharts_Chart_commonjs2_highcharts_Chart_root_Highcharts_Chart_default()), 'afterGetContainer', function () {
+            const shadowRoot = this.container
+                .getRootNode().host?.shadowRoot;
+            if (shadowRoot &&
+                !shadowRoot.getElementById('highcharts-adaptive-theme')) {
+                const adaptiveStyle = style.cloneNode(true);
+                shadowRoot.appendChild(adaptiveStyle);
+            }
+        });
     }
     DynamicDefaultTheme.apply = apply;
 })(DynamicDefaultTheme || (DynamicDefaultTheme = {}));

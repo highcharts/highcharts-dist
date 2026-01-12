@@ -2,7 +2,6 @@
  *
  *  Author: Rafal Sebestjanski
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -15,7 +14,7 @@ import InfinityLine from './InfinityLine.js';
 import MockPoint from '../MockPoint.js';
 import U from '../../../Core/Utilities.js';
 const { merge } = U;
-if (defaultOptions.annotations) {
+if (defaultOptions.annotations?.types) {
     defaultOptions.annotations.types.fibonacciTimeZones = merge(defaultOptions.annotations.types.crookedLine, 
     /**
      * Options for the fibonacci time zones annotation type.
@@ -118,7 +117,7 @@ This is being done for each fibonacci time zone line.
     |---------*--------------------------------------------------------|
         and this point here is found (intersection with the plot area edge)
 
-* @private
+* @internal
 */
 function edgePoint(startIndex, endIndex, fibonacciIndex) {
     return function (target) {
@@ -153,6 +152,7 @@ function edgePoint(startIndex, endIndex, fibonacciIndex) {
  *  Class
  *
  * */
+/** @internal */
 class FibonacciTimeZones extends CrookedLine {
     /* *
      *
@@ -176,10 +176,10 @@ class FibonacciTimeZones extends CrookedLine {
             if (i === 1) {
                 this.secondLineEdgePoints = [points[0], points[1]];
             }
-            this.initShape(merge(this.options.typeOptions.line, {
+            this.initShape(merge(this.options.typeOptions?.line, {
                 type: 'path',
-                points: points,
-                className: 'highcharts-fibonacci-timezones-lines'
+                className: 'highcharts-fibonacci-timezones-lines',
+                points
             }), i // Shape's index. Can be found in annotation.shapes[i].index
             );
         }

@@ -59,9 +59,8 @@ declare module "../highcharts" {
         start: number;
     }
     interface DataGroupingResultObject {
-        groupedXData: Array<number>;
-        groupedYData: (Array<(number|null|undefined)>|Array<Array<(number|null|undefined)>>);
         groupMap: Array<DataGroupingInfoObject>;
+        modified: DataTableCore;
     }
     interface DataTableOptions {
         columns?: DataTableColumnCollection;
@@ -117,6 +116,7 @@ declare module "../highcharts" {
          */
         setCumulative(cumulative?: boolean, redraw?: boolean): void;
     }
+    interface SymbolOptions {}
     /**
      * Stock-optimized chart. Use Chart for common charts.
      */
@@ -186,13 +186,128 @@ declare module "../highcharts" {
      */
     function swapXY(path: SVGPathArray, vertical?: boolean): SVGPathArray;
     /**
-     * Callout shape used for default tooltips.
+     * The same as average, but for series with multiple values, like area
+     * ranges.
      */
-    function callout(): void;
-    function circle(): void;
-    function diamond(): void;
-    function rect(): void;
-    function triangle(): void;
-    function triangleDown(): void;
+    function averages(): void;
+    /**
+     * Callout shape used for default tooltips.
+     *
+     * @param cx
+     *        Center X
+     *
+     * @param cy
+     *        Center Y
+     *
+     * @param w
+     *        Width
+     *
+     * @param h
+     *        Height
+     *
+     * @param options
+     *        Options
+     *
+     * @return Path
+     */
+    function callout(cx: number, cy: number, w: number, h: number, options?: SymbolOptions): SVGPathArray;
+    /**
+     * Circle symbol path.
+     *
+     * @param x
+     *        X coordinate
+     *
+     * @param y
+     *        Y coordinate
+     *
+     * @param w
+     *        Width
+     *
+     * @param h
+     *        Height
+     *
+     * @return Path
+     */
+    function circle(x: number, y: number, w: number, h: number): SVGPathArray;
+    /**
+     * Diamond symbol path.
+     *
+     * @param x
+     *        X coordinate
+     *
+     * @param y
+     *        Y coordinate
+     *
+     * @param w
+     *        Width
+     *
+     * @param h
+     *        Height
+     *
+     * @return Path
+     */
+    function diamond(x: number, y: number, w: number, h: number): SVGPathArray;
+    /**
+     * HLC, OHLC and range are special cases where a multidimensional array is
+     * input and an array is output.
+     */
+    function hlc(): void;
+    /**
+     * Rect symbol path.
+     *
+     * @param x
+     *        X coordinate
+     *
+     * @param y
+     *        Y coordinate
+     *
+     * @param w
+     *        Width
+     *
+     * @param h
+     *        Height
+     *
+     * @param options
+     *        Options
+     *
+     * @return Path
+     */
+    function rect(x: number, y: number, w: number, h: number, options?: SymbolOptions): SVGPathArray;
+    /**
+     * Triangle symbol path.
+     *
+     * @param x
+     *        X coordinate
+     *
+     * @param y
+     *        Y coordinate
+     *
+     * @param w
+     *        Width
+     *
+     * @param h
+     *        Height
+     *
+     * @return Path
+     */
+    function triangle(x: number, y: number, w: number, h: number): SVGPathArray;
+    /**
+     * Inverted triangle symbol path.
+     *
+     * @param x
+     *        X coordinate
+     *
+     * @param y
+     *        Y coordinate
+     *
+     * @param w
+     *        Width
+     *
+     * @param h
+     *        Height
+     *
+     * @return Path
+     */
+    function triangleDown(x: number, y: number, w: number, h: number): SVGPathArray;
 }
 export default _Highcharts;

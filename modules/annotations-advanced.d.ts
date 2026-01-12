@@ -30,35 +30,5 @@ declare module "../highcharts" {
          */
         mock?: boolean;
     }
-    /**
-     * Function which generates the path of the halfcircle.
-     *
-     * @param pixelInterval
-     *        diameter of the circle in pixels
-     *
-     * @param numberOfCircles
-     *        number of cricles
-     *
-     * @param startX
-     *        x position of the first circle
-     *
-     * @param y
-     *        y position of the bottom of the timeCycles
-     *
-     * @return path
-     */
-    function getCirclePath(pixelInterval: number, numberOfCircles: number, startX: number, y: number): string;
-    /**
-     * Function to create start of the path.
-     *
-     * @param x
-     *        x position of the TimeCycles
-     *
-     * @param y
-     *        y position of the TimeCycles
-     *
-     * @return path
-     */
-    function getStartingPath(x: number, y: number): string;
 }
 export default _Highcharts;

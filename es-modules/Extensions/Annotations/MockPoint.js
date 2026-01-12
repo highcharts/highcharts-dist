@@ -1,6 +1,5 @@
 /* *
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -14,13 +13,13 @@ const { defined, fireEvent } = U;
  *
  * */
 /**
- * A trimmed point object which imitates {@link Highchart.Point} class. It is
+ * A trimmed point object which imitates {@link Highcharts.Point} class. It is
  * created when there is a need of pointing to some chart's position using axis
  * values or pixel values
  *
+ * @internal
  * @requires modules/annotations
  *
- * @private
  * @class
  * @name Highcharts.AnnotationMockPoint
  *
@@ -44,7 +43,7 @@ class MockPoint {
     /**
      * Create a mock point from a real Highcharts point.
      *
-     * @private
+     * @internal
      * @static
      *
      * @param {Highcharts.Point} point
@@ -63,7 +62,7 @@ class MockPoint {
     /**
      * Get the pixel position from the point like object.
      *
-     * @private
+     * @internal
      * @static
      *
      * @param {Highcharts.AnnotationPointType} point
@@ -99,7 +98,7 @@ class MockPoint {
     /**
      * Get fresh mock point options from the point like object.
      *
-     * @private
+     * @internal
      * @static
      *
      * @param {Highcharts.AnnotationPointType} point
@@ -195,7 +194,8 @@ class MockPoint {
     }
     /**
      * Apply options for the point.
-     * @private
+     *
+     * @internal
      * @param {Highcharts.AnnotationMockPointOptionsObject} options
      */
     applyOptions(options) {
@@ -206,7 +206,8 @@ class MockPoint {
     }
     /**
      * Get the point's options.
-     * @private
+     *
+     * @internal
      * @return {Highcharts.AnnotationMockPointOptionsObject}
      * The mock point's options.
      */
@@ -220,7 +221,8 @@ class MockPoint {
     }
     /**
      * Check if the point has dynamic options.
-     * @private
+     *
+     * @internal
      * @return {boolean}
      * A positive flag if the point has dynamic options.
      */
@@ -229,7 +231,8 @@ class MockPoint {
     }
     /**
      * Check if the point is inside its pane.
-     * @private
+     *
+     * @internal
      * @return {boolean} A flag indicating whether the point is inside the pane.
      */
     isInsidePlot() {
@@ -253,7 +256,7 @@ class MockPoint {
     }
     /**
      * Refresh point values and coordinates based on its options.
-     * @private
+     * @internal
      */
     refresh() {
         const series = this.series, xAxis = series.xAxis, yAxis = series.yAxis, options = this.getOptions();
@@ -277,7 +280,7 @@ class MockPoint {
     }
     /**
      * Refresh point options based on its plot coordinates.
-     * @private
+     * @internal
      */
     refreshOptions() {
         const series = this.series, xAxis = series.xAxis, yAxis = series.yAxis;
@@ -290,7 +293,8 @@ class MockPoint {
     }
     /**
      * Rotate the point.
-     * @private
+     *
+     * @internal
      * @param {number} cx origin x rotation
      * @param {number} cy origin y rotation
      * @param {number} radians
@@ -306,7 +310,7 @@ class MockPoint {
     /**
      * Scale the point.
      *
-     * @private
+     * @internal
      *
      * @param {number} cx
      * Origin x transformation.
@@ -330,7 +334,8 @@ class MockPoint {
     }
     /**
      * Set x or y axis.
-     * @private
+     *
+     * @internal
      * @param {Highcharts.AnnotationMockPointOptionsObject} options
      * @param {string} xOrY
      * 'x' or 'y' string literal
@@ -348,7 +353,8 @@ class MockPoint {
     }
     /**
      * Transform the mock point to an anchor (relative position on the chart).
-     * @private
+     *
+     * @internal
      * @return {Array<number>}
      * A quadruple of numbers which denotes x, y, width and height of the box
      **/
@@ -363,7 +369,7 @@ class MockPoint {
     /**
      * Translate the point.
      *
-     * @private
+     * @internal
      *
      * @param {number|undefined} cx
      * Origin x transformation.
@@ -397,7 +403,7 @@ export default MockPoint;
  *
  * */
 /**
- * @private
+ * @internal
  * @interface Highcharts.AnnotationMockLabelOptionsObject
  */ /**
 * Point instance of the point.
@@ -448,19 +454,22 @@ export default MockPoint;
 * @name      Highcharts.AnnotationMockPointOptionsObject.yAxis
 */
 /**
- * Callback function that returns the annotation shape point.
+ * Callback function that returns the annotation shape point or it's options.
  *
  * @callback Highcharts.AnnotationMockPointFunction
  *
- * @param  {Highcharts.Annotation} annotation
- *         An annotation instance.
+ * @param {Highcharts.AnnotationControllable} controllable
+ *        Controllable shape or label.
  *
- * @return {Highcharts.AnnotationMockPointOptionsObject}
- *         Annotations shape point.
+ * @return {
+ *     Highcharts.AnnotationMockPointOptionsObject |
+ *     Highcharts.Point
+ * }
+ *         Annotations shape point or it's options.
  */
 /**
  * A mock series instance imitating a real series from a real point.
- * @private
+ * @internal
  * @interface Highcharts.AnnotationMockSeries
  */ /**
 * Whether a series is visible.

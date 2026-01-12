@@ -4,9 +4,9 @@
  *
  *  Authors: Grzegorz Blachlinski, Karol Kolodziej
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -24,7 +24,7 @@ const { addEvent, defined, extend, fireEvent, isString, merge, objectEach, pick,
  * */
 /**
  * Shift the drillUpButton to make the space for resetZoomButton, #8095.
- * @private
+ * @internal
  */
 function onChartAfterShowResetZoom() {
     const chart = this;
@@ -40,7 +40,7 @@ function onChartAfterShowResetZoom() {
 }
 /**
  * Remove resize/afterSetExtremes at chart destroy.
- * @private
+ * @internal
  */
 function onChartDestroy() {
     if (this.breadcrumbs) {
@@ -50,7 +50,7 @@ function onChartDestroy() {
 }
 /**
  * Logic for making space for the buttons above the plot area
- * @private
+ * @internal
  */
 function onChartGetMargins() {
     const breadcrumbs = this.breadcrumbs;
@@ -73,15 +73,13 @@ function onChartGetMargins() {
         }
     }
 }
-/**
- * @private
- */
+/** @internal */
 function onChartRedraw() {
     this.breadcrumbs && this.breadcrumbs.redraw();
 }
 /**
  * After zooming out, shift the drillUpButton to the previous position, #8095.
- * @private
+ * @internal
  */
 function onChartSelection(event) {
     if (event.resetSelection === true &&
@@ -97,7 +95,7 @@ function onChartSelection(event) {
 /**
  * The Breadcrumbs class
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.Breadcrumbs
  *
@@ -157,12 +155,6 @@ class Breadcrumbs {
     }
     /**
      * Set breadcrumbs list.
-     * @function Highcharts.Breadcrumbs#setList
-     *
-     * @param {Highcharts.Breadcrumbs} this
-     *        Breadcrumbs class.
-     * @param {Highcharts.BreadcrumbsOptions} list
-     *        Breadcrumbs list.
      */
     setList(list) {
         this.list = list;
@@ -402,17 +394,6 @@ class Breadcrumbs {
         }
         return separator;
     }
-    /**
-     * Update.
-     * @function Highcharts.Breadcrumbs#update
-     *
-     * @param {Highcharts.Breadcrumbs} this
-     *        Breadcrumbs class.
-     * @param {Highcharts.BreadcrumbsOptions} options
-     *        Breadcrumbs class.
-     * @param {boolean} redraw
-     *        Redraw flag
-     */
     update(options) {
         merge(true, this.options, options);
         this.destroy();
@@ -583,6 +564,7 @@ Breadcrumbs.defaultOptions = BreadcrumbsDefaults.options;
  *  Default Export
  *
  * */
+/** @internal */
 export default Breadcrumbs;
 /* *
  *
@@ -655,15 +637,5 @@ export default Breadcrumbs;
  * Y offset of a Breadcrumbs group.
  * @name Highcharts.BreadcrumbsAlignOptions#y
  * @type {number}
- */
-/**
- * Options for all breadcrumbs.
- *
- * @interface Highcharts.BreadcrumbsOptions
- */
-/**
- * Button theme.
- * @name Highcharts.BreadcrumbsOptions#buttonTheme
- * @type { SVGAttributes | undefined }
  */
 (''); // Keeps doclets above in JS file

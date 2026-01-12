@@ -1,13 +1,16 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.5.0 (2026-01-12)
  * @module highcharts/modules/xrange
  * @requires highcharts
  *
  * X-range series
  *
- * (c) 2010-2025 Torstein Honsi, Lars A. V. Cabrera
+ * (c) 2010-2026 Highsoft AS
+ * Author: Torstein Honsi, Lars A. V. Cabrera
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -44,6 +47,7 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -59,11 +63,12 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  *
  *  X-range series module
  *
- *  (c) 2010-2025 Torstein Honsi, Lars A. V. Cabrera
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi, Lars A. V. Cabrera
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -275,11 +280,12 @@ const XRangeSeriesDefaults = {
  *
  *  X-range series module
  *
- *  (c) 2010-2025 Torstein Honsi, Lars A. V. Cabrera
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi, Lars A. V. Cabrera
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -366,6 +372,7 @@ class XRangePoint extends ColumnPoint {
         super.applyOptions(options, x);
         this.x2 = this.series.chart.time.parse(this.x2);
         this.isNull = !this.isValid?.();
+        this.formatPrefix = this.isNull ? 'null' : 'point'; // #23605
         return this;
     }
     /**
@@ -424,11 +431,12 @@ extend(XRangePoint.prototype, {
  *
  *  X-range series module
  *
- *  (c) 2010-2025 Torstein Honsi, Lars A. V. Cabrera
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi, Lars A. V. Cabrera
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 

@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -55,7 +56,7 @@ var PlotLineOrBandAxis;
      * Add a plot band or plot line after render time. Called from
      * addPlotBand and addPlotLine internally.
      *
-     * @private
+     * @internal
      * @function Highcharts.Axis#addPlotBandOrLine
      * @param {Highcharts.AxisPlotBandsOptions|Highcharts.AxisPlotLinesOptions} options
      * The plotBand or plotLine configuration object.
@@ -104,9 +105,7 @@ var PlotLineOrBandAxis;
     function addPlotLine(options) {
         return this.addPlotBandOrLine(options, 'plotLines');
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function compose(PlotLineOrBandType, AxisClass) {
         const axisProto = AxisClass.prototype;
         if (!axisProto.addPlotBand) {
@@ -209,7 +208,7 @@ var PlotLineOrBandAxis;
     /**
      * Remove a plot band or plot line from the chart by id. Called
      * internally from `removePlotBand` and `removePlotLine`.
-     * @private
+     * @internal
      * @function Highcharts.Axis#removePlotBandOrLine
      */
     function removePlotBandOrLine(id) {

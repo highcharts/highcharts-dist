@@ -1,13 +1,16 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.5.0 (2026-01-12)
  * @module highcharts/modules/data
  * @requires highcharts
  *
  * Data module
  *
- * (c) 2012-2025 Torstein Honsi
+ * (c) 2012-2026 Highsoft AS
+ * Author: Torstein Honsi
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -44,6 +47,7 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -51,11 +55,12 @@ var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require_
 ;// ./code/es-modules/Core/HttpUtilities.js
 /* *
  *
- *  (c) 2010-2025 Christer Vasseng, Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Christer Vasseng, Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -88,9 +93,7 @@ function ajax(settings) {
     }, r = new XMLHttpRequest();
     /**
      * Private error handler.
-     *
-     * @private
-     *
+     * @internal
      * @param {XMLHttpRequest} xhr
      * Internal request object.
      * @param {string | Error} err
@@ -171,13 +174,15 @@ function getJSON(url, success) {
 /**
  * The post utility.
  *
- * @private
+ * @internal
  * @function Highcharts.post
  *
  * @param {string} url
  * Post URL.
+ *
  * @param {Object} data
  * Post data.
+ *
  * @param {RequestInit} [fetchOptions]
  * Additional attributes for the post request.
  */
@@ -208,16 +213,16 @@ async function post(url, data, fetchOptions) {
         discardElement(link);
     }
 }
-/* *
- *
- *  Default Export
- *
- * */
+/**
+ * Utility functions for Ajax.
+ * @class
+ * @name Highcharts.HttpUtilities
+ */
 const HttpUtilities = {
     ajax,
-    getJSON,
-    post
+    getJSON
 };
+HttpUtilities.post = post;
 /* harmony default export */ const Core_HttpUtilities = (HttpUtilities);
 /* *
  *
@@ -281,11 +286,12 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  *
  *  Data module
  *
- *  (c) 2012-2025 Torstein Honsi
+ *  (c) 2012-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -307,9 +313,7 @@ const { addEvent, defined, extend, fireEvent, isNumber, merge, objectEach: Data_
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function getFreeIndexes(numberOfColumns, seriesBuilders) {
     const freeIndexes = [], freeIndexValues = [];
     let s, i, referencedIndexes;
@@ -400,6 +404,10 @@ class Data {
      *
      * */
     constructor(dataOptions, chartOptions = {}, chart) {
+        /**
+         * A collection of two-dimensional arrays.
+         * @internal
+         */
         this.rowsToColumns = Data.rowsToColumns; // Backwards compatibility
         /**
          * A collection of available date formats, extendable from the outside to
@@ -475,7 +483,7 @@ class Data {
     /**
      * Initialize the Data object with the given options
      *
-     * @private
+     * @internal
      * @function Highcharts.Data#init
      */
     init(dataOptions, chartOptions, chart) {
@@ -614,7 +622,7 @@ class Data {
      * When the data is parsed into columns, either by CSV, table, GS or direct
      * input, continue with other operations.
      *
-     * @private
+     * @internal
      * @function Highcharts.Data#dataFound
      */
     dataFound() {
@@ -685,12 +693,12 @@ class Data {
         */
         /**
          * Parse a single row.
-         * @private
+         * @internal
          */
         function parseRow(columnStr, rowNumber, noAdd, callbacks) {
             let i = 0, c = '', cl = '', cn = '', token = '', actualColumn = 0, column = 0;
             /**
-             * @private
+             * @internal
              */
             function read(j) {
                 c = columnStr[j];
@@ -698,7 +706,7 @@ class Data {
                 cn = columnStr[j + 1];
             }
             /**
-             * @private
+             * @internal
              */
             function pushType(type) {
                 if (dataTypes.length < column + 1) {
@@ -709,7 +717,7 @@ class Data {
                 }
             }
             /**
-             * @private
+             * @internal
              */
             function push() {
                 if (startColumn > actualColumn || actualColumn > endColumn) {
@@ -784,7 +792,7 @@ class Data {
          * Attempt to guess the delimiter. We do a separate parse pass here
          * because we need to count potential delimiters softly without making
          * any assumptions.
-         * @private
+         * @internal
          */
         function guessDelimiter(lines) {
             let points = 0, commas = 0, guessed = false;
@@ -879,7 +887,7 @@ class Data {
          *  - Check if a shortened year format is used (e.g. 1/1/99)
          *  - If no guess can be made, the user must be prompted
          * data is the data to deduce a format based on
-         * @private
+         * @internal
          */
         function deduceDateFormat(data, limit) {
             const format = 'YYYY/mm/dd', stable = [], max = [];
@@ -1095,12 +1103,12 @@ class Data {
         delete options.rowsURL;
         delete options.columnsURL;
         /**
-         * @private
+         * @internal
          */
         function performFetch(initialFetch) {
             /**
              * Helper function for doing the data fetch + polling.
-             * @private
+             * @internal
              */
             function request(url, done, tp) {
                 if (!url ||
@@ -1115,7 +1123,7 @@ class Data {
                     chart.liveDataURL = url;
                 }
                 /**
-                 * @private
+                 * @internal
                  */
                 function poll() {
                     // Poll
@@ -1199,7 +1207,7 @@ class Data {
         };
         /**
          * Fetch the actual spreadsheet using XMLHttpRequest.
-         * @private
+         * @internal
          */
         function fetchSheet(fn) {
             const url = [
@@ -1639,7 +1647,7 @@ class Data {
     /**
      * Sets properties directly on the xAxis object.
      *
-     * @private
+     * @internal
      */
     xAxisUpdateHandler(axis) {
         const options = this.xAxisOptions;
@@ -1766,7 +1774,7 @@ addEvent((external_highcharts_src_js_default_Chart_default()), 'init', function 
  * The name of the builder is taken from the second column. In the above
  * example it would be the column with index 7.
  *
- * @private
+ * @internal
  * @class
  * @name SeriesBuilder
  */

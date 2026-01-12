@@ -1,12 +1,11 @@
 /* *
  *
- *  (c) 2019-2025 Highsoft AS
+ *  (c) 2019-2026 Highsoft AS
  *
  *  Boost module: stripped-down renderer for higher performance
  *
  *  License: highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -21,7 +20,10 @@ import Boostables from './Boostables.js';
  *  Constants
  *
  * */
-// These are the series we allow boosting for.
+/**
+ * These are the series we allow boosting for.
+ * @internal
+ */
 const BoostableMap = {};
 Boostables.forEach((item) => {
     BoostableMap[item] = true;
@@ -31,4 +33,5 @@ Boostables.forEach((item) => {
  *  Default Export
  *
  * */
+/** @internal */
 export default BoostableMap;

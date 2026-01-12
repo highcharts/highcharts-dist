@@ -2,11 +2,12 @@
  *
  *  Exporting module
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -15,6 +16,7 @@
  *  Composition
  *
  * */
+/** @internal */
 var ExportingSymbols;
 (function (ExportingSymbols) {
     /* *
@@ -30,7 +32,7 @@ var ExportingSymbols;
      * */
     /* eslint-disable valid-jsdoc */
     /**
-     * @private
+     * @internal
      */
     function compose(SVGRendererClass) {
         if (modifiedClasses.indexOf(SVGRendererClass) === -1) {
@@ -42,7 +44,7 @@ var ExportingSymbols;
     }
     ExportingSymbols.compose = compose;
     /**
-     * @private
+     * @internal
      */
     function menu(x, y, width, height) {
         const arr = [
@@ -56,7 +58,7 @@ var ExportingSymbols;
         return arr;
     }
     /**
-     * @private
+     * @internal
      */
     function menuball(x, y, width, height) {
         const h = (height / 3) - 2;
@@ -70,4 +72,5 @@ var ExportingSymbols;
  *  Default Export
  *
  * */
+/** @internal */
 export default ExportingSymbols;

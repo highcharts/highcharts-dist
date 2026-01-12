@@ -2,13 +2,13 @@
  *
  *  Marker clusters module.
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
  *
  *  Author: Wojciech Chmiel
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -25,7 +25,7 @@ let symbols;
  * */
 /**
  * Cluster symbol.
- * @private
+ * @internal
  */
 function cluster(x, y, width, height) {
     const w = width / 2, h = height / 2, outerWidth = 1, space = 1, inner = symbols.arc(x + w, y + h, w - space * 4, h - space * 4, {
@@ -45,9 +45,7 @@ function cluster(x, y, width, height) {
     });
     return outer2.concat(outer1, inner);
 }
-/**
- * @private
- */
+/** @internal */
 function compose(SVGRendererClass) {
     symbols = SVGRendererClass.prototype.symbols;
     symbols.cluster = cluster;

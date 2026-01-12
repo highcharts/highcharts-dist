@@ -1,11 +1,13 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.5.0 (2026-01-12)
  * @module highcharts/modules/tiledwebmap
  * @requires highcharts
  *
- * (c) 2009-2025
+ * (c) 2009-2026
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -42,6 +44,7 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -56,6 +59,7 @@ var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require_
  *  Class
  *
  * */
+/** @internal */
 class OpenStreetMap {
     constructor() {
         /* *
@@ -95,6 +99,7 @@ class OpenStreetMap {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const TilesProviders_OpenStreetMap = (OpenStreetMap);
 
 ;// ./code/es-modules/Maps/TilesProviders/Stamen.js
@@ -107,6 +112,7 @@ class OpenStreetMap {
  *  Class
  *
  * */
+/** @internal */
 class Stamen {
     constructor() {
         /* *
@@ -164,6 +170,7 @@ class Stamen {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const TilesProviders_Stamen = (Stamen);
 
 ;// ./code/es-modules/Maps/TilesProviders/LimaLabs.js
@@ -176,6 +183,7 @@ class Stamen {
  *  Class
  *
  * */
+/** @internal */
 class LimaLabs {
     constructor() {
         /* *
@@ -201,6 +209,7 @@ class LimaLabs {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const TilesProviders_LimaLabs = (LimaLabs);
 
 ;// ./code/es-modules/Maps/TilesProviders/Thunderforest.js
@@ -213,6 +222,7 @@ class LimaLabs {
  *  Class
  *
  * */
+/** @internal */
 class Thunderforest {
     constructor() {
         /* *
@@ -280,6 +290,7 @@ class Thunderforest {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const TilesProviders_Thunderforest = (Thunderforest);
 
 ;// ./code/es-modules/Maps/TilesProviders/Esri.js
@@ -292,6 +303,7 @@ class Thunderforest {
  *  Class
  *
  * */
+/** @internal */
 class Esri {
     constructor() {
         /* *
@@ -373,6 +385,7 @@ class Esri {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const TilesProviders_Esri = (Esri);
 
 ;// ./code/es-modules/Maps/TilesProviders/USGS.js
@@ -385,6 +398,7 @@ class Esri {
  *  Class
  *
  * */
+/** @internal */
 class USGS {
     constructor() {
         /* *
@@ -419,12 +433,12 @@ class USGS {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const TilesProviders_USGS = (USGS);
 
 ;// ./code/es-modules/Maps/TilesProviders/TilesProviderRegistry.js
 /* *
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -444,6 +458,7 @@ class USGS {
  *  Constants
  *
  * */
+/** @internal */
 const tilesProviderRegistry = {
     Esri: TilesProviders_Esri,
     LimaLabs: TilesProviders_LimaLabs,
@@ -457,6 +472,7 @@ const tilesProviderRegistry = {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const TilesProviderRegistry = (tilesProviderRegistry);
 
 ;// external ["../highcharts.src.js","default","SeriesRegistry"]
@@ -465,11 +481,12 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
 ;// ./code/es-modules/Series/TiledWebMap/TiledWebMapSeriesDefaults.js
 /* *
  *
- *  (c) 2010-2025 Hubert Kozik, Kamil Musiałowski
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Hubert Kozik, Kamil Musiałowski
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -611,11 +628,12 @@ const TiledWebMapSeriesDefaults = {
 ;// ./code/es-modules/Series/TiledWebMap/TiledWebMapSeries.js
 /* *
  *
- *  (c) 2010-2025 Hubert Kozik, Kamil Musiałowski
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Hubert Kozik, Kamil Musiałowski
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -1072,8 +1090,8 @@ class TiledWebMapSeries extends MapSeries {
                 'Provider Registry.', false);
         }
     }
-    update() {
-        const series = this, { transformGroups } = series, chart = this.chart, mapView = chart.mapView, options = arguments[0], { provider } = options;
+    update(options) {
+        const { transformGroups } = this, chart = this.chart, mapView = chart.mapView, { provider } = options;
         if (transformGroups) {
             transformGroups.forEach((group) => {
                 if (Object.keys(group).length !== 0) {
@@ -1084,19 +1102,17 @@ class TiledWebMapSeries extends MapSeries {
         }
         if (mapView &&
             !defined(chart.userOptions.mapView?.projection) &&
-            provider &&
-            provider.type) {
+            provider?.type) {
             const ProviderDefinition = TilesProviderRegistry[provider.type];
             if (ProviderDefinition) {
-                const def = new ProviderDefinition(), { initialProjectionName: providerProjectionName } = def;
                 mapView.update({
                     projection: {
-                        name: providerProjectionName
+                        name: (new ProviderDefinition()).initialProjectionName
                     }
                 });
             }
         }
-        super.update.apply(series, arguments);
+        super.update.apply(this, arguments);
     }
 }
 TiledWebMapSeries.defaultOptions = merge(MapSeries.defaultOptions, TiledWebMap_TiledWebMapSeriesDefaults);

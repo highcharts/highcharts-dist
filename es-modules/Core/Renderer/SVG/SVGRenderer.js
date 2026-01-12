@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -111,7 +112,7 @@ class SVGRenderer {
     /**
      * Page url used for internal references.
      *
-     * @private
+     * @internal
      * @name Highcharts.SVGRenderer#url
      * @type {string}
      */
@@ -146,7 +147,9 @@ class SVGRenderer {
      * not when set explicitly through `.attr` and `.css` etc.
      */
     constructor(container, width, height, style, forExport, allowHTML, styledMode) {
+        /** @internal */
         this.x = 0;
+        /** @internal */
         this.y = 0;
         const renderer = this, boxWrapper = renderer
             .createElement('svg')
@@ -171,7 +174,7 @@ class SVGRenderer {
         this.url = this.getReferenceURL();
         // Add description
         const desc = this.createElement('desc').add();
-        desc.element.appendChild(doc.createTextNode('Created with Highcharts 12.4.0'));
+        desc.element.appendChild(doc.createTextNode('Created with Highcharts 12.5.0'));
         this.defs = this.createElement('defs').add();
         this.allowHTML = allowHTML;
         this.forExport = forExport;
@@ -244,6 +247,8 @@ class SVGRenderer {
      * - Firefox <= 51 (January 2017)
      * - Safari/Mac <= 12.1 (2018 or 2019)
      * - Safari/iOS <= 13
+     *
+     * @internal
      *
      * @todo Remove this hack when time has passed. All the affected browsers
      * are evergreens, so it is increasingly unlikely that users are affected by
@@ -319,12 +324,10 @@ class SVGRenderer {
     /**
      * Get the global style setting for the renderer.
      *
-     * @private
+     * @internal
      * @function Highcharts.SVGRenderer#getStyle
-     *
      * @param {Highcharts.CSSObject} style
      * Style settings.
-     *
      * @return {Highcharts.CSSObject}
      * The style settings mixed with defaults.
      */
@@ -407,7 +410,7 @@ class SVGRenderer {
      * reference. Used internally from the {@link SVGElement#colorGradient}
      * function.
      *
-     * @private
+     * @internal
      * @function Highcharts.SVGRenderer#getRadialAttr
      */
     getRadialAttr(radialReference, gradAttr) {
@@ -422,11 +425,10 @@ class SVGRenderer {
     /**
      * Create a drop shadow definition and return its id
      *
-     * @private
+     * @internal
      * @function Highcharts.SVGRenderer#shadowDefinition
-     *
-     * @param {boolean|Highcharts.ShadowOptionsObject} [shadowOptions] The
-     *        shadow options. If `true`, the default options are applied
+     * @param {boolean|Highcharts.ShadowOptionsObject} [shadowOptions]
+     * The shadow options. If `true`, the default options are applied.
      */
     shadowDefinition(shadowOptions) {
         const id = [
@@ -456,9 +458,8 @@ class SVGRenderer {
      * Get shadow filter content.
      * NOTE! Overridden in es5 module for IE11 compatibility.
      *
-     * @private
+     * @internal
      * @function Highcharts.SVGRenderer#getShadowFilterContent
-     *
      * @param {ShadowOptionsObject} options
      * The shadow options.
      * @return {Array<AST.Node>}
@@ -484,9 +485,8 @@ class SVGRenderer {
      * text features like `width`, `text-overflow`, `white-space`, and also
      * attributes like `href` and `style`.
      *
-     * @private
+     * @internal
      * @function Highcharts.SVGRenderer#buildText
-     *
      * @param {Highcharts.SVGElement} wrapper
      * The parent SVGElement.
      */
@@ -909,7 +909,8 @@ class SVGRenderer {
      * @function Highcharts.SVGRenderer#roundedRect
      *
      * @param {Highcharts.SVGAttributes} attribs
-     *      Attributes
+     * Attributes.
+     *
      * @return {Highcharts.SVGElement}
      * The generated wrapper element.
      */
@@ -960,11 +961,11 @@ class SVGRenderer {
      * @function Highcharts.SVGRenderer#g
      *
      * @param {string} [name]
-     *        The group will be given a class name of `highcharts-{name}`. This
-     *        can be used for styling and scripting.
+     * The group will be given a class name of `highcharts-{name}`. This can be
+     * used for styling and scripting.
      *
      * @return {Highcharts.SVGElement}
-     *         The generated wrapper element.
+     * The generated wrapper element.
      */
     g(name) {
         const elem = this.createElement('g');
@@ -983,26 +984,25 @@ class SVGRenderer {
      * @function Highcharts.SVGRenderer#image
      *
      * @param {string} href
-     *        The image source.
+     * The image source.
      *
      * @param {number} [x]
-     *        The X position.
+     * The X position.
      *
      * @param {number} [y]
-     *        The Y position.
+     * The Y position.
      *
      * @param {number} [width]
-     *        The image width. If omitted, it defaults to the image file width.
+     * The image width. If omitted, it defaults to the image file width.
      *
      * @param {number} [height]
-     *        The image height. If omitted it defaults to the image file
-     *        height.
+     * The image height. If omitted it defaults to the image file height.
      *
      * @param {Function} [onload]
-     *        Event handler for image load.
+     * Event handler for image load.
      *
      * @return {Highcharts.SVGElement}
-     *         The generated wrapper element.
+     * The generated wrapper element.
      */
     image(href, x, y, width, height, onload) {
         const attribs = { preserveAspectRatio: 'none' };
@@ -1240,7 +1240,7 @@ class SVGRenderer {
      * @param {number} [height]
      *
      * @return {Highcharts.ClipRectElement}
-     *         A clipping rectangle.
+     * A clipping rectangle.
      */
     clipRect(x, y, width, height) {
         return this.rect(x, y, width, height, 0);
@@ -1335,7 +1335,7 @@ class SVGRenderer {
     /**
      * Correct X and Y positioning of a label for rotation (#1764).
      *
-     * @private
+     * @internal
      * @function Highcharts.SVGRenderer#rotCorr
      */
     rotCorr(baseline, rotation, alterY) {
@@ -1355,7 +1355,7 @@ class SVGRenderer {
      * It is used in maps to parse the `path` option, and in SVGRenderer.dSetter
      * to support legacy paths from demos.
      *
-     * @private
+     * @internal
      * @function Highcharts.SVGRenderer#pathToSegments
      */
     pathToSegments(path) {
@@ -1596,41 +1596,41 @@ class SVGRenderer {
      * @function Highcharts.SVGRenderer#label
      *
      * @param {string} str
-     *        The initial text string or (subset) HTML to render.
+     * The initial text string or (subset) HTML to render.
      *
      * @param {number} x
-     *        The x position of the label's left side.
+     * The x position of the label's left side.
      *
      * @param {number} [y]
-     *        The y position of the label's top side or baseline, depending on
-     *        the `baseline` parameter.
+     * The y position of the label's top side or baseline, depending on the
+     * `baseline` parameter.
      *
      * @param {string} [shape='rect']
-     *        The shape of the label's border/background, if any. Defaults to
-     *        `rect`. Other possible values are `callout` or other shapes
-     *        defined in {@link Highcharts.SVGRenderer#symbols}.
+     * The shape of the label's border/background, if any. Defaults to `rect`.
+     * Other possible values are `callout` or other shapes defined in
+     * {@link Highcharts.SVGRenderer#symbols}.
      *
      * @param {number} [anchorX]
-     *        In case the `shape` has a pointer, like a flag, this is the
-     *        coordinates it should be pinned to.
+     * In case the `shape` has a pointer, like a flag, this is the coordinates
+     * it should be pinned to.
      *
      * @param {number} [anchorY]
-     *        In case the `shape` has a pointer, like a flag, this is the
-     *        coordinates it should be pinned to.
+     * In case the `shape` has a pointer, like a flag, this is the coordinates
+     * it should be pinned to.
      *
      * @param {boolean} [useHTML=false]
-     *        Whether to use HTML to render the label.
+     * Whether to use HTML to render the label.
      *
      * @param {boolean} [baseline=false]
-     *        Whether to position the label relative to the text baseline,
-     *        like {@link Highcharts.SVGRenderer#text|renderer.text}, or to the
-     *        upper border of the rectangle.
+     * Whether to position the label relative to the text baseline, like
+     * {@link Highcharts.SVGRenderer#text|renderer.text}, or to the upper border
+     * of the rectangle.
      *
      * @param {string} [className]
-     *        Class name for the group.
+     * Class name for the group.
      *
      * @return {Highcharts.SVGElement}
-     *         The generated label.
+     * The generated label.
      */
     label(str, x, y, shape, anchorX, anchorY, useHTML, baseline, className) {
         return new SVGLabel(this, str, x, y, shape, anchorX, anchorY, useHTML, baseline, className);
@@ -1638,7 +1638,7 @@ class SVGRenderer {
     /**
      * Re-align all aligned elements.
      *
-     * @private
+     * @internal
      * @function Highcharts.SVGRenderer#alignElements
      */
     alignElements() {

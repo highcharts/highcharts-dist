@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -27,9 +28,7 @@ var Responsive;
      *  Functions
      *
      * */
-    /**
-     * @private
-     */
+    /** @internal */
     function compose(ChartClass) {
         const chartProto = ChartClass.prototype;
         if (!chartProto.matchResponsiveRule) {
@@ -44,7 +43,7 @@ var Responsive;
     /**
      * Handle a single responsiveness rule.
      *
-     * @private
+     * @internal
      * @function Highcharts.Chart#matchResponsiveRule
      * @param {Highcharts.ResponsiveRulesOptions} rule
      * @param {Array<string>} matches
@@ -64,7 +63,7 @@ var Responsive;
      * Update the chart based on the current chart/document size and options
      * for responsiveness.
      *
-     * @private
+     * @internal
      * @function Highcharts.Chart#setResponsive
      * @param  {boolean} [redraw=true]
      * @param  {boolean} [reset=false]

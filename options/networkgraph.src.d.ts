@@ -6,138 +6,127 @@
 import * as Highcharts from "../highcharts.src";
 declare module "../highcharts.src" {
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable the initial
-     * animation when a series is displayed for the `dataLabels`. The animation
-     * can also be set as a configuration object. Please note that this option
-     * only applies to the initial animation.
-     *
-     * For other animations, see chart.animation and the animation parameter
-     * under the API methods. The following properties are supported:
-     *
-     * - `defer`: The animation delay time in milliseconds.
+     * (Highcharts) Point accessibility options for a series.
      */
-    interface PlotNetworkgraphDataLabelsAnimationOptions {
+    interface PlotNetworkgraphAccessibilityPointOptions {
         /**
-         * (Highcharts, Highstock, Highmaps, Gantt) The animation delay time in
-         * milliseconds. Set to `0` to render the data labels immediately. As
-         * `undefined` inherits defer time from the series.animation.defer.
+         * (Highcharts) Date format to use for points on datetime axes when
+         * describing them to screen reader users.
+         *
+         * Defaults to the same format as in tooltip.
+         *
+         * For an overview of the replacement codes, see dateFormat.
          */
-        defer?: number;
+        dateFormat?: string;
+        /**
+         * (Highcharts) Formatter function to determine the date/time format
+         * used with points on datetime axes when describing them to screen
+         * reader users. Receives one argument, `point`, referring to the point
+         * to describe. Should return a date format string compatible with
+         * dateFormat.
+         */
+        dateFormatter?: Highcharts.ScreenReaderFormatterCallbackFunction<Highcharts.Point>;
+        /**
+         * (Highcharts) Whether or not to describe points with the value `null`
+         * to assistive technology, such as screen readers.
+         */
+        describeNull?: boolean;
+        /**
+         * (Highcharts) A format string to use instead of the default for point
+         * descriptions.
+         *
+         * The context of the format string is the point instance.
+         *
+         * As opposed to accessibility.point.valueDescriptionFormat, this option
+         * replaces the whole description.
+         */
+        descriptionFormat?: string;
+        /**
+         * (Highcharts) Formatter function to use instead of the default for
+         * point descriptions. Same as
+         * `accessibility.point.descriptionFormatter`, but applies to a series
+         * instead of the whole chart.
+         *
+         * Note: Prefer using accessibility.point.valueDescriptionFormat instead
+         * if possible, as default functionality such as describing annotations
+         * will be preserved.
+         */
+        descriptionFormatter?: Highcharts.ScreenReaderFormatterCallbackFunction<Highcharts.Point>;
+        /**
+         * (Highcharts) Decimals to use for the values in the point
+         * descriptions. Uses tooltip.valueDecimals if not defined.
+         */
+        valueDecimals?: number;
+        /**
+         * (Highcharts) Format to use for describing the values of data points
+         * to assistive technology - including screen readers. The point context
+         * is available as `{point}`.
+         *
+         * Other available context variables include `{index}`, `{value}`, and
+         * `{xDescription}`.
+         *
+         * Additionally, the series name, annotation info, and description added
+         * in `point.accessibility.description` is added by default if relevant.
+         * To override this, use the accessibility.point.descriptionFormatter
+         * option.
+         */
+        valueDescriptionFormat?: string;
+        /**
+         * (Highcharts) Prefix to add to the values in the point descriptions.
+         * Uses tooltip.valuePrefix if not defined.
+         */
+        valuePrefix?: string;
+        /**
+         * (Highcharts) Suffix to add to the values in the point descriptions.
+         * Uses tooltip.valueSuffix if not defined.
+         */
+        valueSuffix?: string;
     }
-    interface PlotNetworkgraphLayoutAlgorithmOptions {
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Styles for the label. The
+     * default `color` setting is `"contrast"`, which is a pseudo color that
+     * Highcharts picks up and applies the maximum contrast to the underlying
+     * point item, for example the bar in a bar chart.
+     *
+     * The `textOutline` is a pseudo property that applies an outline of the
+     * given width with the given color, which by default is the maximum
+     * contrast to the text. So a bright text color will result in a black text
+     * outline for maximum readability on a mixed background. In some cases,
+     * especially with grayscale text, the text outline doesn't work well, in
+     * which cases it can be disabled by setting it to `"none"`. When `useHTML`
+     * is true, the `textOutline` will not be picked up. In this, case, the same
+     * effect can be acheived through the `text-shadow` CSS property.
+     *
+     * For some series types, where each point has an extent, like for example
+     * tree maps, the data label may overflow the point. There are two
+     * strategies for handling overflow. By default, the text will wrap to
+     * multiple lines. The other strategy is to set `style.textOverflow` to
+     * `ellipsis`, which will keep the text on one line plus it will break
+     * inside long words.
+     */
+    interface PlotNetworkgraphDataLabelsStyleOptions {
+        transition?: string;
+    }
+    /**
+     * (Highcharts) Link style options
+     */
+    interface PlotNetworkgraphLinkOptions {
         /**
-         * (Highcharts) Approximation used to calculate repulsive forces
-         * affecting nodes. By default, when calculating net force, nodes are
-         * compared against each other, which gives O(N^2) complexity. Using
-         * Barnes-Hut approximation, we decrease this to O(N log N), but the
-         * resulting graph will have different layout. Barnes-Hut approximation
-         * divides space into rectangles via quad tree, where forces exerted on
-         * nodes are calculated directly for nearby cells, and for all others,
-         * cells are treated as a separate node with center of mass.
+         * (Highcharts) Color of the link between two nodes.
          */
-        approximation?: Highcharts.OptionsApproximationValue;
+        color?: string;
         /**
-         * (Highcharts) Attraction force applied on a node which is conected to
-         * another node by a link. Passed are two arguments:
-         *
-         * - `d` - which is current distance between two nodes
-         *
-         * - `k` - which is desired distance between two nodes
-         *
-         * In `verlet` integration, defaults to: `function (d, k) { return (k -
-         * d) / d; }`
+         * (Highcharts) A name for the dash style to use for links.
          */
-        attractiveForce?: Function;
+        dashStyle?: string;
         /**
-         * (Highcharts) Experimental. Enables live simulation of the algorithm
-         * implementation. All nodes are animated as the forces applies on them.
+         * (Highcharts) Opacity of the link between two nodes.
          */
-        enableSimulation?: boolean;
+        opacity?: number;
         /**
-         * (Highcharts) Friction applied on forces to prevent nodes rushing to
-         * fast to the desired positions.
+         * (Highcharts) Width (px) of the link between two nodes.
          */
-        friction?: number;
-        /**
-         * (Highcharts) Gravitational const used in the barycenter force of the
-         * algorithm.
-         */
-        gravitationalConstant?: number;
-        /**
-         * (Highcharts) When `initialPositions` are set to 'circle',
-         * `initialPositionRadius` is a distance from the center of circle, in
-         * which nodes are created.
-         */
-        initialPositionRadius?: number;
-        /**
-         * (Highcharts) Initial layout algorithm for positioning nodes. Can be
-         * one of built-in options ("circle", "random") or a function where
-         * positions should be set on each node (`this.nodes`) as `node.plotX`
-         * and `node.plotY`
-         */
-        initialPositions?: ("circle"|"random"|Function);
-        /**
-         * (Highcharts) Integration type. Available options are `'euler'` and
-         * `'verlet'`. Integration determines how forces are applied on
-         * particles. In Euler integration, force is applied direct as
-         * `newPosition += velocity;`. In Verlet integration, new position is
-         * based on a previous position without velocity: `newPosition +=
-         * previousPosition - newPosition`.
-         *
-         * Note that different integrations give different results as forces are
-         * different.
-         *
-         * In Highcharts v7.0.x only `'euler'` integration was supported.
-         */
-        integration?: Highcharts.OptionsIntegrationValue;
-        /**
-         * (Highcharts) Ideal length (px) of the link between two nodes. When
-         * not defined, length is calculated as: `Math.pow(availableWidth *
-         * availableHeight / nodesLength, 0.4);`
-         *
-         * Note: Because of the algorithm specification, length of each link
-         * might be not exactly as specified.
-         */
-        linkLength?: number;
-        /**
-         * (Highcharts) Max number of iterations before algorithm will stop. In
-         * general, algorithm should find positions sooner, but when rendering
-         * huge number of nodes, it is recommended to increase this value as
-         * finding perfect graph positions can require more time.
-         */
-        maxIterations?: number;
-        /**
-         * (Highcharts) Verlet integration only. Max speed that node can get in
-         * one iteration. In terms of simulation, it's a maximum translation (in
-         * pixels) that node can move (in both, x and y, dimensions). While
-         * `friction` is applied on all nodes, max speed is applied only for
-         * nodes that move very fast, for example small or disconnected ones.
-         */
-        maxSpeed?: number;
-        /**
-         * (Highcharts) Repulsive force applied on a node. Passed are two
-         * arguments:
-         *
-         * - `d` - which is current distance between two nodes
-         *
-         * - `k` - which is desired distance between two nodes
-         *
-         * In `verlet` integration, defaults to: `function (d, k) { return (k -
-         * d) / d * (k > d ? 1 : 0) }`
-         */
-        repulsiveForce?: Function;
-        /**
-         * (Highcharts) Barnes-Hut approximation only. Deteremines when distance
-         * between cell and node is small enough to calculate forces. Value of
-         * `theta` is compared directly with quotient `s / d`, where `s` is the
-         * size of the cell, and `d` is distance between center of cell's mass
-         * and currently compared node.
-         */
-        theta?: number;
-        /**
-         * (Highcharts) Type of the algorithm used when positioning nodes.
-         */
-        type?: "reingold-fruchterman";
+        width?: number;
     }
     /**
      * (Highcharts) Options for the connector in the _Series on point_ feature.
@@ -189,86 +178,119 @@ declare module "../highcharts.src" {
         y?: number;
     }
     /**
-     * (Highcharts) Positioning options for fixed tooltip, taking effect only
-     * when tooltip.fixed is `true`.
+     * (Highcharts, Highstock) Animation setting for hovering the graph in
+     * line-type series.
      */
-    interface PlotNetworkgraphTooltipPositionOptions {
+    interface PlotNetworkgraphStatesHoverAnimationOptions {
         /**
-         * (Highcharts) The horizontal alignment of the fixed tooltip.
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
          */
-        align?: Highcharts.AlignValue;
-        /**
-         * (Highcharts) What the fixed tooltip alignment should be relative to.
-         *
-         * The default, `pane`, means that it is aligned within the plot area
-         * for that given series. If the tooltip is split (as default in Stock
-         * charts), each partial tooltip is aligned within the series' pane.
-         */
-        relativeTo?: Highcharts.OptionsRelativeToValue;
-        /**
-         * (Highcharts) The vertical alignment of the fixed tooltip.
-         */
-        verticalAlign?: Highcharts.VerticalAlignValue;
-        /**
-         * (Highcharts) X pixel offset from the given position. Can be used to
-         * shy away from axis lines, grid lines etc to avoid the tooltip
-         * overlapping other elements.
-         */
-        x?: number;
-        /**
-         * (Highcharts) Y pixel offset from the given position. Can be used to
-         * shy away from axis lines, grid lines etc to avoid the tooltip
-         * overlapping other elements.
-         */
-        y?: number;
+        duration?: number;
     }
     /**
-     * (Highcharts) A collection of options for the individual nodes. The nodes
-     * in a networkgraph diagram are auto-generated instances of
-     * `Highcharts.Point`, but options can be applied here and linked by the
-     * `id`.
+     * (Highcharts, Highstock) Animation setting for hovering the graph in
+     * line-type series.
      */
-    interface SeriesNetworkgraphNodesOptions {
+    interface PlotNetworkgraphStatesSelectAnimationOptions {
         /**
-         * (Highcharts) The color of the auto generated node.
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
          */
-        color?: Highcharts.ColorString;
+        duration?: number;
+    }
+    /**
+     * (Highcharts) Enable or disable the initial animation when a series is
+     * displayed for the `dataLabels`. The animation can also be set as a
+     * configuration object. Please note that this option only applies to the
+     * initial animation.
+     *
+     * For other animations, see chart.animation and the animation parameter
+     * under the API methods. The following properties are supported:
+     *
+     * - `defer`: The animation delay time in milliseconds.
+     */
+    interface SeriesNetworkgraphDataDataLabelsAnimationOptions {
         /**
-         * (Highcharts) The color index of the auto generated node, especially
-         * for use in styled mode.
+         * (Highcharts) The animation delay time in milliseconds. Set to `0` to
+         * render the data labels immediately. As `undefined` inherits defer
+         * time from the series.animation.defer.
          */
-        colorIndex?: number;
+        defer?: number;
+    }
+    /**
+     * (Highcharts) Animation when hovering over the marker.
+     */
+    interface SeriesNetworkgraphNodesMarkerStatesHoverAnimationOptions {
+        duration?: number;
+    }
+    /**
+     * (Highcharts) A `networkgraph` series. If the type option is not
+     * specified, it is inherited from chart.type.
+     *
+     * Configuration options for the series are given in three levels:
+     *
+     * 1. Options for all series in a chart are defined in the
+     * plotOptions.series object.
+     *
+     * 2. Options for all `networkgraph` series are defined in
+     * plotOptions.networkgraph.
+     *
+     * 3. Options for one single series are given in the series instance array.
+     * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - type option should always be set, otherwise a broad set of unsupported
+     * options is allowed.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
+     *
+     * You have to extend the `SeriesNetworkgraphOptions` via an interface to
+     * allow custom properties: ``` declare interface SeriesNetworkgraphOptions
+     * { customProperty: string; }
+     *
+     */
+    interface SeriesNetworkgraphOptions extends Highcharts.PlotNetworkgraphOptions, Highcharts.SeriesOptions {
         /**
-         * (Highcharts) Individual data label for each node. The options are the
-         * same as the ones for series.networkgraph.dataLabels.
-         */
-        dataLabels?: (Highcharts.SeriesNetworkgraphDataLabelsOptionsObject|Array<Highcharts.SeriesNetworkgraphDataLabelsOptionsObject>);
-        /**
-         * (Highcharts) The id of the auto-generated node, referring to the
-         * `from` or `to` setting of the link.
-         */
-        id?: string;
-        /**
-         * (Highcharts) Options for the node markers.
-         */
-        marker?: Highcharts.PointMarkerOptionsObject;
-        /**
-         * (Highcharts) Mass of the node. By default, each node has mass equal
-         * to it's marker radius . Mass is used to determine how two connected
-         * nodes should affect each other:
+         * (Highcharts) An array of data points for the series. For the
+         * `networkgraph` series type, points can be given in the following way:
          *
-         * Attractive force is multiplied by the ratio of two connected nodes;
-         * if a big node has weights twice as the small one, then the small one
-         * will move towards the big one twice faster than the big one to the
-         * small one .
+         * An array of objects with named values. The following snippet shows
+         * only a few settings, see the complete options set below. If the total
+         * number of data points exceeds the series' turboThreshold, this option
+         * is not available. (see online documentation for example)
          */
-        mass?: number;
+        data?: (Highcharts.PointOptionsObject|Array<(object|any[]|number)>);
         /**
-         * (Highcharts) The name to display for the node in data labels and
-         * tooltips. Use this when the name is different from the `id`. Where
-         * the id must be unique for each node, this is not necessary for the
-         * name.
+         * (Highcharts) A collection of options for the individual nodes. The
+         * nodes in a networkgraph diagram are auto-generated instances of
+         * `Highcharts.Point`, but options can be applied here and linked by the
+         * `id`.
          */
-        name?: string;
+        nodes?: Array<Highcharts.SeriesNetworkgraphNodesOptions>;
+        /**
+         * Not available
+         */
+        stack?: undefined;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) This property is only in
+         * TypeScript non-optional and might be `undefined` in series objects
+         * from unknown sources.
+         */
+        type: "networkgraph";
+        /**
+         * Not available
+         */
+        xAxis?: undefined;
+        /**
+         * Not available
+         */
+        yAxis?: undefined;
     }
 }

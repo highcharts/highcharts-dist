@@ -1,13 +1,16 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.5.0 (2026-01-12)
  * @module highcharts/modules/marker-clusters
  * @requires highcharts
  *
  * Marker clusters module for Highcharts
  *
- * (c) 2010-2025 Wojciech Chmiel
+ * (c) 2010-2026 Highsoft AS
+ * Author: Wojciech Chmiel
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -44,6 +47,7 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -53,13 +57,13 @@ var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require_
  *
  *  Marker clusters module.
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
  *
  *  Author: Wojciech Chmiel
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -92,7 +96,7 @@ var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require_
  * @since 8.0.0
  * @optionparent plotOptions.scatter.cluster
  *
- * @private
+ * @internal
  */
 const cluster = {
     /**
@@ -390,11 +394,11 @@ const MarkerClusterDefaults = {
 ;// ./code/es-modules/Data/ColumnUtils.js
 /* *
  *
- *  (c) 2020-2025 Highsoft AS
+ *  (c) 2020-2026 Highsoft AS
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  *  Authors:
  *  - Dawid Dragula
@@ -428,7 +432,7 @@ var ColumnUtils;
      * @param {boolean} asSubarray
      * If column is a typed array, return a subarray instead of a new array. It
      * is faster `O(1)`, but the entire buffer will be kept in memory until all
-     * views to it are destroyed. Default is `false`.
+     * views of it are destroyed. Default is `false`.
      *
      * @return {DataTable.Column}
      * Modified column.
@@ -494,6 +498,33 @@ var ColumnUtils;
         };
     }
     ColumnUtils.splice = splice;
+    /**
+     * Converts a cell value to a number.
+     *
+     * @param {DataTable.CellType} value
+     * Cell value to convert to a number.
+     *
+     * @param {boolean} useNaN
+     * If `true`, returns `NaN` for non-numeric values; if `false`,
+     * returns `null` instead.
+     *
+     * @return {number | null}
+     * Number or `null` if the value is not a number.
+     *
+     * @private
+     */
+    function convertToNumber(value, useNaN) {
+        switch (typeof value) {
+            case 'boolean':
+                return (value ? 1 : 0);
+            case 'number':
+                return (isNaN(value) && !useNaN ? null : value);
+            default:
+                value = parseFloat(`${value ?? ''}`);
+                return (isNaN(value) && !useNaN ? null : value);
+        }
+    }
+    ColumnUtils.convertToNumber = convertToNumber;
 })(ColumnUtils || (ColumnUtils = {}));
 /* *
  *
@@ -505,11 +536,11 @@ var ColumnUtils;
 ;// ./code/es-modules/Data/DataTableCore.js
 /* *
  *
- *  (c) 2009-2025 Highsoft AS
+ *  (c) 2009-2026 Highsoft AS
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  *  Authors:
  *  - Sophie Bremer
@@ -571,12 +602,11 @@ class DataTableCore {
          * @type {string}
          */
         this.id = (options.id || uniqueKey());
-        this.modified = this;
         this.rowCount = 0;
         this.versionTag = uniqueKey();
         let rowCount = 0;
-        objectEach(options.columns || {}, (column, columnName) => {
-            this.columns[columnName] = column.slice();
+        objectEach(options.columns || {}, (column, columnId) => {
+            this.columns[columnId] = column.slice();
             rowCount = Math.max(rowCount, column.length);
         });
         this.applyRowCount(rowCount);
@@ -595,9 +625,9 @@ class DataTableCore {
      */
     applyRowCount(rowCount) {
         this.rowCount = rowCount;
-        objectEach(this.columns, (column, columnName) => {
+        objectEach(this.columns, (column, columnId) => {
             if (column.length !== rowCount) {
-                this.columns[columnName] = setLength(column, rowCount);
+                this.columns[columnId] = setLength(column, rowCount);
             }
         });
     }
@@ -618,8 +648,8 @@ class DataTableCore {
     deleteRows(rowIndex, rowCount = 1) {
         if (rowCount > 0 && rowIndex < this.rowCount) {
             let length = 0;
-            objectEach(this.columns, (column, columnName) => {
-                this.columns[columnName] =
+            objectEach(this.columns, (column, columnId) => {
+                this.columns[columnId] =
                     splice(column, rowIndex, rowCount).array;
                 length = column.length;
             });
@@ -632,33 +662,33 @@ class DataTableCore {
      * Fetches the given column by the canonical column name. Simplified version
      * of the full `DataTable.getRow` method, always returning by reference.
      *
-     * @param {string} columnName
+     * @param {string} columnId
      * Name of the column to get.
      *
      * @return {Highcharts.DataTableColumn|undefined}
      * A copy of the column, or `undefined` if not found.
      */
-    getColumn(columnName, 
+    getColumn(columnId, 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asReference) {
-        return this.columns[columnName];
+        return this.columns[columnId];
     }
     /**
      * Retrieves all or the given columns. Simplified version of the full
      * `DataTable.getColumns` method, always returning by reference.
      *
-     * @param {Array<string>} [columnNames]
-     * Column names to retrieve.
+     * @param {Array<string>} [columnIds]
+     * Column ids to retrieve.
      *
      * @return {Highcharts.DataTableColumnCollection}
      * Collection of columns. If a requested column was not found, it is
      * `undefined`.
      */
-    getColumns(columnNames, 
+    getColumns(columnIds, 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asReference) {
-        return (columnNames || Object.keys(this.columns)).reduce((columns, columnName) => {
-            columns[columnName] = this.columns[columnName];
+        return (columnIds || Object.keys(this.columns)).reduce((columns, columnId) => {
+            columns[columnId] = this.columns[columnId];
             return columns;
         }, {});
     }
@@ -668,19 +698,19 @@ class DataTableCore {
      * @param {number} rowIndex
      * Row index to retrieve. First row has index 0.
      *
-     * @param {Array<string>} [columnNames]
+     * @param {Array<string>} [columnIds]
      * Column names to retrieve.
      *
      * @return {Record<string, number|string|undefined>|undefined}
      * Returns the row values, or `undefined` if not found.
      */
-    getRow(rowIndex, columnNames) {
-        return (columnNames || Object.keys(this.columns)).map((key) => this.columns[key]?.[rowIndex]);
+    getRow(rowIndex, columnIds) {
+        return (columnIds || Object.keys(this.columns)).map((key) => this.columns[key]?.[rowIndex]);
     }
     /**
      * Sets cell values for a column. Will insert a new column, if not found.
      *
-     * @param {string} columnName
+     * @param {string} columnId
      * Column name to set.
      *
      * @param {Highcharts.DataTableColumn} [column]
@@ -695,8 +725,8 @@ class DataTableCore {
      * @emits #setColumns
      * @emits #afterSetColumns
      */
-    setColumn(columnName, column = [], rowIndex = 0, eventDetail) {
-        this.setColumns({ [columnName]: column }, rowIndex, eventDetail);
+    setColumn(columnId, column = [], rowIndex = 0, eventDetail) {
+        this.setColumns({ [columnId]: column }, rowIndex, eventDetail);
     }
     /**
      * Sets cell values for multiple columns. Will insert new columns, if not
@@ -718,8 +748,8 @@ class DataTableCore {
      */
     setColumns(columns, rowIndex, eventDetail) {
         let rowCount = this.rowCount;
-        objectEach(columns, (column, columnName) => {
-            this.columns[columnName] = column.slice();
+        objectEach(columns, (column, columnId) => {
+            this.columns[columnId] = column.slice();
             rowCount = column.length;
         });
         this.applyRowCount(rowCount);
@@ -748,18 +778,27 @@ class DataTableCore {
      * @emits #afterSetRows
      */
     setRow(row, rowIndex = this.rowCount, insert, eventDetail) {
-        const { columns } = this, indexRowCount = insert ? this.rowCount + 1 : rowIndex + 1;
-        objectEach(row, (cellValue, columnName) => {
-            let column = columns[columnName] ||
-                eventDetail?.addColumns !== false && new Array(indexRowCount);
+        const { columns } = this, indexRowCount = insert ? this.rowCount + 1 : rowIndex + 1, rowKeys = Object.keys(row);
+        if (eventDetail?.addColumns !== false) {
+            for (let i = 0, iEnd = rowKeys.length; i < iEnd; i++) {
+                const key = rowKeys[i];
+                if (!columns[key]) {
+                    columns[key] = [];
+                }
+            }
+        }
+        objectEach(columns, (column, columnId) => {
+            if (!column && eventDetail?.addColumns !== false) {
+                column = new Array(indexRowCount);
+            }
             if (column) {
                 if (insert) {
-                    column = splice(column, rowIndex, 0, true, [cellValue]).array;
+                    column = splice(column, rowIndex, 0, true, [row[columnId] ?? null]).array;
                 }
                 else {
-                    column[rowIndex] = cellValue;
+                    column[rowIndex] = row[columnId] ?? null;
                 }
-                columns[columnName] = column;
+                columns[columnId] = column;
             }
         });
         if (indexRowCount > this.rowCount) {
@@ -769,6 +808,16 @@ class DataTableCore {
             fireEvent(this, 'afterSetRows');
             this.versionTag = uniqueKey();
         }
+    }
+    /**
+     * Returns the modified (clone) or the original data table if the modified
+     * one does not exist.
+     *
+     * @return {Highcharts.DataTableCore}
+     * The modified (clone) or the original data table.
+     */
+    getModified() {
+        return this.modified || this;
     }
 }
 /* *
@@ -816,13 +865,13 @@ class DataTableCore {
  *
  *  Marker clusters module.
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
  *
  *  Author: Wojciech Chmiel
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -1028,7 +1077,7 @@ let baseGeneratePoints,
 /**
  * Points that ids are included in the oldPointsStateId array are hidden
  * before animation. Other ones are destroyed.
- * @private
+ * @internal
  */
 oldPointsStateId = [], stateIdCounter = 0;
 /* *
@@ -1036,7 +1085,7 @@ oldPointsStateId = [], stateIdCounter = 0;
  *  Functions
  *
  * */
-/** @private */
+/** @internal */
 function compose(highchartsDefaultOptions, ScatterSeriesClass) {
     const scatterProto = ScatterSeriesClass.prototype;
     if (!scatterProto.markerClusterAlgorithms) {
@@ -1064,7 +1113,7 @@ function compose(highchartsDefaultOptions, ScatterSeriesClass) {
 }
 /**
  * Util function.
- * @private
+ * @internal
  */
 function destroyOldPoints(oldState) {
     for (const key of Object.keys(oldState)) {
@@ -1073,14 +1122,14 @@ function destroyOldPoints(oldState) {
 }
 /**
  * Util function.
- * @private
+ * @internal
  */
 function fadeInElement(elem, opacity, animation) {
     elem.attr({ opacity }).animate({ opacity: 1 }, animation);
 }
 /**
  * Util function.
- * @private
+ * @internal
  */
 function fadeInNewPointAndDestoryOld(newPointObj, oldPoints, animation, opacity) {
     // Fade in new point.
@@ -1092,7 +1141,7 @@ function fadeInNewPointAndDestoryOld(newPointObj, oldPoints, animation, opacity)
 }
 /**
  * Util function.
- * @private
+ * @internal
  */
 function fadeInStatePoint(stateObj, opacity, animation, fadeinGraphic, fadeinDataLabel) {
     if (stateObj.point) {
@@ -1108,7 +1157,7 @@ function fadeInStatePoint(stateObj, opacity, animation, fadeinGraphic, fadeinDat
 }
 /**
  * Util function.
- * @private
+ * @internal
  */
 function getClusterPosition(points) {
     const pointsLen = points.length;
@@ -1125,7 +1174,7 @@ function getClusterPosition(points) {
 /**
  * Util function.Prepare array with sorted data objects to be compared in
  * getPointsState method.
- * @private
+ * @internal
  */
 function getDataState(clusteredData, stateDataLen) {
     const state = [];
@@ -1142,14 +1191,14 @@ function getDataState(clusteredData, stateDataLen) {
 }
 /**
  * Util function. Generate unique stateId for a state element.
- * @private
+ * @internal
  */
 function getStateId() {
     return Math.random().toString(36).substring(2, 7) + '-' + stateIdCounter++;
 }
 /**
  * Util function.
- * @private
+ * @internal
  */
 function hideStatePoint(stateObj, hideGraphic, hideDataLabel) {
     if (stateObj.point) {
@@ -1161,7 +1210,7 @@ function hideStatePoint(stateObj, hideGraphic, hideDataLabel) {
         }
     }
 }
-/** @private */
+/** @internal */
 function onPointDrillToCluster(event) {
     const point = event.point || event.target;
     point.firePointEvent('drillToCluster', event, function (e) {
@@ -1204,7 +1253,7 @@ function onPointDrillToCluster(event) {
 }
 /**
  * Util function.
- * @private
+ * @internal
  */
 function pixelsToValues(series, pos) {
     const { chart, xAxis, yAxis } = series;
@@ -1216,7 +1265,7 @@ function pixelsToValues(series, pos) {
         y: yAxis ? yAxis.toValue(pos.y) : 0
     };
 }
-/** @private */
+/** @internal */
 function seriesAnimateClusterPoint(clusterObj) {
     const series = this, chart = series.chart, mapView = chart.mapView, animation = animObject(series.options.cluster?.animation), animDuration = animation.duration || 500, pointsState = series.markerClusterInfo?.pointsState, newState = pointsState?.newState, oldState = pointsState?.oldState, oldPoints = [];
     let parentId, oldPointObj, newPointObj, newPointBBox, offset = 0, newX = 0, newY = 0, isOldPointGrahic = false, isCbHandled = false;
@@ -1322,7 +1371,7 @@ function seriesAnimateClusterPoint(clusterObj) {
 }
 /**
  * Destroy clustered data points.
- * @private
+ * @internal
  */
 function seriesDestroyClusteredData() {
     // Clear previous groups.
@@ -1333,7 +1382,7 @@ function seriesDestroyClusteredData() {
 }
 /**
  * Override the generatePoints method by adding a reference to grouped data.
- * @private
+ * @internal
  */
 function seriesGeneratePoints() {
     const series = this, { chart } = series, mapView = chart.mapView, xData = series.getColumn('x'), yData = series.getColumn('y'), clusterOptions = series.options.cluster, realExtremes = series.getRealExtremes(), visibleXData = [], visibleYData = [], visibleDataIndexes = [];
@@ -1490,7 +1539,7 @@ function seriesGeneratePoints() {
         baseGeneratePoints.apply(this);
     }
 }
-/** @private */
+/** @internal */
 function seriesGetClusterDistancesFromPoint(clusters, pointX, pointY) {
     const pointClusterDistance = [];
     for (let clusterIndex = 0; clusterIndex < clusters.length; clusterIndex++) {
@@ -1503,7 +1552,7 @@ function seriesGetClusterDistancesFromPoint(clusters, pointX, pointY) {
     }
     return pointClusterDistance.sort((a, b) => a.distance - b.distance);
 }
-/** @private */
+/** @internal */
 function seriesGetClusteredData(groupedData, options) {
     const series = this, data = series.options.data, groupedXData = [], groupedYData = [], clusters = [], // Container for clusters.
     noise = [], // Container for points not belonging to any cluster.
@@ -1636,7 +1685,7 @@ function seriesGetClusteredData(groupedData, options) {
         groupMap
     };
 }
-/** @private */
+/** @internal */
 function seriesGetGridOffset() {
     const series = this, { chart, xAxis, yAxis } = series;
     let plotLeft = 0, plotTop = 0;
@@ -1659,7 +1708,7 @@ function seriesGetGridOffset() {
 /**
  * Point state used when animation is enabled to compare and bind old points
  * with new ones.
- * @private
+ * @internal
  */
 function seriesGetPointsState(clusteredData, oldMarkerClusterInfo, dataLength) {
     const oldDataStateArr = oldMarkerClusterInfo ?
@@ -1701,7 +1750,7 @@ function seriesGetPointsState(clusteredData, oldMarkerClusterInfo, dataLength) {
     }
     return state;
 }
-/** @private */
+/** @internal */
 function seriesGetRealExtremes() {
     const chart = this.chart, x = chart.mapView ? 0 : chart.plotLeft, y = chart.mapView ? 0 : chart.plotTop, p1 = pixelsToValues(this, {
         x,
@@ -1717,7 +1766,7 @@ function seriesGetRealExtremes() {
         maxY: Math.max(realMinY, realMaxY)
     };
 }
-/** @private */
+/** @internal */
 function seriesGetScaledGridSize(options) {
     const series = this, xAxis = series.xAxis, mapView = series.chart.mapView, processedGridSize = options.processedGridSize ||
         clusterDefaults.layoutAlgorithm.gridSize;
@@ -1754,7 +1803,7 @@ function seriesGetScaledGridSize(options) {
 }
 /**
  * Hide clustered data points.
- * @private
+ * @internal
  */
 function seriesHideClusteredData() {
     const clusteredSeriesData = this.markerClusterSeriesData, oldState = this.markerClusterInfo?.pointsState?.oldState, oldPointsId = oldPointsStateId.map((elem) => oldState?.[elem].point?.id || '');
@@ -1776,7 +1825,7 @@ function seriesHideClusteredData() {
 }
 /**
  * Check if user algorithm result is valid groupedDataObject.
- * @private
+ * @internal
  */
 function seriesIsValidGroupedDataObject(groupedData) {
     let result = false;
@@ -1798,7 +1847,7 @@ function seriesIsValidGroupedDataObject(groupedData) {
     });
     return result;
 }
-/** @private */
+/** @internal */
 function seriesPreventClusterCollisions(props) {
     const series = this, [gridY, gridX] = props.key.split(':').map(parseFloat), gridSize = props.gridSize, groupedData = props.groupedData, defaultRadius = props.defaultRadius, clusterRadius = props.clusterRadius, gridXPx = gridX * gridSize, gridYPx = gridY * gridSize, propsPx = valuesToPixels(series, props), gridsToCheckCollision = [], clusterMarkerOptions = series.options.cluster?.marker, zoneOptions = series.options.cluster?.zones, gridOffset = series.getGridOffset();
     let xPixel = propsPx.x, yPixel = propsPx.y, pointsLen = 0, radius = 0, nextXPixel, nextYPixel, signX, signY, cornerGridX, cornerGridY, j, itemX, itemY, nextClusterPos, maxDist, keys;
@@ -1886,7 +1935,7 @@ function seriesPreventClusterCollisions(props) {
 }
 /**
  * Util function.
- * @private
+ * @internal
  */
 function valuesToPixels(series, pos) {
     const { chart, xAxis, yAxis } = series;
@@ -1913,13 +1962,13 @@ const MarkerClusterScatter = {
  *
  *  Marker clusters module.
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
  *
  *  Author: Wojciech Chmiel
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -1944,7 +1993,7 @@ const { addEvent: MarkerClusters_addEvent, defined: MarkerClusters_defined, erro
  *  Functions
  *
  * */
-/** @private */
+/** @internal */
 function MarkerClusters_compose(AxisClass, ChartClass, highchartsDefaultOptions, SeriesClass) {
     if (pushUnique(composed, 'MarkerClusters')) {
         const PointClass = SeriesClass.prototype.pointClass, { scatter: ScatterSeries } = SeriesClass.types;
@@ -1961,7 +2010,7 @@ function MarkerClusters_compose(AxisClass, ChartClass, highchartsDefaultOptions,
 }
 /**
  * Destroy the old tooltip after zoom.
- * @private
+ * @internal
  */
 function onAxisSetExtremes() {
     const chart = this.chart;
@@ -1980,7 +2029,7 @@ function onAxisSetExtremes() {
 }
 /**
  * Handle animation.
- * @private
+ * @internal
  */
 function onChartRender() {
     const chart = this;
@@ -2003,7 +2052,7 @@ function onChartRender() {
         }
     }
 }
-/** @private */
+/** @internal */
 function MarkerClusters_onPointDrillToCluster(event) {
     const point = event.point || event.target, series = point.series, clusterOptions = series.options.cluster, onDrillToCluster = ((clusterOptions || {}).events || {}).drillToCluster;
     if (MarkerClusters_isFunction(onDrillToCluster)) {
@@ -2013,7 +2062,7 @@ function MarkerClusters_onPointDrillToCluster(event) {
 /**
  * Override point prototype to throw a warning when trying to update
  * clustered point.
- * @private
+ * @internal
  */
 function onPointUpdate() {
     const point = this;
@@ -2026,7 +2075,7 @@ function onPointUpdate() {
 }
 /**
  * Add classes, change mouse cursor.
- * @private
+ * @internal
  */
 function onSeriesAfterRender() {
     const series = this, clusterZoomEnabled = (series.options.cluster || {}).drillToCluster;
@@ -2086,13 +2135,13 @@ const MarkerClusters = {
  *
  *  Marker clusters module.
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
  *
  *  Author: Wojciech Chmiel
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -2109,7 +2158,7 @@ let symbols;
  * */
 /**
  * Cluster symbol.
- * @private
+ * @internal
  */
 function MarkerClusterSymbols_cluster(x, y, width, height) {
     const w = width / 2, h = height / 2, outerWidth = 1, space = 1, inner = symbols.arc(x + w, y + h, w - space * 4, h - space * 4, {
@@ -2129,9 +2178,7 @@ function MarkerClusterSymbols_cluster(x, y, width, height) {
     });
     return outer2.concat(outer1, inner);
 }
-/**
- * @private
- */
+/** @internal */
 function MarkerClusterSymbols_compose(SVGRendererClass) {
     symbols = SVGRendererClass.prototype.symbols;
     symbols.cluster = MarkerClusterSymbols_cluster;

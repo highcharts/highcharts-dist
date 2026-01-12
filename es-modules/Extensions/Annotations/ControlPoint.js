@@ -1,6 +1,5 @@
 /* *
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -46,7 +45,8 @@ class ControlPoint extends EventEmitter {
         /**
          * List of events for `annotation.options.events` that should not be
          * added to `annotation.graphic` but to the `annotation`.
-         * @private
+         *
+         * @internal
          * @name Highcharts.AnnotationControlPoint#nonDOMEvents
          * @type {Array<string>}
          */
@@ -63,7 +63,7 @@ class ControlPoint extends EventEmitter {
      * */
     /**
      * Destroy the control point.
-     * @private
+     * @internal
      */
     destroy() {
         super.destroy();
@@ -76,7 +76,8 @@ class ControlPoint extends EventEmitter {
     }
     /**
      * Redraw the control point.
-     * @private
+     *
+     * @internal
      * @param {boolean} [animation]
      */
     redraw(animation) {
@@ -84,7 +85,7 @@ class ControlPoint extends EventEmitter {
     }
     /**
      * Render the control point.
-     * @private
+     * @internal
      */
     render() {
         const chart = this.chart, options = this.options;

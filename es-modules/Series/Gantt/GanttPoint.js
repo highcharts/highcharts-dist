@@ -1,12 +1,12 @@
 /* *
  *
- *  (c) 2016-2025 Highsoft AS
+ *  (c) 2016-2026 Highsoft AS
  *
  *  Author: Lars A. V. Cabrera
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -57,6 +57,7 @@ class GanttPoint extends XRangePoint {
         const ganttPoint = super.applyOptions(options, x);
         GanttPoint.setGanttPointAliases(ganttPoint, ganttPoint.series.chart);
         this.isNull = !this.isValid?.();
+        this.formatPrefix = this.isNull ? 'null' : 'point'; // #23605
         return ganttPoint;
     }
     isValid() {

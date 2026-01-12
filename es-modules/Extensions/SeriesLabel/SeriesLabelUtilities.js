@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2009-2025 Torstein Honsi
+ *  (c) 2009-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -16,7 +17,7 @@
 /**
  * Counter-clockwise, part of the fast line intersection logic.
  *
- * @private
+ * @internal
  * @function ccw
  */
 function ccw(x1, y1, x2, y2, x3, y3) {
@@ -26,7 +27,7 @@ function ccw(x1, y1, x2, y2, x3, y3) {
 /**
  * Detect if two lines intersect.
  *
- * @private
+ * @internal
  * @function intersectLine
  */
 function intersectLine(x1, y1, x2, y2, x3, y3, x4, y4) {
@@ -36,7 +37,7 @@ function intersectLine(x1, y1, x2, y2, x3, y3, x4, y4) {
 /**
  * Detect if a box intersects with a line.
  *
- * @private
+ * @internal
  * @function boxIntersectLine
  */
 function boxIntersectLine(x, y, w, h, x1, y1, x2, y2) {
@@ -46,9 +47,7 @@ function boxIntersectLine(x, y, w, h, x1, y1, x2, y2) {
         intersectLine(x, y, x, y + h, x1, y1, x2, y2) // Left of label
     );
 }
-/**
- * @private
- */
+/** @internal */
 function intersectRect(r1, r2) {
     return !(r2.left > r1.right ||
         r2.right < r1.left ||

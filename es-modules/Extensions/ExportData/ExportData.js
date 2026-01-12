@@ -2,11 +2,12 @@
  *
  *  Experimental data export module for Highcharts
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 // @todo
@@ -17,8 +18,7 @@ import AST from '../../Core/Renderer/HTML/AST.js';
 import Chart from '../../Core/Chart/Chart.js';
 import D from '../../Core/Defaults.js';
 const { getOptions, setOptions } = D;
-import DownloadURL from '../DownloadURL.js';
-const { downloadURL } = DownloadURL;
+import { downloadURL, getBlobFromContent } from '../../Shared/DownloadURL.js';
 import ExportDataDefaults from './ExportDataDefaults.js';
 import G from '../../Core/Globals.js';
 const { composed, doc, win } = G;
@@ -29,6 +29,7 @@ const { addEvent, defined, extend, find, fireEvent, isNumber, pick, pushUnique }
  *  Composition
  *
  * */
+/** @internal */
 var ExportData;
 (function (ExportData) {
     /* *
@@ -44,7 +45,7 @@ var ExportData;
     /**
      * Composition function.
      *
-     * @private
+     * @internal
      * @function Highcharts.Exporting#compose
      *
      * @param {ChartClass} ChartClass
@@ -200,39 +201,6 @@ var ExportData;
             downloadURL(getBlobFromContent(template, 'application/vnd.ms-excel') ||
                 uri + base64(template), this.getFilename() + '.xls');
         });
-    }
-    /**
-     * Get a blob object from content, if blob is supported.
-     *
-     * @private
-     * @function Highcharts.getBlobFromContent
-     *
-     * @param {string} content
-     * The content to create the blob from.
-     * @param {string} type
-     * The type of the content.
-     *
-     * @return {string | undefined}
-     * The blob object, or undefined if not supported.
-     *
-     * @requires modules/exporting
-     * @requires modules/export-data
-     */
-    function getBlobFromContent(content, type) {
-        const nav = win.navigator, domurl = win.URL || win.webkitURL || win;
-        try {
-            // MS specific
-            if ((nav.msSaveOrOpenBlob) && win.MSBlobBuilder) {
-                const blob = new win.MSBlobBuilder();
-                blob.append(content);
-                return blob.getBlob('image/svg+xml');
-            }
-            return domurl.createObjectURL(new win.Blob(['\uFEFF' + content], // #7084
-            { type: type }));
-        }
-        catch {
-            // Ignore
-        }
     }
     /**
      * Returns the current chart data as a CSV string.
@@ -538,7 +506,7 @@ var ExportData;
             });
         }
         dataRows = dataRows.concat(rowArr);
-        fireEvent(chart, 'exportData', { dataRows: dataRows });
+        fireEvent(chart, 'exportData', { dataRows });
         return dataRows;
     }
     /**
@@ -592,7 +560,7 @@ var ExportData;
     /**
      * Get the AST of a HTML table representing the chart data.
      *
-     * @private
+     * @internal
      * @function Highcharts.Exporting#getTableAST
      *
      * @param {boolean} [useLocalDecimalPoint]
@@ -783,8 +751,8 @@ var ExportData;
     /**
      * Toggle showing data table.
      *
-     * @private
-     * @function Highcharts.Exporting#hideData
+     * @internal
+     * @function Highcharts.Exporting#toggleDataTable
      *
      * @param {boolean} [show]
      * Whether to show data table or not.
@@ -853,9 +821,9 @@ var ExportData;
     }
     /**
      * Wrapper function for the download functions, which handles showing and
-     * hiding the loading message
+     * hiding the loading message.
      *
-     * @private
+     * @internal
      *
      * @requires modules/exporting
      * @requires modules/export-data
@@ -881,7 +849,7 @@ var ExportData;
     /**
      * Function that runs on the chart's 'afterViewData' event.
      *
-     * @private
+     * @internal
      * @function Highcharts.Chart#onChartAfterViewData
      *
      * @requires modules/exporting
@@ -929,7 +897,7 @@ var ExportData;
      * Function that runs on the chart's 'render' event. Handle the showTable
      * option.
      *
-     * @private
+     * @internal
      * @function Highcharts.Chart#onChartRenderer
      *
      * @requires modules/exporting
@@ -945,7 +913,7 @@ var ExportData;
      * Function that runs on the chart's 'destroy' event. Handle cleaning up the
      * dataTableDiv element.
      *
-     * @private
+     * @internal
      * @function Highcharts.Chart#onChartDestroy
      *
      * @requires modules/exporting
@@ -960,6 +928,7 @@ var ExportData;
  * Default Export
  *
  * */
+/** @internal */
 export default ExportData;
 /* *
  *

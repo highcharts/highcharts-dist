@@ -1,12 +1,13 @@
 /* *
  *
- *  (c) 2009-2025 Øystein Moseng
+ *  (c) 2009-2026 Highsoft AS
+ *  Author: Øystein Moseng
  *
  *  Class representing an Instrument with mappable parameters for sonification.
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -139,7 +140,7 @@ class SonificationInstrument {
     }
     /**
      * Schedule a pan value at a given time offset.
-     * @private
+     * @internal
      */
     setPanAtTime(time, pan) {
         if (this.panNode) {
@@ -148,7 +149,7 @@ class SonificationInstrument {
     }
     /**
      * Schedule a filter configuration at a given time offset.
-     * @private
+     * @internal
      */
     setFilterAtTime(filter, time, frequency, resonance) {
         const node = this[filter + 'Node'], audioTime = this.audioContext.currentTime + time;
@@ -163,7 +164,7 @@ class SonificationInstrument {
     }
     /**
      * Schedule a volume value at a given time offset.
-     * @private
+     * @internal
      */
     setVolumeAtTime(time, volume) {
         if (this.volumeNode) {
@@ -172,7 +173,7 @@ class SonificationInstrument {
     }
     /**
      * Schedule a tremolo configuration at a given time offset.
-     * @private
+     * @internal
      */
     setTremoloAtTime(time, depth, speed) {
         const audioTime = this.audioContext.currentTime + time;
@@ -185,7 +186,7 @@ class SonificationInstrument {
     }
     /**
      * Create audio nodes according to instrument capabilities
-     * @private
+     * @internal
      */
     createNodesFromCapabilities(capabilities) {
         const ctx = this.audioContext;
@@ -216,7 +217,7 @@ class SonificationInstrument {
     /**
      * Connect audio node chain from output down to input, depending on which
      * nodes exist.
-     * @private
+     * @internal
      */
     connectCapabilityNodes(input, output) {
         [
@@ -231,7 +232,7 @@ class SonificationInstrument {
     /**
      * Get number of notes from C0 from a string like "F#4"
      * @static
-     * @private
+     * @internal
      */
     static noteStringToC0Distance(note) {
         const match = note.match(/^([a-g][#b]?)([0-8])$/i), semitone = match ? match[1] : 'a', wholetone = semitone[0].toLowerCase(), accidental = semitone[1], octave = match ? parseInt(match[2], 10) : 4, accidentalOffset = accidental === '#' ?

@@ -6,9 +6,6 @@
 import * as globals from "../globals";
 import * as _Highcharts from "../highcharts";
 declare module "../highcharts" {
-    interface BreadcrumbsOptions {
-        buttonTheme?: SVGAttributes;
-    }
     function recursive(): void;
 }
 export default _Highcharts;

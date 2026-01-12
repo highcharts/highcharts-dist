@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -144,7 +145,7 @@ function merge(extendOrSource, ...sources) {
 /**
  * Constrain a value to within a lower and upper threshold.
  *
- * @private
+ * @internal
  * @param {number} value The initial value
  * @param {number} min The lower threshold
  * @param {number} max The upper threshold
@@ -172,7 +173,7 @@ function crisp(value, lineWidth = 0, inverted) {
 /**
  * Return the deep difference between two objects. It can either return the new
  * properties, or optionally return the old values of new properties.
- * @private
+ * @internal
  */
 function diffObjects(newer, older, keepOlder, collectionsWithUpdate) {
     const ret = {};
@@ -238,7 +239,7 @@ function diffObjects(newer, older, keepOlder, collectionsWithUpdate) {
 /**
  * Shortcut for parseInt
  *
- * @private
+ * @internal
  * @function Highcharts.pInt
  *
  * @param {*} s
@@ -375,7 +376,7 @@ function erase(arr, item) {
  * according to the index option and whether it is internal. Used internally
  * when adding series and axes.
  *
- * @private
+ * @internal
  * @function Highcharts.Chart#insertItem
  * @param  {Highcharts.Series|Highcharts.Axis} item
  *         The item to insert
@@ -1006,14 +1007,14 @@ const timeUnits = {
 /**
  * Easing definition
  *
- * @private
+ * @internal
  * @function Math.easeInOutSine
  *
  * @param {number} pos
- *        Current position, ranging from 0 to 1.
+ * Current position, ranging from 0 to 1.
  *
  * @return {number}
- *         Ease result
+ * Ease result
  */
 Math.easeInOutSine = function (pos) {
     return -0.5 * (Math.cos(Math.PI * pos) - 1);
@@ -1021,7 +1022,7 @@ Math.easeInOutSine = function (pos) {
 /**
  * Convenience function to get the align factor, used several places for
  * computing positions
- * @private
+ * @internal
  */
 const getAlignFactor = (align = '') => ({
     center: 0.5,
@@ -1031,7 +1032,7 @@ const getAlignFactor = (align = '') => ({
 }[align] || 0);
 /**
  * Find the closest distance between two values of a two-dimensional array
- * @private
+ * @internal
  * @function Highcharts.getClosestDistance
  *
  * @param {Array<Array<number>>} arrays
@@ -1064,7 +1065,7 @@ function getClosestDistance(arrays, onError) {
 /**
  * Returns the value of a property path on a given object.
  *
- * @private
+ * @internal
  * @function getNestedProperty
  *
  * @param {string} path
@@ -1332,18 +1333,14 @@ function addEvent(el, type, fn, options = {}) {
  */
 function removeEvent(el, type, fn) {
     /* eslint-enable valid-jsdoc */
-    /**
-     * @private
-     */
+    /** @internal */
     function removeOneEvent(type, fn) {
         const removeEventListener = el.removeEventListener;
         if (removeEventListener) {
             removeEventListener.call(el, type, fn, false);
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function removeAllEvents(eventCollection) {
         let types, len;
         if (!el.nodeName) {
@@ -1595,11 +1592,6 @@ if (win.jQuery) {
         }
     };
 }
-/* *
- *
- *  Default Export
- *
- * */
 // TODO use named exports when supported.
 const Utilities = {
     addEvent,
@@ -1661,35 +1653,6 @@ export default Utilities;
  *  API Declarations
  *
  * */
-/**
- * An animation configuration. Animation configurations can also be defined as
- * booleans, where `false` turns off animation and `true` defaults to a duration
- * of 500ms and defer of 0ms.
- *
- * @interface Highcharts.AnimationOptionsObject
- */ /**
-* A callback function to execute when the animation finishes.
-* @name Highcharts.AnimationOptionsObject#complete
-* @type {Function|undefined}
-*/ /**
-* The animation defer in milliseconds.
-* @name Highcharts.AnimationOptionsObject#defer
-* @type {number|undefined}
-*/ /**
-* The animation duration in milliseconds.
-* @name Highcharts.AnimationOptionsObject#duration
-* @type {number|undefined}
-*/ /**
-* The name of an easing function as defined on the `Math` object.
-* @name Highcharts.AnimationOptionsObject#easing
-* @type {string|Function|undefined}
-*/ /**
-* A callback function to execute on each step of each attribute or CSS property
-* that's being animated. The first argument contains information about the
-* animation and progress.
-* @name Highcharts.AnimationOptionsObject#step
-* @type {Function|undefined}
-*/
 /**
  * Creates a frame for the animated SVG element.
  *
@@ -1850,6 +1813,9 @@ export default Utilities;
 * @name Highcharts.Dictionary<T>#[key:string]
 * @type {T}
 */
+/**
+ * @typedef {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement} Highcharts.DOMElementType
+ */
 /**
  * The function callback to execute when the event is fired. The `this` context
  * contains the instance, that fired the event.

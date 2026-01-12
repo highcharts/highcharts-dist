@@ -1,17 +1,18 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
 import Axis from '../Axis.js';
+import ColorAxisBase from './ColorAxisBase.js';
 import ColorAxisComposition from './ColorAxisComposition.js';
 import ColorAxisDefaults from './ColorAxisDefaults.js';
-import ColorAxisLike from './ColorAxisLike.js';
 import D from '../../Defaults.js';
 const { defaultOptions } = D;
 import LegendSymbol from '../../Legend/LegendSymbol.js';
@@ -44,6 +45,7 @@ class ColorAxis extends Axis {
      *  Static Functions
      *
      * */
+    /** @internal */
     static compose(ChartClass, FxClass, LegendClass, SeriesClass) {
         ColorAxisComposition.compose(ColorAxis, ChartClass, FxClass, LegendClass, SeriesClass);
     }
@@ -52,12 +54,12 @@ class ColorAxis extends Axis {
      *  Constructors
      *
      * */
-    /**
-     * @private
-     */
+    /** @internal */
     constructor(chart, userOptions) {
         super(chart, userOptions);
+        /** @internal */
         this.coll = 'colorAxis';
+        /** @internal */
         this.visible = true;
         this.init(chart, userOptions);
     }
@@ -114,7 +116,7 @@ class ColorAxis extends Axis {
     }
     /**
      * Override so that ticks are not added in data class axes (#6914)
-     * @private
+     * @internal
      */
     setTickPositions() {
         if (!this.dataClasses) {
@@ -123,7 +125,7 @@ class ColorAxis extends Axis {
     }
     /**
      * Extend the setOptions method to process extreme colors and color stops.
-     * @private
+     * @internal
      */
     setOptions(userOptions) {
         const options = merge(defaultOptions.colorAxis, userOptions, 
@@ -137,9 +139,7 @@ class ColorAxis extends Axis {
         super.setOptions(options);
         this.options.crosshair = this.options.marker;
     }
-    /**
-     * @private
-     */
+    /** @internal */
     setAxisSize() {
         const axis = this, chart = axis.chart, symbol = axis.legendItem?.symbol;
         let { width, height } = axis.getSize();
@@ -160,7 +160,7 @@ class ColorAxis extends Axis {
     /**
      * Override the getOffset method to add the whole axis groups inside the
      * legend.
-     * @private
+     * @internal
      */
     getOffset() {
         const axis = this;
@@ -198,7 +198,7 @@ class ColorAxis extends Axis {
     }
     /**
      * Create the color gradient.
-     * @private
+     * @internal
      */
     setLegendColor() {
         const axis = this;
@@ -219,7 +219,7 @@ class ColorAxis extends Axis {
     }
     /**
      * The color axis appears inside the legend and has its own legend symbol.
-     * @private
+     * @internal
      */
     drawLegendSymbol(legend, item) {
         const axis = this, legendItem = item.legendItem || {}, padding = legend.padding, legendOptions = legend.options, labelOptions = axis.options.labels, itemDistance = pick(legendOptions.itemDistance, 10), horiz = axis.horiz, { width, height } = axis.getSize(), labelPadding = pick(
@@ -252,21 +252,17 @@ class ColorAxis extends Axis {
     }
     /**
      * Fool the legend.
-     * @private
+     * @internal
      */
     setState(state) {
         this.series.forEach(function (series) {
             series.setState(state);
         });
     }
-    /**
-     * @private
-     */
+    /** @internal */
     setVisible() {
     }
-    /**
-     * @private
-     */
+    /** @internal */
     getSeriesExtremes() {
         const axis = this;
         const series = axis.series;
@@ -354,9 +350,7 @@ class ColorAxis extends Axis {
             }
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     getPlotLinePath(options) {
         const axis = this, left = axis.left, pos = options.translatedValue, top = axis.top;
         // Crosshairs only
@@ -409,7 +403,7 @@ class ColorAxis extends Axis {
     }
     /**
      * Destroy color axis legend items.
-     * @private
+     * @internal
      */
     destroyItems() {
         const axis = this, chart = axis.chart, legendItem = axis.legendItem || {};
@@ -423,7 +417,10 @@ class ColorAxis extends Axis {
         }
         chart.isDirtyLegend = true;
     }
-    //   Removing the whole axis (#14283)
+    /**
+     * Removing the whole axis (#14283)
+     * @internal
+     */
     destroy() {
         this.chart.isDirtyLegend = true;
         this.destroyItems();
@@ -443,7 +440,7 @@ class ColorAxis extends Axis {
     }
     /**
      * Get the legend item symbols for data classes.
-     * @private
+     * @internal
      */
     getDataClassLegendSymbols() {
         const axis = this, chart = axis.chart, legendItems = (axis.legendItem &&
@@ -515,7 +512,7 @@ class ColorAxis extends Axis {
     }
     /**
      * Get size of color axis symbol.
-     * @private
+     * @internal
      */
     getSize() {
         const axis = this, { chart, horiz } = axis, { height: colorAxisHeight, width: colorAxisWidth } = axis.options, { legend: legendOptions } = chart.options, width = pick(defined(colorAxisWidth) ?
@@ -532,14 +529,13 @@ class ColorAxis extends Axis {
  *  Static Properties
  *
  * */
+/** @internal */
 ColorAxis.defaultLegendLength = 200;
-/**
- * @private
- */
+/** @internal */
 ColorAxis.keepProps = [
     'legendItem'
 ];
-extend(ColorAxis.prototype, ColorAxisLike);
+extend(ColorAxis.prototype, ColorAxisBase);
 /* *
  *
  *  Registry

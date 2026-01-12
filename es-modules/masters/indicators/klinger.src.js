@@ -1,14 +1,17 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Stock JS v12.4.0 (2025-09-04)
+ * @license Highcharts Stock JS v12.5.0 (2026-01-12)
  * @module highcharts/indicators/klinger
  * @requires highcharts
  * @requires highcharts/modules/stock
  *
  * Indicator series type for Highcharts Stock
  *
- * (c) 2010-2025 Karol Kolodziej
+ * (c) 2010-2026 Highsoft AS
+ * Author: Karol Kolodziej
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 'use strict';
 import Highcharts from '../../Core/Globals.js';

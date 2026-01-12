@@ -1,14 +1,17 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v12.4.0 (2025-09-04)
+ * @license Highstock JS v12.5.0 (2026-01-12)
  * @module highcharts/indicators/disparity-index
  * @requires highcharts
  * @requires highcharts/modules/stock
  *
  * Indicator series type for Highstock
  *
- * (c) 2010-2025 Rafal Sebestjanski
+ * (c) 2010-2026 Highsoft AS
+ * Author: Rafal Sebestjanski
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -110,13 +113,14 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
 ;// ./code/es-modules/Stock/Indicators/DisparityIndex/DisparityIndexIndicator.js
 /* *
- *  (c) 2010-2025 Rafal Sebestjanski
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Rafal Sebestjanski
  *
  *  Disparity Index technical indicator for Highcharts Stock
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 

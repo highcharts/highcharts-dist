@@ -1,11 +1,11 @@
 /* *
  *
- *  (c) 2016 Highsoft AS
+ *  (c) 2016-2026 Highsoft AS
  *  Authors: Øystein Moseng, Lars A. V. Cabrera
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -23,7 +23,7 @@ const { defined, error, merge } = U;
  * Get point bounding box using plotX/plotY and shapeArgs. If using
  * graphic.getBBox() directly, the bbox will be affected by animation.
  *
- * @private
+ * @internal
  * @function
  *
  * @param {Highcharts.Point} point
@@ -55,7 +55,7 @@ function getPointBB(point) {
 /**
  * Warn if using legacy options. Copy the options over. Note that this will
  * still break if using the legacy options in chart.update, addSeries etc.
- * @private
+ * @internal
  */
 function warnLegacy(chart) {
     if (chart.options.pathfinder ||
@@ -76,6 +76,7 @@ function warnLegacy(chart) {
  *  Composition
  *
  * */
+/** @internal */
 var ConnectionComposition;
 (function (ConnectionComposition) {
     /* *
@@ -83,7 +84,6 @@ var ConnectionComposition;
      *  Functions
      *
      * */
-    /** @private */
     function compose(ChartClass, PathfinderClass, PointClass) {
         const pointProto = PointClass.prototype;
         if (!pointProto.getPathfinderAnchorPoint) {
@@ -107,7 +107,6 @@ var ConnectionComposition;
     /**
      * Get coordinates of anchor point for pathfinder connection.
      *
-     * @private
      * @function Highcharts.Point#getPathfinderAnchorPoint
      *
      * @param {Highcharts.ConnectorsMarkerOptions} markerOptions
@@ -142,7 +141,6 @@ var ConnectionComposition;
     /**
      * Utility to get the angle from one point to another.
      *
-     * @private
      * @function Highcharts.Point#getRadiansToVector
      *
      * @param {Highcharts.PositionObject} v1
@@ -171,7 +169,6 @@ var ConnectionComposition;
      * Utility to get the position of the marker, based on the path angle and
      * the marker's radius.
      *
-     * @private
      * @function Highcharts.Point#getMarkerVector
      *
      * @param {number} radians
@@ -245,4 +242,5 @@ var ConnectionComposition;
  *  Default Export
  *
  * */
+/** @internal */
 export default ConnectionComposition;

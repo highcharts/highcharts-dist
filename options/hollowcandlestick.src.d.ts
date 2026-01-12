@@ -95,102 +95,46 @@ declare module "../highcharts.src" {
         y?: number;
     }
     /**
-     * (Highstock) Positioning options for fixed tooltip, taking effect only
-     * when tooltip.fixed is `true`.
+     * (Highcharts, Highstock) Animation setting for hovering the graph in
+     * line-type series.
      */
-    interface PlotHollowcandlestickTooltipPositionOptions {
+    interface PlotHollowcandlestickStatesHoverAnimationOptions {
         /**
-         * (Highstock) The horizontal alignment of the fixed tooltip.
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
          */
-        align?: Highcharts.AlignValue;
-        /**
-         * (Highstock) What the fixed tooltip alignment should be relative to.
-         *
-         * The default, `pane`, means that it is aligned within the plot area
-         * for that given series. If the tooltip is split (as default in Stock
-         * charts), each partial tooltip is aligned within the series' pane.
-         */
-        relativeTo?: Highcharts.OptionsRelativeToValue;
-        /**
-         * (Highstock) The vertical alignment of the fixed tooltip.
-         */
-        verticalAlign?: Highcharts.VerticalAlignValue;
-        /**
-         * (Highstock) X pixel offset from the given position. Can be used to
-         * shy away from axis lines, grid lines etc to avoid the tooltip
-         * overlapping other elements.
-         */
-        x?: number;
-        /**
-         * (Highstock) Y pixel offset from the given position. Can be used to
-         * shy away from axis lines, grid lines etc to avoid the tooltip
-         * overlapping other elements.
-         */
-        y?: number;
+        duration?: number;
     }
     /**
-     * (Highstock) A `hollowcandlestick` series. If the type option is not
-     * specified, it is inherited from chart.type.
-     *
-     * Configuration options for the series are given in three levels:
-     *
-     * 1. Options for all series in a chart are defined in the
-     * plotOptions.series object.
-     *
-     * 2. Options for all `hollowcandlestick` series are defined in
-     * plotOptions.hollowcandlestick.
-     *
-     * 3. Options for one single series are given in the series instance array.
-     * (see online documentation for example)
-     *
-     * **TypeScript:**
-     *
-     * - the type option must always be set.
-     *
-     * - when accessing an array of series, the combined set of all series types
-     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
-     * specific type can be done by checking the `type` property. (see online
-     * documentation for example)
-     *
-     * You have to extend the `SeriesHollowcandlestickOptions` via an interface
-     * to allow custom properties: ``` declare interface
-     * SeriesHollowcandlestickOptions { customProperty: string; }
-     *
+     * (Highcharts, Highstock) Animation setting for hovering the graph in
+     * line-type series.
      */
-    interface SeriesHollowcandlestickOptions extends Highcharts.PlotHollowcandlestickOptions, Highcharts.SeriesOptions {
+    interface PlotHollowcandlestickStatesSelectAnimationOptions {
         /**
-         * (Highstock) An array of data points for the series. For the
-         * `hollowcandlestick` series type, points can be given in the following
-         * ways:
-         *
-         * 1. An array of arrays with 5 or 4 values. In this case, the values
-         * correspond to `x,open,high,low,close`. If the first value is a
-         * string, it is applied as the name of the point, and the `x` value is
-         * inferred. The `x` value can also be omitted, in which case the inner
-         * arrays should be of length 4. Then the `x` value is automatically
-         * calculated, either starting at 0 and incremented by 1, or from
-         * `pointStart` and `pointInterval` given in the series options. (see
-         * online documentation for example)
-         *
-         * 2. An array of objects with named values. The following snippet shows
-         * only a few settings, see the complete options set below. If the total
-         * number of data points exceeds the series' turboThreshold, this option
-         * is not available. (see online documentation for example)
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
          */
-        data?: Array<([(number|string), number, number, number]|[(number|string), number, number, number, number]|Highcharts.PointOptionsObject)>;
+        duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock) Enable or disable the initial animation when a
+     * series is displayed for the `dataLabels`. The animation can also be set
+     * as a configuration object. Please note that this option only applies to
+     * the initial animation.
+     *
+     * For other animations, see chart.animation and the animation parameter
+     * under the API methods. The following properties are supported:
+     *
+     * - `defer`: The animation delay time in milliseconds.
+     */
+    interface SeriesHollowcandlestickDataDataLabelsAnimationOptions {
         /**
-         * Not available
+         * (Highcharts, Highstock) The animation delay time in milliseconds. Set
+         * to `0` to render the data labels immediately. As `undefined` inherits
+         * defer time from the series.animation.defer.
          */
-        dataParser?: undefined;
-        /**
-         * Not available
-         */
-        dataURL?: undefined;
-        /**
-         * (Highcharts, Highstock, Highmaps, Gantt) This property is only in
-         * TypeScript non-optional and might be `undefined` in series objects
-         * from unknown sources.
-         */
-        type: "hollowcandlestick";
+        defer?: number;
     }
 }

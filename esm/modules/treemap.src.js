@@ -1,12 +1,14 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.5.0 (2026-01-12)
  * @module highcharts/modules/treemap
  * @requires highcharts
  *
- * (c) 2014-2025 Highsoft AS
+ * (c) 2014-2026 Highsoft AS
  * Authors: Jon Arild Nygard / Oystein Moseng
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -43,6 +45,7 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -54,9 +57,9 @@ var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require_
  *
  *  Authors: Grzegorz Blachlinski, Karol Kolodziej
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -70,10 +73,10 @@ var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require_
  */
 const lang = {
     /**
+     * The text for the main breadcrumb.
+     *
      * @since   10.0.0
      * @product highcharts highmaps
-     *
-     * @private
      */
     mainBreadcrumb: 'Main'
 };
@@ -88,6 +91,13 @@ const lang = {
  * @optionparent navigation.breadcrumbs
  */
 const options = {
+    /**
+     * The default padding for each button and separator in each direction.
+     *
+     * @type  {number}
+     * @since 10.0.0
+     */
+    buttonSpacing: 5,
     /**
      * A collection of attributes for the buttons. The object takes SVG
      * attributes like `fill`, `stroke`, `stroke-width`, as well as `style`,
@@ -125,13 +135,6 @@ const options = {
             color: "#334eff" /* Palette.highlightColor80 */
         }
     },
-    /**
-     * The default padding for each button and separator in each direction.
-     *
-     * @type  {number}
-     * @since 10.0.0
-     */
-    buttonSpacing: 5,
     /**
      * Fires when clicking on the breadcrumbs button. Two arguments are
      * passed to the function. First breadcrumb button as an SVG element.
@@ -261,6 +264,7 @@ const options = {
          *
          * In styled mode, the breadcrumbs separators are styled by the
          * `.highcharts-separator` rule with its different states.
+         *
          *  @type  {Highcharts.CSSObject}
          *  @since 10.0.0
          */
@@ -310,10 +314,12 @@ const options = {
  *  Default Export
  *
  * */
+/** @internal */
 const BreadcrumbsDefaults = {
     lang,
     options
 };
+/** @internal */
 /* harmony default export */ const Breadcrumbs_BreadcrumbsDefaults = (BreadcrumbsDefaults);
 
 ;// external ["../highcharts.src.js","default","Templating"]
@@ -326,9 +332,9 @@ var external_highcharts_src_js_default_Templating_default = /*#__PURE__*/__webpa
  *
  *  Authors: Grzegorz Blachlinski, Karol Kolodziej
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -346,7 +352,7 @@ const { addEvent, defined, extend, fireEvent, isString, merge, objectEach, pick,
  * */
 /**
  * Shift the drillUpButton to make the space for resetZoomButton, #8095.
- * @private
+ * @internal
  */
 function onChartAfterShowResetZoom() {
     const chart = this;
@@ -362,7 +368,7 @@ function onChartAfterShowResetZoom() {
 }
 /**
  * Remove resize/afterSetExtremes at chart destroy.
- * @private
+ * @internal
  */
 function onChartDestroy() {
     if (this.breadcrumbs) {
@@ -372,7 +378,7 @@ function onChartDestroy() {
 }
 /**
  * Logic for making space for the buttons above the plot area
- * @private
+ * @internal
  */
 function onChartGetMargins() {
     const breadcrumbs = this.breadcrumbs;
@@ -395,15 +401,13 @@ function onChartGetMargins() {
         }
     }
 }
-/**
- * @private
- */
+/** @internal */
 function onChartRedraw() {
     this.breadcrumbs && this.breadcrumbs.redraw();
 }
 /**
  * After zooming out, shift the drillUpButton to the previous position, #8095.
- * @private
+ * @internal
  */
 function onChartSelection(event) {
     if (event.resetSelection === true &&
@@ -419,7 +423,7 @@ function onChartSelection(event) {
 /**
  * The Breadcrumbs class
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.Breadcrumbs
  *
@@ -479,12 +483,6 @@ class Breadcrumbs {
     }
     /**
      * Set breadcrumbs list.
-     * @function Highcharts.Breadcrumbs#setList
-     *
-     * @param {Highcharts.Breadcrumbs} this
-     *        Breadcrumbs class.
-     * @param {Highcharts.BreadcrumbsOptions} list
-     *        Breadcrumbs list.
      */
     setList(list) {
         this.list = list;
@@ -724,17 +722,6 @@ class Breadcrumbs {
         }
         return separator;
     }
-    /**
-     * Update.
-     * @function Highcharts.Breadcrumbs#update
-     *
-     * @param {Highcharts.Breadcrumbs} this
-     *        Breadcrumbs class.
-     * @param {Highcharts.BreadcrumbsOptions} options
-     *        Breadcrumbs class.
-     * @param {boolean} redraw
-     *        Redraw flag
-     */
     update(options) {
         merge(true, this.options, options);
         this.destroy();
@@ -905,6 +892,7 @@ Breadcrumbs.defaultOptions = Breadcrumbs_BreadcrumbsDefaults.options;
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Breadcrumbs_Breadcrumbs = (Breadcrumbs);
 /* *
  *
@@ -978,16 +966,6 @@ Breadcrumbs.defaultOptions = Breadcrumbs_BreadcrumbsDefaults.options;
  * @name Highcharts.BreadcrumbsAlignOptions#y
  * @type {number}
  */
-/**
- * Options for all breadcrumbs.
- *
- * @interface Highcharts.BreadcrumbsOptions
- */
-/**
- * Button theme.
- * @name Highcharts.BreadcrumbsOptions#buttonTheme
- * @type { SVGAttributes | undefined }
- */
 (''); // Keeps doclets above in JS file
 
 ;// external ["../highcharts.src.js","default","Color"]
@@ -1002,11 +980,12 @@ var external_highcharts_src_js_default_SVGElement_default = /*#__PURE__*/__webpa
 ;// ./code/es-modules/Series/ColorMapComposition.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -1133,13 +1112,13 @@ var external_highcharts_src_js_default_Series_default = /*#__PURE__*/__webpack_r
 ;// ./code/es-modules/Series/Treemap/TreemapAlgorithmGroup.js
 /* *
  *
- *  (c) 2014-2025 Highsoft AS
+ *  (c) 2014-2026 Highsoft AS
  *
  *  Authors: Jon Arild Nygard / Oystein Moseng
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -1226,11 +1205,12 @@ class TreemapAlgorithmGroup {
 ;// ./code/es-modules/Series/Treemap/TreemapNode.js
 /* *
  *
- *  (c) 2010-2025 Pawel Lysy
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Pawel Lysy
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -1275,7 +1255,6 @@ class TreemapNode {
 ;// ./code/es-modules/Series/DrawPointUtilities.js
 /* *
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -1358,13 +1337,13 @@ const DrawPointUtilities = {
 ;// ./code/es-modules/Series/Treemap/TreemapPoint.js
 /* *
  *
- *  (c) 2014-2025 Highsoft AS
+ *  (c) 2014-2026 Highsoft AS
  *
  *  Authors: Jon Arild Nygard / Oystein Moseng
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -1454,13 +1433,13 @@ TreemapPoint_extend(TreemapPoint.prototype, {
 ;// ./code/es-modules/Series/Treemap/TreemapSeriesDefaults.js
 /* *
  *
- *  (c) 2014-2025 Highsoft AS
+ *  (c) 2014-2026 Highsoft AS
  *
  *  Authors: Jon Arild Nygard / Oystein Moseng
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -2182,13 +2161,13 @@ const TreemapSeriesDefaults = {
 ;// ./code/es-modules/Series/Treemap/TreemapUtilities.js
 /* *
  *
- *  (c) 2014-2025 Highsoft AS
+ *  (c) 2014-2026 Highsoft AS
  *
  *  Authors: Jon Arild Nygard / Oystein Moseng
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -2231,13 +2210,13 @@ var TreemapUtilities;
 ;// ./code/es-modules/Series/TreeUtilities.js
 /* *
  *
- *  (c) 2014-2025 Highsoft AS
+ *  (c) 2014-2026 Highsoft AS
  *
  *  Authors: Jon Arild Nygard / Oystein Moseng
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -2447,13 +2426,13 @@ const TreeUtilities = {
 ;// ./code/es-modules/Series/Treemap/TreemapSeries.js
 /* *
  *
- *  (c) 2014-2025 Highsoft AS
+ *  (c) 2014-2026 Highsoft AS
  *
  *  Authors: Jon Arild Nygard / Oystein Moseng
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -2496,23 +2475,31 @@ let treemapAxisDefaultValues = false;
 /** @private */
 function onSeriesAfterBindAxes() {
     const series = this, xAxis = series.xAxis, yAxis = series.yAxis;
-    let treeAxis;
     if (xAxis && yAxis) {
         if (series.is('treemap')) {
-            treeAxis = {
+            // Treemap and treegraph axes are used for the layout, but are
+            // hidden by default.
+            const treeAxisDefaults = {
                 endOnTick: false,
-                gridLineWidth: 0,
-                lineWidth: 0,
-                min: 0,
-                minPadding: 0,
-                max: axisMax,
-                maxPadding: 0,
                 startOnTick: false,
-                title: void 0,
-                tickPositions: []
+                visible: false
             };
-            TreemapSeries_extend(yAxis.options, treeAxis);
-            TreemapSeries_extend(xAxis.options, treeAxis);
+            // Treemap layout depends on specific scaling of both axes
+            if (!series.is('treegraph')) {
+                treeAxisDefaults.min = 0;
+                treeAxisDefaults.max = axisMax;
+                treeAxisDefaults.tickPositions = [];
+            }
+            TreemapSeries_merge(true, xAxis.options, treeAxisDefaults, xAxis.userOptions);
+            TreemapSeries_merge(true, yAxis.options, treeAxisDefaults, yAxis.userOptions);
+            // Set the propertys on the axis object
+            xAxis.visible = xAxis.options.visible;
+            yAxis.visible = yAxis.options.visible;
+            // Set `isCartesian` conditionally. Because non-cartesian zoom won't
+            // work if it is true, and the axis will not show if it is false.
+            if (series.is('treegraph')) {
+                this.isCartesian = xAxis.visible;
+            }
             treemapAxisDefaultValues = true;
         }
         else if (treemapAxisDefaultValues) {
@@ -3018,7 +3005,9 @@ class TreemapSeries extends ScatterSeries {
                 }
             }
             // Merge custom options with point options
-            point.dlOptions = TreemapSeries_merge(options, point.options.dataLabels);
+            point.dlOptions = TreemapSeries_merge(options, point.options.dataLabels, {
+                zIndex: void 0
+            });
         }
         super.drawDataLabels(points);
     }
@@ -3201,6 +3190,9 @@ class TreemapSeries extends ScatterSeries {
             child = series.buildTree(series.points[i].id, i, level + 1, list, id);
             height = Math.max(child.height + 1, height);
             children.push(child);
+            if (series.is('treegraph')) {
+                child.visible = true;
+            }
         }
         const node = new series.NodeClass().init(id, index, children, height, level, series, parent);
         for (const child of children) {
@@ -3211,6 +3203,10 @@ class TreemapSeries extends ScatterSeries {
         if (point) {
             point.node = node;
             node.point = point;
+            // Handle x-axis value for treegraph
+            if (!TreemapSeries_defined(point.options.x)) {
+                point.x = level;
+            }
         }
         return node;
     }
@@ -3524,7 +3520,9 @@ class TreemapSeries extends ScatterSeries {
             childrenTotal: childrenTotal,
             // Ignore this node if point is not visible
             ignore: !(TreemapSeries_pick(point?.visible, true) && (val > 0)),
-            isLeaf: tree.visible && !childrenTotal,
+            isLeaf: tree.visible && !(series.type === 'treegraph' ?
+                children.length > 0 :
+                childrenTotal),
             isGroup: point?.isGroup,
             levelDynamic: (tree.level - (levelIsConstant ? 0 : nodeRoot.level)),
             name: TreemapSeries_pick(point?.name, ''),

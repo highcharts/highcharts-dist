@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2009-2025 Highsoft, Black Label
+ *  (c) 2009-2026 Highsoft AS
+ *  Author: Highsoft, Black Label
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -42,9 +43,7 @@ function chartAddAnnotation(userOptions, redraw) {
     }
     return annotation;
 }
-/**
- * @private
- */
+/** @internal */
 function chartCallback() {
     const chart = this;
     chart.plotBoxClip = this.renderer.clipRect(this.plotBox);
@@ -91,16 +90,10 @@ function chartCallback() {
                 };
             }
             return s;
-        }, startRowLength = event.dataRows[0].length, annotationSeparator = (chart.options.exporting &&
-            chart.options.exporting.csv &&
-            chart.options.exporting.csv.annotations &&
-            chart.options.exporting.csv.annotations.itemDelimiter), joinAnnotations = (chart.options.exporting &&
-            chart.options.exporting.csv &&
-            chart.options.exporting.csv.annotations &&
-            chart.options.exporting.csv.annotations.join);
+        }, startRowLength = event.dataRows[0].length, annotationSeparator = chart.options.exporting?.csv?.annotations
+            ?.itemDelimiter, joinAnnotations = chart.options.exporting?.csv?.annotations?.join;
         annotations.forEach((annotation) => {
-            if (annotation.options.labelOptions &&
-                annotation.options.labelOptions.includeInDataExport) {
+            if (annotation.options.labelOptions?.includeInDataExport) {
                 annotation.labels.forEach((label) => {
                     if (label.options.text) {
                         const annotationText = label.options.text;
@@ -179,9 +172,7 @@ function chartCallback() {
         }
     });
 }
-/**
- * @private
- */
+/** @internal */
 function chartDrawAnnotations() {
     this.plotBoxClip.attr(this.plotBox);
     this.annotations.forEach((annotation) => {
@@ -213,8 +204,8 @@ function chartRemoveAnnotation(idOrAnnotation) {
     }
 }
 /**
- * Create lookups initially
- * @private
+ * Create lookups initially.
+ * @internal
  */
 function onChartAfterInit() {
     const chart = this, annotationsOption = this.options.annotations, annotationsUserOption = this.userOptions.annotations;
@@ -227,9 +218,7 @@ function onChartAfterInit() {
         this.options.annotations.push(annotationsOption);
     }
 }
-/**
- * @private
- */
+/** @internal */
 function wrapPointerOnContainerMouseDown(proceed) {
     if (!this.chart.hasDraggedAnnotation) {
         proceed.apply(this, Array.prototype.slice.call(arguments, 1));
@@ -240,9 +229,7 @@ function wrapPointerOnContainerMouseDown(proceed) {
  *  Composition
  *
  * */
-/**
- * @private
- */
+/** @internal */
 var AnnotationChart;
 (function (AnnotationChart) {
     /* *
@@ -250,9 +237,7 @@ var AnnotationChart;
      *  Functions
      *
      * */
-    /**
-     * @private
-     */
+    /** @internal */
     function compose(AnnotationClass, ChartClass, PointerClass) {
         const chartProto = ChartClass.prototype;
         if (!chartProto.addAnnotation) {

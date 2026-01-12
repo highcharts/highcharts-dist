@@ -2,11 +2,12 @@
  *
  *  Organization chart module
  *
- *  (c) 2018-2025 Torstein Honsi
+ *  (c) 2018-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -92,7 +93,7 @@ const OrganizationSeriesDefaults = {
         lineWidth: 1,
         /**
          * Radius for the rounded corners of the links between nodes.
-         * Works for `default` link type.
+         * Works for the `orthogonal` link type.
          *
          * @sample   highcharts/series-organization/link-options
          *           Square links
@@ -105,11 +106,11 @@ const OrganizationSeriesDefaults = {
          *           Different link types
          *
          * @declare Highcharts.OrganizationLinkTypeValue
-         * @type {'default' | 'curved' | 'straight'}
-         * @default 'default'
+         * @type {'orthogonal' | 'curved' | 'straight'}
+         * @default 'orthogonal'
          * @product highcharts
          */
-        type: 'default'
+        type: 'orthogonal'
     },
     borderWidth: 1,
     /**

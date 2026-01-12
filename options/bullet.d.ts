@@ -74,7 +74,8 @@ declare module "../highcharts" {
      *
      * **TypeScript:**
      *
-     * - the type option must always be set.
+     * - type option should always be set, otherwise a broad set of unsupported
+     * options is allowed.
      *
      * - when accessing an array of series, the combined set of all series types
      * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
@@ -402,6 +403,9 @@ declare module "../highcharts" {
          * If master series uses data sorting and linked series does not have
          * its own sorting definition, the linked series will be sorted in the
          * same order as the master one.
+         *
+         * If a `compare` value is not set on a linked series, it will be
+         * inherited from the parent series.
          */
         linkedTo?: string;
         /**
@@ -622,8 +626,8 @@ declare module "../highcharts" {
         sonification?: Highcharts.SeriesSonificationOptions;
         /**
          * (Highcharts, Highstock) Whether to stack the values of each series on
-         * top of each other. Possible values are `undefined` to disable,
-         * `"normal"` to stack by value or `"percent"`.
+         * top of each other. Possible values are null to disable, `"normal"` to
+         * stack by value or `"percent"`.
          *
          * When stacking is enabled, data must be sorted in ascending X order.
          *
@@ -633,6 +637,9 @@ declare module "../highcharts" {
          * series.
          */
         stacking?: Highcharts.OptionsStackingValue;
+        /**
+         * (Highcharts) A collection of options for different series states.
+         */
         states?: Highcharts.SeriesStatesOptionsObject;
         /**
          * (Highcharts) Sticky tracking of mouse events. When true, the
@@ -716,57 +723,76 @@ declare module "../highcharts" {
         zoomEnabled?: boolean;
     }
     /**
-     * (Highcharts) Positioning options for fixed tooltip, taking effect only
-     * when tooltip.fixed is `true`.
+     * (Highcharts) Animation when not hovering over the marker.
      */
-    interface PlotBulletTooltipPositionOptions {
-        /**
-         * (Highcharts) The horizontal alignment of the fixed tooltip.
-         */
-        align?: Highcharts.AlignValue;
-        /**
-         * (Highcharts) What the fixed tooltip alignment should be relative to.
-         *
-         * The default, `pane`, means that it is aligned within the plot area
-         * for that given series. If the tooltip is split (as default in Stock
-         * charts), each partial tooltip is aligned within the series' pane.
-         */
-        relativeTo?: Highcharts.OptionsRelativeToValue;
-        /**
-         * (Highcharts) The vertical alignment of the fixed tooltip.
-         */
-        verticalAlign?: Highcharts.VerticalAlignValue;
-        /**
-         * (Highcharts) X pixel offset from the given position. Can be used to
-         * shy away from axis lines, grid lines etc to avoid the tooltip
-         * overlapping other elements.
-         */
-        x?: number;
-        /**
-         * (Highcharts) Y pixel offset from the given position. Can be used to
-         * shy away from axis lines, grid lines etc to avoid the tooltip
-         * overlapping other elements.
-         */
-        y?: number;
+    interface PlotBulletStatesInactiveAnimationOptions {
+        duration?: number;
     }
     /**
-     * (Highcharts, Highstock, Gantt) Enable or disable the initial animation
-     * when a series is displayed for the `dataLabels`. The animation can also
-     * be set as a configuration object. Please note that this option only
-     * applies to the initial animation.
-     *
-     * For other animations, see chart.animation and the animation parameter
-     * under the API methods. The following properties are supported:
-     *
-     * - `defer`: The animation delay time in milliseconds.
+     * (Highcharts) All options related with look and positioning of targets.
      */
-    interface SeriesBulletDataDataLabelsAnimationOptions {
+    interface PlotBulletTargetOptions {
         /**
-         * (Highcharts, Highstock, Gantt) The animation delay time in
-         * milliseconds. Set to `0` to render the data labels immediately. As
-         * `undefined` inherits defer time from the series.animation.defer.
+         * (Highcharts) The border color of the rectangle representing the
+         * target. When not set, the point's border color is used.
+         *
+         * In styled mode, use class `highcharts-bullet-target` instead.
          */
-        defer?: number;
+        borderColor?: Highcharts.ColorString;
+        /**
+         * (Highcharts) The border radius of the rectangle representing the
+         * target.
+         */
+        borderRadius?: number;
+        /**
+         * (Highcharts) The border width of the rectangle representing the
+         * target.
+         *
+         * In styled mode, use class `highcharts-bullet-target` instead.
+         */
+        borderWidth?: number;
+        /**
+         * (Highcharts) The color of the rectangle representing the target. When
+         * not set, point's color (if set in point's options - `color`) or zone
+         * of the target value (if `zones` or `negativeColor` are set) or the
+         * same color as the point has is used.
+         *
+         * In styled mode, use class `highcharts-bullet-target` instead.
+         */
+        color?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        /**
+         * (Highcharts) The height of the rectangle representing the target.
+         */
+        height?: number;
+        /**
+         * (Highcharts) The width of the rectangle representing the target.
+         * Could be set as a pixel value or as a percentage of a column width.
+         */
+        width?: (number|string);
+    }
+    /**
+     * (Highcharts, Highstock) Animation setting for hovering the graph in
+     * line-type series.
+     */
+    interface SeriesBulletDataStatesHoverAnimationOptions {
+        /**
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
+         */
+        duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock) Animation setting for hovering the graph in
+     * line-type series.
+     */
+    interface SeriesBulletDataStatesSelectAnimationOptions {
+        /**
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
+         */
+        duration?: number;
     }
     /**
      * (Highcharts) A `bullet` series. If the type option is not specified, it
@@ -784,7 +810,8 @@ declare module "../highcharts" {
      *
      * **TypeScript:**
      *
-     * - the type option must always be set.
+     * - type option should always be set, otherwise a broad set of unsupported
+     * options is allowed.
      *
      * - when accessing an array of series, the combined set of all series types
      * is represented by Highcharts.SeriesOptionsType . Narrowing down to the

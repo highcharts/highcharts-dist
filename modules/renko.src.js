@@ -1,14 +1,17 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v12.4.0 (2025-09-04)
+ * @license Highstock JS v12.5.0 (2026-01-12)
  * @module highcharts/modules/renko
  * @requires highcharts
  * @requires highcharts/modules/stock
  *
  * Renko series type for Highcharts Stock
  *
- * (c) 2010-2025 Pawel Lysy
+ * (c) 2010-2026 Highsoft AS
+ * Author: Pawel Lysy
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -118,11 +121,12 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
 ;// ./code/es-modules/Series/Renko/RenkoPoint.js
 /* *
  *
- *  (c) 2010-2025 Pawel Lysy
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Pawel Lysy
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -149,11 +153,12 @@ class RenkoPoint extends ColumnPoint {
 ;// ./code/es-modules/Series/Renko/RenkoSeriesDefaults.js
 /* *
  *
- *  (c) 2010-2025 Pawel Lysy
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Pawel Lysy
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -280,11 +285,12 @@ var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commo
 ;// ./code/es-modules/Series/Renko/RenkoSeries.js
 /* *
  *
- *  (c) 2010-2025 Pawel Lysy
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Pawel Lysy
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -336,7 +342,7 @@ class RenkoSeries extends (highcharts_Series_types_column_commonjs_highcharts_Se
         };
     }
     getProcessedData() {
-        const modified = this.dataTable.modified;
+        const modified = this.dataTable.getModified();
         const processedXData = [];
         const processedYData = [];
         const processedLowData = [];

@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -28,9 +29,7 @@ const baseGeneratePoints = seriesProto.generatePoints;
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function adjustExtremes(xAxis, groupedXData) {
     // Make sure the X axis extends to show the first group (#2533)
     // But only for visible series (#5493, #6393)
@@ -59,9 +58,7 @@ function adjustExtremes(xAxis, groupedXData) {
         xAxis.dataMax = Math.max(groupedXData[groupedXData.length - 1], xAxis.dataMax);
     }
 }
-/**
- * @private
- */
+/** @internal */
 function anchorPoints(series, groupedXData, xMax) {
     const options = series.options, dataGroupingOptions = options.dataGrouping, totalRange = (series.currentDataGrouping && series.currentDataGrouping.gapSize), xData = series.getColumn('x');
     if (!(dataGroupingOptions &&
@@ -120,7 +117,7 @@ function anchorPoints(series, groupedXData, xMax) {
 /**
  * For the processed data, calculate the grouped data if needed.
  *
- * @private
+ * @internal
  * @function Highcharts.Series#applyGrouping
  */
 function applyGrouping(hasExtremesChanged) {
@@ -144,7 +141,7 @@ function applyGrouping(hasExtremesChanged) {
     series.destroyGroupedData();
     const table = dataGroupingOptions.groupAll ?
         series.dataTable :
-        series.dataTable.modified || series.dataTable, processedXData = series.getColumn('x', !dataGroupingOptions.groupAll), xData = processedXData, plotSizeX = chart.plotSizeX, xAxis = series.xAxis, extremes = xAxis.getExtremes(), ordinal = xAxis.options.ordinal, groupPixelWidth = series.groupPixelWidth;
+        series.dataTable.getModified() || series.dataTable, processedXData = series.getColumn('x', !dataGroupingOptions.groupAll), xData = processedXData, plotSizeX = chart.plotSizeX, xAxis = series.xAxis, extremes = xAxis.getExtremes(), ordinal = xAxis.options.ordinal, groupPixelWidth = series.groupPixelWidth;
     let i, hasGroupedData;
     // Execute grouping if the amount of points is greater than the limit
     // defined in groupPixelWidth
@@ -223,9 +220,7 @@ function applyGrouping(hasExtremesChanged) {
         (lastDataGrouping && lastDataGrouping.totalRange) !==
             (currentDataGrouping && currentDataGrouping.totalRange);
 }
-/**
- * @private
- */
+/** @internal */
 function compose(SeriesClass) {
     const seriesProto = SeriesClass.prototype;
     if (!seriesProto.applyGrouping) {
@@ -251,7 +246,7 @@ function compose(SeriesClass) {
 }
 /**
  * Destroy the grouped data points. #622, #740
- * @private
+ * @internal
  */
 function destroyGroupedData() {
     // Clear previous groups
@@ -272,7 +267,7 @@ function destroyGroupedData() {
 }
 /**
  * Override the generatePoints method by adding a reference to grouped data
- * @private
+ * @internal
  */
 function generatePoints() {
     baseGeneratePoints.apply(this);
@@ -284,7 +279,7 @@ function generatePoints() {
 /**
  * Set default approximations to the prototypes if present. Properties are
  * inherited down. Can be overridden for individual series types.
- * @private
+ * @internal
  */
 function getDGApproximation() {
     if (this.is('arearange')) {
@@ -451,7 +446,7 @@ function groupData(table, groupPositions, approximation) {
 /**
  * Handle default options for data grouping. This must be set at runtime because
  * some series types are defined after this.
- * @private
+ * @internal
  */
 function onAfterSetOptions(e) {
     const options = e.options, type = this.type, plotOptions = this.chart.options.plotOptions, 
@@ -473,9 +468,7 @@ function onAfterSetOptions(e) {
             rangeSelector.buttonOptions[rangeSelector.selected].dataGrouping);
     }
 }
-/**
- * @private
- */
+/** @internal */
 function skipDataGrouping(series, force) {
     return !(series.isCartesian &&
         !series.isDirty &&
@@ -488,8 +481,10 @@ function skipDataGrouping(series, force) {
  *  Default Export
  *
  * */
+/** @internal */
 const DataGroupingSeriesComposition = {
     compose,
     groupData
 };
+/** @internal */
 export default DataGroupingSeriesComposition;

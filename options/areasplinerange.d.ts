@@ -32,6 +32,12 @@ declare module "../highcharts" {
         fontSize?: (number|string);
     }
     /**
+     * (Highcharts, Highstock) Animation when hovering over the marker.
+     */
+    interface PlotAreasplinerangeMarkerStatesHoverAnimationOptions {
+        duration?: number;
+    }
+    /**
      * (Highcharts, Highstock) Options for the _Series on point_ feature. Only
      * `pie` and `sunburst` series are supported at this moment.
      */
@@ -74,7 +80,8 @@ declare module "../highcharts" {
      *
      * **TypeScript:**
      *
-     * - the type option must always be set.
+     * - type option should always be set, otherwise a broad set of unsupported
+     * options is allowed.
      *
      * - when accessing an array of series, the combined set of all series types
      * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
@@ -191,7 +198,9 @@ declare module "../highcharts" {
          * percentage or absolute change depending on whether `compare` is set
          * to `"percent"` or `"value"`. When this is applied to multiple series,
          * it allows comparing the development of the series against each other.
-         * Adds a `change` field to every point object.
+         * Adds a `change` field to every point object. If a `compare` value is
+         * not set on a linked series, it will be inherited from the parent
+         * series.
          */
         compare?: Highcharts.OptionsCompareValue;
         /**
@@ -493,6 +502,9 @@ declare module "../highcharts" {
          * If master series uses data sorting and linked series does not have
          * its own sorting definition, the linked series will be sorted in the
          * same order as the master one.
+         *
+         * If a `compare` value is not set on a linked series, it will be
+         * inherited from the parent series.
          */
         linkedTo?: string;
         /**
@@ -717,6 +729,10 @@ declare module "../highcharts" {
          * series.
          */
         sonification?: Highcharts.SeriesSonificationOptions;
+        /**
+         * (Highcharts, Highstock) A collection of options for different series
+         * states.
+         */
         states?: Highcharts.SeriesStatesOptionsObject;
         /**
          * (Highcharts, Highstock) Sticky tracking of mouse events. When true,
@@ -810,72 +826,64 @@ declare module "../highcharts" {
         zoomEnabled?: boolean;
     }
     /**
-     * (Highcharts, Highstock) A `areasplinerange` series. If the type option is
-     * not specified, it is inherited from chart.type.
-     *
-     * Configuration options for the series are given in three levels:
-     *
-     * 1. Options for all series in a chart are defined in the
-     * plotOptions.series object.
-     *
-     * 2. Options for all `areasplinerange` series are defined in
-     * plotOptions.areasplinerange.
-     *
-     * 3. Options for one single series are given in the series instance array.
-     * (see online documentation for example)
-     *
-     * **TypeScript:**
-     *
-     * - the type option must always be set.
-     *
-     * - when accessing an array of series, the combined set of all series types
-     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
-     * specific type can be done by checking the `type` property. (see online
-     * documentation for example)
-     *
-     * You have to extend the `SeriesAreasplinerangeOptions` via an interface to
-     * allow custom properties: ``` declare interface
-     * SeriesAreasplinerangeOptions { customProperty: string; }
-     *
+     * (Highcharts, Highstock) Animation when not hovering over the marker.
      */
-    interface SeriesAreasplinerangeOptions extends Highcharts.PlotAreasplinerangeOptions, Highcharts.SeriesOptions {
+    interface PlotAreasplinerangeStatesInactiveAnimationOptions {
+        duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock) Positioning options for fixed tooltip, taking
+     * effect only when tooltip.fixed is `true`.
+     */
+    interface PlotAreasplinerangeTooltipPositionOptions {
         /**
-         * (Highcharts, Highstock) An array of data points for the series. For
-         * the `areasplinerange` series type, points can be given in the
-         * following ways:
+         * (Highcharts, Highstock) The horizontal alignment of the fixed
+         * tooltip.
+         */
+        align?: Highcharts.AlignValue;
+        /**
+         * (Highcharts, Highstock) What the fixed tooltip alignment should be
+         * relative to.
          *
-         * 1. An array of arrays with 3 or 2 values. In this case, the values
-         * correspond to `x,low,high`. If the first value is a string, it is
-         * applied as the name of the point, and the `x` value is inferred. The
-         * `x` value can also be omitted, in which case the inner arrays should
-         * be of length 2\. Then the `x` value is automatically calculated,
-         * either starting at 0 and incremented by 1, or from `pointStart` and
-         * `pointInterval` given in the series options. (see online
-         * documentation for example)
-         *
-         * 2. An array of objects with named values. The following snippet shows
-         * only a few settings, see the complete options set below. If the total
-         * number of data points exceeds the series' turboThreshold, this option
-         * is not available. (see online documentation for example)
+         * The default, `pane`, means that it is aligned within the plot area
+         * for that given series. If the tooltip is split (as default in Stock
+         * charts), each partial tooltip is aligned within the series' pane.
          */
-        data?: Array<([(number|string), number]|[(number|string), number, number]|Highcharts.PointOptionsObject)>;
+        relativeTo?: Highcharts.OptionsRelativeToValue;
         /**
-         * Not available
+         * (Highcharts, Highstock) The vertical alignment of the fixed tooltip.
          */
-        dataParser?: undefined;
+        verticalAlign?: Highcharts.VerticalAlignValue;
         /**
-         * Not available
+         * (Highcharts, Highstock) X pixel offset from the given position. Can
+         * be used to shy away from axis lines, grid lines etc to avoid the
+         * tooltip overlapping other elements.
          */
-        dataURL?: undefined;
+        x?: number;
         /**
-         * Not available
+         * (Highcharts, Highstock) Y pixel offset from the given position. Can
+         * be used to shy away from axis lines, grid lines etc to avoid the
+         * tooltip overlapping other elements.
          */
-        stack?: undefined;
+        y?: number;
+    }
+    /**
+     * (Highcharts, Highstock) Enable or disable the initial animation when a
+     * series is displayed for the `dataLabels`. The animation can also be set
+     * as a configuration object. Please note that this option only applies to
+     * the initial animation.
+     *
+     * For other animations, see chart.animation and the animation parameter
+     * under the API methods. The following properties are supported:
+     *
+     * - `defer`: The animation delay time in milliseconds.
+     */
+    interface SeriesAreasplinerangeDataDataLabelsAnimationOptions {
         /**
-         * (Highcharts, Highstock, Highmaps, Gantt) This property is only in
-         * TypeScript non-optional and might be `undefined` in series objects
-         * from unknown sources.
+         * (Highcharts, Highstock) The animation delay time in milliseconds. Set
+         * to `0` to render the data labels immediately. As `undefined` inherits
+         * defer time from the series.animation.defer.
          */
-        type: "areasplinerange";
+        defer?: number;
     }
 }

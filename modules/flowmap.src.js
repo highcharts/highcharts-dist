@@ -1,11 +1,13 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.5.0 (2026-01-12)
  * @module highcharts/modules/flowmap
  * @requires highcharts
  *
- * (c) 2009-2025
+ * (c) 2009-2026
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -108,11 +110,12 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
 ;// ./code/es-modules/Series/FlowMap/FlowMapPoint.js
 /* *
  *
- *  (c) 2010-2025 Askel Eirik Johansson, Piotr Madej
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Askel Eirik Johansson, Piotr Madej
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -155,11 +158,12 @@ class FlowMapPoint extends MapLinePoint {
 ;// ./code/es-modules/Series/FlowMap/FlowMapSeries.js
 /* *
  *
- *  (c) 2010-2025 Askel Eirik Johansson, Piotr Madej
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Askel Eirik Johansson, Piotr Madej
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 

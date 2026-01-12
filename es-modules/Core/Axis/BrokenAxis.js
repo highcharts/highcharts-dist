@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2009-2025 Torstein Honsi
+ *  (c) 2009-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -18,7 +19,7 @@ const { addEvent, find, fireEvent, isArray, isNumber, pick } = U;
  * */
 /**
  * Axis with support of broken data rows.
- * @private
+ * @internal
  */
 var BrokenAxis;
 (function (BrokenAxis) {
@@ -34,7 +35,7 @@ var BrokenAxis;
      * */
     /**
      * Adds support for broken axes.
-     * @private
+     * @internal
      */
     function compose(AxisClass, SeriesClass) {
         if (!AxisClass.keepProps.includes('brokenAxis')) {
@@ -52,9 +53,7 @@ var BrokenAxis;
         return AxisClass;
     }
     BrokenAxis.compose = compose;
-    /**
-     * @private
-     */
+    /** @internal */
     function onAxisAfterInit() {
         if (typeof this.brokenAxis !== 'undefined') {
             this.brokenAxis.setBreaks(this.options.breaks, false);
@@ -62,7 +61,7 @@ var BrokenAxis;
     }
     /**
      * Force Axis to be not-ordinal when breaks are defined.
-     * @private
+     * @internal
      */
     function onAxisAfterSetOptions() {
         const axis = this;
@@ -71,9 +70,7 @@ var BrokenAxis;
             axis.options.ordinal = false;
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function onAxisAfterSetTickPositions() {
         const axis = this, brokenAxis = axis.brokenAxis;
         if (brokenAxis?.hasBreaks) {
@@ -87,18 +84,14 @@ var BrokenAxis;
             axis.tickPositions.info = info;
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function onAxisInit() {
         const axis = this;
         if (!axis.brokenAxis) {
             axis.brokenAxis = new Additions(axis);
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function onSeriesAfterGeneratePoints() {
         const { isDirty, options: { connectNulls }, points, xAxis, yAxis } = this;
         // Set, or reset visibility of the points. Axis.setBreaks marks
@@ -119,16 +112,12 @@ var BrokenAxis;
             }
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function onSeriesAfterRender() {
         this.drawBreaks(this.xAxis, ['x']);
         this.drawBreaks(this.yAxis, pick(this.pointArrayMap, ['y']));
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function seriesDrawBreaks(axis, keys) {
         const series = this, points = series.points;
         let breaks, threshold, y;
@@ -170,7 +159,7 @@ var BrokenAxis;
      * can draw a gap in the line or area. This was moved from ordinal
      * axis module to broken axis module as of #5045.
      *
-     * @private
+     * @internal
      * @function Highcharts.Series#gappedPath
      *
      * @return {Highcharts.SVGPathArray}
@@ -268,7 +257,7 @@ var BrokenAxis;
                     });
                     // For stacked chart generate empty stack items, #6546
                     if (yAxis.stacking && this.options.stacking) {
-                        stack = yAxis.stacking.stacks[this.stackKey][xRange] = new StackItem(yAxis, yAxis.options.stackLabels, false, xRange, this.stack);
+                        stack = yAxis.stacking.stacks[this.stackKey][xRange] = new StackItem(yAxis, yAxis.options.stackLabels, false, xRange, this.stack ?? '');
                         stack.total = 0;
                     }
                 }
@@ -286,7 +275,7 @@ var BrokenAxis;
      * */
     /**
      * Provides support for broken axes.
-     * @private
+     * @internal
      * @class
      */
     class Additions {
@@ -295,9 +284,7 @@ var BrokenAxis;
          *  Static Functions
          *
          * */
-        /**
-         * @private
-         */
+        /** @internal */
         static isInBreak(brk, val) {
             const repeat = brk.repeat || Infinity, from = brk.from, length = brk.to - brk.from, test = (val >= from ?
                 (val - from) % repeat :
@@ -311,9 +298,7 @@ var BrokenAxis;
             }
             return ret;
         }
-        /**
-         * @private
-         */
+        /** @internal */
         static lin2Val(val) {
             const axis = this, threshold = axis.min || 0, brokenAxis = axis.brokenAxis, breakArray = brokenAxis?.breakArray;
             if (!breakArray?.length || !isNumber(val)) {
@@ -352,9 +337,7 @@ var BrokenAxis;
             }
             return nval;
         }
-        /**
-         * @private
-         */
+        /** @internal */
         static val2Lin(val) {
             const axis = this, threshold = axis.min || 0, brokenAxis = axis.brokenAxis, breakArray = brokenAxis?.breakArray;
             if (!breakArray?.length || !isNumber(val)) {
@@ -400,6 +383,7 @@ var BrokenAxis;
          *  Constructors
          *
          * */
+        /** @internal */
         constructor(axis) {
             this.axis = axis;
         }
@@ -427,9 +411,7 @@ var BrokenAxis;
                 return b.from < x && x < b.to;
             });
         }
-        /**
-         * @private
-         */
+        /** @internal */
         isInAnyBreak(val, testKeep) {
             const brokenAxis = this, axis = brokenAxis.axis, breaks = axis.options.breaks || [];
             let i = breaks.length, inbrk, keep, ret;
@@ -455,7 +437,7 @@ var BrokenAxis;
          * Dynamically set or unset breaks in an axis. This function in lighter
          * than using Axis.update, and it also preserves animation.
          *
-         * @private
+         * @internal
          * @function Highcharts.Axis#setBreaks
          *
          * @param {Array<Highcharts.XAxisBreaksOptions>} [breaks]
@@ -630,4 +612,5 @@ var BrokenAxis;
  *  Default Export
  *
  * */
+/** @internal */
 export default BrokenAxis;

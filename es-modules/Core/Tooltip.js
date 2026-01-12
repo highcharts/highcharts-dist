@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2024 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -18,7 +19,7 @@ import R from './Renderer/RendererUtilities.js';
 const { distribute } = R;
 import RendererRegistry from './Renderer/RendererRegistry.js';
 import U from './Utilities.js';
-const { addEvent, clamp, css, discardElement, extend, fireEvent, getAlignFactor, isArray, isNumber, isObject, isString, merge, pick, pushUnique, splat, syncTimeout } = U;
+const { addEvent, clamp, css, clearTimeout, discardElement, extend, fireEvent, getAlignFactor, isArray, isNumber, isObject, isString, merge, pick, pushUnique, splat, syncTimeout } = U;
 /* *
  *
  *  Class
@@ -53,11 +54,48 @@ class Tooltip {
          *
          * */
         this.allowShared = true;
+        /**
+         * List of crosshairs.
+         *
+         * @internal
+         * @readonly
+         * @name Highcharts.Tooltip#crosshairs
+         * @type {Array<null>}
+         */
         this.crosshairs = [];
         this.distance = 0;
+        /**
+         * Tooltips are initially hidden.
+         *
+         * @internal
+         * @readonly
+         * @name Highcharts.Tooltip#isHidden
+         * @type {boolean}
+         */
         this.isHidden = true;
         this.isSticky = false;
+        /**
+         * Used tooltip options.
+         *
+         * @readonly
+         * @name Highcharts.Tooltip#options
+         * @type {Highcharts.TooltipOptions}
+         */
         this.options = {};
+        /**
+         * Whether to allow the tooltip to render outside the chart's SVG
+         * element box. By default (false), the tooltip is rendered within the
+         * chart's SVG element, which results in the tooltip being aligned
+         * inside the chart area.
+         *
+         * @readonly
+         * @name Highcharts.Tooltip#outside
+         * @type {boolean}
+         *
+         * @todo
+         * Split tooltip does not support outside in the first iteration. Should
+         * not be too complicated to implement.
+         */
         this.outside = false;
         this.chart = chart;
         this.init(chart, options);
@@ -73,7 +111,7 @@ class Tooltip {
      * returning one entry for each item, abstracting this functionality allows
      * to easily overwrite and extend it.
      *
-     * @private
+     * @internal
      * @function Highcharts.Tooltip#bodyFormatter
      */
     bodyFormatter(points) {
@@ -87,7 +125,7 @@ class Tooltip {
      * Destroy the single tooltips in a split tooltip.
      * If the tooltip is active then it is not destroyed, unless forced to.
      *
-     * @private
+     * @internal
      * @function Highcharts.Tooltip#cleanSplit
      *
      * @param {boolean} [force]
@@ -149,13 +187,13 @@ class Tooltip {
             this.renderer = this.renderer.destroy();
             discardElement(this.container);
         }
-        U.clearTimeout(this.hideTimer);
+        clearTimeout(this.hideTimer);
     }
     /**
      * Extendable method to get the anchor position of the tooltip
      * from a point or set of points
      *
-     * @private
+     * @internal
      * @function Highcharts.Tooltip#getAnchor
      */
     getAnchor(points, mouseEvent) {
@@ -335,7 +373,7 @@ class Tooltip {
     /**
      * Get the total area available area to place the tooltip
      *
-     * @private
+     * @internal
      */
     getPlayingField() {
         const { body, documentElement } = doc, { chart, distance, outside } = this;
@@ -414,7 +452,7 @@ class Tooltip {
          * tooltip on top or bottom of the point, it will look for space
          * there.
          *
-         * @private
+         * @internal
          */
         firstDimension = function (dim, outerSize, innerSize, scaledInnerSize, // #11329
         point, min, max) {
@@ -446,7 +484,7 @@ class Tooltip {
          * align the tooltip above the point, trying to align center but
          * allowing left or right align within the chart box.
          *
-         * @private
+         * @internal
          */
         secondDimension = function (dim, outerSize, innerSize, scaledInnerSize, // #11329
         point) {
@@ -500,7 +538,7 @@ class Tooltip {
      * Place the tooltip when `position.fixed` is true. This is called both for
      * single tooltips, and for partial tooltips when `split`.
      *
-     * @private
+     * @internal
      */
     getFixedPosition(boxWidth, boxHeight, point) {
         const series = point.series, { chart, options, split } = this, position = options.position, relativeToOption = position.relativeTo, noPane = options.shared || series?.yAxis?.isRadial &&
@@ -530,7 +568,7 @@ class Tooltip {
     hide(delay) {
         const tooltip = this;
         // Disallow duplicate timers (#1728, #1766)
-        U.clearTimeout(this.hideTimer);
+        clearTimeout(this.hideTimer);
         delay = pick(delay, this.options.hideDelay);
         if (!this.isHidden) {
             this.hideTimer = syncTimeout(function () {
@@ -558,7 +596,7 @@ class Tooltip {
     /**
      * Initialize tooltip.
      *
-     * @private
+     * @internal
      * @function Highcharts.Tooltip#init
      *
      * @param {Highcharts.Chart} chart
@@ -587,7 +625,7 @@ class Tooltip {
         /**
          * List of crosshairs.
          *
-         * @private
+         * @internal
          * @readonly
          * @name Highcharts.Tooltip#crosshairs
          * @type {Array<null>}
@@ -596,7 +634,7 @@ class Tooltip {
         /**
          * Tooltips are initially hidden.
          *
-         * @private
+         * @internal
          * @readonly
          * @name Highcharts.Tooltip#isHidden
          * @type {boolean}
@@ -644,7 +682,7 @@ class Tooltip {
     /**
      * Moves the tooltip with a soft animation to a new position.
      *
-     * @private
+     * @internal
      * @function Highcharts.Tooltip#move
      *
      * @param {number} x
@@ -689,7 +727,7 @@ class Tooltip {
         if (!options.enabled || !point.series) { // #16820
             return;
         }
-        U.clearTimeout(this.hideTimer);
+        clearTimeout(this.hideTimer);
         // A switch saying if this specific tooltip configuration allows shared
         // or split modes
         tooltip.allowShared = !(!isArray(pointOrPoints) &&
@@ -801,7 +839,7 @@ class Tooltip {
      * a label next to the point, then uses the distribute function to
      * find best non-overlapping positions.
      *
-     * @private
+     * @internal
      * @function Highcharts.Tooltip#renderSplit
      *
      * @param {string|Array<(boolean|string)>} labels
@@ -834,7 +872,7 @@ class Tooltip {
         /**
          * Calculates the anchor position for the partial tooltip
          *
-         * @private
+         * @internal
          * @param {Highcharts.Point} point The point related to the tooltip
          * @return {Object} Returns an object with anchorX and anchorY
          */
@@ -865,7 +903,7 @@ class Tooltip {
         }
         /**
          * Calculate the position of the partial tooltip
-         * @private
+         * @internal
          */
         const defaultPositioner = function (boxWidth, boxHeight, point, anchor = [0, 0], alignedLeft = true) {
             let x, y;
@@ -892,7 +930,7 @@ class Tooltip {
          * Updates the attributes and styling of the partial tooltip. Creates a
          * new partial tooltip if it does not exists.
          *
-         * @private
+         * @internal
          * @param {Highcharts.SVGElement|undefined} partialTooltip
          *  The partial tooltip to update
          * @param {Highcharts.Point} point
@@ -1094,7 +1132,7 @@ class Tooltip {
     /**
      * If the `stickOnContact` option is active, this will add a tracker shape.
      *
-     * @private
+     * @internal
      * @function Highcharts.Tooltip#drawTracker
      */
     drawTracker() {
@@ -1140,6 +1178,11 @@ class Tooltip {
                 .rect(box)
                 .addClass('highcharts-tracker')
                 .add(label);
+            // For a rapid move going outside of the elements keeping the
+            // tooltip visible, cancel the hide (#23512).
+            addEvent(tooltip.tracker.element, 'mouseenter', () => {
+                clearTimeout(tooltip.hideTimer);
+            });
             if (!chart.styledMode) {
                 tooltip.tracker.attr({
                     fill: 'rgba(0,0,0,0)'
@@ -1147,9 +1190,7 @@ class Tooltip {
             }
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     styledModeFormat(formatString) {
         return formatString
             .replace('style="font-size: 0.8em"', 'class="highcharts-header"')
@@ -1161,7 +1202,7 @@ class Tooltip {
      * Format the footer/header of the tooltip
      * #3397: abstraction to enable formatting of footer and header
      *
-     * @private
+     * @internal
      * @function Highcharts.Tooltip#headerFooterFormatter
      */
     headerFooterFormatter(point, isFooter) {
@@ -1210,7 +1251,7 @@ class Tooltip {
     /**
      * Find the new position and perform the move
      *
-     * @private
+     * @internal
      * @function Highcharts.Tooltip#updatePosition
      *
      * @param {Highcharts.Point} point
@@ -1272,9 +1313,7 @@ class Tooltip {
      *  Functions
      *
      * */
-    /**
-     * @private
-     */
+    /** @internal */
     function compose(PointerClass) {
         if (pushUnique(composed, 'Core.Tooltip')) {
             addEvent(PointerClass, 'afterInit', function () {

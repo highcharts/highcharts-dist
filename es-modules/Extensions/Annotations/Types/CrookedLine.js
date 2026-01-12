@@ -1,6 +1,5 @@
 /* *
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -11,7 +10,7 @@ const { defaultOptions } = D;
 import MockPoint from '../MockPoint.js';
 import U from '../../../Core/Utilities.js';
 const { merge } = U;
-if (defaultOptions.annotations) {
+if (defaultOptions.annotations?.types) {
     /**
     * Options for the crooked line annotation type.
     *
@@ -25,10 +24,6 @@ if (defaultOptions.annotations) {
         /**
          * @extends   annotations.labelOptions
          * @apioption annotations.types.crookedLine.labelOptions
-         */
-        /**
-         * @extends   annotations.shapeOptions
-         * @apioption annotations.types.crookedLine.shapeOptions
          */
         /**
          * Additional options for an annotation with the type.
@@ -78,6 +73,7 @@ if (defaultOptions.annotations) {
         },
         /**
          * @excluding positioner, events
+         * @extends annotations.controlPointOptions
          */
         controlPointOptions: {
             positioner: function (target) {
@@ -111,6 +107,7 @@ if (defaultOptions.annotations) {
  *  Class
  *
  * */
+/** @internal */
 class CrookedLine extends Annotation {
     /* *
      *
@@ -119,17 +116,19 @@ class CrookedLine extends Annotation {
      * */
     /**
      * Overrides default setter to get axes from typeOptions.
-     * @private
      */
     setClipAxes() {
-        this.clipXAxis = this.chart.xAxis[this.options.typeOptions.xAxis];
-        this.clipYAxis = this.chart.yAxis[this.options.typeOptions.yAxis];
+        this.clipXAxis = this.chart.xAxis[this.options.typeOptions?.xAxis];
+        this.clipYAxis = this.chart.yAxis[this.options.typeOptions?.yAxis];
     }
     getPointsOptions() {
-        const typeOptions = this.options.typeOptions;
+        var _a;
+        const typeOptions = (_a = this.options).typeOptions || (_a.typeOptions = {});
         return (typeOptions.points || []).map((pointOptions) => {
-            pointOptions.xAxis = typeOptions.xAxis;
-            pointOptions.yAxis = typeOptions.yAxis;
+            if (typeof pointOptions !== 'string') {
+                pointOptions.xAxis = typeOptions.xAxis;
+                pointOptions.yAxis = typeOptions.yAxis;
+            }
             return pointOptions;
         });
     }
@@ -144,7 +143,8 @@ class CrookedLine extends Annotation {
         }, this);
     }
     addShapes() {
-        const typeOptions = this.options.typeOptions, shape = this.initShape(merge(typeOptions.line, {
+        var _a;
+        const typeOptions = (_a = this.options).typeOptions || (_a.typeOptions = {}), shape = this.initShape(merge(typeOptions.line, {
             type: 'path',
             className: 'highcharts-crooked-lines',
             points: this.points.map((_point, i) => (function (target) {

@@ -1,8 +1,9 @@
 /**
- * Highchart Stock v12.4.0 (2025-09-04)
+ * Highchart Stock v12.5.0 (2026-01-12)
  * @module highcharts/highstock
  *
- * (c) 2009-2025 Highsoft AS
+ * (c) 2009-2026 Highsoft AS
  *
- * License: www.highcharts.com/license
- */import*as t from"./highcharts.js";import"./modules/stock.js";var e,r,o={};o.d=(t,e)=>{for(var r in e)o.o(e,r)&&!o.o(t,r)&&Object.defineProperty(t,r,{enumerable:!0,get:e[r]})},o.o=(t,e)=>Object.prototype.hasOwnProperty.call(t,e);let a=(e={default:()=>t.default},r={},o.d(r,e),r);o.d({},{}),a.default.product="Highstock";let s=a.default;export{s as default};
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
+ */import r from"./highcharts.js";import"./modules/stock.js";var o={};o.d=(r,t)=>{for(var e in t)o.o(t,e)&&!o.o(r,e)&&Object.defineProperty(r,e,{enumerable:!0,get:t[e]})},o.o=(r,o)=>Object.prototype.hasOwnProperty.call(r,o),r.product="Highstock";let t=r;export{t as default};

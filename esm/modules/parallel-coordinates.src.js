@@ -1,13 +1,16 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.5.0 (2026-01-12)
  * @module highcharts/modules/parallel-coordinates
  * @requires highcharts
  *
  * Support for parallel coordinates in Highcharts
  *
- * (c) 2010-2025 Pawel Fus
+ * (c) 2010-2026 Highsoft AS
+ * Author: Pawel Fus
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -44,6 +47,7 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -53,11 +57,12 @@ var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require_
  *
  *  Parallel coordinates module
  *
- *  (c) 2010-2025 Pawel Fus
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Pawel Fus
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -197,11 +202,12 @@ const ParallelCoordinatesDefaults = {
  *
  *  Parallel coordinates module
  *
- *  (c) 2010-2025 Pawel Fus
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Pawel Fus
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -215,7 +221,7 @@ const { addEvent, arrayMax, arrayMin, isNumber, merge, pick } = (external_highch
  * */
 /**
  * Support for parallel axes.
- * @private
+ * @internal
  * @class
  */
 class ParallelAxisAdditions {
@@ -236,7 +242,7 @@ class ParallelAxisAdditions {
      * Set predefined left+width and top+height (inverted) for yAxes.
      * This method modifies options param.
      *
-     * @private
+     * @internal
      *
      * @param  {Array<string>} axisPosition
      * ['left', 'width', 'height', 'top'] or ['top', 'height', 'width', 'left']
@@ -279,7 +285,7 @@ var ParallelAxis;
      * */
     /**
      * Adds support for parallel axes.
-     * @private
+     * @internal
      */
     function compose(AxisClass) {
         if (!AxisClass.keepProps.includes('parallel')) {
@@ -294,7 +300,7 @@ var ParallelAxis;
     ParallelAxis.compose = compose;
     /**
      * Update default options with predefined for a parallel coords.
-     * @private
+     * @internal
      */
     function onAfterSetOptions(e) {
         const axis = this, chart = axis.chart, parallelCoordinates = axis.parallelCoordinates;
@@ -321,7 +327,7 @@ var ParallelAxis;
      * series.data. Not like the default one, which gathers extremes from all
      * series bind to this axis. Consider using series.points instead of
      * series.yData.
-     * @private
+     * @internal
      */
     function onGetSeriesExtremes(e) {
         const axis = this;
@@ -350,7 +356,7 @@ var ParallelAxis;
     }
     /**
      * Add parallel addition
-     * @private
+     * @internal
      */
     function onInit() {
         const axis = this;
@@ -374,11 +380,12 @@ var external_highcharts_src_js_default_Templating_default = /*#__PURE__*/__webpa
  *
  *  Parallel coordinates module
  *
- *  (c) 2010-2025 Pawel Fus
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Pawel Fus
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -405,7 +412,7 @@ var ParallelSeries;
      *  Functions
      *
      * */
-    /** @private */
+    /** @internal */
     function compose(SeriesClass) {
         if (pushUnique(composed, 'ParallelSeries')) {
             const CompoClass = SeriesClass;
@@ -418,7 +425,7 @@ var ParallelSeries;
     ParallelSeries.compose = compose;
     /**
      * Translate each point using corresponding yAxis.
-     * @private
+     * @internal
      */
     function onSeriesAfterTranslate() {
         const series = this, chart = this.chart, points = series.points, dataLength = points && points.length;
@@ -461,7 +468,7 @@ var ParallelSeries;
     /**
      * Bind each series to each yAxis. yAxis needs a reference to all series to
      * calculate extremes.
-     * @private
+     * @internal
      */
     function onSeriesBindAxes(e) {
         const series = this, chart = series.chart;
@@ -478,7 +485,7 @@ var ParallelSeries;
     }
     /**
      * On destroy, we need to remove series from each `axis.series`.
-     * @private
+     * @internal
      */
     function onSeriesDestroy() {
         const series = this, chart = series.chart;
@@ -492,7 +499,7 @@ var ParallelSeries;
         }
     }
     /**
-     * @private
+     * @internal
      */
     function onSeriesAfterGeneratePoints() {
         const chart = this.chart;
@@ -530,11 +537,12 @@ var ParallelSeries;
  *
  *  Parallel coordinates module
  *
- *  (c) 2010-2025 Pawel Fus
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Pawel Fus
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -573,7 +581,7 @@ class ChartAdditions {
      * - check only first series for number of points and assume the rest is the
      *   same
      *
-     * @private
+     * @internal
      * @function Highcharts.Chart#setParallelInfo
      * @param {Highcharts.Options} options
      * User options
@@ -609,7 +617,7 @@ var ParallelCoordinates;
      *  Functions
      *
      * */
-    /** @private */
+    /** @internal */
     function compose(AxisClass, ChartClass, highchartsDefaultOptions, SeriesClass) {
         ParallelCoordinates_ParallelAxis.compose(AxisClass);
         ParallelCoordinates_ParallelSeries.compose(SeriesClass);
@@ -624,7 +632,7 @@ var ParallelCoordinates;
     ParallelCoordinates.compose = compose;
     /**
      * Initialize parallelCoordinates
-     * @private
+     * @internal
      */
     function onChartInit(e) {
         const chart = this, options = e.args[0], defaultYAxis = splat(options.yAxis || {}), newYAxes = [];
@@ -672,7 +680,7 @@ var ParallelCoordinates;
     }
     /**
      * Initialize parallelCoordinates
-     * @private
+     * @internal
      */
     function onChartUpdate(e) {
         const chart = this, options = e.options;

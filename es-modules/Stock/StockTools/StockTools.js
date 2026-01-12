@@ -1,19 +1,19 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
  *
  *  Events generator for Stock tools
  *
- *  (c) 2009-2025 Paweł Fus
+ *  (c) 2009-2026 Highsoft AS
+ *  Author: Paweł Fus
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
 import D from '../../Core/Defaults.js';
 const { setOptions } = D;
-import NBU from '../../Extensions/Annotations/NavigationBindingsUtilities.js';
-const { getAssignedAxis } = NBU;
 import StockToolsBindings from './StockToolsBindings.js';
 import StockToolsDefaults from './StockToolsDefaults.js';
 import STU from './StockToolsUtilities.js';
@@ -40,7 +40,7 @@ function compose(NavigationBindingsClass) {
         navigationProto.utils = navigationProto.utils || {};
         navigationProto.utils.indicatorsWithAxes = STU.indicatorsWithAxes;
         navigationProto.utils.indicatorsWithVolume = STU.indicatorsWithVolume;
-        navigationProto.utils.getAssignedAxis = getAssignedAxis;
+        navigationProto.utils.getAssignedAxis = STU.getAssignedAxis;
         navigationProto.utils.isPriceIndicatorEnabled = isPriceIndicatorEnabled;
         navigationProto.utils.manageIndicators = STU.manageIndicators;
         setOptions(StockToolsDefaults);

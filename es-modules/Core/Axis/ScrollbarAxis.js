@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -17,6 +18,7 @@ const { addEvent, correctFloat, defined, pick, pushUnique } = U;
  *  Composition
  *
  * */
+/** @internal */
 var ScrollbarAxis;
 (function (ScrollbarAxis) {
     /* *
@@ -33,7 +35,7 @@ var ScrollbarAxis;
     /**
      * Attaches to axis events to create scrollbars if enabled.
      *
-     * @private
+     * @internal
      *
      * @param {Highcharts.Axis} AxisClass
      * Axis class to extend.
@@ -50,7 +52,7 @@ var ScrollbarAxis;
         }
     }
     ScrollbarAxis.compose = compose;
-    /** @private */
+    /** @internal */
     function getExtremes(axis) {
         const axisMin = pick(axis.options?.min, axis.min);
         const axisMax = pick(axis.options?.max, axis.max);
@@ -66,7 +68,7 @@ var ScrollbarAxis;
     }
     /**
      * Make space for a scrollbar.
-     * @private
+     * @internal
      */
     function onAxisAfterGetOffset() {
         const axis = this, scrollbar = axis.scrollbar, opposite = scrollbar && !scrollbar.options.opposite, index = axis.horiz ? 2 : opposite ? 3 : 1;
@@ -79,7 +81,7 @@ var ScrollbarAxis;
     }
     /**
      * Wrap axis initialization and create scrollbar if enabled.
-     * @private
+     * @internal
      */
     function onAxisAfterInit() {
         const axis = this;
@@ -122,7 +124,7 @@ var ScrollbarAxis;
     }
     /**
      * Wrap rendering axis, and update scrollbar if one is created.
-     * @private
+     * @internal
      */
     function onAxisAfterRender() {
         const axis = this, { scrollMin, scrollMax } = getExtremes(axis), scrollbar = axis.scrollbar, offset = (axis.axisTitleMargin || 0) + (axis.titleOffset || 0), scrollbarsOffsets = axis.chart.scrollbarsOffsets, axisMargin = axis.options.margin || 0;
@@ -213,4 +215,5 @@ var ScrollbarAxis;
  *  Default Export
  *
  * */
+/** @internal */
 export default ScrollbarAxis;

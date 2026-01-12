@@ -1,10 +1,12 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v12.4.0 (2025-09-04)
+ * @license Highcharts Gantt JS v12.5.0 (2026-01-12)
  * @module highcharts/highcharts-gantt
  *
- * (c) 2017-2025 Highsoft AS
+ * (c) 2017-2026 Highsoft AS
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  *
  * Authors:
  * - Lars Cabrera
@@ -12,8 +14,8 @@
  * - Jon Arild Nygard
  * - Oystein Moseng
  */
-import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_c57973fa__ from "./highcharts.src.js";
-import * as __WEBPACK_EXTERNAL_MODULE__modules_gantt_src_js_671dcdef__ from "./modules/gantt.src.js";
+import { default as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_c57973fa_default__ } from "./highcharts.src.js";
+import "./modules/gantt.src.js";
 /******/ // The require scope
 /******/ var __webpack_require__ = {};
 /******/ 
@@ -36,27 +38,18 @@ import * as __WEBPACK_EXTERNAL_MODULE__modules_gantt_src_js_671dcdef__ from "./m
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external "./highcharts.src.js"
-var x = (y) => {
-	var x = {}; __webpack_require__.d(x,
-    	y); return x
-    } 
-    var y = (x) => (() => (x))
-    const external_highcharts_src_js_namespaceObject = x({ ["default"]: () => (__WEBPACK_EXTERNAL_MODULE__highcharts_src_js_c57973fa__["default"]) });
+
 ;// external "./modules/gantt.src.js"
-var gantt_src_js_x = (y) => {
-	var x = {}; __webpack_require__.d(x,
-    	y); return x
-    } 
-    var gantt_src_js_y = (x) => (() => (x))
-    const gantt_src_js_namespaceObject = gantt_src_js_x({  });
+
 ;// ./code/es-modules/masters/highcharts-gantt.src.js
 
 
 
 
-external_highcharts_src_js_namespaceObject["default"].product = 'Highcharts Gantt';
-/* harmony default export */ const highcharts_gantt_src = (external_highcharts_src_js_namespaceObject["default"]);
+__WEBPACK_EXTERNAL_MODULE__highcharts_src_js_c57973fa_default__.product = 'Highcharts Gantt';
+/* harmony default export */ const highcharts_gantt_src = (__WEBPACK_EXTERNAL_MODULE__highcharts_src_js_c57973fa_default__);
 
 export { highcharts_gantt_src as default };

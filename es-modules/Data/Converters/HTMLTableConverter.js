@@ -1,20 +1,22 @@
 /* *
  *
- *  (c) 2009-2025 Highsoft AS
+ *  (c) 2009-2026 Highsoft AS
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  *  Authors:
  *  - Torstein Hønsi
  *  - Gøran Slettemark
  *  - Wojciech Chmiel
  *  - Sophie Bremer
+ *  - Kamil Kubik
  *
  * */
 'use strict';
 import DataConverter from './DataConverter.js';
+import DataConverterUtils from './DataConverterUtils.js';
 import U from '../../Core/Utilities.js';
 const { merge } = U;
 /* *
@@ -58,13 +60,12 @@ class HTMLTableConverter extends DataConverter {
     /**
      * Constructs an instance of the HTMLTableConverter.
      *
-     * @param {HTMLTableConverter.UserOptions} [options]
+     * @param {Partial<HTMLTableConverterOptions>} [options]
      * Options for the HTMLTableConverter.
      */
     constructor(options) {
         const mergedOptions = merge(HTMLTableConverter.defaultOptions, options);
         super(mergedOptions);
-        this.columns = [];
         this.headers = [];
         this.options = mergedOptions;
         if (mergedOptions.tableElement) {
@@ -92,7 +93,7 @@ class HTMLTableConverter extends DataConverter {
      */
     export(connector, options = this.options) {
         const exportNames = (options.firstRowAsNames !== false), useMultiLevelHeaders = options.useMultiLevelHeaders;
-        const columns = connector.getSortedColumns(options.usePresentationOrder), columnNames = Object.keys(columns), htmlRows = [], columnsCount = columnNames.length;
+        const columns = connector.getSortedColumns(), columnIds = Object.keys(columns), htmlRows = [], columnsCount = columnIds.length;
         const rowArray = [];
         let tableHead = '';
         // Add the names as the first row if they should be exported
@@ -101,32 +102,30 @@ class HTMLTableConverter extends DataConverter {
             // If using multilevel headers, the first value
             // of each column is a subcategory
             if (useMultiLevelHeaders) {
-                for (const name of columnNames) {
-                    let column = columns[name];
+                for (const columnId of columnIds) {
+                    let column = columns[columnId];
                     if (!Array.isArray(column)) {
                         // Convert to conventional array from typed array
                         // if needed
                         column = Array.from(column);
                     }
                     const subhead = (column.shift() || '').toString();
-                    columns[name] = column;
+                    columns[columnId] = column;
                     subcategories.push(subhead);
                 }
-                tableHead = this.getTableHeaderHTML(columnNames, subcategories, options);
+                tableHead = this.getTableHeaderHTML(columnIds, subcategories, options);
             }
             else {
-                tableHead = this.getTableHeaderHTML(void 0, columnNames, options);
+                tableHead = this.getTableHeaderHTML(void 0, columnIds, options);
             }
         }
         for (let columnIndex = 0; columnIndex < columnsCount; columnIndex++) {
-            const columnName = columnNames[columnIndex], column = columns[columnName], columnLength = column.length;
+            const columnId = columnIds[columnIndex], column = columns[columnId], columnLength = column.length;
             for (let rowIndex = 0; rowIndex < columnLength; rowIndex++) {
                 let cellValue = column[rowIndex];
                 if (!rowArray[rowIndex]) {
                     rowArray[rowIndex] = [];
                 }
-                // Alternative: Datatype from HTML attribute with
-                // connector.whatIs(columnName)
                 if (!(typeof cellValue === 'string' ||
                     typeof cellValue === 'number' ||
                     typeof cellValue === 'undefined')) {
@@ -247,7 +246,7 @@ class HTMLTableConverter extends DataConverter {
     /**
      * Initiates the parsing of the HTML table
      *
-     * @param {HTMLTableConverter.UserOptions}[options]
+     * @param {Partial<HTMLTableConverterOptions>}[options]
      * Options for the parser
      *
      * @param {DataEvent.Detail} [eventDetail]
@@ -258,22 +257,22 @@ class HTMLTableConverter extends DataConverter {
      * @emits HTMLTableParser#parseError
      */
     parse(options, eventDetail) {
-        const converter = this, columns = [], headers = [], parseOptions = merge(converter.options, options), { endRow, startColumn, endColumn, firstRowAsNames } = parseOptions, tableHTML = parseOptions.tableElement || this.tableElement;
+        const converter = this, columnsArray = [], headers = [], parseOptions = merge(converter.options, options), { endRow, startColumn, endColumn, firstRowAsNames } = parseOptions, tableHTML = parseOptions.tableElement || this.tableElement;
         if (!(tableHTML instanceof HTMLElement)) {
             converter.emit({
                 type: 'parseError',
-                columns,
+                columns: columnsArray,
                 detail: eventDetail,
                 headers,
                 error: 'Not a valid HTML Table'
             });
-            return;
+            return {};
         }
         converter.tableElement = tableHTML;
         converter.tableElementID = tableHTML.id;
         this.emit({
             type: 'parse',
-            columns: converter.columns,
+            columns: columnsArray,
             detail: eventDetail,
             headers: converter.headers
         });
@@ -299,20 +298,20 @@ class HTMLTableConverter extends DataConverter {
                 const columnsInRow = rows[rowIndex].children, columnsInRowLength = columnsInRow.length;
                 let columnIndex = 0;
                 while (columnIndex < columnsInRowLength) {
-                    const relativeColumnIndex = columnIndex - startColumn, row = columns[relativeColumnIndex];
+                    const relativeColumnIndex = columnIndex - startColumn, row = columnsArray[relativeColumnIndex];
                     item = columnsInRow[columnIndex];
                     if ((item.tagName === 'TD' ||
                         item.tagName === 'TH') &&
                         (columnIndex >= startColumn &&
                             columnIndex <= endColumn)) {
-                        if (!columns[relativeColumnIndex]) {
-                            columns[relativeColumnIndex] = [];
+                        if (!columnsArray[relativeColumnIndex]) {
+                            columnsArray[relativeColumnIndex] = [];
                         }
-                        let cellValue = converter.asGuessedType(item.innerHTML);
+                        let cellValue = converter.convertByType(item.innerHTML);
                         if (cellValue instanceof Date) {
                             cellValue = cellValue.getTime();
                         }
-                        columns[relativeColumnIndex][rowIndex - startRow] = cellValue;
+                        columnsArray[relativeColumnIndex][rowIndex - startRow] = cellValue;
                         // Loop over all previous indices and make sure
                         // they are nulls, not undefined.
                         let i = 1;
@@ -327,23 +326,14 @@ class HTMLTableConverter extends DataConverter {
             }
             rowIndex++;
         }
-        this.columns = columns;
         this.headers = headers;
         this.emit({
             type: 'afterParse',
-            columns,
+            columns: columnsArray,
             detail: eventDetail,
             headers
         });
-    }
-    /**
-     * Handles converting the parsed data to a table.
-     *
-     * @return {DataTable}
-     * Table from the parsed HTML table
-     */
-    getTable() {
-        return DataConverter.getTableFromColumns(this.columns, this.headers);
+        return DataConverterUtils.getColumnsCollection(columnsArray, converter.headers);
     }
 }
 /* *
@@ -357,7 +347,11 @@ class HTMLTableConverter extends DataConverter {
 HTMLTableConverter.defaultOptions = {
     ...DataConverter.defaultOptions,
     useRowspanHeaders: true,
-    useMultiLevelHeaders: true
+    useMultiLevelHeaders: true,
+    startColumn: 0,
+    endColumn: Number.MAX_VALUE,
+    startRow: 0,
+    endRow: Number.MAX_VALUE
 };
 DataConverter.registerType('HTMLTable', HTMLTableConverter);
 /* *

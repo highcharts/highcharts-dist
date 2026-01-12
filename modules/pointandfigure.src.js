@@ -1,14 +1,17 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v12.4.0 (2025-09-04)
+ * @license Highstock JS v12.5.0 (2026-01-12)
  * @module highcharts/modules/pointandfigure
  * @requires highcharts
  * @requires highcharts/modules/stock
  *
  * Point and figure series type for Highcharts Stock
  *
- * (c) 2010-2025 Kamil Musialowski
+ * (c) 2010-2026 Highsoft AS
+ * Author: Kamil Musialowski
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -118,11 +121,12 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
 ;// ./code/es-modules/Series/PointAndFigure/PointAndFigurePoint.js
 /* *
  *
- *  (c) 2010-2025 Kamil Musialowski
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Kamil Musialowski
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -180,11 +184,12 @@ class PointAndFigurePoint extends ScatterPoint {
 ;// ./code/es-modules/Series/PointAndFigure/PointAndFigureSeriesDefaults.js
 /* *
  *
- *  (c) 2010-2025 Kamil Musialowski
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Kamil Musialowski
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -389,11 +394,12 @@ var PointAndFigureSymbols;
 ;// ./code/es-modules/Series/PointAndFigure/PointAndFigureSeries.js
 /* *
  *
- *  (c) 2010-2025 Kamil Musialowski
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Kamil Musialowski
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -466,13 +472,13 @@ class PointAndFigureSeries extends ScatterSeries {
     getProcessedData() {
         if (!this.pnfDataGroups) {
             return {
-                modified: this.dataTable.modified,
+                modified: this.dataTable.getModified(),
                 cropped: false,
                 cropStart: 0,
                 closestPointRange: 1
             };
         }
-        const series = this, modified = this.dataTable.modified, options = series.options, xData = series.getColumn('x', true), yData = series.getColumn('y', true), boxSize = options.boxSize, calculatedBoxSize = isNumber(boxSize) ?
+        const series = this, modified = this.dataTable.getModified(), options = series.options, xData = series.getColumn('x', true), yData = series.getColumn('y', true), boxSize = options.boxSize, calculatedBoxSize = isNumber(boxSize) ?
             boxSize : relativeLength(boxSize, yData[0]), pnfDataGroups = series.pnfDataGroups, reversal = calculatedBoxSize * options.reversalAmount;
         series.calculatedBoxSize = calculatedBoxSize;
         let upTrend;

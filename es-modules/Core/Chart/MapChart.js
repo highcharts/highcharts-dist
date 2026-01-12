@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -119,6 +120,15 @@ class MapChart extends Chart {
                 void 0);
         }
     }
+    /**
+     * A wrapper for the chart's update function that will additionally run
+     * recommendMapView on chart.map change.
+     *
+     * @function Highcharts.MapChart#update
+     *
+     * @param {Highcharts.Options} options
+     *        The chart options.
+     */
     update(options) {
         // Calculate and set the recommended map view if map option is set
         if (options.chart && 'map' in options.chart) {

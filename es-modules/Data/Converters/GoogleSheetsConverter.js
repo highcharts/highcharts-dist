@@ -1,20 +1,22 @@
 /* *
  *
- *  (c) 2009-2025 Highsoft AS
+ *  (c) 2009-2026 Highsoft AS
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  *  Authors:
  *  - Torstein Hønsi
  *  - Gøran Slettemark
  *  - Wojciech Chmiel
  *  - Sophie Bremer
+ *  - Kamil Kubik
  *
  * */
 'use strict';
 import DataConverter from './DataConverter.js';
+import DataConverterUtils from './DataConverterUtils.js';
 import U from '../../Core/Utilities.js';
 const { merge, uniqueKey } = U;
 /* *
@@ -36,13 +38,12 @@ class GoogleSheetsConverter extends DataConverter {
     /**
      * Constructs an instance of the GoogleSheetsConverter.
      *
-     * @param {GoogleSheetsConverter.UserOptions} [options]
+     * @param {Partial<GoogleSheetsConverterOptions>} [options]
      * Options for the GoogleSheetsConverter.
      */
     constructor(options) {
         const mergedOptions = merge(GoogleSheetsConverter.defaultOptions, options);
         super(mergedOptions);
-        this.columns = [];
         this.header = [];
         this.options = mergedOptions;
     }
@@ -54,7 +55,7 @@ class GoogleSheetsConverter extends DataConverter {
     /**
      * Initiates the parsing of the Google Sheet
      *
-     * @param {GoogleSheetsConverter.UserOptions}[options]
+     * @param {Partial<GoogleSheetsConverterOptions>}[options]
      * Options for the parser
      *
      * @param {DataEvent.Detail} [eventDetail]
@@ -65,55 +66,43 @@ class GoogleSheetsConverter extends DataConverter {
      */
     parse(options, eventDetail) {
         const converter = this, parseOptions = merge(converter.options, options);
-        let columns = ((parseOptions.json?.values) || []).map((column) => column.slice());
-        if (columns.length === 0) {
-            return false;
+        let columnsArray = ((parseOptions.json?.values) || []).map((column) => column.slice());
+        if (columnsArray.length === 0) {
+            return {};
         }
         converter.header = [];
-        converter.columns = [];
         converter.emit({
             type: 'parse',
-            columns: converter.columns,
+            columns: [],
             detail: eventDetail,
             headers: converter.header
         });
         // If beforeParse is defined, use it to modify the data
         const { beforeParse, json } = parseOptions;
         if (beforeParse && json) {
-            columns = beforeParse(json.values);
+            columnsArray = beforeParse(json.values);
         }
         let column;
-        converter.columns = columns;
-        for (let i = 0, iEnd = columns.length; i < iEnd; i++) {
-            column = columns[i];
+        for (let i = 0, iEnd = columnsArray.length; i < iEnd; i++) {
+            column = columnsArray[i];
             converter.header[i] = (parseOptions.firstRowAsNames ?
                 `${column.shift()}` :
                 uniqueKey());
             for (let j = 0, jEnd = column.length; j < jEnd; ++j) {
-                if (column[j] && typeof column[j] === 'string') {
-                    let cellValue = converter.asGuessedType(column[j]);
-                    if (cellValue instanceof Date) {
-                        cellValue = cellValue.getTime();
-                    }
-                    converter.columns[i][j] = cellValue;
+                let cellValue = column[j];
+                if (isDateObject(cellValue)) {
+                    cellValue = cellValue.getTime();
                 }
+                columnsArray[i][j] = cellValue;
             }
         }
         converter.emit({
             type: 'afterParse',
-            columns: converter.columns,
+            columns: columnsArray,
             detail: eventDetail,
             headers: converter.header
         });
-    }
-    /**
-     * Handles converting the parsed data to a table.
-     *
-     * @return {DataTable}
-     * Table from the parsed Google Sheet
-     */
-    getTable() {
-        return DataConverter.getTableFromColumns(this.columns, this.header);
+        return DataConverterUtils.getColumnsCollection(columnsArray, converter.header);
     }
 }
 /* *
@@ -134,3 +123,13 @@ DataConverter.registerType('GoogleSheets', GoogleSheetsConverter);
  *
  * */
 export default GoogleSheetsConverter;
+/**
+ * Check if a value is a Date object
+ *
+ * @param {unknown} value to verify
+ * @return {boolean}
+ * True if the value is a Date object, false otherwise.
+ */
+function isDateObject(value) {
+    return Object.prototype.toString.call(value) === '[object Date]';
+}

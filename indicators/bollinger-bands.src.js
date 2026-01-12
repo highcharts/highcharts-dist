@@ -1,14 +1,17 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v12.4.0 (2025-09-04)
+ * @license Highstock JS v12.5.0 (2026-01-12)
  * @module highcharts/indicators/bollinger-bands
  * @requires highcharts
  * @requires highcharts/modules/stock
  *
  * Indicator series type for Highcharts Stock
  *
- * (c) 2010-2025 Paweł Fus
+ * (c) 2010-2026 Highsoft AS
+ * Author: Paweł Fus
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -109,13 +112,15 @@ var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default 
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
 ;// ./code/es-modules/Stock/Indicators/MultipleLinesComposition.js
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
  *
- *  (c) 2010-2025 Wojciech Chmiel
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Wojciech Chmiel
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -390,11 +395,12 @@ var MultipleLinesComposition;
 /* harmony default export */ const Indicators_MultipleLinesComposition = (MultipleLinesComposition);
 
 ;// ./code/es-modules/Stock/Indicators/BB/BBIndicator.js
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 

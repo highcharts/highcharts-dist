@@ -2,13 +2,13 @@
  *
  *  Marker clusters module.
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
  *
  *  Author: Wojciech Chmiel
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -33,7 +33,7 @@ const { addEvent, defined, error, isFunction, merge, pushUnique, syncTimeout } =
  *  Functions
  *
  * */
-/** @private */
+/** @internal */
 function compose(AxisClass, ChartClass, highchartsDefaultOptions, SeriesClass) {
     if (pushUnique(composed, 'MarkerClusters')) {
         const PointClass = SeriesClass.prototype.pointClass, { scatter: ScatterSeries } = SeriesClass.types;
@@ -50,7 +50,7 @@ function compose(AxisClass, ChartClass, highchartsDefaultOptions, SeriesClass) {
 }
 /**
  * Destroy the old tooltip after zoom.
- * @private
+ * @internal
  */
 function onAxisSetExtremes() {
     const chart = this.chart;
@@ -69,7 +69,7 @@ function onAxisSetExtremes() {
 }
 /**
  * Handle animation.
- * @private
+ * @internal
  */
 function onChartRender() {
     const chart = this;
@@ -92,7 +92,7 @@ function onChartRender() {
         }
     }
 }
-/** @private */
+/** @internal */
 function onPointDrillToCluster(event) {
     const point = event.point || event.target, series = point.series, clusterOptions = series.options.cluster, onDrillToCluster = ((clusterOptions || {}).events || {}).drillToCluster;
     if (isFunction(onDrillToCluster)) {
@@ -102,7 +102,7 @@ function onPointDrillToCluster(event) {
 /**
  * Override point prototype to throw a warning when trying to update
  * clustered point.
- * @private
+ * @internal
  */
 function onPointUpdate() {
     const point = this;
@@ -115,7 +115,7 @@ function onPointUpdate() {
 }
 /**
  * Add classes, change mouse cursor.
- * @private
+ * @internal
  */
 function onSeriesAfterRender() {
     const series = this, clusterZoomEnabled = (series.options.cluster || {}).drillToCluster;

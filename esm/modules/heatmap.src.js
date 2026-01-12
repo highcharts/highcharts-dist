@@ -1,14 +1,17 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v12.4.0 (2025-09-04)
+ * @license Highmaps JS v12.5.0 (2026-01-12)
  * @module highcharts/modules/heatmap
  * @requires highcharts
  *
- * (c) 2009-2025 Torstein Honsi
+ * (c) 2009-2026 Highsoft AS
+ * Author: Torstein Honsi
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
-import * as __WEBPACK_EXTERNAL_MODULE__coloraxis_src_js_cdd22a72__ from "./coloraxis.src.js";
+import "./coloraxis.src.js";
 /******/ // The require scope
 /******/ var __webpack_require__ = {};
 /******/ 
@@ -43,17 +46,13 @@ import * as __WEBPACK_EXTERNAL_MODULE__coloraxis_src_js_cdd22a72__ from "./color
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
 ;// external "./coloraxis.src.js"
-var x = (y) => {
-	var x = {}; __webpack_require__.d(x,
-    	y); return x
-    } 
-    var y = (x) => (() => (x))
-    const external_coloraxis_src_js_namespaceObject = x({  });
+
 ;// external ["../highcharts.src.js","default","Color"]
 const external_highcharts_src_js_default_Color_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Color;
 var external_highcharts_src_js_default_Color_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Color_namespaceObject);
@@ -66,11 +65,12 @@ var external_highcharts_src_js_default_SVGElement_default = /*#__PURE__*/__webpa
 ;// ./code/es-modules/Series/ColorMapComposition.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -194,11 +194,12 @@ var ColorMapComposition;
 ;// ./code/es-modules/Series/Heatmap/HeatmapPoint.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -307,11 +308,12 @@ extend(HeatmapPoint.prototype, {
 ;// ./code/es-modules/Series/Heatmap/HeatmapSeriesDefaults.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -950,11 +952,12 @@ var external_highcharts_src_js_default_SVGRenderer_default = /*#__PURE__*/__webp
 ;// ./code/es-modules/Series/InterpolationUtilities.js
 /* *
  *
- *  (c) 2010-2025 Hubert Kozik
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Hubert Kozik
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -1024,11 +1027,12 @@ const InterpolationUtilities = {
 ;// ./code/es-modules/Series/Heatmap/HeatmapSeries.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -1246,7 +1250,7 @@ class HeatmapSeries extends ScatterSeries {
         // Apply old borderWidth property if exists.
         attr['stroke-width'] = borderWidth;
         if (state && state !== 'normal') {
-            const stateOptions = merge(seriesOptions.states?.[state], seriesOptions.marker?.states?.[state], point?.options.states?.[state] || {});
+            const stateOptions = merge(seriesOptions.states?.[state], seriesOptions.marker?.states?.[state], point?.options.marker?.states?.[state] || {});
             attr.fill =
                 stateOptions.color ||
                     external_highcharts_src_js_default_Color_default().parse(attr.fill).brighten(stateOptions.brightness || 0).get();
@@ -1291,6 +1295,9 @@ HeatmapSeries.defaultOptions = merge(ScatterSeries.defaultOptions, Heatmap_Heatm
 HeatmapSeries_addEvent(HeatmapSeries, 'afterDataClassLegendClick', function () {
     this.isDirtyCanvas = true;
     this.drawPoints();
+    if (this.options.enableMouseTracking) {
+        this.drawTracker(); // #23162, set tracker again after points redraw
+    }
 });
 HeatmapSeries_extend(HeatmapSeries.prototype, {
     axisTypes: Series_ColorMapComposition.seriesMembers.axisTypes,

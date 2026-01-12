@@ -104,6 +104,13 @@ declare module "../highcharts" {
      */
     class Fullscreen {
         /**
+         * Handles displaying chart's container in the fullscreen mode.
+         *
+         * **Note**: Fullscreen is not supported on iPhone due to iOS
+         * limitations.
+         */
+        constructor(chart: Chart);
+        /**
          * Chart managed by the fullscreen controller.
          */
         chart: Chart;

@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2009-2025 Torstein Honsi
+ *  (c) 2009-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 /*
@@ -46,7 +47,7 @@ const labelDistance = 3;
  * */
 /**
  * Check whether a proposed label position is clear of other elements.
- * @private
+ * @internal
  */
 function checkClearPoint(series, x, y, bBox, checkDistance) {
     const chart = series.chart, seriesLabelOptions = series.options.label || {}, onArea = pick(seriesLabelOptions.onArea, !!series.area), findDistanceToOthers = (onArea || seriesLabelOptions.connectorAllowed), leastDistance = 16, boxesToAvoid = chart.boxesToAvoid;
@@ -56,7 +57,7 @@ function checkClearPoint(series, x, y, bBox, checkDistance) {
      * Get the weight in order to determine the ideal position. Larger distance
      * to other series gives more weight. Smaller distance to the actual point
      * (connector points only) gives more weight.
-     * @private
+     * @internal
      */
     function getWeight(distToOthersSquared, distToPointSquared) {
         return distToOthersSquared - distToPointSquared;
@@ -153,9 +154,7 @@ function checkClearPoint(series, x, y, bBox, checkDistance) {
         connectorPoint
     } : false;
 }
-/**
- * @private
- */
+/** @internal */
 function compose(ChartClass, SVGRendererClass) {
     if (pushUnique(composed, 'SeriesLabel')) {
         // Leave both events, we handle animation differently (#9815)
@@ -170,7 +169,7 @@ function compose(ChartClass, SVGRendererClass) {
  * redraw. It runs in  a timeout to prevent locking, and loops over all series,
  * taking all series and labels into account when placing the labels.
  *
- * @private
+ * @internal
  * @function Highcharts.Chart#drawSeriesLabels
  */
 function drawSeriesLabels(chart) {
@@ -210,7 +209,7 @@ function drawSeriesLabels(chart) {
             areaMax = Math.max.apply(Math, dataExtremes);
         }
         /**
-         * @private
+         * @internal
          */
         function insidePane(x, y, bBox) {
             const leftBound = Math.max(paneLeft, pick(areaMin, -Infinity)), rightBound = Math.min(paneLeft + paneWidth, pick(areaMax, Infinity));
@@ -220,7 +219,7 @@ function drawSeriesLabels(chart) {
                 y <= paneTop + paneHeight - bBox.height);
         }
         /**
-         * @private
+         * @internal
          */
         function destroyLabel() {
             if (label) {
@@ -413,7 +412,7 @@ function drawSeriesLabels(chart) {
  * Points to avoid. In addition to actual data points, the label should avoid
  * interpolated positions.
  *
- * @private
+ * @internal
  * @function Highcharts.Series#getPointsOnGraph
  */
 function getPointsOnGraph(series) {
@@ -426,7 +425,7 @@ function getPointsOnGraph(series) {
      * Push the point to the interpolated points, but only if that position in
      * the grid has not been occupied. As a performance optimization, we divide
      * the plot area into a grid and only add one point per series (#9815).
-     * @private
+     * @internal
      */
     function pushDiscrete(point) {
         const cellSize = 8, key = Math.round((point.plotX || 0) / cellSize) + ',' +
@@ -544,7 +543,7 @@ function getPointsOnGraph(series) {
  * Overridable function to return series-specific font sizes for the labels. By
  * default it returns bigger font sizes for series with the greater sum of y
  * values.
- * @private
+ * @internal
  */
 function labelFontSize(series, minFontSize, maxFontSize) {
     return minFontSize + (((series.sum || 0) / (series.chart.labelSeriesMaxSum || 0)) *
@@ -552,7 +551,7 @@ function labelFontSize(series, minFontSize, maxFontSize) {
 }
 /**
  * Prepare drawing series labels.
- * @private
+ * @internal
  */
 function onChartRedraw(e) {
     if (this.renderer) {
@@ -606,7 +605,7 @@ function onChartRedraw(e) {
 }
 /**
  * General symbol definition for labels with connector.
- * @private
+ * @internal
  */
 function symbolConnector(x, y, w, h, options) {
     const anchorX = options && options.anchorX, anchorY = options && options.anchorY;

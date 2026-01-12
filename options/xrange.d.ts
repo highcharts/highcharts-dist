@@ -115,61 +115,53 @@ declare module "../highcharts" {
         fill?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
     }
     /**
-     * (Highcharts, Highstock, Gantt) An `xrange` series. If the type option is
-     * not specified, it is inherited from chart.type.
-     *
-     * Configuration options for the series are given in three levels:
-     *
-     * 1. Options for all series in a chart are defined in the
-     * plotOptions.series object.
-     *
-     * 2. Options for all `xrange` series are defined in plotOptions.xrange.
-     *
-     * 3. Options for one single series are given in the series instance array.
-     * (see online documentation for example)
-     *
-     * **TypeScript:**
-     *
-     * - the type option must always be set.
-     *
-     * - when accessing an array of series, the combined set of all series types
-     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
-     * specific type can be done by checking the `type` property. (see online
-     * documentation for example)
-     *
-     * You have to extend the `SeriesXrangeOptions` via an interface to allow
-     * custom properties: ``` declare interface SeriesXrangeOptions {
-     * customProperty: string; }
-     *
+     * (Highcharts, Highstock, Gantt) Animation when not hovering over the
+     * marker.
      */
-    interface SeriesXrangeOptions extends Highcharts.PlotXrangeOptions, Highcharts.SeriesOptions {
+    interface PlotXrangeStatesInactiveAnimationOptions {
+        duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock, Gantt) Positioning options for fixed tooltip,
+     * taking effect only when tooltip.fixed is `true`.
+     */
+    interface PlotXrangeTooltipPositionOptions {
         /**
-         * (Highcharts, Highstock, Gantt) An array of data points for the
-         * series. For the `xrange` series type, points can be given in the
-         * following ways:
+         * (Highcharts, Highstock, Gantt) The horizontal alignment of the fixed
+         * tooltip.
+         */
+        align?: Highcharts.AlignValue;
+        /**
+         * (Highcharts, Highstock, Gantt) What the fixed tooltip alignment
+         * should be relative to.
          *
-         * 1. An array of objects with named values. The objects are point
-         * configuration objects as seen below. (see online documentation for
-         * example)
+         * The default, `pane`, means that it is aligned within the plot area
+         * for that given series. If the tooltip is split (as default in Stock
+         * charts), each partial tooltip is aligned within the series' pane.
          */
-        data?: Array<Highcharts.XrangePointOptionsObject>;
+        relativeTo?: Highcharts.OptionsRelativeToValue;
         /**
-         * Not available
+         * (Highcharts, Highstock, Gantt) The vertical alignment of the fixed
+         * tooltip.
          */
-        depth?: undefined;
+        verticalAlign?: Highcharts.VerticalAlignValue;
         /**
-         * Not available
+         * (Highcharts, Highstock, Gantt) X pixel offset from the given
+         * position. Can be used to shy away from axis lines, grid lines etc to
+         * avoid the tooltip overlapping other elements.
          */
-        edgeColor?: undefined;
+        x?: number;
         /**
-         * Not available
+         * (Highcharts, Highstock, Gantt) Y pixel offset from the given
+         * position. Can be used to shy away from axis lines, grid lines etc to
+         * avoid the tooltip overlapping other elements.
          */
-        edgeWidth?: undefined;
-        /**
-         * (Highcharts, Highstock, Highmaps, Gantt) This property is only in
-         * TypeScript non-optional and might be `undefined` in series objects
-         * from unknown sources.
-         */
-        type: "xrange";
+        y?: number;
+    }
+    /**
+     * (Highcharts, Highstock) Animation when hovering over the marker.
+     */
+    interface SeriesXrangeDataMarkerStatesHoverAnimationOptions {
+        duration?: number;
     }
 }

@@ -1,11 +1,14 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.5.0 (2026-01-12)
  * @module highcharts/modules/dumbbell
  * @requires highcharts
  *
- * (c) 2009-2025 Sebastian Bochan, Rafal Sebestjanski
+ * (c) 2009-2026 Highsoft AS
+ * Author: Sebastian Bochan, Rafal Sebestjanski
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -115,11 +118,12 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
 ;// ./code/es-modules/Series/AreaRange/AreaRangePoint.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -133,16 +137,6 @@ const { defined, isNumber } = (highcharts_commonjs_highcharts_commonjs2_highchar
  *
  * */
 class AreaRangePoint extends AreaPoint {
-    /**
-     * Range series only. The high or maximum value for each data point.
-     * @name Highcharts.Point#high
-     * @type {number|undefined}
-     */
-    /**
-     * Range series only. The low or minimum value for each data point.
-     * @name Highcharts.Point#low
-     * @type {number|undefined}
-     */
     /* *
      *
      *  Functions
@@ -220,15 +214,34 @@ class AreaRangePoint extends AreaPoint {
  *
  * */
 /* harmony default export */ const AreaRange_AreaRangePoint = (AreaRangePoint);
+/* *
+ *
+ *  API Options
+ *
+ * */
+/**
+ * Range series only. The high or maximum value for each data point.
+ *
+ * @name Highcharts.Point#high
+ * @type {number|undefined}
+ */
+/**
+ * Range series only. The low or minimum value for each data point.
+ *
+ * @name Highcharts.Point#low
+ * @type {number|undefined}
+ */
+''; // Keeps doclets above in JS file.
 
 ;// ./code/es-modules/Series/Dumbbell/DumbbellPoint.js
 /* *
  *
- *  (c) 2010-2025 Sebastian Bochan, Rafal Sebestjanski
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Sebastian Bochan, Rafal Sebestjanski
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -303,11 +316,12 @@ extend(DumbbellPoint.prototype, {
 ;// ./code/es-modules/Series/Dumbbell/DumbbellSeriesDefaults.js
 /* *
  *
- *  (c) 2010-2025 Sebastian Bochan, Rafal Sebestjanski
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Sebastian Bochan, Rafal Sebestjanski
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -540,11 +554,12 @@ var highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_
 ;// ./code/es-modules/Series/Dumbbell/DumbbellSeries.js
 /* *
  *
- *  (c) 2010-2025 Sebastian Bochan, Rafal Sebestjanski
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Sebastian Bochan, Rafal Sebestjanski
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 

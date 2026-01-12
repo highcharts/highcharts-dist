@@ -1,10 +1,10 @@
 /* *
  *
- *  (c) 2009-2025 Highsoft AS
+ *  (c) 2009-2026 Highsoft AS
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  *  Authors:
  *  - Sophie Bremer
@@ -12,8 +12,8 @@
  * */
 'use strict';
 import DataConnector from './Connectors/DataConnector.js';
-import DataPoolDefaults from './DataPoolDefaults.js';
 import U from '../Core/Utilities.js';
+const { addEvent, fireEvent, merge } = U;
 /* *
  *
  *  Class
@@ -25,7 +25,7 @@ import U from '../Core/Utilities.js';
  * @class
  * @name Data.DataPool
  *
- * @param {Data.DataPoolOptions} options
+ * @param {DataPoolOptions} options
  * Pool options with all connectors.
  */
 class DataPool {
@@ -34,27 +34,25 @@ class DataPool {
      *  Constructor
      *
      * */
-    constructor(options = DataPoolDefaults) {
-        options.connectors = (options.connectors || []);
+    constructor(options) {
+        this.options = merge(DataPool.defaultOptions, options);
         this.connectors = {};
-        this.options = options;
         this.waiting = {};
     }
     /* *
      *
-     *  Functions
+     *  Methods
      *
      * */
     /**
      * Emits an event on this data pool to all registered callbacks of the given
      * event.
-     * @private
      *
      * @param {DataTable.Event} e
      * Event object with event information.
      */
     emit(e) {
-        U.fireEvent(this, e.type, e);
+        fireEvent(this, e.type, e);
     }
     /**
      * Loads the connector.
@@ -124,7 +122,7 @@ class DataPool {
      * @param {string} connectorId
      * ID of the connector.
      *
-     * @return {DataPoolConnectorOptions|undefined}
+     * @return {DataConnectorTypeOptions | undefined}
      * Returns the options of the connector, or `undefined` if not found.
      */
     getConnectorOptions(connectorId) {
@@ -134,22 +132,6 @@ class DataPool {
                 return connectors[i];
             }
         }
-    }
-    /**
-     * Loads the connector table.
-     *
-     * @function Data.DataPool#getConnectorTable
-     *
-     * @param {string} connectorId
-     * ID of the connector.
-     *
-     * @return {Promise<Data.DataTable>}
-     * Returns the connector table.
-     */
-    getConnectorTable(connectorId) {
-        return this
-            .getConnector(connectorId)
-            .then((connector) => connector.table);
     }
     /**
      * Tests whether the connector has never been requested.
@@ -165,7 +147,8 @@ class DataPool {
         return !this.connectors[connectorId];
     }
     /**
-     * Creates and loads the connector.
+     * Instantiates the connector class for the given options and loads its
+     * data.
      *
      * @private
      *
@@ -185,12 +168,12 @@ class DataPool {
             if (!ConnectorClass) {
                 throw new Error(`Connector type not found. (${options.type})`);
             }
-            const connector = this.connectors[options.id] = new ConnectorClass(options.options, options.dataTables);
+            const connector = this.connectors[options.id] =
+                new ConnectorClass(options);
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             connector
                 .load()
-                .then(({ converter, dataTables }) => {
-                connector.dataTables = dataTables;
+                .then(({ converter }) => {
                 connector.converter = converter;
                 connector.loaded = true;
                 this.emit({
@@ -225,31 +208,33 @@ class DataPool {
      * Function to unregister callback from the event.
      */
     on(type, callback) {
-        return U.addEvent(this, type, callback);
+        return addEvent(this, type, callback);
     }
     /**
      * Sets connector options under the specified `options.id`.
      *
-     * @param {Data.DataPoolConnectorOptions} options
+     * @param options
      * Connector options to set.
      */
     setConnectorOptions(options) {
-        const connectors = this.options.connectors, instances = this.connectors;
+        const connectorsOptions = this.options.connectors;
+        const connectorsInstances = this.connectors;
         this.emit({
             type: 'setConnectorOptions',
             options
         });
-        for (let i = 0, iEnd = connectors.length; i < iEnd; ++i) {
-            if (connectors[i].id === options.id) {
-                connectors.splice(i, 1);
+        for (let i = 0, iEnd = connectorsOptions.length; i < iEnd; ++i) {
+            if (connectorsOptions[i].id === options.id) {
+                connectorsOptions.splice(i, 1);
                 break;
             }
         }
-        if (instances[options.id]) {
-            instances[options.id].stopPolling();
-            delete instances[options.id];
+        // TODO: Check if can be refactored
+        if (connectorsInstances[options.id]) {
+            connectorsInstances[options.id].stopPolling();
+            delete connectorsInstances[options.id];
         }
-        connectors.push(options);
+        connectorsOptions.push(options);
         this.emit({
             type: 'afterSetConnectorOptions',
             options
@@ -261,11 +246,9 @@ class DataPool {
  *  Static Properties
  *
  * */
-/**
- * Semantic version string of the DataPool class.
- * @internal
- */
-DataPool.version = '1.0.0';
+DataPool.defaultOptions = {
+    connectors: []
+};
 /* *
  *
  *  Default Export

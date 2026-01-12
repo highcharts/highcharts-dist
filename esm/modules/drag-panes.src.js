@@ -1,18 +1,19 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v12.4.0 (2025-09-04)
+ * @license Highstock JS v12.5.0 (2026-01-12)
  * @module highcharts/modules/drag-panes
  * @requires highcharts
  * @requires highcharts/modules/stock
  *
  * Drag-panes module
  *
- * (c) 2010-2025 Highsoft AS
+ * (c) 2010-2026 Highsoft AS
  * Author: Kacper Madej
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
-import * as __WEBPACK_EXTERNAL_MODULE__stock_src_js_3de69a45__ from "./stock.src.js";
 /******/ // The require scope
 /******/ var __webpack_require__ = {};
 /******/ 
@@ -47,200 +48,25 @@ import * as __WEBPACK_EXTERNAL_MODULE__stock_src_js_3de69a45__ from "./stock.src
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
-;// ./code/es-modules/Extensions/DragPanes/AxisResizerDefaults.js
-/* *
- *
- *  Plugin for resizing axes / panes in a chart.
- *
- *  (c) 2010-2025 Highsoft AS
- *
- *  Author: Kacper Madej
- *
- *  License: www.highcharts.com/license
- *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
- *
- * */
-/* *
- *
- *  API Options
- *
- * */
-const AxisResizerDefaults = {
-    /**
-     * Minimal size of a resizable axis. Could be set as a percent
-     * of plot area or pixel size.
-     *
-     * @sample {highstock} stock/yaxis/resize-min-max-length
-     *         minLength and maxLength
-     *
-     * @type      {number|string}
-     * @product   highstock
-     * @requires  modules/drag-panes
-     * @apioption yAxis.minLength
-     */
-    minLength: '10%',
-    /**
-     * Maximal size of a resizable axis. Could be set as a percent
-     * of plot area or pixel size.
-     *
-     * @sample {highstock} stock/yaxis/resize-min-max-length
-     *         minLength and maxLength
-     *
-     * @type      {number|string}
-     * @product   highstock
-     * @requires  modules/drag-panes
-     * @apioption yAxis.maxLength
-     */
-    maxLength: '100%',
-    /**
-     * Options for axis resizing. It adds a thick line between panes which
-     * the user can drag in order to resize the panes.
-     *
-     * @sample {highstock} stock/demo/candlestick-and-volume
-     *         Axis resizing enabled
-     *
-     * @product      highstock
-     * @requires     modules/drag-panes
-     * @optionparent yAxis.resize
-     */
-    resize: {
-        /**
-         * Contains two arrays of axes that are controlled by control line
-         * of the axis.
-         *
-         * @requires modules/drag-panes
-         */
-        controlledAxis: {
-            /**
-             * Array of axes that should move out of the way of resizing
-             * being done for the current axis. If not set, the next axis
-             * will be used.
-             *
-             * @sample {highstock} stock/yaxis/multiple-resizers
-             *         Three panes with resizers
-             * @sample {highstock} stock/yaxis/resize-multiple-axes
-             *         One resizer controlling multiple axes
-             *
-             * @type     {Array<number|string>}
-             * @default  []
-             * @requires modules/drag-panes
-             */
-            next: [],
-            /**
-             * Array of axes that should move with the current axis
-             * while resizing.
-             *
-             * @sample {highstock} stock/yaxis/multiple-resizers
-             *         Three panes with resizers
-             * @sample {highstock} stock/yaxis/resize-multiple-axes
-             *         One resizer controlling multiple axes
-             *
-             * @type     {Array<number|string>}
-             * @default  []
-             * @requires modules/drag-panes
-             */
-            prev: []
-        },
-        /**
-         * Enable or disable resize by drag for the axis.
-         *
-         * @sample {highstock} stock/demo/candlestick-and-volume
-         *         Enabled resizer
-         *
-         * @requires modules/drag-panes
-         */
-        enabled: false,
-        /**
-         * Cursor style for the control line.
-         *
-         * In styled mode use class `highcharts-axis-resizer` instead.
-         *
-         * @requires modules/drag-panes
-         */
-        cursor: 'ns-resize',
-        /**
-         * Color of the control line.
-         *
-         * In styled mode use class `highcharts-axis-resizer` instead.
-         *
-         * @sample {highstock} stock/yaxis/styled-resizer
-         *         Styled resizer
-         *
-         * @type     {Highcharts.ColorString}
-         * @requires modules/drag-panes
-         */
-        lineColor: "#cccccc" /* Palette.neutralColor20 */,
-        /**
-         * Dash style of the control line.
-         *
-         * In styled mode use class `highcharts-axis-resizer` instead.
-         *
-         * @see For supported options check [dashStyle](#plotOptions.series.dashStyle)
-         *
-         * @sample {highstock} stock/yaxis/styled-resizer
-         *         Styled resizer
-         *
-         * @requires modules/drag-panes
-         */
-        lineDashStyle: 'Solid',
-        /**
-         * Width of the control line.
-         *
-         * In styled mode use class `highcharts-axis-resizer` instead.
-         *
-         * @sample {highstock} stock/yaxis/styled-resizer
-         *         Styled resizer
-         *
-         * @requires modules/drag-panes
-         */
-        lineWidth: 4,
-        /**
-         * Horizontal offset of the control line.
-         *
-         * @sample {highstock} stock/yaxis/styled-resizer
-         *         Styled resizer
-         *
-         * @requires modules/drag-panes
-         */
-        x: 0,
-        /**
-         * Vertical offset of the control line.
-         *
-         * @sample {highstock} stock/yaxis/styled-resizer
-         *         Styled resizer
-         *
-         * @requires modules/drag-panes
-         */
-        y: 0
-    }
-};
-/* *
- *
- *  Default Export
- *
- * */
-/* harmony default export */ const DragPanes_AxisResizerDefaults = (AxisResizerDefaults);
-
 ;// ./code/es-modules/Extensions/DragPanes/AxisResizer.js
 /* *
  *
  *  Plugin for resizing axes / panes in a chart.
  *
- *  (c) 2010-2025 Highsoft AS
+ *  (c) 2010-2026 Highsoft AS
  *
  *  Author: Kacper Madej
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
-
 
 
 const { addEvent, clamp, isNumber, relativeLength } = (external_highcharts_src_js_default_default());
@@ -252,7 +78,7 @@ const { addEvent, clamp, isNumber, relativeLength } = (external_highcharts_src_j
 /**
  * The AxisResizer class.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.AxisResizer
  *
@@ -448,7 +274,7 @@ class AxisResizer {
                     yDelta = chartY - resizer.lastPos;
                     // Normalize height to option limits
                     height = normalize(axis.len - yDelta, minLength, maxLength);
-                    // Adjust top, so the axis looks like shrinked from top
+                    // Adjust top, so the axis looks like shrank from top
                     top = axis.top + yDelta;
                     // Check for plot area limits
                     if (top + height > plotBottom) {
@@ -528,32 +354,204 @@ class AxisResizer {
 }
 /* *
  *
- *  Static Properties
+ *  Default Export
  *
  * */
-// Default options for AxisResizer.
-AxisResizer.resizerOptions = DragPanes_AxisResizerDefaults;
+/** @internal */
+/* harmony default export */ const DragPanes_AxisResizer = (AxisResizer);
+
+;// ./code/es-modules/Extensions/DragPanes/AxisResizerDefaults.js
+/* *
+ *
+ *  Plugin for resizing axes / panes in a chart.
+ *
+ *  (c) 2010-2026 Highsoft AS
+ *
+ *  Author: Kacper Madej
+ *
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
+ *
+ *
+ * */
+/* *
+ *
+ *  API Options
+ *
+ * */
+/** @internal */
+const AxisResizerDefaults = {
+    /**
+     * Minimal size of a resizable axis. Could be set as a percent
+     * of plot area or pixel size.
+     *
+     * @sample {highstock} stock/yaxis/resize-min-max-length
+     *         minLength and maxLength
+     *
+     * @type      {number|string}
+     * @product   highstock
+     * @requires  modules/drag-panes
+     * @apioption yAxis.minLength
+     */
+    minLength: '10%',
+    /**
+     * Maximal size of a resizable axis. Could be set as a percent
+     * of plot area or pixel size.
+     *
+     * @sample {highstock} stock/yaxis/resize-min-max-length
+     *         minLength and maxLength
+     *
+     * @type      {number|string}
+     * @product   highstock
+     * @requires  modules/drag-panes
+     * @apioption yAxis.maxLength
+     */
+    maxLength: '100%',
+    /**
+     * Options for axis resizing. It adds a thick line between panes which
+     * the user can drag in order to resize the panes.
+     *
+     * @sample {highstock} stock/demo/candlestick-and-volume
+     *         Axis resizing enabled
+     *
+     * @product      highstock
+     * @requires     modules/drag-panes
+     * @optionparent yAxis.resize
+     */
+    resize: {
+        /**
+         * Contains two arrays of axes that are controlled by control line
+         * of the axis.
+         *
+         * @requires modules/drag-panes
+         */
+        controlledAxis: {
+            /**
+             * Array of axes that should move out of the way of resizing
+             * being done for the current axis. If not set, the next axis
+             * will be used.
+             *
+             * @sample {highstock} stock/yaxis/multiple-resizers
+             *         Three panes with resizers
+             * @sample {highstock} stock/yaxis/resize-multiple-axes
+             *         One resizer controlling multiple axes
+             *
+             * @type     {Array<number|string>}
+             * @default  []
+             * @requires modules/drag-panes
+             */
+            next: [],
+            /**
+             * Array of axes that should move with the current axis
+             * while resizing.
+             *
+             * @sample {highstock} stock/yaxis/multiple-resizers
+             *         Three panes with resizers
+             * @sample {highstock} stock/yaxis/resize-multiple-axes
+             *         One resizer controlling multiple axes
+             *
+             * @type     {Array<number|string>}
+             * @default  []
+             * @requires modules/drag-panes
+             */
+            prev: []
+        },
+        /**
+         * Enable or disable resize by drag for the axis.
+         *
+         * @sample {highstock} stock/demo/candlestick-and-volume
+         *         Enabled resizer
+         *
+         * @requires modules/drag-panes
+         */
+        enabled: false,
+        /**
+         * Cursor style for the control line.
+         *
+         * In styled mode use class `highcharts-axis-resizer` instead.
+         *
+         * @requires modules/drag-panes
+         */
+        cursor: 'ns-resize',
+        /**
+         * Color of the control line.
+         *
+         * In styled mode use class `highcharts-axis-resizer` instead.
+         *
+         * @sample {highstock} stock/yaxis/styled-resizer
+         *         Styled resizer
+         *
+         * @type     {Highcharts.ColorString}
+         * @requires modules/drag-panes
+         */
+        lineColor: "#cccccc" /* Palette.neutralColor20 */,
+        /**
+         * Dash style of the control line.
+         *
+         * In styled mode use class `highcharts-axis-resizer` instead.
+         *
+         * @see For supported options check [dashStyle](#plotOptions.series.dashStyle)
+         *
+         * @sample {highstock} stock/yaxis/styled-resizer
+         *         Styled resizer
+         *
+         * @requires modules/drag-panes
+         */
+        lineDashStyle: 'Solid',
+        /**
+         * Width of the control line.
+         *
+         * In styled mode use class `highcharts-axis-resizer` instead.
+         *
+         * @sample {highstock} stock/yaxis/styled-resizer
+         *         Styled resizer
+         *
+         * @requires modules/drag-panes
+         */
+        lineWidth: 4,
+        /**
+         * Horizontal offset of the control line.
+         *
+         * @sample {highstock} stock/yaxis/styled-resizer
+         *         Styled resizer
+         *
+         * @requires modules/drag-panes
+         */
+        x: 0,
+        /**
+         * Vertical offset of the control line.
+         *
+         * @sample {highstock} stock/yaxis/styled-resizer
+         *         Styled resizer
+         *
+         * @requires modules/drag-panes
+         */
+        y: 0
+    }
+};
 /* *
  *
  *  Default Export
  *
  * */
-/* harmony default export */ const DragPanes_AxisResizer = (AxisResizer);
+/** @internal */
+/* harmony default export */ const DragPanes_AxisResizerDefaults = (AxisResizerDefaults);
 
 ;// ./code/es-modules/Extensions/DragPanes/DragPanes.js
 /* *
  *
  *  Plugin for resizing axes / panes in a chart.
  *
- *  (c) 2010-2025 Highsoft AS
+ *  (c) 2010-2026 Highsoft AS
  *
  *  Author: Kacper Madej
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
+
 
 
 
@@ -565,12 +563,10 @@ const { addEvent: DragPanes_addEvent, merge, wrap } = (external_highcharts_src_j
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function compose(AxisClass, PointerClass) {
     if (!AxisClass.keepProps.includes('resizer')) {
-        merge(true, defaultOptions.yAxis, DragPanes_AxisResizer.resizerOptions);
+        merge(true, defaultOptions.yAxis, DragPanes_AxisResizerDefaults);
         // Keep resizer reference on axis update
         AxisClass.keepProps.push('resizer');
         DragPanes_addEvent(AxisClass, 'afterRender', onAxisAfterRender);
@@ -581,7 +577,7 @@ function compose(AxisClass, PointerClass) {
 }
 /**
  * Add new AxisResizer, update or remove it
- * @private
+ * @internal
  */
 function onAxisAfterRender() {
     const axis = this, resizer = axis.resizer, resizerOptions = axis.options.resize;
@@ -611,7 +607,7 @@ function onAxisAfterRender() {
 }
 /**
  * Clear resizer on axis remove.
- * @private
+ * @internal
  */
 function onAxisDestroy(e) {
     const axis = this;
@@ -622,7 +618,7 @@ function onAxisDestroy(e) {
 /**
  * Prevent default drag action detection while dragging a control line of
  * AxisResizer. (#7563)
- * @private
+ * @internal
  */
 function wrapPointerDrag(proceed) {
     const pointer = this;
@@ -632,7 +628,7 @@ function wrapPointerDrag(proceed) {
 }
 /**
  * Prevent any hover effects while dragging a control line of AxisResizer.
- * @private
+ * @internal
  */
 function wrapPointerRunPointActions(proceed) {
     const pointer = this;
@@ -645,27 +641,19 @@ function wrapPointerRunPointActions(proceed) {
  *  Default Export
  *
  * */
+/** @internal */
 const DragPanes = {
     compose
 };
+/** @internal */
 /* harmony default export */ const DragPanes_DragPanes = (DragPanes);
 
-;// external "./stock.src.js"
-var x = (y) => {
-	var x = {}; __webpack_require__.d(x,
-    	y); return x
-    } 
-    var y = (x) => (() => (x))
-    const external_stock_src_js_namespaceObject = x({  });
 ;// ./code/es-modules/masters/modules/drag-panes.src.js
 
 
 
 
-
-
 const G = (external_highcharts_src_js_default_default());
-G.AxisResizer = DragPanes_AxisResizer;
 DragPanes_DragPanes.compose(G.Axis, G.Pointer);
 /* harmony default export */ const drag_panes_src = ((external_highcharts_src_js_default_default()));
 

@@ -1,14 +1,16 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.5.0 (2026-01-12)
  * @module highcharts/modules/timeline
  * @requires highcharts
  *
  * Timeline series
  *
- * (c) 2010-2025 Highsoft AS
+ * (c) 2010-2026 Highsoft AS
  * Author: Daniel Studencki
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -123,13 +125,13 @@ var highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_H
  *
  *  Timeline Series.
  *
- *  (c) 2010-2025 Highsoft AS
+ *  (c) 2010-2026 Highsoft AS
  *
  *  Author: Daniel Studencki
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -293,13 +295,13 @@ class TimelinePoint extends LinePoint {
  *
  *  Timeline Series.
  *
- *  (c) 2010-2025 Highsoft AS
+ *  (c) 2010-2026 Highsoft AS
  *
  *  Author: Daniel Studencki
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -549,13 +551,13 @@ const TimelineSeriesDefaults = {
  *
  *  Timeline Series.
  *
- *  (c) 2010-2025 Highsoft AS
+ *  (c) 2010-2026 Highsoft AS
  *
  *  Author: Daniel Studencki
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -752,13 +754,11 @@ class TimelineSeries extends LineSeries {
         }
         // Handle hover and select states
         if (state) {
-            seriesStateOptions =
-                seriesMarkerOptions.states[state] || {};
-            pointStateOptions = pointMarkerOptions.states &&
-                pointMarkerOptions.states[state] || {};
-            radius = TimelineSeries_pick(pointStateOptions.radius, seriesStateOptions.radius, radius + (seriesStateOptions.radiusPlus || 0));
+            seriesStateOptions = seriesMarkerOptions.states?.[state];
+            pointStateOptions = pointMarkerOptions.states?.[state];
+            radius = TimelineSeries_pick(pointStateOptions?.radius, seriesStateOptions?.radius, radius + (seriesStateOptions?.radiusPlus || 0));
         }
-        point.hasImage = (symbol && symbol.indexOf('url') === 0);
+        point.hasImage = !!(symbol && symbol.indexOf('url') === 0);
         const attribs = {
             x: Math.floor(point.plotX) - (width / 2) - (radius / 2),
             y: point.plotY - (height / 2) - (radius / 2),

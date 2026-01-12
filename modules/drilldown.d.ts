@@ -23,15 +23,6 @@ declare module "../highcharts" {
          */
         drilldownCategory(x: number, originalEvent?: MouseEvent): void;
     }
-    /**
-     * Options for all breadcrumbs.
-     */
-    interface BreadcrumbsOptions {
-        /**
-         * Button theme.
-         */
-        buttonTheme?: SVGAttributes;
-    }
     interface Chart {
         /**
          * Add a series to the chart as drilldown from a specific point in the

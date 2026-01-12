@@ -6,9 +6,6 @@
 import * as globals from "../globals.src";
 import * as _Highcharts from "../highcharts.src";
 declare module "../highcharts.src" {
-    interface BreadcrumbsOptions {
-        buttonTheme?: SVGAttributes;
-    }
     interface SVGElement {
         /**
          * Attach a polygon to a bounding box if the element contains a

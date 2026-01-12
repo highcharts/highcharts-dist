@@ -1,13 +1,16 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v12.4.0 (2025-09-04)
+ * @license Highcharts Gantt JS v12.5.0 (2026-01-12)
  * @module highcharts/modules/treegrid
  * @requires highcharts
  *
  * Tree Grid
  *
- * (c) 2016-2025 Jon Arild Nygard
+ * (c) 2016-2026 Highsoft AS
+ * Author: Jon Arild Nygard
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -44,6 +47,7 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -54,11 +58,12 @@ var external_highcharts_src_js_default_StackItem_default = /*#__PURE__*/__webpac
 ;// ./code/es-modules/Core/Axis/BrokenAxis.js
 /* *
  *
- *  (c) 2009-2025 Torstein Honsi
+ *  (c) 2009-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -72,7 +77,7 @@ const { addEvent, find, fireEvent, isArray, isNumber, pick } = (external_highcha
  * */
 /**
  * Axis with support of broken data rows.
- * @private
+ * @internal
  */
 var BrokenAxis;
 (function (BrokenAxis) {
@@ -88,7 +93,7 @@ var BrokenAxis;
      * */
     /**
      * Adds support for broken axes.
-     * @private
+     * @internal
      */
     function compose(AxisClass, SeriesClass) {
         if (!AxisClass.keepProps.includes('brokenAxis')) {
@@ -106,9 +111,7 @@ var BrokenAxis;
         return AxisClass;
     }
     BrokenAxis.compose = compose;
-    /**
-     * @private
-     */
+    /** @internal */
     function onAxisAfterInit() {
         if (typeof this.brokenAxis !== 'undefined') {
             this.brokenAxis.setBreaks(this.options.breaks, false);
@@ -116,7 +119,7 @@ var BrokenAxis;
     }
     /**
      * Force Axis to be not-ordinal when breaks are defined.
-     * @private
+     * @internal
      */
     function onAxisAfterSetOptions() {
         const axis = this;
@@ -125,9 +128,7 @@ var BrokenAxis;
             axis.options.ordinal = false;
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function onAxisAfterSetTickPositions() {
         const axis = this, brokenAxis = axis.brokenAxis;
         if (brokenAxis?.hasBreaks) {
@@ -141,18 +142,14 @@ var BrokenAxis;
             axis.tickPositions.info = info;
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function onAxisInit() {
         const axis = this;
         if (!axis.brokenAxis) {
             axis.brokenAxis = new Additions(axis);
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function onSeriesAfterGeneratePoints() {
         const { isDirty, options: { connectNulls }, points, xAxis, yAxis } = this;
         // Set, or reset visibility of the points. Axis.setBreaks marks
@@ -173,16 +170,12 @@ var BrokenAxis;
             }
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function onSeriesAfterRender() {
         this.drawBreaks(this.xAxis, ['x']);
         this.drawBreaks(this.yAxis, pick(this.pointArrayMap, ['y']));
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function seriesDrawBreaks(axis, keys) {
         const series = this, points = series.points;
         let breaks, threshold, y;
@@ -224,7 +217,7 @@ var BrokenAxis;
      * can draw a gap in the line or area. This was moved from ordinal
      * axis module to broken axis module as of #5045.
      *
-     * @private
+     * @internal
      * @function Highcharts.Series#gappedPath
      *
      * @return {Highcharts.SVGPathArray}
@@ -322,7 +315,7 @@ var BrokenAxis;
                     });
                     // For stacked chart generate empty stack items, #6546
                     if (yAxis.stacking && this.options.stacking) {
-                        stack = yAxis.stacking.stacks[this.stackKey][xRange] = new (external_highcharts_src_js_default_StackItem_default())(yAxis, yAxis.options.stackLabels, false, xRange, this.stack);
+                        stack = yAxis.stacking.stacks[this.stackKey][xRange] = new (external_highcharts_src_js_default_StackItem_default())(yAxis, yAxis.options.stackLabels, false, xRange, this.stack ?? '');
                         stack.total = 0;
                     }
                 }
@@ -340,7 +333,7 @@ var BrokenAxis;
      * */
     /**
      * Provides support for broken axes.
-     * @private
+     * @internal
      * @class
      */
     class Additions {
@@ -349,9 +342,7 @@ var BrokenAxis;
          *  Static Functions
          *
          * */
-        /**
-         * @private
-         */
+        /** @internal */
         static isInBreak(brk, val) {
             const repeat = brk.repeat || Infinity, from = brk.from, length = brk.to - brk.from, test = (val >= from ?
                 (val - from) % repeat :
@@ -365,9 +356,7 @@ var BrokenAxis;
             }
             return ret;
         }
-        /**
-         * @private
-         */
+        /** @internal */
         static lin2Val(val) {
             const axis = this, threshold = axis.min || 0, brokenAxis = axis.brokenAxis, breakArray = brokenAxis?.breakArray;
             if (!breakArray?.length || !isNumber(val)) {
@@ -406,9 +395,7 @@ var BrokenAxis;
             }
             return nval;
         }
-        /**
-         * @private
-         */
+        /** @internal */
         static val2Lin(val) {
             const axis = this, threshold = axis.min || 0, brokenAxis = axis.brokenAxis, breakArray = brokenAxis?.breakArray;
             if (!breakArray?.length || !isNumber(val)) {
@@ -454,6 +441,7 @@ var BrokenAxis;
          *  Constructors
          *
          * */
+        /** @internal */
         constructor(axis) {
             this.axis = axis;
         }
@@ -481,9 +469,7 @@ var BrokenAxis;
                 return b.from < x && x < b.to;
             });
         }
-        /**
-         * @private
-         */
+        /** @internal */
         isInAnyBreak(val, testKeep) {
             const brokenAxis = this, axis = brokenAxis.axis, breaks = axis.options.breaks || [];
             let i = breaks.length, inbrk, keep, ret;
@@ -509,7 +495,7 @@ var BrokenAxis;
          * Dynamically set or unset breaks in an axis. This function in lighter
          * than using Axis.update, and it also preserves animation.
          *
-         * @private
+         * @internal
          * @function Highcharts.Axis#setBreaks
          *
          * @param {Array<Highcharts.XAxisBreaksOptions>} [breaks]
@@ -684,6 +670,7 @@ var BrokenAxis;
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Axis_BrokenAxis = (BrokenAxis);
 
 ;// external ["../highcharts.src.js","default","Axis"]
@@ -692,12 +679,12 @@ var external_highcharts_src_js_default_Axis_default = /*#__PURE__*/__webpack_req
 ;// ./code/es-modules/Core/Axis/GridAxis.js
 /* *
  *
- *  (c) 2016 Highsoft AS
+ *  (c) 2016-2026 Highsoft AS
  *  Authors: Lars A. V. Cabrera
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -713,7 +700,7 @@ const { addEvent: GridAxis_addEvent, defined, erase, find: GridAxis_find, isArra
  * */
 /**
  * Enum for which side the axis is on. Maps to axis.side.
- * @private
+ * @internal
  */
 var GridAxisSide;
 (function (GridAxisSide) {
@@ -727,22 +714,16 @@ var GridAxisSide;
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function argsToArray(args) {
     return Array.prototype.slice.call(args, 1);
 }
-/**
- * @private
- */
+/** @internal */
 function isObject(x) {
     // Always use strict mode
     return external_highcharts_src_js_default_default().isObject(x, true);
 }
-/**
- * @private
- */
+/** @internal */
 function applyGridOptions(axis) {
     const options = axis.options;
     // Center-align by default
@@ -770,7 +751,7 @@ function applyGridOptions(axis) {
 }
 /**
  * Extends axis class with grid support.
- * @private
+ * @internal
  */
 function compose(AxisClass, ChartClass, TickClass) {
     if (!AxisClass.keepProps.includes('grid')) {
@@ -799,7 +780,7 @@ function compose(AxisClass, ChartClass, TickClass) {
 /**
  * Get the largest label width and height.
  *
- * @private
+ * @internal
  * @function Highcharts.Axis#getMaxLabelDimensions
  *
  * @param {Highcharts.Dictionary<Highcharts.Tick>} ticks
@@ -854,7 +835,7 @@ function getMaxLabelDimensions(ticks, tickPositions) {
 }
 /**
  * Handle columns and getOffset.
- * @private
+ * @internal
  */
 function wrapGetOffset(proceed) {
     const { grid } = this, 
@@ -878,9 +859,7 @@ function wrapGetOffset(proceed) {
         proceed.apply(this);
     }
 }
-/**
- * @private
- */
+/** @internal */
 function onAfterGetTitlePosition(e) {
     const axis = this;
     const options = axis.options;
@@ -914,9 +893,7 @@ function onAfterGetTitlePosition(e) {
             axisTop - titleMargin + yOption;
     }
 }
-/**
- * @private
- */
+/** @internal */
 function onAfterInit() {
     const axis = this;
     const { chart, options: { grid: gridOptions = {} }, userOptions } = axis;
@@ -964,7 +941,7 @@ function onAfterInit() {
  *             (axis.min) __________________________ (axis.max)
  *                        ___|____|____|____|____|__
  * ```
- * @private
+ * @internal
  */
 function onAfterRender() {
     const axis = this, { axisTitle, grid, options } = axis, gridOptions = options.grid || {};
@@ -1120,9 +1097,7 @@ function onAfterRender() {
         }
     }
 }
-/**
- * @private
- */
+/** @internal */
 function onAfterSetAxisTranslation() {
     const axis = this;
     const tickInfo = axis.tickPositions?.info;
@@ -1170,7 +1145,7 @@ function onAfterSetAxisTranslation() {
  *   wall
  * - Ensures that the rightmost tick is at the end of the axis, to
  *   create a right wall.
- * @private
+ * @internal
  */
 function onAfterSetOptions(e) {
     const options = this.options, userOptions = e.userOptions, gridOptions = ((options && isObject(options.grid)) ? options.grid : {});
@@ -1312,9 +1287,7 @@ function onAfterSetOptions(e) {
         }
     }
 }
-/**
- * @private
- */
+/** @internal */
 function onAfterSetOptions2(e) {
     const axis = this;
     const userOptions = e.userOptions;
@@ -1328,7 +1301,7 @@ function onAfterSetOptions2(e) {
 }
 /**
  * Handle columns and setScale.
- * @private
+ * @internal
  */
 function onAfterSetScale() {
     const axis = this;
@@ -1337,7 +1310,7 @@ function onAfterSetScale() {
 /**
  * Draw vertical axis ticks extra long to create cell floors and roofs.
  * Overrides the tickLength for vertical axes.
- * @private
+ * @internal
  */
 function onAfterTickSize(e) {
     const { horiz, maxLabelDimensions, options: { grid: gridOptions = {} } } = this;
@@ -1355,9 +1328,7 @@ function onAfterTickSize(e) {
         }
     }
 }
-/**
- * @private
- */
+/** @internal */
 function onChartAfterSetChartSize() {
     this.axes.forEach((axis) => {
         (axis.grid?.columns || []).forEach((column) => {
@@ -1366,9 +1337,7 @@ function onChartAfterSetChartSize() {
         });
     });
 }
-/**
- * @private
- */
+/** @internal */
 function onDestroy(e) {
     const { grid } = this;
     (grid.columns || []).forEach((column) => column.destroy(e.keepEvents));
@@ -1376,7 +1345,7 @@ function onDestroy(e) {
 }
 /**
  * Wraps axis init to draw cell walls on vertical axes.
- * @private
+ * @internal
  */
 function onInit(e) {
     const axis = this;
@@ -1393,7 +1362,7 @@ function onInit(e) {
 }
 /**
  * Center tick labels in cells.
- * @private
+ * @internal
  */
 function onTickAfterGetLabelPosition(e) {
     const tick = this, label = tick.label, axis = tick.axis, reversed = axis.reversed, chart = axis.chart, options = axis.options, gridOptions = options.grid || {}, labelOpts = axis.options.labels, align = labelOpts.align, 
@@ -1471,9 +1440,7 @@ function onTickAfterGetLabelPosition(e) {
         e.pos.x += (axis.horiz && labelOpts.x) || 0;
     }
 }
-/**
- * @private
- */
+/** @internal */
 function onTickLabelFormat(ctx) {
     const { axis, value } = ctx;
     if (axis.options.grid?.enabled) {
@@ -1514,7 +1481,7 @@ function onTickLabelFormat(ctx) {
  *                        |___|_______|_______|_______|
  *                          ^
  * ```
- * @private
+ * @internal
  * @todo Does this function do what the drawing says? Seems to affect
  *       ticks and not the labels directly?
  */
@@ -1542,7 +1509,7 @@ function onTrimTicks() {
 }
 /**
  * Avoid altering tickInterval when reserving space.
- * @private
+ * @internal
  */
 function wrapUnsquish(proceed) {
     const axis = this;
@@ -1559,7 +1526,7 @@ function wrapUnsquish(proceed) {
  * */
 /**
  * Additions for grid axes.
- * @private
+ * @internal
  * @class
  */
 class GridAxisAdditions {
@@ -1585,7 +1552,7 @@ class GridAxisAdditions {
      * this function returns true if the axis supplied is the last
      * of the x-axes.
      *
-     * @private
+     * @internal
      *
      * @return {boolean}
      * True if the axis is the outermost axis in its dimension; false if
@@ -1622,8 +1589,8 @@ class GridAxisAdditions {
     }
     /**
      * Add extra border based on the provided path.
-     * @private
-     * @param {SVGPath} path
+     * @internal
+     * @param {Highcharts.SVGPathArray} path
      * The path of the border.
      * @return {Highcharts.SVGElement}
      * Border
@@ -1669,9 +1636,11 @@ dateFormats.W = function (timestamp) {
  *  Default Export
  *
  * */
+/** @internal */
 const GridAxis = {
     compose
 };
+/** @internal */
 /* harmony default export */ const Axis_GridAxis = (GridAxis);
 /* *
  *
@@ -1757,13 +1726,13 @@ const GridAxis = {
 ;// ./code/es-modules/Gantt/Tree.js
 /* *
  *
- *  (c) 2016-2025 Highsoft AS
+ *  (c) 2016-2026 Highsoft AS
  *
  *  Authors: Jon Arild Nygard
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -1782,7 +1751,7 @@ const { extend, isNumber: Tree_isNumber, pick: Tree_pick } = (external_highchart
 /**
  * Creates an object map from parent id to children's index.
  *
- * @private
+ * @internal
  * @function Highcharts.Tree#getListOfParents
  *
  * @param {Array<*>} data
@@ -1815,7 +1784,7 @@ function getListOfParents(data) {
     });
     return listOfParents;
 }
-/** @private */
+/** @internal */
 function getNode(id, parent, level, data, mapOfIdToChildren, options) {
     const after = options && options.after, before = options && options.before, node = {
         data,
@@ -1865,7 +1834,7 @@ function getNode(id, parent, level, data, mapOfIdToChildren, options) {
     }
     return node;
 }
-/** @private */
+/** @internal */
 function getTree(data, options) {
     return getNode('', null, 1, null, getListOfParents(data), options);
 }
@@ -1874,21 +1843,23 @@ function getTree(data, options) {
  *  Default Export
  *
  * */
+/** @internal */
 const Tree = {
     getNode,
     getTree
 };
+/** @internal */
 /* harmony default export */ const Gantt_Tree = (Tree);
 
 ;// ./code/es-modules/Core/Axis/TreeGrid/TreeGridTick.js
 /* *
  *
- *  (c) 2016 Highsoft AS
+ *  (c) 2016-2026 Highsoft AS
  *  Authors: Jon Arild Nygard
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -1899,18 +1870,14 @@ const { addEvent: TreeGridTick_addEvent, correctFloat, removeEvent, isObject: Tr
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function onTickInit() {
     const tick = this;
     if (!tick.treeGrid) {
         tick.treeGrid = new TreeGridTickAdditions(tick);
     }
 }
-/**
- * @private
- */
+/** @internal */
 function onTickHover(label) {
     label.addClass('highcharts-treegrid-node-active');
     if (!label.renderer.styledMode) {
@@ -1919,9 +1886,7 @@ function onTickHover(label) {
         });
     }
 }
-/**
- * @private
- */
+/** @internal */
 function onTickHoverExit(label, options) {
     const css = TreeGridTick_isObject(options.style) ? options.style : {};
     label.removeClass('highcharts-treegrid-node-active');
@@ -1929,9 +1894,7 @@ function onTickHoverExit(label, options) {
         label.css({ textDecoration: (css.textDecoration || 'none') });
     }
 }
-/**
- * @private
- */
+/** @internal */
 function renderLabelIcon(tick, params) {
     const treeGrid = tick.treeGrid, isNew = !treeGrid.labelIcon, renderer = params.renderer, labelBox = params.xy, options = params.options, width = options.width || 0, height = options.height || 0, padding = options.padding ?? tick.axis.linkedParent ? 0 : 5, iconCenter = {
         x: labelBox.x - (width / 2) - padding,
@@ -1964,9 +1927,7 @@ function renderLabelIcon(tick, params) {
         rotation: rotation
     });
 }
-/**
- * @private
- */
+/** @internal */
 function wrapGetLabelPosition(proceed, x, y, label, horiz, labelOptions, tickmarkOffset, index, step) {
     const tick = this, lbOptions = TreeGridTick_pick(tick.options?.labels, labelOptions), pos = tick.pos, axis = tick.axis, isTreeGrid = axis.type === 'treegrid', result = proceed.apply(tick, [x, y, label, horiz, lbOptions, tickmarkOffset, index, step]);
     let mapOfPosToGridNode, node, level;
@@ -1987,9 +1948,7 @@ function wrapGetLabelPosition(proceed, x, y, label, horiz, labelOptions, tickmar
     }
     return result;
 }
-/**
- * @private
- */
+/** @internal */
 function wrapRenderLabel(proceed) {
     const tick = this, { pos, axis, label, treeGrid: tickGrid, options: tickOptions } = tick, icon = tickGrid?.labelIcon, labelElement = label?.element, { treeGrid: axisGrid, options: axisOptions, chart, tickPositions } = axis, mapOfPosToGridNode = axisGrid.mapOfPosToGridNode, labelOptions = TreeGridTick_pick(tickOptions?.labels, axisOptions?.labels), symbolOptions = (labelOptions && TreeGridTick_isObject(labelOptions.symbol, true) ?
         labelOptions.symbol :
@@ -2059,7 +2018,7 @@ function wrapRenderLabel(proceed) {
  *
  * */
 /**
- * @private
+ * @internal
  * @class
  */
 class TreeGridTickAdditions {
@@ -2068,9 +2027,7 @@ class TreeGridTickAdditions {
      *  Static Functions
      *
      * */
-    /**
-     * @private
-     */
+    /** @internal */
     static compose(TickClass) {
         const tickProto = TickClass.prototype;
         if (!tickProto.toggleCollapse) {
@@ -2094,9 +2051,7 @@ class TreeGridTickAdditions {
      *  Constructors
      *
      * */
-    /**
-     * @private
-     */
+    /** @internal */
     constructor(tick) {
         this.tick = tick;
     }
@@ -2110,7 +2065,7 @@ class TreeGridTickAdditions {
      *
      * @see gantt/treegrid-axis/collapsed-dynamically/demo.js
      *
-     * @private
+     * @internal
      * @function Highcharts.Tick#collapse
      *
      * @param {boolean} [redraw=true]
@@ -2126,7 +2081,7 @@ class TreeGridTickAdditions {
     /**
      * Destroy remaining labelIcon if exist.
      *
-     * @private
+     * @internal
      * @function Highcharts.Tick#destroy
      */
     destroy() {
@@ -2137,7 +2092,7 @@ class TreeGridTickAdditions {
      *
      * @see gantt/treegrid-axis/collapsed-dynamically/demo.js
      *
-     * @private
+     * @internal
      * @function Highcharts.Tick#expand
      *
      * @param {boolean} [redraw=true]
@@ -2156,7 +2111,7 @@ class TreeGridTickAdditions {
      *
      * @see gantt/treegrid-axis/collapsed-dynamically/demo.js
      *
-     * @private
+     * @internal
      * @function Highcharts.Tick#toggleCollapse
      *
      * @param {boolean} [redraw=true]
@@ -2203,6 +2158,7 @@ class TreeGridTickAdditions {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const TreeGridTick = (TreeGridTickAdditions);
 
 ;// external ["../highcharts.src.js","default","Color"]
@@ -2211,13 +2167,13 @@ var external_highcharts_src_js_default_Color_default = /*#__PURE__*/__webpack_re
 ;// ./code/es-modules/Series/TreeUtilities.js
 /* *
  *
- *  (c) 2014-2025 Highsoft AS
+ *  (c) 2014-2026 Highsoft AS
  *
  *  Authors: Jon Arild Nygard / Oystein Moseng
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -2427,12 +2383,12 @@ const TreeUtilities = {
 ;// ./code/es-modules/Core/Axis/TreeGrid/TreeGridAxis.js
 /* *
  *
- *  (c) 2016 Highsoft AS
+ *  (c) 2016-2026 Highsoft AS
  *  Authors: Jon Arild Nygard
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -2449,6 +2405,7 @@ const { addEvent: TreeGridAxis_addEvent, isArray: TreeGridAxis_isArray, splat, f
  *  Variables
  *
  * */
+/** @internal */
 let TickConstructor;
 /* *
  *
@@ -2457,11 +2414,9 @@ let TickConstructor;
  * */
 /**
  * Creates a break object from a node.
- *
+ * @internal
  * @param {Object} node
  * The node to create a break object from.
- *
- * @private
  */
 function getBreakFromNode(node) {
     return {
@@ -2474,7 +2429,7 @@ function getBreakFromNode(node) {
  * Creates a tree structure of the data, and the treegrid. Calculates
  * categories, and y-values of points based on the tree.
  *
- * @private
+ * @internal
  * @function getTreeGridFromData
  *
  * @param {Array<Highcharts.GanttPointOptions>} data
@@ -2613,7 +2568,7 @@ function getTreeGridFromData(data, uniqueNames, numberOfSeries) {
 }
 /**
  * Builds the tree of categories and calculates its positions.
- * @private
+ * @internal
  * @param {Object} e Event object
  * @param {Object} e.target The chart instance which the event was fired on.
  * @param {object[]} e.target.axes The axes of the chart.
@@ -2727,7 +2682,7 @@ function onBeforeRender(e) {
 /**
  * Generates a tick for initial positioning.
  *
- * @private
+ * @internal
  * @function Highcharts.GridAxis#generateTick
  *
  * @param {Function} proceed
@@ -2768,9 +2723,7 @@ function wrapGenerateTick(proceed, pos) {
         proceed.apply(axis, Array.prototype.slice.call(arguments, 1));
     }
 }
-/**
- * @private
- */
+/** @internal */
 function wrapInit(proceed, chart, userOptions, coll) {
     const axis = this, isTreeGrid = userOptions.type === 'treegrid';
     if (!axis.treeGrid) {
@@ -2826,18 +2779,16 @@ function wrapInit(proceed, chart, userOptions, coll) {
             labels: {
                 align: 'left',
                 /**
-                * Set options on specific levels in a tree grid axis. Takes
-                * precedence over labels options.
-                *
-                * @sample {gantt} gantt/treegrid-axis/labels-levels
-                *         Levels on TreeGrid Labels
-                *
-                * @type      {Array<*>}
-                * @product   gantt
-                * @apioption yAxis.labels.levels
-                *
-                * @private
-                */
+                 * Set options on specific levels in a tree grid axis. Takes
+                 * precedence over labels options.
+                 *
+                 * @sample {gantt} gantt/treegrid-axis/labels-levels
+                 *         Levels on TreeGrid Labels
+                 *
+                 * @type      {Array<*>}
+                 * @product   gantt
+                 * @apioption yAxis.labels.levels
+                 */
                 levels: [{
                         /**
                         * Specify the level which the options within this object
@@ -2847,7 +2798,7 @@ function wrapInit(proceed, chart, userOptions, coll) {
                         * @product   gantt
                         * @apioption yAxis.labels.levels.level
                         *
-                        * @private
+                        * @internal
                         */
                         level: void 0
                     }, {
@@ -2857,7 +2808,7 @@ function wrapInit(proceed, chart, userOptions, coll) {
                          * @product   gantt
                          * @apioption yAxis.labels.levels.style
                          *
-                         * @private
+                         * @internal
                          */
                         style: {
                             /** @ignore-option */
@@ -2871,7 +2822,7 @@ function wrapInit(proceed, chart, userOptions, coll) {
                  * @product      gantt
                  * @optionparent yAxis.labels.symbol
                  *
-                 * @private
+                 * @internal
                  */
                 symbol: {
                     /**
@@ -2880,7 +2831,7 @@ function wrapInit(proceed, chart, userOptions, coll) {
                      *
                      * @type {Highcharts.SymbolKeyValue}
                      *
-                     * @private
+                     * @internal
                      */
                     type: 'triangle',
                     x: -5,
@@ -2906,7 +2857,7 @@ function wrapInit(proceed, chart, userOptions, coll) {
 /**
  * Set the tick positions, tickInterval, axis min and max.
  *
- * @private
+ * @internal
  * @function Highcharts.GridAxis#setTickInterval
  *
  * @param {Function} proceed
@@ -2943,7 +2894,7 @@ function wrapSetTickInterval(proceed) {
 /**
  * Wrap axis redraw to remove TreeGrid events from ticks
  *
- * @private
+ * @internal
  * @function Highcharts.GridAxis#redraw
  *
  * @param {Function} proceed
@@ -2968,7 +2919,7 @@ function wrapRedraw(proceed) {
  *
  * */
 /**
- * @private
+ * @internal
  * @class
  */
 class TreeGridAxisAdditions {
@@ -2977,9 +2928,7 @@ class TreeGridAxisAdditions {
      *  Static Functions
      *
      * */
-    /**
-     * @private
-     */
+    /** @internal */
     static compose(AxisClass, ChartClass, SeriesClass, TickClass) {
         if (!AxisClass.keepProps.includes('treeGrid')) {
             const axisProps = AxisClass.prototype;
@@ -3006,10 +2955,9 @@ class TreeGridAxisAdditions {
      *  Constructors
      *
      * */
-    /**
-     * @private
-     */
+    /** @internal */
     constructor(axis) {
+        /** @internal */
         this.pendingSizeAdjustment = 0;
         this.axis = axis;
     }
@@ -3021,7 +2969,7 @@ class TreeGridAxisAdditions {
     /**
      * Set the collapse status.
      *
-     * @private
+     * @internal
      *
      * @param {Highcharts.Axis} axis
      * The axis to check against.
@@ -3045,7 +2993,7 @@ class TreeGridAxisAdditions {
     /**
      * Calculates the new axis breaks to collapse a node.
      *
-     * @private
+     * @internal
      *
      * @param {Highcharts.Axis} axis
      * The axis to check against.
@@ -3070,7 +3018,7 @@ class TreeGridAxisAdditions {
     /**
      * Calculates the new axis breaks to expand a node.
      *
-     * @private
+     * @internal
      *
      * @param {Highcharts.Axis} axis
      * The axis to check against.
@@ -3101,7 +3049,7 @@ class TreeGridAxisAdditions {
      * Creates a list of positions for the ticks on the axis. Filters out
      * positions that are outside min and max, or is inside an axis break.
      *
-     * @private
+     * @internal
      *
      * @return {Array<number>}
      * List of positions.
@@ -3121,7 +3069,7 @@ class TreeGridAxisAdditions {
     /**
      * Check if a node is collapsed.
      *
-     * @private
+     * @internal
      *
      * @param {Object} node
      * The node to check if is collapsed.
@@ -3140,7 +3088,7 @@ class TreeGridAxisAdditions {
      * state of a node. If it is collapsed it will be expanded, and if it is
      * expanded it will be collapsed.
      *
-     * @private
+     * @internal
      *
      * @param {Highcharts.Axis} axis
      * The axis to check against.
@@ -3162,6 +3110,7 @@ class TreeGridAxisAdditions {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const TreeGridAxis = (TreeGridAxisAdditions);
 
 ;// ./code/es-modules/masters/modules/treegrid.src.js

@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -56,7 +57,8 @@ const exporting = {
      *
      * @see [styledMode](#chart.styledMode)
      *
-     * @sample {highcharts} highcharts/exporting/apply-stylesheets/
+     * @sample    {highcharts} highcharts/exporting/apply-stylesheets/
+     *            Export with custom stylesheet
      *
      * @type      {boolean}
      * @default   false
@@ -175,12 +177,17 @@ const exporting = {
      * [svg2pdf.js](https://github.com/yWorks/svg2pdf.js), required for client
      * side export in certain browsers.
      *
+     * Note: Highcharts cannot take responsibility for the security of any
+     * external libraries (including [optional dependencies](https://www.highcharts.com/docs/getting-started/optional-dependencies))
+     * loaded through `exporting.libURL`. These libraries are not licensed or
+     * warrantied under the Highcharts license.
+     *
      * @type      {string}
      * @default   https://code.highcharts.com/{version}/lib
      * @since     5.0.0
      * @apioption exporting.libURL
      */
-    libURL: 'https://code.highcharts.com/12.4.0/lib/',
+    libURL: 'https://code.highcharts.com/12.5.0/lib/',
     /**
      * Whether the chart should be exported using the browser's built-in
      * capabilities, allowing offline exports without requiring access to the
@@ -251,7 +258,7 @@ const exporting = {
     type: 'image/png',
     /**
      * The URL for the server module converting the SVG string to an image
-     * format. By default this points to Highchart's free web service.
+     * format. By default this points to Highcharts free web service.
      *
      * @since 2.0
      */
@@ -366,15 +373,6 @@ const exporting = {
              * @apioption exporting.buttons.contextButton.onclick
              */
             /**
-             * See [navigation.buttonOptions.symbolFill](
-             * #navigation.buttonOptions.symbolFill).
-             *
-             * @type      {Highcharts.ColorString}
-             * @default   #666666
-             * @since     2.0
-             * @apioption exporting.buttons.contextButton.symbolFill
-             */
-            /**
              * The horizontal position of the button relative to the `align`
              * option.
              *
@@ -464,49 +462,48 @@ const exporting = {
      * @sample highcharts/exporting/menuitemdefinitions-webp/
      *         Adding a custom menu item for WebP export
      *
-     *
-     * @type    {Highcharts.Dictionary<Highcharts.ExportingMenuObject>}
-     * @default {"viewFullscreen": {}, "printChart": {}, "separator": {}, "downloadPNG": {}, "downloadJPEG": {}, "downloadPDF": {}, "downloadSVG": {}}
-     * @since   5.0.13
+     * @type     {Highcharts.Dictionary<Highcharts.ExportingMenuObject>}
+     * @since    5.0.13
      */
     menuItemDefinitions: {
-        /**
-         * @ignore
-         */
         viewFullscreen: {
+            /**
+             * @see [lang.viewFullscreen](#lang.viewFullscreen)
+             * @default viewFullscreen
+             */
             textKey: 'viewFullscreen',
             onclick: function () {
                 this.fullscreen?.toggle();
             }
         },
-        /**
-         * @ignore
-         */
         printChart: {
+            /**
+             * @see [lang.printChart](#lang.printChart)
+             * @default printChart
+             */
             textKey: 'printChart',
             onclick: function () {
                 this.exporting?.print();
             }
         },
-        /**
-         * @ignore
-         */
         separator: {
             separator: true
         },
-        /**
-         * @ignore
-         */
         downloadPNG: {
+            /**
+             * @see [lang.downloadPNG](#lang.downloadPNG)
+             * @default downloadPNG
+             */
             textKey: 'downloadPNG',
             onclick: async function () {
                 await this.exporting?.exportChart();
             }
         },
-        /**
-         * @ignore
-         */
         downloadJPEG: {
+            /**
+             * @see [lang.downloadJPEG](#lang.downloadJPEG)
+             * @default downloadJPEG
+             */
             textKey: 'downloadJPEG',
             onclick: async function () {
                 await this.exporting?.exportChart({
@@ -514,10 +511,11 @@ const exporting = {
                 });
             }
         },
-        /**
-         * @ignore
-         */
         downloadPDF: {
+            /**
+             * @see [lang.downloadPDF](#lang.downloadPDF)
+             * @default downloadPDF
+             */
             textKey: 'downloadPDF',
             onclick: async function () {
                 await this.exporting?.exportChart({
@@ -525,10 +523,11 @@ const exporting = {
                 });
             }
         },
-        /**
-         * @ignore
-         */
         downloadSVG: {
+            /**
+             * @see [lang.downloadSVG](#lang.downloadSVG)
+             * @default downloadSVG
+             */
             textKey: 'downloadSVG',
             onclick: async function () {
                 await this.exporting?.exportChart({
@@ -548,6 +547,7 @@ const lang = {
      * in full screen.
      *
      * @since 8.0.1
+     * @requires modules/exporting
      */
     viewFullscreen: 'View in full screen',
     /**
@@ -555,6 +555,7 @@ const lang = {
      * from full screen.
      *
      * @since 8.0.1
+     * @requires modules/exporting
      */
     exitFullscreen: 'Exit from full screen',
     /**
@@ -888,9 +889,11 @@ const navigation = {
  *  Default Export
  *
  * */
+/** @internal */
 const ExportingDefaults = {
     exporting,
     lang,
     navigation
 };
+/** @internal */
 export default ExportingDefaults;

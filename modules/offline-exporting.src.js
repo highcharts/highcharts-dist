@@ -1,14 +1,17 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.5.0 (2026-01-12)
  * @module highcharts/modules/offline-exporting
  * @requires highcharts
  * @requires highcharts/modules/exporting
  *
  * Client side exporting module
  *
- * (c) 2015-2025 Torstein Honsi / Oystein Moseng
+ * (c) 2015-2026 Highsoft AS
+ * Author: Torstein Honsi / Oystein Moseng
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -112,14 +115,15 @@ __webpack_require__.d(__webpack_exports__, {
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts"],"commonjs":["highcharts"],"commonjs2":["highcharts"],"root":["Highcharts"]}
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_ = __webpack_require__(944);
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default = /*#__PURE__*/__webpack_require__.n(highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_);
-;// ./code/es-modules/Extensions/DownloadURL.js
+;// ./code/es-modules/Shared/DownloadURL.js
 /* *
  *
- *  (c) 2015-2025 Oystein Moseng
+ *  (c) 2015-2026 Highsoft AS
+ *  Author: Oystein Moseng
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  *  Mixin for downloading content in the browser
  *
@@ -148,7 +152,7 @@ const domurl = win.URL || win.webkitURL || win;
 /**
  * Convert base64 dataURL to Blob if supported, otherwise returns undefined.
  *
- * @private
+ * @internal
  * @function Highcharts.dataURLtoBlob
  *
  * @param {string} dataURL
@@ -180,7 +184,7 @@ function dataURLtoBlob(dataURL) {
 /**
  * Download a data URL in the browser. Can also take a blob as first param.
  *
- * @private
+ * @internal
  * @function Highcharts.downloadURL
  *
  * @param {string | global.URL} dataURL
@@ -239,7 +243,7 @@ function downloadURL(dataURL, filename) {
 /**
  * Asynchronously downloads a script from a provided location.
  *
- * @private
+ * @internal
  * @function Highcharts.getScript
  *
  * @param {string} scriptLocation
@@ -265,17 +269,54 @@ function getScript(scriptLocation) {
         head.appendChild(script);
     });
 }
+/**
+ * Get a blob object from content, if blob is supported.
+ *
+ * @internal
+ * @function Highcharts.getBlobFromContent
+ *
+ * @param {string} content
+ * The content to create the blob from.
+ * @param {string} type
+ * The type of the content.
+ *
+ * @return {string | undefined}
+ * The blob object, or undefined if not supported.
+ *
+ * @requires modules/exporting
+ * @requires modules/export-data
+ */
+function getBlobFromContent(content, type) {
+    const nav = win.navigator, domurl = win.URL || win.webkitURL || win;
+    try {
+        // MS specific
+        if ((nav.msSaveOrOpenBlob) && win.MSBlobBuilder) {
+            const blob = new win.MSBlobBuilder();
+            blob.append(content);
+            return blob.getBlob('image/svg+xml');
+        }
+        return domurl.createObjectURL(new win.Blob(['\uFEFF' + content], // #7084
+        { type: type }));
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    }
+    catch (e) {
+        // Ignore
+    }
+}
 /* *
  *
  *  Default Export
  *
  * */
+/** @internal */
 const DownloadURL = {
     dataURLtoBlob,
     downloadURL,
+    getBlobFromContent,
     getScript
 };
-/* harmony default export */ const Extensions_DownloadURL = (DownloadURL);
+/** @internal */
+/* harmony default export */ const Shared_DownloadURL = (DownloadURL);
 
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","AST"],"commonjs":["highcharts","AST"],"commonjs2":["highcharts","AST"],"root":["Highcharts","AST"]}
 var highcharts_AST_commonjs_highcharts_AST_commonjs2_highcharts_AST_root_Highcharts_AST_ = __webpack_require__(660);
@@ -286,11 +327,12 @@ var highcharts_Chart_commonjs_highcharts_Chart_commonjs2_highcharts_Chart_root_H
 ;// ./code/es-modules/Extensions/OfflineExporting/OfflineExportingDefaults.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -301,7 +343,7 @@ var highcharts_Chart_commonjs_highcharts_Chart_commonjs2_highcharts_Chart_root_H
  * */
 /**
  * @optionparent exporting
- * @private
+ * @internal
  */
 const exporting = {};
 /* *
@@ -319,11 +361,12 @@ const OfflineExportingDefaults = {
  *
  *  Client side exporting module
  *
- *  (c) 2015 Torstein Honsi / Oystein Moseng
+ *  (c) 2015-2026 Highsoft AS
+ *  Author: Torstein Honsi / Oystein Moseng
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -332,7 +375,6 @@ const OfflineExportingDefaults = {
 
 const { getOptions, setOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { downloadURL: OfflineExporting_downloadURL, getScript: OfflineExporting_getScript } = Extensions_DownloadURL;
 
 const { composed, doc: OfflineExporting_doc, win: OfflineExporting_win } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
@@ -353,7 +395,7 @@ var OfflineExporting;
     /**
      * Composition function.
      *
-     * @private
+     * @internal
      * @function compose
      *
      * @param {ExportingClass} ExportingClass
@@ -381,9 +423,9 @@ var OfflineExporting;
                         // things asynchronously
                         if (!OfflineExporting_win.jspdf?.jsPDF) {
                             // Get jspdf
-                            await OfflineExporting_getScript(`${libURL}jspdf.js`);
+                            await getScript(`${libURL}jspdf.js`);
                             // Get svg2pdf
-                            await OfflineExporting_getScript(`${libURL}svg2pdf.js`);
+                            await getScript(`${libURL}svg2pdf.js`);
                         }
                         // Call the PDF download if SVG element found
                         await downloadPDF(svg, scale, filename, exportingOptions?.pdfFont);
@@ -446,7 +488,7 @@ var OfflineExporting;
      * function processes the SVG, applies necessary font adjustments, converts
      * it to a PDF, and initiates the file download.
      *
-     * @private
+     * @internal
      * @async
      * @function downloadPDF
      *
@@ -475,7 +517,7 @@ var OfflineExporting;
             // Transform SVG to PDF
             const pdfData = await svgToPdf(svgNode, 0, scale);
             // Download the PDF
-            OfflineExporting_downloadURL(pdfData, filename);
+            downloadURL(pdfData, filename);
         }
     }
     /**
@@ -486,7 +528,7 @@ var OfflineExporting;
      * It fetches font files (if provided in `pdfFont`), converts them to
      * base64, and registers them with jsPDF.
      *
-     * @private
+     * @internal
      * @function loadPdfFonts
      *
      * @param {SVGElement} svgElement
@@ -570,7 +612,7 @@ var OfflineExporting;
      * a given SVG string, applies font styles inherited from parent elements,
      * and removes text outlines and title elements to improve PDF rendering.
      *
-     * @private
+     * @internal
      * @function preparePDF
      *
      * @param {string} svg
@@ -646,7 +688,7 @@ var OfflineExporting;
      * Transform from PDF to SVG.
      *
      * @async
-     * @private
+     * @internal
      * @function svgToPdf
      *
      * @param {Highcharts.SVGElement} svgElement
@@ -721,9 +763,9 @@ var OfflineExporting;
 
 const G = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 // Compatibility
-G.dataURLtoBlob = G.dataURLtoBlob || Extensions_DownloadURL.dataURLtoBlob;
+G.dataURLtoBlob = G.dataURLtoBlob || Shared_DownloadURL.dataURLtoBlob;
 G.downloadSVGLocal = OfflineExporting_OfflineExporting.downloadSVGLocal;
-G.downloadURL = G.downloadURL || Extensions_DownloadURL.downloadURL;
+G.downloadURL = G.downloadURL || Shared_DownloadURL.downloadURL;
 // Compose
 OfflineExporting_OfflineExporting.compose(G.Exporting);
 /* harmony default export */ const offline_exporting_src = ((highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default()));

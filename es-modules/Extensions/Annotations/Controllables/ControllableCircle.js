@@ -1,6 +1,5 @@
 /* *
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -16,9 +15,9 @@ const { merge } = U;
 /**
  * A controllable circle class.
  *
+ * @internal
  * @requires modules/annotations
  *
- * @private
  * @class
  * @name Highcharts.AnnotationControllableCircle
  *
@@ -47,9 +46,6 @@ class ControllableCircle extends Controllable {
      *  Functions
      *
      * */
-    /**
-     * @private
-     */
     redraw(animation) {
         if (this.graphic) {
             const position = this.anchor(this.points[0]).absolutePosition;
@@ -70,9 +66,6 @@ class ControllableCircle extends Controllable {
         }
         super.redraw.call(this, animation);
     }
-    /**
-     * @private
-     */
     render(parent) {
         const attrs = this.attrsFromOptions(this.options);
         this.graphic = this.annotation.chart.renderer
@@ -83,7 +76,8 @@ class ControllableCircle extends Controllable {
     }
     /**
      * Set the radius.
-     * @private
+     *
+     * @internal
      * @param {number} r
      *        A radius to be set
      */
@@ -109,4 +103,5 @@ ControllableCircle.attrsMap = merge(ControllablePath.attrsMap, { r: 'r' });
  *  Default Export
  *
  * */
+/** @internal */
 export default ControllableCircle;

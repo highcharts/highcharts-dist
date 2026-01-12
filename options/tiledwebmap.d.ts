@@ -22,7 +22,8 @@ declare module "../highcharts" {
      *
      * **TypeScript:**
      *
-     * - the type option must always be set.
+     * - type option should always be set, otherwise a broad set of unsupported
+     * options is allowed.
      *
      * - when accessing an array of series, the combined set of all series types
      * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
@@ -106,6 +107,9 @@ declare module "../highcharts" {
          * the points in this series for keyboard navigation.
          */
         skipKeyboardNavigation?: boolean;
+        /**
+         * (Highmaps) A collection of options for different series states.
+         */
         states?: Highcharts.SeriesStatesOptionsObject;
         /**
          * (Highmaps) Set the initial visibility of the series.
@@ -123,5 +127,73 @@ declare module "../highcharts" {
          * Note: This option works only for non-cartesian series.
          */
         zoomEnabled?: boolean;
+    }
+    /**
+     * (Highmaps) Animation when not hovering over the marker.
+     */
+    interface PlotTiledwebmapStatesInactiveAnimationOptions {
+        duration?: number;
+    }
+    /**
+     * (Highmaps) A `tiledwebmap` series. The type option is not specified, it
+     * is inherited from chart.type.
+     *
+     * Configuration options for the series are given in three levels:
+     *
+     * 1. Options for all series in a chart are defined in the
+     * plotOptions.series object.
+     *
+     * 2. Options for all `tiledwebmap` series are defined in
+     * plotOptions.tiledwebmap.
+     *
+     * 3. Options for one single series are given in the series instance array.
+     * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - type option should always be set, otherwise a broad set of unsupported
+     * options is allowed.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
+     *
+     * You have to extend the `SeriesTiledwebmapOptions` via an interface to
+     * allow custom properties: ``` declare interface SeriesTiledwebmapOptions {
+     * customProperty: string; }
+     *
+     */
+    interface SeriesTiledwebmapOptions extends Highcharts.PlotTiledwebmapOptions, Highcharts.SeriesOptions {
+        /**
+         * Not available
+         */
+        affectsMapView?: undefined;
+        /**
+         * Not available
+         */
+        colorByPoint?: undefined;
+        /**
+         * Not available
+         */
+        colors?: undefined;
+        /**
+         * Not available
+         */
+        dataParser?: undefined;
+        /**
+         * Not available
+         */
+        dataURL?: undefined;
+        /**
+         * Not available
+         */
+        nullColor?: undefined;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) This property is only in
+         * TypeScript non-optional and might be `undefined` in series objects
+         * from unknown sources.
+         */
+        type: "tiledwebmap";
     }
 }

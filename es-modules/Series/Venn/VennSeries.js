@@ -1,17 +1,17 @@
 /* *
  *
- *  Experimental Highcharts module which enables visualization of a Venn
+ *  Highcharts module which enables visualization of a Venn
  *  diagram.
  *
- *  (c) 2016-2025 Highsoft AS
+ *  (c) 2016-2026 Highsoft AS
  *  Authors: Jon Arild Nygard
  *
  *  Layout algorithm by Ben Frederickson:
  *  https://www.benfrederickson.com/better-venn-diagrams/
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -417,7 +417,7 @@ class VennSeries extends ScatterSeries {
                     style: {
                         width: dataLabelWidth
                     }
-                }, isObject(dlOptions, true) ? dlOptions : void 0);
+                }, isObject(dlOptions, true) ? dlOptions : void 0, { zIndex: void 0 });
             }
             // Set name for usage in tooltip and in data label.
             point.name = point.options.name || sets.join('∩');

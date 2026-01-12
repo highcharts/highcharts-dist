@@ -1,10 +1,10 @@
 /* *
  *
- *  (c) 2009-2025 Highsoft AS
+ *  (c) 2009-2026 Highsoft AS
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  *  Authors:
  *  - Sophie Bremer
@@ -48,11 +48,11 @@ class MathModifier extends DataModifier {
         const modifier = this;
         modifier.emit({ type: 'modify', detail: eventDetail, table });
         const alternativeSeparators = modifier.options.alternativeSeparators, formulaColumns = (modifier.options.formulaColumns ||
-            table.getColumnNames()), modified = table.modified;
-        for (let i = 0, iEnd = formulaColumns.length, columnName; i < iEnd; ++i) {
-            columnName = formulaColumns[i];
-            if (formulaColumns.indexOf(columnName) >= 0) {
-                modified.setColumn(columnName, modifier.processColumn(table, columnName));
+            table.getColumnIds()), modified = table.getModified();
+        for (let i = 0, iEnd = formulaColumns.length, columnId; i < iEnd; ++i) {
+            columnId = formulaColumns[i];
+            if (formulaColumns.indexOf(columnId) >= 0) {
+                modified.setColumn(columnId, modifier.processColumn(table, columnId));
             }
         }
         const columnFormulas = (modifier.options.columnFormulas || []);
@@ -72,8 +72,8 @@ class MathModifier extends DataModifier {
      * @param {Highcharts.DataTable} table
      * Table to extract column from and use as reference.
      *
-     * @param {string} columnName
-     * Name of column to process.
+     * @param {string} columnId
+     * Id of column to process.
      *
      * @param {number} rowIndex
      * Row index to start the replacing process from.
@@ -81,8 +81,8 @@ class MathModifier extends DataModifier {
      * @return {Highcharts.DataTableColumn}
      * Returns the processed table column.
      */
-    processColumn(table, columnName, rowIndex = 0) {
-        const alternativeSeparators = this.options.alternativeSeparators, column = (table.getColumn(columnName, true) || [])
+    processColumn(table, columnId, rowIndex = 0) {
+        const alternativeSeparators = this.options.alternativeSeparators, column = (table.getColumn(columnId, true) || [])
             .slice(rowIndex > 0 ? rowIndex : 0);
         for (let i = 0, iEnd = column.length, cacheFormula = [], cacheString = '', cell; i < iEnd; ++i) {
             cell = column[i];
@@ -128,7 +128,7 @@ class MathModifier extends DataModifier {
     processColumnFormula(formula, table, rowStart = 0, rowEnd = table.getRowCount()) {
         rowStart = rowStart >= 0 ? rowStart : 0;
         rowEnd = rowEnd >= 0 ? rowEnd : table.getRowCount() + rowEnd;
-        const column = [], modified = table.modified;
+        const column = [], modified = table.getModified();
         for (let i = 0, iEnd = (rowEnd - rowStart); i < iEnd; ++i) {
             try {
                 column[i] = FormulaProcessor.processFormula(formula, modified);

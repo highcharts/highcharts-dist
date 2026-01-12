@@ -7,6 +7,7 @@
  *  Class
  *
  * */
+/** @internal */
 class Stamen {
     constructor() {
         /* *
@@ -64,4 +65,5 @@ class Stamen {
  *  Default Export
  *
  * */
+/** @internal */
 export default Stamen;

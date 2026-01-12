@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -23,7 +24,7 @@ const { extend, merge, splat } = U;
  *
  * In the future, this can be extended to basic Highcharts and Highcharts Stock.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.Pane
  * @param {Highcharts.PaneOptions} options
@@ -47,7 +48,7 @@ class Pane {
     /**
      * Initialize the Pane object
      *
-     * @private
+     * @internal
      * @function Highcharts.Pane#init
      *
      * @param {Highcharts.PaneOptions} options
@@ -61,7 +62,7 @@ class Pane {
         this.setOptions(options);
     }
     /**
-     * @private
+     * @internal
      * @function Highcharts.Pane#setOptions
      *
      * @param {Highcharts.PaneOptions} options
@@ -73,7 +74,7 @@ class Pane {
     /**
      * Render the pane with its backgrounds.
      *
-     * @private
+     * @internal
      * @function Highcharts.Pane#render
      */
     render() {
@@ -105,7 +106,7 @@ class Pane {
     /**
      * Render an individual pane background.
      *
-     * @private
+     * @internal
      * @function Highcharts.Pane#renderBackground
      *
      * @param {Highcharts.PaneBackgroundOptions} backgroundOptions
@@ -139,7 +140,7 @@ class Pane {
     /**
      * Gets the center for the pane and its axis.
      *
-     * @private
+     * @internal
      * @function Highcharts.Pane#updateCenter
      * @param {Highcharts.Axis} [axis]
      */
@@ -152,7 +153,7 @@ class Pane {
      * Destroy the pane item
      *
      * @ignore
-     * @private
+     * @internal
      * @function Highcharts.Pane#destroy
      * /
     destroy: function () {
@@ -167,7 +168,7 @@ class Pane {
     /**
      * Update the pane item with new options
      *
-     * @private
+     * @internal
      * @function Highcharts.Pane#update
      * @param {Highcharts.PaneOptions} options
      *        New pane options

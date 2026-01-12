@@ -1,6 +1,5 @@
 /* *
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -10,7 +9,7 @@ const { defaultOptions } = D;
 import MockPoint from '../MockPoint.js';
 import U from '../../../Core/Utilities.js';
 const { merge, pick } = U;
-if (defaultOptions.annotations) {
+if (defaultOptions.annotations?.types) {
     /**
      * Options for the vertical line annotation type.
      *
@@ -49,7 +48,7 @@ if (defaultOptions.annotations) {
             /**
              * Connector options.
              *
-             * @extends   annotations.types.crookedLine.shapeOptions
+             * @extends   annotations.shapeOptions
              * @excluding height, r, type, width
              */
             connector: {
@@ -70,9 +69,15 @@ if (defaultOptions.annotations) {
  *  Class
  *
  * */
+/** @internal */
 class VerticalLine extends Annotation {
+    /* *
+     *
+     *  Static Functions
+     *
+     * */
     static connectorFirstPoint(target) {
-        const annotation = target.annotation, chart = annotation.chart, inverted = chart.inverted, point = annotation.points[0], left = pick(point.series.yAxis && point.series.yAxis.left, 0), top = pick(point.series.yAxis && point.series.yAxis.top, 0), offset = annotation.options.typeOptions.label.offset, y = MockPoint.pointToPixels(point, true)[inverted ? 'x' : 'y'];
+        const annotation = target.annotation, chart = annotation.chart, inverted = chart.inverted, point = annotation.points[0], left = pick(point.series.yAxis?.left, 0), top = pick(point.series.yAxis?.top, 0), offset = annotation.options.typeOptions?.label?.offset || 0, y = MockPoint.pointToPixels(point, true)[inverted ? 'x' : 'y'];
         return {
             x: point.x,
             xAxis: point.series.xAxis,
@@ -82,8 +87,8 @@ class VerticalLine extends Annotation {
     }
     static connectorSecondPoint(target) {
         const annotation = target.annotation, chart = annotation.chart, inverted = chart.inverted, typeOptions = annotation.options.typeOptions, point = annotation.points[0], left = pick(point.series.yAxis && point.series.yAxis.left, 0), top = pick(point.series.yAxis && point.series.yAxis.top, 0), y = MockPoint.pointToPixels(point, true)[inverted ? 'x' : 'y'];
-        let yOffset = typeOptions.yOffset;
-        if (typeOptions.label.offset < 0) {
+        let yOffset = typeOptions?.yOffset || 0;
+        if ((typeOptions?.label?.offset || 0) < 0) {
             yOffset *= -1;
         }
         return {
@@ -99,9 +104,11 @@ class VerticalLine extends Annotation {
      *
      * */
     getPointsOptions() {
-        return [this.options.typeOptions.point];
+        return this.options.typeOptions?.point ?
+            [this.options.typeOptions.point] : [];
     }
     addShapes() {
+        var _a;
         const typeOptions = this.options.typeOptions, connector = this.initShape(merge(typeOptions.connector, {
             type: 'path',
             points: [
@@ -111,16 +118,17 @@ class VerticalLine extends Annotation {
             className: 'highcharts-vertical-line'
         }), 0);
         typeOptions.connector = connector.options;
-        this.userOptions.typeOptions.point = typeOptions.point;
+        // Update to be able to save the chart after drag (#18584).
+        ((_a = this.userOptions).typeOptions || (_a.typeOptions = {})).point = typeOptions.point;
     }
     addLabels() {
-        const typeOptions = this.options.typeOptions, labelOptions = typeOptions.label;
-        let x = 0, y = labelOptions.offset, verticalAlign = labelOptions.offset < 0 ? 'bottom' : 'top', align = 'center';
+        const typeOptions = this.options.typeOptions, labelOptions = typeOptions.label, offset = labelOptions?.offset || 0;
+        let x = 0, y = offset, verticalAlign = offset < 0 ? 'bottom' : 'top', align = 'center';
         if (this.chart.inverted) {
-            x = labelOptions.offset;
+            x = offset;
             y = 0;
             verticalAlign = 'middle';
-            align = labelOptions.offset < 0 ? 'right' : 'left';
+            align = offset < 0 ? 'right' : 'left';
         }
         const label = this.initLabel(merge(labelOptions, {
             verticalAlign: verticalAlign,

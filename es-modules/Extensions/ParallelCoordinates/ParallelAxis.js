@@ -2,11 +2,12 @@
  *
  *  Parallel coordinates module
  *
- *  (c) 2010-2025 Pawel Fus
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Pawel Fus
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -20,7 +21,7 @@ const { addEvent, arrayMax, arrayMin, isNumber, merge, pick } = U;
  * */
 /**
  * Support for parallel axes.
- * @private
+ * @internal
  * @class
  */
 class ParallelAxisAdditions {
@@ -41,7 +42,7 @@ class ParallelAxisAdditions {
      * Set predefined left+width and top+height (inverted) for yAxes.
      * This method modifies options param.
      *
-     * @private
+     * @internal
      *
      * @param  {Array<string>} axisPosition
      * ['left', 'width', 'height', 'top'] or ['top', 'height', 'width', 'left']
@@ -84,7 +85,7 @@ var ParallelAxis;
      * */
     /**
      * Adds support for parallel axes.
-     * @private
+     * @internal
      */
     function compose(AxisClass) {
         if (!AxisClass.keepProps.includes('parallel')) {
@@ -99,7 +100,7 @@ var ParallelAxis;
     ParallelAxis.compose = compose;
     /**
      * Update default options with predefined for a parallel coords.
-     * @private
+     * @internal
      */
     function onAfterSetOptions(e) {
         const axis = this, chart = axis.chart, parallelCoordinates = axis.parallelCoordinates;
@@ -126,7 +127,7 @@ var ParallelAxis;
      * series.data. Not like the default one, which gathers extremes from all
      * series bind to this axis. Consider using series.points instead of
      * series.yData.
-     * @private
+     * @internal
      */
     function onGetSeriesExtremes(e) {
         const axis = this;
@@ -155,7 +156,7 @@ var ParallelAxis;
     }
     /**
      * Add parallel addition
-     * @private
+     * @internal
      */
     function onInit() {
         const axis = this;

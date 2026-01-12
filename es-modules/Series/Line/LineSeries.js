@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -354,7 +355,7 @@ export default LineSeries;
  *
  * @type      {string}
  * @since     5.0.0
- * @product   highcharts gantt
+ * @product   highcharts highstock gantt
  * @apioption series.line.data.className
  */
 /**
@@ -403,7 +404,8 @@ export default LineSeries;
 /**
  * Individual data label for each point. The options are the same as
  * the ones for [plotOptions.series.dataLabels](
- * #plotOptions.series.dataLabels).
+ * #plotOptions.series.dataLabels) with exception of `zIndex` which is applied
+ * on the data label's parent group.
  *
  * @sample highcharts/point/datalabels/
  *         Show a label for the last value
@@ -411,6 +413,7 @@ export default LineSeries;
  * @type      {*|Array<*>}
  * @declare   Highcharts.DataLabelsOptions
  * @extends   plotOptions.line.dataLabels
+ * @excluding zIndex
  * @product   highcharts highstock gantt
  * @apioption series.line.data.dataLabels
  */
@@ -436,9 +439,11 @@ export default LineSeries;
  * @apioption series.line.data.id
  */
 /**
- * The rank for this point's data label in case of collision. If two
+ * The rank for all this point's data labels in case of collision. If two
  * data labels are about to overlap, only the one with the highest `labelrank`
  * will be drawn.
+ *
+ * The `labelrank` set on `series.dataLabels` takes precedence over this.
  *
  * @type      {number}
  * @apioption series.line.data.labelrank

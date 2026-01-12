@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -22,9 +23,7 @@ const { addEvent, extend, merge, objectEach, pick, pushUnique } = U;
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function stopEvent(e) {
     if (e) {
         e.preventDefault?.();
@@ -41,7 +40,7 @@ function stopEvent(e) {
  * The MapNavigation handles buttons for navigation in addition to mousewheel
  * and doubleclick handlers for chart zooming.
  *
- * @private
+ * @internal
  * @class
  * @name MapNavigation
  *
@@ -277,4 +276,5 @@ class MapNavigation {
  *  Default Export
  *
  * */
+/** @internal */
 export default MapNavigation;

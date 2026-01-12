@@ -1,16 +1,18 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.5.0 (2026-01-12)
  * Organization chart series type
  * @module highcharts/modules/organization
  * @requires highcharts
  * @requires highcharts/modules/sankey
  *
- * (c) 2019-2025 Torstein Honsi
+ * (c) 2019-2026 Highsoft AS
+ * Author: Torstein Honsi
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
-import * as __WEBPACK_EXTERNAL_MODULE__sankey_src_js_3bb2850a__ from "./sankey.src.js";
 /******/ // The require scope
 /******/ var __webpack_require__ = {};
 /******/ 
@@ -45,17 +47,11 @@ import * as __WEBPACK_EXTERNAL_MODULE__sankey_src_js_3bb2850a__ from "./sankey.s
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
-;// external "./sankey.src.js"
-var x = (y) => {
-	var x = {}; __webpack_require__.d(x,
-    	y); return x
-    } 
-    var y = (x) => (() => (x))
-    const external_sankey_src_js_namespaceObject = x({  });
 ;// external ["../highcharts.src.js","default","SeriesRegistry"]
 const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
 var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
@@ -64,11 +60,12 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  *
  *  Organization chart module
  *
- *  (c) 2018-2025 Torstein Honsi
+ *  (c) 2018-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -181,11 +178,12 @@ class OrganizationPoint extends SankeyPointClass {
  *
  *  Organization chart module
  *
- *  (c) 2018-2025 Torstein Honsi
+ *  (c) 2018-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -271,7 +269,7 @@ const OrganizationSeriesDefaults = {
         lineWidth: 1,
         /**
          * Radius for the rounded corners of the links between nodes.
-         * Works for `default` link type.
+         * Works for the `orthogonal` link type.
          *
          * @sample   highcharts/series-organization/link-options
          *           Square links
@@ -284,11 +282,11 @@ const OrganizationSeriesDefaults = {
          *           Different link types
          *
          * @declare Highcharts.OrganizationLinkTypeValue
-         * @type {'default' | 'curved' | 'straight'}
-         * @default 'default'
+         * @type {'orthogonal' | 'curved' | 'straight'}
+         * @default 'orthogonal'
          * @product highcharts
          */
-        type: 'default'
+        type: 'orthogonal'
     },
     borderWidth: 1,
     /**
@@ -652,25 +650,36 @@ const OrganizationSeriesDefaults = {
 ;// ./code/es-modules/Series/PathUtilities.js
 /* *
  *
- *  (c) 2010-2025 Pawel Lysy
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Pawel Lysy
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
 const getLinkPath = {
-    'default': getDefaultPath,
+    'default': getOrthogonalPath,
+    orthogonal: getOrthogonalPath,
     straight: getStraightPath,
     curved: getCurvedPath
 };
 /**
  *
  */
-function getDefaultPath(pathParams) {
-    const { x1, y1, x2, y2, width = 0, inverted = false, radius, parentVisible } = pathParams;
-    const path = [
+function getOrthogonalPath(pathParams) {
+    const { x1, y1, x2, y2, bendAt, width = 0, inverted = false, radius, parentVisible } = pathParams;
+    if (parentVisible) {
+        const bend = bendAt ?? (width / 2);
+        return applyRadius([
+            ['M', x1, y1],
+            ['L', x1 + bend * (inverted ? -1 : 1), y1],
+            ['L', x1 + bend * (inverted ? -1 : 1), y2],
+            ['L', x2, y2]
+        ], radius);
+    }
+    return [
         ['M', x1, y1],
         ['L', x1, y1],
         ['C', x1, y1, x1, y2, x1, y2],
@@ -678,14 +687,6 @@ function getDefaultPath(pathParams) {
         ['C', x1, y1, x1, y2, x1, y2],
         ['L', x1, y2]
     ];
-    return parentVisible ?
-        applyRadius([
-            ['M', x1, y1],
-            ['L', x1 + width * (inverted ? -0.5 : 0.5), y1],
-            ['L', x1 + width * (inverted ? -0.5 : 0.5), y2],
-            ['L', x2, y2]
-        ], radius) :
-        path;
 }
 /**
  *
@@ -796,11 +797,12 @@ var external_highcharts_src_js_default_SVGElement_default = /*#__PURE__*/__webpa
  *
  *  Highcharts module with textPath functionality.
  *
- *  (c) 2009-2025 Torstein Honsi
+ *  (c) 2009-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -1025,11 +1027,12 @@ const TextPath = {
  *
  *  Organization chart module
  *
- *  (c) 2018-2025 Torstein Honsi
+ *  (c) 2018-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -1310,7 +1313,6 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ''; // Detach doclets above
 
 ;// ./code/es-modules/masters/modules/organization.src.js
-
 
 
 

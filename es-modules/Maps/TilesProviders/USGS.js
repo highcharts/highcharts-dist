@@ -7,6 +7,7 @@
  *  Class
  *
  * */
+/** @internal */
 class USGS {
     constructor() {
         /* *
@@ -41,4 +42,5 @@ class USGS {
  *  Default Export
  *
  * */
+/** @internal */
 export default USGS;

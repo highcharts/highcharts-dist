@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -47,7 +48,9 @@ class Tick {
      *
      * */
     constructor(axis, pos, type, noLabel, parameters) {
+        /** @internal */
         this.isNew = true;
+        /** @internal */
         this.isNewLabel = true;
         /**
          * The related axis of the tick.
@@ -89,7 +92,7 @@ class Tick {
     /**
      * Write the tick label.
      *
-     * @private
+     * @internal
      * @function Highcharts.Tick#addLabel
      */
     addLabel() {
@@ -217,7 +220,7 @@ class Tick {
     /**
      * Render and return the label of the tick.
      *
-     * @private
+     * @internal
      * @function Highcharts.Tick#createLabel
      */
     createLabel(str, labelOptions, xy) {
@@ -242,7 +245,7 @@ class Tick {
     /**
      * Destructor for the tick prototype
      *
-     * @private
+     * @internal
      * @function Highcharts.Tick#destroy
      */
     destroy() {
@@ -251,7 +254,7 @@ class Tick {
     /**
      * Gets the x and y positions for ticks in terms of pixels.
      *
-     * @private
+     * @internal
      * @function Highcharts.Tick#getPosition
      *
      * @param {boolean} horiz
@@ -300,7 +303,7 @@ class Tick {
     }
     /**
      * Get the x, y position of the tick label
-     * @private
+     * @internal
      */
     getLabelPosition(x, y, label, horiz, labelOptions, tickmarkOffset, index, step) {
         const axis = this.axis, transA = axis.transA, reversed = ( // #7911
@@ -353,7 +356,7 @@ class Tick {
     /**
      * Get the offset height or width of the label
      *
-     * @private
+     * @internal
      * @function Highcharts.Tick#getLabelSize
      */
     getLabelSize() {
@@ -363,7 +366,7 @@ class Tick {
     }
     /**
      * Extendible method to return the path of the marker
-     * @private
+     * @internal
      */
     getMarkPath(x, y, tickLength, tickWidth, horiz = false, renderer) {
         return renderer.crispLine([[
@@ -380,7 +383,7 @@ class Tick {
      * Handle the label overflow by adjusting the labels to the left and right
      * edge, or hide them if they collide into the neighbour label.
      *
-     * @private
+     * @internal
      * @function Highcharts.Tick#handleOverflow
      */
     handleOverflow(xy) {
@@ -442,7 +445,7 @@ class Tick {
     /**
      * Try to replace the label if the same one already exists.
      *
-     * @private
+     * @internal
      * @function Highcharts.Tick#moveLabel
      */
     moveLabel(str, labelOptions) {
@@ -479,7 +482,7 @@ class Tick {
     /**
      * Put everything in place
      *
-     * @private
+     * @internal
      * @param {number} index
      *
      * @param {boolean} [old]
@@ -512,7 +515,7 @@ class Tick {
     /**
      * Renders the gridLine.
      *
-     * @private
+     * @internal
      * @function Highcharts.Tick#renderGridLine
      * @param {boolean} old  Whether or not the tick is old
      * @param {number} opacity  The opacity of the grid line
@@ -568,7 +571,7 @@ class Tick {
     /**
      * Renders the tick mark.
      *
-     * @private
+     * @internal
      * @function Highcharts.Tick#renderMark
      * @param {Highcharts.PositionObject} xy  The position vector of the mark
      * @param {number} opacity  The opacity of the mark
@@ -611,7 +614,7 @@ class Tick {
      * Note: The label should already be created in init(), so it should only
      * have to be moved into place.
      *
-     * @private
+     * @internal
      * @function Highcharts.Tick#renderLabel
      * @param {Highcharts.PositionObject} xy  The position vector of the label
      * @param {boolean} old  Whether or not the tick is old
@@ -663,7 +666,7 @@ class Tick {
      * Replace labels with the moved ones to perform animation. Additionally
      * destroy unused labels.
      *
-     * @private
+     * @internal
      * @function Highcharts.Tick#replaceMovedLabel
      */
     replaceMovedLabel() {
@@ -691,7 +694,7 @@ export default Tick;
  * */
 /**
  * Optional parameters for the tick.
- * @private
+ * @internal
  * @interface Highcharts.TickParametersObject
  */ /**
 * Set category for the tick.

@@ -2,11 +2,12 @@
  *
  *  GUI generator for Stock tools
  *
- *  (c) 2009-2025 Sebastian Bochan
+ *  (c) 2009-2026 Highsoft AS
+ *  Author: Sebastian Bochan
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -566,7 +567,7 @@ class Toolbar {
     getIconsURL() {
         return this.chart.options.navigation.iconsURL ||
             this.options.iconsURL ||
-            'https://code.highcharts.com/12.4.0/gfx/stock-icons/';
+            'https://code.highcharts.com/12.5.0/gfx/stock-icons/';
     }
 }
 Toolbar.prototype.classMapping = {

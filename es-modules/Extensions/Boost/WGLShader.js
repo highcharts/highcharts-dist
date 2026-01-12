@@ -1,12 +1,11 @@
 /* *
  *
- *  (c) 2019-2025 Highsoft AS
+ *  (c) 2019-2026 Highsoft AS
  *
  *  Boost module: stripped-down renderer for higher performance
  *
  *  License: highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -208,9 +207,9 @@ const vertexShader = [
  * */
 /* eslint-disable valid-jsdoc */
 /**
- * A static shader mimicing axis translation functions found in Core/Axis
+ * A static shader mimicking axis translation functions found in Core/Axis.
  *
- * @private
+ * @internal
  *
  * @param {WebGLContext} gl
  * the context in which the shader is active
@@ -239,7 +238,7 @@ class WGLShader {
      * Bind the shader.
      * This makes the shader the active one until another one is bound,
      * or until 0 is bound.
-     * @private
+     * @internal
      */
     bind() {
         if (this.gl && this.shaderProgram) {
@@ -248,8 +247,8 @@ class WGLShader {
     }
     /**
      * Create the shader.
-     * Loads the shader program statically defined above
-     * @private
+     * Loads the shader program statically defined above.
+     * @internal
      */
     createShader() {
         const v = this.stringToProgram(vertexShader, 'vertex'), f = this.stringToProgram(fragmentShader, 'fragment'), uloc = (n) => (this.gl.getUniformLocation(this.shaderProgram, n));
@@ -283,8 +282,8 @@ class WGLShader {
         return true;
     }
     /**
-     * Handle errors accumulated in errors stack
-     * @private
+     * Handle errors accumulated in errors stack.
+     * @internal
      */
     handleErrors() {
         if (this.errors.length) {
@@ -293,8 +292,9 @@ class WGLShader {
         }
     }
     /**
-     * String to shader program
-     * @private
+     * String to shader program.
+     *
+     * @internal
      * @param {string} str
      * Program source
      * @param {string} type
@@ -314,8 +314,8 @@ class WGLShader {
         return shader;
     }
     /**
-     * Destroy the shader
-     * @private
+     * Destroy the shader.
+     * @internal
      */
     destroy() {
         if (this.gl && this.shaderProgram) {
@@ -327,8 +327,9 @@ class WGLShader {
         return this.fcUniform;
     }
     /**
-     * Get the shader program handle
-     * @private
+     * Get the shader program handle.
+     *
+     * @internal
      * @return {WebGLProgram}
      * The handle for the program
      */
@@ -342,8 +343,8 @@ class WGLShader {
         return this.pUniform;
     }
     /**
-     * Flush
-     * @private
+     * Flush.
+     * @internal
      */
     reset() {
         if (this.gl && this.shaderProgram) {
@@ -352,8 +353,9 @@ class WGLShader {
         }
     }
     /**
-     * Set bubble uniforms
-     * @private
+     * Set bubble uniforms.
+     *
+     * @internal
      * @param {Highcharts.Series} series
      * Series to use
      */
@@ -379,7 +381,8 @@ class WGLShader {
     }
     /**
      * Set the Color uniform.
-     * @private
+     *
+     * @internal
      * @param {Array<number>} color
      * Array with RGBA values.
      */
@@ -389,8 +392,8 @@ class WGLShader {
         }
     }
     /**
-     * Enable/disable circle drawing
-     * @private
+     * Enable/disable circle drawing.
+     * @internal
      */
     setDrawAsCircle(flag) {
         if (this.gl && this.shaderProgram) {
@@ -398,8 +401,9 @@ class WGLShader {
         }
     }
     /**
-     * Set if inversion state
-     * @private
+     * Set if inversion state.
+     *
+     * @internal
      * @param {number} flag
      * Inversion flag
      */
@@ -409,8 +413,9 @@ class WGLShader {
         }
     }
     /**
-     * Set the perspective matrix
-     * @private
+     * Set the perspective matrix.
+     *
+     * @internal
      * @param {Float32List} m
      * Matrix 4 x 4
      */
@@ -421,7 +426,8 @@ class WGLShader {
     }
     /**
      * Set the point size.
-     * @private
+     *
+     * @internal
      * @param {number} p
      * Point size
      */
@@ -431,8 +437,8 @@ class WGLShader {
         }
     }
     /**
-     * Set skip translation
-     * @private
+     * Set skip translation.
+     * @internal
      */
     setSkipTranslation(flag) {
         if (this.gl && this.shaderProgram) {
@@ -440,10 +446,11 @@ class WGLShader {
         }
     }
     /**
-     * Set the active texture
-     * @private
+     * Set the active texture.
+     *
+     * @internal
      * @param {number} texture
-     * Texture to activate
+     * Texture to activate.
      */
     setTexture(texture) {
         if (this.gl && this.shaderProgram) {
@@ -453,11 +460,12 @@ class WGLShader {
     /**
      * Set a uniform value.
      * This uses a hash map to cache uniform locations.
-     * @private
+     *
+     * @internal
      * @param {string} name
      * Name of the uniform to set.
      * @param {number} val
-     * Value to set
+     * Value to set.
      */
     setUniform(name, val) {
         if (this.gl && this.shaderProgram) {
@@ -472,4 +480,5 @@ class WGLShader {
  *  Default Export
  *
  * */
+/** @internal */
 export default WGLShader;

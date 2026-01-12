@@ -1,12 +1,11 @@
 /* *
  *
- *  (c) 2019-2025 Highsoft AS
+ *  (c) 2019-2026 Highsoft AS
  *
  *  Boost module: stripped-down renderer for higher performance
  *
  *  License: highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -20,9 +19,7 @@ const { addEvent, pick, pushUnique } = U;
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function compose(ChartClass, wglMode) {
     if (wglMode && pushUnique(composed, 'Boost.Chart')) {
         ChartClass.prototype.callbacks.push(onChartCallback);
@@ -34,7 +31,7 @@ function compose(ChartClass, wglMode) {
  * For the chart, we need to consider the maximum extent of its Y axes,
  * in case of Highcharts Stock panes and navigator.
  *
- * @private
+ * @internal
  * @function Highcharts.Chart#getBoostClipRect
  */
 function getBoostClipRect(chart, target) {
@@ -83,7 +80,8 @@ function getBoostClipRect(chart, target) {
 }
 /**
  * Returns true if the chart is in series boost mode.
- * @private
+ *
+ * @internal
  * @param {Highcharts.Chart} chart
  * Chart to check.
  * @return {boolean}
@@ -152,13 +150,13 @@ function isChartSeriesBoosting(chart) {
     return boost.forceChartBoost;
 }
 /**
- * Take care of the canvas blitting
- * @private
+ * Take care of the canvas blitting.
+ * @internal
  */
 function onChartCallback(chart) {
     /**
      * Convert chart-level canvas to image.
-     * @private
+     * @internal
      */
     function canvasToSVG() {
         if (chart.boost &&
@@ -169,7 +167,7 @@ function onChartCallback(chart) {
     }
     /**
      * Clear chart-level canvas.
-     * @private
+     * @internal
      */
     function preRender() {
         // Reset force state
@@ -229,7 +227,7 @@ function onChartCallback(chart) {
 /**
  * Tolerant max() function.
  *
- * @private
+ * @internal
  * @param {...Array<Array<unknown>>} args
  * Max arguments
  * @return {number}
@@ -254,9 +252,11 @@ function patientMax(...args) {
  *  Default Export
  *
  * */
+/** @internal */
 const BoostChart = {
     compose,
     getBoostClipRect,
     isChartSeriesBoosting
 };
+/** @internal */
 export default BoostChart;

@@ -1,2 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
+import * as Highcharts from '../../../modules/grid-axis.src';
 export default Highcharts;

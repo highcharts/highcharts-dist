@@ -1,6 +1,5 @@
 /* *
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -11,7 +10,7 @@ import InfinityLine from './InfinityLine.js';
 import MockPoint from '../MockPoint.js';
 import U from '../../../Core/Utilities.js';
 const { merge } = U;
-if (defaultOptions.annotations) {
+if (defaultOptions.annotations?.types) {
     defaultOptions.annotations.types.pitchfork = merge(defaultOptions.annotations.types.infinityLine, 
     /**
      * Options for the pitchfork annotation type.
@@ -24,11 +23,14 @@ if (defaultOptions.annotations) {
      * @optionparent annotations.types.pitchfork
      */
     {
+        /**
+         * @excluding line
+         */
         typeOptions: {
             /**
              * Inner background options.
              *
-             * @extends   annotations.types.crookedLine.shapeOptions
+             * @extends   annotations.shapeOptions
              * @excluding height, r, type, width
              */
             innerBackground: {
@@ -38,7 +40,7 @@ if (defaultOptions.annotations) {
             /**
              * Outer background options.
              *
-             * @extends   annotations.types.crookedLine.shapeOptions
+             * @extends   annotations.shapeOptions
              * @excluding height, r, type, width
              */
             outerBackground: {
@@ -53,6 +55,7 @@ if (defaultOptions.annotations) {
  *  Class
  *
  * */
+/** @internal */
 class Pitchfork extends InfinityLine {
     /* *
      *

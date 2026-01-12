@@ -1,10 +1,10 @@
 /* *
  *
- *  (c) 2009-2025 Highsoft AS
+ *  (c) 2009-2026 Highsoft AS
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  *  Authors:
  *  - Dawid Dragula
@@ -53,7 +53,7 @@ class FilterModifier extends DataModifier {
                 return (row, table, i) => !sub(row, table, i);
             }
         }
-        const { columnName: col, value } = condition;
+        const { columnId: col, value } = condition;
         switch (op) {
             case '==':
                 // eslint-disable-next-line eqeqeq
@@ -73,6 +73,8 @@ class FilterModifier extends DataModifier {
                 return (row) => (row[col] || 0) < (value || 0);
             case '<=':
                 return (row) => (row[col] || 0) <= (value || 0);
+            case 'empty':
+                return (row) => row[col] === null || row[col] === '';
         }
         const { ignoreCase } = condition;
         const str = (val) => {
@@ -107,7 +109,9 @@ class FilterModifier extends DataModifier {
      *
      * */
     /**
-     * Replaces table rows with filtered rows.
+     * Filters out table rows matching a given condition. If the given table
+     * does not have defined a `modified` property, the filtering is applied
+     * in-place on the original table rather than on a `modified` copy.
      *
      * @param {DataTable} table
      * Table to modify.
@@ -116,7 +120,8 @@ class FilterModifier extends DataModifier {
      * Custom information for pending events.
      *
      * @return {DataTable}
-     * Table with `modified` property as a reference.
+     * Table with `modified` property as a reference or modified table, if
+     * `modified` property of the original table is undefined.
      */
     modifyTable(table, eventDetail) {
         const modifier = this;
@@ -127,8 +132,7 @@ class FilterModifier extends DataModifier {
             return table;
         }
         const matchRow = FilterModifier.compile(condition);
-        // This line should be investigated further when reworking Data Layer.
-        const modified = table.modified;
+        const modified = table.getModified();
         const rows = [];
         const indexes = [];
         for (let i = 0, iEnd = table.getRowCount(); i < iEnd; ++i) {
@@ -138,7 +142,7 @@ class FilterModifier extends DataModifier {
             }
             if (matchRow(row, table, i)) {
                 rows.push(row);
-                indexes.push(modified.getOriginalRowIndex(i));
+                indexes.push(table.getOriginalRowIndex(i));
             }
         }
         modified.deleteRows();

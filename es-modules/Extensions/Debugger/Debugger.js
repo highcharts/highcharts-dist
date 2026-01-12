@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -43,9 +44,7 @@ const defaultOptions = {
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function compose(ChartClass) {
     if (pushUnique(composed, 'Debugger')) {
         addEvent(ChartClass, 'beforeRedraw', onChartBeforeRedraw);
@@ -53,9 +52,7 @@ function compose(ChartClass) {
         setOptions(defaultOptions);
     }
 }
-/**
- * @private
- */
+/** @internal */
 function onChartBeforeRedraw() {
     const errorElements = this.errorElements;
     if (errorElements && errorElements.length) {
@@ -65,9 +62,7 @@ function onChartBeforeRedraw() {
     }
     delete this.errorElements;
 }
-/**
- * @private
- */
+/** @internal */
 function onHighchartsDisplayError(e) {
     // Display error on the chart causing the error or the last created chart.
     const chart = (e.chart ||
@@ -125,7 +120,9 @@ function onHighchartsDisplayError(e) {
  *  Default Export
  *
  * */
+/** @internal */
 const Debugger = {
     compose
 };
+/** @internal */
 export default Debugger;

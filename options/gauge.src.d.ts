@@ -205,6 +205,12 @@ declare module "../highcharts.src" {
          */
         inside?: boolean;
         /**
+         * (Highcharts) The rank for this point's data label in case of
+         * collision. If two data labels are about to overlap, only the one with
+         * the highest `labelrank` will be drawn.
+         */
+        labelrank?: number;
+        /**
          * (Highcharts) Format for points with the value of null. Works
          * analogously to format. `nullFormat` can be applied only to series
          * which support displaying null points. `heatmap` and `tilemap`
@@ -220,9 +226,10 @@ declare module "../highcharts.src" {
          * `nullFormatter` can be applied only to series which support
          * displaying null points. `heatmap` and `tilemap` supports
          * `nullFormatter` by default while the following series requires
-         * [#series.nullInteraction] set to `true`: `line`, `spline`, `area`,
-         * `area-spline`, `column`, `bar`, and `timeline`. Does not work with
-         * series that don't display null points, like `pie`.
+         * (series.nullInteraction)[#series.nullInteraction] set to `true`:
+         * `line`, `spline`, `area`, `area-spline`, `column`, `bar`, and
+         * `timeline`. Does not work with series that don't display null points,
+         * like `pie`.
          */
         nullFormatter?: Highcharts.DataLabelsFormatterCallbackFunction;
         /**
@@ -316,9 +323,11 @@ declare module "../highcharts.src" {
          */
         y?: number;
         /**
-         * (Highcharts) The z index of the data labels. Use a `zIndex` of 6 to
-         * display it above the series, or use a `zIndex` of 2 to display it
-         * behind the series.
+         * (Highcharts) The z index of the data labels group. Does not apply
+         * below series level options.
+         *
+         * Use a `zIndex` of 6 to display it above the series, or use a `zIndex`
+         * of 2 to display it behind the series.
          */
         zIndex?: number;
     }
@@ -370,7 +379,8 @@ declare module "../highcharts.src" {
      *
      * **TypeScript:**
      *
-     * - the type option must always be set.
+     * - type option should always be set, otherwise a broad set of unsupported
+     * options is allowed.
      *
      * - when accessing an array of series, the combined set of all series types
      * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
@@ -569,6 +579,9 @@ declare module "../highcharts.src" {
          * If master series uses data sorting and linked series does not have
          * its own sorting definition, the linked series will be sorted in the
          * same order as the master one.
+         *
+         * If a `compare` value is not set on a linked series, it will be
+         * inherited from the parent series.
          */
         linkedTo?: string;
         /**
@@ -776,67 +789,22 @@ declare module "../highcharts.src" {
         y?: number;
     }
     /**
-     * (Highcharts) A `gauge` series. If the type option is not specified, it is
-     * inherited from chart.type.
+     * (Highcharts, Highstock, Gantt) Enable or disable the initial animation
+     * when a series is displayed for the `dataLabels`. The animation can also
+     * be set as a configuration object. Please note that this option only
+     * applies to the initial animation.
      *
-     * Configuration options for the series are given in three levels:
+     * For other animations, see chart.animation and the animation parameter
+     * under the API methods. The following properties are supported:
      *
-     * 1. Options for all series in a chart are defined in the
-     * plotOptions.series object.
-     *
-     * 2. Options for all `gauge` series are defined in plotOptions.gauge.
-     *
-     * 3. Options for one single series are given in the series instance array.
-     * (see online documentation for example)
-     *
-     * **TypeScript:**
-     *
-     * - the type option must always be set.
-     *
-     * - when accessing an array of series, the combined set of all series types
-     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
-     * specific type can be done by checking the `type` property. (see online
-     * documentation for example)
-     *
-     * You have to extend the `SeriesGaugeOptions` via an interface to allow
-     * custom properties: ``` declare interface SeriesGaugeOptions {
-     * customProperty: string; }
-     *
+     * - `defer`: The animation delay time in milliseconds.
      */
-    interface SeriesGaugeOptions extends Highcharts.PlotGaugeOptions, Highcharts.SeriesOptions {
+    interface SeriesGaugeDataDataLabelsAnimationOptions {
         /**
-         * (Highcharts) An array of data points for the series. For the `gauge`
-         * series type, points can be given in the following ways:
-         *
-         * 1. An array of numerical values. In this case, the numerical values
-         * will be interpreted as `y` options. Example: (see online
-         * documentation for example)
-         *
-         * 2. An array of objects with named values. The following snippet shows
-         * only a few settings, see the complete options set below. If the total
-         * number of data points exceeds the series' turboThreshold, this option
-         * is not available. (see online documentation for example)
-         *
-         * The typical gauge only contains a single data value.
+         * (Highcharts, Highstock, Gantt) The animation delay time in
+         * milliseconds. Set to `0` to render the data labels immediately. As
+         * `undefined` inherits defer time from the series.animation.defer.
          */
-        data?: Array<(number|null|Highcharts.PointOptionsObject)>;
-        /**
-         * Not available
-         */
-        dataParser?: undefined;
-        /**
-         * Not available
-         */
-        dataURL?: undefined;
-        /**
-         * Not available
-         */
-        stack?: undefined;
-        /**
-         * (Highcharts, Highstock, Highmaps, Gantt) This property is only in
-         * TypeScript non-optional and might be `undefined` in series objects
-         * from unknown sources.
-         */
-        type: "gauge";
+        defer?: number;
     }
 }

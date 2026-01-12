@@ -1,12 +1,12 @@
 /* *
  *
- *  (c) 2009-2025 Highsoft AS
+ *  (c) 2009-2026 Highsoft AS
  *
  *  Authors: Øystein Moseng, Torstein Hønsi, Jon A. Nygård
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -20,7 +20,7 @@ const { addEvent } = U;
 /**
  * Add multiple event listeners with the same handler to the same element.
  *
- * @private
+ * @internal
  * @function addEvents
  * @param {T} el
  *        The element or object to add listeners to.
@@ -48,7 +48,7 @@ function addEvents(el, types, fn, options) {
 /**
  * Utility function to count the number of props in an object.
  *
- * @private
+ * @internal
  * @function countProps
  *
  * @param {Object} obj
@@ -64,7 +64,7 @@ function countProps(obj) {
  * Utility function to get the value of the first prop of an object. (Note that
  * the order of keys in an object is usually not guaranteed.)
  *
- * @private
+ * @internal
  * @function getFirstProp
  * @param {Highcharts.Dictionary<T>} obj
  *        The object to count.
@@ -82,7 +82,7 @@ function getFirstProp(obj) {
 /**
  * Take a mouse/touch event and return the event object with chartX/chartY.
  *
- * @private
+ * @internal
  * @function getNormalizedEvent
  * @param {global.PointerEvent} e
  *        The event to normalize.
@@ -102,10 +102,12 @@ function getNormalizedEvent(e, chart) {
  *  Default Export
  *
  * */
+/** @internal */
 const DragDropUtilities = {
     addEvents,
     countProps,
     getFirstProp,
     getNormalizedEvent
 };
+/** @internal */
 export default DragDropUtilities;

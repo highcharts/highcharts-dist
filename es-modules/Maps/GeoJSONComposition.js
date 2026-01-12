@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -42,7 +43,7 @@ var GeoJSONComposition;
      * X and Y coordinates in terms of projected values
      */
     function chartFromLatLonToPoint(lonLat) {
-        return this.mapView && this.mapView.lonLatToProjectedUnits(lonLat);
+        return this.mapView?.lonLatToProjectedUnits(lonLat);
     }
     /**
      * Deprecated. Use `MapView.projectedUnitsToLonLat` instead.
@@ -61,7 +62,7 @@ var GeoJSONComposition;
      * An object with `lat` and `lon` properties.
      */
     function chartFromPointToLatLon(point) {
-        return this.mapView && this.mapView.projectedUnitsToLonLat(point);
+        return this.mapView?.projectedUnitsToLonLat(point);
     }
     /**
      * Highcharts Maps only. Get point from latitude and longitude using
@@ -158,7 +159,7 @@ var GeoJSONComposition;
         } : normalized);
         return { lat: projected.y, lon: projected.x };
     }
-    /** @private */
+    /** @internal */
     function compose(ChartClass) {
         const chartProto = ChartClass.prototype;
         if (!chartProto.transformFromLatLon) {
@@ -255,6 +256,9 @@ var GeoJSONComposition;
      * Convert a TopoJSON topology to GeoJSON. By default the first object is
      * handled.
      * Based on https://github.com/topojson/topojson-specification
+     *
+     * @requires modules/map
+     * @internal
      */
     function topo2geo(topology, objectName) {
         // Decode first object/feature as default
@@ -335,7 +339,7 @@ var GeoJSONComposition;
     GeoJSONComposition.topo2geo = topo2geo;
     /**
      * Override addCredits to include map source by default.
-     * @private
+     * @internal
      */
     function wrapChartAddCredit(proceed, credits) {
         credits = merge(true, this.options.credits, credits);
@@ -498,7 +502,7 @@ export default GeoJSONComposition;
  * An array of GeoJSON or TopoJSON objects or strings used as map data for
  * series.
  *
- * @typedef {Array<*>|GeoJSON|TopoJSON|string} Highcharts.MapDataType
+ * @typedef {Array<*>|Highcharts.GeoJSON|Highcharts.TopoJSON|string} Highcharts.MapDataType
  */
 /**
  * A TopoJSON object, see description on the
@@ -506,4 +510,42 @@ export default GeoJSONComposition;
  *
  * @typedef {Object} Highcharts.TopoJSON
  */
+/**
+ * Rotation of the projection in terms of degrees `[lambda, phi, gamma]`.
+ * 1st number is mandatory, while 2nd and 3rd are optional.
+ *
+ * @typedef {"TypeScript: [number]|[number,number]|[number,number,number]"} Highcharts.ProjectionRotationOption
+ */
+/**
+ * The padding of the map view. Can be either a number of pixels, a percentage
+ * string, or an array of either. If an array is given, it sets the top, right,
+ * bottom, left paddings respectively.
+ *
+ * @interface Highcharts.MapViewPaddingType
+ * @typedef {number|string|Array<number|string>} Highcharts.MapViewPaddingType
+ */
+/**
+ * Object containing the bounds of the map.
+ * All coordinates are in projected units.
+ *
+ * @interface Highcharts.MapBounds
+ */ /**
+* The center of the bounding box.
+* @name Highcharts.MapBounds#midX
+*/ /**
+* The center of the bounding box.
+* @name Highcharts.MapBounds#midY
+*/ /**
+* First point's X of the bounding box.
+* @name Highcharts.MapBounds#x1
+*/ /**
+* First point's Y of the bounding box.
+* @name Highcharts.MapBounds#y1
+*/ /**
+* Second point's X of the bounding box.
+* @name Highcharts.MapBounds#x2
+*/ /**
+* Second point's Y of the bounding box.
+* @name Highcharts.MapBounds#y2
+*/
 ''; // Detach doclets above

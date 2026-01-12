@@ -1,13 +1,16 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v12.4.0 (2025-09-04)
+ * @license Highcharts Gantt JS v12.5.0 (2026-01-12)
  * @module highcharts/modules/static-scale
  * @requires highcharts
  *
  * StaticScale
  *
- * (c) 2016-2025 Torstein Honsi, Lars A. V. Cabrera
+ * (c) 2016-2026 Highsoft AS
+ * Author: Torstein Honsi, Lars A. V. Cabrera
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -100,11 +103,12 @@ var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default 
 ;// ./code/es-modules/Extensions/StaticScale.js
 /* *
  *
- *  (c) 2016-2025 Torstein Honsi, Lars Cabrera
+ *  (c) 2016-2026 Highsoft AS
+ *  Author: Torstein Honsi, Lars Cabrera
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -115,7 +119,7 @@ const { addEvent, defined, isNumber } = (highcharts_commonjs_highcharts_commonjs
  *  Composition
  *
  * */
-/** @private */
+/** @internal */
 function compose(AxisClass, ChartClass) {
     const chartProto = ChartClass.prototype;
     if (!chartProto.adjustHeight) {
@@ -124,7 +128,7 @@ function compose(AxisClass, ChartClass) {
         addEvent(ChartClass, 'render', chartProto.adjustHeight);
     }
 }
-/** @private */
+/** @internal */
 function onAxisAfterSetOptions() {
     const chartOptions = this.chart.userOptions.chart;
     if (!this.horiz &&
@@ -134,7 +138,7 @@ function onAxisAfterSetOptions() {
         this.staticScale = this.options.staticScale;
     }
 }
-/** @private */
+/** @internal */
 function chartAdjustHeight() {
     const chart = this;
     if (chart.redrawTrigger !== 'adjustHeight') {

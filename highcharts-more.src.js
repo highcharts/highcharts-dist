@@ -1,11 +1,13 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.5.0 (2026-01-12)
  * @module highcharts/highcharts-more
  * @requires highcharts
  *
- * (c) 2009-2025 Highsoft AS
+ * (c) 2009-2026 Highsoft AS
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -167,11 +169,12 @@ var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_roo
 ;// ./code/es-modules/Series/CenteredUtilities.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -313,7 +316,7 @@ const { addEvent, correctFloat, defined, pick: PaneComposition_pick } = (highcha
  *  Functions
  *
  * */
-/** @private */
+/** @internal */
 function chartGetHoverPane(eventArgs) {
     const chart = this;
     let hoverPane;
@@ -327,8 +330,28 @@ function chartGetHoverPane(eventArgs) {
     }
     return hoverPane;
 }
-/** @private */
-function compose(ChartClass, PointerClass) {
+/**
+ * Adjusts the clipBox based on the position of panes.
+ * @internal
+ */
+function onSetClip({ clipBox }) {
+    if (!this.xAxis ||
+        !this.yAxis ||
+        (!this.chart.angular && !this.chart.polar)) {
+        return;
+    }
+    const { plotWidth, plotHeight } = this.chart, smallestSize = Math.min(plotWidth, plotHeight), xPane = this.xAxis.pane, yPane = this.yAxis.pane;
+    if (xPane && xPane.axis) {
+        clipBox.x += xPane.center[0] -
+            (xPane.center[2] / smallestSize) * plotWidth / 2;
+    }
+    if (yPane && yPane.axis) {
+        clipBox.y += yPane.center[1] -
+            (yPane.center[2] / smallestSize) * plotHeight / 2;
+    }
+}
+/** @internal */
+function compose(ChartClass, PointerClass, SeriesClass) {
     const chartProto = ChartClass.prototype;
     if (!chartProto.getHoverPane) {
         chartProto.collectionsWithUpdate.push('pane');
@@ -336,11 +359,12 @@ function compose(ChartClass, PointerClass) {
         addEvent(ChartClass, 'afterIsInsidePlot', onChartAfterIsInsiderPlot);
         addEvent(PointerClass, 'afterGetHoverData', onPointerAfterGetHoverData);
         addEvent(PointerClass, 'beforeGetHoverData', onPointerBeforeGetHoverData);
+        addEvent(SeriesClass, 'setClip', onSetClip);
     }
 }
 /**
  * Check whether element is inside or outside pane.
- * @private
+ * @internal
  * @param  {number} x
  * Element's x coordinate
  * @param  {number} y
@@ -389,7 +413,7 @@ function isInsidePane(x, y, center, startAngle, endAngle) {
 }
 /**
  * Check if (x, y) position is within pane for polar.
- * @private
+ * @internal
  */
 function onChartAfterIsInsiderPlot(e) {
     const chart = this;
@@ -413,7 +437,7 @@ function onPointerAfterGetHoverData(eventArgs) {
         eventArgs.hoverPoint = void 0;
     }
 }
-/** @private */
+/** @internal */
 function onPointerBeforeGetHoverData(eventArgs) {
     const chart = this.chart;
     if (chart.polar) {
@@ -444,11 +468,12 @@ const PaneComposition = {
 ;// ./code/es-modules/Extensions/Pane/PaneDefaults.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -653,11 +678,12 @@ const PaneDefaults = {
 ;// ./code/es-modules/Extensions/Pane/Pane.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -676,7 +702,7 @@ const { extend, merge, splat } = (highcharts_commonjs_highcharts_commonjs2_highc
  *
  * In the future, this can be extended to basic Highcharts and Highcharts Stock.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.Pane
  * @param {Highcharts.PaneOptions} options
@@ -700,7 +726,7 @@ class Pane {
     /**
      * Initialize the Pane object
      *
-     * @private
+     * @internal
      * @function Highcharts.Pane#init
      *
      * @param {Highcharts.PaneOptions} options
@@ -714,7 +740,7 @@ class Pane {
         this.setOptions(options);
     }
     /**
-     * @private
+     * @internal
      * @function Highcharts.Pane#setOptions
      *
      * @param {Highcharts.PaneOptions} options
@@ -726,7 +752,7 @@ class Pane {
     /**
      * Render the pane with its backgrounds.
      *
-     * @private
+     * @internal
      * @function Highcharts.Pane#render
      */
     render() {
@@ -758,7 +784,7 @@ class Pane {
     /**
      * Render an individual pane background.
      *
-     * @private
+     * @internal
      * @function Highcharts.Pane#renderBackground
      *
      * @param {Highcharts.PaneBackgroundOptions} backgroundOptions
@@ -792,7 +818,7 @@ class Pane {
     /**
      * Gets the center for the pane and its axis.
      *
-     * @private
+     * @internal
      * @function Highcharts.Pane#updateCenter
      * @param {Highcharts.Axis} [axis]
      */
@@ -805,7 +831,7 @@ class Pane {
      * Destroy the pane item
      *
      * @ignore
-     * @private
+     * @internal
      * @function Highcharts.Pane#destroy
      * /
     destroy: function () {
@@ -820,7 +846,7 @@ class Pane {
     /**
      * Update the pane item with new options
      *
-     * @private
+     * @internal
      * @function Highcharts.Pane#update
      * @param {Highcharts.PaneOptions} options
      *        New pane options
@@ -863,11 +889,12 @@ Pane.compose = Pane_PaneComposition.compose;
 ;// ./code/es-modules/Series/AreaRange/AreaRangePoint.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -881,16 +908,6 @@ const { defined: AreaRangePoint_defined, isNumber: AreaRangePoint_isNumber } = (
  *
  * */
 class AreaRangePoint extends AreaPoint {
-    /**
-     * Range series only. The high or maximum value for each data point.
-     * @name Highcharts.Point#high
-     * @type {number|undefined}
-     */
-    /**
-     * Range series only. The low or minimum value for each data point.
-     * @name Highcharts.Point#low
-     * @type {number|undefined}
-     */
     /* *
      *
      *  Functions
@@ -968,15 +985,34 @@ class AreaRangePoint extends AreaPoint {
  *
  * */
 /* harmony default export */ const AreaRange_AreaRangePoint = (AreaRangePoint);
+/* *
+ *
+ *  API Options
+ *
+ * */
+/**
+ * Range series only. The high or maximum value for each data point.
+ *
+ * @name Highcharts.Point#high
+ * @type {number|undefined}
+ */
+/**
+ * Range series only. The low or minimum value for each data point.
+ *
+ * @name Highcharts.Point#low
+ * @type {number|undefined}
+ */
+''; // Keeps doclets above in JS file.
 
 ;// ./code/es-modules/Series/AreaRange/AreaRangeSeries.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -1415,16 +1451,6 @@ class AreaRangeSeries extends AreaSeries {
         i = 0;
         while (i < pointLength) {
             point = series.points[i];
-            /**
-             * Array for multiple SVG graphics representing the point in the
-             * chart. Only used in cases where the point can not be represented
-             * by a single graphic.
-             *
-             * @see Highcharts.Point#graphic
-             *
-             * @name Highcharts.Point#graphics
-             * @type {Array<Highcharts.SVGElement>|undefined}
-             */
             point.graphics = point.graphics || [];
             // Save original props to be overridden by temporary props for top
             // points
@@ -1553,11 +1579,12 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 ;// ./code/es-modules/Series/AreaSplineRange/AreaSplineRangeSeries.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -1725,11 +1752,12 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 ;// ./code/es-modules/Series/BoxPlot/BoxPlotSeriesDefaults.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -2179,11 +2207,12 @@ var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commo
 ;// ./code/es-modules/Series/BoxPlot/BoxPlotSeries.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -2418,13 +2447,13 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 ;// ./code/es-modules/Series/Bubble/BubbleLegendDefaults.js
 /* *
  *
- *  (c) 2010-2025 Highsoft AS
+ *  (c) 2010-2026 Highsoft AS
  *
  *  Author: Paweł Potaczek
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -2689,13 +2718,13 @@ var highcharts_Templating_commonjs_highcharts_Templating_commonjs2_highcharts_Te
 ;// ./code/es-modules/Series/Bubble/BubbleLegendItem.js
 /* *
  *
- *  (c) 2010-2025 Highsoft AS
+ *  (c) 2010-2026 Highsoft AS
  *
  *  Author: Paweł Potaczek
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -3133,13 +3162,13 @@ class BubbleLegendItem {
 ;// ./code/es-modules/Series/Bubble/BubbleLegendComposition.js
 /* *
  *
- *  (c) 2010-2025 Highsoft AS
+ *  (c) 2010-2026 Highsoft AS
  *
  *  Author: Paweł Potaczek
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -3402,11 +3431,12 @@ var highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_H
 ;// ./code/es-modules/Series/Bubble/BubblePoint.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -3462,11 +3492,12 @@ BubblePoint_extend(BubblePoint.prototype, {
 ;// ./code/es-modules/Series/Bubble/BubbleSeries.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -4179,11 +4210,12 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 ;// ./code/es-modules/Series/ColumnRange/ColumnRangePoint.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -4219,11 +4251,12 @@ ColumnRangePoint_extend(ColumnRangePoint.prototype, {
 ;// ./code/es-modules/Series/ColumnRange/ColumnRangeSeries.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -4522,11 +4555,12 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 ;// ./code/es-modules/Series/ColumnPyramid/ColumnPyramidSeriesDefaults.js
 /* *
  *
- *  (c) 2010-2025 Sebastian Bochan
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Sebastian Bochan
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -4649,11 +4683,12 @@ const ColumnPyramidSeriesDefaults = {};
 ;// ./code/es-modules/Series/ColumnPyramid/ColumnPyramidSeries.js
 /* *
  *
- *  (c) 2010-2025 Sebastian Bochan
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Sebastian Bochan
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -4830,11 +4865,12 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 ;// ./code/es-modules/Series/ErrorBar/ErrorBarSeriesDefaults.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -4979,11 +5015,12 @@ const ErrorBarSeriesDefaults = {
 ;// ./code/es-modules/Series/ErrorBar/ErrorBarSeries.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -5064,11 +5101,12 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 ;// ./code/es-modules/Series/Gauge/GaugePoint.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -5104,11 +5142,12 @@ class GaugePoint extends Point {
 ;// ./code/es-modules/Series/Gauge/GaugeSeries.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -5669,11 +5708,12 @@ var highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_H
  *
  *  Networkgraph series
  *
- *  (c) 2010-2025 Paweł Fus
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Paweł Fus
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -5841,11 +5881,12 @@ const DragNodesComposition = {
  *
  *  Networkgraph series
  *
- *  (c) 2010-2025 Paweł Fus
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Paweł Fus
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -5975,11 +6016,12 @@ var highcharts_Chart_commonjs_highcharts_Chart_commonjs2_highcharts_Chart_root_H
 ;// ./code/es-modules/Series/PackedBubble/PackedBubblePoint.js
 /* *
  *
- *  (c) 2010-2025 Grzegorz Blachlinski, Sebastian Bochan
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Grzegorz Blachlinski, Sebastian Bochan
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -6447,11 +6489,12 @@ const PackedBubbleSeriesDefaults = {
  *
  *  Networkgraph series
  *
- *  (c) 2010-2025 Paweł Fus
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Paweł Fus
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -6636,11 +6679,12 @@ const VerletIntegration = {
 ;// ./code/es-modules/Series/PackedBubble/PackedBubbleIntegration.js
 /* *
  *
- *  (c) 2010-2025 Grzegorz Blachlinski, Sebastian Bochan
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Grzegorz Blachlinski, Sebastian Bochan
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -6727,11 +6771,12 @@ const PackedBubbleIntegration = {
  *
  *  Networkgraph series
  *
- *  (c) 2010-2025 Paweł Fus
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Paweł Fus
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -6927,11 +6972,12 @@ const EulerIntegration = {
  *
  *  Networkgraph series
  *
- *  (c) 2010-2025 Paweł Fus
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Paweł Fus
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -7198,11 +7244,12 @@ class QuadTreeNode {
  *
  *  Networkgraph series
  *
- *  (c) 2010-2025 Paweł Fus
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Paweł Fus
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -7343,11 +7390,12 @@ class QuadTree {
  *
  *  Networkgraph series
  *
- *  (c) 2010-2025 Paweł Fus
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Paweł Fus
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -7852,11 +7900,12 @@ class ReingoldFruchtermanLayout {
 ;// ./code/es-modules/Series/PackedBubble/PackedBubbleLayout.js
 /* *
  *
- *  (c) 2010-2025 Grzegorz Blachlinski, Sebastian Bochan
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Grzegorz Blachlinski, Sebastian Bochan
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -8059,12 +8108,11 @@ Series_GraphLayoutComposition.layouts.packedbubble = PackedBubbleLayout;
 ;// ./code/es-modules/Series/SimulationSeriesUtilities.js
 /* *
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
 
-const { merge: SimulationSeriesUtilities_merge, syncTimeout } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { syncTimeout } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 const { animObject } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /**
@@ -8098,7 +8146,8 @@ function initDataLabelsDefer() {
 function initDataLabels() {
     const series = this, dlOptions = series.options.dataLabels;
     if (!series.dataLabelsGroup) {
-        const dataLabelsGroup = this.initDataLabelsGroup();
+        // Those series support only one group of data labels (index 0)
+        const dataLabelsGroup = this.initDataLabelsGroup(0, dlOptions);
         // Apply the dataLabels.style not only to the
         // individual dataLabels but also to the entire group
         if (!series.chart.styledMode && dlOptions?.style) {
@@ -8109,7 +8158,7 @@ function initDataLabels() {
         if (series.visible) { // #2597, #3023, #3024
             // #19663, initial data labels animation
             if (series.options.animation && dlOptions?.animation) {
-                dataLabelsGroup.animate({ opacity: 1 }, dlOptions?.animation);
+                dataLabelsGroup.animate({ opacity: 1 }, dlOptions.animation);
             }
             else {
                 dataLabelsGroup.attr({ opacity: 1 });
@@ -8119,7 +8168,10 @@ function initDataLabels() {
         return dataLabelsGroup;
     }
     // Place it on first and subsequent (redraw) calls
-    series.dataLabelsGroup.attr(SimulationSeriesUtilities_merge({ opacity: 1 }, this.getPlotBox('data-labels')));
+    series.dataLabelsGroup.attr({
+        opacity: 1,
+        ...this.getPlotBox('data-labels')
+    });
     return series.dataLabelsGroup;
 }
 const DataLabelsDeferUtils = {
@@ -8136,11 +8188,12 @@ var highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_highcharts_SV
  *
  *  Highcharts module with textPath functionality.
  *
- *  (c) 2009-2025 Torstein Honsi
+ *  (c) 2009-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -8363,11 +8416,12 @@ const TextPath = {
 ;// ./code/es-modules/Series/PackedBubble/PackedBubbleSeries.js
 /* *
  *
- *  (c) 2010-2025 Grzegorz Blachlinski, Sebastian Bochan
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Grzegorz Blachlinski, Sebastian Bochan
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -9201,11 +9255,12 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 ;// ./code/es-modules/Series/Polygon/PolygonSeriesDefaults.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -9329,11 +9384,12 @@ const PolygonSeriesDefaults = {
 ;// ./code/es-modules/Series/Polygon/PolygonSeries.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -9399,9 +9455,9 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *
  *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -9433,9 +9489,7 @@ let oldRoundedRect = BorderRadius_noop;
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function applyBorderRadius(path, i, r) {
     const a = path[i];
     let b = path[i + 1];
@@ -9517,7 +9571,7 @@ function applyBorderRadius(path, i, r) {
 }
 /**
  * Extend arc with borderRadius.
- * @private
+ * @internal
  */
 function arc(x, y, w, h, options = {}) {
     const path = oldArc(x, y, w, h, options), { brStart = true, brEnd = true, innerR = 0, r = w, start = 0, end = 0 } = options;
@@ -9545,7 +9599,7 @@ function arc(x, y, w, h, options = {}) {
     }
     return path;
 }
-/** @private */
+/** @internal */
 function seriesOnAfterColumnTranslate() {
     if (this.options.borderRadius &&
         !(this.chart.is3d && this.chart.is3d())) {
@@ -9605,7 +9659,7 @@ function seriesOnAfterColumnTranslate() {
         }
     }
 }
-/** @private */
+/** @internal */
 function BorderRadius_compose(SeriesClass, SVGElementClass, SVGRendererClass) {
     const PieSeriesClass = SeriesClass.types.pie;
     if (!SVGElementClass.symbolCustomAttribs.includes('borderRadius')) {
@@ -9622,14 +9676,14 @@ function BorderRadius_compose(SeriesClass, SVGElementClass, SVGRendererClass) {
         symbols.roundedRect = roundedRect;
     }
 }
-/** @private */
+/** @internal */
 function optionsToObject(options, seriesBROptions) {
     if (!isObject(options)) {
         options = { radius: options || 0 };
     }
     return BorderRadius_merge(defaultBorderRadiusOptions, seriesBROptions, options);
 }
-/** @private */
+/** @internal */
 function pieSeriesOnAfterTranslate() {
     const borderRadius = optionsToObject(this.options.borderRadius);
     for (const point of this.points) {
@@ -9641,7 +9695,7 @@ function pieSeriesOnAfterTranslate() {
 }
 /**
  * Extend roundedRect with individual cutting through rOffset.
- * @private
+ * @internal
  */
 function roundedRect(x, y, width, height, options = {}) {
     const path = oldRoundedRect(x, y, width, height, options), { r = 0, brBoxHeight = height, brBoxY = y } = options, brOffsetTop = y - brBoxY, brOffsetBtm = (brBoxY + brBoxHeight) - (y + height), 
@@ -9781,20 +9835,21 @@ const BorderRadius = {
 ;// ./code/es-modules/Core/Axis/RadialAxisDefaults.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
  *  Extension for radial axes
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
 /**
-     * Circular axis around the perimeter of a polar chart.
-     * @private
-     */
+ * Circular axis around the perimeter of a polar chart.
+ * @internal
+ */
 const defaultCircularOptions = {
     gridLineWidth: 1, // Spokes
     labels: {
@@ -9809,7 +9864,7 @@ const defaultCircularOptions = {
 };
 /**
  * The default options extend defaultYAxisOptions.
- * @private
+ * @internal
  */
 const defaultRadialGaugeOptions = {
     endOnTick: false,
@@ -9839,7 +9894,7 @@ const defaultRadialGaugeOptions = {
 };
 /**
  * Radial axis, like a spoke in a polar chart.
- * @private
+ * @internal
  */
 const defaultRadialOptions = {
     /**
@@ -9859,6 +9914,51 @@ const defaultRadialOptions = {
      * @since     4.2.7
      * @product   highcharts
      * @apioption xAxis.angle
+     */
+    /**
+     * In a gauge chart, this option determines the inner radius of the
+     * plot band that stretches along the perimeter. It can be given as
+     * a percentage string, like `"100%"`, or as a pixel number, like `100`.
+     * By default, the inner radius is controlled by the [thickness](
+     * #yAxis.plotBands.thickness) option.
+     *
+     * @sample {highcharts} highcharts/xaxis/plotbands-gauge
+     *         Gauge plot band
+     *
+     * @type      {number|string}
+     * @since     2.3
+     * @product   highcharts
+     * @apioption yAxis.plotBands.innerRadius
+     */
+    /**
+     * In a gauge chart, this option determines the outer radius of the
+     * plot band that stretches along the perimeter. It can be given as
+     * a percentage string, like `"100%"`, or as a pixel number, like `100`.
+     *
+     * @sample {highcharts} highcharts/xaxis/plotbands-gauge
+     *         Gauge plot band
+     *
+     * @type      {number|string}
+     * @default   100%
+     * @since     2.3
+     * @product   highcharts
+     * @apioption yAxis.plotBands.outerRadius
+     */
+    /**
+     * In a gauge chart, this option sets the width of the plot band
+     * stretching along the perimeter. It can be given as a percentage
+     * string, like `"10%"`, or as a pixel number, like `10`. The default
+     * value 10 is the same as the default [tickLength](#yAxis.tickLength),
+     * thus making the plot band act as a background for the tick markers.
+     *
+     * @sample {highcharts} highcharts/xaxis/plotbands-gauge
+     *         Gauge plot band
+     *
+     * @type      {number|string}
+     * @default   10
+     * @since     2.3
+     * @product   highcharts
+     * @apioption yAxis.plotBands.thickness
      */
     /**
      * Polar charts only. Whether the grid lines should draw as a polygon
@@ -9899,8 +9999,10 @@ const defaultRadialOptions = {
  *
  * */
 const RadialAxisDefaults = {
+    /** @internal */
     circular: defaultCircularOptions,
     radial: defaultRadialOptions,
+    /** @internal */
     radialGauge: defaultRadialGaugeOptions
 };
 /* harmony default export */ const Axis_RadialAxisDefaults = (RadialAxisDefaults);
@@ -9908,11 +10010,12 @@ const RadialAxisDefaults = {
 ;// ./code/es-modules/Core/Axis/RadialAxis.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -9928,6 +10031,7 @@ const { addEvent: RadialAxis_addEvent, correctFloat: RadialAxis_correctFloat, de
  *  Composition
  *
  * */
+/** @internal */
 var RadialAxis;
 (function (RadialAxis) {
     /* *
@@ -9946,7 +10050,7 @@ var RadialAxis;
      * In case of auto connect, add one closestPointRange to the max value
      * right before tickPositions are computed, so that ticks will extend
      * passed the real max.
-     * @private
+     * @internal
      */
     function beforeSetTickPositions() {
         // If autoConnect is true, polygonal grid lines are connected, and
@@ -9971,7 +10075,7 @@ var RadialAxis;
     /**
      * Augments methods for the value axis.
      *
-     * @private
+     * @internal
      *
      * @param {Highcharts.Axis} AxisClass
      * Axis class to extend.
@@ -10001,7 +10105,7 @@ var RadialAxis;
      * Attach and return collecting function for labels in radial axis for
      * anti-collision.
      *
-     * @private
+     * @internal
      */
     function createLabelCollector() {
         return () => {
@@ -10018,14 +10122,14 @@ var RadialAxis;
     }
     /**
      * Creates an empty collector function.
-     * @private
+     * @internal
      */
     function createLabelCollectorHidden() {
         return RadialAxis_noop;
     }
     /**
      * Find the correct end values of crosshair in polar.
-     * @private
+     * @internal
      */
     function getCrosshairPosition(options, x1, y1) {
         const center = this.pane.center;
@@ -10069,7 +10173,7 @@ var RadialAxis;
      * Get the path for the axis line. This method is also referenced in the
      * getPlotLinePath method.
      *
-     * @private
+     * @internal
      * @param {number} _lineWidth
      * Line width is not used.
      * @param {number} [radius]
@@ -10127,7 +10231,7 @@ var RadialAxis;
     /**
      * Find the path for plot bands along the radial axis.
      *
-     * @private
+     * @internal
      */
     function getPlotBandPath(from, to, options) {
         const chart = this.chart, radiusToPixels = (radius) => {
@@ -10311,7 +10415,7 @@ var RadialAxis;
      * Returns the x, y coordinate of a point given by a value and a pixel
      * distance from center.
      *
-     * @private
+     * @internal
      * @param {number} value
      * Point value.
      * @param {number} [length]
@@ -10347,7 +10451,7 @@ var RadialAxis;
     }
     /**
      * Modify radial axis.
-     * @private
+     * @internal
      *
      * @param {Highcharts.Axis} radialAxis
      * Radial axis to modify.
@@ -10369,7 +10473,7 @@ var RadialAxis;
     }
     /**
      * Modify radial axis as hidden.
-     * @private
+     * @internal
      *
      * @param {Highcharts.Axis} radialAxis
      * Radial axis to modify.
@@ -10639,7 +10743,7 @@ var RadialAxis;
      * Translate from intermediate plotX (angle), plotY (axis.len - radius)
      * to final chart coordinates.
      *
-     * @private
+     * @internal
      * @param {number} angle
      * Translation angle.
      * @param {number} radius
@@ -10663,7 +10767,7 @@ var RadialAxis;
      * Override the setAxisSize method to use the arc's circumference as
      * length. This allows tickPixelInterval to apply to pixel lengths along
      * the perimeter.
-     * @private
+     * @internal
      */
     function setAxisSize() {
         const axisProto = this.constructor.prototype;
@@ -10698,7 +10802,7 @@ var RadialAxis;
      * difference in rotation. This allows the translate method to return
      * angle for any given value.
      *
-     * @private
+     * @internal
      */
     function setAxisTranslation() {
         const axisProto = this.constructor.prototype;
@@ -10786,16 +10890,18 @@ var RadialAxis;
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Axis_RadialAxis = (RadialAxis);
 
 ;// ./code/es-modules/Series/PolarComposition.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -11728,7 +11834,7 @@ class PolarAdditions {
      *
      * */
     static compose(AxisClass, ChartClass, PointerClass, SeriesClass, TickClass, PointClass, AreaSplineRangeSeriesClass, ColumnSeriesClass, LineSeriesClass, SplineSeriesClass) {
-        Pane_Pane.compose(ChartClass, PointerClass);
+        Pane_Pane.compose(ChartClass, PointerClass, SeriesClass);
         Axis_RadialAxis.compose(AxisClass, TickClass);
         if (PolarComposition_pushUnique(PolarComposition_composed, 'Polar')) {
             const chartProto = ChartClass.prototype, pointProto = PointClass.prototype, pointerProto = PointerClass.prototype, seriesProto = SeriesClass.prototype;
@@ -11862,11 +11968,12 @@ var highcharts_StackItem_commonjs_highcharts_StackItem_commonjs2_highcharts_Stac
 ;// ./code/es-modules/Core/Axis/WaterfallAxis.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -11880,6 +11987,7 @@ const { addEvent: WaterfallAxis_addEvent, objectEach: WaterfallAxis_objectEach, 
  *  Namespace
  *
  * */
+/** @internal */
 var WaterfallAxis;
 (function (WaterfallAxis) {
     /* *
@@ -11892,9 +12000,7 @@ var WaterfallAxis;
      *  Functions
      *
      * */
-    /**
-     * @private
-     */
+    /** @internal */
     function compose(AxisClass, ChartClass) {
         if (WaterfallAxis_pushUnique(WaterfallAxis_composed, 'Axis.Waterfall')) {
             WaterfallAxis_addEvent(AxisClass, 'init', onAxisInit);
@@ -11904,9 +12010,7 @@ var WaterfallAxis;
         }
     }
     WaterfallAxis.compose = compose;
-    /**
-     * @private
-     */
+    /** @internal */
     function onAxisAfterBuildStacks() {
         const axis = this, stacks = axis.waterfall?.stacks;
         if (stacks) {
@@ -11914,9 +12018,7 @@ var WaterfallAxis;
             delete stacks.alreadyChanged;
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function onAxisAfterRender() {
         const axis = this, stackLabelOptions = axis.options.stackLabels;
         if (stackLabelOptions?.enabled &&
@@ -11924,18 +12026,14 @@ var WaterfallAxis;
             axis.waterfall.renderStackTotals();
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function onAxisInit() {
         const axis = this;
         if (!axis.waterfall) {
             axis.waterfall = new Composition(axis);
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function onChartBeforeRedraw() {
         const axes = this.axes, series = this.series;
         for (const serie of series) {
@@ -11954,6 +12052,7 @@ var WaterfallAxis;
      *  Classes
      *
      * */
+    /** @internal */
     class Composition {
         /* *
          *
@@ -11975,7 +12074,7 @@ var WaterfallAxis;
          * Calls StackItem.prototype.render function that creates and renders
          * stack total label for each waterfall stack item.
          *
-         * @private
+         * @internal
          * @function Highcharts.Axis#renderWaterfallStackTotals
          */
         renderStackTotals() {
@@ -12006,16 +12105,18 @@ var WaterfallAxis;
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Axis_WaterfallAxis = (WaterfallAxis);
 
 ;// ./code/es-modules/Series/Waterfall/WaterfallPoint.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -12060,11 +12161,12 @@ class WaterfallPoint extends (highcharts_Series_types_column_commonjs_highcharts
 ;// ./code/es-modules/Series/Waterfall/WaterfallSeriesDefaults.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -12267,11 +12369,12 @@ const WaterfallSeriesDefaults = {
 ;// ./code/es-modules/Series/Waterfall/WaterfallSeries.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -12820,7 +12923,7 @@ const G = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_d
 G.RadialAxis = Axis_RadialAxis;
 Bubble_BubbleSeries.compose(G.Axis, G.Chart, G.Legend);
 PackedBubble_PackedBubbleSeries.compose(G.Axis, G.Chart, G.Legend);
-Pane_Pane.compose(G.Chart, G.Pointer);
+Pane_Pane.compose(G.Chart, G.Pointer, G.Series);
 PolarComposition.compose(G.Axis, G.Chart, G.Pointer, G.Series, G.Tick, G.Point, (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes.areasplinerange, (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes.column, (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes.line, (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes.spline);
 Waterfall_WaterfallSeries.compose(G.Axis, G.Chart);
 /* harmony default export */ const highcharts_more_src = (G);

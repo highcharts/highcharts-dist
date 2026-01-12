@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -35,9 +36,7 @@ var ColorAxisComposition;
      *  Functions
      *
      * */
-    /**
-     * @private
-     */
+    /** @internal */
     function compose(ColorAxisClass, ChartClass, FxClass, LegendClass, SeriesClass) {
         const chartProto = ChartClass.prototype, fxProto = FxClass.prototype, seriesProto = SeriesClass.prototype;
         if (!chartProto.collectionsWithUpdate.includes('colorAxis')) {
@@ -67,7 +66,7 @@ var ColorAxisComposition;
     ColorAxisComposition.compose = compose;
     /**
      * Extend the chart createAxes method to also make the color axis.
-     * @private
+     * @internal
      */
     function onChartAfterCreateAxes() {
         const { userOptions } = this;
@@ -82,7 +81,7 @@ var ColorAxisComposition;
     /**
      * Add the color axis. This also removes the axis' own series to prevent
      * them from showing up individually.
-     * @private
+     * @internal
      */
     function onLegendAfterGetAllItems(e) {
         const colorAxes = this.chart.colorAxis || [], destroyItem = (item) => {
@@ -127,9 +126,7 @@ var ColorAxisComposition;
             e.allItems.unshift(colorAxisItems[i]);
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function onLegendAfterColorizeItem(e) {
         if (e.visible && e.item.legendColor) {
             e.item.legendItem.symbol.attr({
@@ -139,7 +136,7 @@ var ColorAxisComposition;
     }
     /**
      * Updates in the legend need to be reflected in the color axis. (#6888)
-     * @private
+     * @internal
      */
     function onLegendAfterUpdate(e) {
         this.chart.colorAxis?.forEach((colorAxis) => {
@@ -148,7 +145,7 @@ var ColorAxisComposition;
     }
     /**
      * Calculate and set colors for points.
-     * @private
+     * @internal
      */
     function onSeriesAfterTranslate() {
         if (this.chart.colorAxis?.length ||
@@ -158,7 +155,7 @@ var ColorAxisComposition;
     }
     /**
      * Add colorAxis to series axisTypes.
-     * @private
+     * @internal
      */
     function onSeriesBindAxes() {
         const axisTypes = this.axisTypes;
@@ -171,7 +168,7 @@ var ColorAxisComposition;
     }
     /**
      * Set the visibility of a single point
-     * @private
+     * @internal
      * @function Highcharts.colorPointMixin.setVisible
      * @param {boolean} visible
      */
@@ -190,7 +187,7 @@ var ColorAxisComposition;
     /**
      * In choropleth maps, the color is a result of the value, so this needs
      * translation too
-     * @private
+     * @internal
      * @function Highcharts.colorSeriesMixin.translateColors
      */
     function seriesTranslateColors() {
@@ -212,9 +209,7 @@ var ColorAxisComposition;
             }
         });
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function wrapChartCreateAxis(ChartClass) {
         const superCreateAxis = ChartClass.prototype.createAxis;
         ChartClass.prototype.createAxis = function (type, options) {
@@ -243,14 +238,14 @@ var ColorAxisComposition;
     }
     /**
      * Handle animation of the color attributes directly.
-     * @private
+     * @internal
      */
     function wrapFxFillSetter() {
         this.elem.attr('fill', color(this.start).tweenTo(color(this.end), this.pos), void 0, true);
     }
     /**
      * Handle animation of the color attributes directly.
-     * @private
+     * @internal
      */
     function wrapFxStrokeSetter() {
         this.elem.attr('stroke', color(this.start).tweenTo(color(this.end), this.pos), void 0, true);

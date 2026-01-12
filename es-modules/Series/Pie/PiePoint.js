@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -126,13 +127,7 @@ class PiePoint extends Point {
         setAnimation(animation, chart);
         // Redraw is true by default
         redraw = pick(redraw, true);
-        /**
-         * Pie series only. Whether to display a slice offset from the
-         * center.
-         * @name Highcharts.Point#sliced
-         * @type {boolean|undefined}
-         */
-        // if called without an argument, toggle
+        // If called without an argument, toggle
         this.sliced = this.options.sliced = sliced =
             defined(sliced) ? sliced : !this.sliced;
         // Update userOptions.data
@@ -215,3 +210,15 @@ extend(PiePoint.prototype, {
  *
  * */
 export default PiePoint;
+/* *
+ *
+ *  API Options
+ *
+ * */
+/**
+ * Pie series only. Whether to display a slice offset from the center.
+ *
+ * @name Highcharts.Point#sliced
+ * @type {boolean|undefined}
+ */
+''; // Keeps doclets above in JS file

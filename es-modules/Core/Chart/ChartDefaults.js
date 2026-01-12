@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -1123,13 +1124,9 @@ const ChartDefaults = {
              * @since 10.2.1
              */
             position: {
-                /**
-                 * The horizontal alignment of the button.
-                 */
+                /** @internal */
                 align: 'right',
-                /**
-                 * The horizontal offset of the button.
-                 */
+                /** @internal */
                 x: -10,
                 /**
                  * The vertical alignment of the button.
@@ -1138,9 +1135,7 @@ const ChartDefaults = {
                  * @default    top
                  * @apioption  chart.zooming.resetButton.position.verticalAlign
                  */
-                /**
-                 * The vertical offset of the button.
-                 */
+                /** @internal */
                 y: 10
             }
         }

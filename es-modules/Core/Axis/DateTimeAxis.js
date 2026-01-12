@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -30,7 +31,7 @@ var DateTimeAxis;
      * */
     /**
      * Extends axis class with date and time support.
-     * @private
+     * @internal
      */
     function compose(AxisClass) {
         if (!AxisClass.keepProps.includes('dateTime')) {
@@ -48,7 +49,7 @@ var DateTimeAxis;
      * the time positions. Used in datetime axes as well as for grouping
      * data on a datetime axis.
      *
-     * @private
+     * @internal
      * @function Highcharts.Axis#getTimeTicks
      * @param {Highcharts.TimeNormalizeObject} normalizedInterval
      * The interval in axis values (ms) and the count.
@@ -60,9 +61,7 @@ var DateTimeAxis;
     function getTimeTicks() {
         return this.chart.time.getTimeTicks.apply(this.chart.time, arguments);
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function onAfterSetType() {
         if (this.type !== 'datetime') {
             this.dateTime = void 0;
@@ -77,6 +76,7 @@ var DateTimeAxis;
      *  Classes
      *
      * */
+    /** @internal */
     class Additions {
         /* *
          *
@@ -99,7 +99,7 @@ var DateTimeAxis;
          * charts, the normalizing logic was extracted in order to prevent it
          * for running over again for each segment having the same interval.
          * #662, #697.
-         * @private
+         * @internal
          */
         normalizeTimeTickInterval(tickInterval, unitsOption) {
             const units = (unitsOption || [[
@@ -167,7 +167,7 @@ var DateTimeAxis;
          * Get the best date format for a specific X value based on the closest
          * point range on the axis.
          *
-         * @private
+         * @internal
          */
         getXDateFormat(x, dateTimeLabelFormats) {
             const { axis } = this, time = axis.chart.time;

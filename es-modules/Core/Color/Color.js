@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -60,6 +61,11 @@ class Color {
      *
      * */
     constructor(input) {
+        /**
+         * The RGBA color components, if the color is a solid color.
+         * @name Highcharts.Color#rgba
+         * @type {Highcharts.RGBA}
+         */
         this.rgba = [NaN, NaN, NaN, NaN];
         this.input = input;
         const GlobalColor = H.Color;
@@ -229,7 +235,7 @@ class Color {
 /**
  * Collection of named colors. Can be extended from the outside by adding
  * colors to Highcharts.Color.names.
- * @private
+ * @internal
  */
 Color.names = {
     white: '#ffffff',
@@ -238,7 +244,7 @@ Color.names = {
 /**
  * Collection of parsers. This can be extended from the outside by pushing
  * parsers to `Color.parsers`.
- * @private
+ * @internal
  */
 Color.parsers = [{
         // RGBA color
@@ -289,11 +295,16 @@ Color.parsers = [{
 /**
  * Whether to use CSS `color-mix` for color handling (brightening,
  * tweening). This can be disabled from the outside.
- * @private
+ * @internal
  */
 Color.useColorMix = win.CSS?.supports('color', 'color-mix(in srgb,red,blue 9%)');
-// Must be last static member for init cycle
-Color.None = new Color('');
+/**
+ * A static Color instance representing no color.
+ * @name Highcharts.Color.None
+ * @type {Highcharts.Color}
+ * @internal
+ */
+Color.None = new Color(''); // Must be last static for init
 /* *
  *
  *  Default Export
@@ -403,6 +414,13 @@ export default Color;
 * Radius relative to the shape. Float ranges 0-1.
 * @name Highcharts.RadialGradientColorObject#r
 * @type {number}
+*/
+/**
+ * @interface Highcharts.RGBA
+ * @extends Array<number>
+ */ /**
+* @name Highcharts.RGBA#length
+* @type {4}
 */
 /**
  * Creates a color instance out of a color string.

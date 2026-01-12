@@ -1,14 +1,17 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.5.0 (2026-01-12)
  * @module highcharts/modules/export-data
  * @requires highcharts
  * @requires highcharts/modules/exporting
  *
  * Export data module
  *
- * (c) 2010-2025 Torstein Honsi
+ * (c) 2010-2026 Highsoft AS
+ * Author: Torstein Honsi
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -112,14 +115,15 @@ __webpack_require__.d(__webpack_exports__, {
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts"],"commonjs":["highcharts"],"commonjs2":["highcharts"],"root":["Highcharts"]}
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_ = __webpack_require__(944);
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default = /*#__PURE__*/__webpack_require__.n(highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_);
-;// ./code/es-modules/Extensions/DownloadURL.js
+;// ./code/es-modules/Shared/DownloadURL.js
 /* *
  *
- *  (c) 2015-2025 Oystein Moseng
+ *  (c) 2015-2026 Highsoft AS
+ *  Author: Oystein Moseng
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  *  Mixin for downloading content in the browser
  *
@@ -148,7 +152,7 @@ const domurl = win.URL || win.webkitURL || win;
 /**
  * Convert base64 dataURL to Blob if supported, otherwise returns undefined.
  *
- * @private
+ * @internal
  * @function Highcharts.dataURLtoBlob
  *
  * @param {string} dataURL
@@ -180,7 +184,7 @@ function dataURLtoBlob(dataURL) {
 /**
  * Download a data URL in the browser. Can also take a blob as first param.
  *
- * @private
+ * @internal
  * @function Highcharts.downloadURL
  *
  * @param {string | global.URL} dataURL
@@ -239,7 +243,7 @@ function downloadURL(dataURL, filename) {
 /**
  * Asynchronously downloads a script from a provided location.
  *
- * @private
+ * @internal
  * @function Highcharts.getScript
  *
  * @param {string} scriptLocation
@@ -265,17 +269,54 @@ function getScript(scriptLocation) {
         head.appendChild(script);
     });
 }
+/**
+ * Get a blob object from content, if blob is supported.
+ *
+ * @internal
+ * @function Highcharts.getBlobFromContent
+ *
+ * @param {string} content
+ * The content to create the blob from.
+ * @param {string} type
+ * The type of the content.
+ *
+ * @return {string | undefined}
+ * The blob object, or undefined if not supported.
+ *
+ * @requires modules/exporting
+ * @requires modules/export-data
+ */
+function getBlobFromContent(content, type) {
+    const nav = win.navigator, domurl = win.URL || win.webkitURL || win;
+    try {
+        // MS specific
+        if ((nav.msSaveOrOpenBlob) && win.MSBlobBuilder) {
+            const blob = new win.MSBlobBuilder();
+            blob.append(content);
+            return blob.getBlob('image/svg+xml');
+        }
+        return domurl.createObjectURL(new win.Blob(['\uFEFF' + content], // #7084
+        { type: type }));
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    }
+    catch (e) {
+        // Ignore
+    }
+}
 /* *
  *
  *  Default Export
  *
  * */
+/** @internal */
 const DownloadURL = {
     dataURLtoBlob,
     downloadURL,
+    getBlobFromContent,
     getScript
 };
-/* harmony default export */ const Extensions_DownloadURL = (DownloadURL);
+/** @internal */
+/* harmony default export */ const Shared_DownloadURL = (DownloadURL);
 
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","AST"],"commonjs":["highcharts","AST"],"commonjs2":["highcharts","AST"],"root":["Highcharts","AST"]}
 var highcharts_AST_commonjs_highcharts_AST_commonjs2_highcharts_AST_root_Highcharts_AST_ = __webpack_require__(660);
@@ -288,11 +329,12 @@ var highcharts_Chart_commonjs_highcharts_Chart_commonjs2_highcharts_Chart_root_H
  *
  *  Experimental data export module for Highcharts
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -303,7 +345,7 @@ var highcharts_Chart_commonjs_highcharts_Chart_commonjs2_highcharts_Chart_root_H
  * */
 /**
  * @optionparent exporting
- * @private
+ * @internal
  */
 const exporting = {
     /**
@@ -319,7 +361,7 @@ const exporting = {
      * @apioption exporting.tableCaption
      */
     /**
-     * Options for exporting data to CSV or ExCel, or displaying the data
+     * Options for exporting data to CSV or Excel, or displaying the data
      * in a HTML table or a JavaScript structure.
      *
      * This module adds data export options to the export menu and provides
@@ -341,34 +383,31 @@ const exporting = {
      */
     csv: {
         /**
-         *
          * Options for annotations in the export-data table.
          *
          * @since    8.2.0
          * @requires modules/export-data
          * @requires modules/annotations
-         *
-         *
          */
         annotations: {
             /**
-            * The way to mark the separator for annotations
-            * combined in one export-data table cell.
-            *
-            * @since    8.2.0
-            * @requires modules/annotations
-            */
+             * The way to mark the separator for annotations
+             * combined in one export-data table cell.
+             *
+             * @since    8.2.0
+             * @requires modules/annotations
+             */
             itemDelimiter: '; ',
             /**
-            * When several labels are assigned to a specific point,
-            * they will be displayed in one field in the table.
-            *
-            * @sample highcharts/export-data/join-annotations/
-            *         Concatenate point annotations with itemDelimiter set.
-            *
-            * @since    8.2.0
-            * @requires modules/annotations
-            */
+             * When several labels are assigned to a specific point,
+             * they will be displayed in one field in the table.
+             *
+             * @sample highcharts/export-data/join-annotations/
+             *         Concatenate point annotations with itemDelimiter set.
+             *
+             * @since    8.2.0
+             * @requires modules/annotations
+             */
             join: false
         },
         /**
@@ -428,60 +467,58 @@ const exporting = {
          */
         lineDelimiter: '\n'
     },
-    /**
-     * An object consisting of definitions for the menu items in the context
-     * menu. Each key value pair has a `key` that is referenced in the
-     * [menuItems](#exporting.buttons.contextButton.menuItems) setting,
-     * and a `value`, which is an object with the following properties:
-     *
-     * - **onclick:** The click handler for the menu item
-     *
-     * - **text:** The text for the menu item
-     *
-     * - **textKey:** If internationalization is required, the key to a language
-     *   string
-     *
-     * Custom text for the "exitFullScreen" can be set only in lang options
-     * (it is not a separate button).
-     *
-     * @sample highcharts/exporting/menuitemdefinitions/
-     *         Menu item definitions
-     * @sample highcharts/exporting/menuitemdefinitions-webp/
-     *         Adding a custom menu item for WebP export
-     *
-     * @type     {Highcharts.Dictionary<Highcharts.ExportingMenuObject>}
-     * @default  {"downloadCSV": {}, "downloadXLS": {}, "viewData": {}}
-     * @requires modules/export-data
-     */
     menuItemDefinitions: {
         /**
-         * @ignore
+         * @requires modules/export-data
          */
         downloadCSV: {
+            /**
+             * @see [lang.downloadCSV](#lang.downloadCSV)
+             * @default downloadCSV
+             */
             textKey: 'downloadCSV',
             onclick: function () {
                 this.exporting?.downloadCSV();
             }
         },
         /**
-         * @ignore
+         * @requires modules/export-data
          */
         downloadXLS: {
+            /**
+             * @see [lang.downloadXLS](#lang.downloadXLS)
+             * @default downloadXLS
+             */
             textKey: 'downloadXLS',
             onclick: function () {
                 this.exporting?.downloadXLS();
             }
         },
         /**
-         * @ignore
+         * @requires modules/export-data
          */
         viewData: {
+            /**
+             * @see [lang.viewData](#lang.viewData)
+             * @default viewData
+             */
             textKey: 'viewData',
             onclick: function () {
                 this.exporting?.wrapLoading(this.exporting.toggleDataTable);
             }
         }
     },
+    /**
+     * Display a message when export is in progress. Uses
+     * [Chart.showLoading()](/class-reference/Highcharts.Chart#showLoading).
+     *
+     * The message can be altered by changing
+     * [lang.exportInProgress](#lang.exportInProgress).
+     *
+     * @since    11.3.0
+     * @requires modules/export-data
+     */
+    showExportInProgress: true,
     /**
      * Show a HTML table below the chart with the chart's current data.
      *
@@ -517,21 +554,12 @@ const exporting = {
      * @since    6.0.4
      * @requires modules/export-data
      */
-    useRowspanHeaders: true,
-    /**
-     * Display a message when export is in progress.
-     * Uses [Chart.setLoading()](/class-reference/Highcharts.Chart#setLoading)
-     *
-     * The message can be altered by changing [](#lang.exporting.exportInProgress)
-     *
-     * @since    11.3.0
-     * @requires modules/export-data
-     */
-    showExportInProgress: true
+    useRowspanHeaders: true
 };
+// TODO: no need to be a partial when Options are fully optional.
 /**
  * @optionparent lang
- * @private
+ * @internal
  */
 const lang = {
     /**
@@ -595,10 +623,12 @@ const lang = {
  *  Default Export
  *
  * */
+/** @internal */
 const ExportDataDefaults = {
     exporting,
     lang
 };
+/** @internal */
 /* harmony default export */ const ExportData_ExportDataDefaults = (ExportDataDefaults);
 /* *
  *
@@ -610,7 +640,9 @@ const ExportDataDefaults = {
  * data rows before processed into the final format.
  *
  * @type      {Highcharts.ExportDataCallbackFunction}
+ * @since     7.2.0
  * @context   Highcharts.Chart
+ * @requires  modules/exporting
  * @requires  modules/export-data
  * @apioption chart.events.exportData
  */
@@ -633,11 +665,12 @@ const ExportDataDefaults = {
  *
  *  Experimental data export module for Highcharts
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 // @todo
@@ -649,7 +682,6 @@ const ExportDataDefaults = {
 
 const { getOptions, setOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { downloadURL: ExportData_downloadURL } = Extensions_DownloadURL;
 
 
 const { composed, doc: ExportData_doc, win: ExportData_win } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
@@ -660,6 +692,7 @@ const { addEvent, defined, extend, find, fireEvent, isNumber, pick, pushUnique }
  *  Composition
  *
  * */
+/** @internal */
 var ExportData;
 (function (ExportData) {
     /* *
@@ -675,7 +708,7 @@ var ExportData;
     /**
      * Composition function.
      *
-     * @private
+     * @internal
      * @function Highcharts.Exporting#compose
      *
      * @param {ChartClass} ChartClass
@@ -790,7 +823,7 @@ var ExportData;
     function downloadCSV() {
         this.wrapLoading(() => {
             const csv = this.getCSV(true);
-            ExportData_downloadURL(getBlobFromContent(csv, 'text/csv') ||
+            downloadURL(getBlobFromContent(csv, 'text/csv') ||
                 'data:text/csv,\uFEFF' + encodeURIComponent(csv), this.getFilename() + '.csv');
         });
     }
@@ -828,42 +861,9 @@ var ExportData;
                 '</body></html>', base64 = function (s) {
                 return ExportData_win.btoa(unescape(encodeURIComponent(s))); // #50
             };
-            ExportData_downloadURL(getBlobFromContent(template, 'application/vnd.ms-excel') ||
+            downloadURL(getBlobFromContent(template, 'application/vnd.ms-excel') ||
                 uri + base64(template), this.getFilename() + '.xls');
         });
-    }
-    /**
-     * Get a blob object from content, if blob is supported.
-     *
-     * @private
-     * @function Highcharts.getBlobFromContent
-     *
-     * @param {string} content
-     * The content to create the blob from.
-     * @param {string} type
-     * The type of the content.
-     *
-     * @return {string | undefined}
-     * The blob object, or undefined if not supported.
-     *
-     * @requires modules/exporting
-     * @requires modules/export-data
-     */
-    function getBlobFromContent(content, type) {
-        const nav = ExportData_win.navigator, domurl = ExportData_win.URL || ExportData_win.webkitURL || ExportData_win;
-        try {
-            // MS specific
-            if ((nav.msSaveOrOpenBlob) && ExportData_win.MSBlobBuilder) {
-                const blob = new ExportData_win.MSBlobBuilder();
-                blob.append(content);
-                return blob.getBlob('image/svg+xml');
-            }
-            return domurl.createObjectURL(new ExportData_win.Blob(['\uFEFF' + content], // #7084
-            { type: type }));
-        }
-        catch {
-            // Ignore
-        }
     }
     /**
      * Returns the current chart data as a CSV string.
@@ -1169,7 +1169,7 @@ var ExportData;
             });
         }
         dataRows = dataRows.concat(rowArr);
-        fireEvent(chart, 'exportData', { dataRows: dataRows });
+        fireEvent(chart, 'exportData', { dataRows });
         return dataRows;
     }
     /**
@@ -1223,7 +1223,7 @@ var ExportData;
     /**
      * Get the AST of a HTML table representing the chart data.
      *
-     * @private
+     * @internal
      * @function Highcharts.Exporting#getTableAST
      *
      * @param {boolean} [useLocalDecimalPoint]
@@ -1414,8 +1414,8 @@ var ExportData;
     /**
      * Toggle showing data table.
      *
-     * @private
-     * @function Highcharts.Exporting#hideData
+     * @internal
+     * @function Highcharts.Exporting#toggleDataTable
      *
      * @param {boolean} [show]
      * Whether to show data table or not.
@@ -1484,9 +1484,9 @@ var ExportData;
     }
     /**
      * Wrapper function for the download functions, which handles showing and
-     * hiding the loading message
+     * hiding the loading message.
      *
-     * @private
+     * @internal
      *
      * @requires modules/exporting
      * @requires modules/export-data
@@ -1512,7 +1512,7 @@ var ExportData;
     /**
      * Function that runs on the chart's 'afterViewData' event.
      *
-     * @private
+     * @internal
      * @function Highcharts.Chart#onChartAfterViewData
      *
      * @requires modules/exporting
@@ -1560,7 +1560,7 @@ var ExportData;
      * Function that runs on the chart's 'render' event. Handle the showTable
      * option.
      *
-     * @private
+     * @internal
      * @function Highcharts.Chart#onChartRenderer
      *
      * @requires modules/exporting
@@ -1576,7 +1576,7 @@ var ExportData;
      * Function that runs on the chart's 'destroy' event. Handle cleaning up the
      * dataTableDiv element.
      *
-     * @private
+     * @internal
      * @function Highcharts.Chart#onChartDestroy
      *
      * @requires modules/exporting
@@ -1591,6 +1591,7 @@ var ExportData;
  * Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const ExportData_ExportData = (ExportData);
 /* *
  *
@@ -1630,8 +1631,8 @@ var ExportData;
 
 const G = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 // Compatibility
-G.dataURLtoBlob = G.dataURLtoBlob || Extensions_DownloadURL.dataURLtoBlob;
-G.downloadURL = G.downloadURL || Extensions_DownloadURL.downloadURL;
+G.dataURLtoBlob = G.dataURLtoBlob || Shared_DownloadURL.dataURLtoBlob;
+G.downloadURL = G.downloadURL || Shared_DownloadURL.downloadURL;
 // Compose
 ExportData_ExportData.compose(G.Chart, G.Exporting, G.Series);
 /* harmony default export */ const export_data_src = ((highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default()));

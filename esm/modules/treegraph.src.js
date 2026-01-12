@@ -1,16 +1,18 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.5.0 (2026-01-12)
  * Treegraph chart series type
  * @module highcharts/modules/treegraph
  * @requires highcharts
  * @requires highcharts/modules/treemap
  *
- *  (c) 2010-2025 Pawel Lysy Grzegorz Blachlinski
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Pawel Lysy Grzegorz Blachlinski
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
-import * as __WEBPACK_EXTERNAL_MODULE__treemap_src_js_d9a26ac3__ from "./treemap.src.js";
 /******/ // The require scope
 /******/ var __webpack_require__ = {};
 /******/ 
@@ -45,39 +47,44 @@ import * as __WEBPACK_EXTERNAL_MODULE__treemap_src_js_d9a26ac3__ from "./treemap
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
-;// external "./treemap.src.js"
-var x = (y) => {
-	var x = {}; __webpack_require__.d(x,
-    	y); return x
-    } 
-    var y = (x) => (() => (x))
-    const external_treemap_src_js_namespaceObject = x({  });
 ;// ./code/es-modules/Series/PathUtilities.js
 /* *
  *
- *  (c) 2010-2025 Pawel Lysy
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Pawel Lysy
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
 const getLinkPath = {
-    'default': getDefaultPath,
+    'default': getOrthogonalPath,
+    orthogonal: getOrthogonalPath,
     straight: getStraightPath,
     curved: getCurvedPath
 };
 /**
  *
  */
-function getDefaultPath(pathParams) {
-    const { x1, y1, x2, y2, width = 0, inverted = false, radius, parentVisible } = pathParams;
-    const path = [
+function getOrthogonalPath(pathParams) {
+    const { x1, y1, x2, y2, bendAt, width = 0, inverted = false, radius, parentVisible } = pathParams;
+    if (parentVisible) {
+        const bend = bendAt ?? (width / 2);
+        return applyRadius([
+            ['M', x1, y1],
+            ['L', x1 + bend * (inverted ? -1 : 1), y1],
+            ['L', x1 + bend * (inverted ? -1 : 1), y2],
+            ['L', x2, y2]
+        ], radius);
+    }
+    return [
         ['M', x1, y1],
         ['L', x1, y1],
         ['C', x1, y1, x1, y2, x1, y2],
@@ -85,14 +92,6 @@ function getDefaultPath(pathParams) {
         ['C', x1, y1, x1, y2, x1, y2],
         ['L', x1, y2]
     ];
-    return parentVisible ?
-        applyRadius([
-            ['M', x1, y1],
-            ['L', x1 + width * (inverted ? -0.5 : 0.5), y1],
-            ['L', x1 + width * (inverted ? -0.5 : 0.5), y2],
-            ['L', x2, y2]
-        ], radius) :
-        path;
 }
 /**
  *
@@ -204,11 +203,12 @@ var external_highcharts_src_js_default_SVGRenderer_default = /*#__PURE__*/__webp
 ;// ./code/es-modules/Series/Treegraph/TreegraphNode.js
 /* *
  *
- *  (c) 2010-2025 Pawel Lysy Grzegorz Blachlinski
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Pawel Lysy Grzegorz Blachlinski
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -396,11 +396,12 @@ var external_highcharts_src_js_default_Point_default = /*#__PURE__*/__webpack_re
 ;// ./code/es-modules/Series/Treegraph/TreegraphPoint.js
 /* *
  *
- *  (c) 2010-2025 Pawel Lysy Grzegorz Blachlinski
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Pawel Lysy Grzegorz Blachlinski
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -572,13 +573,13 @@ var external_highcharts_src_js_default_Color_default = /*#__PURE__*/__webpack_re
 ;// ./code/es-modules/Series/TreeUtilities.js
 /* *
  *
- *  (c) 2014-2025 Highsoft AS
+ *  (c) 2014-2026 Highsoft AS
  *
  *  Authors: Jon Arild Nygard / Oystein Moseng
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -788,11 +789,12 @@ const TreeUtilities = {
 ;// ./code/es-modules/Series/Treegraph/TreegraphLink.js
 /* *
  *
- *  (c) 2010-2025 Pawel Lysy Grzegorz Blachlinski
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Pawel Lysy Grzegorz Blachlinski
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -865,11 +867,12 @@ class LinkPoint extends ColumnPoint {
 ;// ./code/es-modules/Series/Treegraph/TreegraphLayout.js
 /* *
  *
- *  (c) 2010-2025 Pawel Lysy Grzegorz Blachlinski
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Pawel Lysy Grzegorz Blachlinski
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -1064,7 +1067,7 @@ class TreegraphLayout {
         // left to right with root node close to the chart border, this is why
         // x and y positions are switched.
         node.yPosition = node.preX + modSum;
-        node.xPosition = node.level;
+        node.xPosition = node.point?.x ?? node.level;
         for (const child of node.children) {
             treeLayout.secondWalk(child, modSum + node.mod);
         }
@@ -1198,11 +1201,12 @@ class TreegraphLayout {
 ;// ./code/es-modules/Series/Treegraph/TreegraphSeriesDefaults.js
 /* *
  *
- *  (c) 2010-2025 Pawel Lysy Grzegorz Blachlinski
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Pawel Lysy Grzegorz Blachlinski
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -1273,7 +1277,19 @@ const TreegraphSeriesDefaults = {
          * @default   0.5
          * @product   highcharts
          * @since 10.3.0
-         * @apioption series.treegraph.link.curveFactor
+         * @apioption plotOptions.treegraph.link.curveFactor
+         */
+        /**
+         * For the orthogonal link type, this defines how far down the link
+         * bends. A number defines the pixel offset from the start of the link,
+         * and a percentage defines the relative position on the link. For
+         * example, a `bendAt` of `50%` means that the link bends in the middle.
+         *
+         * @type      {number|string}
+         * @since 12.5.0
+         * @product   highcharts
+         * @default   50%
+         * @apioption plotOptions.treegraph.link.bendAt
          */
         /**
          * The color of the links between nodes.
@@ -1291,7 +1307,7 @@ const TreegraphSeriesDefaults = {
         lineWidth: 1,
         /**
          * Radius for the rounded corners of the links between nodes.
-         * Works for `default` link type.
+         * Works for the `orthogonal` link type.
          *
          * @private
          */
@@ -1303,12 +1319,22 @@ const TreegraphSeriesDefaults = {
          * @sample   highcharts/series-treegraph/link-types
          *           Different link types
          *
-         * @type {'default' | 'curved' | 'straight'}
+         * @type {'orthogonal' | 'curved' | 'straight'}
          * @product highcharts
          *
          */
         type: 'curved'
     },
+    /**
+     * Can set the options of dataLabels on each point which lies on the
+     * level.
+     * [plotOptions.treegraph.dataLabels](#plotOptions.treegraph.dataLabels)
+     * for possible values.
+     *
+     * @extends   plotOptions.treegraph.dataLabels
+     * @product   highcharts
+     * @apioption plotOptions.treegraph.levels.dataLabels
+     */
     /**
      * Options applied to collapse Button. The collape button is the
      * small button which indicates, that the node is collapsable.
@@ -1376,13 +1402,12 @@ const TreegraphSeriesDefaults = {
      */
     tooltip: {
         /**
-         * The HTML of the point's line in the tooltip. Variables are
-         * enclosed by curly brackets. Available variables are
-         * `point.id`,  `point.fromNode.id`, `point.toNode.id`,
-         * `series.name`, `series.color` and other properties on the
-         * same form. Furthermore, This can also be overridden for each
-         * series, which makes it a good hook for displaying units. In
-         * styled mode, the dot is colored by a class name rather than
+         * The HTML of the point's line in the tooltip. Variables are enclosed
+         * by curly brackets. Available variables are `point.id`,
+         * `point.fromNode.id`, `point.toNode.id`, `series.name`, `series.color`
+         * and other properties on the same form. Furthermore, This can also be
+         * overridden for each series, which makes it a good hook for displaying
+         * units. In styled mode, the dot is colored by a class name rather than
          * the point color.
          *
          * @type {string}
@@ -1433,10 +1458,27 @@ const TreegraphSeriesDefaults = {
         },
         enabled: true,
         linkFormatter: () => '',
+        /**
+         * The
+         * [format string](https://www.highcharts.com/docs/chart-concepts/labels-and-string-formatting)
+         * specifying what to show for _nodes_ in the treegraph. Overrides
+         * `format`. Use `pointFormat` and `linkFormat` to differentiate between
+         * node and link data labels.
+         *
+         * @type {string}
+         */
+        pointFormat: void 0,
         padding: 5,
         style: {
             textOverflow: 'none'
         }
+        /**
+         * Callback function to format data labels for _nodes_ in the
+         * treegraph, when `pointFormat` is not sufficient.
+         *
+         * @type {function}
+         * @apioption series.treegraph.dataLabels.pointFormatter
+         */
     },
     /**
      * The distance between nodes in a tree graph in the longitudinal direction.
@@ -1491,11 +1533,12 @@ var external_highcharts_src_js_default_SVGElement_default = /*#__PURE__*/__webpa
  *
  *  Highcharts module with textPath functionality.
  *
- *  (c) 2009-2025 Torstein Honsi
+ *  (c) 2009-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -1718,11 +1761,12 @@ const TextPath = {
 ;// ./code/es-modules/Series/Treegraph/TreegraphSeries.js
 /* *
  *
- *  (c) 2010-2025 Pawel Lysy Grzegorz Blachlinski
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Pawel Lysy Grzegorz Blachlinski
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -1804,7 +1848,7 @@ class TreegraphSeries extends TreemapSeries {
      * @return {LayoutModifiers} `a` and `b` parameter for x and y direction.
      */
     getLayoutModifiers() {
-        const chart = this.chart, series = this, plotSizeX = chart.plotSizeX, plotSizeY = chart.plotSizeY, columnCount = arrayMax(this.points.map((p) => p.node.xPosition));
+        const chart = this.chart, series = this, plotSizeX = chart.plotSizeX, plotSizeY = chart.plotSizeY, linkWidth = series.options.link?.lineWidth || 0, columnCount = arrayMax(this.points.map((p) => p.node.xPosition));
         let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity, maxXSize = 0, minXSize = 0, maxYSize = 0, minYSize = 0;
         this.points.forEach((point) => {
             // When fillSpace is on, stop the layout calculation when the hidden
@@ -1812,32 +1856,27 @@ class TreegraphSeries extends TreemapSeries {
             if (this.options.fillSpace && !point.visible) {
                 return;
             }
-            const node = point.node, level = series.mapOptionsToLevel[point.node.level] || {}, markerOptions = TreegraphSeries_merge(this.options.marker, level.marker, point.options.marker), nodeWidth = markerOptions.width ?? TreegraphSeries_getNodeWidth(this, columnCount), radius = TreegraphSeries_relativeLength(markerOptions.radius || 0, Math.min(plotSizeX, plotSizeY)), symbol = markerOptions.symbol, nodeSizeY = (symbol === 'circle' || !markerOptions.height) ?
+            const node = point.node, level = series.mapOptionsToLevel[point.node.level] || {}, markerOptions = TreegraphSeries_merge(this.options.marker, level.marker, point.options.marker), nodeWidth = markerOptions.width ?? TreegraphSeries_getNodeWidth(this, columnCount), radius = TreegraphSeries_relativeLength(markerOptions.radius || 0, Math.min(plotSizeX, plotSizeY)), lineWidth = Math.max(markerOptions.lineWidth || 0, linkWidth), symbol = markerOptions.symbol, nodeSizeY = (symbol === 'circle' || !markerOptions.height) ?
                 radius * 2 :
                 TreegraphSeries_relativeLength(markerOptions.height, plotSizeY), nodeSizeX = symbol === 'circle' || !nodeWidth ?
                 radius * 2 :
                 TreegraphSeries_relativeLength(nodeWidth, plotSizeX);
             node.nodeSizeX = nodeSizeX;
             node.nodeSizeY = nodeSizeY;
-            let lineWidth;
             if (node.xPosition <= minX) {
                 minX = node.xPosition;
-                lineWidth = markerOptions.lineWidth || 0;
                 minXSize = Math.max(nodeSizeX + lineWidth, minXSize);
             }
             if (node.xPosition >= maxX) {
                 maxX = node.xPosition;
-                lineWidth = markerOptions.lineWidth || 0;
                 maxXSize = Math.max(nodeSizeX + lineWidth, maxXSize);
             }
             if (node.yPosition <= minY) {
                 minY = node.yPosition;
-                lineWidth = markerOptions.lineWidth || 0;
                 minYSize = Math.max(nodeSizeY + lineWidth, minYSize);
             }
             if (node.yPosition >= maxY) {
                 maxY = node.yPosition;
-                lineWidth = markerOptions.lineWidth || 0;
                 maxYSize = Math.max(nodeSizeY + lineWidth, maxYSize);
             }
         });
@@ -1854,7 +1893,7 @@ class TreegraphSeries extends TreemapSeries {
         const series = this;
         const links = [];
         this.data.forEach((point) => {
-            const levelOptions = series.mapOptionsToLevel[point.node.level || 0] || {};
+            const levelOptions = series.mapOptionsToLevel[point.node.level ?? 0] || {};
             if (point.node.parent) {
                 const pointOptions = TreegraphSeries_merge(levelOptions, point.options);
                 if (!point.linkToParent || point.linkToParent.destroyed) {
@@ -1881,7 +1920,7 @@ class TreegraphSeries extends TreemapSeries {
     }
     buildTree(id, index, level, list, parent) {
         const point = this.points[index];
-        level = (point && point.level) || level;
+        level = point?.level ?? level;
         return super.buildTree.call(this, id, index, level, list, parent);
     }
     markerAttribs() {
@@ -1949,20 +1988,21 @@ class TreegraphSeries extends TreemapSeries {
         }
     }
     translateLink(link) {
-        const fromNode = link.fromNode, toNode = link.toNode, linkWidth = this.options.link?.lineWidth || 0, factor = TreegraphSeries_pick(this.options.link?.curveFactor, 0.5), type = TreegraphSeries_pick(link.options.link?.type, this.options.link?.type, 'default');
+        const fromNode = link.fromNode, toNode = link.toNode, linkWidth = this.options.link?.lineWidth || 0, factor = TreegraphSeries_pick(this.options.link?.curveFactor, 0.5), hasXData = toNode.x !== toNode.node.level ||
+            fromNode.x !== fromNode.node.level, type = TreegraphSeries_pick(link.options.link?.type, this.options.link?.type, 'default');
         if (fromNode.shapeArgs && toNode.shapeArgs) {
             const fromNodeWidth = (fromNode.shapeArgs.width || 0), inverted = this.chart.inverted, y1 = crisp((fromNode.shapeArgs.y || 0) +
                 (fromNode.shapeArgs.height || 0) / 2, linkWidth), y2 = crisp((toNode.shapeArgs.y || 0) +
                 (toNode.shapeArgs.height || 0) / 2, linkWidth);
             let x1 = crisp((fromNode.shapeArgs.x || 0) + fromNodeWidth, linkWidth), x2 = crisp(toNode.shapeArgs.x || 0, linkWidth);
             if (inverted) {
-                x1 -= fromNodeWidth;
-                x2 += (toNode.shapeArgs.width || 0);
+                x1 -= Math.round(fromNodeWidth);
+                x2 += Math.round(toNode.shapeArgs.width || 0);
             }
-            const diff = toNode.node.xPosition - fromNode.node.xPosition;
+            const xDiff = toNode.node.xPosition - fromNode.node.xPosition, fullWidth = Math.abs(x2 - x1) + fromNodeWidth, scopeWidth = hasXData ? fullWidth : (fullWidth / xDiff), width = scopeWidth - fromNodeWidth, offset = width * factor * (inverted ? -1 : 1), xMiddle = crisp((x2 + x1) / 2, linkWidth), bendAt = TreegraphSeries_relativeLength(link.options.link?.bendAt ??
+                this.options.link?.bendAt ??
+                '50%', fullWidth - fromNodeWidth);
             link.shapeType = 'path';
-            const fullWidth = Math.abs(x2 - x1) + fromNodeWidth, width = (fullWidth / diff) - fromNodeWidth, offset = width * factor * (inverted ? -1 : 1);
-            const xMiddle = crisp((x2 + x1) / 2, linkWidth);
             link.plotX = xMiddle;
             link.plotY = y2;
             link.shapeArgs = {
@@ -1975,7 +2015,8 @@ class TreegraphSeries extends TreemapSeries {
                     offset,
                     inverted,
                     parentVisible: toNode.visible,
-                    radius: this.options.link?.radius
+                    radius: this.options.link?.radius,
+                    bendAt
                 })
             };
             link.dlBox = {
@@ -2080,7 +2121,7 @@ class TreegraphSeries extends TreemapSeries {
      */
     pointAttribs(point, state) {
         const series = this, levelOptions = point &&
-            series.mapOptionsToLevel[point.node.level || 0] || {}, options = point && point.options, stateOptions = (levelOptions.states &&
+            series.mapOptionsToLevel[point.node.level ?? 0] || {}, options = point && point.options, stateOptions = (levelOptions.states &&
             levelOptions.states[state]) ||
             {};
         if (point) {
@@ -2110,9 +2151,11 @@ class TreegraphSeries extends TreemapSeries {
      * @private
      */
     translateNode(point) {
-        const chart = this.chart, node = point.node, plotSizeY = chart.plotSizeY, plotSizeX = chart.plotSizeX, 
+        const chart = this.chart, { node, plotX = 0 } = point, plotSizeY = chart.plotSizeY, plotSizeX = chart.plotSizeX, 
         // Get the layout modifiers which are common for all nodes.
-        { ax, bx, ay, by } = this.layoutModifier, x = ax * node.xPosition + bx, y = ay * node.yPosition + by, level = this.mapOptionsToLevel[node.level] || {}, markerOptions = TreegraphSeries_merge(this.options.marker, level.marker, point.options.marker), symbol = markerOptions.symbol, height = node.nodeSizeY, width = node.nodeSizeX, reversed = this.options.reversed, nodeX = node.x = (chart.inverted ?
+        { ax, bx, ay, by } = this.layoutModifier, x = this.isCartesian ?
+            (chart.inverted ? plotSizeX - plotX : plotX) :
+            ax * node.xPosition + bx, y = ay * node.yPosition + by, level = this.mapOptionsToLevel[node.level] || {}, markerOptions = TreegraphSeries_merge(this.options.marker, level.marker, point.options.marker), symbol = markerOptions.symbol, height = node.nodeSizeY, width = node.nodeSizeX, reversed = this.options.reversed, nodeX = node.x = (chart.inverted ?
             plotSizeX - width / 2 - x :
             x - width / 2), nodeY = node.y = (!reversed ?
             plotSizeY - y - height / 2 :
@@ -2280,7 +2323,6 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ''; // Gets doclets above into transpiled version
 
 ;// ./code/es-modules/masters/modules/treegraph.src.js
-
 
 
 

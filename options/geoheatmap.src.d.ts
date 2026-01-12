@@ -46,138 +46,43 @@ declare module "../highcharts.src" {
         enabled?: boolean;
     }
     /**
-     * (Highcharts, Highstock, Highmaps) Positioning options for fixed tooltip,
-     * taking effect only when tooltip.fixed is `true`.
+     * (Highmaps) Animation when not hovering over the marker.
      */
-    interface PlotGeoheatmapTooltipPositionOptions {
-        /**
-         * (Highcharts, Highstock, Highmaps) The horizontal alignment of the
-         * fixed tooltip.
-         */
-        align?: Highcharts.AlignValue;
-        /**
-         * (Highcharts, Highstock, Highmaps) What the fixed tooltip alignment
-         * should be relative to.
-         *
-         * The default, `pane`, means that it is aligned within the plot area
-         * for that given series. If the tooltip is split (as default in Stock
-         * charts), each partial tooltip is aligned within the series' pane.
-         */
-        relativeTo?: Highcharts.OptionsRelativeToValue;
-        /**
-         * (Highcharts, Highstock, Highmaps) The vertical alignment of the fixed
-         * tooltip.
-         */
-        verticalAlign?: Highcharts.VerticalAlignValue;
-        /**
-         * (Highcharts, Highstock, Highmaps) X pixel offset from the given
-         * position. Can be used to shy away from axis lines, grid lines etc to
-         * avoid the tooltip overlapping other elements.
-         */
-        x?: number;
-        /**
-         * (Highcharts, Highstock, Highmaps) Y pixel offset from the given
-         * position. Can be used to shy away from axis lines, grid lines etc to
-         * avoid the tooltip overlapping other elements.
-         */
-        y?: number;
+    interface PlotGeoheatmapStatesInactiveAnimationOptions {
+        duration?: number;
     }
     /**
-     * (Highmaps) An array of data points for the series. For the `geoheatmap`
-     * series type, points can be given in the following ways:
+     * (Highmaps) For map and mapline series types, the geometry of a point.
      *
-     * 1. An array of arrays with 3 or 2 values. In this case, the values
-     * correspond to `lon,lat,value`. The `value` refers to the color on the
-     * `colorAxis`. (see online documentation for example)
+     * To achieve a better separation between the structure and the data, it is
+     * recommended to use `mapData` to define the geometry instead of defining
+     * it on the data points themselves.
      *
-     * 2. An array of objects with named values. The following snippet shows
-     * only a few settings, see the complete options set below. If the total
-     * number of data points exceeds the series' turboThreshold, this option is
-     * not available. (see online documentation for example)
+     * The geometry object is compatible to that of a `feature` in GeoJSON, so
+     * features of GeoJSON can be passed directly into the `data`, optionally
+     * after first filtering and processing it.
+     *
+     * For pre-projected maps (like GeoJSON maps from our map collection), user
+     * has to specify coordinates in `projectedUnits` for geometry type other
+     * than `Point`, instead of `[longitude, latitude]`.
      */
-    interface SeriesGeoheatmapDataOptions {
+    interface SeriesGeoheatmapDataGeometryOptions {
         /**
-         * (Highmaps) Individual color for the point. By default the color is
-         * either used to denote the value, or pulled from the global `colors`
-         * array.
+         * (Highmaps) The geometry coordinates in terms of arrays of
+         * `[longitude, latitude]`, or a two dimensional array of the same. The
+         * dimensionality must comply with the `type`.
          */
-        color?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        coordinates?: (Array<Array<LonLatArray>>|Array<LonLatArray>);
         /**
-         * (Highmaps) Individual data label for each point. The options are the
-         * same as the ones for plotOptions.series.dataLabels.
+         * (Highmaps) The geometry type. Can be one of `LineString`, `Polygon`,
+         * `MultiLineString` or `MultiPolygon`.
          */
-        dataLabels?: Highcharts.DataLabelsOptions;
-        /**
-         * (Highmaps) The `id` of a series in the drilldown.series array to use
-         * for a drilldown for this point.
-         */
-        drilldown?: string;
-        /**
-         * (Highmaps) Individual point events
-         */
-        events?: Highcharts.PointEventsOptionsObject;
-        /**
-         * (Highmaps) For map and mapline series types, the geometry of a point.
-         *
-         * To achieve a better separation between the structure and the data, it
-         * is recommended to use `mapData` to define the geometry instead of
-         * defining it on the data points themselves.
-         *
-         * The geometry object is compatible to that of a `feature` in GeoJSON,
-         * so features of GeoJSON can be passed directly into the `data`,
-         * optionally after first filtering and processing it.
-         *
-         * For pre-projected maps (like GeoJSON maps from our map collection),
-         * user has to specify coordinates in `projectedUnits` for geometry type
-         * other than `Point`, instead of `[longitude, latitude]`.
-         */
-        geometry?: (object|Highcharts.SeriesGeoheatmapDataGeometryOptions);
-        /**
-         * (Highmaps) An id for the point. This can be used after render time to
-         * get a pointer to the point object through `chart.get()`.
-         */
-        id?: string;
-        /**
-         * (Highmaps) When data labels are laid out on a map, Highmaps runs a
-         * simplified algorithm to detect collision. When two labels collide,
-         * the one with the lowest rank is hidden. By default the rank is
-         * computed from the area.
-         */
-        labelrank?: number;
-        /**
-         * (Highmaps) The relative mid point of an area, used to place the data
-         * label. Ranges from 0 to 1\. When `mapData` is used, middleX can be
-         * defined there.
-         */
-        middleX?: number;
-        /**
-         * (Highmaps) The relative mid point of an area, used to place the data
-         * label. Ranges from 0 to 1\. When `mapData` is used, middleY can be
-         * defined there.
-         */
-        middleY?: number;
-        /**
-         * (Highmaps) The name of the point as shown in the legend, tooltip,
-         * dataLabel etc.
-         */
-        name?: string;
-        /**
-         * (Highmaps) For map and mapline series types, the SVG path for the
-         * shape. For compatibility with old IE, not all SVG path definitions
-         * are supported, but M, L and C operators are safe.
-         *
-         * To achieve a better separation between the structure and the data, it
-         * is recommended to use `mapData` to define that paths instead of
-         * defining them on the data points themselves.
-         *
-         * For providing true geographical shapes based on longitude and
-         * latitude, use the `geometry` option instead.
-         */
-        path?: string;
-        /**
-         * (Highmaps) The value of the point, resulting in a color controlled by
-         * options as set in the colorAxis configuration.
-         */
-        value?: (number|null);
+        type?: Highcharts.MapGeometryTypeValue;
+    }
+    /**
+     * (Highmaps) Animation when not hovering over the marker.
+     */
+    interface SeriesGeoheatmapDataStatesInactiveAnimationOptions {
+        duration?: number;
     }
 }

@@ -1,12 +1,13 @@
 /* *
  *
- *  (c) 2009-2025 Øystein Moseng
+ *  (c) 2009-2026 Highsoft AS
+ *  Author: Øystein Moseng
  *
  *  Sonification module.
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -269,7 +270,7 @@ class Sonification {
     }
     /**
      * Implementation of chart.sonify
-     * @private
+     * @internal
      */
     sonifyChart(resetAfter, onEnd) {
         if (!this.ready(this.sonifyChart.bind(this, resetAfter, onEnd))) {
@@ -283,7 +284,7 @@ class Sonification {
     }
     /**
      * Implementation of series.sonify
-     * @private
+     * @internal
      */
     sonifySeries(series, resetAfter, onEnd) {
         if (!this.ready(this.sonifySeries.bind(this, series, resetAfter, onEnd))) {
@@ -297,7 +298,7 @@ class Sonification {
     }
     /**
      * Implementation of point.sonify
-     * @private
+     * @internal
      */
     sonifyPoint(point, onEnd) {
         if (!this.ready(this.sonifyPoint.bind(this, point, onEnd))) {
@@ -312,7 +313,7 @@ class Sonification {
     /**
      * Set the overall/master volume for the sonification.
      * Usually handled through chart update.
-     * @private
+     * @internal
      */
     setMasterVolume(vol) {
         if (this.timeline) {
@@ -321,7 +322,7 @@ class Sonification {
     }
     /**
      * Destroy the sonification capabilities
-     * @private
+     * @internal
      */
     destroy() {
         this.unbindKeydown();
@@ -343,7 +344,7 @@ class Sonification {
      * automatically. Note that the [sonification.updateInterval](https://api.highcharts.com/highcharts/sonification.updateInterval)
      * option can stop updates from happening in rapid succession, including
      * manual calls to this function.
-     * @private
+     * @internal
      */
     update() {
         const sOpts = this.chart.options && this.chart.options.sonification;
@@ -377,7 +378,7 @@ class Sonification {
     /**
      * Only continue if sonification enabled. If audioContext is
      * suspended, retry up to 20 times with a small delay.
-     * @private
+     * @internal
      */
     ready(whenReady) {
         if (!this.audioContext ||
@@ -407,7 +408,7 @@ class Sonification {
     }
     /**
      * Call beforePlay event handler if exists
-     * @private
+     * @internal
      */
     beforePlay() {
         const opts = this.chart.options.sonification, beforePlay = opts && opts.events && opts.events.beforePlay;
@@ -417,7 +418,7 @@ class Sonification {
     }
     /**
      * Initialize the builtin boundary hit instrument
-     * @private
+     * @internal
      */
     initBoundaryInstrument() {
         if (!this.boundaryInstrument) {
@@ -428,7 +429,7 @@ class Sonification {
     }
     /**
      * The default boundary hit sound
-     * @private
+     * @internal
      */
     defaultBoundaryHit() {
         if (this.boundaryInstrument) {
@@ -441,7 +442,7 @@ class Sonification {
     const composedClasses = [];
     /**
      * Update sonification object on chart.
-     * @private
+     * @internal
      */
     function updateSonificationEnabled() {
         const sonification = this.sonification, sOptions = this.options && this.options.sonification;
@@ -461,7 +462,7 @@ class Sonification {
     }
     /**
      * Destroy with chart.
-     * @private
+     * @internal
      */
     function chartOnDestroy() {
         if (this && this.sonification) {
@@ -470,7 +471,7 @@ class Sonification {
     }
     /**
      * Update on render
-     * @private
+     * @internal
      */
     function chartOnRender() {
         if (this.updateSonificationEnabled) {
@@ -479,7 +480,7 @@ class Sonification {
     }
     /**
      * Update
-     * @private
+     * @internal
      */
     function chartOnUpdate(e) {
         const newOptions = e.options.sonification;
@@ -490,7 +491,7 @@ class Sonification {
     }
     /**
      * Compose
-     * @private
+     * @internal
      */
     function compose(ChartClass, SeriesClass, PointClass) {
         // Extend chart

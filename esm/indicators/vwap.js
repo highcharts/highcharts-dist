@@ -1,12 +1,14 @@
 /**
- * Highstock JS v12.4.0 (2025-09-04)
+ * Highstock JS v12.5.0 (2026-01-12)
  * @module highcharts/indicators/vwap
  * @requires highcharts
  * @requires highcharts/modules/stock
  *
  * Indicator series type for Highcharts Stock
  *
- * (c) 2010-2025 Paweł Dalek
+ * (c) 2010-2026 Highsoft AS
+ * Author: Paweł Dalek
  *
- * License: www.highcharts.com/license
- */import*as e from"../highcharts.js";import"../modules/stock.js";var t={};t.n=e=>{var r=e&&e.__esModule?()=>e.default:()=>e;return t.d(r,{a:r}),r},t.d=(e,r)=>{for(var a in r)t.o(r,a)&&!t.o(e,a)&&Object.defineProperty(e,a,{enumerable:!0,get:r[a]})},t.o=(e,t)=>Object.prototype.hasOwnProperty.call(e,t);let r=e.default;var a=t.n(r);t.d({},{});let s=e.default.SeriesRegistry;var l=t.n(s);let{sma:o}=l().seriesTypes,{error:u,isArray:i,merge:p}=a();class d extends o{getValues(e,t){let r=e.chart,a=e.xData,s=e.yData,l=t.period,o=!0,p;return(p=r.get(t.volumeSeriesID))?(i(s[0])||(o=!1),this.calculateVWAPValues(o,a,s,p,l)):void u("Series "+t.volumeSeriesID+" not found! Check `volumeSeriesID`.",!0,r)}calculateVWAPValues(e,t,r,a,s){let l,o,u,i,p,d,n=a.getColumn("y"),c=n.length,v=t.length,h=[],m=[],f=[],g=[],y=[];for(p=0,l=v<=c?v:c,d=0;p<l;p++)o=(e?(r[p][1]+r[p][2]+r[p][3])/3:r[p])*n[p],u=d?h[p-1]+o:o,i=d?m[p-1]+n[p]:n[p],h.push(u),m.push(i),y.push([t[p],u/i]),f.push(y[p][0]),g.push(y[p][1]),++d===s&&(d=0);return{values:y,xData:f,yData:g}}}d.defaultOptions=p(o.defaultOptions,{params:{index:void 0,period:30,volumeSeriesID:"volume"}}),l().registerSeriesType("vwap",d);let n=a();export{n as default};
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
+ */import*as e from"../highcharts.js";var t={};t.n=e=>{var a=e&&e.__esModule?()=>e.default:()=>e;return t.d(a,{a:a}),a},t.d=(e,a)=>{for(var r in a)t.o(a,r)&&!t.o(e,r)&&Object.defineProperty(e,r,{enumerable:!0,get:a[r]})},t.o=(e,t)=>Object.prototype.hasOwnProperty.call(e,t);let a=e.default;var r=t.n(a);let s=e.default.SeriesRegistry;var l=t.n(s);let{sma:u}=l().seriesTypes,{error:o,isArray:i,merge:p}=r();class n extends u{getValues(e,t){let a=e.chart,r=e.xData,s=e.yData,l=t.period,u=!0,p;return(p=a.get(t.volumeSeriesID))?(i(s[0])||(u=!1),this.calculateVWAPValues(u,r,s,p,l)):void o("Series "+t.volumeSeriesID+" not found! Check `volumeSeriesID`.",!0,a)}calculateVWAPValues(e,t,a,r,s){let l,u,o,i,p,n,d=r.getColumn("y"),v=d.length,h=t.length,c=[],f=[],m=[],g=[],y=[];for(p=0,l=h<=v?h:v,n=0;p<l;p++)u=(e?(a[p][1]+a[p][2]+a[p][3])/3:a[p])*d[p],o=n?c[p-1]+u:u,i=n?f[p-1]+d[p]:d[p],c.push(o),f.push(i),y.push([t[p],o/i]),m.push(y[p][0]),g.push(y[p][1]),++n===s&&(n=0);return{values:y,xData:m,yData:g}}}n.defaultOptions=p(u.defaultOptions,{params:{index:void 0,period:30,volumeSeriesID:"volume"}}),l().registerSeriesType("vwap",n);let d=r();export{d as default};

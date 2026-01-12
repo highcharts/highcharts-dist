@@ -1,10 +1,10 @@
 /* *
  *
- *  (c) 2009-2025 Highsoft AS
+ *  (c) 2009-2026 Highsoft AS
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  *  Authors:
  *  - Sophie Bremer
@@ -38,7 +38,7 @@ const operators = ['+', '-', '*', '/', '^', '=', '<', '<=', '>', '>='];
  * `true`, if the item is a formula (or argument) array.
  */
 function isFormula(item) {
-    return item instanceof Array;
+    return Array.isArray(item);
 }
 /**
  * Tests an item for a Function structure.
@@ -53,7 +53,7 @@ function isFormula(item) {
  */
 function isFunction(item) {
     return (typeof item === 'object' &&
-        !(item instanceof Array) &&
+        !(Array.isArray(item)) &&
         item.type === 'function');
 }
 /**
@@ -84,7 +84,7 @@ function isOperator(item) {
  */
 function isRange(item) {
     return (typeof item === 'object' &&
-        !(item instanceof Array) &&
+        !(Array.isArray(item)) &&
         item.type === 'range');
 }
 /**
@@ -100,7 +100,7 @@ function isRange(item) {
  */
 function isReference(item) {
     return (typeof item === 'object' &&
-        !(item instanceof Array) &&
+        !(Array.isArray(item)) &&
         item.type === 'reference');
 }
 /**

@@ -1,16 +1,18 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.5.0 (2026-01-12)
  * @module modules/arc-diagram
  * @requires highcharts/modules/sankey
  *
  * Arc diagram module
  *
- * (c) 2021 Piotr Madej
+ * (c) 2021-2026 Highsoft AS
+ * Author: Piotr Madej
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
-import * as __WEBPACK_EXTERNAL_MODULE__sankey_src_js_3bb2850a__ from "./sankey.src.js";
 /******/ // The require scope
 /******/ var __webpack_require__ = {};
 /******/ 
@@ -45,24 +47,17 @@ import * as __WEBPACK_EXTERNAL_MODULE__sankey_src_js_3bb2850a__ from "./sankey.s
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
-;// external "./sankey.src.js"
-var x = (y) => {
-	var x = {}; __webpack_require__.d(x,
-    	y); return x
-    } 
-    var y = (x) => (() => (x))
-    const external_sankey_src_js_namespaceObject = x({  });
 ;// external ["../highcharts.src.js","default","SeriesRegistry"]
 const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
 var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
 ;// ./code/es-modules/Series/NodesComposition.js
 /* *
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -330,11 +325,12 @@ var NodesComposition;
  *
  *  Arc diagram module
  *
- *  (c) 2018-2025 Torstein Honsi
+ *  (c) 2018-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -348,6 +344,7 @@ const { extend: ArcDiagramPoint_extend } = (external_highcharts_src_js_default_d
  *  Class
  *
  * */
+/** @internal */
 class ArcDiagramPoint extends SankeyPoint {
     /* *
      *
@@ -368,6 +365,7 @@ ArcDiagramPoint_extend(ArcDiagramPoint.prototype, {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const ArcDiagram_ArcDiagramPoint = (ArcDiagramPoint);
 
 ;// ./code/es-modules/Series/ArcDiagram/ArcDiagramSeriesDefaults.js
@@ -375,11 +373,12 @@ ArcDiagramPoint_extend(ArcDiagramPoint.prototype, {
  *
  *  Arc diagram module
  *
- *  (c) 2021 Piotr Madej, Grzegorz Blachliński
+ *  (c) 2021-2026 Highsoft AS
+ *  Author: Piotr Madej, Grzegorz Blachliński
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -440,8 +439,6 @@ const ArcDiagramSeriesDefaults = {
      * string by default.
      *
      * @declare Highcharts.SeriesArcDiagramDataLabelsOptionsObject
-     *
-     * @private
      */
     dataLabels: {
         /**
@@ -494,6 +491,13 @@ const ArcDiagramSeriesDefaults = {
      * @apioption series.arcdiagram.linkWeight
      */
     /**
+     * Options for the point markers of arc diagram series. Properties like
+     * `fillColor`, `lineColor` and `lineWidth` define the visual appearance of
+     * the markers, while the `symbol` option defines their shape.
+     *
+     * In styled mode, the markers can be styled with the `.highcharts-point`,
+     * `.highcharts-point-hover` and `.highcharts-point-select` class names.
+     *
      * @extends   plotOptions.series.marker
      * @excluding enabled, enabledThreshold, height, width
      */
@@ -549,11 +553,6 @@ const ArcDiagramSeriesDefaults = {
  * @apioption series.arcdiagram.marker
  */
 /**
- * @type      {Highcharts.SeriesArcDiagramDataLabelsOptionsObject|Array<Highcharts.SeriesArcDiagramDataLabelsOptionsObject>}
- * @product   highcharts
- * @apioption series.arcdiagram.data.dataLabels
- */
-/**
  * A collection of options for the individual nodes. The nodes in an arc diagram
  * are auto-generated instances of `Highcharts.Point`, but options can be
  * applied here and linked by the `id`.
@@ -572,14 +571,6 @@ const ArcDiagramSeriesDefaults = {
  * {Highcharts.SeriesArcDiagramDataLabelsOptionsObject|Array<Highcharts.SeriesArcDiagramDataLabelsOptionsObject>}
  *
  * @apioption series.arcdiagram.nodes.dataLabels
- */
-/**
- * Individual data label for each node. The options are the same as the ones for
- * [series.arcdiagram.dataLabels](#series.arcdiagram.dataLabels).
- *
- * @type
- * {Highcharts.SeriesArcDiagramDataLabelsOptionsObject|Array<Highcharts.SeriesArcDiagramDataLabelsOptionsObject>}
- *
  */
 /**
  * An array of data points for the series. For the `arcdiagram` series type,
@@ -605,8 +596,26 @@ const ArcDiagramSeriesDefaults = {
  * @type      {Array<*>}
  * @extends   series.sankey.data
  * @product   highcharts
- * @excluding outgoing, dataLabels
+ * @excluding outgoing
  * @apioption series.arcdiagram.data
+ */
+/**
+ * @type      {Highcharts.SeriesArcDiagramDataLabelsOptionsObject|Array<Highcharts.SeriesArcDiagramDataLabelsOptionsObject>}
+ * @product   highcharts
+ * @apioption series.arcdiagram.data.dataLabels
+ */
+/**
+ * The link weight, in pixels. If not set, width is calculated per link,
+ * depending on the weight value.
+ *
+ * @sample highcharts/series-arcdiagram/link-weight
+ *         Link weight set on series
+ *
+ * @type {number}
+ * @since 10.0.0
+ * @default undefined
+ * @product highcharts
+ * @apioption series.arcdiagram.data.linkWeight
  */
 ''; // Adds doclets above to the transpiled file
 /* *
@@ -621,11 +630,12 @@ const ArcDiagramSeriesDefaults = {
  *
  *  Sankey diagram module
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -857,11 +867,12 @@ var external_highcharts_src_js_default_SVGElement_default = /*#__PURE__*/__webpa
  *
  *  Highcharts module with textPath functionality.
  *
- *  (c) 2009-2025 Torstein Honsi
+ *  (c) 2009-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -1086,11 +1097,12 @@ const TextPath = {
  *
  *  Arc diagram module
  *
- *  (c) 2021 Piotr Madej, Grzegorz Blachliński
+ *  (c) 2021-2026 Highsoft AS
+ *  Author: Piotr Madej, Grzegorz Blachliński
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -1113,7 +1125,7 @@ const { crisp, extend: ArcDiagramSeries_extend, merge: ArcDiagramSeries_merge, p
  *
  * */
 /**
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.arcdiagram
  *
@@ -1128,7 +1140,7 @@ class ArcDiagramSeries extends SankeySeries {
     /**
      * Create node columns by analyzing the nodes and the relations between
      * incoming and outgoing links.
-     * @private
+     * @internal
      */
     createNodeColumns() {
         const series = this, chart = series.chart, 
@@ -1217,7 +1229,7 @@ class ArcDiagramSeries extends SankeySeries {
     }
     /**
      * Run translation operations for one link.
-     * @private
+     * @internal
      */
     translateLink(point) {
         const series = this, fromNode = point.fromNode, toNode = point.toNode, chart = this.chart, translationFactor = series.translationFactor, pointOptions = point.options, seriesOptions = series.options, linkWeight = ArcDiagramSeries_pick(pointOptions.linkWeight, seriesOptions.linkWeight, Math.max((point.weight || 0) *
@@ -1302,14 +1314,14 @@ class ArcDiagramSeries extends SankeySeries {
     }
     /**
      * Run translation operations for one node.
-     * @private
+     * @internal
      */
     translateNode(node, column) {
         const series = this, translationFactor = series.translationFactor, chart = series.chart, maxNodesLength = chart.inverted ?
             chart.plotWidth : chart.plotHeight, options = series.options, maxRadius = Math.min(chart.plotWidth, chart.plotHeight, maxNodesLength / node.series.nodes.length - this.nodePadding), sum = node.getSum() * (column.sankeyColumn.scale || 0), equalNodes = options.equalNodes, nodeHeight = equalNodes ?
             maxRadius :
             Math.max(sum * translationFactor, this.options.minLinkWidth || 0), lineWidth = options.marker?.lineWidth || 0, nodeOffset = column.sankeyColumn.offset(node, translationFactor), fromNodeLeft = crisp(ArcDiagramSeries_pick(nodeOffset && nodeOffset.absoluteLeft, ((column.sankeyColumn.left(translationFactor) || 0) +
-            (nodeOffset && nodeOffset.relativeLeft || 0))), lineWidth), markerOptions = ArcDiagramSeries_merge(options.marker, node.options.marker), symbol = markerOptions.symbol, markerRadius = markerOptions.radius, top = parseInt(options.offset, 10) *
+            (nodeOffset && nodeOffset.relativeLeft || 0))), lineWidth), markerOptions = ArcDiagramSeries_merge(options.marker, node.options.marker), symbol = markerOptions.symbol, markerRadius = markerOptions.radius, top = parseInt(options.offset ?? '100', 10) *
             ((chart.inverted ?
                 chart.plotWidth : chart.plotHeight) - (crisp(this.colDistance * (node.column || 0) +
                 (markerOptions.lineWidth || 0) / 2, lineWidth) +
@@ -1331,10 +1343,13 @@ class ArcDiagramSeries extends SankeySeries {
             }
             if (this.mapOptionsToLevel) {
                 // Calculate data label options for the point
-                node.dlOptions = SankeySeries.getDLOptions({
-                    level: this.mapOptionsToLevel[node.level],
-                    optionsPoint: node.options
-                });
+                node.dlOptions = {
+                    ...SankeySeries.getDLOptions({
+                        level: this.mapOptionsToLevel[node.level],
+                        optionsPoint: node.options
+                    }),
+                    zIndex: void 0
+                };
             }
             // Pass test in drawPoints
             node.plotX = 1;
@@ -1414,10 +1429,10 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const ArcDiagram_ArcDiagramSeries = ((/* unused pure expression or super */ null && (ArcDiagramSeries)));
 
 ;// ./code/es-modules/masters/modules/arc-diagram.src.js
-
 
 
 

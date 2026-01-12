@@ -1,13 +1,16 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.5.0 (2026-01-12)
  * @module highcharts/modules/arrow-symbols
  * @requires highcharts
  *
  * Arrow Symbols
  *
- * (c) 2017-2025 Lars A. V. Cabrera
+ * (c) 2017-2026 Highsoft AS
+ * Author: Lars A. V. Cabrera
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -44,6 +47,7 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -51,12 +55,12 @@ var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require_
 ;// ./code/es-modules/Extensions/ArrowSymbols.js
 /* *
  *
- *  (c) 2017 Highsoft AS
+ *  (c) 2017-2026 Highsoft AS
  *  Authors: Lars A. V. Cabrera
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -77,7 +81,7 @@ var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require_
  *                   o
  * ```
  *
- * @private
+ * @internal
  * @function
  *
  * @param {number} x
@@ -113,7 +117,7 @@ function arrow(x, y, w, h) {
  *       o
  * ```
  *
- * @private
+ * @internal
  * @function
  *
  * @param {number} x
@@ -135,7 +139,12 @@ function arrowHalf(x, y, w, h) {
     return arrow(x, y, w / 2, h);
 }
 /**
- * @private
+ * Adds the arrow symbols to the SVGRenderer.
+ *
+ * @internal
+ *
+ * @param SVGRendererClass
+ * The SVGRenderer class to extend.
  */
 function compose(SVGRendererClass) {
     const symbols = SVGRendererClass.prototype.symbols;
@@ -156,7 +165,7 @@ function compose(SVGRendererClass) {
  *             o
  * ```
  *
- * @private
+ * @internal
  * @function
  *
  * @param {number} x
@@ -192,7 +201,7 @@ function triangleLeft(x, y, w, h) {
  *       o
  * ```
  *
- * @private
+ * @internal
  * @function
  *
  * @param {number} x

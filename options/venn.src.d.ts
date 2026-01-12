@@ -6,81 +6,10 @@
 import * as Highcharts from "../highcharts.src";
 declare module "../highcharts.src" {
     /**
-     * (Highcharts) Point accessibility options for a series.
+     * (Highcharts, Highmaps) Options for the cluster data labels.
      */
-    interface PlotVennAccessibilityPointOptions {
-        /**
-         * (Highcharts) Date format to use for points on datetime axes when
-         * describing them to screen reader users.
-         *
-         * Defaults to the same format as in tooltip.
-         *
-         * For an overview of the replacement codes, see dateFormat.
-         */
-        dateFormat?: string;
-        /**
-         * (Highcharts) Formatter function to determine the date/time format
-         * used with points on datetime axes when describing them to screen
-         * reader users. Receives one argument, `point`, referring to the point
-         * to describe. Should return a date format string compatible with
-         * dateFormat.
-         */
-        dateFormatter?: Highcharts.ScreenReaderFormatterCallbackFunction<Highcharts.Point>;
-        /**
-         * (Highcharts) Whether or not to describe points with the value `null`
-         * to assistive technology, such as screen readers.
-         */
-        describeNull?: boolean;
-        /**
-         * (Highcharts) A format string to use instead of the default for point
-         * descriptions.
-         *
-         * The context of the format string is the point instance.
-         *
-         * As opposed to accessibility.point.valueDescriptionFormat, this option
-         * replaces the whole description.
-         */
-        descriptionFormat?: string;
-        /**
-         * (Highcharts) Formatter function to use instead of the default for
-         * point descriptions. Same as
-         * `accessibility.point.descriptionFormatter`, but applies to a series
-         * instead of the whole chart.
-         *
-         * Note: Prefer using accessibility.point.valueDescriptionFormat instead
-         * if possible, as default functionality such as describing annotations
-         * will be preserved.
-         */
-        descriptionFormatter?: Highcharts.ScreenReaderFormatterCallbackFunction<Highcharts.Point>;
-        /**
-         * (Highcharts) Decimals to use for the values in the point
-         * descriptions. Uses tooltip.valueDecimals if not defined.
-         */
-        valueDecimals?: number;
-        /**
-         * (Highcharts) Format to use for describing the values of data points
-         * to assistive technology - including screen readers. The point context
-         * is available as `{point}`.
-         *
-         * Other available context variables include `{index}`, `{value}`, and
-         * `{xDescription}`.
-         *
-         * Additionally, the series name, annotation info, and description added
-         * in `point.accessibility.description` is added by default if relevant.
-         * To override this, use the accessibility.point.descriptionFormatter
-         * option.
-         */
-        valueDescriptionFormat?: string;
-        /**
-         * (Highcharts) Prefix to add to the values in the point descriptions.
-         * Uses tooltip.valuePrefix if not defined.
-         */
-        valuePrefix?: string;
-        /**
-         * (Highcharts) Suffix to add to the values in the point descriptions.
-         * Uses tooltip.valueSuffix if not defined.
-         */
-        valueSuffix?: string;
+    interface PlotVennClusterDataLabelsOptions {
+        style?: any;
     }
     /**
      * (Highcharts, Highmaps) Options for layout algorithm. Inside there are
@@ -341,6 +270,12 @@ declare module "../highcharts.src" {
          */
         inside?: boolean;
         /**
+         * (Highcharts, Highstock, Highmaps, Gantt) The rank for this point's
+         * data label in case of collision. If two data labels are about to
+         * overlap, only the one with the highest `labelrank` will be drawn.
+         */
+        labelrank?: number;
+        /**
          * (Highcharts, Highstock, Highmaps, Gantt) Format for points with the
          * value of null. Works analogously to format. `nullFormat` can be
          * applied only to series which support displaying null points.
@@ -357,9 +292,10 @@ declare module "../highcharts.src" {
          * analogously to formatter. `nullFormatter` can be applied only to
          * series which support displaying null points. `heatmap` and `tilemap`
          * supports `nullFormatter` by default while the following series
-         * requires [#series.nullInteraction] set to `true`: `line`, `spline`,
-         * `area`, `area-spline`, `column`, `bar`, and `timeline`. Does not work
-         * with series that don't display null points, like `pie`.
+         * requires (series.nullInteraction)[#series.nullInteraction] set to
+         * `true`: `line`, `spline`, `area`, `area-spline`, `column`, `bar`, and
+         * `timeline`. Does not work with series that don't display null points,
+         * like `pie`.
          */
         nullFormatter?: Highcharts.DataLabelsFormatterCallbackFunction;
         /**
@@ -458,8 +394,10 @@ declare module "../highcharts.src" {
         y?: number;
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) The z index of the data
-         * labels. Use a `zIndex` of 6 to display it above the series, or use a
-         * `zIndex` of 2 to display it behind the series.
+         * labels group. Does not apply below series level options.
+         *
+         * Use a `zIndex` of 6 to display it above the series, or use a `zIndex`
+         * of 2 to display it behind the series.
          */
         zIndex?: number;
     }
@@ -507,7 +445,8 @@ declare module "../highcharts.src" {
      *
      * **TypeScript:**
      *
-     * - the type option must always be set.
+     * - type option should always be set, otherwise a broad set of unsupported
+     * options is allowed.
      *
      * - when accessing an array of series, the combined set of all series types
      * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
@@ -794,6 +733,9 @@ declare module "../highcharts.src" {
          * (Highcharts) Sonification/audio chart options for a series.
          */
         sonification?: Highcharts.SeriesSonificationOptions;
+        /**
+         * (Highcharts) A collection of options for different series states.
+         */
         states?: Highcharts.SeriesStatesOptionsObject;
         /**
          * (Highcharts, Highstock) Whether to apply steps to the line. Possible
@@ -854,22 +796,129 @@ declare module "../highcharts.src" {
         zoomEnabled?: boolean;
     }
     /**
-     * (Highcharts, Highstock, Gantt) Enable or disable the initial animation
-     * when a series is displayed for the `dataLabels`. The animation can also
-     * be set as a configuration object. Please note that this option only
-     * applies to the initial animation.
-     *
-     * For other animations, see chart.animation and the animation parameter
-     * under the API methods. The following properties are supported:
-     *
-     * - `defer`: The animation delay time in milliseconds.
+     * (Highcharts) Animation when not hovering over the marker.
      */
-    interface SeriesVennDataDataLabelsAnimationOptions {
+    interface PlotVennStatesInactiveAnimationOptions {
+        duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock, Highmaps) Positioning options for fixed tooltip,
+     * taking effect only when tooltip.fixed is `true`.
+     */
+    interface PlotVennTooltipPositionOptions {
         /**
-         * (Highcharts, Highstock, Gantt) The animation delay time in
-         * milliseconds. Set to `0` to render the data labels immediately. As
-         * `undefined` inherits defer time from the series.animation.defer.
+         * (Highcharts, Highstock, Highmaps) The horizontal alignment of the
+         * fixed tooltip.
          */
-        defer?: number;
+        align?: Highcharts.AlignValue;
+        /**
+         * (Highcharts, Highstock, Highmaps) What the fixed tooltip alignment
+         * should be relative to.
+         *
+         * The default, `pane`, means that it is aligned within the plot area
+         * for that given series. If the tooltip is split (as default in Stock
+         * charts), each partial tooltip is aligned within the series' pane.
+         */
+        relativeTo?: Highcharts.OptionsRelativeToValue;
+        /**
+         * (Highcharts, Highstock, Highmaps) The vertical alignment of the fixed
+         * tooltip.
+         */
+        verticalAlign?: Highcharts.VerticalAlignValue;
+        /**
+         * (Highcharts, Highstock, Highmaps) X pixel offset from the given
+         * position. Can be used to shy away from axis lines, grid lines etc to
+         * avoid the tooltip overlapping other elements.
+         */
+        x?: number;
+        /**
+         * (Highcharts, Highstock, Highmaps) Y pixel offset from the given
+         * position. Can be used to shy away from axis lines, grid lines etc to
+         * avoid the tooltip overlapping other elements.
+         */
+        y?: number;
+    }
+    /**
+     * (Highcharts) A `venn` series. If the type option is not specified, it is
+     * inherited from chart.type.
+     *
+     * Configuration options for the series are given in three levels:
+     *
+     * 1. Options for all series in a chart are defined in the
+     * plotOptions.series object.
+     *
+     * 2. Options for all `venn` series are defined in plotOptions.venn.
+     *
+     * 3. Options for one single series are given in the series instance array.
+     * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - type option should always be set, otherwise a broad set of unsupported
+     * options is allowed.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
+     *
+     * You have to extend the `SeriesVennOptions` via an interface to allow
+     * custom properties: ``` declare interface SeriesVennOptions {
+     * customProperty: string; }
+     *
+     */
+    interface SeriesVennOptions extends Highcharts.PlotVennOptions, Highcharts.SeriesOptions {
+        /**
+         * (Highcharts) An array of data points for the series. For the
+         * `scatter` series type, points can be given in the following ways:
+         *
+         * 1. An array of numerical values. In this case, the numerical values
+         * will be interpreted as `y` options. The `x` values will be
+         * automatically calculated, either starting at 0 and incremented by 1,
+         * or from `pointStart` and `pointInterval` given in the series options.
+         * If the axis has categories, these will be used. Example: (see online
+         * documentation for example)
+         *
+         * 2. An array of arrays with 2 values. In this case, the values
+         * correspond to `x,y`. If the first value is a string, it is applied as
+         * the name of the point, and the `x` value is inferred. (see online
+         * documentation for example)
+         *
+         * 3. An array of objects with named values. The following snippet shows
+         * only a few settings, see the complete options set below. If the total
+         * number of data points exceeds the series' turboThreshold, this option
+         * is not available. (see online documentation for example)
+         */
+        data?: Array<Highcharts.PointOptionsObject>;
+        /**
+         * Not available
+         */
+        dataParser?: undefined;
+        /**
+         * Not available
+         */
+        dataURL?: undefined;
+        /**
+         * Not available
+         */
+        stack?: undefined;
+        /**
+         * Not available
+         */
+        steps?: undefined;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) This property is only in
+         * TypeScript non-optional and might be `undefined` in series objects
+         * from unknown sources.
+         */
+        type: "venn";
+        /**
+         * Not available
+         */
+        xAxis?: undefined;
+        /**
+         * Not available
+         */
+        yAxis?: undefined;
     }
 }

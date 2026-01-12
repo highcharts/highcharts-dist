@@ -1,12 +1,13 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
  *  Extension for 3d axes
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -25,9 +26,7 @@ const { addEvent, merge, pick, wrap } = U;
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function onAxisAfterSetOptions() {
     const axis = this, chart = axis.chart, options = axis.options;
     if (chart.is3d?.() && axis.coll !== 'colorAxis') {
@@ -35,9 +34,7 @@ function onAxisAfterSetOptions() {
         options.gridLineWidth = pick(options.gridLineWidth, 1);
     }
 }
-/**
- * @private
- */
+/** @internal */
 function onAxisDrawCrosshair(e) {
     const axis = this;
     if (axis.chart.is3d() &&
@@ -49,9 +46,7 @@ function onAxisDrawCrosshair(e) {
         }
     }
 }
-/**
- * @private
- */
+/** @internal */
 function onAxisInit() {
     const axis = this;
     if (!axis.axis3D) {
@@ -60,7 +55,7 @@ function onAxisInit() {
 }
 /**
  * Do not draw axislines in 3D.
- * @private
+ * @internal
  */
 function wrapAxisGetLinePath(proceed) {
     const axis = this;
@@ -70,9 +65,7 @@ function wrapAxisGetLinePath(proceed) {
     }
     return [];
 }
-/**
- * @private
- */
+/** @internal */
 function wrapAxisGetPlotBandPath(proceed) {
     // Do not do this if the chart is not 3D
     if (!this.chart.is3d() || this.coll === 'colorAxis') {
@@ -94,9 +87,7 @@ function wrapAxisGetPlotBandPath(proceed) {
     }
     return path;
 }
-/**
- * @private
- */
+/** @internal */
 function wrapAxisGetPlotLinePath(proceed) {
     const axis = this, axis3D = axis.axis3D, chart = axis.chart, path = proceed.apply(axis, [].slice.call(arguments, 1));
     // Do not do this if the chart is not 3D
@@ -166,7 +157,7 @@ function wrapAxisGetPlotLinePath(proceed) {
 /**
  * Wrap getSlotWidth function to calculate individual width value for each
  * slot (#8042).
- * @private
+ * @internal
  */
 function wrapAxisGetSlotWidth(proceed, tick) {
     const axis = this, { chart, gridGroup, tickPositions, ticks } = axis;
@@ -220,9 +211,7 @@ function wrapAxisGetSlotWidth(proceed, tick) {
     }
     return proceed.apply(axis, [].slice.call(arguments, 1));
 }
-/**
- * @private
- */
+/** @internal */
 function wrapAxisGetTitlePosition(proceed) {
     const pos = proceed.apply(this, [].slice.call(arguments, 1));
     return this.axis3D ?
@@ -236,7 +225,7 @@ function wrapAxisGetTitlePosition(proceed) {
  * */
 /**
  * Adds 3D support to axes.
- * @private
+ * @internal
  * @class
  */
 class Axis3DAdditions {
@@ -247,7 +236,7 @@ class Axis3DAdditions {
      * */
     /**
      * Extends axis class with 3D support.
-     * @private
+     * @internal
      */
     static compose(AxisClass, TickClass) {
         Tick3D.compose(TickClass);
@@ -270,9 +259,7 @@ class Axis3DAdditions {
      *  Constructors
      *
      * */
-    /**
-     * @private
-     */
+    /** @internal */
     constructor(axis) {
         this.axis = axis;
     }
@@ -282,7 +269,7 @@ class Axis3DAdditions {
      *
      * */
     /**
-     * @private
+     * @internal
      * @param {Highcharts.Axis} axis
      * Related axis.
      * @param {Highcharts.Position3DObject} pos
@@ -465,9 +452,7 @@ class Axis3DAdditions {
         }
         return projected;
     }
-    /**
-     * @private
-     */
+    /** @internal */
     swapZ(p, insidePlotArea) {
         const axis = this.axis;
         if (axis.isZAxis) {
@@ -486,4 +471,5 @@ class Axis3DAdditions {
  *  Default Export
  *
  * */
+/** @internal */
 export default Axis3DAdditions;

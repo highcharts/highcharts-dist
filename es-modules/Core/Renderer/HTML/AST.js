@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -84,6 +85,15 @@ class AST {
         });
         return attributes;
     }
+    /**
+     * Utility function to parse a style string to a CSSObject.
+     *
+     * @internal
+     * @param {string} style
+     * The style string to parse.
+     * @return {Highcharts.CSSObject}
+     * The parsed CSSObject.
+     */
     static parseStyle(style) {
         return style
             .split(';')
@@ -145,11 +155,11 @@ class AST {
      */
     addToDOM(parent) {
         /**
-         * @private
+         * @internal
          * @param {Highcharts.ASTNode} subtree
-         * HTML/SVG definition
+         * HTML/SVG definition.
          * @param {Element} [subParent]
-         * parent node
+         * Parent node.
          * @return {Highcharts.SVGDOMElement|Highcharts.HTMLDOMElement}
          * The inserted node.
          */
@@ -220,13 +230,11 @@ class AST {
      * Parse HTML/SVG markup into AST Node objects. Used internally from the
      * constructor.
      *
-     * @private
-     *
-     * @function Highcharts.AST#getNodesFromMarkup
-     *
-     * @param {string} markup The markup string.
-     *
-     * @return {Array<Highcharts.ASTNode>} The parsed nodes.
+     * @internal
+     * @param {string} markup
+     * The markup string.
+     * @return {Array<Highcharts.ASTNode>}
+     * The parsed nodes.
      */
     parseMarkup(markup) {
         const nodes = [];
@@ -502,6 +510,7 @@ AST.allowedTags = [
     'u',
     'ul'
 ];
+/** @internal */
 AST.emptyHTML = emptyHTML;
 /**
  * Allow all custom SVG and HTML attributes, references and tags (together

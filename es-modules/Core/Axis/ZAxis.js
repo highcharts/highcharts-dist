@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -18,15 +19,13 @@ const { addEvent, merge, pick, splat } = U;
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function chartAddZAxis(options) {
     return new ZAxis(this, options);
 }
 /**
  * Get the Z axis in addition to the default X and Y.
- * @private
+ * @internal
  */
 function onChartAfterCreateAxes() {
     const zAxisOptions = this.options.zAxis = splat(this.options.zAxis || {});
@@ -45,7 +44,6 @@ function onChartAfterCreateAxes() {
  * */
 /**
  * 3D axis for z coordinates.
- * @private
  */
 class ZAxis extends Axis {
     constructor() {
@@ -57,6 +55,7 @@ class ZAxis extends Axis {
         super(...arguments);
         this.isZAxis = true;
     }
+    /** @internal */
     static compose(ChartClass) {
         const chartProto = ChartClass.prototype;
         if (!chartProto.addZAxis) {
@@ -85,6 +84,7 @@ class ZAxis extends Axis {
      *  Functions
      *
      * */
+    /** @internal */
     getSeriesExtremes() {
         this.hasVisibleSeries = false;
         // Reset properties in case we're redrawing (#3353)
@@ -109,9 +109,7 @@ class ZAxis extends Axis {
             }
         });
     }
-    /**
-     * @private
-     */
+    /** @internal */
     setAxisSize() {
         const chart = this.chart;
         super.setAxisSize();

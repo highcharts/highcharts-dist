@@ -2,13 +2,13 @@
  *
  *  Timeline Series.
  *
- *  (c) 2010-2025 Highsoft AS
+ *  (c) 2010-2026 Highsoft AS
  *
  *  Author: Daniel Studencki
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -205,13 +205,11 @@ class TimelineSeries extends LineSeries {
         }
         // Handle hover and select states
         if (state) {
-            seriesStateOptions =
-                seriesMarkerOptions.states[state] || {};
-            pointStateOptions = pointMarkerOptions.states &&
-                pointMarkerOptions.states[state] || {};
-            radius = pick(pointStateOptions.radius, seriesStateOptions.radius, radius + (seriesStateOptions.radiusPlus || 0));
+            seriesStateOptions = seriesMarkerOptions.states?.[state];
+            pointStateOptions = pointMarkerOptions.states?.[state];
+            radius = pick(pointStateOptions?.radius, seriesStateOptions?.radius, radius + (seriesStateOptions?.radiusPlus || 0));
         }
-        point.hasImage = (symbol && symbol.indexOf('url') === 0);
+        point.hasImage = !!(symbol && symbol.indexOf('url') === 0);
         const attribs = {
             x: Math.floor(point.plotX) - (width / 2) - (radius / 2),
             y: point.plotY - (height / 2) - (radius / 2),

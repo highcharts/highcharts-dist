@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -18,16 +19,6 @@ const { defined, isNumber } = U;
  *
  * */
 class AreaRangePoint extends AreaPoint {
-    /**
-     * Range series only. The high or maximum value for each data point.
-     * @name Highcharts.Point#high
-     * @type {number|undefined}
-     */
-    /**
-     * Range series only. The low or minimum value for each data point.
-     * @name Highcharts.Point#low
-     * @type {number|undefined}
-     */
     /* *
      *
      *  Functions
@@ -105,3 +96,21 @@ class AreaRangePoint extends AreaPoint {
  *
  * */
 export default AreaRangePoint;
+/* *
+ *
+ *  API Options
+ *
+ * */
+/**
+ * Range series only. The high or maximum value for each data point.
+ *
+ * @name Highcharts.Point#high
+ * @type {number|undefined}
+ */
+/**
+ * Range series only. The low or minimum value for each data point.
+ *
+ * @name Highcharts.Point#low
+ * @type {number|undefined}
+ */
+''; // Keeps doclets above in JS file.

@@ -1,12 +1,14 @@
 /**
- * Highstock JS v12.4.0 (2025-09-04)
+ * Highstock JS v12.5.0 (2026-01-12)
  * @module highcharts/indicators/trix
  * @requires highcharts
  * @requires highcharts/modules/stock
  *
  * Indicator series type for Highcharts Stock
  *
- * (c) 2010-2025 Rafal Sebestjanski
+ * (c) 2010-2026 Highsoft AS
+ * Author: Rafal Sebestjanski
  *
- * License: www.highcharts.com/license
- */import*as e from"../highcharts.js";import"../modules/stock.js";var r={};r.n=e=>{var t=e&&e.__esModule?()=>e.default:()=>e;return r.d(t,{a:t}),t},r.d=(e,t)=>{for(var s in t)r.o(t,s)&&!r.o(e,s)&&Object.defineProperty(e,s,{enumerable:!0,get:t[s]})},r.o=(e,r)=>Object.prototype.hasOwnProperty.call(e,r);let t=e.default;var s=r.n(t);r.d({},{});let l=e.default.SeriesRegistry;var a=r.n(l);let{tema:o}=a().seriesTypes,{correctFloat:i,merge:n}=s();class p extends o{getTemaPoint(e,r,t,s){if(s>r)return[e[s-3],0!==t.prevLevel3?i(t.level3-t.prevLevel3)/t.prevLevel3*100:null]}}p.defaultOptions=n(o.defaultOptions),a().registerSeriesType("trix",p);let d=s();export{d as default};
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
+ */import*as e from"../highcharts.js";var r={};r.n=e=>{var t=e&&e.__esModule?()=>e.default:()=>e;return r.d(t,{a:t}),t},r.d=(e,t)=>{for(var l in t)r.o(t,l)&&!r.o(e,l)&&Object.defineProperty(e,l,{enumerable:!0,get:t[l]})},r.o=(e,r)=>Object.prototype.hasOwnProperty.call(e,r);let t=e.default;var l=r.n(t);let a=e.default.SeriesRegistry;var s=r.n(a);let{tema:i}=s().seriesTypes,{correctFloat:o,merge:n}=l();class p extends i{getTemaPoint(e,r,t,l){if(l>r)return[e[l-3],0!==t.prevLevel3?o(t.level3-t.prevLevel3)/t.prevLevel3*100:null]}}p.defaultOptions=n(i.defaultOptions),s().registerSeriesType("trix",p);let v=l();export{v as default};

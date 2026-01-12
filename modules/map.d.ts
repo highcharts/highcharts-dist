@@ -91,6 +91,36 @@ declare module "../highcharts" {
          */
         transformToLatLon(point: (Point|ProjectedXY), transform: any): (MapLonLatObject|undefined);
     }
+    /**
+     * Object containing the bounds of the map. All coordinates are in projected
+     * units.
+     */
+    interface MapBounds {
+        /**
+         * The center of the bounding box.
+         */
+        midX: any;
+        /**
+         * The center of the bounding box.
+         */
+        midY: any;
+        /**
+         * First point's X of the bounding box.
+         */
+        x1: any;
+        /**
+         * Second point's X of the bounding box.
+         */
+        x2: any;
+        /**
+         * First point's Y of the bounding box.
+         */
+        y1: any;
+        /**
+         * Second point's Y of the bounding box.
+         */
+        y2: any;
+    }
     interface Point {
         pointPadding?: number;
         /**
@@ -122,6 +152,54 @@ declare module "../highcharts" {
         y: number;
     }
     /**
+     * The Equal Earth map projection is an equal-area pseudocylindrical
+     * projection for world maps, invented by Bojan Šavrič, Bernhard Jenny, and
+     * Tom Patterson in 2018. It is inspired by the widely used Robinson
+     * projection, but unlike the Robinson projection, retains the relative size
+     * of areas. The projection equations are simple to implement and fast to
+     * evaluate.
+     *
+     * We chose this as the default world map projection for Highcharts because
+     * it is visually pleasing like Robinson, but avoids the political problem
+     * of rendering high-latitude regions like Europe and North America larger
+     * than tropical regions.
+     */
+    class EqualEarth {}
+    /**
+     * The Lambert conformal conic projection (LCC) is a conic map projection
+     * used for many national and regional mapping systems.
+     *
+     * Its advantage lies in mapping smaller areas like countries or continents.
+     * Two standard parallels are given, and between these, the distortion is
+     * minimal.
+     *
+     * In Highcharts, LCC is the default projection when loading a map smaller
+     * than 180 degrees width and 90 degrees height.
+     *
+     * For custom use, `rotation` should be set to adjust the reference
+     * longitude, in addition to the `parallels` option.
+     */
+    class LambertConformalConic {
+        /**
+         * The Lambert conformal conic projection (LCC) is a conic map
+         * projection used for many national and regional mapping systems.
+         *
+         * Its advantage lies in mapping smaller areas like countries or
+         * continents. Two standard parallels are given, and between these, the
+         * distortion is minimal.
+         *
+         * In Highcharts, LCC is the default projection when loading a map
+         * smaller than 180 degrees width and 90 degrees height.
+         *
+         * For custom use, `rotation` should be set to adjust the reference
+         * longitude, in addition to the `parallels` option.
+         *
+         * @param options
+         *        The projection options, with support for `parallels`.
+         */
+        constructor(options: MapViewProjectionOptions);
+    }
+    /**
      * Map-optimized chart. Use Chart for common charts.
      */
     class MapChart extends Chart {
@@ -145,6 +223,14 @@ declare module "../highcharts" {
          * @fires Highcharts.MapChart#afterInit
          */
         init(userOptions: Options, callback?: Function): void;
+        /**
+         * A wrapper for the chart's update function that will additionally run
+         * recommendMapView on chart.map change.
+         *
+         * @param options
+         *        The chart options.
+         */
+        update(options: Options): void;
     }
     /**
      * The map view handles zooming and centering on the map, and various
@@ -177,7 +263,7 @@ declare module "../highcharts" {
          */
         readonly zoom: number;
         /**
-         * Fit the view to given bounds
+         * Fit the view to the given bounds.
          *
          * @param bounds
          *        Bounds in terms of projected units given as `{ x1, y1, x2, y2
@@ -194,7 +280,7 @@ declare module "../highcharts" {
          * @param animation
          *        What animation to use for redraw
          */
-        fitToBounds(bounds: object, padding?: (number|string), redraw?: boolean, animation?: (boolean|Partial<AnimationOptionsObject>)): void;
+        fitToBounds(bounds: MapBounds, padding?: MapViewPaddingType, redraw?: boolean, animation?: (boolean|Partial<AnimationOptionsObject>)): void;
         /**
          * Convert map coordinates in longitude/latitude to pixels
          *
@@ -318,6 +404,43 @@ declare module "../highcharts" {
         zoomBy(howMuch?: number, coords?: LonLatArray, chartCoords?: Array<number>, animation?: (boolean|Partial<AnimationOptionsObject>)): void;
     }
     /**
+     * The Miller cylindrical projection is a modified Mercator projection,
+     * proposed by Osborn Maitland Miller in 1942. Compared to Mercator, the
+     * vertical exaggeration of polar areas is smaller, so the relative size of
+     * areas is more correct.
+     *
+     * Highcharts used this as the default map projection for world maps until
+     * the Map Collection v2.0 and Highcharts v10.0, when projection math was
+     * moved to the client side and EqualEarth chosen as the default world map
+     * projection.
+     */
+    class Miller {}
+    /**
+     * The orthographic projection is an azimuthal perspective projection,
+     * projecting the Earth's surface from an infinite distance to a plane. It
+     * gives the illusion of a three-dimensional globe.
+     *
+     * Its disadvantage is that it fails to render the whole world in one view.
+     * However, since the distortion is small at the center of the view, it is
+     * great at rendering limited areas of the globe, or at showing the
+     * positions of areas on the globe.
+     */
+    class Orthographic {}
+    /**
+     * Web Mercator is a variant of the Mercator map projection and is the de
+     * facto standard for Web mapping applications.
+     *
+     * Web Mercator is primarily created for tiled map services, as when zooming
+     * in to smaller scales, the angle between lines on the surface is
+     * approximately retained.
+     *
+     * The great disadvantage of Web Mercator is that areas inflate with
+     * distance from the equator. For example, in the world map, Greenland
+     * appears roughly the same size as Africa. In reality Africa is 14 times
+     * larger, as is apparent from the Equal Earth or Orthographic projections.
+     */
+    class WebMercator {}
+    /**
      * Contains all loaded map data for Highmaps.
      */
     let maps: Record<string, any>;
@@ -397,21 +520,32 @@ declare module "../highcharts" {
      * @return Splitted SVG path
      */
     function splitPath(path: (string|Array<(string|number)>)): SVGPathArray;
-    function bottomButton(): void;
     /**
      * If ranges are not specified, determine ranges from rendered bubble series
      * and render legend again.
      */
     function chartDrawChartBox(): void;
     /**
+     * Calculate the haversine of an angle.
+     */
+    function hav(): void;
+    /**
+     * Calculate the haversine of an angle from two coordinates.
+     */
+    function havFromCoords(): void;
+    /**
+     * Add logic to pad each axis with the amount of pixels necessary to avoid
+     * the bubbles to overflow.
+     */
+    function onAxisFoundExtremes(): void;
+    /**
      * Toggle bubble legend depending on the visible status of bubble series.
      */
     function onLegendItemClick(): void;
-    function topButton(): void;
     /**
-     * Convert a TopoJSON topology to GeoJSON. By default the first object is
-     * handled. Based on https://github.com/topojson/topojson-specification
+     * Keep longitude within -180 and 180. This is faster than using the modulo
+     * operator, and preserves the distinction between -180 and 180.
      */
-    function topo2geo(): void;
+    function wrapLon(): void;
 }
 export default _Highcharts;

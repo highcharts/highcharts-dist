@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2009-2025 Highsoft, Black Label
+ *  (c) 2009-2026 Highsoft AS
+ *  Author: Highsoft, Black Label
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -27,7 +28,7 @@ const { addEvent, attr, defined, fireEvent, isArray, isFunction, isNumber, isObj
  * */
 /**
  * IE 9-11 polyfill for Element.closest():
- * @private
+ * @internal
  */
 function closestPolyfill(el, s) {
     const ElementProto = win.Element.prototype, elementMatches = ElementProto.matches ||
@@ -47,25 +48,19 @@ function closestPolyfill(el, s) {
     }
     return ret;
 }
-/**
- * @private
- */
+/** @internal */
 function onAnnotationRemove() {
     if (this.chart.navigationBindings) {
         this.chart.navigationBindings.deselectAnnotation();
     }
 }
-/**
- * @private
- */
+/** @internal */
 function onChartDestroy() {
     if (this.navigationBindings) {
         this.navigationBindings.destroy();
     }
 }
-/**
- * @private
- */
+/** @internal */
 function onChartLoad() {
     const options = this.options;
     if (options && options.navigation && options.navigation.bindings) {
@@ -74,9 +69,7 @@ function onChartLoad() {
         this.navigationBindings.initUpdate();
     }
 }
-/**
- * @private
- */
+/** @internal */
 function onChartRender() {
     const navigationBindings = this.navigationBindings, disabledClassName = 'highcharts-disabled-btn';
     if (this && navigationBindings) {
@@ -123,28 +116,24 @@ function onChartRender() {
         }
     }
 }
-/**
- * @private
- */
+/** @internal */
 function onNavigationBindingsClosePopup() {
     this.deselectAnnotation();
 }
-/**
- * @private
- */
+/** @internal */
 function onNavigationBindingsDeselectButton() {
     this.selectedButtonElement = null;
 }
 /**
  * Show edit-annotation form:
- * @private
+ * @internal
  */
 function selectableAnnotation(annotationType) {
     const originalClick = annotationType.prototype.defaultOptions.events &&
         annotationType.prototype.defaultOptions.events.click;
     /**
-     * Select and show popup
-     * @private
+     * Select and show popup.
+     * @internal
      */
     function selectAndShowPopup(eventArguments) {
         const annotation = this, navigation = annotation.chart.navigationBindings, prevAnnotation = navigation.activeAnnotation;
@@ -220,9 +209,7 @@ function selectableAnnotation(annotationType) {
  *  Class
  *
  * */
-/**
- * @private
- */
+/** @internal */
 class NavigationBindings {
     /* *
      *
@@ -277,7 +264,7 @@ class NavigationBindings {
     /**
      * Init all events connected to NavigationBindings.
      *
-     * @private
+     * @internal
      * @function Highcharts.NavigationBindings#initEvents
      */
     initEvents() {
@@ -318,7 +305,7 @@ class NavigationBindings {
     /**
      * Common chart.update() delegation, shared between bindings and exporting.
      *
-     * @private
+     * @internal
      * @function Highcharts.NavigationBindings#initUpdate
      */
     initUpdate() {
@@ -333,7 +320,7 @@ class NavigationBindings {
      * Hook for click on a button, method selects/unselects buttons,
      * then calls `bindings.init` callback.
      *
-     * @private
+     * @internal
      * @function Highcharts.NavigationBindings#bindingsButtonClick
      *
      * @param {Highcharts.HTMLDOMElement} [button]
@@ -387,7 +374,7 @@ class NavigationBindings {
      * then on all subsequent clicks iterate over `steps` array.
      * When finished, calls `end` event.
      *
-     * @private
+     * @internal
      * @function Highcharts.NavigationBindings#bindingsChartClick
      *
      * @param {Highcharts.Chart} chart
@@ -466,7 +453,7 @@ class NavigationBindings {
     /**
      * Hook for mouse move on a chart's container. It calls current step.
      *
-     * @private
+     * @internal
      * @function Highcharts.NavigationBindings#bindingsContainerMouseMove
      *
      * @param {Highcharts.HTMLDOMElement} container
@@ -484,7 +471,7 @@ class NavigationBindings {
      * Translate fields (e.g. `params.period` or `marker.styles.color`) to
      * Highcharts options object (e.g. `{ params: { period } }`).
      *
-     * @private
+     * @internal
      * @function Highcharts.NavigationBindings#fieldsToOptions<T>
      *
      * @param {Highcharts.Dictionary<string>} fields
@@ -556,9 +543,7 @@ class NavigationBindings {
      *         Annotation options to be displayed in popup box
      */
     annotationToFields(annotation) {
-        const options = annotation.options, editables = NavigationBindings.annotationsEditable, nestedEditables = editables.nestedOptions, type = pick(options.type, options.shapes && options.shapes[0] &&
-            options.shapes[0].type, options.labels && options.labels[0] &&
-            options.labels[0].type, 'label'), nonEditables = NavigationBindings.annotationsNonEditable[options.langKey] || [], visualOptions = {
+        const options = annotation.options, editables = NavigationBindings.annotationsEditable, nestedEditables = editables.nestedOptions, type = pick(options.type, options.shapes?.[0]?.type, options.labels?.[0]?.type, 'label'), nonEditables = NavigationBindings.annotationsNonEditable[options.langKey] || [], visualOptions = {
             langKey: options.langKey,
             type: type
         };
@@ -567,7 +552,7 @@ class NavigationBindings {
          * allowed options (with values) to new object, which is last parameter:
          * "parent".
          *
-         * @private
+         * @internal
          *
          * @param {*} option
          *        Atomic type or object/array
@@ -642,7 +627,9 @@ class NavigationBindings {
             }
         }
         objectEach(options, (option, key) => {
-            if (key === 'typeOptions') {
+            if (key === 'typeOptions' &&
+                visualOptions['type'] !== 'basicAnnotation' // #23575
+            ) {
                 visualOptions[key] = {};
                 objectEach(options[key], (typeOption, typeKey) => {
                     traverse(typeOption, typeKey, nestedEditables, visualOptions[key], typeKey);
@@ -658,7 +645,7 @@ class NavigationBindings {
      * Get all class names for all parents in the element. Iterates until finds
      * main container.
      *
-     * @private
+     * @internal
      * @function Highcharts.NavigationBindings#getClickedClassNames
      *
      * @param {Highcharts.HTMLDOMElement} container
@@ -691,7 +678,7 @@ class NavigationBindings {
      * Get events bound to a button. It's a custom event delegation to find all
      * events connected to the element.
      *
-     * @private
+     * @internal
      * @function Highcharts.NavigationBindings#getButtonEvents
      *
      * @param {Highcharts.HTMLDOMElement} container
@@ -720,7 +707,7 @@ class NavigationBindings {
      * Bindings are just events, so the whole update process is simply
      * removing old events and adding new ones.
      *
-     * @private
+     * @internal
      * @function Highcharts.NavigationBindings#update
      */
     update(options) {
@@ -731,14 +718,14 @@ class NavigationBindings {
     /**
      * Remove all events created in the navigation.
      *
-     * @private
+     * @internal
      * @function Highcharts.NavigationBindings#removeEvents
      */
     removeEvents() {
         this.eventsToUnbind.forEach((unbinder) => unbinder());
     }
     /**
-     * @private
+     * @internal
      * @function Highcharts.NavigationBindings#destroy
      */
     destroy() {
@@ -798,6 +785,7 @@ NavigationBindings.annotationsNonEditable = {
  *  Default Export
  *
  * */
+/** @internal */
 export default NavigationBindings;
 /* *
  *

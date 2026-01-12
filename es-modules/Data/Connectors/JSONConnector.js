@@ -1,20 +1,21 @@
 /* *
  *
- *  (c) 2009-2025 Highsoft AS
+ *  (c) 2009-2026 Highsoft AS
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  *  Authors:
  *  - Pawel Lysy
+ *  - Kamil Kubik
  *
  * */
 'use strict';
 import DataConnector from './DataConnector.js';
-import U from '../../Core/Utilities.js';
 import JSONConverter from '../Converters/JSONConverter.js';
-const { merge, defined } = U;
+import U from '../../Core/Utilities.js';
+const { merge, fireEvent } = U;
 /* *
  *
  *  Class
@@ -34,17 +35,13 @@ class JSONConnector extends DataConnector {
     /**
      * Constructs an instance of JSONConnector.
      *
-     * @param {JSONConnector.UserOptions} [options]
+     * @param {Partial<JSONConnectorOptions>} [options]
      * Options for the connector and converter.
-     *
-     * @param {Array<DataTableOptions>} [dataTables]
-     * Multiple connector data tables options.
      */
-    constructor(options, dataTables) {
+    constructor(options) {
         const mergedOptions = merge(JSONConnector.defaultOptions, options);
-        super(mergedOptions, dataTables);
-        this.options = defined(dataTables) ?
-            merge(mergedOptions, { dataTables }) : mergedOptions;
+        super(mergedOptions);
+        this.options = mergedOptions;
         if (mergedOptions.enablePolling) {
             this.startPolling(Math.max(mergedOptions.dataRefreshRate || 0, 1) * 1000);
         }
@@ -55,6 +52,16 @@ class JSONConnector extends DataConnector {
      *
      * */
     /**
+     * Overrides the DataConnector method. Emits an event on the connector to
+     * all registered callbacks of this event.
+     *
+     * @param {JSONConnector.Event} e
+     * Event object containing additional event information.
+     */
+    emit(e) {
+        fireEvent(this, e.type, e);
+    }
+    /**
      * Initiates the loading of the JSON source to the connector
      *
      * @param {DataEvent.Detail} [eventDetail]
@@ -64,12 +71,13 @@ class JSONConnector extends DataConnector {
      * @emits JSONConnector#afterLoad
      */
     load(eventDetail) {
-        const connector = this, tables = connector.dataTables, { data, dataUrl, dataModifier, dataTables } = connector.options;
+        const connector = this;
+        const options = connector.options;
+        const { data, dataUrl, dataTables } = options;
         connector.emit({
             type: 'load',
-            data,
             detail: eventDetail,
-            tables
+            data
         });
         return Promise
             .resolve(dataUrl ?
@@ -79,51 +87,42 @@ class JSONConnector extends DataConnector {
                 connector.emit({
                     type: 'loadError',
                     detail: eventDetail,
-                    error,
-                    tables
+                    error
                 });
                 console.warn(`Unable to fetch data from ${dataUrl}.`); // eslint-disable-line no-console
             }) :
             data || [])
-            .then((data) => {
+            .then(async (data) => {
             if (data) {
                 this.initConverters(data, (key) => {
-                    const options = this.options;
                     const tableOptions = dataTables?.find((dataTable) => dataTable.key === key);
-                    // Takes over the connector default options.
-                    const mergedTableOptions = {
-                        dataTableKey: key,
-                        columnNames: tableOptions?.columnNames ??
-                            options.columnNames,
-                        firstRowAsNames: tableOptions?.firstRowAsNames ??
-                            options.firstRowAsNames,
-                        orientation: tableOptions?.orientation ??
-                            options.orientation,
-                        beforeParse: tableOptions?.beforeParse ??
-                            options.beforeParse
+                    // The data table options takes precedence over the
+                    // connector options.
+                    const { columnIds = options.columnIds, firstRowAsNames = options.firstRowAsNames, orientation = options.orientation, beforeParse = options.beforeParse } = tableOptions || {};
+                    const converterOptions = {
+                        data,
+                        columnIds,
+                        firstRowAsNames,
+                        orientation,
+                        beforeParse
                     };
-                    return new JSONConverter(merge(this.options, mergedTableOptions));
-                }, (converter, data) => {
-                    converter.parse({ data });
-                });
+                    return new JSONConverter(converterOptions);
+                }, (converter, data) => converter.parse({ data }));
             }
-            return connector.setModifierOptions(dataModifier, dataTables)
-                .then(() => data);
+            return connector.applyTableModifiers().then(() => data ?? []);
         })
             .then((data) => {
             connector.emit({
                 type: 'afterLoad',
-                data,
                 detail: eventDetail,
-                tables
+                data
             });
             return connector;
         })['catch']((error) => {
             connector.emit({
                 type: 'loadError',
                 detail: eventDetail,
-                error,
-                tables
+                error
             });
             throw error;
         });
@@ -135,11 +134,19 @@ class JSONConnector extends DataConnector {
  *
  * */
 JSONConnector.defaultOptions = {
+    type: 'JSON',
+    id: 'json-connector',
+    data: [],
     enablePolling: false,
     dataRefreshRate: 0,
     firstRowAsNames: true,
     orientation: 'rows'
 };
+/* *
+ *
+ *  Registry
+ *
+ * */
 DataConnector.registerType('JSON', JSONConnector);
 /* *
  *

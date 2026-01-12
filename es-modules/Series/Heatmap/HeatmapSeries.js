@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -222,7 +223,7 @@ class HeatmapSeries extends ScatterSeries {
         // Apply old borderWidth property if exists.
         attr['stroke-width'] = borderWidth;
         if (state && state !== 'normal') {
-            const stateOptions = merge(seriesOptions.states?.[state], seriesOptions.marker?.states?.[state], point?.options.states?.[state] || {});
+            const stateOptions = merge(seriesOptions.states?.[state], seriesOptions.marker?.states?.[state], point?.options.marker?.states?.[state] || {});
             attr.fill =
                 stateOptions.color ||
                     Color.parse(attr.fill).brighten(stateOptions.brightness || 0).get();
@@ -267,6 +268,9 @@ HeatmapSeries.defaultOptions = merge(ScatterSeries.defaultOptions, HeatmapSeries
 addEvent(HeatmapSeries, 'afterDataClassLegendClick', function () {
     this.isDirtyCanvas = true;
     this.drawPoints();
+    if (this.options.enableMouseTracking) {
+        this.drawTracker(); // #23162, set tracker again after points redraw
+    }
 });
 extend(HeatmapSeries.prototype, {
     axisTypes: ColorMapComposition.seriesMembers.axisTypes,

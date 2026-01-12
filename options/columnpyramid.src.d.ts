@@ -222,6 +222,12 @@ declare module "../highcharts.src" {
          */
         inside?: boolean;
         /**
+         * (Highcharts, Highstock, Highmaps, Gantt) The rank for this point's
+         * data label in case of collision. If two data labels are about to
+         * overlap, only the one with the highest `labelrank` will be drawn.
+         */
+        labelrank?: number;
+        /**
          * (Highcharts, Highstock, Highmaps, Gantt) Format for points with the
          * value of null. Works analogously to format. `nullFormat` can be
          * applied only to series which support displaying null points.
@@ -238,9 +244,10 @@ declare module "../highcharts.src" {
          * analogously to formatter. `nullFormatter` can be applied only to
          * series which support displaying null points. `heatmap` and `tilemap`
          * supports `nullFormatter` by default while the following series
-         * requires [#series.nullInteraction] set to `true`: `line`, `spline`,
-         * `area`, `area-spline`, `column`, `bar`, and `timeline`. Does not work
-         * with series that don't display null points, like `pie`.
+         * requires (series.nullInteraction)[#series.nullInteraction] set to
+         * `true`: `line`, `spline`, `area`, `area-spline`, `column`, `bar`, and
+         * `timeline`. Does not work with series that don't display null points,
+         * like `pie`.
          */
         nullFormatter?: Highcharts.DataLabelsFormatterCallbackFunction;
         /**
@@ -339,8 +346,10 @@ declare module "../highcharts.src" {
         y?: number;
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) The z index of the data
-         * labels. Use a `zIndex` of 6 to display it above the series, or use a
-         * `zIndex` of 2 to display it behind the series.
+         * labels group. Does not apply below series level options.
+         *
+         * Use a `zIndex` of 6 to display it above the series, or use a `zIndex`
+         * of 2 to display it behind the series.
          */
         zIndex?: number;
     }
@@ -394,7 +403,8 @@ declare module "../highcharts.src" {
      *
      * **TypeScript:**
      *
-     * - the type option must always be set.
+     * - type option should always be set, otherwise a broad set of unsupported
+     * options is allowed.
      *
      * - when accessing an array of series, the combined set of all series types
      * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
@@ -552,7 +562,9 @@ declare module "../highcharts.src" {
          * percentage or absolute change depending on whether `compare` is set
          * to `"percent"` or `"value"`. When this is applied to multiple series,
          * it allows comparing the development of the series against each other.
-         * Adds a `change` field to every point object.
+         * Adds a `change` field to every point object. If a `compare` value is
+         * not set on a linked series, it will be inherited from the parent
+         * series.
          */
         compare?: Highcharts.OptionsCompareValue;
         /**
@@ -777,6 +789,9 @@ declare module "../highcharts.src" {
          * If master series uses data sorting and linked series does not have
          * its own sorting definition, the linked series will be sorted in the
          * same order as the master one.
+         *
+         * If a `compare` value is not set on a linked series, it will be
+         * inherited from the parent series.
          */
         linkedTo?: string;
         /**
@@ -996,8 +1011,8 @@ declare module "../highcharts.src" {
         sonification?: Highcharts.SeriesSonificationOptions;
         /**
          * (Highcharts, Highstock) Whether to stack the values of each series on
-         * top of each other. Possible values are `undefined` to disable,
-         * `"normal"` to stack by value or `"percent"`.
+         * top of each other. Possible values are null to disable, `"normal"` to
+         * stack by value or `"percent"`.
          *
          * When stacking is enabled, data must be sorted in ascending X order.
          *
@@ -1007,6 +1022,10 @@ declare module "../highcharts.src" {
          * series.
          */
         stacking?: Highcharts.OptionsStackingValue;
+        /**
+         * (Highcharts, Highstock) A collection of options for different series
+         * states.
+         */
         states?: Highcharts.SeriesStatesOptionsObject;
         /**
          * (Highcharts, Highstock) Sticky tracking of mouse events. When true,
@@ -1065,71 +1084,64 @@ declare module "../highcharts.src" {
         zoomEnabled?: boolean;
     }
     /**
-     * (Highcharts, Highstock) A `columnpyramid` series. If the type option is
-     * not specified, it is inherited from chart.type.
-     *
-     * Configuration options for the series are given in three levels:
-     *
-     * 1. Options for all series in a chart are defined in the
-     * plotOptions.series object.
-     *
-     * 2. Options for all `columnpyramid` series are defined in
-     * plotOptions.columnpyramid.
-     *
-     * 3. Options for one single series are given in the series instance array.
-     * (see online documentation for example)
-     *
-     * **TypeScript:**
-     *
-     * - the type option must always be set.
-     *
-     * - when accessing an array of series, the combined set of all series types
-     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
-     * specific type can be done by checking the `type` property. (see online
-     * documentation for example)
-     *
-     * You have to extend the `SeriesColumnpyramidOptions` via an interface to
-     * allow custom properties: ``` declare interface SeriesColumnpyramidOptions
-     * { customProperty: string; }
-     *
+     * (Highcharts, Highstock) Animation when not hovering over the marker.
      */
-    interface SeriesColumnpyramidOptions extends Highcharts.PlotColumnpyramidOptions, Highcharts.SeriesOptions {
+    interface PlotColumnpyramidStatesInactiveAnimationOptions {
+        duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock) Positioning options for fixed tooltip, taking
+     * effect only when tooltip.fixed is `true`.
+     */
+    interface PlotColumnpyramidTooltipPositionOptions {
         /**
-         * (Highcharts, Highstock) An array of data points for the series. For
-         * the `columnpyramid` series type, points can be given in the following
-         * ways:
+         * (Highcharts, Highstock) The horizontal alignment of the fixed
+         * tooltip.
+         */
+        align?: Highcharts.AlignValue;
+        /**
+         * (Highcharts, Highstock) What the fixed tooltip alignment should be
+         * relative to.
          *
-         * 1. An array of numerical values. In this case, the numerical values
-         * will be interpreted as `y` options. The `x` values will be
-         * automatically calculated, either starting at 0 and incremented by 1,
-         * or from `pointStart` and `pointInterval` given in the series options.
-         * If the axis has categories, these will be used. Example: (see online
-         * documentation for example)
-         *
-         * 2. An array of arrays with 2 values. In this case, the values
-         * correspond to `x,y`. If the first value is a string, it is applied as
-         * the name of the point, and the `x` value is inferred. (see online
-         * documentation for example)
-         *
-         * 3. An array of objects with named values. The objects are point
-         * configuration objects as seen below. If the total number of data
-         * points exceeds the series' turboThreshold, this option is not
-         * available. (see online documentation for example)
+         * The default, `pane`, means that it is aligned within the plot area
+         * for that given series. If the tooltip is split (as default in Stock
+         * charts), each partial tooltip is aligned within the series' pane.
          */
-        data?: Array<(number|[(number|string), (number|null)]|null|Highcharts.PointOptionsObject)>;
+        relativeTo?: Highcharts.OptionsRelativeToValue;
         /**
-         * Not available
+         * (Highcharts, Highstock) The vertical alignment of the fixed tooltip.
          */
-        dataParser?: undefined;
+        verticalAlign?: Highcharts.VerticalAlignValue;
         /**
-         * Not available
+         * (Highcharts, Highstock) X pixel offset from the given position. Can
+         * be used to shy away from axis lines, grid lines etc to avoid the
+         * tooltip overlapping other elements.
          */
-        dataURL?: undefined;
+        x?: number;
         /**
-         * (Highcharts, Highstock, Highmaps, Gantt) This property is only in
-         * TypeScript non-optional and might be `undefined` in series objects
-         * from unknown sources.
+         * (Highcharts, Highstock) Y pixel offset from the given position. Can
+         * be used to shy away from axis lines, grid lines etc to avoid the
+         * tooltip overlapping other elements.
          */
-        type: "columnpyramid";
+        y?: number;
+    }
+    /**
+     * (Highcharts, Highstock, Gantt) Enable or disable the initial animation
+     * when a series is displayed for the `dataLabels`. The animation can also
+     * be set as a configuration object. Please note that this option only
+     * applies to the initial animation.
+     *
+     * For other animations, see chart.animation and the animation parameter
+     * under the API methods. The following properties are supported:
+     *
+     * - `defer`: The animation delay time in milliseconds.
+     */
+    interface SeriesColumnpyramidDataDataLabelsAnimationOptions {
+        /**
+         * (Highcharts, Highstock, Gantt) The animation delay time in
+         * milliseconds. Set to `0` to render the data labels immediately. As
+         * `undefined` inherits defer time from the series.animation.defer.
+         */
+        defer?: number;
     }
 }

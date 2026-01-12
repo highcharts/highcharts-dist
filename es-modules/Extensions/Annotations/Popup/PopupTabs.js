@@ -2,11 +2,12 @@
  *
  *  Popup generator for Stock tools
  *
- *  (c) 2009-2025 Sebastian Bochan
+ *  (c) 2009-2026 Highsoft AS
+ *  Author: Sebastian Bochan
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -20,8 +21,9 @@ const { addEvent, createElement } = U;
  *
  * */
 /**
- * Create tab content
- * @private
+ * Create tab content.
+ *
+ * @internal
  * @return {HTMLDOMElement} - created HTML tab-content element
  */
 function addContentItem() {
@@ -32,8 +34,9 @@ function addContentItem() {
     }, void 0, popupDiv);
 }
 /**
- * Create tab menu item
- * @private
+ * Create tab menu item.
+ *
+ * @internal
  * @param {string} tabName
  * `add` or `edit`
  * @param {number} [disableTab]
@@ -57,7 +60,7 @@ function addMenuItem(tabName, disableTab) {
 }
 /**
  * Set all tabs as invisible.
- * @private
+ * @internal
  */
 function deselectAll() {
     const popupDiv = this.container, tabs = popupDiv
@@ -69,8 +72,9 @@ function deselectAll() {
     }
 }
 /**
- * Init tabs. Create tab menu items, tabs containers
- * @private
+ * Init tabs. Create tab menu items, tabs containers.
+ *
+ * @internal
  * @param {Highcharts.Chart} chart
  * Reference to current chart
  */
@@ -90,8 +94,9 @@ function init(chart) {
     selectTab.call(this, firstTab, 0);
 }
 /**
- * Set tab as visible
- * @private
+ * Set tab as visible.
+ *
+ * @internal
  * @param {globals.Element} - current tab
  * @param {number} - Index of tab in menu
  */
@@ -102,8 +107,9 @@ function selectTab(tab, index) {
     allTabs[index].className += ' highcharts-tab-item-show';
 }
 /**
- * Add click event to each tab
- * @private
+ * Add click event to each tab.
+ *
+ * @internal
  * @param {number} disableTab
  * Disable tab when 0
  */
@@ -128,7 +134,9 @@ function switchTabs(disableTab) {
  *  Default Export
  *
  * */
+/** @internal */
 const PopupTabs = {
     init
 };
+/** @internal */
 export default PopupTabs;

@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -114,7 +115,7 @@ class TimeBase {
      * initializing Highcharts, after running `Highcharts.setOptions` and on
      * `Chart.update`.
      *
-     * @private
+     * @internal
      * @function Highcharts.Time#update
      *
      * @param {Highcharts.TimeOptions} [options]
@@ -594,7 +595,7 @@ class TimeBase {
     /**
      * Resolve legacy formats of dateTimeLabelFormats (strings and arrays) into
      * an object.
-     * @private
+     * @internal
      * @param {string|Array<T>|Highcharts.Dictionary<T>} f
      * General format description
      * @return {Highcharts.Dictionary<T>}
@@ -618,7 +619,7 @@ class TimeBase {
     /**
      * Get the optimal date format for a point, based on a range.
      *
-     * @private
+     * @internal
      * @function Highcharts.Time#getDateFormat
      *
      * @param {number} range
@@ -810,7 +811,7 @@ export default TimeBase;
 * The number of fractional digits to use. 3 means milliseconds.
 *
 * @name Highcharts.DateTimeFormatOptions#fractionalSecondDigits
-* @type {number|undefined}
+* @type {1|2|3|undefined}
 */ /**
 * The representation of the time zone name.
 *

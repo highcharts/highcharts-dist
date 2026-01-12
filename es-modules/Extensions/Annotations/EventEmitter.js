@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2009-2025 Highsoft, Black Label
+ *  (c) 2009-2026 Highsoft AS
+ *  Author: Highsoft, Black Label
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -17,9 +18,7 @@ const { addEvent, fireEvent, objectEach, pick, removeEvent } = U;
  *  Class
  *
  * */
-/**
- * @private
- */
+// Internal class, but made public because Annotation extends it.
 class EventEmitter {
     /* *
      *
@@ -28,7 +27,7 @@ class EventEmitter {
      * */
     /**
      * Add emitter events.
-     * @private
+     * @internal
      */
     addEvents() {
         const emitter = this, addMouseDownEvent = function (element) {
@@ -87,6 +86,7 @@ class EventEmitter {
     }
     /**
      * Destroy the event emitter.
+     * @internal
      */
     destroy() {
         this.removeDocEvents();
@@ -95,7 +95,7 @@ class EventEmitter {
     }
     /**
      * Map mouse move event to the radians.
-     * @private
+     * @internal
      */
     mouseMoveToRadians(e, cx, cy) {
         let prevDy = e.prevChartY - cy, prevDx = e.prevChartX - cx, dy = e.chartY - cy, dx = e.chartX - cx, temp;
@@ -111,7 +111,7 @@ class EventEmitter {
     }
     /**
      * Map mouse move to the scale factors.
-     * @private
+     * @internal
      */
     mouseMoveToScale(e, cx, cy) {
         const prevDx = e.prevChartX - cx, prevDy = e.prevChartY - cy, dx = e.chartX - cx, dy = e.chartY - cy;
@@ -128,7 +128,7 @@ class EventEmitter {
     }
     /**
      * Map mouse move event to the distance between two following events.
-     * @private
+     * @internal
      */
     mouseMoveToTranslation(e) {
         let dx = e.chartX - e.prevChartX, dy = e.chartY - e.prevChartY, temp;
@@ -145,7 +145,7 @@ class EventEmitter {
     /**
      * Drag and drop event. All basic annotations should share this
      * capability as well as the extended ones.
-     * @private
+     * @internal
      */
     onDrag(e) {
         if (this.chart.isInsidePlot(e.chartX - this.chart.plotLeft, e.chartY - this.chart.plotTop, {
@@ -171,7 +171,7 @@ class EventEmitter {
     }
     /**
      * Mouse down handler.
-     * @private
+     * @internal
      */
     onMouseDown(e) {
         if (e.preventDefault) {
@@ -219,13 +219,14 @@ class EventEmitter {
     }
     /**
      * Mouse up handler.
+     * @internal
      */
     onMouseUp() {
         this.removeDocEvents();
     }
     /**
      * Remove emitter document events.
-     * @private
+     * @internal
      */
     removeDocEvents() {
         if (this.removeDrag) {

@@ -1,12 +1,12 @@
 /* *
  *
- *  (c) 2016-2025 Highsoft AS
+ *  (c) 2016-2026 Highsoft AS
  *
  *  Authors: Jon Arild Nygard
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -25,7 +25,7 @@ const { extend, isNumber, pick } = U;
 /**
  * Creates an object map from parent id to children's index.
  *
- * @private
+ * @internal
  * @function Highcharts.Tree#getListOfParents
  *
  * @param {Array<*>} data
@@ -58,7 +58,7 @@ function getListOfParents(data) {
     });
     return listOfParents;
 }
-/** @private */
+/** @internal */
 function getNode(id, parent, level, data, mapOfIdToChildren, options) {
     const after = options && options.after, before = options && options.before, node = {
         data,
@@ -108,7 +108,7 @@ function getNode(id, parent, level, data, mapOfIdToChildren, options) {
     }
     return node;
 }
-/** @private */
+/** @internal */
 function getTree(data, options) {
     return getNode('', null, 1, null, getListOfParents(data), options);
 }
@@ -117,8 +117,10 @@ function getTree(data, options) {
  *  Default Export
  *
  * */
+/** @internal */
 const Tree = {
     getNode,
     getTree
 };
+/** @internal */
 export default Tree;

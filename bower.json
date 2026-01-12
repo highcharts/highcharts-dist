@@ -1,7 +1,19 @@
 {
   "name": "highcharts",
-  "version": "12.4.0",
+  "version": "12.5.0",
   "main": "highcharts.js",
   "license": "https://www.highcharts.com/license",
-  "types": "highcharts.d.ts"
+  "types": "highcharts.d.ts",
+  "peerDependencies": {
+    "jspdf": "^3.0.0",
+    "svg2pdf.js": "^2.6.0"
+  },
+  "peerDependenciesMeta": {
+    "jspdf": {
+      "optional": true
+    },
+    "svg2pdf.js": {
+      "optional": true
+    }
+  }
 }

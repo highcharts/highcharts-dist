@@ -2,11 +2,12 @@
  *
  *  Arc diagram module
  *
- *  (c) 2021 Piotr Madej, Grzegorz Blachliński
+ *  (c) 2021-2026 Highsoft AS
+ *  Author: Piotr Madej, Grzegorz Blachliński
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -29,7 +30,7 @@ const { crisp, extend, merge, pick, relativeLength } = U;
  *
  * */
 /**
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.arcdiagram
  *
@@ -44,7 +45,7 @@ class ArcDiagramSeries extends SankeySeries {
     /**
      * Create node columns by analyzing the nodes and the relations between
      * incoming and outgoing links.
-     * @private
+     * @internal
      */
     createNodeColumns() {
         const series = this, chart = series.chart, 
@@ -133,7 +134,7 @@ class ArcDiagramSeries extends SankeySeries {
     }
     /**
      * Run translation operations for one link.
-     * @private
+     * @internal
      */
     translateLink(point) {
         const series = this, fromNode = point.fromNode, toNode = point.toNode, chart = this.chart, translationFactor = series.translationFactor, pointOptions = point.options, seriesOptions = series.options, linkWeight = pick(pointOptions.linkWeight, seriesOptions.linkWeight, Math.max((point.weight || 0) *
@@ -218,14 +219,14 @@ class ArcDiagramSeries extends SankeySeries {
     }
     /**
      * Run translation operations for one node.
-     * @private
+     * @internal
      */
     translateNode(node, column) {
         const series = this, translationFactor = series.translationFactor, chart = series.chart, maxNodesLength = chart.inverted ?
             chart.plotWidth : chart.plotHeight, options = series.options, maxRadius = Math.min(chart.plotWidth, chart.plotHeight, maxNodesLength / node.series.nodes.length - this.nodePadding), sum = node.getSum() * (column.sankeyColumn.scale || 0), equalNodes = options.equalNodes, nodeHeight = equalNodes ?
             maxRadius :
             Math.max(sum * translationFactor, this.options.minLinkWidth || 0), lineWidth = options.marker?.lineWidth || 0, nodeOffset = column.sankeyColumn.offset(node, translationFactor), fromNodeLeft = crisp(pick(nodeOffset && nodeOffset.absoluteLeft, ((column.sankeyColumn.left(translationFactor) || 0) +
-            (nodeOffset && nodeOffset.relativeLeft || 0))), lineWidth), markerOptions = merge(options.marker, node.options.marker), symbol = markerOptions.symbol, markerRadius = markerOptions.radius, top = parseInt(options.offset, 10) *
+            (nodeOffset && nodeOffset.relativeLeft || 0))), lineWidth), markerOptions = merge(options.marker, node.options.marker), symbol = markerOptions.symbol, markerRadius = markerOptions.radius, top = parseInt(options.offset ?? '100', 10) *
             ((chart.inverted ?
                 chart.plotWidth : chart.plotHeight) - (crisp(this.colDistance * (node.column || 0) +
                 (markerOptions.lineWidth || 0) / 2, lineWidth) +
@@ -247,10 +248,13 @@ class ArcDiagramSeries extends SankeySeries {
             }
             if (this.mapOptionsToLevel) {
                 // Calculate data label options for the point
-                node.dlOptions = SankeySeries.getDLOptions({
-                    level: this.mapOptionsToLevel[node.level],
-                    optionsPoint: node.options
-                });
+                node.dlOptions = {
+                    ...SankeySeries.getDLOptions({
+                        level: this.mapOptionsToLevel[node.level],
+                        optionsPoint: node.options
+                    }),
+                    zIndex: void 0
+                };
             }
             // Pass test in drawPoints
             node.plotX = 1;
@@ -330,4 +334,5 @@ SeriesRegistry.registerSeriesType('arcdiagram', ArcDiagramSeries);
  *  Default Export
  *
  * */
+/** @internal */
 export default ArcDiagramSeries;

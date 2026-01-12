@@ -1,6 +1,5 @@
 /* *
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -12,17 +11,13 @@ const { merge } = U;
  *  Class
  *
  * */
-/**
- * It provides methods for handling points, control points
- * and points transformations.
- * @private
- */
 class Controllable {
     /* *
      *
      *  Constructor
      *
      * */
+    /** @internal */
     constructor(annotation, options, index, itemType) {
         this.annotation = annotation;
         this.chart = annotation.chart;
@@ -41,7 +36,7 @@ class Controllable {
      * */
     /**
      * Redirect attr usage on the controllable graphic element.
-     * @private
+     * @internal
      */
     attr(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -51,7 +46,7 @@ class Controllable {
     /**
      * Utility function for mapping item's options
      * to element's attribute
-     * @private
+     * @internal
      * @param {Highcharts.AnnotationsLabelsOptions|Highcharts.AnnotationsShapesOptions} options
      * @return {Highcharts.SVGAttributes}
      *         Mapped options.
@@ -72,7 +67,7 @@ class Controllable {
     }
     /**
      * Destroy a controllable.
-     * @private
+     * @internal
      */
     destroy() {
         if (this.graphic) {
@@ -85,7 +80,7 @@ class Controllable {
     }
     /**
      * Init the controllable
-     * @private
+     * @internal
      */
     init(annotation, options, index) {
         this.annotation = annotation;
@@ -99,14 +94,14 @@ class Controllable {
     }
     /**
      * Redraw a controllable.
-     * @private
+     * @internal
      */
     redraw(animation) {
         this.redrawControlPoints(animation);
     }
     /**
      * Render a controllable.
-     * @private
+     * @internal
      */
     render(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -118,7 +113,7 @@ class Controllable {
     }
     /**
      * Rotate a controllable.
-     * @private
+     * @internal
      * @param {number} cx
      *        Origin x rotation
      * @param {number} cy
@@ -130,7 +125,7 @@ class Controllable {
     }
     /**
      * Scale a controllable.
-     * @private
+     * @internal
      * @param {number} cx
      *        Origin x rotation
      * @param {number} cy
@@ -145,7 +140,7 @@ class Controllable {
     }
     /**
      * Set control points' visibility.
-     * @private
+     * @internal
      */
     setControlPointsVisibility(visible) {
         this.controlPoints.forEach((controlPoint) => {
@@ -154,7 +149,7 @@ class Controllable {
     }
     /**
      * Check if a controllable should be rendered/redrawn.
-     * @private
+     * @internal
      * @return {boolean}
      *         Whether a controllable should be drawn.
      */
@@ -164,7 +159,8 @@ class Controllable {
     /**
      * Translate shape within controllable item.
      * Replaces `controllable.translate` method.
-     * @private
+     *
+     * @internal
      * @param {number} dx
      *        Translation for x coordinate
      * @param {number} dy
@@ -193,7 +189,7 @@ class Controllable {
     }
     /**
      * Update a controllable.
-     * @private
+     * @internal
      */
     update(newOptions) {
         const annotation = this.annotation, options = merge(true, this.options, newOptions), parentGroup = this.graphic.parentGroup, Constructor = this.constructor;
@@ -220,14 +216,18 @@ export default Controllable;
  * An object which denotes a controllable's anchor positions - relative and
  * absolute.
  *
- * @private
+ * @internal
  * @interface Highcharts.AnnotationAnchorObject
  */ /**
-* Relative to the plot area position
+* Relative to the plot area position.
+*
+* @internal
 * @name Highcharts.AnnotationAnchorObject#relativePosition
 * @type {Highcharts.BBoxObject}
 */ /**
-* Absolute position
+* Absolute position.
+*
+* @internal
 * @name Highcharts.AnnotationAnchorObject#absolutePosition
 * @type {Highcharts.BBoxObject}
 */
@@ -243,7 +243,7 @@ export default Controllable;
 * @name Highcharts.AnnotationControllable#collection
 * @type {string}
 */ /**
-* @private
+* @internal
 * @name Highcharts.AnnotationControllable#controlPoints
 * @type {Array<Highcharts.AnnotationControlPoint>}
 */ /**

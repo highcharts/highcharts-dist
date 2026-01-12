@@ -1,17 +1,19 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.4.0 (2025-09-04)
+ * @license Highcharts JS v12.5.0 (2026-01-12)
  * @module highcharts/modules/solid-gauge
  * @requires highcharts
  * @requires highcharts/highcharts-more
  *
  * Solid angular gauge module
  *
- * (c) 2010-2025 Torstein Honsi
+ * (c) 2010-2026 Highsoft AS
+ * Author: Torstein Honsi
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
-import * as __WEBPACK_EXTERNAL_MODULE__highcharts_more_src_js_48e0d456__ from "../highcharts-more.src.js";
 /******/ // The require scope
 /******/ var __webpack_require__ = {};
 /******/ 
@@ -46,17 +48,11 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_more_src_js_48e0d456__ from ".
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
-;// external "../highcharts-more.src.js"
-var x = (y) => {
-	var x = {}; __webpack_require__.d(x,
-    	y); return x
-    } 
-    var y = (x) => (() => (x))
-    const external_highcharts_more_src_js_namespaceObject = x({  });
 ;// ./code/es-modules/Extensions/BorderRadius.js
 /* *
  *
@@ -64,9 +60,9 @@ var x = (y) => {
  *
  *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -98,9 +94,7 @@ let oldRoundedRect = noop;
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function applyBorderRadius(path, i, r) {
     const a = path[i];
     let b = path[i + 1];
@@ -182,7 +176,7 @@ function applyBorderRadius(path, i, r) {
 }
 /**
  * Extend arc with borderRadius.
- * @private
+ * @internal
  */
 function arc(x, y, w, h, options = {}) {
     const path = oldArc(x, y, w, h, options), { brStart = true, brEnd = true, innerR = 0, r = w, start = 0, end = 0 } = options;
@@ -210,7 +204,7 @@ function arc(x, y, w, h, options = {}) {
     }
     return path;
 }
-/** @private */
+/** @internal */
 function seriesOnAfterColumnTranslate() {
     if (this.options.borderRadius &&
         !(this.chart.is3d && this.chart.is3d())) {
@@ -270,7 +264,7 @@ function seriesOnAfterColumnTranslate() {
         }
     }
 }
-/** @private */
+/** @internal */
 function compose(SeriesClass, SVGElementClass, SVGRendererClass) {
     const PieSeriesClass = SeriesClass.types.pie;
     if (!SVGElementClass.symbolCustomAttribs.includes('borderRadius')) {
@@ -287,14 +281,14 @@ function compose(SeriesClass, SVGElementClass, SVGRendererClass) {
         symbols.roundedRect = roundedRect;
     }
 }
-/** @private */
+/** @internal */
 function optionsToObject(options, seriesBROptions) {
     if (!isObject(options)) {
         options = { radius: options || 0 };
     }
     return merge(defaultBorderRadiusOptions, seriesBROptions, options);
 }
-/** @private */
+/** @internal */
 function pieSeriesOnAfterTranslate() {
     const borderRadius = optionsToObject(this.options.borderRadius);
     for (const point of this.points) {
@@ -306,7 +300,7 @@ function pieSeriesOnAfterTranslate() {
 }
 /**
  * Extend roundedRect with individual cutting through rOffset.
- * @private
+ * @internal
  */
 function roundedRect(x, y, width, height, options = {}) {
     const path = oldRoundedRect(x, y, width, height, options), { r = 0, brBoxHeight = height, brBoxY = y } = options, brOffsetTop = y - brBoxY, brOffsetBtm = (brBoxY + brBoxHeight) - (y + height), 
@@ -449,28 +443,30 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
 ;// external ["../highcharts.src.js","default","Color"]
 const external_highcharts_src_js_default_Color_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Color;
 var external_highcharts_src_js_default_Color_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Color_namespaceObject);
-;// ./code/es-modules/Core/Axis/Color/ColorAxisLike.js
+;// ./code/es-modules/Core/Axis/Color/ColorAxisBase.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
 
 const { parse: color } = (external_highcharts_src_js_default_Color_default());
 
-const { merge: ColorAxisLike_merge } = (external_highcharts_src_js_default_default());
+const { merge: ColorAxisBase_merge } = (external_highcharts_src_js_default_default());
 /* *
  *
  *  Namespace
  *
  * */
-var ColorAxisLike;
-(function (ColorAxisLike) {
+/** @internal */
+var ColorAxisBase;
+(function (ColorAxisBase) {
     /* *
      *
      *  Declarations
@@ -483,7 +479,7 @@ var ColorAxisLike;
      * */
     /**
      * Initialize defined data classes.
-     * @private
+     * @internal
      */
     function initDataClasses(userOptions) {
         const axis = this, chart = axis.chart, legendItem = axis.legendItem = axis.legendItem || {}, options = axis.options, userDataClasses = userOptions.dataClasses || [];
@@ -492,7 +488,7 @@ var ColorAxisLike;
         legendItem.labels = [];
         for (let i = 0, iEnd = userDataClasses.length; i < iEnd; ++i) {
             dataClass = userDataClasses[i];
-            dataClass = ColorAxisLike_merge(dataClass);
+            dataClass = ColorAxisBase_merge(dataClass);
             dataClasses.push(dataClass);
             if (!chart.styledMode && dataClass.color) {
                 continue;
@@ -516,10 +512,10 @@ var ColorAxisLike;
             }
         }
     }
-    ColorAxisLike.initDataClasses = initDataClasses;
+    ColorAxisBase.initDataClasses = initDataClasses;
     /**
      * Create initial color stops.
-     * @private
+     * @internal
      */
     function initStops() {
         const axis = this, options = axis.options, stops = axis.stops = options.stops || [
@@ -530,10 +526,10 @@ var ColorAxisLike;
             stops[i].color = color(stops[i][1]);
         }
     }
-    ColorAxisLike.initStops = initStops;
+    ColorAxisBase.initStops = initStops;
     /**
      * Normalize logarithmic values.
-     * @private
+     * @internal
      */
     function normalizedValue(value) {
         const axis = this, max = axis.max || 0, min = axis.min || 0;
@@ -543,10 +539,10 @@ var ColorAxisLike;
         return 1 - ((max - value) /
             ((max - min) || 1));
     }
-    ColorAxisLike.normalizedValue = normalizedValue;
+    ColorAxisBase.normalizedValue = normalizedValue;
     /**
      * Translate from a value to a color.
-     * @private
+     * @internal
      */
     function toColor(value, point) {
         const axis = this;
@@ -586,23 +582,24 @@ var ColorAxisLike;
         }
         return color;
     }
-    ColorAxisLike.toColor = toColor;
-})(ColorAxisLike || (ColorAxisLike = {}));
+    ColorAxisBase.toColor = toColor;
+})(ColorAxisBase || (ColorAxisBase = {}));
 /* *
  *
  *  Default Export
  *
  * */
-/* harmony default export */ const Color_ColorAxisLike = (ColorAxisLike);
+/* harmony default export */ const Color_ColorAxisBase = (ColorAxisBase);
 
 ;// ./code/es-modules/Core/Axis/SolidGaugeAxis.js
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -614,20 +611,20 @@ const { extend: SolidGaugeAxis_extend } = (external_highcharts_src_js_default_de
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function init(axis) {
-    SolidGaugeAxis_extend(axis, Color_ColorAxisLike);
+    SolidGaugeAxis_extend(axis, Color_ColorAxisBase);
 }
 /* *
  *
  *  Default export
  *
  * */
+/** @internal */
 const SolidGaugeAxis = {
     init
 };
+/** @internal */
 /* harmony default export */ const Axis_SolidGaugeAxis = (SolidGaugeAxis);
 
 ;// ./code/es-modules/Series/SolidGauge/SolidGaugeSeriesDefaults.js
@@ -635,11 +632,12 @@ const SolidGaugeAxis = {
  *
  *  Solid angular gauge module
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -853,11 +851,12 @@ const SolidGaugeSeriesDefaults = {
  *
  *  Solid angular gauge module
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -1016,7 +1015,6 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 /* harmony default export */ const SolidGauge_SolidGaugeSeries = ((/* unused pure expression or super */ null && (SolidGaugeSeries)));
 
 ;// ./code/es-modules/masters/modules/solid-gauge.src.js
-
 
 
 

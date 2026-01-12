@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Pawel Lysy Grzegorz Blachlinski
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Pawel Lysy Grzegorz Blachlinski
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -86,7 +87,7 @@ class TreegraphSeries extends TreemapSeries {
      * @return {LayoutModifiers} `a` and `b` parameter for x and y direction.
      */
     getLayoutModifiers() {
-        const chart = this.chart, series = this, plotSizeX = chart.plotSizeX, plotSizeY = chart.plotSizeY, columnCount = arrayMax(this.points.map((p) => p.node.xPosition));
+        const chart = this.chart, series = this, plotSizeX = chart.plotSizeX, plotSizeY = chart.plotSizeY, linkWidth = series.options.link?.lineWidth || 0, columnCount = arrayMax(this.points.map((p) => p.node.xPosition));
         let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity, maxXSize = 0, minXSize = 0, maxYSize = 0, minYSize = 0;
         this.points.forEach((point) => {
             // When fillSpace is on, stop the layout calculation when the hidden
@@ -94,32 +95,27 @@ class TreegraphSeries extends TreemapSeries {
             if (this.options.fillSpace && !point.visible) {
                 return;
             }
-            const node = point.node, level = series.mapOptionsToLevel[point.node.level] || {}, markerOptions = merge(this.options.marker, level.marker, point.options.marker), nodeWidth = markerOptions.width ?? getNodeWidth(this, columnCount), radius = relativeLength(markerOptions.radius || 0, Math.min(plotSizeX, plotSizeY)), symbol = markerOptions.symbol, nodeSizeY = (symbol === 'circle' || !markerOptions.height) ?
+            const node = point.node, level = series.mapOptionsToLevel[point.node.level] || {}, markerOptions = merge(this.options.marker, level.marker, point.options.marker), nodeWidth = markerOptions.width ?? getNodeWidth(this, columnCount), radius = relativeLength(markerOptions.radius || 0, Math.min(plotSizeX, plotSizeY)), lineWidth = Math.max(markerOptions.lineWidth || 0, linkWidth), symbol = markerOptions.symbol, nodeSizeY = (symbol === 'circle' || !markerOptions.height) ?
                 radius * 2 :
                 relativeLength(markerOptions.height, plotSizeY), nodeSizeX = symbol === 'circle' || !nodeWidth ?
                 radius * 2 :
                 relativeLength(nodeWidth, plotSizeX);
             node.nodeSizeX = nodeSizeX;
             node.nodeSizeY = nodeSizeY;
-            let lineWidth;
             if (node.xPosition <= minX) {
                 minX = node.xPosition;
-                lineWidth = markerOptions.lineWidth || 0;
                 minXSize = Math.max(nodeSizeX + lineWidth, minXSize);
             }
             if (node.xPosition >= maxX) {
                 maxX = node.xPosition;
-                lineWidth = markerOptions.lineWidth || 0;
                 maxXSize = Math.max(nodeSizeX + lineWidth, maxXSize);
             }
             if (node.yPosition <= minY) {
                 minY = node.yPosition;
-                lineWidth = markerOptions.lineWidth || 0;
                 minYSize = Math.max(nodeSizeY + lineWidth, minYSize);
             }
             if (node.yPosition >= maxY) {
                 maxY = node.yPosition;
-                lineWidth = markerOptions.lineWidth || 0;
                 maxYSize = Math.max(nodeSizeY + lineWidth, maxYSize);
             }
         });
@@ -136,7 +132,7 @@ class TreegraphSeries extends TreemapSeries {
         const series = this;
         const links = [];
         this.data.forEach((point) => {
-            const levelOptions = series.mapOptionsToLevel[point.node.level || 0] || {};
+            const levelOptions = series.mapOptionsToLevel[point.node.level ?? 0] || {};
             if (point.node.parent) {
                 const pointOptions = merge(levelOptions, point.options);
                 if (!point.linkToParent || point.linkToParent.destroyed) {
@@ -163,7 +159,7 @@ class TreegraphSeries extends TreemapSeries {
     }
     buildTree(id, index, level, list, parent) {
         const point = this.points[index];
-        level = (point && point.level) || level;
+        level = point?.level ?? level;
         return super.buildTree.call(this, id, index, level, list, parent);
     }
     markerAttribs() {
@@ -231,20 +227,21 @@ class TreegraphSeries extends TreemapSeries {
         }
     }
     translateLink(link) {
-        const fromNode = link.fromNode, toNode = link.toNode, linkWidth = this.options.link?.lineWidth || 0, factor = pick(this.options.link?.curveFactor, 0.5), type = pick(link.options.link?.type, this.options.link?.type, 'default');
+        const fromNode = link.fromNode, toNode = link.toNode, linkWidth = this.options.link?.lineWidth || 0, factor = pick(this.options.link?.curveFactor, 0.5), hasXData = toNode.x !== toNode.node.level ||
+            fromNode.x !== fromNode.node.level, type = pick(link.options.link?.type, this.options.link?.type, 'default');
         if (fromNode.shapeArgs && toNode.shapeArgs) {
             const fromNodeWidth = (fromNode.shapeArgs.width || 0), inverted = this.chart.inverted, y1 = crisp((fromNode.shapeArgs.y || 0) +
                 (fromNode.shapeArgs.height || 0) / 2, linkWidth), y2 = crisp((toNode.shapeArgs.y || 0) +
                 (toNode.shapeArgs.height || 0) / 2, linkWidth);
             let x1 = crisp((fromNode.shapeArgs.x || 0) + fromNodeWidth, linkWidth), x2 = crisp(toNode.shapeArgs.x || 0, linkWidth);
             if (inverted) {
-                x1 -= fromNodeWidth;
-                x2 += (toNode.shapeArgs.width || 0);
+                x1 -= Math.round(fromNodeWidth);
+                x2 += Math.round(toNode.shapeArgs.width || 0);
             }
-            const diff = toNode.node.xPosition - fromNode.node.xPosition;
+            const xDiff = toNode.node.xPosition - fromNode.node.xPosition, fullWidth = Math.abs(x2 - x1) + fromNodeWidth, scopeWidth = hasXData ? fullWidth : (fullWidth / xDiff), width = scopeWidth - fromNodeWidth, offset = width * factor * (inverted ? -1 : 1), xMiddle = crisp((x2 + x1) / 2, linkWidth), bendAt = relativeLength(link.options.link?.bendAt ??
+                this.options.link?.bendAt ??
+                '50%', fullWidth - fromNodeWidth);
             link.shapeType = 'path';
-            const fullWidth = Math.abs(x2 - x1) + fromNodeWidth, width = (fullWidth / diff) - fromNodeWidth, offset = width * factor * (inverted ? -1 : 1);
-            const xMiddle = crisp((x2 + x1) / 2, linkWidth);
             link.plotX = xMiddle;
             link.plotY = y2;
             link.shapeArgs = {
@@ -257,7 +254,8 @@ class TreegraphSeries extends TreemapSeries {
                     offset,
                     inverted,
                     parentVisible: toNode.visible,
-                    radius: this.options.link?.radius
+                    radius: this.options.link?.radius,
+                    bendAt
                 })
             };
             link.dlBox = {
@@ -362,7 +360,7 @@ class TreegraphSeries extends TreemapSeries {
      */
     pointAttribs(point, state) {
         const series = this, levelOptions = point &&
-            series.mapOptionsToLevel[point.node.level || 0] || {}, options = point && point.options, stateOptions = (levelOptions.states &&
+            series.mapOptionsToLevel[point.node.level ?? 0] || {}, options = point && point.options, stateOptions = (levelOptions.states &&
             levelOptions.states[state]) ||
             {};
         if (point) {
@@ -392,9 +390,11 @@ class TreegraphSeries extends TreemapSeries {
      * @private
      */
     translateNode(point) {
-        const chart = this.chart, node = point.node, plotSizeY = chart.plotSizeY, plotSizeX = chart.plotSizeX, 
+        const chart = this.chart, { node, plotX = 0 } = point, plotSizeY = chart.plotSizeY, plotSizeX = chart.plotSizeX, 
         // Get the layout modifiers which are common for all nodes.
-        { ax, bx, ay, by } = this.layoutModifier, x = ax * node.xPosition + bx, y = ay * node.yPosition + by, level = this.mapOptionsToLevel[node.level] || {}, markerOptions = merge(this.options.marker, level.marker, point.options.marker), symbol = markerOptions.symbol, height = node.nodeSizeY, width = node.nodeSizeX, reversed = this.options.reversed, nodeX = node.x = (chart.inverted ?
+        { ax, bx, ay, by } = this.layoutModifier, x = this.isCartesian ?
+            (chart.inverted ? plotSizeX - plotX : plotX) :
+            ax * node.xPosition + bx, y = ay * node.yPosition + by, level = this.mapOptionsToLevel[node.level] || {}, markerOptions = merge(this.options.marker, level.marker, point.options.marker), symbol = markerOptions.symbol, height = node.nodeSizeY, width = node.nodeSizeX, reversed = this.options.reversed, nodeX = node.x = (chart.inverted ?
             plotSizeX - width / 2 - x :
             x - width / 2), nodeY = node.y = (!reversed ?
             plotSizeY - y - height / 2 :

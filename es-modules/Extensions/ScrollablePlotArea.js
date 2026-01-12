@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  *  Highcharts feature to make the Y axis stay fixed when scrolling the chart
  *  horizontally on mobile devices. Supports left and right side axes.
@@ -22,7 +23,7 @@ const { addEvent, createElement, css, defined, erase, merge, pushUnique } = U;
  *  Functions
  *
  * */
-/** @private */
+/** @internal */
 function onChartRender() {
     let scrollablePlotArea = this.scrollablePlotArea;
     if ((this.scrollablePixelsX || this.scrollablePixelsY) &&
@@ -31,7 +32,7 @@ function onChartRender() {
     }
     scrollablePlotArea?.applyFixed();
 }
-/** @private */
+/** @internal */
 function markDirty() {
     if (this.chart.scrollablePlotArea) {
         this.chart.scrollablePlotArea.isDirty = true;
@@ -46,6 +47,7 @@ class ScrollablePlotArea {
             addEvent(SeriesClass, 'show', markDirty);
         }
     }
+    /** @internal */
     static afterSetSize(chart, e) {
         const { minWidth, minHeight } = chart.options.chart.scrollablePlotArea || {}, { clipBox, plotBox, inverted, renderer } = chart;
         let scrollablePixelsX, scrollablePixelsY, recalculateHoriz;
@@ -233,7 +235,7 @@ class ScrollablePlotArea {
     /**
      * These elements are moved over to the fixed renderer and stay fixed when
      * the user scrolls the chart
-     * @private
+     * @internal
      */
     moveFixedElements() {
         const { container, inverted, scrollablePixelsX, scrollablePixelsY } = this.chart, fixedRenderer = this.fixedRenderer, fixedSelectors = ScrollablePlotArea.fixedSelectors;
@@ -284,6 +286,7 @@ class ScrollablePlotArea {
         }
     }
 }
+/** @internal */
 ScrollablePlotArea.fixedSelectors = [
     '.highcharts-breadcrumbs-group',
     '.highcharts-contextbutton',

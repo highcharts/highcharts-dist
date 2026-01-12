@@ -1,8 +1,9 @@
 /**
- * Highcharts Maps v12.4.0 (2025-09-04)
+ * Highcharts Maps v12.5.0 (2026-01-12)
  * @module highcharts/highmaps
  *
- * (c) 2011-2025 Highsoft AS
+ * (c) 2011-2026 Highsoft AS
  *
- * License: www.highcharts.com/license
- */import*as e from"./highcharts.js";import"./modules/map.js";var t,r,a={};a.d=(e,t)=>{for(var r in t)a.o(t,r)&&!a.o(e,r)&&Object.defineProperty(e,r,{enumerable:!0,get:t[r]})},a.o=(e,t)=>Object.prototype.hasOwnProperty.call(e,t);let o=(t={default:()=>e.default},r={},a.d(r,t),r);a.d({},{}),o.default.product="Highmaps";let s=o.default;export{s as default};
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
+ */import r from"./highcharts.js";import"./modules/map.js";var e={};e.d=(r,o)=>{for(var t in o)e.o(o,t)&&!e.o(r,t)&&Object.defineProperty(r,t,{enumerable:!0,get:o[t]})},e.o=(r,e)=>Object.prototype.hasOwnProperty.call(r,e),r.product="Highmaps";let o=r;export{o as default};

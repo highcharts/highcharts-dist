@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2024 Hubert Kozik
+ *  (c) 2024-2026 Highsoft AS
+ *  Author: Hubert Kozik
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -19,7 +20,7 @@ const { addEvent, pushUnique } = U;
  * */
 /**
  * Logic for non-cartesian series zooming and panning
- * @private
+ * @internal
  */
 function onTransform(params) {
     const chart = this, { trigger, selection, reset, from = {}, to = {} } = params, type = chart.zooming.type;
@@ -149,7 +150,7 @@ function onTransform(params) {
 }
 /**
  * Apply zoom into series plot box
- * @private
+ * @internal
  */
 function onGetPlotBox(e) {
     const { chart, group, zooming } = this;
@@ -197,7 +198,7 @@ function onGetPlotBox(e) {
 }
 /**
  * Clip series and data labels group with zoom rect
- * @private
+ * @internal
  */
 function onAfterDrawChartBox() {
     const chart = this;
@@ -215,11 +216,15 @@ function onAfterDrawChartBox() {
         clipRect = chart.zoomClipRect;
     }
     chart.seriesGroup?.clip(clipRect);
-    chart.dataLabelsGroup?.clip(clipRect);
+    chart.series.forEach((series) => {
+        series.dataLabelsParentGroups?.forEach((dataLabelsGroup) => {
+            dataLabelsGroup.clip(clipRect);
+        });
+    });
 }
 /**
  * Adjust tooltip position to scaled series group
- * @private
+ * @internal
  */
 function onGetAnchor(params) {
     if (params.point.series &&
@@ -231,6 +236,10 @@ function onGetAnchor(params) {
         params.ret[1] = (params.ret[1] * scale) + top - chart.plotTop;
     }
 }
+/**
+ * Adjust series group props
+ * @internal
+ */
 function onAfterSetChartSize(params) {
     if (params.skipAxes) {
         this.series.forEach((series) => {
@@ -245,6 +254,19 @@ function onAfterSetChartSize(params) {
         });
     }
 }
+/**
+ * Create data labels parent group for clipping purposes after zoom-in
+ * @internal
+ */
+function onInitDataLabelsGroup({ index, zIndex }) {
+    var _a;
+    if (this.hasDataLabels?.()) {
+        this.dataLabelsParentGroups || (this.dataLabelsParentGroups = []);
+        (_a = this.dataLabelsParentGroups)[index] || (_a[index] = this.chart.renderer.g()
+            .attr({ zIndex })
+            .add());
+    }
+}
 /* *
  *
  *  Class
@@ -253,7 +275,7 @@ function onAfterSetChartSize(params) {
 /**
  * The series type
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.tiledwebmap
  *
@@ -271,6 +293,7 @@ class NonCartesianSeriesZoom {
             addEvent(ChartClass, 'transform', onTransform);
             addEvent(ChartClass, 'afterSetChartSize', onAfterSetChartSize);
             addEvent(SeriesClass, 'getPlotBox', onGetPlotBox);
+            addEvent(SeriesClass, 'initDataLabelsGroup', onInitDataLabelsGroup);
             addEvent(TooltipClass, 'getAnchor', onGetAnchor);
         }
     }

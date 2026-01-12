@@ -1,13 +1,16 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v12.4.0 (2025-09-04)
+ * @license Highcharts Gantt JS v12.5.0 (2026-01-12)
  * @module highcharts/modules/current-date-indicator
  * @requires highcharts
  *
  * CurrentDateIndicator
  *
- * (c) 2010-2025 Lars A. V. Cabrera
+ * (c) 2010-2026 Highsoft AS
+ * Author: Lars A. V. Cabrera
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -100,13 +103,13 @@ var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default 
 ;// ./code/es-modules/Extensions/CurrentDateIndication.js
 /* *
  *
- *  (c) 2016-2025 Highsoft AS
+ *  (c) 2016-2026 Highsoft AS
  *
  *  Author: Lars A. V. Cabrera
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -171,9 +174,7 @@ const defaultOptions = {
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function compose(AxisClass, PlotLineOrBandClass) {
     if (pushUnique(composed, 'CurrentDateIndication')) {
         addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
@@ -181,9 +182,7 @@ function compose(AxisClass, PlotLineOrBandClass) {
         wrap(PlotLineOrBandClass.prototype, 'getLabelText', wrapPlotLineOrBandGetLabelText);
     }
 }
-/**
- * @private
- */
+/** @internal */
 function onAxisAfterSetOptions() {
     const options = this.options, cdiOptions = options.currentDateIndicator;
     if (cdiOptions) {
@@ -198,9 +197,7 @@ function onAxisAfterSetOptions() {
         options.plotLines.push(plotLineOptions);
     }
 }
-/**
- * @private
- */
+/** @internal */
 function onPlotLineOrBandRender() {
     // If the label already exists, update its text
     if (this.label) {
@@ -209,9 +206,7 @@ function onPlotLineOrBandRender() {
         });
     }
 }
-/**
- * @private
- */
+/** @internal */
 function wrapPlotLineOrBandGetLabelText(defaultMethod, defaultLabelOptions) {
     const options = this.options;
     if (options &&

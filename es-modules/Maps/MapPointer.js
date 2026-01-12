@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -15,6 +16,7 @@ const { defined, extend, pick, wrap } = U;
  *  Composition
  *
  * */
+/** @internal */
 var MapPointer;
 (function (MapPointer) {
     /* *
@@ -31,7 +33,7 @@ var MapPointer;
      * */
     /**
      * Extend the Pointer.
-     * @private
+     * @internal
      */
     function compose(PointerClass) {
         const pointerProto = PointerClass.prototype;
@@ -47,7 +49,7 @@ var MapPointer;
     MapPointer.compose = compose;
     /**
      * The event handler for the doubleclick event.
-     * @private
+     * @internal
      */
     function onContainerDblClick(e) {
         const chart = this.chart;
@@ -64,7 +66,7 @@ var MapPointer;
     }
     /**
      * The event handler for the mouse scroll event.
-     * @private
+     * @internal
      */
     function onContainerMouseWheel(e) {
         const chart = this.chart;
@@ -98,7 +100,7 @@ var MapPointer;
     }
     /**
      * Add lon and lat information to pointer events
-     * @private
+     * @internal
      */
     function wrapNormalize(proceed, e, chartPosition) {
         const chart = this.chart;
@@ -116,7 +118,7 @@ var MapPointer;
     }
     /**
      * The pinchType is inferred from mapNavigation options.
-     * @private
+     * @internal
      */
     function wrapZoomOption(proceed) {
         const mapNavigation = this.chart.options.mapNavigation;
@@ -133,4 +135,5 @@ var MapPointer;
  *  Default Export
  *
  * */
+/** @internal */
 export default MapPointer;

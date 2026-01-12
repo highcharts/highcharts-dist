@@ -1,6 +1,5 @@
 /* *
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -11,7 +10,7 @@ import MockPoint from '../MockPoint.js';
 import Tunnel from './Tunnel.js';
 import U from '../../../Core/Utilities.js';
 const { merge } = U;
-if (defaultOptions.annotations) {
+if (defaultOptions.annotations?.types) {
     defaultOptions.annotations.types.fibonacci = merge(defaultOptions.annotations.types.tunnel, 
     /**
      * Options for the fibonacci annotation type.
@@ -42,7 +41,7 @@ if (defaultOptions.annotations) {
             height: 2,
             /**
              * An array of background colors:
-             * Default to:
+             * Defaults to:
              * ```
              * [
              * 'rgba(130, 170, 255, 0.4)',
@@ -100,9 +99,7 @@ if (defaultOptions.annotations) {
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function createPathDGenerator(retracementIndex, isBackground) {
     return function () {
         const annotation = this.annotation;
@@ -126,6 +123,7 @@ function createPathDGenerator(retracementIndex, isBackground) {
  *  Class
  *
  * */
+/** @internal */
 class Fibonacci extends Tunnel {
     /* *
      *

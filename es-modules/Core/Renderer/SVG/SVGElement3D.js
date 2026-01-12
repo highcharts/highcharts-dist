@@ -1,12 +1,13 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
  *  Extensions to the SVGRenderer class to enable 3D shapes
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -21,6 +22,7 @@ const { defined, pick } = U;
  *  Class
  *
  * */
+/** @internal */
 class SVGElement3D extends SVGElement {
     constructor() {
         /* *
@@ -44,7 +46,7 @@ class SVGElement3D extends SVGElement {
      * */
     /**
      * The init is used by base - renderer.Element
-     * @private
+     * @internal
      */
     initArgs(args) {
         const elem3d = this, renderer = elem3d.renderer, paths = renderer[elem3d.pathType + 'Path'](args), zIndexes = paths.zIndexes;
@@ -75,7 +77,7 @@ class SVGElement3D extends SVGElement {
     }
     /**
      * Single property setter that applies options to each part
-     * @private
+     * @internal
      */
     singleSetterForParts(prop, val, values, verb, duration, complete) {
         const elem3d = this, newAttr = {}, optionsToApply = [null, null, (verb || 'attr'), duration, complete], hasZIndexes = values?.zIndexes;
@@ -105,7 +107,7 @@ class SVGElement3D extends SVGElement {
     }
     /**
      * Calls function for each part. Used for attr, animate and destroy.
-     * @private
+     * @internal
      */
     processParts(props, partsProps, verb, duration, complete) {
         const elem3d = this;
@@ -123,13 +125,14 @@ class SVGElement3D extends SVGElement {
     }
     /**
      * Destroy all parts
-     * @private
+     * @internal
      */
     destroy() {
         this.processParts(null, null, 'destroy');
         return super.destroy();
     }
     // Following functions are SVGElement3DCuboid (= base)
+    /** @internal */
     attr(args, val, complete, continueAnimation) {
         // Resolve setting attributes by string name
         if (typeof args === 'string' && typeof val !== 'undefined') {
@@ -142,6 +145,7 @@ class SVGElement3D extends SVGElement {
         }
         return super.attr(args, void 0, complete, continueAnimation);
     }
+    /** @internal */
     animate(args, duration, complete) {
         if (defined(args.x) && defined(args.y)) {
             const paths = this.renderer[this.pathType + 'Path'](args), forcedSides = paths.forcedSides;
@@ -162,6 +166,7 @@ class SVGElement3D extends SVGElement {
         }
         return this;
     }
+    /** @internal */
     fillSetter(fill) {
         const elem3d = this;
         elem3d.forcedSides = elem3d.forcedSides || [];
@@ -185,4 +190,5 @@ SVGElement3D.types = {
  *  Default Export
  *
  * */
+/** @internal */
 export default SVGElement3D;

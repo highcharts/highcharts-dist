@@ -1,13 +1,16 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v12.4.0 (2025-09-04)
+ * @license Highcharts Gantt JS v12.5.0 (2026-01-12)
  * @module highcharts/modules/static-scale
  * @requires highcharts
  *
  * StaticScale
  *
- * (c) 2016-2025 Torstein Honsi, Lars A. V. Cabrera
+ * (c) 2016-2026 Highsoft AS
+ * Author: Torstein Honsi, Lars A. V. Cabrera
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -44,6 +47,7 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -51,11 +55,12 @@ var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require_
 ;// ./code/es-modules/Extensions/StaticScale.js
 /* *
  *
- *  (c) 2016-2025 Torstein Honsi, Lars Cabrera
+ *  (c) 2016-2026 Highsoft AS
+ *  Author: Torstein Honsi, Lars Cabrera
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -66,7 +71,7 @@ const { addEvent, defined, isNumber } = (external_highcharts_src_js_default_defa
  *  Composition
  *
  * */
-/** @private */
+/** @internal */
 function compose(AxisClass, ChartClass) {
     const chartProto = ChartClass.prototype;
     if (!chartProto.adjustHeight) {
@@ -75,7 +80,7 @@ function compose(AxisClass, ChartClass) {
         addEvent(ChartClass, 'render', chartProto.adjustHeight);
     }
 }
-/** @private */
+/** @internal */
 function onAxisAfterSetOptions() {
     const chartOptions = this.chart.userOptions.chart;
     if (!this.horiz &&
@@ -85,7 +90,7 @@ function onAxisAfterSetOptions() {
         this.staticScale = this.options.staticScale;
     }
 }
-/** @private */
+/** @internal */
 function chartAdjustHeight() {
     const chart = this;
     if (chart.redrawTrigger !== 'adjustHeight') {

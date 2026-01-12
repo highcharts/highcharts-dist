@@ -1,19 +1,22 @@
 /* *
  *
- *   (c) 2010-2025 Highsoft AS
+ *   (c) 2010-2026 Highsoft AS
  *
  *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *  Dynamic light/dark theme based on CSS variables
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
+import Chart from '../../Core/Chart/Chart.js';
 import D from '../../Core/Defaults.js';
 const { setOptions } = D;
+import U from '../../Core/Utilities.js';
+const { addEvent } = U;
 /* *
  *
  *  Theme
@@ -144,6 +147,18 @@ const styleSheet = `
 
 .highcharts-dark {
     ${darkRules}
+}
+
+.highcharts-container {
+    color-scheme: light dark;
+}
+
+.highcharts-light .highcharts-container {
+    color-scheme: light;
+}
+
+.highcharts-dark .highcharts-container {
+    color-scheme: dark;
 }
 `;
 var DynamicDefaultTheme;
@@ -995,9 +1010,20 @@ var DynamicDefaultTheme;
         const style = document.createElement('style');
         style.nonce = 'highcharts';
         style.innerText = styleSheet;
+        style.id = 'highcharts-adaptive-theme';
         document.getElementsByTagName('head')[0].appendChild(style);
         // Apply the theme
         setOptions(DynamicDefaultTheme.options);
+        // Copy it over to the shadow DOM of each chart (#23967)
+        addEvent(Chart, 'afterGetContainer', function () {
+            const shadowRoot = this.container
+                .getRootNode().host?.shadowRoot;
+            if (shadowRoot &&
+                !shadowRoot.getElementById('highcharts-adaptive-theme')) {
+                const adaptiveStyle = style.cloneNode(true);
+                shadowRoot.appendChild(adaptiveStyle);
+            }
+        });
     }
     DynamicDefaultTheme.apply = apply;
 })(DynamicDefaultTheme || (DynamicDefaultTheme = {}));

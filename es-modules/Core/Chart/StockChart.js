@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -28,7 +29,7 @@ const { addEvent, clamp, crisp, defined, extend, find, isNumber, isString, merge
 /**
  * Get stock-specific default axis options.
  *
- * @private
+ * @internal
  * @function getDefaultAxisOptions
  */
 function getDefaultAxisOptions(coll, options, defaultOptions) {
@@ -60,7 +61,7 @@ function getDefaultAxisOptions(coll, options, defaultOptions) {
 /**
  * Get stock-specific forced axis options.
  *
- * @private
+ * @internal
  * @function getForcedAxisOptions
  */
 function getForcedAxisOptions(type, chartOptions) {
@@ -180,7 +181,7 @@ class StockChart extends Chart {
      * Factory for creating different axis types.
      * Extended to add stock defaults.
      *
-     * @private
+     * @internal
      * @function Highcharts.StockChart#createAxis
      * @param {string} coll
      * An axis type.
@@ -208,13 +209,30 @@ addEvent(Chart, 'update', function (e) {
  *  Composition
  *
  * */
+/** @internal */
 (function (StockChart) {
     /* *
      *
      *  Functions
      *
      * */
-    /** @private */
+    /**
+     * Composes the chart with the stock-specific functionality.
+     *
+     * @internal
+     *
+     * @param {Highcharts.Class<Highcharts.Chart>} ChartClass
+     * The chart class to compose.
+     *
+     * @param {Highcharts.Class<Highcharts.Axis>} AxisClass
+     * The axis class to compose.
+     *
+     * @param {Highcharts.Class<Highcharts.Series>} SeriesClass
+     * The series class to compose.
+     *
+     * @param {Highcharts.Class<Highcharts.SVGRenderer>} SVGRendererClass
+     * The SVG renderer class to compose.
+     */
     function compose(ChartClass, AxisClass, SeriesClass, SVGRendererClass) {
         const seriesProto = SeriesClass.prototype;
         if (!seriesProto.forceCropping) {
@@ -232,7 +250,7 @@ addEvent(Chart, 'update', function (e) {
     StockChart.compose = compose;
     /**
      * Extend crosshairs to also draw the label.
-     * @private
+     * @internal
      */
     function onAxisAfterDrawCrosshair(event) {
         const axis = this;
@@ -384,7 +402,7 @@ addEvent(Chart, 'update', function (e) {
     }
     /**
      * Wrapper to hide the label.
-     * @private
+     * @internal
      */
     function onAxisAfterHideCrosshair() {
         const axis = this;
@@ -395,7 +413,7 @@ addEvent(Chart, 'update', function (e) {
     /**
      * Override the automatic label alignment so that the first Y axis' labels
      * are drawn on top of the grid line, and subsequent axes are drawn outside.
-     * @private
+     * @internal
      */
     function onAxisAutoLabelAlign(e) {
         const axis = this, chart = axis.chart, options = axis.options, panes = chart._labelPanes = chart._labelPanes || {}, labelOptions = options.labels;
@@ -418,7 +436,7 @@ addEvent(Chart, 'update', function (e) {
     }
     /**
      * Clear axis from label panes. (#6071)
-     * @private
+     * @internal
      */
     function onAxisDestroy() {
         const axis = this, chart = axis.chart, key = (axis.options &&
@@ -429,7 +447,7 @@ addEvent(Chart, 'update', function (e) {
     }
     /**
      * Override getPlotLinePath to allow for multipane charts.
-     * @private
+     * @internal
      */
     function onAxisGetPlotLinePath(e) {
         const axis = this, series = (axis.isLinked && !axis.series && axis.linkedParent ?
@@ -438,7 +456,7 @@ addEvent(Chart, 'update', function (e) {
         /**
          * Return the other axis based on either the axis option or on
          * related series.
-         * @private
+         * @internal
          */
         getAxis = (coll) => {
             const otherColl = coll === 'xAxis' ? 'yAxis' : 'xAxis', opt = axis.options[otherColl];
@@ -536,7 +554,7 @@ addEvent(Chart, 'update', function (e) {
     /**
      * Handle som Stock-specific series defaults, override the plotOptions
      * before series options are handled.
-     * @private
+     * @internal
      */
     function onSeriesSetOptions(e) {
         const series = this;
@@ -615,7 +633,7 @@ addEvent(Chart, 'update', function (e) {
     /**
      * Function to crisp a line with multiple segments
      *
-     * @private
+     * @internal
      * @function Highcharts.SVGRenderer#crispPolyLine
      */
     function svgRendererCrispPolyLine(points, width) {

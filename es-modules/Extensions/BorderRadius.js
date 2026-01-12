@@ -4,9 +4,9 @@
  *
  *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -38,9 +38,7 @@ let oldRoundedRect = noop;
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function applyBorderRadius(path, i, r) {
     const a = path[i];
     let b = path[i + 1];
@@ -122,7 +120,7 @@ function applyBorderRadius(path, i, r) {
 }
 /**
  * Extend arc with borderRadius.
- * @private
+ * @internal
  */
 function arc(x, y, w, h, options = {}) {
     const path = oldArc(x, y, w, h, options), { brStart = true, brEnd = true, innerR = 0, r = w, start = 0, end = 0 } = options;
@@ -150,7 +148,7 @@ function arc(x, y, w, h, options = {}) {
     }
     return path;
 }
-/** @private */
+/** @internal */
 function seriesOnAfterColumnTranslate() {
     if (this.options.borderRadius &&
         !(this.chart.is3d && this.chart.is3d())) {
@@ -210,7 +208,7 @@ function seriesOnAfterColumnTranslate() {
         }
     }
 }
-/** @private */
+/** @internal */
 function compose(SeriesClass, SVGElementClass, SVGRendererClass) {
     const PieSeriesClass = SeriesClass.types.pie;
     if (!SVGElementClass.symbolCustomAttribs.includes('borderRadius')) {
@@ -227,14 +225,14 @@ function compose(SeriesClass, SVGElementClass, SVGRendererClass) {
         symbols.roundedRect = roundedRect;
     }
 }
-/** @private */
+/** @internal */
 function optionsToObject(options, seriesBROptions) {
     if (!isObject(options)) {
         options = { radius: options || 0 };
     }
     return merge(defaultBorderRadiusOptions, seriesBROptions, options);
 }
-/** @private */
+/** @internal */
 function pieSeriesOnAfterTranslate() {
     const borderRadius = optionsToObject(this.options.borderRadius);
     for (const point of this.points) {
@@ -246,7 +244,7 @@ function pieSeriesOnAfterTranslate() {
 }
 /**
  * Extend roundedRect with individual cutting through rOffset.
- * @private
+ * @internal
  */
 function roundedRect(x, y, width, height, options = {}) {
     const path = oldRoundedRect(x, y, width, height, options), { r = 0, brBoxHeight = height, brBoxY = y } = options, brOffsetTop = y - brBoxY, brOffsetBtm = (brBoxY + brBoxHeight) - (y + height), 

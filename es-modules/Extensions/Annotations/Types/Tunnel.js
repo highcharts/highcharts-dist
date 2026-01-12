@@ -1,6 +1,5 @@
 /* *
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -12,7 +11,7 @@ const { defaultOptions } = D;
 import MockPoint from '../MockPoint.js';
 import U from '../../../Core/Utilities.js';
 const { merge } = U;
-if (defaultOptions.annotations) {
+if (defaultOptions.annotations?.types) {
     defaultOptions.annotations.types.tunnel = merge(defaultOptions.annotations.types.crookedLine, 
     /**
      * Options for the tunnel annotation type.
@@ -95,9 +94,7 @@ if (defaultOptions.annotations) {
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function getSecondCoordinate(p1, p2, x) {
     return (p2.y - p1.y) / (p2.x - p1.x) * (x - p1.x) + p1.y;
 }
@@ -106,6 +103,7 @@ function getSecondCoordinate(p1, p2, x) {
  *  Class
  *
  * */
+/** @internal */
 class Tunnel extends CrookedLine {
     /* *
      *
@@ -113,7 +111,7 @@ class Tunnel extends CrookedLine {
      *
      * */
     getPointsOptions() {
-        const pointsOptions = CrookedLine.prototype.getPointsOptions.call(this), yAxisIndex = this.options.typeOptions.yAxis || 0, yAxis = this.chart.yAxis[yAxisIndex];
+        const pointsOptions = CrookedLine.prototype.getPointsOptions.call(this), yAxisIndex = this.options.typeOptions?.yAxis || 0, yAxis = this.chart.yAxis[yAxisIndex];
         pointsOptions[2] = this.heightPointOptions(pointsOptions[1]);
         pointsOptions[3] = this.heightPointOptions(pointsOptions[0]);
         // In case of log axis, translate the bottom left point again, #16769
@@ -147,8 +145,10 @@ class Tunnel extends CrookedLine {
         this.addBackground();
     }
     addLine() {
-        const line = this.initShape(merge(this.options.typeOptions.line, {
+        var _a;
+        const line = this.initShape(merge(((_a = this.options).typeOptions || (_a.typeOptions = {})).line, {
             type: 'path',
+            className: 'highcharts-tunnel-lines',
             points: [
                 this.points[0],
                 this.points[1],
@@ -158,8 +158,7 @@ class Tunnel extends CrookedLine {
                     return pointOptions;
                 },
                 this.points[3]
-            ],
-            className: 'highcharts-tunnel-lines'
+            ]
         }), 0);
         this.options.typeOptions.line = line.options;
     }
@@ -173,7 +172,7 @@ class Tunnel extends CrookedLine {
     }
     /**
      * Translate start or end ("left" or "right") side of the tunnel.
-     * @private
+     *
      * @param {number} dx
      * the amount of x translation
      * @param {number} dy
@@ -188,15 +187,15 @@ class Tunnel extends CrookedLine {
     }
     /**
      * Translate height of the tunnel.
-     * @private
+     *
      * @param {number} dh
      * the amount of height translation
      */
     translateHeight(dh) {
         this.translatePoint(0, dh, 2);
         this.translatePoint(0, dh, 3);
-        this.options.typeOptions.height = this.points[3].y -
-            this.points[0].y;
+        this.options.typeOptions.height =
+            this.points[3].y - this.points[0].y;
         this.userOptions.typeOptions.height = this.options.typeOptions.height;
     }
 }

@@ -2,13 +2,13 @@
  *
  *  Marker clusters module.
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
  *
  *  Author: Wojciech Chmiel
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -214,7 +214,7 @@ let baseGeneratePoints,
 /**
  * Points that ids are included in the oldPointsStateId array are hidden
  * before animation. Other ones are destroyed.
- * @private
+ * @internal
  */
 oldPointsStateId = [], stateIdCounter = 0;
 /* *
@@ -222,7 +222,7 @@ oldPointsStateId = [], stateIdCounter = 0;
  *  Functions
  *
  * */
-/** @private */
+/** @internal */
 function compose(highchartsDefaultOptions, ScatterSeriesClass) {
     const scatterProto = ScatterSeriesClass.prototype;
     if (!scatterProto.markerClusterAlgorithms) {
@@ -250,7 +250,7 @@ function compose(highchartsDefaultOptions, ScatterSeriesClass) {
 }
 /**
  * Util function.
- * @private
+ * @internal
  */
 function destroyOldPoints(oldState) {
     for (const key of Object.keys(oldState)) {
@@ -259,14 +259,14 @@ function destroyOldPoints(oldState) {
 }
 /**
  * Util function.
- * @private
+ * @internal
  */
 function fadeInElement(elem, opacity, animation) {
     elem.attr({ opacity }).animate({ opacity: 1 }, animation);
 }
 /**
  * Util function.
- * @private
+ * @internal
  */
 function fadeInNewPointAndDestoryOld(newPointObj, oldPoints, animation, opacity) {
     // Fade in new point.
@@ -278,7 +278,7 @@ function fadeInNewPointAndDestoryOld(newPointObj, oldPoints, animation, opacity)
 }
 /**
  * Util function.
- * @private
+ * @internal
  */
 function fadeInStatePoint(stateObj, opacity, animation, fadeinGraphic, fadeinDataLabel) {
     if (stateObj.point) {
@@ -294,7 +294,7 @@ function fadeInStatePoint(stateObj, opacity, animation, fadeinGraphic, fadeinDat
 }
 /**
  * Util function.
- * @private
+ * @internal
  */
 function getClusterPosition(points) {
     const pointsLen = points.length;
@@ -311,7 +311,7 @@ function getClusterPosition(points) {
 /**
  * Util function.Prepare array with sorted data objects to be compared in
  * getPointsState method.
- * @private
+ * @internal
  */
 function getDataState(clusteredData, stateDataLen) {
     const state = [];
@@ -328,14 +328,14 @@ function getDataState(clusteredData, stateDataLen) {
 }
 /**
  * Util function. Generate unique stateId for a state element.
- * @private
+ * @internal
  */
 function getStateId() {
     return Math.random().toString(36).substring(2, 7) + '-' + stateIdCounter++;
 }
 /**
  * Util function.
- * @private
+ * @internal
  */
 function hideStatePoint(stateObj, hideGraphic, hideDataLabel) {
     if (stateObj.point) {
@@ -347,7 +347,7 @@ function hideStatePoint(stateObj, hideGraphic, hideDataLabel) {
         }
     }
 }
-/** @private */
+/** @internal */
 function onPointDrillToCluster(event) {
     const point = event.point || event.target;
     point.firePointEvent('drillToCluster', event, function (e) {
@@ -390,7 +390,7 @@ function onPointDrillToCluster(event) {
 }
 /**
  * Util function.
- * @private
+ * @internal
  */
 function pixelsToValues(series, pos) {
     const { chart, xAxis, yAxis } = series;
@@ -402,7 +402,7 @@ function pixelsToValues(series, pos) {
         y: yAxis ? yAxis.toValue(pos.y) : 0
     };
 }
-/** @private */
+/** @internal */
 function seriesAnimateClusterPoint(clusterObj) {
     const series = this, chart = series.chart, mapView = chart.mapView, animation = animObject(series.options.cluster?.animation), animDuration = animation.duration || 500, pointsState = series.markerClusterInfo?.pointsState, newState = pointsState?.newState, oldState = pointsState?.oldState, oldPoints = [];
     let parentId, oldPointObj, newPointObj, newPointBBox, offset = 0, newX = 0, newY = 0, isOldPointGrahic = false, isCbHandled = false;
@@ -508,7 +508,7 @@ function seriesAnimateClusterPoint(clusterObj) {
 }
 /**
  * Destroy clustered data points.
- * @private
+ * @internal
  */
 function seriesDestroyClusteredData() {
     // Clear previous groups.
@@ -519,7 +519,7 @@ function seriesDestroyClusteredData() {
 }
 /**
  * Override the generatePoints method by adding a reference to grouped data.
- * @private
+ * @internal
  */
 function seriesGeneratePoints() {
     const series = this, { chart } = series, mapView = chart.mapView, xData = series.getColumn('x'), yData = series.getColumn('y'), clusterOptions = series.options.cluster, realExtremes = series.getRealExtremes(), visibleXData = [], visibleYData = [], visibleDataIndexes = [];
@@ -676,7 +676,7 @@ function seriesGeneratePoints() {
         baseGeneratePoints.apply(this);
     }
 }
-/** @private */
+/** @internal */
 function seriesGetClusterDistancesFromPoint(clusters, pointX, pointY) {
     const pointClusterDistance = [];
     for (let clusterIndex = 0; clusterIndex < clusters.length; clusterIndex++) {
@@ -689,7 +689,7 @@ function seriesGetClusterDistancesFromPoint(clusters, pointX, pointY) {
     }
     return pointClusterDistance.sort((a, b) => a.distance - b.distance);
 }
-/** @private */
+/** @internal */
 function seriesGetClusteredData(groupedData, options) {
     const series = this, data = series.options.data, groupedXData = [], groupedYData = [], clusters = [], // Container for clusters.
     noise = [], // Container for points not belonging to any cluster.
@@ -822,7 +822,7 @@ function seriesGetClusteredData(groupedData, options) {
         groupMap
     };
 }
-/** @private */
+/** @internal */
 function seriesGetGridOffset() {
     const series = this, { chart, xAxis, yAxis } = series;
     let plotLeft = 0, plotTop = 0;
@@ -845,7 +845,7 @@ function seriesGetGridOffset() {
 /**
  * Point state used when animation is enabled to compare and bind old points
  * with new ones.
- * @private
+ * @internal
  */
 function seriesGetPointsState(clusteredData, oldMarkerClusterInfo, dataLength) {
     const oldDataStateArr = oldMarkerClusterInfo ?
@@ -887,7 +887,7 @@ function seriesGetPointsState(clusteredData, oldMarkerClusterInfo, dataLength) {
     }
     return state;
 }
-/** @private */
+/** @internal */
 function seriesGetRealExtremes() {
     const chart = this.chart, x = chart.mapView ? 0 : chart.plotLeft, y = chart.mapView ? 0 : chart.plotTop, p1 = pixelsToValues(this, {
         x,
@@ -903,7 +903,7 @@ function seriesGetRealExtremes() {
         maxY: Math.max(realMinY, realMaxY)
     };
 }
-/** @private */
+/** @internal */
 function seriesGetScaledGridSize(options) {
     const series = this, xAxis = series.xAxis, mapView = series.chart.mapView, processedGridSize = options.processedGridSize ||
         clusterDefaults.layoutAlgorithm.gridSize;
@@ -940,7 +940,7 @@ function seriesGetScaledGridSize(options) {
 }
 /**
  * Hide clustered data points.
- * @private
+ * @internal
  */
 function seriesHideClusteredData() {
     const clusteredSeriesData = this.markerClusterSeriesData, oldState = this.markerClusterInfo?.pointsState?.oldState, oldPointsId = oldPointsStateId.map((elem) => oldState?.[elem].point?.id || '');
@@ -962,7 +962,7 @@ function seriesHideClusteredData() {
 }
 /**
  * Check if user algorithm result is valid groupedDataObject.
- * @private
+ * @internal
  */
 function seriesIsValidGroupedDataObject(groupedData) {
     let result = false;
@@ -984,7 +984,7 @@ function seriesIsValidGroupedDataObject(groupedData) {
     });
     return result;
 }
-/** @private */
+/** @internal */
 function seriesPreventClusterCollisions(props) {
     const series = this, [gridY, gridX] = props.key.split(':').map(parseFloat), gridSize = props.gridSize, groupedData = props.groupedData, defaultRadius = props.defaultRadius, clusterRadius = props.clusterRadius, gridXPx = gridX * gridSize, gridYPx = gridY * gridSize, propsPx = valuesToPixels(series, props), gridsToCheckCollision = [], clusterMarkerOptions = series.options.cluster?.marker, zoneOptions = series.options.cluster?.zones, gridOffset = series.getGridOffset();
     let xPixel = propsPx.x, yPixel = propsPx.y, pointsLen = 0, radius = 0, nextXPixel, nextYPixel, signX, signY, cornerGridX, cornerGridY, j, itemX, itemY, nextClusterPos, maxDist, keys;
@@ -1072,7 +1072,7 @@ function seriesPreventClusterCollisions(props) {
 }
 /**
  * Util function.
- * @private
+ * @internal
  */
 function valuesToPixels(series, pos) {
     const { chart, xAxis, yAxis } = series;

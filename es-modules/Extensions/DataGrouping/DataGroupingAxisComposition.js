@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -47,9 +48,6 @@ function applyGrouping(e) {
         series.applyGrouping(!!e.hasExtremesChanged);
     });
 }
-/**
- * @private
- */
 function compose(AxisClass) {
     AxisConstructor = AxisClass;
     const axisProto = AxisClass.prototype;
@@ -68,7 +66,7 @@ function compose(AxisClass) {
 /**
  * Get the data grouping pixel width based on the greatest defined individual
  * width of the axis' series, and if whether one of the axes need grouping.
- * @private
+ * @internal
  */
 function getGroupPixelWidth() {
     const series = this.series;
@@ -82,7 +80,7 @@ function getGroupPixelWidth() {
             groupPixelWidth = Math.max(groupPixelWidth, 
             // Fallback to commonOptions (#9693)
             pick(dgOptions.groupPixelWidth, DataGroupingDefaults.common.groupPixelWidth));
-            dataLength = (series[i].dataTable.modified ||
+            dataLength = (series[i].dataTable.getModified() ||
                 series[i].dataTable).rowCount;
             // Execute grouping if the amount of points is greater than the
             // limit defined in groupPixelWidth
@@ -100,7 +98,7 @@ function getGroupPixelWidth() {
  * When resetting the scale reset the hasProcessed flag to avoid taking
  * previous data grouping of neighbour series into account when determining
  * group pixel width (#2692).
- * @private
+ * @internal
  */
 function onAfterSetScale() {
     this.series.forEach(function (series) {
@@ -163,7 +161,9 @@ function setDataGrouping(dataGrouping, redraw) {
  *  Default Export
  *
  * */
+/** @internal */
 const DataGroupingAxisComposition = {
     compose
 };
+/** @internal */
 export default DataGroupingAxisComposition;

@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -19,7 +20,7 @@ const { attr, css, createElement, defined, extend, getAlignFactor, isNumber, pIn
  * element and SVG groups, and as identical CSS properties on the HTML element
  * and the ancestry divs. (#3542)
  *
- * @private
+ * @internal
  */
 function commonSetter(value, key, elem) {
     const style = this.div?.style;
@@ -34,7 +35,7 @@ function commonSetter(value, key, elem) {
  * contain the HTML span. These div elements are translated and styled like
  * original `g` counterparts.
  *
- * @private
+ * @internal
  */
 const decorateSVGGroup = (g, container) => {
     if (!g.div) {
@@ -63,7 +64,7 @@ const decorateSVGGroup = (g, container) => {
          *
          * Reverted the fix for #6957 due to positioning problems and offline
          * export (#7254, #7280, #7529)
-         * @private
+         * @internal
          */
         g.translateXSetter = g.translateYSetter = (value, key) => {
             g[key] = value;
@@ -112,7 +113,7 @@ const decorateSVGGroup = (g, container) => {
 class HTMLElement extends SVGElement {
     /**
      * Compose
-     * @private
+     * @internal
      */
     static compose(SVGRendererClass) {
         if (pushUnique(composed, this.compose)) {
@@ -120,7 +121,7 @@ class HTMLElement extends SVGElement {
              * Create a HTML text node. This is used by the SVG renderer `text`
              * and `label` functions through the `useHTML` parameter.
              *
-             * @private
+             * @internal
              */
             SVGRendererClass.prototype.html = function (str, x, y) {
                 return new HTMLElement(this, 'span')
@@ -159,7 +160,7 @@ class HTMLElement extends SVGElement {
     }
     /**
      * Get the correction in X and Y positioning as the element is rotated.
-     * @private
+     * @internal
      */
     getSpanCorrection(width, baseline, alignCorrection) {
         this.xCorr = -width * alignCorrection;
@@ -167,7 +168,7 @@ class HTMLElement extends SVGElement {
     }
     /**
      * Apply CSS to HTML elements. This is used in text within SVG rendering.
-     * @private
+     * @internal
      */
     css(styles) {
         const { element } = this, 
@@ -211,7 +212,7 @@ class HTMLElement extends SVGElement {
      * Called internally from the `SVGElement.getBBox` function and subsequently
      * rotated.
      *
-     * @private
+     * @internal
      */
     htmlGetBBox() {
         const { element } = this;
@@ -225,7 +226,7 @@ class HTMLElement extends SVGElement {
     /**
      * Batch update styles and attributes related to transform
      *
-     * @private
+     * @internal
      */
     updateTransform() {
         // Aligning non added elements is expensive
@@ -239,8 +240,7 @@ class HTMLElement extends SVGElement {
             if (this.textPxLength) {
                 return this.textPxLength;
             }
-            // Reset multiline/ellipsis in order to read width (#4928,
-            // #5417)
+            // Reset multiline/ellipsis in order to read width (#4928, #5417)
             css(element, {
                 width: '',
                 whiteSpace: whiteSpace || 'nowrap'
@@ -376,7 +376,7 @@ class HTMLElement extends SVGElement {
      * Add the element to a group wrapper. For HTML elements, a parallel div
      * will be created for each ancenstor SVG `g` element.
      *
-     * @private
+     * @internal
      */
     add(parentGroup) {
         const { foreignObject, renderer } = this, container = renderer.box.parentNode, parents = [];
@@ -427,7 +427,7 @@ class HTMLElement extends SVGElement {
     }
     /**
      * Text setter
-     * @private
+     * @internal
      */
     textSetter(value) {
         if (value !== this.textStr) {
@@ -441,7 +441,7 @@ class HTMLElement extends SVGElement {
     /**
      * Align setter
      *
-     * @private
+     * @internal
      */
     alignSetter(value) {
         this.alignValue = this.textAlign = value;
@@ -449,7 +449,7 @@ class HTMLElement extends SVGElement {
     }
     /**
      * Various setters which rely on update transform
-     * @private
+     * @internal
      */
     xSetter(value, key) {
         this[key] = value;

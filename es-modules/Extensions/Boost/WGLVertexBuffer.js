@@ -1,12 +1,11 @@
 /* *
  *
- *  (c) 2019-2025 Highsoft AS
+ *  (c) 2019-2026 Highsoft AS
  *
  *  Boost module: stripped-down renderer for higher performance
  *
  *  License: highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -20,7 +19,7 @@
  * A vertex buffer is a set of vertices which are passed to the GPU
  * in a single call.
  *
- * @private
+ * @internal
  * @class
  * @name WGLVertexBuffer
  *
@@ -60,15 +59,15 @@ class WGLVertexBuffer {
     /**
      * Note about pre-allocated buffers:
      *     - This is slower for charts with many series
-     * @private
+     * @internal
      */
     allocate(size) {
         this.iterator = -1;
         this.preAllocated = new Float32Array(size * 4);
     }
     /**
-     * Bind the buffer
-     * @private
+     * Bind the buffer.
+     * @internal
      */
     bind() {
         if (!this.buffer) {
@@ -81,8 +80,9 @@ class WGLVertexBuffer {
         /// gl.enableVertexAttribArray(vertAttribute);
     }
     /**
-     * Build the buffer
-     * @private
+     * Build the buffer.
+     *
+     * @internal
      * @param {Array<number>} dataIn
      * Zero padded array of indices
      * @param {string} attrib
@@ -116,9 +116,7 @@ class WGLVertexBuffer {
         farray = false;
         return true;
     }
-    /**
-     * @private
-     */
+    /** @internal */
     destroy() {
         if (this.buffer) {
             this.gl.deleteBuffer(this.buffer);
@@ -131,7 +129,8 @@ class WGLVertexBuffer {
     }
     /**
      * Adds data to the pre-allocated buffer.
-     * @private
+     *
+     * @internal
      * @param {number} x
      * X data
      * @param {number} y
@@ -150,9 +149,9 @@ class WGLVertexBuffer {
         }
     }
     /**
-     * Render the buffer
+     * Render the buffer.
      *
-     * @private
+     * @internal
      * @param {number} from
      * Start indice.
      * @param {number} to
@@ -188,4 +187,5 @@ class WGLVertexBuffer {
  *  Default Export
  *
  * */
+/** @internal */
 export default WGLVertexBuffer;

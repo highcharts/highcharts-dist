@@ -1,14 +1,17 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v12.4.0 (2025-09-04)
+ * @license Highstock JS v12.5.0 (2026-01-12)
  * @module highcharts/indicators/macd
  * @requires highcharts
  * @requires highcharts/modules/stock
  *
  * Indicator series type for Highcharts Stock
  *
- * (c) 2010-2025 Sebastian Bochan
+ * (c) 2010-2026 Highsoft AS
+ * Author: Sebastian Bochan
  *
- * License: www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -111,9 +114,9 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
 ;// ./code/es-modules/Stock/Indicators/MACD/MACDIndicator.js
 /* *
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 
@@ -145,23 +148,21 @@ class MACDIndicator extends SMAIndicator {
      * */
     init() {
         highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().seriesTypes.sma.prototype.init.apply(this, arguments);
-        const originalColor = this.color;
+        const originalColor = this.color, originalColorIndex = this.colorIndex;
         // Check whether series is initialized. It may be not initialized,
         // when any of required indicators is missing.
         if (this.options) {
-            // If the default colour doesn't set, get the next available from
+            // If the default color doesn't set, get the next available from
             // the array and apply it #15608.
             if (defined(this.colorIndex)) {
-                if (this.options.signalLine &&
-                    this.options.signalLine.styles &&
+                if (this.options.signalLine?.styles &&
                     !this.options.signalLine.styles.lineColor) {
                     this.options.colorIndex = this.colorIndex + 1;
                     this.getCyclic('color', void 0, this.chart.options.colors);
                     this.options.signalLine.styles.lineColor =
                         this.color;
                 }
-                if (this.options.macdLine &&
-                    this.options.macdLine.styles &&
+                if (this.options.macdLine?.styles &&
                     !this.options.macdLine.styles.lineColor) {
                     this.options.colorIndex = this.colorIndex + 1;
                     this.getCyclic('color', void 0, this.chart.options.colors);
@@ -172,16 +173,17 @@ class MACDIndicator extends SMAIndicator {
             // Zones have indexes automatically calculated, we need to
             // translate them to support multiple lines within one indicator
             this.macdZones = {
-                zones: this.options.macdLine.zones,
+                zones: this.options.macdLine?.zones,
                 startIndex: 0
             };
             this.signalZones = {
-                zones: this.macdZones.zones.concat(this.options.signalLine.zones),
-                startIndex: this.macdZones.zones.length
+                zones: this.macdZones.zones?.concat(this.options.signalLine.zones),
+                startIndex: this.macdZones.zones?.length
             };
         }
         // Reset color and index #15608.
         this.color = originalColor;
+        this.colorIndex = originalColorIndex;
     }
     toYData(point) {
         return [point.y, point.signal, point.MACD];

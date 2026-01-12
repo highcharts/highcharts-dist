@@ -1,12 +1,12 @@
 /* *
  *
- *  (c) 2009-2025 Highsoft AS
+ *  (c) 2009-2026 Highsoft AS
  *
  *  Authors: Øystein Moseng, Torstein Hønsi, Jon A. Nygård
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -534,7 +534,7 @@ const gantt = {
  * */
 /**
  * Use a circle covering the marker as drag handle.
- * @private
+ * @internal
  */
 function arearangeHandleFormatter(point) {
     const radius = point.graphic ?
@@ -548,7 +548,7 @@ function arearangeHandleFormatter(point) {
 }
 /**
  * 90deg rotated column handle path, used in multiple series types.
- * @private
+ * @internal
  */
 function horizHandleFormatter(point) {
     const shapeArgs = point.shapeArgs || point.graphic.getBBox(), top = shapeArgs.r || 0, // Rounding of bar corners
@@ -569,7 +569,7 @@ function horizHandleFormatter(point) {
  * Handle positioner logic is the same for x and x2 apart from the x value.
  * shapeArgs does not take yAxis reversed etc into account, so we use
  * axis.toPixels to handle positioning.
- * @private
+ * @internal
  */
 function xrangeHandlePositioner(point, xProp) {
     const series = point.series, xAxis = series.xAxis, yAxis = series.yAxis, inverted = series.chart.inverted, offsetY = series.columnMetrics ? series.columnMetrics.offset :
@@ -593,6 +593,7 @@ function xrangeHandlePositioner(point, xProp) {
  *  Default Export
  *
  * */
+/** @internal */
 const DragDropProps = {
     arearange,
     boxplot,
@@ -607,4 +608,5 @@ const DragDropProps = {
     waterfall,
     xrange
 };
+/** @internal */
 export default DragDropProps;

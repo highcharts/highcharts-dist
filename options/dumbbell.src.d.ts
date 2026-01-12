@@ -104,6 +104,12 @@ declare module "../highcharts.src" {
         sortKey?: string;
     }
     /**
+     * (Highcharts, Highstock) Animation when hovering over the marker.
+     */
+    interface PlotDumbbellLowMarkerStatesHoverAnimationOptions {
+        duration?: number;
+    }
+    /**
      * (Highcharts, Highstock) Options for the connector in the _Series on
      * point_ feature.
      *
@@ -155,40 +161,28 @@ declare module "../highcharts.src" {
         y?: number;
     }
     /**
-     * (Highcharts, Highstock) Positioning options for fixed tooltip, taking
-     * effect only when tooltip.fixed is `true`.
+     * (Highcharts, Highstock) Animation setting for hovering the graph in
+     * line-type series.
      */
-    interface PlotDumbbellTooltipPositionOptions {
+    interface PlotDumbbellStatesHoverAnimationOptions {
         /**
-         * (Highcharts, Highstock) The horizontal alignment of the fixed
-         * tooltip.
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
          */
-        align?: Highcharts.AlignValue;
+        duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock) Animation setting for hovering the graph in
+     * line-type series.
+     */
+    interface PlotDumbbellStatesSelectAnimationOptions {
         /**
-         * (Highcharts, Highstock) What the fixed tooltip alignment should be
-         * relative to.
-         *
-         * The default, `pane`, means that it is aligned within the plot area
-         * for that given series. If the tooltip is split (as default in Stock
-         * charts), each partial tooltip is aligned within the series' pane.
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
          */
-        relativeTo?: Highcharts.OptionsRelativeToValue;
-        /**
-         * (Highcharts, Highstock) The vertical alignment of the fixed tooltip.
-         */
-        verticalAlign?: Highcharts.VerticalAlignValue;
-        /**
-         * (Highcharts, Highstock) X pixel offset from the given position. Can
-         * be used to shy away from axis lines, grid lines etc to avoid the
-         * tooltip overlapping other elements.
-         */
-        x?: number;
-        /**
-         * (Highcharts, Highstock) Y pixel offset from the given position. Can
-         * be used to shy away from axis lines, grid lines etc to avoid the
-         * tooltip overlapping other elements.
-         */
-        y?: number;
+        duration?: number;
     }
     /**
      * (Highcharts, Highstock) Enable or disable the initial animation when a

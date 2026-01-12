@@ -162,6 +162,10 @@ declare module "../highcharts" {
         update(options: DataOptions, redraw?: boolean): void;
     }
     /**
+     * Utility functions for Ajax.
+     */
+    class HttpUtilities {}
+    /**
      * Perform an Ajax call.
      *
      * @param settings

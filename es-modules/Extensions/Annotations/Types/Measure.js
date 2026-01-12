@@ -1,6 +1,5 @@
 /* *
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -10,7 +9,7 @@ import D from '../../../Core/Defaults.js';
 const { defaultOptions } = D;
 import U from '../../../Core/Utilities.js';
 const { defined, extend, isNumber, merge, pick } = U;
-if (defaultOptions.annotations) {
+if (defaultOptions.annotations?.types) {
     /**
      * Options for the measure annotation type.
      *
@@ -221,8 +220,8 @@ if (defaultOptions.annotations) {
                     y = yAxis.toPixels(targetY);
                 }
                 return {
-                    x: x - (controlPointOptions.width / 2),
-                    y: y - (controlPointOptions.height / 2)
+                    x: x - ((controlPointOptions?.width || 0) / 2),
+                    y: y - ((controlPointOptions?.height || 0) / 2)
                 };
             },
             events: {
@@ -243,9 +242,7 @@ if (defaultOptions.annotations) {
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function average() {
     let average = 0, pointsTotal = 0, pointsAmount = 0;
     const series = this.chart.series, ext = getExtremes(this.xAxisMin, this.xAxisMax, this.yAxisMin, this.yAxisMax);
@@ -266,9 +263,7 @@ function average() {
     }
     return average;
 }
-/**
- * @private
- */
+/** @internal */
 function isPointWithinExtremes(point, ext) {
     return (!point.isNull &&
         isNumber(point.y) &&
@@ -277,9 +272,7 @@ function isPointWithinExtremes(point, ext) {
         point.y > ext.yAxisMin &&
         point.y <= ext.yAxisMax);
 }
-/**
- * @private
- */
+/** @internal */
 function bins() {
     const series = this.chart.series, ext = getExtremes(this.xAxisMin, this.xAxisMax, this.yAxisMin, this.yAxisMax);
     let bins = 0;
@@ -296,8 +289,8 @@ function bins() {
     return bins;
 }
 /**
- * Default formatter of label's content
- * @private
+ * Default formatter of label's content.
+ * @internal
  */
 function defaultFormatter() {
     return 'Min: ' + this.min +
@@ -307,8 +300,8 @@ function defaultFormatter() {
 }
 /**
  * Set values for xAxisMin, xAxisMax, yAxisMin, yAxisMax, also
- * when chart is inverted
- * @private
+ * when chart is inverted.
+ * @internal
  */
 function getExtremes(xAxisMin, xAxisMax, yAxisMin, yAxisMax) {
     return {
@@ -321,7 +314,8 @@ function getExtremes(xAxisMin, xAxisMax, yAxisMin, yAxisMax) {
 /**
  * Set current xAxisMin, xAxisMax, yAxisMin, yAxisMax.
  * Calculations of measure values (min, max, average, bins).
- * @private
+ *
+ * @internal
  * @param {Highcharts.Axis} axis
  *        X or y axis reference
  * @param {number} value
@@ -333,8 +327,8 @@ function getPointPos(axis, value, offset) {
     return axis.toValue(axis.toPixels(value) + offset);
 }
 /**
- * Set starting points
- * @private
+ * Set starting points.
+ * @internal
  */
 function init() {
     const options = this.options.typeOptions, chart = this.chart, inverted = chart.inverted, xAxis = chart.xAxis[options.xAxis], yAxis = chart.yAxis[options.yAxis], bg = options.background, width = inverted ? bg.height : bg.width, height = inverted ? bg.width : bg.height, selectType = options.selectType, top = inverted ? xAxis.left : yAxis.top, // #13664
@@ -363,9 +357,7 @@ function init() {
         this.startXMax = xAxis.toValue(left + xAxis.len);
     }
 }
-/**
- * @private
- */
+/** @internal */
 function max() {
     const series = this.chart.series, ext = getExtremes(this.xAxisMin, this.xAxisMax, this.yAxisMin, this.yAxisMax);
     let max = -Infinity, isCalculated = false; // To avoid Infinity in formatter
@@ -388,8 +380,8 @@ function max() {
     return max;
 }
 /**
- * Definitions of calculations (min, max, average, bins)
- * @private
+ * Definitions of calculations (min, max, average, bins).
+ * @internal
  */
 function min() {
     const series = this.chart.series, ext = getExtremes(this.xAxisMin, this.xAxisMax, this.yAxisMin, this.yAxisMax);
@@ -415,7 +407,8 @@ function min() {
 /**
  * Set current xAxisMin, xAxisMax, yAxisMin, yAxisMax.
  * Calculations of measure values (min, max, average, bins).
- * @private
+ *
+ * @internal
  * @param {boolean} [resize]
  *        Flag if shape is resized.
  */
@@ -434,9 +427,9 @@ function recalculate(resize) {
     }
 }
 /**
- * Update position of start points
- * (startXMin, startXMax, startYMin, startYMax)
- * @private
+ * Update position of start points (startXMin, startXMax, startYMin, startYMax).
+ *
+ * @internal
  * @param {boolean} redraw
  *        Flag if shape is redraw
  * @param {boolean} resize
@@ -445,6 +438,7 @@ function recalculate(resize) {
  *        Index of controlPoint
  */
 function updateStartPoints(redraw, resize, cpIndex, dx, dy) {
+    var _a;
     const options = this.options.typeOptions, selectType = options.selectType, xAxis = this.chart.xAxis[options.xAxis], yAxis = this.chart.yAxis[options.yAxis], startXMin = this.startXMin, startXMax = this.startXMax, startYMin = this.startYMin, startYMax = this.startYMax, offsetX = this.offsetX, offsetY = this.offsetY;
     if (resize) {
         if (selectType === 'x') {
@@ -482,7 +476,7 @@ function updateStartPoints(redraw, resize, cpIndex, dx, dy) {
     };
     // We need to update userOptions as well as they are used in
     // the Annotation.update() method to initialize the annotation, #19121.
-    this.userOptions.typeOptions.point = {
+    ((_a = this.userOptions).typeOptions || (_a.typeOptions = {})).point = {
         x: this.startXMin,
         y: this.startYMin
     };
@@ -492,6 +486,7 @@ function updateStartPoints(redraw, resize, cpIndex, dx, dy) {
  *  Class
  *
  * */
+/** @internal */
 class Measure extends Annotation {
     /* *
      *
@@ -500,7 +495,6 @@ class Measure extends Annotation {
      * */
     /**
      * Init annotation object.
-     * @private
      */
     init(annotationOrChart, userOptions, index) {
         super.init(annotationOrChart, userOptions, index);
@@ -514,7 +508,6 @@ class Measure extends Annotation {
     }
     /**
      * Overrides default setter to get axes from typeOptions.
-     * @private
      */
     setClipAxes() {
         this.clipXAxis = this.chart.xAxis[this.options.typeOptions.xAxis];
@@ -522,7 +515,6 @@ class Measure extends Annotation {
     }
     /**
      * Get points configuration objects for shapes.
-     * @private
      */
     shapePointsOptions() {
         const options = this.options.typeOptions, xAxis = options.xAxis, yAxis = options.yAxis;
@@ -576,7 +568,7 @@ class Measure extends Annotation {
     }
     /**
      * Add label with calculated values (min, max, average, bins).
-     * @private
+     *
      * @param {boolean} [resize]
      * The flag for resize shape
      */
@@ -622,7 +614,6 @@ class Measure extends Annotation {
     }
     /**
      * Crosshair, background (rect).
-     * @private
      */
     addShapes() {
         this.addCrosshairs();
@@ -630,7 +621,6 @@ class Measure extends Annotation {
     }
     /**
      * Add background shape.
-     * @private
      */
     addBackground() {
         const shapePoints = this.shapePointsOptions();
@@ -645,7 +635,6 @@ class Measure extends Annotation {
     }
     /**
      * Add internal crosshair shapes (on top and bottom).
-     * @private
      */
     addCrosshairs() {
         const chart = this.chart, options = this.options.typeOptions, point = this.options.typeOptions.point, xAxis = chart.xAxis[options.xAxis], yAxis = chart.yAxis[options.yAxis], inverted = chart.inverted, defaultOptions = {
@@ -708,8 +697,8 @@ class Measure extends Annotation {
     }
     /**
      * Translate start or end ("left" or "right") side of the measure.
-     * Update start points (startXMin, startXMax, startYMin, startYMax)
-     * @private
+     * Update start points (startXMin, startXMax, startYMin, startYMax).
+     *
      * @param {number} dx
      * the amount of x translation
      * @param {number} dy
@@ -753,8 +742,9 @@ class Measure extends Annotation {
     }
     /**
      * Redraw event which render elements and update start points if needed.
-     * @private
+     *
      * @param {boolean} animation
+     * flag if redraw with animation
      * @param {boolean} [resize]
      * flag if resized
      * @param {boolean} [setStartPoints]

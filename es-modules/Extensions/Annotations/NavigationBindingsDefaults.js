@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2009-2025 Highsoft, Black Label
+ *  (c) 2009-2026 Highsoft AS
+ *  Author: Highsoft, Black Label
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -120,6 +121,12 @@ const navigation = {
         circleAnnotation: {
             /** @ignore-option */
             className: 'highcharts-circle-annotation',
+            /**
+             * Options to customize the bindings' annotation shapes and labels.
+             * @type      {Highcharts.AnnotationsOptions}
+             * @extends   navigation.annotationsOptions
+             * @apioption navigation.bindings.circleAnnotation.annotationsOptions
+             */
             /** @ignore-option */
             start: function (e) {
                 const coords = this.chart.pointer?.getCoordinates(e), coordsX = coords && getAssignedAxis(coords.xAxis), coordsY = coords && getAssignedAxis(coords.yAxis), navigation = this.chart.options.navigation;
@@ -166,7 +173,7 @@ const navigation = {
             ]
         },
         /**
-         * A ellipse annotation bindings. Includes `start` and two events in
+         * An ellipse annotation bindings. Includes `start` and two events in
          * `steps` array. First updates the second point, responsible for a
          * rx width, and second updates the ry width.
          *
@@ -175,6 +182,12 @@ const navigation = {
          */
         ellipseAnnotation: {
             className: 'highcharts-ellipse-annotation',
+            /**
+             * Options to customize the bindings' annotation shapes and labels.
+             * @type      {Highcharts.AnnotationsOptions}
+             * @extends   navigation.annotationsOptions
+             * @apioption navigation.bindings.ellipseAnnotation.annotationsOptions
+             */
             start: function (e) {
                 const coords = this.chart.pointer?.getCoordinates(e), coordsX = coords && getAssignedAxis(coords.xAxis), coordsY = coords && getAssignedAxis(coords.yAxis), navigation = this.chart.options.navigation;
                 if (!coordsX || !coordsY) {
@@ -224,6 +237,12 @@ const navigation = {
         rectangleAnnotation: {
             /** @ignore-option */
             className: 'highcharts-rectangle-annotation',
+            /**
+             * Options to customize the bindings' annotation shapes and labels.
+             * @type      {Highcharts.AnnotationsOptions}
+             * @extends   navigation.annotationsOptions
+             * @apioption navigation.bindings.rectangleAnnotation.annotationsOptions
+             */
             /** @ignore-option */
             start: function (e) {
                 const coords = this.chart.pointer?.getCoordinates(e), coordsX = coords && getAssignedAxis(coords.xAxis), coordsY = coords && getAssignedAxis(coords.yAxis);
@@ -283,6 +302,12 @@ const navigation = {
         labelAnnotation: {
             /** @ignore-option */
             className: 'highcharts-label-annotation',
+            /**
+             * Options to customize the bindings' annotation shapes and labels.
+             * @type      {Highcharts.AnnotationsOptions}
+             * @extends   navigation.annotationsOptions
+             * @apioption navigation.bindings.labelAnnotation.annotationsOptions
+             */
             /** @ignore-option */
             start: function (e) {
                 const coords = this.chart.pointer?.getCoordinates(e), coordsX = coords && getAssignedAxis(coords.xAxis), coordsY = coords && getAssignedAxis(coords.yAxis), navigation = this.chart.options.navigation;
@@ -319,7 +344,7 @@ const navigation = {
      * from a different server.
      *
      * @type      {string}
-     * @default   https://code.highcharts.com/12.4.0/gfx/stock-icons/
+     * @default   https://code.highcharts.com/12.5.0/gfx/stock-icons/
      * @since     7.1.3
      * @apioption navigation.iconsURL
      */
@@ -389,8 +414,10 @@ const navigation = {
  *  Default Export
  *
  * */
+/** @internal */
 const NavigationBindingDefaults = {
     lang,
     navigation
 };
+/** @internal */
 export default NavigationBindingDefaults;

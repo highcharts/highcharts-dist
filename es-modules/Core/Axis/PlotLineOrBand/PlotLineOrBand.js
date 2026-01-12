@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -34,6 +35,17 @@ class PlotLineOrBand {
      *  Static Functions
      *
      * */
+    /**
+     * Composes `PlotLineOrBand` with `Axis` and `Chart`.
+     *
+     * @param {Highcharts.Chart} ChartClass
+     * Chart class to compose.
+     *
+     * @param {Highcharts.Axis} AxisClass
+     * Axis class to compose.
+     *
+     * @internal
+     */
     static compose(ChartClass, AxisClass) {
         addEvent(ChartClass, 'afterInit', function () {
             this.labelCollectors.push(() => {
@@ -81,7 +93,7 @@ class PlotLineOrBand {
     /**
      * Render the plot line or plot band. If it is already existing,
      * move it.
-     * @private
+     * @internal
      * @function Highcharts.PlotLineOrBand#render
      */
     render() {
@@ -200,7 +212,7 @@ class PlotLineOrBand {
     }
     /**
      * Render and align label for plot line or band.
-     * @private
+     * @internal
      * @function Highcharts.PlotLineOrBand#renderLabel
      */
     renderLabel(optionsLabel, path, isBand, zIndex) {
@@ -265,7 +277,7 @@ class PlotLineOrBand {
     }
     /**
      * Get label's text content.
-     * @private
+     * @internal
      * @function Highcharts.PlotLineOrBand#getLabelText
      */
     getLabelText(optionsLabel) {
@@ -902,51 +914,6 @@ export default PlotLineOrBand;
  * @type      {Array<*>}
  * @extends   xAxis.plotBands
  * @apioption yAxis.plotBands
- */
-/**
- * In a gauge chart, this option determines the inner radius of the
- * plot band that stretches along the perimeter. It can be given as
- * a percentage string, like `"100%"`, or as a pixel number, like `100`.
- * By default, the inner radius is controlled by the [thickness](
- * #yAxis.plotBands.thickness) option.
- *
- * @sample {highcharts} highcharts/xaxis/plotbands-gauge
- *         Gauge plot band
- *
- * @type      {number|string}
- * @since     2.3
- * @product   highcharts
- * @apioption yAxis.plotBands.innerRadius
- */
-/**
- * In a gauge chart, this option determines the outer radius of the
- * plot band that stretches along the perimeter. It can be given as
- * a percentage string, like `"100%"`, or as a pixel number, like `100`.
- *
- * @sample {highcharts} highcharts/xaxis/plotbands-gauge
- *         Gauge plot band
- *
- * @type      {number|string}
- * @default   100%
- * @since     2.3
- * @product   highcharts
- * @apioption yAxis.plotBands.outerRadius
- */
-/**
- * In a gauge chart, this option sets the width of the plot band
- * stretching along the perimeter. It can be given as a percentage
- * string, like `"10%"`, or as a pixel number, like `10`. The default
- * value 10 is the same as the default [tickLength](#yAxis.tickLength),
- * thus making the plot band act as a background for the tick markers.
- *
- * @sample {highcharts} highcharts/xaxis/plotbands-gauge
- *         Gauge plot band
- *
- * @type      {number|string}
- * @default   10
- * @since     2.3
- * @product   highcharts
- * @apioption yAxis.plotBands.thickness
  */
 /**
  * @type      {Array<*>}

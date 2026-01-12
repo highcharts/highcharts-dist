@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -15,9 +16,7 @@ const { addEvent, normalizeTickInterval, pick } = U;
  *  Class
  *
  * */
-/**
- * @private
- */
+/** @internal */
 var LogarithmicAxis;
 (function (LogarithmicAxis) {
     /* *
@@ -32,7 +31,7 @@ var LogarithmicAxis;
      * */
     /**
      * Provides logarithmic support for axes.
-     * @private
+     * @internal
      */
     function compose(AxisClass) {
         if (!AxisClass.keepProps.includes('logarithmic')) {
@@ -43,9 +42,7 @@ var LogarithmicAxis;
         return AxisClass;
     }
     LogarithmicAxis.compose = compose;
-    /**
-     * @private
-     */
+    /** @internal */
     function onAfterSetType() {
         if (this.type !== 'logarithmic') {
             this.logarithmic = void 0;
@@ -54,9 +51,7 @@ var LogarithmicAxis;
             this.logarithmic ?? (this.logarithmic = new Additions(this));
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function onAfterInit() {
         const axis = this;
         const log = axis.logarithmic;
@@ -77,7 +72,7 @@ var LogarithmicAxis;
      * */
     /**
      * Provides logarithmic support for axes.
-     * @private
+     * @internal
      * @class
      */
     class Additions {
@@ -171,9 +166,31 @@ var LogarithmicAxis;
             }
             return positions;
         }
+        /**
+         * Converts a linear value to a logarithmic value.
+         *
+         * @internal
+         *
+         * @param {number} num
+         * The linear value.
+         *
+         * @return {number}
+         * The logarithmic value.
+         */
         lin2log(num) {
             return Math.pow(10, num);
         }
+        /**
+         * Converts a logarithmic value to a linear value.
+         *
+         * @internal
+         *
+         * @param {number} num
+         * The logarithmic value.
+         *
+         * @return {number}
+         * The linear value.
+         */
         log2lin(num) {
             return Math.log(num) / Math.LN10;
         }
@@ -185,4 +202,5 @@ var LogarithmicAxis;
  *  Default Export
  *
  * */
+/** @internal */
 export default LogarithmicAxis;

@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Torstein Honsi
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Honsi
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -364,7 +365,7 @@ var ColumnDataLabel;
             // Place the labels in the final position
             this.placeDataLabels();
             this.points.forEach((point) => {
-                (point.dataLabels || []).forEach((dataLabel) => {
+                point.dataLabels?.forEach((dataLabel, i) => {
                     // #8864: every connector can have individual options
                     const { connectorColor, connectorWidth = 1 } = (dataLabel.options || {}), labelPosition = dataLabel.dataLabelPosition;
                     // Draw the connector
@@ -382,7 +383,7 @@ var ColumnDataLabel;
                                     (point.className ?
                                         ' ' + point.className :
                                         ''))
-                                    .add(series.dataLabelsGroup);
+                                    .add(series.dataLabelsGroups?.[i]);
                             }
                             if (!chart.styledMode) {
                                 connector.attr({

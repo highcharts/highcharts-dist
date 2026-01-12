@@ -1,10 +1,11 @@
 /* *
  *
- *  (c) 2010-2025 Hubert Kozik, Kamil Musiałowski
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Hubert Kozik, Kamil Musiałowski
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -12,7 +13,7 @@ import H from '../../Core/Globals.js';
 const { composed } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { map: MapSeries } = SeriesRegistry.seriesTypes;
-import TilesProvidersRegistry from '../../Maps/TilesProviders/TilesProviderRegistry.js';
+import TilesProviderRegistry from '../../Maps/TilesProviders/TilesProviderRegistry.js';
 import TiledWebMapSeriesDefaults from './TiledWebMapSeriesDefaults.js';
 import U from '../../Core/Utilities.js';
 const { addEvent, defined, error, merge, pick, pushUnique } = U;
@@ -25,7 +26,7 @@ const { addEvent, defined, error, merge, pick, pushUnique } = U;
 function onRecommendMapView(e) {
     const { geoBounds, chart } = e, twm = (chart.options.series || []).filter((s) => s.type === 'tiledwebmap')[0];
     if (twm && twm.provider && twm.provider.type && !twm.provider.url) {
-        const ProviderDefinition = TilesProvidersRegistry[twm.provider.type];
+        const ProviderDefinition = TilesProviderRegistry[twm.provider.type];
         if (!defined(ProviderDefinition)) {
             error('Highcharts warning: Tiles Provider not defined in the ' +
                 'Provider Registry.', false);
@@ -185,7 +186,7 @@ class TiledWebMapSeries extends MapSeries {
             ((tileSize / worldSize) * Math.pow(2, zoomFloor)), scaledTileSize = scale * 256;
         if (provider && (provider.type || provider.url)) {
             if (provider.type && !provider.url) {
-                const ProviderDefinition = TilesProvidersRegistry[provider.type];
+                const ProviderDefinition = TilesProviderRegistry[provider.type];
                 if (!defined(ProviderDefinition)) {
                     error('Highcharts warning: Tiles Provider \'' +
                         provider.type + '\' not defined in the Provider' +
@@ -461,8 +462,8 @@ class TiledWebMapSeries extends MapSeries {
                 'Provider Registry.', false);
         }
     }
-    update() {
-        const series = this, { transformGroups } = series, chart = this.chart, mapView = chart.mapView, options = arguments[0], { provider } = options;
+    update(options) {
+        const { transformGroups } = this, chart = this.chart, mapView = chart.mapView, { provider } = options;
         if (transformGroups) {
             transformGroups.forEach((group) => {
                 if (Object.keys(group).length !== 0) {
@@ -473,19 +474,17 @@ class TiledWebMapSeries extends MapSeries {
         }
         if (mapView &&
             !defined(chart.userOptions.mapView?.projection) &&
-            provider &&
-            provider.type) {
-            const ProviderDefinition = TilesProvidersRegistry[provider.type];
+            provider?.type) {
+            const ProviderDefinition = TilesProviderRegistry[provider.type];
             if (ProviderDefinition) {
-                const def = new ProviderDefinition(), { initialProjectionName: providerProjectionName } = def;
                 mapView.update({
                     projection: {
-                        name: providerProjectionName
+                        name: (new ProviderDefinition()).initialProjectionName
                     }
                 });
             }
         }
-        super.update.apply(series, arguments);
+        super.update.apply(this, arguments);
     }
 }
 TiledWebMapSeries.defaultOptions = merge(MapSeries.defaultOptions, TiledWebMapSeriesDefaults);

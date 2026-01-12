@@ -1,23 +1,24 @@
 /* *
  *
- *  (c) 2009-2025 Highsoft AS
+ *  (c) 2009-2026 Highsoft AS
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  *  Authors:
  *  - Torstein Hønsi
  *  - Gøran Slettemark
  *  - Wojciech Chmiel
  *  - Sophie Bremer
+ *  - Kamil Kubik
  *
  * */
 'use strict';
 import DataConnector from './DataConnector.js';
+import HTMLTableConverter from '../Converters/HTMLTableConverter.js';
 import H from '../../Core/Globals.js';
 const { win } = H;
-import HTMLTableConverter from '../Converters/HTMLTableConverter.js';
 import U from '../../Core/Utilities.js';
 const { merge } = U;
 /* *
@@ -39,14 +40,14 @@ class HTMLTableConnector extends DataConnector {
     /**
      * Constructs an instance of HTMLTableConnector.
      *
-     * @param {HTMLTableConnector.UserOptions} [options]
+     * @param {HTMLTableConnector.CombinedHTMLTableConnectorOptions} [options]
      * Options for the connector and converter.
      */
     constructor(options) {
         const mergedOptions = merge(HTMLTableConnector.defaultOptions, options);
         super(mergedOptions);
-        this.converter = new HTMLTableConverter(mergedOptions);
         this.options = mergedOptions;
+        this.converter = new HTMLTableConverter(mergedOptions);
     }
     /**
      * Initiates creating the dataconnector from the HTML table
@@ -58,21 +59,23 @@ class HTMLTableConnector extends DataConnector {
      * @emits HTMLTableConnector#afterLoad
      * @emits HTMLTableConnector#loadError
      */
-    load(eventDetail) {
-        const connector = this, converter = connector.converter, table = connector.table, { dataModifier, table: tableHTML } = connector.options;
+    async load(eventDetail) {
+        const connector = this;
+        const options = connector.options;
+        const converter = connector.converter;
+        const table = connector.getTable();
+        const htmlTable = options.htmlTable;
         connector.emit({
             type: 'load',
-            detail: eventDetail,
-            tables: { table },
-            tableElement: connector.tableElement
+            detail: eventDetail
         });
         let tableElement;
-        if (typeof tableHTML === 'string') {
-            connector.tableID = tableHTML;
-            tableElement = win.document.getElementById(tableHTML);
+        if (typeof htmlTable === 'string') {
+            connector.tableID = htmlTable;
+            tableElement = win.document.getElementById(htmlTable);
         }
         else {
-            tableElement = tableHTML;
+            tableElement = htmlTable;
             connector.tableID = tableElement.id;
         }
         connector.tableElement = tableElement || void 0;
@@ -81,26 +84,20 @@ class HTMLTableConnector extends DataConnector {
             connector.emit({
                 type: 'loadError',
                 detail: eventDetail,
-                error,
-                tables: { table }
+                error
             });
             return Promise.reject(new Error(error));
         }
-        converter.parse(merge({ tableElement: connector.tableElement }, connector.options), eventDetail);
+        const columns = converter.parse(merge({ tableElement: connector.tableElement }, options), eventDetail);
         // If already loaded, clear the current rows
         table.deleteColumns();
-        table.setColumns(converter.getTable().getColumns());
-        return connector
-            .setModifierOptions(dataModifier)
-            .then(() => {
-            connector.emit({
-                type: 'afterLoad',
-                detail: eventDetail,
-                tables: { table },
-                tableElement: connector.tableElement
-            });
-            return connector;
+        table.setColumns(columns);
+        await connector.applyTableModifiers();
+        connector.emit({
+            type: 'afterLoad',
+            detail: eventDetail
         });
+        return connector;
     }
 }
 /* *
@@ -109,7 +106,9 @@ class HTMLTableConnector extends DataConnector {
  *
  * */
 HTMLTableConnector.defaultOptions = {
-    table: ''
+    id: 'HTML-table-connector',
+    type: 'HTMLTable',
+    htmlTable: ''
 };
 DataConnector.registerType('HTMLTable', HTMLTableConnector);
 /* *

@@ -1,6 +1,5 @@
 /* *
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -10,7 +9,7 @@ import D from '../../../Core/Defaults.js';
 const { defaultOptions } = D;
 import U from '../../../Core/Utilities.js';
 const { merge } = U;
-if (defaultOptions.annotations) {
+if (defaultOptions.annotations?.types) {
     defaultOptions.annotations.types.elliottWave = merge(defaultOptions.annotations.types.crookedLine, 
     /**
      * Options for the elliott wave annotation type.
@@ -56,6 +55,7 @@ if (defaultOptions.annotations) {
  *  Class
  *
  * */
+/** @internal */
 class ElliottWave extends CrookedLine {
     /* *
      *

@@ -1,12 +1,13 @@
 /* *
  *
- *  (c) 2009-2025 Øystein Moseng
+ *  (c) 2009-2026 Highsoft AS
+ *  Author: Øystein Moseng
  *
  *  Handle forcing series markers.
  *
- *  License: www.highcharts.com/license
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
- *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
 'use strict';
@@ -158,6 +159,8 @@ var ForcedMarkersComposition;
         }
         else if (series.a11yMarkersForced) {
             delete series.a11yMarkersForced;
+            // Mark series dirty to ensure marker graphics are cleaned up
+            series.isDirty = true;
             unforceSeriesMarkerOptions(series);
             if (options.marker && options.marker.enabled === false) { // #23329
                 delete series.resetA11yMarkerOptions; // #16624
@@ -196,6 +199,16 @@ var ForcedMarkersComposition;
             const originalOpacity = resetMarkerOptions.states &&
                 resetMarkerOptions.states.normal &&
                 resetMarkerOptions.states.normal.opacity;
+            // Prevent ghost markers when zooming out (#23878).
+            if (series.chart.styledMode &&
+                resetMarkerOptions.enabled === false &&
+                series.points) {
+                series.points.forEach((point) => {
+                    if (point.graphic) {
+                        point.graphic = point.graphic.destroy();
+                    }
+                });
+            }
             // Temporarily set the old marker options to enabled in order to
             // trigger destruction of the markers in Series.update.
             if (series.userOptions && series.userOptions.marker) {
