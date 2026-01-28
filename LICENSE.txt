@@ -1,0 +1,6 @@
+Use of this software is governed by the Highsoft Standard License Agreement
+found at:
+
+https://www.highcharts.com/license
+
+By installing or using this software, you agree to these terms.
