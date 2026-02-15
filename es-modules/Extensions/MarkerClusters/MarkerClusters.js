@@ -33,7 +33,10 @@ const { addEvent, defined, error, isFunction, merge, pushUnique, syncTimeout } =
  *  Functions
  *
  * */
-/** @internal */
+/**
+ * Compose marker cluster module hooks.
+ * @internal
+ */
 function compose(AxisClass, ChartClass, highchartsDefaultOptions, SeriesClass) {
     if (pushUnique(composed, 'MarkerClusters')) {
         const PointClass = SeriesClass.prototype.pointClass, { scatter: ScatterSeries } = SeriesClass.types;
@@ -57,7 +60,8 @@ function onAxisSetExtremes() {
     let animationDuration = 0;
     for (const series of chart.series) {
         if (series.markerClusterInfo) {
-            animationDuration = (animObject((series.options.cluster || {}).animation).duration ||
+            const clusterOptions = series.options.cluster;
+            animationDuration = (animObject((clusterOptions || {}).animation).duration ||
                 0);
         }
     }
@@ -75,8 +79,8 @@ function onChartRender() {
     const chart = this;
     for (const series of (chart.series || [])) {
         if (series.markerClusterInfo) {
-            const options = series.options.cluster, pointsState = (series.markerClusterInfo || {}).pointsState, oldState = (pointsState || {}).oldState;
-            if ((options || {}).animation &&
+            const clusterOptions = series.options.cluster, pointsState = (series.markerClusterInfo || {}).pointsState, oldState = (pointsState || {}).oldState;
+            if ((clusterOptions || {}).animation &&
                 series.markerClusterInfo &&
                 (series.chart.pointer?.pinchDown || []).length === 0 &&
                 ((series.xAxis || {}).eventArgs || {}).trigger !== 'pan' &&
@@ -92,7 +96,10 @@ function onChartRender() {
         }
     }
 }
-/** @internal */
+/**
+ * Handle drill-to-cluster event.
+ * @internal
+ */
 function onPointDrillToCluster(event) {
     const point = event.point || event.target, series = point.series, clusterOptions = series.options.cluster, onDrillToCluster = ((clusterOptions || {}).events || {}).drillToCluster;
     if (isFunction(onDrillToCluster)) {
@@ -118,7 +125,8 @@ function onPointUpdate() {
  * @internal
  */
 function onSeriesAfterRender() {
-    const series = this, clusterZoomEnabled = (series.options.cluster || {}).drillToCluster;
+    const series = this, clusterZoomEnabled = (series.options.cluster || {})
+        .drillToCluster;
     if (series.markerClusterInfo && series.markerClusterInfo.clusters) {
         for (const cluster of series.markerClusterInfo.clusters) {
             if (cluster.point && cluster.point.graphic) {
@@ -148,9 +156,11 @@ function onSeriesAfterRender() {
  *  Default Export
  *
  * */
+/** @internal */
 const MarkerClusters = {
     compose
 };
+/** @internal */
 export default MarkerClusters;
 /* *
  *

@@ -124,6 +124,10 @@ declare module "./highcharts" {
      */
     function onLegendAfterGetAllItems(): void;
     /**
+     * Retranslate the legend items after render
+     */
+    function onLegendAfterRender(): void;
+    /**
      * Toggle bubble legend depending on the visible status of bubble series.
      */
     function onLegendItemClick(): void;

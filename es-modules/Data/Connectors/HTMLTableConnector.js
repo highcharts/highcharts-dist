@@ -40,7 +40,7 @@ class HTMLTableConnector extends DataConnector {
     /**
      * Constructs an instance of HTMLTableConnector.
      *
-     * @param {HTMLTableConnector.CombinedHTMLTableConnectorOptions} [options]
+     * @param {CombinedHTMLTableConnectorOptions} [options]
      * Options for the connector and converter.
      */
     constructor(options) {
@@ -52,7 +52,7 @@ class HTMLTableConnector extends DataConnector {
     /**
      * Initiates creating the dataconnector from the HTML table
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @emits HTMLTableConnector#load

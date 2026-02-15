@@ -114,7 +114,7 @@ class DataSeriesConverter {
      * @param {Array<LineSeries>} allSeries
      * Array of series options to store in the converter.
      *
-     * @param {DataEvent.Detail} eventDetail
+     * @param {DataEventDetail} eventDetail
      * Custom information for pending events.
      */
     updateTable(allSeries, eventDetail) {

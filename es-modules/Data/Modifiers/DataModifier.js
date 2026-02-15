@@ -24,6 +24,28 @@ const { addEvent, fireEvent, merge } = U;
  * Abstract class to provide an interface for modifying a table.
  */
 class DataModifier {
+    /**
+     * Adds a modifier class to the registry. The modifier class has to provide
+     * the `DataModifier.options` property and the `DataModifier.modifyTable`
+     * method to modify the table.
+     *
+     * @private
+     *
+     * @param {string} key
+     * Registry key of the modifier class.
+     *
+     * @param {DataModifierType} DataModifierClass
+     * Modifier class (aka class constructor) to register.
+     *
+     * @return {boolean}
+     * Returns true, if the registration was successful. False is returned, if
+     * their is already a modifier registered with this key.
+     */
+    static registerType(key, DataModifierClass) {
+        return (!!key &&
+            !DataModifier.types[key] &&
+            !!(DataModifier.types[key] = DataModifierClass));
+    }
     /* *
      *
      *  Functions
@@ -36,7 +58,7 @@ class DataModifier {
      * @param {DataTable} dataTable
      * The datatable to execute
      *
-     * @param {DataModifier.BenchmarkOptions} options
+     * @param {BenchmarkOptions} options
      * Options. Currently supports `iterations` for number of iterations.
      *
      * @return {Array<number>}
@@ -86,7 +108,7 @@ class DataModifier {
     /**
      * Emits an event on the modifier to all registered callbacks of this event.
      *
-     * @param {DataModifier.Event} [e]
+     * @param {DataModifierEvent} [e]
      * Event object containing additonal event information.
      */
     emit(e) {
@@ -100,7 +122,7 @@ class DataModifier {
      * @param {Highcharts.DataTable} table
      * Table to modify.
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @return {Promise<Highcharts.DataTable>}
@@ -131,7 +153,7 @@ class DataModifier {
      * @param {string} type
      * Event type as a string.
      *
-     * @param {DataEventEmitter.Callback} callback
+     * @param {DataEventCallback} callback
      * Function to register for an modifier callback.
      *
      * @return {Function}
@@ -143,57 +165,14 @@ class DataModifier {
 }
 /* *
  *
- *  Class Namespace
+ *  Static Properties
  *
  * */
 /**
- * Additionally provided types for modifier events and options.
+ * Registry as a record object with modifier names and their class
+ * constructor.
  */
-(function (DataModifier) {
-    /* *
-     *
-     *  Declarations
-     *
-     * */
-    /* *
-     *
-     *  Constants
-     *
-     * */
-    /**
-     * Registry as a record object with modifier names and their class
-     * constructor.
-     */
-    DataModifier.types = {};
-    /* *
-     *
-     *  Functions
-     *
-     * */
-    /**
-     * Adds a modifier class to the registry. The modifier class has to provide
-     * the `DataModifier.options` property and the `DataModifier.modifyTable`
-     * method to modify the table.
-     *
-     * @private
-     *
-     * @param {string} key
-     * Registry key of the modifier class.
-     *
-     * @param {DataModifierType} DataModifierClass
-     * Modifier class (aka class constructor) to register.
-     *
-     * @return {boolean}
-     * Returns true, if the registration was successful. False is returned, if
-     * their is already a modifier registered with this key.
-     */
-    function registerType(key, DataModifierClass) {
-        return (!!key &&
-            !DataModifier.types[key] &&
-            !!(DataModifier.types[key] = DataModifierClass));
-    }
-    DataModifier.registerType = registerType;
-})(DataModifier || (DataModifier = {}));
+DataModifier.types = {};
 /* *
  *
  *  Default Export

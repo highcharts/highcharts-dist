@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.5.0 (2026-01-12)
+ * @license Highcharts JS v12.5.0-modified (2026-02-15)
  * @module highcharts/modules/exporting
  * @requires highcharts
  *
@@ -605,7 +605,7 @@ const exporting = {
      * @since     5.0.0
      * @apioption exporting.libURL
      */
-    libURL: 'https://code.highcharts.com/12.5.0/lib/',
+    libURL: 'https://code.highcharts.com/12.5.0-modified/lib/',
     /**
      * Whether the chart should be exported using the browser's built-in
      * capabilities, allowing offline exports without requiring access to the
@@ -2080,11 +2080,16 @@ class Exporting {
     }
     /** @internal */
     static async fetchCSS(href) {
-        const content = await fetch(href)
-            .then((res) => res.text());
-        const newSheet = new CSSStyleSheet();
-        newSheet.replaceSync(content);
-        return newSheet;
+        try {
+            const res = await fetch(href);
+            const content = await res.text();
+            const newSheet = new CSSStyleSheet();
+            newSheet.replaceSync(content);
+            return newSheet;
+        }
+        catch {
+            Exporting_error(`Warning: Failed to fetch CSS from ${href}`, false);
+        }
     }
     /** @internal */
     static async handleStyleSheet(sheet, resultArray) {
@@ -2092,7 +2097,9 @@ class Exporting {
             for (const rule of Array.from(sheet.cssRules)) {
                 if (rule instanceof CSSImportRule) {
                     const sheet = await Exporting.fetchCSS(rule.href);
-                    await Exporting.handleStyleSheet(sheet, resultArray);
+                    if (sheet) {
+                        await Exporting.handleStyleSheet(sheet, resultArray);
+                    }
                 }
                 if (rule instanceof CSSFontFaceRule) {
                     let cssText = rule.cssText;
@@ -2111,7 +2118,9 @@ class Exporting {
         catch {
             if (sheet.href) {
                 const newSheet = await Exporting.fetchCSS(sheet.href);
-                await Exporting.handleStyleSheet(newSheet, resultArray);
+                if (newSheet) {
+                    await Exporting.handleStyleSheet(newSheet, resultArray);
+                }
             }
         }
     }

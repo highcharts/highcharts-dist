@@ -344,14 +344,6 @@ declare module "../highcharts" {
          * label relative to the point in pixels.
          */
         y?: number;
-        /**
-         * (Highcharts, Highstock, Highmaps, Gantt) The z index of the data
-         * labels group. Does not apply below series level options.
-         *
-         * Use a `zIndex` of 6 to display it above the series, or use a `zIndex`
-         * of 2 to display it behind the series.
-         */
-        zIndex?: number;
     }
     /**
      * (Highcharts, Highstock) Apply a jitter effect for the rendered markers.
@@ -603,8 +595,13 @@ declare module "../highcharts" {
          */
         dataSorting?: (Highcharts.DataSortingOptionsObject|Highcharts.PlotScatter3dDataSortingOptions);
         /**
-         * (Highcharts) A description of the series to add to the screen reader
-         * information about the series.
+         * (Highcharts) Deprecated. Use
+         * plotOptions.series.accessibility.description instead.
+         *
+         * A description of the series to add to the screen reader information
+         * about the series.
+         *
+         * @deprecated 8.0.0
          */
         description?: string;
         /**
@@ -764,13 +761,21 @@ declare module "../highcharts" {
          */
         point?: Highcharts.PlotSeriesPointOptions;
         /**
-         * (Highcharts) Same as accessibility.point.descriptionFormat, but for
-         * an individual series. Overrides the chart wide configuration.
+         * (Highcharts) Deprecated. Use
+         * series.accessibility.point.descriptionFormat instead.
+         *
+         * Same as accessibility.point.descriptionFormat, but for an individual
+         * series. Overrides the chart wide configuration.
          */
         pointDescriptionFormat?: Function;
         /**
-         * (Highcharts) Same as accessibility.series.descriptionFormatter, but
-         * for an individual series. Overrides the chart wide configuration.
+         * (Highcharts) Deprecated. Use
+         * series.accessibility.point.descriptionFormatter instead.
+         *
+         * Same as accessibility.series.descriptionFormatter, but for an
+         * individual series. Overrides the chart wide configuration.
+         *
+         * @deprecated 8.0.0
          */
         pointDescriptionFormatter?: Function;
         /**
@@ -849,8 +854,13 @@ declare module "../highcharts" {
          */
         showInLegend?: boolean;
         /**
-         * (Highcharts) If set to `true`, the accessibility module will skip
-         * past the points in this series for keyboard navigation.
+         * (Highcharts) Deprecated. Use series.accessibility.keyboardNavigation
+         * instead.
+         *
+         * If set to `true`, the accessibility module will skip past the points
+         * in this series for keyboard navigation.
+         *
+         * @deprecated 8.0.0
          */
         skipKeyboardNavigation?: boolean;
         /**
@@ -1395,14 +1405,6 @@ declare module "../highcharts" {
          * label relative to the point in pixels.
          */
         y?: number;
-        /**
-         * (Highcharts, Highstock, Highmaps, Gantt) The z index of the data
-         * labels group. Does not apply below series level options.
-         *
-         * Use a `zIndex` of 6 to display it above the series, or use a `zIndex`
-         * of 2 to display it behind the series.
-         */
-        zIndex?: number;
     }
     /**
      * (Highcharts, Highstock) Apply a jitter effect for the rendered markers.
@@ -1752,8 +1754,13 @@ declare module "../highcharts" {
          */
         dataSorting?: (Highcharts.DataSortingOptionsObject|Highcharts.PlotScatterDataSortingOptions);
         /**
-         * (Highcharts, Highstock) A description of the series to add to the
-         * screen reader information about the series.
+         * (Highcharts, Highstock) Deprecated. Use
+         * plotOptions.series.accessibility.description instead.
+         *
+         * A description of the series to add to the screen reader information
+         * about the series.
+         *
+         * @deprecated 8.0.0
          */
         description?: string;
         /**
@@ -1969,15 +1976,21 @@ declare module "../highcharts" {
          */
         point?: Highcharts.PlotSeriesPointOptions;
         /**
-         * (Highcharts, Highstock) Same as
-         * accessibility.point.descriptionFormat, but for an individual series.
-         * Overrides the chart wide configuration.
+         * (Highcharts, Highstock) Deprecated. Use
+         * series.accessibility.point.descriptionFormat instead.
+         *
+         * Same as accessibility.point.descriptionFormat, but for an individual
+         * series. Overrides the chart wide configuration.
          */
         pointDescriptionFormat?: Function;
         /**
-         * (Highcharts, Highstock) Same as
-         * accessibility.series.descriptionFormatter, but for an individual
-         * series. Overrides the chart wide configuration.
+         * (Highcharts, Highstock) Deprecated. Use
+         * series.accessibility.point.descriptionFormatter instead.
+         *
+         * Same as accessibility.series.descriptionFormatter, but for an
+         * individual series. Overrides the chart wide configuration.
+         *
+         * @deprecated 8.0.0
          */
         pointDescriptionFormatter?: Function;
         /**
@@ -2070,8 +2083,13 @@ declare module "../highcharts" {
          */
         showInNavigator?: boolean;
         /**
-         * (Highcharts, Highstock) If set to `true`, the accessibility module
-         * will skip past the points in this series for keyboard navigation.
+         * (Highcharts, Highstock) Deprecated. Use
+         * series.accessibility.keyboardNavigation instead.
+         *
+         * If set to `true`, the accessibility module will skip past the points
+         * in this series for keyboard navigation.
+         *
+         * @deprecated 8.0.0
          */
         skipKeyboardNavigation?: boolean;
         /**
@@ -2254,8 +2272,6 @@ declare module "../highcharts" {
     /**
      * (Highcharts) A `scatter3d` series. If the type option is not specified,
      * it is inherited from chart.type.
-     *
-     * scatter3d](#plotOptions.scatter3d).
      *
      * Configuration options for the series are given in three levels:
      *

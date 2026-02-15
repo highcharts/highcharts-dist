@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.5.0 (2026-01-12)
+ * @license Highcharts JS v12.5.0-modified (2026-02-15)
  * @module highcharts/modules/debugger
  * @requires highcharts
  *
@@ -167,6 +167,10 @@ const errorMessages = {
     "35": {
         "title": "Missing highcharts.css file",
         "text": "<h1>Missing <b>highcharts.css</b> file</h1><p>This error occurs if you enable <a href=\"https://api.highcharts.com/highcharts/chart.styledMode\">styled mode</a> (<code>chart.styledMode = true</code>) without including the required **highcharts.css** file. Without this stylesheet, charts cannot be rendered correctly.</p><p>To fix this, make sure to load the official stylesheet in your page: <a href=\"https://www.highcharts.com/docs/chart-design-and-style/style-by-css\">Style by CSS</a>.</p>"
+    },
+    "36": {
+        "title": "Chart constructor called in non-browser environment",
+        "text": "<h1>Chart constructor called in non-browser environment</h1><p>This error occurs when attempting to create a chart during server-side rendering (SSR) or in other environments without DOM support.</p><p>Highcharts requires a browser environment to render charts. If using server-side rendering frameworks, ensure that chart initialization only occurs client-side.</p>"
     }
 };
 /** @internal */

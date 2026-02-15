@@ -107,19 +107,14 @@ class AreaSeries extends LineSeries {
         // series graph must be broken, and the area also fall down to
         // fill the gap left by the null point. #2069
         addDummyPoints = function (i, otherI, side) {
-            const point = points[i], stackedValues = stacking &&
-                stacks[point.x].points[seriesIndex], nullVal = point[side + 'Null'] || 0, cliffVal = point[side + 'Cliff'] || 0;
+            const point = points[i], stackedValues = stacking && (stacks[point.x].points[seriesIndex]), nullVal = point[side + 'Null'] || 0, cliffVal = point[side + 'Cliff'] || 0;
             let top, bottom, isNull = true;
-            if (cliffVal || nullVal) {
-                top = (nullVal ?
-                    stackedValues[0] :
-                    stackedValues[1]) + cliffVal;
+            if (stackedValues && (cliffVal || nullVal)) {
+                top = (nullVal ? stackedValues[0] : stackedValues[1]) + cliffVal;
                 bottom = stackedValues[0] + cliffVal;
                 isNull = !!nullVal;
             }
-            else if (!stacking &&
-                points[otherI] &&
-                points[otherI].isNull) {
+            else if (!stacking && points[otherI]?.isNull) {
                 top = bottom = threshold;
             }
             // Add to the top and bottom line of the area

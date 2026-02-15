@@ -6,7 +6,7 @@
 import Controllable from './Controllable.js';
 import ControllablePath from './ControllablePath.js';
 import U from '../../../Core/Utilities.js';
-const { merge } = U;
+const { defined, merge } = U;
 /* *
  *
  *  Class
@@ -46,14 +46,32 @@ class ControllableCircle extends Controllable {
      *  Functions
      *
      * */
+    init(annotation, options, index) {
+        const { point, xAxis, yAxis } = options;
+        if (point && typeof point !== 'string') {
+            if (defined(xAxis)) {
+                point.xAxis = xAxis;
+            }
+            if (defined(yAxis)) {
+                point.yAxis = yAxis;
+            }
+        }
+        super.init(annotation, options, index);
+    }
     redraw(animation) {
         if (this.graphic) {
-            const position = this.anchor(this.points[0]).absolutePosition;
+            const point = this.points[0], position = this.anchor(point).absolutePosition;
+            let r = this.options.r || 0;
             if (position) {
+                const yAxis = defined(this.options.yAxis) ?
+                    this.chart.yAxis[this.options.yAxis] : void 0;
+                if (yAxis && defined(point.y)) {
+                    r = this.calculateAnnotationSize(point.y, r, yAxis);
+                }
                 this.graphic[animation ? 'animate' : 'attr']({
                     x: position.x,
                     y: position.y,
-                    r: this.options.r
+                    r
                 });
             }
             else {

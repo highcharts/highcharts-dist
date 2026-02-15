@@ -47,50 +47,50 @@ function isGoogleError(json) {
  */
 class GoogleSheetsConnector extends DataConnector {
     /* *
-     *
-     *  Constructor
-     *
-     * */
+ *
+ *  Constructor
+ *
+ * */
     /**
-     * Constructs an instance of GoogleSheetsConnector
-     *
-     * @param {Partial<GoogleSheetsConnectorOptions>} [options]
-     * Options for the connector and converter.
-     */
+ * Constructs an instance of GoogleSheetsConnector
+ *
+ * @param {Partial<GoogleSheetsConnectorOptions>} [options]
+ * Options for the connector and converter.
+ */
     constructor(options) {
         const mergedOptions = merge(GoogleSheetsConnector.defaultOptions, options);
         super(mergedOptions);
         this.options = mergedOptions;
     }
     /* *
-     *
-     *  Functions
-     *
-     * */
+ *
+ *  Functions
+ *
+ * */
     /**
-     * Overrides the DataConnector method. Emits an event on the connector to
-     * all registered callbacks of this event.
-     *
-     * @param {GoogleSheetsConnector.Event} e
-     * Event object containing additional event information.
-     */
+ * Overrides the DataConnector method. Emits an event on the connector to
+ * all registered callbacks of this event.
+ *
+ * @param {Event} e
+ * Event object containing additional event information.
+ */
     emit(e) {
         fireEvent(this, e.type, e);
     }
     /**
-     * Loads data from a Google Spreadsheet.
-     *
-     * @param {DataEvent.Detail} [eventDetail]
-     * Custom information for pending events.
-     *
-     * @return {Promise<this>}
-     * Same connector instance with modified table.
-     */
+ * Loads data from a Google Spreadsheet.
+ *
+ * @param {DataEventDetail} [eventDetail]
+ * Custom information for pending events.
+ *
+ * @return {Promise<this>}
+ * Same connector instance with modified table.
+ */
     load(eventDetail) {
         const connector = this;
         const options = connector.options;
         const { dataRefreshRate, enablePolling, googleAPIKey, googleSpreadsheetKey, dataTables } = options;
-        const url = GoogleSheetsConnector.buildFetchURL(googleAPIKey, googleSpreadsheetKey, options);
+        const url = buildFetchURL(googleAPIKey, googleSpreadsheetKey, options);
         connector.emit({
             type: 'load',
             detail: eventDetail,
@@ -140,10 +140,10 @@ class GoogleSheetsConnector extends DataConnector {
     }
 }
 /* *
- *
- *  Static Properties
- *
- * */
+*
+*  Static Properties
+*
+* */
 GoogleSheetsConnector.defaultOptions = {
     id: 'google-sheets-connector',
     type: 'GoogleSheets',
@@ -155,63 +155,49 @@ GoogleSheetsConnector.defaultOptions = {
 };
 /* *
  *
- *  Class Namespace
+ *  Constants
  *
  * */
-(function (GoogleSheetsConnector) {
-    /* *
-     *
-     *  Declarations
-     *
-     * */
-    /* *
-     *
-     *  Constants
-     *
-     * */
-    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    /* *
-     *
-     *  Functions
-     *
-     * */
-    /**
-     * Creates GoogleSheets API v4 URL.
-     * @private
-     */
-    function buildFetchURL(apiKey, sheetKey, options = {}) {
-        const url = new URL(`https://sheets.googleapis.com/v4/spreadsheets/${sheetKey}/values/`);
-        const range = options.onlyColumnIds ?
-            'A1:Z1' : buildQueryRange(options);
-        url.pathname += range;
-        const searchParams = url.searchParams;
-        searchParams.set('alt', 'json');
-        if (!options.onlyColumnIds) {
-            searchParams.set('dateTimeRenderOption', 'FORMATTED_STRING');
-            searchParams.set('majorDimension', 'COLUMNS');
-            searchParams.set('valueRenderOption', 'UNFORMATTED_VALUE');
-        }
-        searchParams.set('prettyPrint', 'false');
-        searchParams.set('key', apiKey);
-        return url.href;
+const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+/* *
+ *
+ *  Functions
+ *
+ * */
+/**
+ * Creates GoogleSheets API v4 URL.
+ * @private
+ */
+export function buildFetchURL(apiKey, sheetKey, options = {}) {
+    const url = new URL(`https://sheets.googleapis.com/v4/spreadsheets/${sheetKey}/values/`);
+    const range = options.onlyColumnIds ?
+        'A1:Z1' : buildQueryRange(options);
+    url.pathname += range;
+    const searchParams = url.searchParams;
+    searchParams.set('alt', 'json');
+    if (!options.onlyColumnIds) {
+        searchParams.set('dateTimeRenderOption', 'FORMATTED_STRING');
+        searchParams.set('majorDimension', 'COLUMNS');
+        searchParams.set('valueRenderOption', 'UNFORMATTED_VALUE');
     }
-    GoogleSheetsConnector.buildFetchURL = buildFetchURL;
-    /**
-     * Creates sheets range.
-     * @private
-     */
-    function buildQueryRange(options = {}) {
-        const { endColumn, endRow, googleSpreadsheetRange, startColumn, startRow } = options;
-        return googleSpreadsheetRange || ((alphabet[startColumn || 0] || 'A') +
-            (Math.max((startRow || 0), 0) + 1) +
-            ':' +
-            (alphabet[pick(endColumn, 25)] || 'Z') +
-            (endRow ?
-                Math.max(endRow, 0) :
-                'Z'));
-    }
-    GoogleSheetsConnector.buildQueryRange = buildQueryRange;
-})(GoogleSheetsConnector || (GoogleSheetsConnector = {}));
+    searchParams.set('prettyPrint', 'false');
+    searchParams.set('key', apiKey);
+    return url.href;
+}
+/**
+ * Creates sheets range.
+ * @private
+ */
+export function buildQueryRange(options = {}) {
+    const { endColumn, endRow, googleSpreadsheetRange, startColumn, startRow } = options;
+    return googleSpreadsheetRange || ((alphabet[startColumn || 0] || 'A') +
+        (Math.max((startRow || 0), 0) + 1) +
+        ':' +
+        (alphabet[pick(endColumn, 25)] || 'Z') +
+        (endRow ?
+            Math.max(endRow, 0) :
+            'Z'));
+}
 /* *
  *
  *  Registry

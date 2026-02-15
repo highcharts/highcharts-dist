@@ -79,6 +79,14 @@ class Controllable {
         this.destroyControlTarget();
     }
     /**
+     * Get the pixel value from a start point to an end point on an axis.
+     * @internal
+     */
+    calculateAnnotationSize(startPoint, value, axis) {
+        const startPixel = axis.toPixels(startPoint, true), endPixel = axis.toPixels(startPoint + value, true);
+        return Math.abs(endPixel - startPixel);
+    }
+    /**
      * Init the controllable
      * @internal
      */

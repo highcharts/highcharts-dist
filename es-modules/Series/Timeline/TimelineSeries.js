@@ -98,7 +98,9 @@ class TimelineSeries extends LineSeries {
                 if (inverted) {
                     defaults.align = (dataLabelsOptions.alternate && visibilityIndex % 2) ? 'right' : 'left';
                 }
-                point.options.dataLabels = merge(defaults, point.userDLOptions);
+                point.options.dataLabels = merge(defaults, point.userDLOptions, 
+                // Forced. Point level limitations.
+                { zIndex: void 0 });
                 visibilityIndex++;
             }
         }
@@ -196,7 +198,7 @@ class TimelineSeries extends LineSeries {
         }));
     }
     markerAttribs(point, state) {
-        const series = this, seriesMarkerOptions = series.options.marker, pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol || seriesMarkerOptions.symbol), width = pick(pointMarkerOptions.width, seriesMarkerOptions.width, series.closestPointRangePx), height = pick(pointMarkerOptions.height, seriesMarkerOptions.height);
+        const series = this, seriesMarkerOptions = series.options.marker, pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol || seriesMarkerOptions?.symbol), width = pick(pointMarkerOptions.width, seriesMarkerOptions?.width, series.closestPointRangePx), height = pick(pointMarkerOptions.height, seriesMarkerOptions?.height);
         let seriesStateOptions, pointStateOptions, radius = 0;
         // Call default markerAttribs method, when the xAxis type
         // is set to datetime.
@@ -205,7 +207,7 @@ class TimelineSeries extends LineSeries {
         }
         // Handle hover and select states
         if (state) {
-            seriesStateOptions = seriesMarkerOptions.states?.[state];
+            seriesStateOptions = seriesMarkerOptions?.states?.[state];
             pointStateOptions = pointMarkerOptions.states?.[state];
             radius = pick(pointStateOptions?.radius, seriesStateOptions?.radius, radius + (seriesStateOptions?.radiusPlus || 0));
         }

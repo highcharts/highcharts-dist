@@ -9,7 +9,7 @@
  *
  * */
 'use strict';
-import ColorAxisBase from './Color/ColorAxisBase';
+import ColorAxisBase from './Color/ColorAxisBase.js';
 import U from '../Utilities.js';
 const { extend } = U;
 /* *

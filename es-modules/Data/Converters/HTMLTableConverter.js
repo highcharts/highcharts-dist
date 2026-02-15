@@ -249,7 +249,7 @@ class HTMLTableConverter extends DataConverter {
      * @param {Partial<HTMLTableConverterOptions>}[options]
      * Options for the parser
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @emits CSVDataParser#parse

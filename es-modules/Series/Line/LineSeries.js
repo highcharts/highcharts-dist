@@ -90,13 +90,17 @@ class LineSeries extends Series {
                     attribs['stroke-linecap'] =
                         attribs['stroke-linejoin'] = 'round';
                 }
-                graph[verb](attribs)
-                    // Add shadow to normal series as well as zones
-                    .shadow(options.shadow &&
-                    // If shadow is defined, call function with
-                    // `filterUnits: 'userSpaceOnUse'` to avoid known
-                    // SVG filter bug (#19093)
-                    merge({ filterUnits: 'userSpaceOnUse' }, isObject(options.shadow) ? options.shadow : {}));
+                graph[verb](attribs);
+                // Add shadow only to the main series (not zones)
+                // If shadow is defined, use `filterUnits: 'userSpaceOnUse'`
+                // to avoid known SVG filter bug (#19093)
+                if (options.shadow) {
+                    const isInverted = this.chart.inverted;
+                    const filterUnits = { filterUnits: 'userSpaceOnUse' };
+                    const shadowOptions = isObject(options.shadow) ?
+                        merge(isInverted ? {} : filterUnits, options.shadow) : (isInverted ? true : filterUnits);
+                    graph.shadow(shadowOptions);
+                }
             }
             // Helpers for animation
             if (graph) {

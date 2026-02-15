@@ -6,7 +6,7 @@
 import Controllable from './Controllable.js';
 import ControllablePath from './ControllablePath.js';
 import U from '../../../Core/Utilities.js';
-const { merge } = U;
+const { defined, merge } = U;
 /* *
  *
  *  Class
@@ -51,6 +51,18 @@ class ControllableRect extends Controllable {
      *  Functions
      *
      * */
+    init(annotation, options, index) {
+        const { point, xAxis, yAxis } = options;
+        if (point && typeof point !== 'string') {
+            if (defined(xAxis)) {
+                point.xAxis = xAxis;
+            }
+            if (defined(yAxis)) {
+                point.yAxis = yAxis;
+            }
+        }
+        super.init(annotation, options, index);
+    }
     render(parent) {
         const attrs = this.attrsFromOptions(this.options);
         this.graphic = this.annotation.chart.renderer
@@ -61,13 +73,23 @@ class ControllableRect extends Controllable {
     }
     redraw(animation) {
         if (this.graphic) {
-            const position = this.anchor(this.points[0]).absolutePosition;
+            const point = this.points[0], position = this.anchor(point).absolutePosition;
+            let width = this.options.width || 0, height = this.options.height || 0;
             if (position) {
+                const xAxis = defined(this.options.xAxis) ?
+                    this.chart.xAxis[this.options.xAxis] : void 0, yAxis = defined(this.options.yAxis) ?
+                    this.chart.yAxis[this.options.yAxis] : void 0;
+                if (xAxis && defined(point.x)) {
+                    width = this.calculateAnnotationSize(point.x, width, xAxis);
+                }
+                if (yAxis && defined(point.y)) {
+                    height = this.calculateAnnotationSize(point.y, height, yAxis);
+                }
                 this.graphic[animation ? 'animate' : 'attr']({
                     x: position.x,
                     y: position.y,
-                    width: this.options.width,
-                    height: this.options.height
+                    width,
+                    height
                 });
             }
             else {

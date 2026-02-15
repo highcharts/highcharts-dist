@@ -256,7 +256,7 @@ class DataTable extends DataTableCore {
      * event.
      * @private
      *
-     * @param {DataTable.Event} e
+     * @param {Event} e
      * Event object with event information.
      */
     emit(e) {

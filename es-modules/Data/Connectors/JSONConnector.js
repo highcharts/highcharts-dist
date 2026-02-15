@@ -55,7 +55,7 @@ class JSONConnector extends DataConnector {
      * Overrides the DataConnector method. Emits an event on the connector to
      * all registered callbacks of this event.
      *
-     * @param {JSONConnector.Event} e
+     * @param {Event} e
      * Event object containing additional event information.
      */
     emit(e) {
@@ -64,7 +64,7 @@ class JSONConnector extends DataConnector {
     /**
      * Initiates the loading of the JSON source to the connector
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @emits JSONConnector#load

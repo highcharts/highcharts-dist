@@ -58,7 +58,7 @@ class GoogleSheetsConverter extends DataConverter {
      * @param {Partial<GoogleSheetsConverterOptions>}[options]
      * Options for the parser
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @emits GoogleSheetsParser#parse

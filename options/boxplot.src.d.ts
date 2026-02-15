@@ -344,14 +344,6 @@ declare module "../highcharts.src" {
          * label relative to the point in pixels.
          */
         y?: number;
-        /**
-         * (Highcharts, Highstock, Highmaps, Gantt) The z index of the data
-         * labels group. Does not apply below series level options.
-         *
-         * Use a `zIndex` of 6 to display it above the series, or use a `zIndex`
-         * of 2 to display it behind the series.
-         */
-        zIndex?: number;
     }
     /**
      * (Highcharts, Highstock, Gantt) Styles for the series label. The color
@@ -606,8 +598,13 @@ declare module "../highcharts.src" {
          */
         depth?: number;
         /**
-         * (Highcharts) A description of the series to add to the screen reader
-         * information about the series.
+         * (Highcharts) Deprecated. Use
+         * plotOptions.series.accessibility.description instead.
+         *
+         * A description of the series to add to the screen reader information
+         * about the series.
+         *
+         * @deprecated 8.0.0
          */
         description?: string;
         /**
@@ -806,13 +803,21 @@ declare module "../highcharts.src" {
          */
         point?: Highcharts.PlotSeriesPointOptions;
         /**
-         * (Highcharts) Same as accessibility.point.descriptionFormat, but for
-         * an individual series. Overrides the chart wide configuration.
+         * (Highcharts) Deprecated. Use
+         * series.accessibility.point.descriptionFormat instead.
+         *
+         * Same as accessibility.point.descriptionFormat, but for an individual
+         * series. Overrides the chart wide configuration.
          */
         pointDescriptionFormat?: Function;
         /**
-         * (Highcharts) Same as accessibility.series.descriptionFormatter, but
-         * for an individual series. Overrides the chart wide configuration.
+         * (Highcharts) Deprecated. Use
+         * series.accessibility.point.descriptionFormatter instead.
+         *
+         * Same as accessibility.series.descriptionFormatter, but for an
+         * individual series. Overrides the chart wide configuration.
+         *
+         * @deprecated 8.0.0
          */
         pointDescriptionFormatter?: Function;
         /**
@@ -957,8 +962,13 @@ declare module "../highcharts.src" {
          */
         showInLegend?: boolean;
         /**
-         * (Highcharts) If set to `true`, the accessibility module will skip
-         * past the points in this series for keyboard navigation.
+         * (Highcharts) Deprecated. Use series.accessibility.keyboardNavigation
+         * instead.
+         *
+         * If set to `true`, the accessibility module will skip past the points
+         * in this series for keyboard navigation.
+         *
+         * @deprecated 8.0.0
          */
         skipKeyboardNavigation?: boolean;
         /**
