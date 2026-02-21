@@ -27,6 +27,12 @@ import DataTableCore from '../../Data/DataTableCore.js';
  *
  * */
 const CHUNK_SIZE = 3000;
+/**
+ * Default boost threshold.
+ *
+ * @internal
+ */
+const DEFAULT_BOOST_THRESHOLD = 5000;
 /* *
  *
  *  Variables
@@ -96,7 +102,7 @@ function compose(SeriesClass, seriesTypes, PointClass, wglMode) {
         Boostables.forEach((type) => {
             const typePlotOptions = plotOptions[type];
             if (typePlotOptions) {
-                typePlotOptions.boostThreshold = 5000;
+                typePlotOptions.boostThreshold = DEFAULT_BOOST_THRESHOLD;
                 typePlotOptions.boostData = [];
                 seriesTypes[type].prototype.fillOpacity = true;
             }
@@ -464,21 +470,21 @@ function exitBoost(series) {
     (chart.seriesGroup || series.group)?.clip();
 }
 /**
+ * True when we can skip the expensive data loop (processData/getExtremes).
  * @internal
  * @function Highcharts.Series#hasExtremes
  */
 function hasExtremes(series, checkX) {
-    const options = series.options, dataLength = series.dataTable.getModified().rowCount, xAxis = series.xAxis && series.xAxis.options, yAxis = series.yAxis && series.yAxis.options, colorAxis = series.colorAxis && series.colorAxis.options;
-    return dataLength > pick(options.boostThreshold, Number.MAX_VALUE) &&
-        // Defined yAxis extremes
-        isNumber(yAxis.min) &&
-        isNumber(yAxis.max) &&
-        // Defined (and required) xAxis extremes
-        (!checkX ||
-            (isNumber(xAxis.min) && isNumber(xAxis.max))) &&
-        // Defined (e.g. heatmap) colorAxis extremes
-        (!colorAxis ||
-            (isNumber(colorAxis.min) && isNumber(colorAxis.max)));
+    const options = series.options, threshold = pick(options.boostThreshold, Number.MAX_VALUE);
+    if (threshold === 0) {
+        return false;
+    }
+    const dataLength = series.dataTable.getModified().rowCount, xAxis = series.xAxis && series.xAxis.options, yAxis = series.yAxis && series.yAxis.options, colorAxis = series.colorAxis && series.colorAxis.options;
+    return (dataLength >= threshold &&
+        isNumber(yAxis?.min) &&
+        isNumber(yAxis?.max) &&
+        (!checkX || (isNumber(xAxis?.min) && isNumber(xAxis?.max))) &&
+        (!colorAxis || (isNumber(colorAxis.min) && isNumber(colorAxis.max))));
 }
 /**
  * Used multiple times. In processData first on this.options.data, the second
@@ -488,13 +494,12 @@ function hasExtremes(series, checkX) {
  * @internal
  */
 const getSeriesBoosting = (series, data) => {
-    // Check if will be grouped.
-    if (series.forceCrop) {
+    const { options, forceCrop, chart } = series, threshold = pick(options.boostThreshold, Number.MAX_VALUE);
+    // Return early if either will be grouped or boost is disabled.
+    if (forceCrop || threshold === 0) {
         return false;
     }
-    return (isChartSeriesBoosting(series.chart) ||
-        ((data ? data.length : 0) >=
-            pick(series.options.boostThreshold, Number.MAX_VALUE)));
+    return isChartSeriesBoosting(chart) || (data?.length ?? 0) >= threshold;
 };
 /**
  * Extend series.destroy to also remove the fake k-d-tree points (#5137).
@@ -918,7 +923,9 @@ function seriesRenderCanvas() {
         return !chartDestroyed;
     }
     /** @internal */
-    const boostOptions = renderer.settings, doneProcessing = () => {
+    const boostOptions = renderer.settings, chunkSize = (isNumber(boostOptions.chunkSize) && boostOptions.chunkSize > 0 ?
+        boostOptions.chunkSize :
+        CHUNK_SIZE), doneProcessing = () => {
         fireEvent(this, 'renderedCanvas');
         // Go back to prototype, ready to build
         delete this.buildKDTree;
@@ -939,7 +946,7 @@ function seriesRenderCanvas() {
         }
         eachAsync(isStacked ?
             this.data.slice(cropStart) :
-            (xData || rawData), processPoint, doneProcessing);
+            (xData || rawData), processPoint, doneProcessing, chunkSize);
     }
 }
 /**
@@ -1016,13 +1023,10 @@ function wrapSeriesFunctions(seriesProto, seriesTypes, method) {
  */
 function wrapSeriesGetExtremes(proceed) {
     if (this.boosted) {
-        if (hasExtremes(this)) {
+        if (hasExtremes(this, true)) {
             return {};
         }
-        if (this.xAxis.isPanning || this.yAxis.isPanning) {
-            // Do not re-compute the extremes during panning, because looping
-            // the data is expensive. The `this` contains the `dataMin` and
-            // `dataMax` to use.
+        if (this.xAxis?.isPanning || this.yAxis?.isPanning) {
             return this;
         }
     }

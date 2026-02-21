@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.5.0 (2026-01-12)
+ * @license Highcharts JS v12.5.0-modified (2026-02-21)
  * @module highcharts/modules/marker-clusters
  * @requires highcharts
  *
@@ -94,9 +94,8 @@ var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require_
  *
  * @product      highcharts highmaps
  * @since 8.0.0
+ * @requires     modules/marker-clusters
  * @optionparent plotOptions.scatter.cluster
- *
- * @internal
  */
 const cluster = {
     /**
@@ -106,6 +105,8 @@ const cluster = {
      *         Maps marker clusters
      * @sample highcharts/marker-clusters/basic
      *         Scatter marker clusters
+     *
+     * @requires modules/marker-clusters
      */
     enabled: false,
     /**
@@ -114,12 +115,15 @@ const cluster = {
      *
      * @sample highcharts/marker-clusters/grid
      *         Prevent overlapping
+     *
+     * @requires modules/marker-clusters
      */
     allowOverlap: true,
     /**
      * Options for the cluster marker animation.
      * @type    {boolean|Partial<Highcharts.AnimationOptionsObject>}
      * @default { "duration": 500 }
+     * @requires modules/marker-clusters
      */
     animation: {
         /** @ignore-option */
@@ -127,6 +131,8 @@ const cluster = {
     },
     /**
      * Zoom the plot area to the cluster points range when a cluster is clicked.
+     *
+     * @requires modules/marker-clusters
      */
     drillToCluster: true,
     /**
@@ -135,12 +141,16 @@ const cluster = {
      *
      * @sample highcharts/marker-clusters/basic
      *         At least three points in the cluster
+     *
+     * @requires modules/marker-clusters
      */
     minimumClusterSize: 2,
     /**
      * Options for layout algorithm. Inside there
      * are options to change the type of the algorithm, gridSize,
      * distance or iterations.
+     *
+     * @requires modules/marker-clusters
      */
     layoutAlgorithm: {
         /**
@@ -217,6 +227,7 @@ const cluster = {
          *
          * @type {string|Function}
          * @see [cluster.minimumClusterSize](#plotOptions.scatter.cluster.minimumClusterSize)
+         * @requires modules/marker-clusters
          * @apioption plotOptions.scatter.cluster.layoutAlgorithm.type
          */
         /**
@@ -226,6 +237,7 @@ const cluster = {
          * of the plot area width.
          *
          * @type    {number|string}
+         * @requires modules/marker-clusters
          */
         gridSize: 50,
         /**
@@ -234,6 +246,7 @@ const cluster = {
          * repeated to find clusters positions.
          *
          * @type    {number}
+         * @requires modules/marker-clusters
          * @apioption plotOptions.scatter.cluster.layoutAlgorithm.iterations
          */
         /**
@@ -244,6 +257,7 @@ const cluster = {
          * defining a percentage of the plot area width.
          *
          * @type    {number|string}
+         * @requires modules/marker-clusters
          */
         distance: 40,
         /**
@@ -251,6 +265,8 @@ const cluster = {
          * than the kmeansThreshold the `grid` algorithm is used to find
          * clusters, otherwise `kmeans`. It ensures good performance on
          * large datasets and better clusters arrangement after the zoom.
+         *
+         * @requires modules/marker-clusters
          */
         kmeansThreshold: 100
     },
@@ -259,6 +275,7 @@ const cluster = {
      * @type      {Highcharts.PointMarkerOptionsObject}
      * @extends   plotOptions.series.marker
      * @excluding enabledThreshold, states
+     * @requires  modules/marker-clusters
      */
     marker: {
         /** @internal */
@@ -279,6 +296,7 @@ const cluster = {
      * @type      {Highcharts.MarkerClusterDrillCallbackFunction}
      * @product   highcharts highmaps
      * @see [cluster.drillToCluster](#plotOptions.scatter.cluster.drillToCluster)
+     * @requires  modules/marker-clusters
      * @apioption plotOptions.scatter.cluster.events.drillToCluster
      */
     /**
@@ -296,6 +314,7 @@ const cluster = {
      *
      * @type      {Array<*>}
      * @product   highcharts highmaps
+     * @requires  modules/marker-clusters
      * @apioption plotOptions.scatter.cluster.zones
      */
     /**
@@ -305,6 +324,7 @@ const cluster = {
      *         Zones styled by class name
      *
      * @type      {string}
+     * @requires  modules/marker-clusters
      * @apioption plotOptions.scatter.cluster.zones.className
      */
     /**
@@ -313,6 +333,7 @@ const cluster = {
      * @see [cluster.marker](#plotOptions.scatter.cluster.marker)
      * @extends   plotOptions.scatter.cluster.marker
      * @product   highcharts highmaps
+     * @requires  modules/marker-clusters
      * @apioption plotOptions.scatter.cluster.zones.marker
      */
     /**
@@ -320,6 +341,7 @@ const cluster = {
      *
      * @type      {number}
      * @product   highcharts highmaps
+     * @requires  modules/marker-clusters
      * @apioption plotOptions.scatter.cluster.zones.from
      */
     /**
@@ -327,6 +349,7 @@ const cluster = {
      *
      * @type      {number}
      * @product   highcharts highmaps
+     * @requires  modules/marker-clusters
      * @apioption plotOptions.scatter.cluster.zones.to
      */
     /**
@@ -335,11 +358,13 @@ const cluster = {
      * state is used.
      *
      * @type      {Highcharts.ColorType}
+     * @requires  modules/marker-clusters
      * @apioption plotOptions.scatter.cluster.states.hover.fillColor
      */
     /**
      * Options for the cluster data labels.
      * @type    {Highcharts.DataLabelsOptions}
+     * @requires modules/marker-clusters
      */
     dataLabels: {
         /** @internal */
@@ -375,6 +400,7 @@ const tooltip = {
      *
      * @type      {string}
      * @default   Clustered points: {point.clusterPointsAmount}
+     * @requires  modules/marker-clusters
      * @apioption tooltip.clusterFormat
      */
     clusterFormat: '<span>Clustered points: ' +
@@ -385,10 +411,12 @@ const tooltip = {
  *  Default Export
  *
  * */
+/** @internal */
 const MarkerClusterDefaults = {
     cluster,
     tooltip
 };
+/** @internal */
 /* harmony default export */ const MarkerClusters_MarkerClusterDefaults = (MarkerClusterDefaults);
 
 ;// ./code/es-modules/Data/ColumnUtils.js
@@ -404,133 +432,123 @@ const MarkerClusterDefaults = {
  *  - Dawid Dragula
  *
  * */
+/* *
+*
+* Functions
+*
+* */
 /**
- * Utility functions for columns that can be either arrays or typed arrays.
+ * Sets the length of the column array.
+ *
+ * @param {DataTableColumn} column
+ * Column to be modified.
+ *
+ * @param {number} length
+ * New length of the column.
+ *
+ * @param {boolean} asSubarray
+ * If column is a typed array, return a subarray instead of a new array. It
+ * is faster `O(1)`, but the entire buffer will be kept in memory until all
+ * views of it are destroyed. Default is `false`.
+ *
+ * @return {DataTableColumn}
+ * Modified column.
+ *
  * @private
  */
-var ColumnUtils;
-(function (ColumnUtils) {
-    /* *
-    *
-    *  Declarations
-    *
-    * */
-    /* *
-    *
-    * Functions
-    *
-    * */
-    /**
-     * Sets the length of the column array.
-     *
-     * @param {DataTable.Column} column
-     * Column to be modified.
-     *
-     * @param {number} length
-     * New length of the column.
-     *
-     * @param {boolean} asSubarray
-     * If column is a typed array, return a subarray instead of a new array. It
-     * is faster `O(1)`, but the entire buffer will be kept in memory until all
-     * views of it are destroyed. Default is `false`.
-     *
-     * @return {DataTable.Column}
-     * Modified column.
-     *
-     * @private
-     */
-    function setLength(column, length, asSubarray) {
-        if (Array.isArray(column)) {
-            column.length = length;
-            return column;
-        }
-        return column[asSubarray ? 'subarray' : 'slice'](0, length);
+function setLength(column, length, asSubarray) {
+    if (Array.isArray(column)) {
+        column.length = length;
+        return column;
     }
-    ColumnUtils.setLength = setLength;
-    /**
-     * Splices a column array.
-     *
-     * @param {DataTable.Column} column
-     * Column to be modified.
-     *
-     * @param {number} start
-     * Index at which to start changing the array.
-     *
-     * @param {number} deleteCount
-     * An integer indicating the number of old array elements to remove.
-     *
-     * @param {boolean} removedAsSubarray
-     * If column is a typed array, return a subarray instead of a new array. It
-     * is faster `O(1)`, but the entire buffer will be kept in memory until all
-     * views to it are destroyed. Default is `true`.
-     *
-     * @param {Array<number>|TypedArray} items
-     * The elements to add to the array, beginning at the start index. If you
-     * don't specify any elements, `splice()` will only remove elements from the
-     * array.
-     *
-     * @return {SpliceResult}
-     * Object containing removed elements and the modified column.
-     *
-     * @private
-     */
-    function splice(column, start, deleteCount, removedAsSubarray, items = []) {
-        if (Array.isArray(column)) {
-            if (!Array.isArray(items)) {
-                items = Array.from(items);
-            }
-            return {
-                removed: column.splice(start, deleteCount, ...items),
-                array: column
-            };
+    return column[asSubarray ? 'subarray' : 'slice'](0, length);
+}
+/**
+ * Splices a column array.
+ *
+ * @param {DataTableColumn} column
+ * Column to be modified.
+ *
+ * @param {number} start
+ * Index at which to start changing the array.
+ *
+ * @param {number} deleteCount
+ * An integer indicating the number of old array elements to remove.
+ *
+ * @param {boolean} removedAsSubarray
+ * If column is a typed array, return a subarray instead of a new array. It
+ * is faster `O(1)`, but the entire buffer will be kept in memory until all
+ * views to it are destroyed. Default is `true`.
+ *
+ * @param {Array<number>|TypedArray} items
+ * The elements to add to the array, beginning at the start index. If you
+ * don't specify any elements, `splice()` will only remove elements from the
+ * array.
+ *
+ * @return {SpliceResult}
+ * Object containing removed elements and the modified column.
+ *
+ * @private
+ */
+function splice(column, start, deleteCount, removedAsSubarray, items = []) {
+    if (Array.isArray(column)) {
+        if (!Array.isArray(items)) {
+            items = Array.from(items);
         }
-        const Constructor = Object.getPrototypeOf(column)
-            .constructor;
-        const removed = column[removedAsSubarray ? 'subarray' : 'slice'](start, start + deleteCount);
-        const newLength = column.length - deleteCount + items.length;
-        const result = new Constructor(newLength);
-        result.set(column.subarray(0, start), 0);
-        result.set(items, start);
-        result.set(column.subarray(start + deleteCount), start + items.length);
         return {
-            removed: removed,
-            array: result
+            removed: column.splice(start, deleteCount, ...items),
+            array: column
         };
     }
-    ColumnUtils.splice = splice;
-    /**
-     * Converts a cell value to a number.
-     *
-     * @param {DataTable.CellType} value
-     * Cell value to convert to a number.
-     *
-     * @param {boolean} useNaN
-     * If `true`, returns `NaN` for non-numeric values; if `false`,
-     * returns `null` instead.
-     *
-     * @return {number | null}
-     * Number or `null` if the value is not a number.
-     *
-     * @private
-     */
-    function convertToNumber(value, useNaN) {
-        switch (typeof value) {
-            case 'boolean':
-                return (value ? 1 : 0);
-            case 'number':
-                return (isNaN(value) && !useNaN ? null : value);
-            default:
-                value = parseFloat(`${value ?? ''}`);
-                return (isNaN(value) && !useNaN ? null : value);
-        }
+    const Constructor = Object.getPrototypeOf(column)
+        .constructor;
+    const removed = column[removedAsSubarray ? 'subarray' : 'slice'](start, start + deleteCount);
+    const newLength = column.length - deleteCount + items.length;
+    const result = new Constructor(newLength);
+    result.set(column.subarray(0, start), 0);
+    result.set(items, start);
+    result.set(column.subarray(start + deleteCount), start + items.length);
+    return {
+        removed: removed,
+        array: result
+    };
+}
+/**
+ * Converts a cell value to a number.
+ *
+ * @param {DataTableCellType} value
+ * Cell value to convert to a number.
+ *
+ * @param {boolean} useNaN
+ * If `true`, returns `NaN` for non-numeric values; if `false`,
+ * returns `null` instead.
+ *
+ * @return {number | null}
+ * Number or `null` if the value is not a number.
+ *
+ * @private
+ */
+function convertToNumber(value, useNaN) {
+    switch (typeof value) {
+        case 'boolean':
+            return (value ? 1 : 0);
+        case 'number':
+            return (isNaN(value) && !useNaN ? null : value);
+        default:
+            value = parseFloat(`${value ?? ''}`);
+            return (isNaN(value) && !useNaN ? null : value);
     }
-    ColumnUtils.convertToNumber = convertToNumber;
-})(ColumnUtils || (ColumnUtils = {}));
+}
 /* *
  *
  *  Default Export
  *
  * */
+const ColumnUtils = {
+    convertToNumber,
+    setLength,
+    splice
+};
 /* harmony default export */ const Data_ColumnUtils = (ColumnUtils);
 
 ;// ./code/es-modules/Data/DataTableCore.js
@@ -550,7 +568,7 @@ var ColumnUtils;
  * */
 
 
-const { setLength, splice } = Data_ColumnUtils;
+const { setLength: DataTableCore_setLength, splice: DataTableCore_splice } = Data_ColumnUtils;
 
 const { fireEvent, objectEach, uniqueKey } = (external_highcharts_src_js_default_default());
 /* *
@@ -627,7 +645,7 @@ class DataTableCore {
         this.rowCount = rowCount;
         objectEach(this.columns, (column, columnId) => {
             if (column.length !== rowCount) {
-                this.columns[columnId] = setLength(column, rowCount);
+                this.columns[columnId] = DataTableCore_setLength(column, rowCount);
             }
         });
     }
@@ -650,7 +668,7 @@ class DataTableCore {
             let length = 0;
             objectEach(this.columns, (column, columnId) => {
                 this.columns[columnId] =
-                    splice(column, rowIndex, rowCount).array;
+                    DataTableCore_splice(column, rowIndex, rowCount).array;
                 length = column.length;
             });
             this.rowCount = length;
@@ -793,7 +811,7 @@ class DataTableCore {
             }
             if (column) {
                 if (insert) {
-                    column = splice(column, rowIndex, 0, true, [row[columnId] ?? null]).array;
+                    column = DataTableCore_splice(column, rowIndex, 0, true, [row[columnId] ?? null]).array;
                 }
                 else {
                     column[rowIndex] = row[columnId] ?? null;
@@ -908,12 +926,13 @@ const markerClusterAlgorithms = {
         return grid;
     },
     kmeans: function (dataX, dataY, dataIndexes, options) {
-        const series = this, clusters = [], noise = [], group = {}, pointMaxDistance = options.processedDistance ||
-            clusterDefaults.layoutAlgorithm.distance, iterations = options.iterations, 
+        const series = this, clusters = [], noise = [], group = {}, pointMaxDistance = Number(options.processedDistance ??
+            relativeLength(options.distance ||
+                clusterDefaults.layoutAlgorithm.distance, series.chart.plotWidth)), iterations = options.iterations, 
         // Max pixel difference beetwen new and old cluster position.
         maxClusterShift = 1;
         let currentIteration = 0, repeat = true, pointX = 0, pointY = 0, tempPos, pointClusterDistance = [];
-        options.processedGridSize = options.processedDistance;
+        options.processedGridSize = pointMaxDistance;
         // Use grid method to get groupedData object.
         const groupedData = series.markerClusterAlgorithms ?
             series.markerClusterAlgorithms.grid.call(series, dataX, dataY, dataIndexes, options) : {};
@@ -1007,9 +1026,10 @@ const markerClusterAlgorithms = {
         return group;
     },
     optimizedKmeans: function (processedXData, processedYData, dataIndexes, options) {
-        const series = this, pointMaxDistance = options.processedDistance ||
-            clusterDefaults.layoutAlgorithm.gridSize, extremes = series.getRealExtremes(), clusterMarkerOptions = (series.options.cluster || {}).marker;
-        let distance, group = {}, offset, radius;
+        const series = this, pointMaxDistance = Number(options.processedDistance ??
+            relativeLength(options.distance ||
+                clusterDefaults.layoutAlgorithm.gridSize, series.chart.plotWidth)), extremes = series.getRealExtremes(), clusterMarkerOptions = (series.options.cluster || {}).marker;
+        let distance, group = {};
         if (!series.markerClusterInfo || (series.initMaxX && series.initMaxX < extremes.maxX ||
             series.initMinX && series.initMinX > extremes.minX ||
             series.initMaxY && series.initMaxY < extremes.maxY ||
@@ -1034,16 +1054,11 @@ const markerClusterAlgorithms = {
                     const dataPointPx = valuesToPixels(series, dataPoint), clusterPx = valuesToPixels(series, cluster);
                     distance = Math.sqrt(Math.pow(dataPointPx.x - clusterPx.x, 2) +
                         Math.pow(dataPointPx.y - clusterPx.y, 2));
-                    if (cluster.clusterZone?.marker?.radius) {
-                        radius = cluster.clusterZone.marker.radius;
-                    }
-                    else if (clusterMarkerOptions?.radius) {
-                        radius = clusterMarkerOptions.radius;
-                    }
-                    else {
-                        radius = clusterDefaults.marker.radius;
-                    }
-                    offset = pointMaxDistance - radius >= 0 ?
+                    const radius = (cluster.clusterZone?.marker?.radius ??
+                        clusterMarkerOptions?.radius ??
+                        clusterDefaults.marker.radius ??
+                        0);
+                    const offset = pointMaxDistance - radius >= 0 ?
                         pointMaxDistance - radius : radius;
                     if (distance > radius + offset &&
                         defined(cluster.pointsOutside)) {
@@ -1085,7 +1100,10 @@ oldPointsStateId = [], stateIdCounter = 0;
  *  Functions
  *
  * */
-/** @internal */
+/**
+ * Compose marker cluster scatter hooks.
+ * @internal
+ */
 function compose(highchartsDefaultOptions, ScatterSeriesClass) {
     const scatterProto = ScatterSeriesClass.prototype;
     if (!scatterProto.markerClusterAlgorithms) {
@@ -1210,11 +1228,15 @@ function hideStatePoint(stateObj, hideGraphic, hideDataLabel) {
         }
     }
 }
-/** @internal */
+/**
+ * Handle point drill-to-cluster click.
+ * @internal
+ */
 function onPointDrillToCluster(event) {
     const point = event.point || event.target;
     point.firePointEvent('drillToCluster', event, function (e) {
-        const point = e.point || e.target, series = point.series, { xAxis, yAxis, chart } = series, { inverted, mapView, pointer } = chart, drillToCluster = series.options.cluster?.drillToCluster;
+        const point = e.point || e.target, series = point.series, { xAxis, yAxis, chart } = series, { inverted, mapView, pointer } = chart, drillToCluster = series.options
+            .cluster?.drillToCluster;
         if (drillToCluster && point.clusteredData) {
             const sortedDataX = point.clusteredData
                 .map((data) => data.x)
@@ -1265,7 +1287,10 @@ function pixelsToValues(series, pos) {
         y: yAxis ? yAxis.toValue(pos.y) : 0
     };
 }
-/** @internal */
+/**
+ * Animate cluster point transitions.
+ * @internal
+ */
 function seriesAnimateClusterPoint(clusterObj) {
     const series = this, chart = series.chart, mapView = chart.mapView, animation = animObject(series.options.cluster?.animation), animDuration = animation.duration || 500, pointsState = series.markerClusterInfo?.pointsState, newState = pointsState?.newState, oldState = pointsState?.oldState, oldPoints = [];
     let parentId, oldPointObj, newPointObj, newPointBBox, offset = 0, newX = 0, newY = 0, isOldPointGrahic = false, isCbHandled = false;
@@ -1539,7 +1564,10 @@ function seriesGeneratePoints() {
         baseGeneratePoints.apply(this);
     }
 }
-/** @internal */
+/**
+ * Calculate distances from a point to all clusters.
+ * @internal
+ */
 function seriesGetClusterDistancesFromPoint(clusters, pointX, pointY) {
     const pointClusterDistance = [];
     for (let clusterIndex = 0; clusterIndex < clusters.length; clusterIndex++) {
@@ -1552,7 +1580,10 @@ function seriesGetClusterDistancesFromPoint(clusters, pointX, pointY) {
     }
     return pointClusterDistance.sort((a, b) => a.distance - b.distance);
 }
-/** @internal */
+/**
+ * Build clustered data from grouped data.
+ * @internal
+ */
 function seriesGetClusteredData(groupedData, options) {
     const series = this, data = series.options.data, groupedXData = [], groupedYData = [], clusters = [], // Container for clusters.
     noise = [], // Container for points not belonging to any cluster.
@@ -1595,10 +1626,10 @@ function seriesGetClusteredData(groupedData, options) {
                     groupedData: groupedData,
                     gridSize: series.getScaledGridSize(options.layoutAlgorithm),
                     defaultRadius: marker.radius || 3 + (marker.lineWidth || 0),
-                    clusterRadius: (zoneOptions && zoneOptions.radius) ?
-                        zoneOptions.radius :
-                        (options.marker || {}).radius ||
-                            clusterDefaults.marker.radius
+                    clusterRadius: zoneOptions?.radius ??
+                        options.marker?.radius ??
+                        clusterDefaults.marker.radius ??
+                        0
                 });
             }
             else {
@@ -1685,7 +1716,10 @@ function seriesGetClusteredData(groupedData, options) {
         groupMap
     };
 }
-/** @internal */
+/**
+ * Resolve plot offsets for clustering calculations.
+ * @internal
+ */
 function seriesGetGridOffset() {
     const series = this, { chart, xAxis, yAxis } = series;
     let plotLeft = 0, plotTop = 0;
@@ -1750,7 +1784,10 @@ function seriesGetPointsState(clusteredData, oldMarkerClusterInfo, dataLength) {
     }
     return state;
 }
-/** @internal */
+/**
+ * Resolve the real extremes for the cluster calculations.
+ * @internal
+ */
 function seriesGetRealExtremes() {
     const chart = this.chart, x = chart.mapView ? 0 : chart.plotLeft, y = chart.mapView ? 0 : chart.plotTop, p1 = pixelsToValues(this, {
         x,
@@ -1766,10 +1803,13 @@ function seriesGetRealExtremes() {
         maxY: Math.max(realMinY, realMaxY)
     };
 }
-/** @internal */
+/**
+ * Normalize grid size based on the current scale.
+ * @internal
+ */
 function seriesGetScaledGridSize(options) {
-    const series = this, xAxis = series.xAxis, mapView = series.chart.mapView, processedGridSize = options.processedGridSize ||
-        clusterDefaults.layoutAlgorithm.gridSize;
+    const series = this, xAxis = series.xAxis, mapView = series.chart.mapView, processedGridSize = Number(options.processedGridSize ??
+        relativeLength(options.gridSize || clusterDefaults.layoutAlgorithm.gridSize, series.chart.plotWidth));
     let search = true, k = 1, divider = 1;
     if (!series.gridValueSize) {
         if (mapView) {
@@ -1847,7 +1887,10 @@ function seriesIsValidGroupedDataObject(groupedData) {
     });
     return result;
 }
-/** @internal */
+/**
+ * Resolve a collision-free cluster position.
+ * @internal
+ */
 function seriesPreventClusterCollisions(props) {
     const series = this, [gridY, gridX] = props.key.split(':').map(parseFloat), gridSize = props.gridSize, groupedData = props.groupedData, defaultRadius = props.defaultRadius, clusterRadius = props.clusterRadius, gridXPx = gridX * gridSize, gridYPx = gridY * gridSize, propsPx = valuesToPixels(series, props), gridsToCheckCollision = [], clusterMarkerOptions = series.options.cluster?.marker, zoneOptions = series.options.cluster?.zones, gridOffset = series.getGridOffset();
     let xPixel = propsPx.x, yPixel = propsPx.y, pointsLen = 0, radius = 0, nextXPixel, nextYPixel, signX, signY, cornerGridX, cornerGridY, j, itemX, itemY, nextClusterPos, maxDist, keys;
@@ -1898,7 +1941,7 @@ function seriesPreventClusterCollisions(props) {
                             radius = clusterMarkerOptions.radius;
                         }
                         else {
-                            radius = clusterDefaults.marker.radius;
+                            radius = clusterDefaults.marker.radius ?? 0;
                         }
                     }
                 }
@@ -1952,9 +1995,11 @@ function valuesToPixels(series, pos) {
  *  Default Export
  *
  * */
+/** @internal */
 const MarkerClusterScatter = {
     compose
 };
+/** @internal */
 /* harmony default export */ const MarkerClusters_MarkerClusterScatter = (MarkerClusterScatter);
 
 ;// ./code/es-modules/Extensions/MarkerClusters/MarkerClusters.js
@@ -1993,7 +2038,10 @@ const { addEvent: MarkerClusters_addEvent, defined: MarkerClusters_defined, erro
  *  Functions
  *
  * */
-/** @internal */
+/**
+ * Compose marker cluster module hooks.
+ * @internal
+ */
 function MarkerClusters_compose(AxisClass, ChartClass, highchartsDefaultOptions, SeriesClass) {
     if (pushUnique(composed, 'MarkerClusters')) {
         const PointClass = SeriesClass.prototype.pointClass, { scatter: ScatterSeries } = SeriesClass.types;
@@ -2017,7 +2065,8 @@ function onAxisSetExtremes() {
     let animationDuration = 0;
     for (const series of chart.series) {
         if (series.markerClusterInfo) {
-            animationDuration = (MarkerClusters_animObject((series.options.cluster || {}).animation).duration ||
+            const clusterOptions = series.options.cluster;
+            animationDuration = (MarkerClusters_animObject((clusterOptions || {}).animation).duration ||
                 0);
         }
     }
@@ -2035,8 +2084,8 @@ function onChartRender() {
     const chart = this;
     for (const series of (chart.series || [])) {
         if (series.markerClusterInfo) {
-            const options = series.options.cluster, pointsState = (series.markerClusterInfo || {}).pointsState, oldState = (pointsState || {}).oldState;
-            if ((options || {}).animation &&
+            const clusterOptions = series.options.cluster, pointsState = (series.markerClusterInfo || {}).pointsState, oldState = (pointsState || {}).oldState;
+            if ((clusterOptions || {}).animation &&
                 series.markerClusterInfo &&
                 (series.chart.pointer?.pinchDown || []).length === 0 &&
                 ((series.xAxis || {}).eventArgs || {}).trigger !== 'pan' &&
@@ -2052,7 +2101,10 @@ function onChartRender() {
         }
     }
 }
-/** @internal */
+/**
+ * Handle drill-to-cluster event.
+ * @internal
+ */
 function MarkerClusters_onPointDrillToCluster(event) {
     const point = event.point || event.target, series = point.series, clusterOptions = series.options.cluster, onDrillToCluster = ((clusterOptions || {}).events || {}).drillToCluster;
     if (MarkerClusters_isFunction(onDrillToCluster)) {
@@ -2078,7 +2130,8 @@ function onPointUpdate() {
  * @internal
  */
 function onSeriesAfterRender() {
-    const series = this, clusterZoomEnabled = (series.options.cluster || {}).drillToCluster;
+    const series = this, clusterZoomEnabled = (series.options.cluster || {})
+        .drillToCluster;
     if (series.markerClusterInfo && series.markerClusterInfo.clusters) {
         for (const cluster of series.markerClusterInfo.clusters) {
             if (cluster.point && cluster.point.graphic) {
@@ -2108,9 +2161,11 @@ function onSeriesAfterRender() {
  *  Default Export
  *
  * */
+/** @internal */
 const MarkerClusters = {
     compose: MarkerClusters_compose
 };
+/** @internal */
 /* harmony default export */ const MarkerClusters_MarkerClusters = (MarkerClusters);
 /* *
  *
@@ -2178,7 +2233,10 @@ function MarkerClusterSymbols_cluster(x, y, width, height) {
     });
     return outer2.concat(outer1, inner);
 }
-/** @internal */
+/**
+ * Register marker cluster symbols.
+ * @internal
+ */
 function MarkerClusterSymbols_compose(SVGRendererClass) {
     symbols = SVGRendererClass.prototype.symbols;
     symbols.cluster = MarkerClusterSymbols_cluster;
@@ -2188,9 +2246,11 @@ function MarkerClusterSymbols_compose(SVGRendererClass) {
  *  Default Export
  *
  * */
+/** @internal */
 const MarkerClusterSymbols = {
     compose: MarkerClusterSymbols_compose
 };
+/** @internal */
 /* harmony default export */ const MarkerClusters_MarkerClusterSymbols = (MarkerClusterSymbols);
 
 ;// ./code/es-modules/masters/modules/marker-clusters.src.js

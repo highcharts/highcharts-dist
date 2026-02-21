@@ -354,8 +354,13 @@ declare module "../highcharts.src" {
          */
         dataSorting?: (Highcharts.DataSortingOptionsObject|Highcharts.PlotPointandfigureDataSortingOptions);
         /**
-         * (Highstock) A description of the series to add to the screen reader
-         * information about the series.
+         * (Highstock) Deprecated. Use
+         * plotOptions.series.accessibility.description instead.
+         *
+         * A description of the series to add to the screen reader information
+         * about the series.
+         *
+         * @deprecated 8.0.0
          */
         description?: string;
         /**
@@ -569,13 +574,21 @@ declare module "../highcharts.src" {
          */
         point?: Highcharts.PlotSeriesPointOptions;
         /**
-         * (Highstock) Same as accessibility.point.descriptionFormat, but for an
-         * individual series. Overrides the chart wide configuration.
+         * (Highstock) Deprecated. Use
+         * series.accessibility.point.descriptionFormat instead.
+         *
+         * Same as accessibility.point.descriptionFormat, but for an individual
+         * series. Overrides the chart wide configuration.
          */
         pointDescriptionFormat?: Function;
         /**
-         * (Highstock) Same as accessibility.series.descriptionFormatter, but
-         * for an individual series. Overrides the chart wide configuration.
+         * (Highstock) Deprecated. Use
+         * series.accessibility.point.descriptionFormatter instead.
+         *
+         * Same as accessibility.series.descriptionFormatter, but for an
+         * individual series. Overrides the chart wide configuration.
+         *
+         * @deprecated 8.0.0
          */
         pointDescriptionFormatter?: Function;
         /**
@@ -674,8 +687,13 @@ declare module "../highcharts.src" {
          */
         showInNavigator?: boolean;
         /**
-         * (Highstock) If set to `true`, the accessibility module will skip past
-         * the points in this series for keyboard navigation.
+         * (Highstock) Deprecated. Use series.accessibility.keyboardNavigation
+         * instead.
+         *
+         * If set to `true`, the accessibility module will skip past the points
+         * in this series for keyboard navigation.
+         *
+         * @deprecated 8.0.0
          */
         skipKeyboardNavigation?: boolean;
         /**

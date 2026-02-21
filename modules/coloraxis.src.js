@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.5.0 (2026-01-12)
+ * @license Highcharts JS v12.5.0-modified (2026-02-21)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -586,7 +586,7 @@ var ColorAxisComposition;
  * convenient to add each category to a separate series.
  *
  * Color axis does not work with: `sankey`, `sunburst`, `dependencywheel`,
- * `networkgraph`, `wordcloud`, `venn`, `gauge` and `solidgauge` series
+ * `networkgraph`, `venn`, `gauge` and `solidgauge` series
  * types.
  *
  * Since v7.2.0 `colorAxis` can also be an array of options objects.
@@ -1208,10 +1208,6 @@ class ColorAxis extends (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_high
             });
             legend.render();
             this.chart.getMargins(true);
-            // If not drilling down/up
-            if (!this.chart.series.some((series) => series.isDrilling)) {
-                axis.isDirty = true; // Flag to fire drawChartBox
-            }
             // First time only
             if (!axis.added) {
                 axis.added = true;

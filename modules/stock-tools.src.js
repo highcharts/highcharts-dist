@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v12.5.0 (2026-01-12)
+ * @license Highstock JS v12.5.0-modified (2026-02-21)
  * @module highcharts/modules/stock-tools
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -667,7 +667,7 @@ const navigation = {
      * from a different server.
      *
      * @type      {string}
-     * @default   https://code.highcharts.com/12.5.0/gfx/stock-icons/
+     * @default   https://code.highcharts.com/12.5.0-modified/gfx/stock-icons/
      * @since     7.1.3
      * @apioption navigation.iconsURL
      */
@@ -5609,7 +5609,7 @@ class Toolbar {
     getIconsURL() {
         return this.chart.options.navigation.iconsURL ||
             this.options.iconsURL ||
-            'https://code.highcharts.com/12.5.0/gfx/stock-icons/';
+            'https://code.highcharts.com/12.5.0-modified/gfx/stock-icons/';
     }
 }
 Toolbar.prototype.classMapping = {

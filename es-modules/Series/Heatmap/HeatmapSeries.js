@@ -166,6 +166,10 @@ class HeatmapSeries extends ScatterSeries {
         if (options.marker && isNumber(options.borderRadius)) {
             options.marker.r = options.borderRadius;
         }
+        const canvas = this.canvas = document.createElement('canvas');
+        if (canvas) {
+            this.context = canvas?.getContext('webgpu');
+        }
     }
     /**
      * @private

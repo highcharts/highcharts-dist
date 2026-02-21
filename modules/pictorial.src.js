@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.5.0 (2026-01-12)
+ * @license Highcharts JS v12.5.0-modified (2026-02-21)
  * @module highcharts/modules/pictorial
  * @requires highcharts
  *
@@ -345,13 +345,15 @@ function onChartRedraw() {
  * @internal
  */
 function onPointAfterInit() {
-    const point = this, colorOptions = point.options.color;
+    const point = this, colorOptions = (point.color || point.options.color);
     // Only do this if we have defined a specific color on this point. Otherwise
     // we will end up trying to re-add the series color for each point.
-    if (colorOptions && colorOptions.pattern) {
+    if (colorOptions &&
+        (colorOptions.pattern ||
+            colorOptions.patternIndex !== void 0)) {
         // Move path definition to object, allows for merge with series path
         // definition
-        if (typeof colorOptions.pattern.path === 'string') {
+        if (typeof colorOptions.pattern?.path === 'string') {
             colorOptions.pattern.path = {
                 d: colorOptions.pattern.path
             };

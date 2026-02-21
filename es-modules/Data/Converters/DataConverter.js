@@ -31,6 +31,26 @@ const { addEvent, fireEvent, merge } = U;
  * @private
  */
 class DataConverter {
+    /**
+     * Adds a converter class to the registry.
+     *
+     * @private
+     *
+     * @param {string} key
+     * Registry key of the converter class.
+     *
+     * @param {DataConverterTypes} DataConverterClass
+     * Connector class (aka class constructor) to register.
+     *
+     * @return {boolean}
+     * Returns true, if the registration was successful. False is returned, if
+     * their is already a converter registered with this key.
+     */
+    static registerType(key, DataConverterClass) {
+        return (!!key &&
+            !DataConverter.types[key] &&
+            !!(DataConverter.types[key] = DataConverterClass));
+    }
     /* *
      *
      *  Constructor
@@ -39,7 +59,7 @@ class DataConverter {
     /**
      * Constructs an instance of the DataConverter.
      *
-     * @param {DataConverter.UserOptions} [options]
+     * @param {UserOptions} [options]
      * Options for the DataConverter.
      */
     constructor(options) {
@@ -237,7 +257,7 @@ class DataConverter {
     /**
      * Emits an event on the DataConverter instance.
      *
-     * @param {DataConverter.Event} [e]
+     * @param {Event} [e]
      * Event object containing additional event data
      */
     emit(e) {
@@ -249,7 +269,7 @@ class DataConverter {
      * @param {string} type
      * Event type as a string.
      *
-     * @param {DataEventEmitter.Callback} callback
+     * @param {DataEventCallback} callback
      * Function to register for an modifier callback.
      *
      * @return {Function}
@@ -329,56 +349,10 @@ DataConverter.defaultOptions = {
     dateFormat: '',
     firstRowAsNames: true
 };
-/* *
- *
- *  Class Namespace
- *
- * */
 /**
- * Additionally provided types for events and conversion.
+ * Registry as a record object with converter names and their class.
  */
-(function (DataConverter) {
-    /* *
-     *
-     *  Declarations
-     *
-     * */
-    /* *
-     *
-     *  Constants
-     *
-     * */
-    /**
-     * Registry as a record object with connector names and their class.
-     */
-    DataConverter.types = {};
-    /* *
-     *
-     *  Functions
-     *
-     * */
-    /**
-     * Adds a converter class to the registry.
-     *
-     * @private
-     *
-     * @param {string} key
-     * Registry key of the converter class.
-     *
-     * @param {DataConverterTypes} DataConverterClass
-     * Connector class (aka class constructor) to register.
-     *
-     * @return {boolean}
-     * Returns true, if the registration was successful. False is returned, if
-     * their is already a converter registered with this key.
-     */
-    function registerType(key, DataConverterClass) {
-        return (!!key &&
-            !DataConverter.types[key] &&
-            !!(DataConverter.types[key] = DataConverterClass));
-    }
-    DataConverter.registerType = registerType;
-})(DataConverter || (DataConverter = {}));
+DataConverter.types = {};
 /* *
  *
  *  Default Export

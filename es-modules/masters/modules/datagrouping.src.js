@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v12.5.0 (2026-01-12)
+ * @license Highstock JS v12.5.0-modified (2026-02-21)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *

@@ -180,7 +180,7 @@ function redrawRangeSelector() {
         rangeSelector.render(extremes.min, extremes.max);
     }
     // Re-align the legend so that it's below the rangeselector
-    if (legend.display &&
+    if (legend?.display &&
         verticalAlign === 'top' &&
         verticalAlign === legend.options.verticalAlign) {
         // Create a new alignment box for the legend.

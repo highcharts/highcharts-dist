@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.5.0 (2026-01-12)
+ * @license Highcharts JS v12.5.0-modified (2026-02-21)
  * @module highcharts/modules/solid-gauge
  * @requires highcharts
  * @requires highcharts/highcharts-more
@@ -307,7 +307,7 @@ function seriesOnAfterColumnTranslate() {
                 // Get the radius
                 const r = Math.min(relativeLength(borderRadius.radius, width), width / 2, 
                 // Cap to the height, but not if where is `end`
-                where === 'all' ? height / 2 : Infinity) || 0;
+                where === 'all' ? brBoxHeight / 2 : Infinity) || 0;
                 // If the `where` option is 'end', cut off the
                 // rectangles by making the border-radius box one r
                 // greater, so that the imaginary radius falls outside
@@ -475,6 +475,11 @@ const BorderRadius = {
 * example `50%`, signifies a relative size. For columns this is relative to the
 * column width, for pies it is relative to the radius and the inner radius.
 *
+* @sample  {highcharts} highcharts/plotoptions/column-borderradius/
+*          Rounded columns
+* @sample  highcharts/plotoptions/series-border-radius
+*          Column and pie with rounded border
+*
 * @name Highcharts.BorderRadiusOptionsObject#radius
 * @type {string|number}
 */ /**
@@ -482,6 +487,9 @@ const BorderRadius = {
 * value `point` means each single point will get rounded corners. The value
 * `stack` means the rounding will apply to the full stack, so that only points
 * close to the top or bottom will receive rounding.
+*
+* @sample  {highcharts} highcharts/plotoptions/column-borderradius/
+*          Rounded columns
 *
 * @name Highcharts.BorderRadiusOptionsObject#scope
 * @validvalue ["point", "stack"]
@@ -491,6 +499,9 @@ const BorderRadius = {
 * value means only those corners at the point value will be rounded, leaving
 * the corners at the base or threshold unrounded. This is the most intuitive
 * behaviour. The `all` value means also the base will be rounded.
+*
+* @sample  {highcharts} highcharts/plotoptions/column-borderradius-where-all
+*          Rounding on all corners
 *
 * @name Highcharts.BorderRadiusOptionsObject#where
 * @validvalue ["all", "end"]

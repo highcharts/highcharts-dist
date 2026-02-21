@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.5.0 (2026-01-12)
+ * @license Highcharts JS v12.5.0-modified (2026-02-21)
  * @module highcharts/modules/data
  * @requires highcharts
  *
@@ -2353,7 +2353,7 @@ class SeriesBuilder {
  * An URL to a remote CSV dataset. Will be fetched when the chart is created
  * using Ajax.
  *
- * @sample highcharts/data/livedata-columns
+ * @sample highcharts/demo/livedata-columns
  *         Categorized bar chart with CSV and live polling
  * @sample highcharts/data/livedata-csv
  *         Time based line chart with CSV and live polling
@@ -2375,7 +2375,7 @@ class SeriesBuilder {
  * A URL to a remote JSON dataset, structured as a column array.
  * Will be fetched when the chart is created using Ajax.
  *
- * @sample highcharts/data/livedata-columns
+ * @sample highcharts/demo/livedata-columns
  *         Columns with live polling
  *
  * @type      {string}
@@ -2410,7 +2410,7 @@ class SeriesBuilder {
  *
  * @sample highcharts/demo/live-data
  *         Live data
- * @sample highcharts/data/livedata-columns
+ * @sample highcharts/demo/livedata-columns
  *         Categorized bar chart with CSV and live polling
  *
  * @type      {boolean}

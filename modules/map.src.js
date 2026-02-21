@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v12.5.0 (2026-01-12)
+ * @license Highmaps JS v12.5.0-modified (2026-02-21)
  * @module highcharts/modules/map
  * @requires highcharts
  *
@@ -635,7 +635,7 @@ var ColorAxisComposition;
  * convenient to add each category to a separate series.
  *
  * Color axis does not work with: `sankey`, `sunburst`, `dependencywheel`,
- * `networkgraph`, `wordcloud`, `venn`, `gauge` and `solidgauge` series
+ * `networkgraph`, `venn`, `gauge` and `solidgauge` series
  * types.
  *
  * Since v7.2.0 `colorAxis` can also be an array of options objects.
@@ -1257,10 +1257,6 @@ class ColorAxis extends (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_high
             });
             legend.render();
             this.chart.getMargins(true);
-            // If not drilling down/up
-            if (!this.chart.series.some((series) => series.isDrilling)) {
-                axis.isDirty = true; // Flag to fire drawChartBox
-            }
             // First time only
             if (!axis.added) {
                 axis.added = true;
@@ -1639,7 +1635,7 @@ Array.prototype.push.apply((highcharts_Axis_commonjs_highcharts_Axis_commonjs2_h
 ;// ./code/es-modules/masters/modules/coloraxis.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.5.0 (2026-01-12)
+ * @license Highcharts JS v12.5.0-modified (2026-02-21)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -9202,15 +9198,12 @@ function chartDrawChartBox(proceed, options, callback) {
         proceed.call(chart, options, callback);
         // Check bubble legend sizes and correct them if necessary.
         legend.bubbleLegend.correctSizes();
-        // Correct items positions with different dimensions in legend.
-        retranslateItems(legend, getLinesHeights(legend));
     }
     else {
         proceed.call(chart, options, callback);
         // Allow color change on static bubble legend after click on legend
         if (legend && legend.options.enabled && legend.bubbleLegend) {
             legend.render();
-            retranslateItems(legend, getLinesHeights(legend));
         }
     }
 }
@@ -9234,6 +9227,7 @@ function BubbleLegendComposition_compose(ChartClass, LegendClass) {
         });
         BubbleLegendComposition_wrap(ChartClass.prototype, 'drawChartBox', chartDrawChartBox);
         BubbleLegendComposition_addEvent(LegendClass, 'afterGetAllItems', onLegendAfterGetAllItems);
+        BubbleLegendComposition_addEvent(LegendClass, 'afterRender', onLegendAfterRender);
         BubbleLegendComposition_addEvent(LegendClass, 'itemClick', onLegendItemClick);
     }
 }
@@ -9324,6 +9318,37 @@ function onLegendAfterGetAllItems(e) {
     }
 }
 /**
+ * Retranslate the legend items after render
+ */
+function onLegendAfterRender() {
+    if (this.bubbleLegend) {
+        const items = this.allItems, rtl = this.options.rtl, lines = getLinesHeights(this);
+        let orgTranslateX, orgTranslateY, movementX, legendItem, actualLine = 0;
+        items.forEach((item, index) => {
+            legendItem = item.legendItem || {};
+            if (!legendItem.group) {
+                return;
+            }
+            orgTranslateX = legendItem.group.translateX || 0;
+            orgTranslateY = legendItem.y || 0;
+            movementX = item.movementX;
+            if (movementX || (rtl && item.ranges)) {
+                movementX = rtl ?
+                    orgTranslateX - item.options.maxSize / 2 :
+                    orgTranslateX + movementX;
+                legendItem.group.attr({ translateX: movementX });
+            }
+            if (index > lines[actualLine].step) {
+                actualLine++;
+            }
+            legendItem.group.attr({
+                translateY: Math.round(orgTranslateY + lines[actualLine].height / 2)
+            });
+            legendItem.y = orgTranslateY + lines[actualLine].height / 2;
+        });
+    }
+}
+/**
  * Toggle bubble legend depending on the visible status of bubble series.
  */
 function onLegendItemClick(e) {
@@ -9350,44 +9375,6 @@ function onLegendItemClick(e) {
         }
         series.visible = visible;
     }
-}
-/**
- * Correct legend items translation in case of different elements heights.
- *
- * @private
- * @function Highcharts.Legend#retranslateItems
- *
- * @param {Highcharts.Legend} legend
- * Legend to translate in.
- *
- * @param {Array<Highcharts.Dictionary<number>>} lines
- * Informations about line height and items amount
- */
-function retranslateItems(legend, lines) {
-    const items = legend.allItems, rtl = legend.options.rtl;
-    let orgTranslateX, orgTranslateY, movementX, legendItem, actualLine = 0;
-    items.forEach((item, index) => {
-        legendItem = item.legendItem || {};
-        if (!legendItem.group) {
-            return;
-        }
-        orgTranslateX = legendItem.group.translateX || 0;
-        orgTranslateY = legendItem.y || 0;
-        movementX = item.movementX;
-        if (movementX || (rtl && item.ranges)) {
-            movementX = rtl ?
-                orgTranslateX - item.options.maxSize / 2 :
-                orgTranslateX + movementX;
-            legendItem.group.attr({ translateX: movementX });
-        }
-        if (index > lines[actualLine].step) {
-            actualLine++;
-        }
-        legendItem.group.attr({
-            translateY: Math.round(orgTranslateY + lines[actualLine].height / 2)
-        });
-        legendItem.y = orgTranslateY + lines[actualLine].height / 2;
-    });
 }
 /* *
  *
@@ -9482,7 +9469,7 @@ const { composed: BubbleSeries_composed, noop: BubbleSeries_noop } = (highcharts
 
 const { series: BubbleSeries_Series, seriesTypes: { column: { prototype: BubbleSeries_columnProto }, scatter: BubbleSeries_ScatterSeries } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
 
-const { addEvent: BubbleSeries_addEvent, arrayMax: BubbleSeries_arrayMax, arrayMin: BubbleSeries_arrayMin, clamp: BubbleSeries_clamp, extend: BubbleSeries_extend, isNumber: BubbleSeries_isNumber, merge: BubbleSeries_merge, pick: BubbleSeries_pick, pushUnique: BubbleSeries_pushUnique } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { addEvent: BubbleSeries_addEvent, arrayMax: BubbleSeries_arrayMax, arrayMin: BubbleSeries_arrayMin, clamp: BubbleSeries_clamp, defined: BubbleSeries_defined, extend: BubbleSeries_extend, isNumber: BubbleSeries_isNumber, merge: BubbleSeries_merge, pick: BubbleSeries_pick, pushUnique: BubbleSeries_pushUnique } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
  *  Functions
@@ -9736,13 +9723,15 @@ class BubbleSeries extends BubbleSeries_ScatterSeries {
             if (this.zoneAxis === 'z') {
                 point.negative = (point.z || 0) < (options.zThreshold || 0);
             }
-            if (BubbleSeries_isNumber(radius) && radius >= minPxSize / 2) {
-                // Shape arguments
+            // #24138: Always update marker to reflect current calculated radius
+            if (BubbleSeries_isNumber(radius)) {
                 point.marker = BubbleSeries_extend(point.marker, {
                     radius,
                     width: 2 * radius,
                     height: 2 * radius
                 });
+            }
+            if (BubbleSeries_isNumber(radius) && radius >= minPxSize / 2) {
                 // Alignment box for the data label
                 point.dlBox = {
                     x: point.plotX - radius,
@@ -10074,6 +10063,14 @@ BubbleSeries_addEvent(BubbleSeries, 'updatedData', (e) => {
 // After removing series, delete the chart-level Z extremes cache, #17502.
 BubbleSeries_addEvent(BubbleSeries, 'remove', (e) => {
     delete e.target.chart.bubbleZExtremes;
+});
+// Before updating series, delete the chart-level Z extremes cache if zMin or
+// zMax options are being changed, #24138.
+BubbleSeries_addEvent(BubbleSeries, 'update', (e) => {
+    const bubbleOptions = e.target.options;
+    if (BubbleSeries_defined(bubbleOptions.zMin) || BubbleSeries_defined(bubbleOptions.zMax)) {
+        delete e.target.chart.bubbleZExtremes;
+    }
 });
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('bubble', BubbleSeries);
 /* *
@@ -11368,7 +11365,8 @@ function colorFromPoint(value, point) {
  */
 function getContext(series) {
     const { canvas, context } = series;
-    if (canvas && context) {
+    // We can trust that the conext is canvas when clearRect is present.
+    if (canvas && context?.clearRect) {
         context.clearRect(0, 0, canvas.width, canvas.height);
     }
     else {
@@ -11554,6 +11552,10 @@ class HeatmapSeries extends HeatmapSeries_ScatterSeries {
         // evaluation of borderRadius would be moved to `markerAttribs`.
         if (options.marker && HeatmapSeries_isNumber(options.borderRadius)) {
             options.marker.r = options.borderRadius;
+        }
+        const canvas = this.canvas = document.createElement('canvas');
+        if (canvas) {
+            this.context = canvas?.getContext('webgpu');
         }
     }
     /**

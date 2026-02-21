@@ -23,6 +23,7 @@ const { addEvent, extend, isNumber, merge, pick, pushUnique } = U;
  *  Class
  *
  * */
+/** @internal */
 class Series3D extends Series {
     /* *
      *
@@ -102,4 +103,5 @@ Series3D.defaultOptions = merge(Series.defaultOptions);
  *  Default Export
  *
  * */
+/** @internal */
 export default Series3D;

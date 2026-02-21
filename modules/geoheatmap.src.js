@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.5.0 (2026-01-12)
+ * @license Highcharts JS v12.5.0-modified (2026-02-21)
  * @module highcharts/modules/geoheatmap
  * @requires highcharts
  *
@@ -225,7 +225,8 @@ function colorFromPoint(value, point) {
  */
 function getContext(series) {
     const { canvas, context } = series;
-    if (canvas && context) {
+    // We can trust that the conext is canvas when clearRect is present.
+    if (canvas && context?.clearRect) {
         context.clearRect(0, 0, canvas.width, canvas.height);
     }
     else {

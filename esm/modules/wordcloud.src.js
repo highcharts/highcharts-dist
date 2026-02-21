@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.5.0 (2026-01-12)
+ * @license Highcharts JS v12.5.0-modified (2026-02-21)
  * @module highcharts/modules/wordcloud
  * @requires highcharts
  *
@@ -240,6 +240,7 @@ const WordcloudSeriesDefaults = {
     clip: false, // Something goes wrong with clip. // @todo fix this
     colorByPoint: true,
     cropThreshold: Infinity,
+    colorKey: 'weight',
     /**
      * A threshold determining the minimum font size that can be applied to
      * a word.

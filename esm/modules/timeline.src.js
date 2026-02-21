@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.5.0 (2026-01-12)
+ * @license Highcharts JS v12.5.0-modified (2026-02-21)
  * @module highcharts/modules/timeline
  * @requires highcharts
  *
@@ -585,7 +585,9 @@ class TimelineSeries extends LineSeries {
                 if (inverted) {
                     defaults.align = (dataLabelsOptions.alternate && visibilityIndex % 2) ? 'right' : 'left';
                 }
-                point.options.dataLabels = TimelineSeries_merge(defaults, point.userDLOptions);
+                point.options.dataLabels = TimelineSeries_merge(defaults, point.userDLOptions, 
+                // Forced. Point level limitations.
+                { zIndex: void 0 });
                 visibilityIndex++;
             }
         }
@@ -683,7 +685,7 @@ class TimelineSeries extends LineSeries {
         }));
     }
     markerAttribs(point, state) {
-        const series = this, seriesMarkerOptions = series.options.marker, pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol || seriesMarkerOptions.symbol), width = TimelineSeries_pick(pointMarkerOptions.width, seriesMarkerOptions.width, series.closestPointRangePx), height = TimelineSeries_pick(pointMarkerOptions.height, seriesMarkerOptions.height);
+        const series = this, seriesMarkerOptions = series.options.marker, pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol || seriesMarkerOptions?.symbol), width = TimelineSeries_pick(pointMarkerOptions.width, seriesMarkerOptions?.width, series.closestPointRangePx), height = TimelineSeries_pick(pointMarkerOptions.height, seriesMarkerOptions?.height);
         let seriesStateOptions, pointStateOptions, radius = 0;
         // Call default markerAttribs method, when the xAxis type
         // is set to datetime.
@@ -692,7 +694,7 @@ class TimelineSeries extends LineSeries {
         }
         // Handle hover and select states
         if (state) {
-            seriesStateOptions = seriesMarkerOptions.states?.[state];
+            seriesStateOptions = seriesMarkerOptions?.states?.[state];
             pointStateOptions = pointMarkerOptions.states?.[state];
             radius = TimelineSeries_pick(pointStateOptions?.radius, seriesStateOptions?.radius, radius + (seriesStateOptions?.radiusPlus || 0));
         }

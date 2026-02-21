@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.5.0 (2026-01-12)
+ * @license Highcharts JS v12.5.0-modified (2026-02-21)
  * @module highcharts/highcharts-more
  * @requires highcharts
  *
@@ -380,7 +380,7 @@ const { defaultOptions } = (external_highcharts_src_js_default_default());
  * @sample {highcharts} highcharts/demo/gauge-speedometer/
  *         Speedometer gauge with multiple backgrounds
  *
- * @type         {Array<*>}
+ * @type         {*|Array<*>}
  * @optionparent pane.background
  */
 const background = {
@@ -3117,15 +3117,12 @@ function chartDrawChartBox(proceed, options, callback) {
         proceed.call(chart, options, callback);
         // Check bubble legend sizes and correct them if necessary.
         legend.bubbleLegend.correctSizes();
-        // Correct items positions with different dimensions in legend.
-        retranslateItems(legend, getLinesHeights(legend));
     }
     else {
         proceed.call(chart, options, callback);
         // Allow color change on static bubble legend after click on legend
         if (legend && legend.options.enabled && legend.bubbleLegend) {
             legend.render();
-            retranslateItems(legend, getLinesHeights(legend));
         }
     }
 }
@@ -3149,6 +3146,7 @@ function BubbleLegendComposition_compose(ChartClass, LegendClass) {
         });
         wrap(ChartClass.prototype, 'drawChartBox', chartDrawChartBox);
         BubbleLegendComposition_addEvent(LegendClass, 'afterGetAllItems', onLegendAfterGetAllItems);
+        BubbleLegendComposition_addEvent(LegendClass, 'afterRender', onLegendAfterRender);
         BubbleLegendComposition_addEvent(LegendClass, 'itemClick', onLegendItemClick);
     }
 }
@@ -3239,6 +3237,37 @@ function onLegendAfterGetAllItems(e) {
     }
 }
 /**
+ * Retranslate the legend items after render
+ */
+function onLegendAfterRender() {
+    if (this.bubbleLegend) {
+        const items = this.allItems, rtl = this.options.rtl, lines = getLinesHeights(this);
+        let orgTranslateX, orgTranslateY, movementX, legendItem, actualLine = 0;
+        items.forEach((item, index) => {
+            legendItem = item.legendItem || {};
+            if (!legendItem.group) {
+                return;
+            }
+            orgTranslateX = legendItem.group.translateX || 0;
+            orgTranslateY = legendItem.y || 0;
+            movementX = item.movementX;
+            if (movementX || (rtl && item.ranges)) {
+                movementX = rtl ?
+                    orgTranslateX - item.options.maxSize / 2 :
+                    orgTranslateX + movementX;
+                legendItem.group.attr({ translateX: movementX });
+            }
+            if (index > lines[actualLine].step) {
+                actualLine++;
+            }
+            legendItem.group.attr({
+                translateY: Math.round(orgTranslateY + lines[actualLine].height / 2)
+            });
+            legendItem.y = orgTranslateY + lines[actualLine].height / 2;
+        });
+    }
+}
+/**
  * Toggle bubble legend depending on the visible status of bubble series.
  */
 function onLegendItemClick(e) {
@@ -3265,44 +3294,6 @@ function onLegendItemClick(e) {
         }
         series.visible = visible;
     }
-}
-/**
- * Correct legend items translation in case of different elements heights.
- *
- * @private
- * @function Highcharts.Legend#retranslateItems
- *
- * @param {Highcharts.Legend} legend
- * Legend to translate in.
- *
- * @param {Array<Highcharts.Dictionary<number>>} lines
- * Informations about line height and items amount
- */
-function retranslateItems(legend, lines) {
-    const items = legend.allItems, rtl = legend.options.rtl;
-    let orgTranslateX, orgTranslateY, movementX, legendItem, actualLine = 0;
-    items.forEach((item, index) => {
-        legendItem = item.legendItem || {};
-        if (!legendItem.group) {
-            return;
-        }
-        orgTranslateX = legendItem.group.translateX || 0;
-        orgTranslateY = legendItem.y || 0;
-        movementX = item.movementX;
-        if (movementX || (rtl && item.ranges)) {
-            movementX = rtl ?
-                orgTranslateX - item.options.maxSize / 2 :
-                orgTranslateX + movementX;
-            legendItem.group.attr({ translateX: movementX });
-        }
-        if (index > lines[actualLine].step) {
-            actualLine++;
-        }
-        legendItem.group.attr({
-            translateY: Math.round(orgTranslateY + lines[actualLine].height / 2)
-        });
-        legendItem.y = orgTranslateY + lines[actualLine].height / 2;
-    });
 }
 /* *
  *
@@ -3397,7 +3388,7 @@ const { composed: BubbleSeries_composed, noop: BubbleSeries_noop } = (external_h
 
 const { series: Series, seriesTypes: { column: { prototype: BubbleSeries_columnProto }, scatter: ScatterSeries } } = (external_highcharts_src_js_default_SeriesRegistry_default());
 
-const { addEvent: BubbleSeries_addEvent, arrayMax: BubbleSeries_arrayMax, arrayMin: BubbleSeries_arrayMin, clamp, extend: BubbleSeries_extend, isNumber: BubbleSeries_isNumber, merge: BubbleSeries_merge, pick: BubbleSeries_pick, pushUnique: BubbleSeries_pushUnique } = (external_highcharts_src_js_default_default());
+const { addEvent: BubbleSeries_addEvent, arrayMax: BubbleSeries_arrayMax, arrayMin: BubbleSeries_arrayMin, clamp, defined: BubbleSeries_defined, extend: BubbleSeries_extend, isNumber: BubbleSeries_isNumber, merge: BubbleSeries_merge, pick: BubbleSeries_pick, pushUnique: BubbleSeries_pushUnique } = (external_highcharts_src_js_default_default());
 /* *
  *
  *  Functions
@@ -3651,13 +3642,15 @@ class BubbleSeries extends ScatterSeries {
             if (this.zoneAxis === 'z') {
                 point.negative = (point.z || 0) < (options.zThreshold || 0);
             }
-            if (BubbleSeries_isNumber(radius) && radius >= minPxSize / 2) {
-                // Shape arguments
+            // #24138: Always update marker to reflect current calculated radius
+            if (BubbleSeries_isNumber(radius)) {
                 point.marker = BubbleSeries_extend(point.marker, {
                     radius,
                     width: 2 * radius,
                     height: 2 * radius
                 });
+            }
+            if (BubbleSeries_isNumber(radius) && radius >= minPxSize / 2) {
                 // Alignment box for the data label
                 point.dlBox = {
                     x: point.plotX - radius,
@@ -3989,6 +3982,14 @@ BubbleSeries_addEvent(BubbleSeries, 'updatedData', (e) => {
 // After removing series, delete the chart-level Z extremes cache, #17502.
 BubbleSeries_addEvent(BubbleSeries, 'remove', (e) => {
     delete e.target.chart.bubbleZExtremes;
+});
+// Before updating series, delete the chart-level Z extremes cache if zMin or
+// zMax options are being changed, #24138.
+BubbleSeries_addEvent(BubbleSeries, 'update', (e) => {
+    const bubbleOptions = e.target.options;
+    if (BubbleSeries_defined(bubbleOptions.zMin) || BubbleSeries_defined(bubbleOptions.zMax)) {
+        delete e.target.chart.bubbleZExtremes;
+    }
 });
 external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('bubble', BubbleSeries);
 /* *
@@ -9529,7 +9530,7 @@ function seriesOnAfterColumnTranslate() {
                 // Get the radius
                 const r = Math.min(BorderRadius_relativeLength(borderRadius.radius, width), width / 2, 
                 // Cap to the height, but not if where is `end`
-                where === 'all' ? height / 2 : Infinity) || 0;
+                where === 'all' ? brBoxHeight / 2 : Infinity) || 0;
                 // If the `where` option is 'end', cut off the
                 // rectangles by making the border-radius box one r
                 // greater, so that the imaginary radius falls outside
@@ -9697,6 +9698,11 @@ const BorderRadius = {
 * example `50%`, signifies a relative size. For columns this is relative to the
 * column width, for pies it is relative to the radius and the inner radius.
 *
+* @sample  {highcharts} highcharts/plotoptions/column-borderradius/
+*          Rounded columns
+* @sample  highcharts/plotoptions/series-border-radius
+*          Column and pie with rounded border
+*
 * @name Highcharts.BorderRadiusOptionsObject#radius
 * @type {string|number}
 */ /**
@@ -9704,6 +9710,9 @@ const BorderRadius = {
 * value `point` means each single point will get rounded corners. The value
 * `stack` means the rounding will apply to the full stack, so that only points
 * close to the top or bottom will receive rounding.
+*
+* @sample  {highcharts} highcharts/plotoptions/column-borderradius/
+*          Rounded columns
 *
 * @name Highcharts.BorderRadiusOptionsObject#scope
 * @validvalue ["point", "stack"]
@@ -9713,6 +9722,9 @@ const BorderRadius = {
 * value means only those corners at the point value will be rounded, leaving
 * the corners at the base or threshold unrounded. This is the most intuitive
 * behaviour. The `all` value means also the base will be rounded.
+*
+* @sample  {highcharts} highcharts/plotoptions/column-borderradius-where-all
+*          Rounding on all corners
 *
 * @name Highcharts.BorderRadiusOptionsObject#where
 * @validvalue ["all", "end"]

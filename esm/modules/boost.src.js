@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.5.0 (2026-01-12)
+ * @license Highcharts JS v12.5.0-modified (2026-02-21)
  * @module highcharts/modules/boost
  * @requires highcharts
  *
@@ -2337,133 +2337,123 @@ class WGLRenderer {
  *  - Dawid Dragula
  *
  * */
+/* *
+*
+* Functions
+*
+* */
 /**
- * Utility functions for columns that can be either arrays or typed arrays.
+ * Sets the length of the column array.
+ *
+ * @param {DataTableColumn} column
+ * Column to be modified.
+ *
+ * @param {number} length
+ * New length of the column.
+ *
+ * @param {boolean} asSubarray
+ * If column is a typed array, return a subarray instead of a new array. It
+ * is faster `O(1)`, but the entire buffer will be kept in memory until all
+ * views of it are destroyed. Default is `false`.
+ *
+ * @return {DataTableColumn}
+ * Modified column.
+ *
  * @private
  */
-var ColumnUtils;
-(function (ColumnUtils) {
-    /* *
-    *
-    *  Declarations
-    *
-    * */
-    /* *
-    *
-    * Functions
-    *
-    * */
-    /**
-     * Sets the length of the column array.
-     *
-     * @param {DataTable.Column} column
-     * Column to be modified.
-     *
-     * @param {number} length
-     * New length of the column.
-     *
-     * @param {boolean} asSubarray
-     * If column is a typed array, return a subarray instead of a new array. It
-     * is faster `O(1)`, but the entire buffer will be kept in memory until all
-     * views of it are destroyed. Default is `false`.
-     *
-     * @return {DataTable.Column}
-     * Modified column.
-     *
-     * @private
-     */
-    function setLength(column, length, asSubarray) {
-        if (Array.isArray(column)) {
-            column.length = length;
-            return column;
-        }
-        return column[asSubarray ? 'subarray' : 'slice'](0, length);
+function setLength(column, length, asSubarray) {
+    if (Array.isArray(column)) {
+        column.length = length;
+        return column;
     }
-    ColumnUtils.setLength = setLength;
-    /**
-     * Splices a column array.
-     *
-     * @param {DataTable.Column} column
-     * Column to be modified.
-     *
-     * @param {number} start
-     * Index at which to start changing the array.
-     *
-     * @param {number} deleteCount
-     * An integer indicating the number of old array elements to remove.
-     *
-     * @param {boolean} removedAsSubarray
-     * If column is a typed array, return a subarray instead of a new array. It
-     * is faster `O(1)`, but the entire buffer will be kept in memory until all
-     * views to it are destroyed. Default is `true`.
-     *
-     * @param {Array<number>|TypedArray} items
-     * The elements to add to the array, beginning at the start index. If you
-     * don't specify any elements, `splice()` will only remove elements from the
-     * array.
-     *
-     * @return {SpliceResult}
-     * Object containing removed elements and the modified column.
-     *
-     * @private
-     */
-    function splice(column, start, deleteCount, removedAsSubarray, items = []) {
-        if (Array.isArray(column)) {
-            if (!Array.isArray(items)) {
-                items = Array.from(items);
-            }
-            return {
-                removed: column.splice(start, deleteCount, ...items),
-                array: column
-            };
+    return column[asSubarray ? 'subarray' : 'slice'](0, length);
+}
+/**
+ * Splices a column array.
+ *
+ * @param {DataTableColumn} column
+ * Column to be modified.
+ *
+ * @param {number} start
+ * Index at which to start changing the array.
+ *
+ * @param {number} deleteCount
+ * An integer indicating the number of old array elements to remove.
+ *
+ * @param {boolean} removedAsSubarray
+ * If column is a typed array, return a subarray instead of a new array. It
+ * is faster `O(1)`, but the entire buffer will be kept in memory until all
+ * views to it are destroyed. Default is `true`.
+ *
+ * @param {Array<number>|TypedArray} items
+ * The elements to add to the array, beginning at the start index. If you
+ * don't specify any elements, `splice()` will only remove elements from the
+ * array.
+ *
+ * @return {SpliceResult}
+ * Object containing removed elements and the modified column.
+ *
+ * @private
+ */
+function splice(column, start, deleteCount, removedAsSubarray, items = []) {
+    if (Array.isArray(column)) {
+        if (!Array.isArray(items)) {
+            items = Array.from(items);
         }
-        const Constructor = Object.getPrototypeOf(column)
-            .constructor;
-        const removed = column[removedAsSubarray ? 'subarray' : 'slice'](start, start + deleteCount);
-        const newLength = column.length - deleteCount + items.length;
-        const result = new Constructor(newLength);
-        result.set(column.subarray(0, start), 0);
-        result.set(items, start);
-        result.set(column.subarray(start + deleteCount), start + items.length);
         return {
-            removed: removed,
-            array: result
+            removed: column.splice(start, deleteCount, ...items),
+            array: column
         };
     }
-    ColumnUtils.splice = splice;
-    /**
-     * Converts a cell value to a number.
-     *
-     * @param {DataTable.CellType} value
-     * Cell value to convert to a number.
-     *
-     * @param {boolean} useNaN
-     * If `true`, returns `NaN` for non-numeric values; if `false`,
-     * returns `null` instead.
-     *
-     * @return {number | null}
-     * Number or `null` if the value is not a number.
-     *
-     * @private
-     */
-    function convertToNumber(value, useNaN) {
-        switch (typeof value) {
-            case 'boolean':
-                return (value ? 1 : 0);
-            case 'number':
-                return (isNaN(value) && !useNaN ? null : value);
-            default:
-                value = parseFloat(`${value ?? ''}`);
-                return (isNaN(value) && !useNaN ? null : value);
-        }
+    const Constructor = Object.getPrototypeOf(column)
+        .constructor;
+    const removed = column[removedAsSubarray ? 'subarray' : 'slice'](start, start + deleteCount);
+    const newLength = column.length - deleteCount + items.length;
+    const result = new Constructor(newLength);
+    result.set(column.subarray(0, start), 0);
+    result.set(items, start);
+    result.set(column.subarray(start + deleteCount), start + items.length);
+    return {
+        removed: removed,
+        array: result
+    };
+}
+/**
+ * Converts a cell value to a number.
+ *
+ * @param {DataTableCellType} value
+ * Cell value to convert to a number.
+ *
+ * @param {boolean} useNaN
+ * If `true`, returns `NaN` for non-numeric values; if `false`,
+ * returns `null` instead.
+ *
+ * @return {number | null}
+ * Number or `null` if the value is not a number.
+ *
+ * @private
+ */
+function convertToNumber(value, useNaN) {
+    switch (typeof value) {
+        case 'boolean':
+            return (value ? 1 : 0);
+        case 'number':
+            return (isNaN(value) && !useNaN ? null : value);
+        default:
+            value = parseFloat(`${value ?? ''}`);
+            return (isNaN(value) && !useNaN ? null : value);
     }
-    ColumnUtils.convertToNumber = convertToNumber;
-})(ColumnUtils || (ColumnUtils = {}));
+}
 /* *
  *
  *  Default Export
  *
  * */
+const ColumnUtils = {
+    convertToNumber,
+    setLength,
+    splice
+};
 /* harmony default export */ const Data_ColumnUtils = (ColumnUtils);
 
 ;// ./code/es-modules/Data/DataTableCore.js
@@ -2483,7 +2473,7 @@ var ColumnUtils;
  * */
 
 
-const { setLength, splice } = Data_ColumnUtils;
+const { setLength: DataTableCore_setLength, splice: DataTableCore_splice } = Data_ColumnUtils;
 
 const { fireEvent, objectEach: DataTableCore_objectEach, uniqueKey } = (external_highcharts_src_js_default_default());
 /* *
@@ -2560,7 +2550,7 @@ class DataTableCore {
         this.rowCount = rowCount;
         DataTableCore_objectEach(this.columns, (column, columnId) => {
             if (column.length !== rowCount) {
-                this.columns[columnId] = setLength(column, rowCount);
+                this.columns[columnId] = DataTableCore_setLength(column, rowCount);
             }
         });
     }
@@ -2583,7 +2573,7 @@ class DataTableCore {
             let length = 0;
             DataTableCore_objectEach(this.columns, (column, columnId) => {
                 this.columns[columnId] =
-                    splice(column, rowIndex, rowCount).array;
+                    DataTableCore_splice(column, rowIndex, rowCount).array;
                 length = column.length;
             });
             this.rowCount = length;
@@ -2726,7 +2716,7 @@ class DataTableCore {
             }
             if (column) {
                 if (insert) {
-                    column = splice(column, rowIndex, 0, true, [row[columnId] ?? null]).array;
+                    column = DataTableCore_splice(column, rowIndex, 0, true, [row[columnId] ?? null]).array;
                 }
                 else {
                     column[rowIndex] = row[columnId] ?? null;
@@ -2823,6 +2813,12 @@ const { addEvent: BoostSeries_addEvent, destroyObjectProperties, error: BoostSer
  *
  * */
 const CHUNK_SIZE = 3000;
+/**
+ * Default boost threshold.
+ *
+ * @internal
+ */
+const DEFAULT_BOOST_THRESHOLD = 5000;
 /* *
  *
  *  Variables
@@ -2892,7 +2888,7 @@ function BoostSeries_compose(SeriesClass, seriesTypes, PointClass, wglMode) {
         Boost_Boostables.forEach((type) => {
             const typePlotOptions = plotOptions[type];
             if (typePlotOptions) {
-                typePlotOptions.boostThreshold = 5000;
+                typePlotOptions.boostThreshold = DEFAULT_BOOST_THRESHOLD;
                 typePlotOptions.boostData = [];
                 seriesTypes[type].prototype.fillOpacity = true;
             }
@@ -3260,21 +3256,21 @@ function exitBoost(series) {
     (chart.seriesGroup || series.group)?.clip();
 }
 /**
+ * True when we can skip the expensive data loop (processData/getExtremes).
  * @internal
  * @function Highcharts.Series#hasExtremes
  */
 function hasExtremes(series, checkX) {
-    const options = series.options, dataLength = series.dataTable.getModified().rowCount, xAxis = series.xAxis && series.xAxis.options, yAxis = series.yAxis && series.yAxis.options, colorAxis = series.colorAxis && series.colorAxis.options;
-    return dataLength > BoostSeries_pick(options.boostThreshold, Number.MAX_VALUE) &&
-        // Defined yAxis extremes
-        BoostSeries_isNumber(yAxis.min) &&
-        BoostSeries_isNumber(yAxis.max) &&
-        // Defined (and required) xAxis extremes
-        (!checkX ||
-            (BoostSeries_isNumber(xAxis.min) && BoostSeries_isNumber(xAxis.max))) &&
-        // Defined (e.g. heatmap) colorAxis extremes
-        (!colorAxis ||
-            (BoostSeries_isNumber(colorAxis.min) && BoostSeries_isNumber(colorAxis.max)));
+    const options = series.options, threshold = BoostSeries_pick(options.boostThreshold, Number.MAX_VALUE);
+    if (threshold === 0) {
+        return false;
+    }
+    const dataLength = series.dataTable.getModified().rowCount, xAxis = series.xAxis && series.xAxis.options, yAxis = series.yAxis && series.yAxis.options, colorAxis = series.colorAxis && series.colorAxis.options;
+    return (dataLength >= threshold &&
+        BoostSeries_isNumber(yAxis?.min) &&
+        BoostSeries_isNumber(yAxis?.max) &&
+        (!checkX || (BoostSeries_isNumber(xAxis?.min) && BoostSeries_isNumber(xAxis?.max))) &&
+        (!colorAxis || (BoostSeries_isNumber(colorAxis.min) && BoostSeries_isNumber(colorAxis.max))));
 }
 /**
  * Used multiple times. In processData first on this.options.data, the second
@@ -3284,13 +3280,12 @@ function hasExtremes(series, checkX) {
  * @internal
  */
 const getSeriesBoosting = (series, data) => {
-    // Check if will be grouped.
-    if (series.forceCrop) {
+    const { options, forceCrop, chart } = series, threshold = BoostSeries_pick(options.boostThreshold, Number.MAX_VALUE);
+    // Return early if either will be grouped or boost is disabled.
+    if (forceCrop || threshold === 0) {
         return false;
     }
-    return (BoostSeries_isChartSeriesBoosting(series.chart) ||
-        ((data ? data.length : 0) >=
-            BoostSeries_pick(series.options.boostThreshold, Number.MAX_VALUE)));
+    return BoostSeries_isChartSeriesBoosting(chart) || (data?.length ?? 0) >= threshold;
 };
 /**
  * Extend series.destroy to also remove the fake k-d-tree points (#5137).
@@ -3714,7 +3709,9 @@ function seriesRenderCanvas() {
         return !chartDestroyed;
     }
     /** @internal */
-    const boostOptions = renderer.settings, doneProcessing = () => {
+    const boostOptions = renderer.settings, chunkSize = (BoostSeries_isNumber(boostOptions.chunkSize) && boostOptions.chunkSize > 0 ?
+        boostOptions.chunkSize :
+        CHUNK_SIZE), doneProcessing = () => {
         BoostSeries_fireEvent(this, 'renderedCanvas');
         // Go back to prototype, ready to build
         delete this.buildKDTree;
@@ -3735,7 +3732,7 @@ function seriesRenderCanvas() {
         }
         eachAsync(isStacked ?
             this.data.slice(cropStart) :
-            (xData || rawData), processPoint, doneProcessing);
+            (xData || rawData), processPoint, doneProcessing, chunkSize);
     }
 }
 /**
@@ -3812,13 +3809,10 @@ function wrapSeriesFunctions(seriesProto, seriesTypes, method) {
  */
 function wrapSeriesGetExtremes(proceed) {
     if (this.boosted) {
-        if (hasExtremes(this)) {
+        if (hasExtremes(this, true)) {
             return {};
         }
-        if (this.xAxis.isPanning || this.yAxis.isPanning) {
-            // Do not re-compute the extremes during panning, because looping
-            // the data is expensive. The `this` contains the `dataMin` and
-            // `dataMax` to use.
+        if (this.xAxis?.isPanning || this.yAxis?.isPanning) {
             return this;
         }
     }
@@ -4364,6 +4358,15 @@ const Boost = {
  * @type      {boolean}
  * @default   false
  * @apioption boost.debug.timeBufferCopy
+ */
+/**
+ * The number of points processed per frame when building the k-d tree for
+ * boosted series. Lower values improve responsiveness but increase the time it
+ * takes to build the tree.
+ *
+ * @type      {number}
+ * @default   3000
+ * @apioption boost.chunkSize
  */
 /**
  * The pixel ratio for the WebGL content. If 0, the `window.devicePixelRatio` is

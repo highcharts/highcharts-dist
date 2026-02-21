@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v12.5.0 (2026-01-12)
+ * @license Highcharts Gantt JS v12.5.0-modified (2026-02-21)
  * @module highcharts/modules/static-scale
  * @requires highcharts
  *
@@ -150,14 +150,17 @@ const StaticScale = {
  * height of the chart adjusts. Adding or removing items will make the chart
  * resize.
  *
- * @sample gantt/xrange-series/demo/
+ * @sample {gantt} gantt/xrange-series/demo/
  *         X-range series with static scale
+ * @sample {highcharts} highcharts/xaxis/staticscale
+ *         Static scale on X axis (horizontal bar chart)
  *
+ * @requires  modules/static-scale
  * @type      {number}
  * @default   50
  * @since     6.2.0
- * @product   gantt
- * @apioption yAxis.staticScale
+ * @product   highcharts highstock gantt
+ * @apioption xAxis.staticScale
  */
 ''; // Keeps doclets above in JS file
 

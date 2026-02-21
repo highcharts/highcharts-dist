@@ -240,7 +240,7 @@ function onAfterInit() {
                     columns: void 0
                 }
             });
-            const column = new Axis(axis.chart, columnOptions, 'yAxis');
+            const column = new Axis(axis.chart, columnOptions, axis.coll);
             column.grid.isColumn = true;
             column.grid.columnIndex = columnIndex;
             // Remove column axis from chart axes array, and place it
@@ -1014,6 +1014,8 @@ export default GridAxis;
  *         Left axis as a table
  * @sample gantt/demo/treegrid-columns
  *         Collapsible tree grid with columns
+ * @sample gantt/grid-axis/horizontal-columns
+ *         Horizontal grid axis with columns rendered as rows
  *
  * @type      {Array<Highcharts.XAxisOptions>}
  * @apioption xAxis.grid.columns

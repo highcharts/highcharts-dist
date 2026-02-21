@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.5.0 (2026-01-12)
+ * @license Highcharts JS v12.5.0-modified (2026-02-21)
  * @module highcharts/highcharts-3d
  * @requires highcharts
  *
@@ -2888,6 +2888,7 @@ const { addEvent: Series3D_addEvent, extend: Series3D_extend, isNumber, merge: S
  *  Class
  *
  * */
+/** @internal */
 class Series3D extends (highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default()) {
     /* *
      *
@@ -2967,6 +2968,7 @@ Series3D.defaultOptions = Series3D_merge((highcharts_Series_commonjs_highcharts_
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Series_Series3D = (Series3D);
 
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","StackItem"],"commonjs":["highcharts","StackItem"],"commonjs2":["highcharts","StackItem"],"root":["Highcharts","StackItem"]}
@@ -4961,8 +4963,6 @@ const Scatter3DSeriesDefaults = {
 /**
  * A `scatter3d` series. If the [type](#series.scatter3d.type) option is
  * not specified, it is inherited from [chart.type](#chart.type).
- *
- * scatter3d](#plotOptions.scatter3d).
  *
  * @extends   series,plotOptions.scatter3d
  * @excluding boostThreshold, boostBlending

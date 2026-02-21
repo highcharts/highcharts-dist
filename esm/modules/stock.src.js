@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v12.5.0 (2026-01-12)
+ * @license Highstock JS v12.5.0-modified (2026-02-21)
  * @module highcharts/modules/stock
  * @requires highcharts
  *
@@ -465,7 +465,7 @@ var DataModifyComposition;
                     }
                     else {
                         const compareBase = this.series.options.compareBase;
-                        value = 100 * (value / compareValue) -
+                        value = 100 * (value / Math.abs(compareValue)) -
                             (compareBase === 100 ? 0 : 100);
                     }
                     // Record for tooltip etc.
@@ -2490,7 +2490,8 @@ const ScrollbarDefaults = {
     /**
      * Whether to redraw the main chart as the scrollbar or the navigator
      * zoomed window is moved. Defaults to `true` for modern browsers and
-     * `false` for legacy IE browsers as well as mobile devices.
+     * `false` for legacy IE browsers as well as mobile devices. This option
+     * works regardless of whether the scrollbar is enabled or not.
      *
      * @sample stock/scrollbar/liveredraw
      *         Setting live redraw to false
@@ -3291,9 +3292,6 @@ Scrollbar.defaultOptions = Scrollbar_ScrollbarDefaults;
  * */
 /* harmony default export */ const Scrollbar_Scrollbar = (Scrollbar);
 
-;// external ["../highcharts.src.js","default","SVGRenderer"]
-const external_highcharts_src_js_default_SVGRenderer_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SVGRenderer;
-var external_highcharts_src_js_default_SVGRenderer_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SVGRenderer_namespaceObject);
 ;// ./code/es-modules/Stock/Navigator/Navigator.js
 /* *
  *
@@ -3315,8 +3313,6 @@ const { isTouchDevice: Navigator_isTouchDevice } = (external_highcharts_src_js_d
 
 
 
-
-const { prototype: { symbols } } = (external_highcharts_src_js_default_SVGRenderer_default());
 
 const { addEvent: Navigator_addEvent, clamp, correctFloat: Navigator_correctFloat, defined: Navigator_defined, destroyObjectProperties: Navigator_destroyObjectProperties, erase, extend: Navigator_extend, find, fireEvent: Navigator_fireEvent, isArray: Navigator_isArray, isNumber: Navigator_isNumber, merge: Navigator_merge, pick: Navigator_pick, removeEvent: Navigator_removeEvent, splat } = (external_highcharts_src_js_default_default());
 /* *
@@ -3604,13 +3600,13 @@ class Navigator {
                 stroke: navigatorOptions.outlineColor
             });
         }
-        // Create the handlers:
+        // Create the handles:
         if (navigatorOptions.handles?.enabled) {
             const handlesOptions = navigatorOptions.handles, { height, width } = handlesOptions;
             [0, 1].forEach((index) => {
                 const symbolName = handlesOptions.symbols[index];
                 if (!navigator.handles[index] ||
-                    navigator.handles[index].symbolUrl !== symbolName) {
+                    navigator.handles[index].symbolName !== symbolName) {
                     // Generate symbol from scratch if we're dealing with an URL
                     navigator.handles[index]?.destroy();
                     navigator.handles[index] = renderer.symbol(symbolName, -width / 2 - 1, 0, width, height, handlesOptions);
@@ -3620,16 +3616,10 @@ class Navigator {
                         .addClass('highcharts-navigator-handle ' +
                         'highcharts-navigator-handle-' +
                         ['left', 'right'][index]).add(navigatorGroup);
-                    navigator.addMouseEvents();
-                    // If the navigator symbol changed, update its path and name
-                }
-                else if (!navigator.handles[index].isImg &&
-                    navigator.handles[index].symbolName !== symbolName) {
-                    const symbolFn = symbols[symbolName], path = symbolFn.call(symbols, -width / 2 - 1, 0, width, height);
-                    navigator.handles[index].attr({
-                        d: path
-                    });
-                    navigator.handles[index].symbolName = symbolName;
+                    // Remove old events:
+                    navigator.removeShadesAndHandlesEvents();
+                    // Re-add the events with new elements:
+                    navigator.addShadesAndHandlesEvents();
                 }
                 if (chart.inverted) {
                     navigator.handles[index].attr({
@@ -3847,7 +3837,8 @@ class Navigator {
      */
     addMouseEvents() {
         const navigator = this, chart = navigator.chart, container = chart.container;
-        let eventsToUnbind = [], mouseMoveHandler, mouseUpHandler;
+        const eventsToUnbind = [];
+        let mouseMoveHandler, mouseUpHandler;
         /**
          * Create mouse events' handlers.
          * Make them as separate functions to enable wrapping them:
@@ -3858,8 +3849,6 @@ class Navigator {
         navigator.mouseUpHandler = mouseUpHandler = function (e) {
             navigator.onMouseUp(e);
         };
-        // Add shades and handles mousedown events
-        eventsToUnbind = navigator.getPartsEvents('mousedown');
         eventsToUnbind.push(
         // Add mouse move and mouseup events. These are bind to doc/div,
         // because Navigator.grabbedSomething flags are stored in mousedown
@@ -3867,7 +3856,7 @@ class Navigator {
         Navigator_addEvent(chart.renderTo, 'mousemove', mouseMoveHandler), Navigator_addEvent(container.ownerDocument, 'mouseup', mouseUpHandler), 
         // Touch events
         Navigator_addEvent(chart.renderTo, 'touchmove', mouseMoveHandler), Navigator_addEvent(container.ownerDocument, 'touchend', mouseUpHandler));
-        eventsToUnbind.concat(navigator.getPartsEvents('touchstart'));
+        navigator.addShadesAndHandlesEvents(); // (#21775)
         navigator.eventsToUnbind = eventsToUnbind;
         // Data events
         if (navigator.series && navigator.series[0]) {
@@ -3875,6 +3864,28 @@ class Navigator {
                 chart.navigator.modifyNavigatorAxisExtremes();
             }));
         }
+    }
+    /**
+     * Set up the mouse and touch events for the shades and handles only.
+     *
+     * @private
+     * @function Highcharts.Navigator#addShadesAndHandlesEvents
+     */
+    addShadesAndHandlesEvents() {
+        this.shadesAndHandlesEventsToUnbind = this.getPartsEvents('mousedown'),
+            this.shadesAndHandlesEventsToUnbind.concat(this.getPartsEvents('touchstart'));
+    }
+    /**
+     * Remove the mouse and touch events for the shades and handles only.
+     *
+     * @private
+     * @function Highcharts.Navigator#removeShadesAndHandelsEvents
+     */
+    removeShadesAndHandlesEvents() {
+        this.shadesAndHandlesEventsToUnbind.forEach((unbind) => {
+            unbind();
+        });
+        this.shadesAndHandlesEventsToUnbind = [];
     }
     /**
      * Generate events for handles and masks
@@ -4030,7 +4041,7 @@ class Navigator {
                 navigator.render(0, 0, navigator.otherHandlePos, chartX - left);
                 // Drag scrollbar or open area in navigator
             }
-            else if (navigator.grabbedCenter) {
+            else if (navigator.grabbedCenter && dragOffset) {
                 navigator.hasDragged = true;
                 if (chartX < dragOffset) { // Outside left
                     chartX = dragOffset;
@@ -4043,8 +4054,7 @@ class Navigator {
                 navigator.render(0, 0, chartX - dragOffset, chartX - dragOffset + range);
             }
             if (navigator.hasDragged &&
-                navigator.scrollbar &&
-                Navigator_pick(navigator.scrollbar.options.liveRedraw, 
+                Navigator_pick(navigator.scrollbarOptions?.liveRedraw, 
                 // By default, don't run live redraw on touch
                 // devices or if the chart is in boost.
                 !Navigator_isTouchDevice &&
@@ -4149,6 +4159,7 @@ class Navigator {
             });
             this.eventsToUnbind = void 0;
         }
+        this.removeShadesAndHandlesEvents();
         this.removeBaseSeriesEvents();
     }
     /**
@@ -4191,6 +4202,7 @@ class Navigator {
         const chartOptions = chart.options, navigatorOptions = chartOptions.navigator || {}, navigatorEnabled = navigatorOptions.enabled, scrollbarOptions = chartOptions.scrollbar || {}, scrollbarEnabled = scrollbarOptions.enabled, height = navigatorEnabled && navigatorOptions.height || 0, scrollbarHeight = scrollbarEnabled && scrollbarOptions.height || 0, scrollButtonSize = scrollbarOptions.buttonsEnabled && scrollbarHeight || 0;
         this.handles = [];
         this.shades = [];
+        this.shadesAndHandlesEventsToUnbind = [];
         this.chart = chart;
         this.setBaseSeries();
         this.height = height;
@@ -4797,133 +4809,123 @@ class Navigator {
  *  - Dawid Dragula
  *
  * */
+/* *
+*
+* Functions
+*
+* */
 /**
- * Utility functions for columns that can be either arrays or typed arrays.
+ * Sets the length of the column array.
+ *
+ * @param {DataTableColumn} column
+ * Column to be modified.
+ *
+ * @param {number} length
+ * New length of the column.
+ *
+ * @param {boolean} asSubarray
+ * If column is a typed array, return a subarray instead of a new array. It
+ * is faster `O(1)`, but the entire buffer will be kept in memory until all
+ * views of it are destroyed. Default is `false`.
+ *
+ * @return {DataTableColumn}
+ * Modified column.
+ *
  * @private
  */
-var ColumnUtils;
-(function (ColumnUtils) {
-    /* *
-    *
-    *  Declarations
-    *
-    * */
-    /* *
-    *
-    * Functions
-    *
-    * */
-    /**
-     * Sets the length of the column array.
-     *
-     * @param {DataTable.Column} column
-     * Column to be modified.
-     *
-     * @param {number} length
-     * New length of the column.
-     *
-     * @param {boolean} asSubarray
-     * If column is a typed array, return a subarray instead of a new array. It
-     * is faster `O(1)`, but the entire buffer will be kept in memory until all
-     * views of it are destroyed. Default is `false`.
-     *
-     * @return {DataTable.Column}
-     * Modified column.
-     *
-     * @private
-     */
-    function setLength(column, length, asSubarray) {
-        if (Array.isArray(column)) {
-            column.length = length;
-            return column;
-        }
-        return column[asSubarray ? 'subarray' : 'slice'](0, length);
+function setLength(column, length, asSubarray) {
+    if (Array.isArray(column)) {
+        column.length = length;
+        return column;
     }
-    ColumnUtils.setLength = setLength;
-    /**
-     * Splices a column array.
-     *
-     * @param {DataTable.Column} column
-     * Column to be modified.
-     *
-     * @param {number} start
-     * Index at which to start changing the array.
-     *
-     * @param {number} deleteCount
-     * An integer indicating the number of old array elements to remove.
-     *
-     * @param {boolean} removedAsSubarray
-     * If column is a typed array, return a subarray instead of a new array. It
-     * is faster `O(1)`, but the entire buffer will be kept in memory until all
-     * views to it are destroyed. Default is `true`.
-     *
-     * @param {Array<number>|TypedArray} items
-     * The elements to add to the array, beginning at the start index. If you
-     * don't specify any elements, `splice()` will only remove elements from the
-     * array.
-     *
-     * @return {SpliceResult}
-     * Object containing removed elements and the modified column.
-     *
-     * @private
-     */
-    function splice(column, start, deleteCount, removedAsSubarray, items = []) {
-        if (Array.isArray(column)) {
-            if (!Array.isArray(items)) {
-                items = Array.from(items);
-            }
-            return {
-                removed: column.splice(start, deleteCount, ...items),
-                array: column
-            };
+    return column[asSubarray ? 'subarray' : 'slice'](0, length);
+}
+/**
+ * Splices a column array.
+ *
+ * @param {DataTableColumn} column
+ * Column to be modified.
+ *
+ * @param {number} start
+ * Index at which to start changing the array.
+ *
+ * @param {number} deleteCount
+ * An integer indicating the number of old array elements to remove.
+ *
+ * @param {boolean} removedAsSubarray
+ * If column is a typed array, return a subarray instead of a new array. It
+ * is faster `O(1)`, but the entire buffer will be kept in memory until all
+ * views to it are destroyed. Default is `true`.
+ *
+ * @param {Array<number>|TypedArray} items
+ * The elements to add to the array, beginning at the start index. If you
+ * don't specify any elements, `splice()` will only remove elements from the
+ * array.
+ *
+ * @return {SpliceResult}
+ * Object containing removed elements and the modified column.
+ *
+ * @private
+ */
+function splice(column, start, deleteCount, removedAsSubarray, items = []) {
+    if (Array.isArray(column)) {
+        if (!Array.isArray(items)) {
+            items = Array.from(items);
         }
-        const Constructor = Object.getPrototypeOf(column)
-            .constructor;
-        const removed = column[removedAsSubarray ? 'subarray' : 'slice'](start, start + deleteCount);
-        const newLength = column.length - deleteCount + items.length;
-        const result = new Constructor(newLength);
-        result.set(column.subarray(0, start), 0);
-        result.set(items, start);
-        result.set(column.subarray(start + deleteCount), start + items.length);
         return {
-            removed: removed,
-            array: result
+            removed: column.splice(start, deleteCount, ...items),
+            array: column
         };
     }
-    ColumnUtils.splice = splice;
-    /**
-     * Converts a cell value to a number.
-     *
-     * @param {DataTable.CellType} value
-     * Cell value to convert to a number.
-     *
-     * @param {boolean} useNaN
-     * If `true`, returns `NaN` for non-numeric values; if `false`,
-     * returns `null` instead.
-     *
-     * @return {number | null}
-     * Number or `null` if the value is not a number.
-     *
-     * @private
-     */
-    function convertToNumber(value, useNaN) {
-        switch (typeof value) {
-            case 'boolean':
-                return (value ? 1 : 0);
-            case 'number':
-                return (isNaN(value) && !useNaN ? null : value);
-            default:
-                value = parseFloat(`${value ?? ''}`);
-                return (isNaN(value) && !useNaN ? null : value);
-        }
+    const Constructor = Object.getPrototypeOf(column)
+        .constructor;
+    const removed = column[removedAsSubarray ? 'subarray' : 'slice'](start, start + deleteCount);
+    const newLength = column.length - deleteCount + items.length;
+    const result = new Constructor(newLength);
+    result.set(column.subarray(0, start), 0);
+    result.set(items, start);
+    result.set(column.subarray(start + deleteCount), start + items.length);
+    return {
+        removed: removed,
+        array: result
+    };
+}
+/**
+ * Converts a cell value to a number.
+ *
+ * @param {DataTableCellType} value
+ * Cell value to convert to a number.
+ *
+ * @param {boolean} useNaN
+ * If `true`, returns `NaN` for non-numeric values; if `false`,
+ * returns `null` instead.
+ *
+ * @return {number | null}
+ * Number or `null` if the value is not a number.
+ *
+ * @private
+ */
+function convertToNumber(value, useNaN) {
+    switch (typeof value) {
+        case 'boolean':
+            return (value ? 1 : 0);
+        case 'number':
+            return (isNaN(value) && !useNaN ? null : value);
+        default:
+            value = parseFloat(`${value ?? ''}`);
+            return (isNaN(value) && !useNaN ? null : value);
     }
-    ColumnUtils.convertToNumber = convertToNumber;
-})(ColumnUtils || (ColumnUtils = {}));
+}
 /* *
  *
  *  Default Export
  *
  * */
+const ColumnUtils = {
+    convertToNumber,
+    setLength,
+    splice
+};
 /* harmony default export */ const Data_ColumnUtils = (ColumnUtils);
 
 ;// ./code/es-modules/Data/DataTableCore.js
@@ -4943,7 +4945,7 @@ var ColumnUtils;
  * */
 
 
-const { setLength, splice } = Data_ColumnUtils;
+const { setLength: DataTableCore_setLength, splice: DataTableCore_splice } = Data_ColumnUtils;
 
 const { fireEvent: DataTableCore_fireEvent, objectEach, uniqueKey } = (external_highcharts_src_js_default_default());
 /* *
@@ -5020,7 +5022,7 @@ class DataTableCore {
         this.rowCount = rowCount;
         objectEach(this.columns, (column, columnId) => {
             if (column.length !== rowCount) {
-                this.columns[columnId] = setLength(column, rowCount);
+                this.columns[columnId] = DataTableCore_setLength(column, rowCount);
             }
         });
     }
@@ -5043,7 +5045,7 @@ class DataTableCore {
             let length = 0;
             objectEach(this.columns, (column, columnId) => {
                 this.columns[columnId] =
-                    splice(column, rowIndex, rowCount).array;
+                    DataTableCore_splice(column, rowIndex, rowCount).array;
                 length = column.length;
             });
             this.rowCount = length;
@@ -5186,7 +5188,7 @@ class DataTableCore {
             }
             if (column) {
                 if (insert) {
-                    column = splice(column, rowIndex, 0, true, [row[columnId] ?? null]).array;
+                    column = DataTableCore_splice(column, rowIndex, 0, true, [row[columnId] ?? null]).array;
                 }
                 else {
                     column[rowIndex] = row[columnId] ?? null;
@@ -7031,7 +7033,7 @@ function redrawRangeSelector() {
         rangeSelector.render(extremes.min, extremes.max);
     }
     // Re-align the legend so that it's below the rangeselector
-    if (legend.display &&
+    if (legend?.display &&
         verticalAlign === 'top' &&
         verticalAlign === legend.options.verticalAlign) {
         // Create a new alignment box for the legend.

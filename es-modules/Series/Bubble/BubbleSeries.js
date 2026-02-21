@@ -16,7 +16,7 @@ const { composed, noop } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: Series, seriesTypes: { column: { prototype: columnProto }, scatter: ScatterSeries } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-const { addEvent, arrayMax, arrayMin, clamp, extend, isNumber, merge, pick, pushUnique } = U;
+const { addEvent, arrayMax, arrayMin, clamp, defined, extend, isNumber, merge, pick, pushUnique } = U;
 /* *
  *
  *  Functions
@@ -270,13 +270,15 @@ class BubbleSeries extends ScatterSeries {
             if (this.zoneAxis === 'z') {
                 point.negative = (point.z || 0) < (options.zThreshold || 0);
             }
-            if (isNumber(radius) && radius >= minPxSize / 2) {
-                // Shape arguments
+            // #24138: Always update marker to reflect current calculated radius
+            if (isNumber(radius)) {
                 point.marker = extend(point.marker, {
                     radius,
                     width: 2 * radius,
                     height: 2 * radius
                 });
+            }
+            if (isNumber(radius) && radius >= minPxSize / 2) {
                 // Alignment box for the data label
                 point.dlBox = {
                     x: point.plotX - radius,
@@ -608,6 +610,14 @@ addEvent(BubbleSeries, 'updatedData', (e) => {
 // After removing series, delete the chart-level Z extremes cache, #17502.
 addEvent(BubbleSeries, 'remove', (e) => {
     delete e.target.chart.bubbleZExtremes;
+});
+// Before updating series, delete the chart-level Z extremes cache if zMin or
+// zMax options are being changed, #24138.
+addEvent(BubbleSeries, 'update', (e) => {
+    const bubbleOptions = e.target.options;
+    if (defined(bubbleOptions.zMin) || defined(bubbleOptions.zMax)) {
+        delete e.target.chart.bubbleZExtremes;
+    }
 });
 SeriesRegistry.registerSeriesType('bubble', BubbleSeries);
 /* *

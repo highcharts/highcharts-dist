@@ -268,8 +268,8 @@ class PlotLineOrBand {
                     !inside) ? (label.rotation === 90 ?
                     axis.height - (label.alignAttr.y -
                         axis.top) : (optionsLabel.clip ?
-                    axis.width :
-                    axis.chart.chartWidth) - (label.alignAttr.x - axis.left)) :
+                    (axis.width + axis.left) :
+                    axis.chart.chartWidth) - label.alignAttr.x) :
                     bBoxWidth)) + 'px'
             });
         }

@@ -353,8 +353,13 @@ declare module "../highcharts.src" {
          */
         dataLabels?: (Highcharts.SeriesSankeyDataLabelsOptionsObject|Array<Highcharts.SeriesSankeyDataLabelsOptionsObject>);
         /**
-         * (Highcharts) A description of the series to add to the screen reader
-         * information about the series.
+         * (Highcharts) Deprecated. Use
+         * plotOptions.series.accessibility.description instead.
+         *
+         * A description of the series to add to the screen reader information
+         * about the series.
+         *
+         * @deprecated 8.0.0
          */
         description?: string;
         /**
@@ -502,13 +507,21 @@ declare module "../highcharts.src" {
          */
         point?: Highcharts.PlotSeriesPointOptions;
         /**
-         * (Highcharts) Same as accessibility.point.descriptionFormat, but for
-         * an individual series. Overrides the chart wide configuration.
+         * (Highcharts) Deprecated. Use
+         * series.accessibility.point.descriptionFormat instead.
+         *
+         * Same as accessibility.point.descriptionFormat, but for an individual
+         * series. Overrides the chart wide configuration.
          */
         pointDescriptionFormat?: Function;
         /**
-         * (Highcharts) Same as accessibility.series.descriptionFormatter, but
-         * for an individual series. Overrides the chart wide configuration.
+         * (Highcharts) Deprecated. Use
+         * series.accessibility.point.descriptionFormatter instead.
+         *
+         * Same as accessibility.series.descriptionFormatter, but for an
+         * individual series. Overrides the chart wide configuration.
+         *
+         * @deprecated 8.0.0
          */
         pointDescriptionFormatter?: Function;
         /**
@@ -547,8 +560,13 @@ declare module "../highcharts.src" {
          */
         size?: (number|string);
         /**
-         * (Highcharts) If set to `true`, the accessibility module will skip
-         * past the points in this series for keyboard navigation.
+         * (Highcharts) Deprecated. Use series.accessibility.keyboardNavigation
+         * instead.
+         *
+         * If set to `true`, the accessibility module will skip past the points
+         * in this series for keyboard navigation.
+         *
+         * @deprecated 8.0.0
          */
         skipKeyboardNavigation?: boolean;
         /**
@@ -659,22 +677,59 @@ declare module "../highcharts.src" {
         y?: number;
     }
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable the initial
-     * animation when a series is displayed for the `dataLabels`. The animation
-     * can also be set as a configuration object. Please note that this option
-     * only applies to the initial animation.
+     * (Highcharts) A `dependencywheel` series. If the type option is not
+     * specified, it is inherited from chart.type.
      *
-     * For other animations, see chart.animation and the animation parameter
-     * under the API methods. The following properties are supported:
+     * Configuration options for the series are given in three levels:
      *
-     * - `defer`: The animation delay time in milliseconds.
+     * 1. Options for all series in a chart are defined in the
+     * plotOptions.series object.
+     *
+     * 2. Options for all `dependencywheel` series are defined in
+     * plotOptions.dependencywheel.
+     *
+     * 3. Options for one single series are given in the series instance array.
+     * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - type option should always be set, otherwise a broad set of unsupported
+     * options is allowed.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
+     *
+     * You have to extend the `SeriesDependencywheelOptions` via an interface to
+     * allow custom properties: ``` declare interface
+     * SeriesDependencywheelOptions { customProperty: string; }
+     *
      */
-    interface SeriesDependencywheelNodesDataLabelsAnimationOptions {
+    interface SeriesDependencywheelOptions extends Highcharts.PlotDependencywheelOptions, Highcharts.SeriesOptions {
         /**
-         * (Highcharts, Highstock, Highmaps, Gantt) The animation delay time in
-         * milliseconds. Set to `0` to render the data labels immediately. As
-         * `undefined` inherits defer time from the series.animation.defer.
+         * (Highcharts) An array of data points for the series. For the
+         * `dependencywheel` series type, points can be given in the following
+         * way:
+         *
+         * An array of objects with named values. The following snippet shows
+         * only a few settings, see the complete options set below. If the total
+         * number of data points exceeds the series' turboThreshold, this option
+         * is not available. (see online documentation for example)
          */
-        defer?: number;
+        data?: Array<([string, string, number]|Highcharts.SeriesSankeyPointOptionsObject)>;
+        /**
+         * (Highcharts) A collection of options for the individual nodes. The
+         * nodes in a dependency diagram are auto-generated instances of
+         * `Highcharts.Point`, but options can be applied here and linked by the
+         * `id`.
+         */
+        nodes?: Array<Highcharts.SeriesSankeyNodesOptionsObject>;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) This property is only in
+         * TypeScript non-optional and might be `undefined` in series objects
+         * from unknown sources.
+         */
+        type: "dependencywheel";
     }
 }

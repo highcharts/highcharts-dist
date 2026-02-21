@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.5.0 (2026-01-12)
+ * @license Highcharts JS v12.5.0-modified (2026-02-21)
  * @module highcharts/modules/bullet
  * @requires highcharts
  *
@@ -188,9 +188,7 @@ const BulletSeriesDefaults = {
         borderRadius: 0
     },
     tooltip: {
-        pointFormat: '<span style="color:{series.color}">\u25CF</span>' +
-            ' {series.name}: <b>{point.y}</b>. Target: <b>{point.target}' +
-            '</b><br/>'
+        pointFormat: '<span style="color:{series.color}">\u25CF</span> {series.name}: <b>{point.y}</b>. Target: <b>{point.target}</b><br/>'
     }
 };
 /**

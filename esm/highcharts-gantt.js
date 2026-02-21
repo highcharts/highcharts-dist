@@ -1,5 +1,5 @@
 /**
- * Highcharts Gantt JS v12.5.0 (2026-01-12)
+ * Highcharts Gantt JS v12.5.0-modified (2026-02-21)
  * @module highcharts/highcharts-gantt
  *
  * (c) 2017-2026 Highsoft AS

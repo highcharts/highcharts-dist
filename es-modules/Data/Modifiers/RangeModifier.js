@@ -32,7 +32,7 @@ class RangeModifier extends DataModifier {
     /**
      * Constructs an instance of the range modifier.
      *
-     * @param {Partial<RangeModifier.Options>} [options]
+     * @param {Partial<RangeModifierOptions>} [options]
      * Options to configure the range modifier.
      */
     constructor(options) {
@@ -52,7 +52,7 @@ class RangeModifier extends DataModifier {
      * @param {DataTable} table
      * Table to modify.
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @return {DataTable}

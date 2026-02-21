@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v12.5.0 (2026-01-12)
+ * @license Highmaps JS v12.5.0-modified (2026-02-21)
  * @module highcharts/modules/heatmap
  * @requires highcharts
  *
@@ -1006,7 +1006,8 @@ function colorFromPoint(value, point) {
  */
 function getContext(series) {
     const { canvas, context } = series;
-    if (canvas && context) {
+    // We can trust that the conext is canvas when clearRect is present.
+    if (canvas && context?.clearRect) {
         context.clearRect(0, 0, canvas.width, canvas.height);
     }
     else {
@@ -1192,6 +1193,10 @@ class HeatmapSeries extends ScatterSeries {
         // evaluation of borderRadius would be moved to `markerAttribs`.
         if (options.marker && HeatmapSeries_isNumber(options.borderRadius)) {
             options.marker.r = options.borderRadius;
+        }
+        const canvas = this.canvas = document.createElement('canvas');
+        if (canvas) {
+            this.context = canvas?.getContext('webgpu');
         }
     }
     /**

@@ -336,8 +336,13 @@ declare module "../highcharts" {
          */
         dataSorting?: (Highcharts.DataSortingOptionsObject|Highcharts.PlotDpoDataSortingOptions);
         /**
-         * (Highstock) A description of the series to add to the screen reader
-         * information about the series.
+         * (Highstock) Deprecated. Use
+         * plotOptions.series.accessibility.description instead.
+         *
+         * A description of the series to add to the screen reader information
+         * about the series.
+         *
+         * @deprecated 8.0.0
          */
         description?: string;
         /**
@@ -517,13 +522,21 @@ declare module "../highcharts" {
          */
         point?: Highcharts.PlotSeriesPointOptions;
         /**
-         * (Highstock) Same as accessibility.point.descriptionFormat, but for an
-         * individual series. Overrides the chart wide configuration.
+         * (Highstock) Deprecated. Use
+         * series.accessibility.point.descriptionFormat instead.
+         *
+         * Same as accessibility.point.descriptionFormat, but for an individual
+         * series. Overrides the chart wide configuration.
          */
         pointDescriptionFormat?: Function;
         /**
-         * (Highstock) Same as accessibility.series.descriptionFormatter, but
-         * for an individual series. Overrides the chart wide configuration.
+         * (Highstock) Deprecated. Use
+         * series.accessibility.point.descriptionFormatter instead.
+         *
+         * Same as accessibility.series.descriptionFormatter, but for an
+         * individual series. Overrides the chart wide configuration.
+         *
+         * @deprecated 8.0.0
          */
         pointDescriptionFormatter?: Function;
         /**
@@ -568,8 +581,13 @@ declare module "../highcharts" {
          */
         showInLegend?: boolean;
         /**
-         * (Highstock) If set to `true`, the accessibility module will skip past
-         * the points in this series for keyboard navigation.
+         * (Highstock) Deprecated. Use series.accessibility.keyboardNavigation
+         * instead.
+         *
+         * If set to `true`, the accessibility module will skip past the points
+         * in this series for keyboard navigation.
+         *
+         * @deprecated 8.0.0
          */
         skipKeyboardNavigation?: boolean;
         /**
@@ -695,50 +713,5 @@ declare module "../highcharts" {
          * slowly back to normal.
          */
         duration?: number;
-    }
-    /**
-     * (Highstock) A Detrended Price Oscillator. If the type option is not
-     * specified, it is inherited from chart.type.
-     *
-     * Configuration options for the series are given in three levels:
-     *
-     * 1. Options for all series in a chart are defined in the
-     * plotOptions.series object.
-     *
-     * 2. Options for all `dpo` series are defined in plotOptions.dpo.
-     *
-     * 3. Options for one single series are given in the series instance array.
-     * (see online documentation for example)
-     *
-     * **TypeScript:**
-     *
-     * - type option should always be set, otherwise a broad set of unsupported
-     * options is allowed.
-     *
-     * - when accessing an array of series, the combined set of all series types
-     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
-     * specific type can be done by checking the `type` property. (see online
-     * documentation for example)
-     *
-     * You have to extend the `SeriesDpoOptions` via an interface to allow
-     * custom properties: ``` declare interface SeriesDpoOptions {
-     * customProperty: string; }
-     *
-     */
-    interface SeriesDpoOptions extends Highcharts.PlotDpoOptions, Highcharts.SeriesOptions {
-        /**
-         * Not available
-         */
-        dataParser?: undefined;
-        /**
-         * Not available
-         */
-        dataURL?: undefined;
-        /**
-         * (Highcharts, Highstock, Highmaps, Gantt) This property is only in
-         * TypeScript non-optional and might be `undefined` in series objects
-         * from unknown sources.
-         */
-        type: "dpo";
     }
 }

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.5.0 (2026-01-12)
+ * @license Highcharts JS v12.5.0-modified (2026-02-21)
  * @module highcharts/modules/sunburst
  * @requires highcharts
  *
@@ -1629,18 +1629,6 @@ const TreemapSeriesDefaults = {
     tooltip: {
         headerFormat: '',
         pointFormat: '<b>{point.name}</b>: {point.value}<br/>',
-        /**
-         * The HTML of the grouped point's nodes in the tooltip. Works only for
-         * Treemap series grouping and analogously to
-         * [pointFormat](#tooltip.pointFormat).
-         *
-         * The grouped nodes point tooltip can be also formatted using
-         * `tooltip.formatter` callback function and `point.isGroupNode` flag.
-         *
-         * @type      {string}
-         * @default   '+ {point.groupedPointsAmount} more...'
-         * @apioption tooltip.clusterFormat
-         */
         clusterFormat: '+ {point.groupedPointsAmount} more...<br/>'
     },
     /**
@@ -2991,12 +2979,11 @@ class TreemapSeries extends ScatterSeries {
                     style.width = `${dataLabelWidth}px`;
                     style.lineClamp ?? (style.lineClamp = Math.floor(height / 16));
                     style.visibility = 'inherit';
-                    // Make the label box itself fill the width
-                    if (options.headers) {
-                        point.dataLabel?.attr({
-                            width: dataLabelWidth
-                        });
-                    }
+                    // Make the label box itself fill the width. Reset when
+                    // no longer header (#23100).
+                    point.dataLabel?.attr({
+                        width: options.headers ? dataLabelWidth : void 0
+                    });
                     // Hide labels for shapes that are too small
                 }
                 else {

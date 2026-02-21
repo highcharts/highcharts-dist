@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v12.5.0 (2026-01-12)
+ * @license Highcharts Gantt JS v12.5.0-modified (2026-02-21)
  * @module highcharts/modules/gantt
  * @requires highcharts
  *
@@ -14,14 +14,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Chart"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["RendererRegistry"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Templating"], root["_Highcharts"]["Point"], root["_Highcharts"]["StackItem"]);
+		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Chart"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["RendererRegistry"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Templating"], root["_Highcharts"]["Point"], root["_Highcharts"]["StackItem"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/gantt", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Chart"],amd1["Axis"],amd1["Color"],amd1["SeriesRegistry"],amd1["RendererRegistry"],amd1["SVGRenderer"],amd1["SVGElement"],amd1["Templating"],amd1["Point"],amd1["StackItem"]);});
+		define("highcharts/modules/gantt", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Chart"],amd1["Axis"],amd1["Color"],amd1["SeriesRegistry"],amd1["RendererRegistry"],amd1["SVGElement"],amd1["Templating"],amd1["Point"],amd1["StackItem"]);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/gantt"] = factory(root["_Highcharts"], root["_Highcharts"]["Chart"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["RendererRegistry"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Templating"], root["_Highcharts"]["Point"], root["_Highcharts"]["StackItem"]);
+		exports["highcharts/modules/gantt"] = factory(root["_Highcharts"], root["_Highcharts"]["Chart"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["RendererRegistry"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Templating"], root["_Highcharts"]["Point"], root["_Highcharts"]["StackItem"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Chart"], root["Highcharts"]["Axis"], root["Highcharts"]["Color"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["RendererRegistry"], root["Highcharts"]["SVGRenderer"], root["Highcharts"]["SVGElement"], root["Highcharts"]["Templating"], root["Highcharts"]["Point"], root["Highcharts"]["StackItem"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__532__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__608__, __WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__984__, __WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__184__) => {
+		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Chart"], root["Highcharts"]["Axis"], root["Highcharts"]["Color"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["RendererRegistry"], root["Highcharts"]["SVGElement"], root["Highcharts"]["Templating"], root["Highcharts"]["Point"], root["Highcharts"]["StackItem"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__532__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__608__, __WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__984__, __WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__184__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -58,13 +58,6 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__532__;
-
-/***/ }),
-
-/***/ 540:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__540__;
 
 /***/ }),
 
@@ -2898,7 +2891,8 @@ const ScrollbarDefaults = {
     /**
      * Whether to redraw the main chart as the scrollbar or the navigator
      * zoomed window is moved. Defaults to `true` for modern browsers and
-     * `false` for legacy IE browsers as well as mobile devices.
+     * `false` for legacy IE browsers as well as mobile devices. This option
+     * works regardless of whether the scrollbar is enabled or not.
      *
      * @sample stock/scrollbar/liveredraw
      *         Setting live redraw to false
@@ -3699,9 +3693,6 @@ Scrollbar.defaultOptions = Scrollbar_ScrollbarDefaults;
  * */
 /* harmony default export */ const Scrollbar_Scrollbar = (Scrollbar);
 
-// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SVGRenderer"],"commonjs":["highcharts","SVGRenderer"],"commonjs2":["highcharts","SVGRenderer"],"root":["Highcharts","SVGRenderer"]}
-var highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_SVGRenderer_root_Highcharts_SVGRenderer_ = __webpack_require__(540);
-var highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_SVGRenderer_root_Highcharts_SVGRenderer_default = /*#__PURE__*/__webpack_require__.n(highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_SVGRenderer_root_Highcharts_SVGRenderer_);
 ;// ./code/es-modules/Stock/Navigator/Navigator.js
 /* *
  *
@@ -3723,8 +3714,6 @@ const { isTouchDevice: Navigator_isTouchDevice } = (highcharts_commonjs_highchar
 
 
 
-
-const { prototype: { symbols } } = (highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_SVGRenderer_root_Highcharts_SVGRenderer_default());
 
 const { addEvent: Navigator_addEvent, clamp, correctFloat: Navigator_correctFloat, defined: Navigator_defined, destroyObjectProperties: Navigator_destroyObjectProperties, erase, extend: Navigator_extend, find, fireEvent: Navigator_fireEvent, isArray: Navigator_isArray, isNumber: Navigator_isNumber, merge: Navigator_merge, pick: Navigator_pick, removeEvent: Navigator_removeEvent, splat: Navigator_splat } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
@@ -4012,13 +4001,13 @@ class Navigator {
                 stroke: navigatorOptions.outlineColor
             });
         }
-        // Create the handlers:
+        // Create the handles:
         if (navigatorOptions.handles?.enabled) {
             const handlesOptions = navigatorOptions.handles, { height, width } = handlesOptions;
             [0, 1].forEach((index) => {
                 const symbolName = handlesOptions.symbols[index];
                 if (!navigator.handles[index] ||
-                    navigator.handles[index].symbolUrl !== symbolName) {
+                    navigator.handles[index].symbolName !== symbolName) {
                     // Generate symbol from scratch if we're dealing with an URL
                     navigator.handles[index]?.destroy();
                     navigator.handles[index] = renderer.symbol(symbolName, -width / 2 - 1, 0, width, height, handlesOptions);
@@ -4028,16 +4017,10 @@ class Navigator {
                         .addClass('highcharts-navigator-handle ' +
                         'highcharts-navigator-handle-' +
                         ['left', 'right'][index]).add(navigatorGroup);
-                    navigator.addMouseEvents();
-                    // If the navigator symbol changed, update its path and name
-                }
-                else if (!navigator.handles[index].isImg &&
-                    navigator.handles[index].symbolName !== symbolName) {
-                    const symbolFn = symbols[symbolName], path = symbolFn.call(symbols, -width / 2 - 1, 0, width, height);
-                    navigator.handles[index].attr({
-                        d: path
-                    });
-                    navigator.handles[index].symbolName = symbolName;
+                    // Remove old events:
+                    navigator.removeShadesAndHandlesEvents();
+                    // Re-add the events with new elements:
+                    navigator.addShadesAndHandlesEvents();
                 }
                 if (chart.inverted) {
                     navigator.handles[index].attr({
@@ -4255,7 +4238,8 @@ class Navigator {
      */
     addMouseEvents() {
         const navigator = this, chart = navigator.chart, container = chart.container;
-        let eventsToUnbind = [], mouseMoveHandler, mouseUpHandler;
+        const eventsToUnbind = [];
+        let mouseMoveHandler, mouseUpHandler;
         /**
          * Create mouse events' handlers.
          * Make them as separate functions to enable wrapping them:
@@ -4266,8 +4250,6 @@ class Navigator {
         navigator.mouseUpHandler = mouseUpHandler = function (e) {
             navigator.onMouseUp(e);
         };
-        // Add shades and handles mousedown events
-        eventsToUnbind = navigator.getPartsEvents('mousedown');
         eventsToUnbind.push(
         // Add mouse move and mouseup events. These are bind to doc/div,
         // because Navigator.grabbedSomething flags are stored in mousedown
@@ -4275,7 +4257,7 @@ class Navigator {
         Navigator_addEvent(chart.renderTo, 'mousemove', mouseMoveHandler), Navigator_addEvent(container.ownerDocument, 'mouseup', mouseUpHandler), 
         // Touch events
         Navigator_addEvent(chart.renderTo, 'touchmove', mouseMoveHandler), Navigator_addEvent(container.ownerDocument, 'touchend', mouseUpHandler));
-        eventsToUnbind.concat(navigator.getPartsEvents('touchstart'));
+        navigator.addShadesAndHandlesEvents(); // (#21775)
         navigator.eventsToUnbind = eventsToUnbind;
         // Data events
         if (navigator.series && navigator.series[0]) {
@@ -4283,6 +4265,28 @@ class Navigator {
                 chart.navigator.modifyNavigatorAxisExtremes();
             }));
         }
+    }
+    /**
+     * Set up the mouse and touch events for the shades and handles only.
+     *
+     * @private
+     * @function Highcharts.Navigator#addShadesAndHandlesEvents
+     */
+    addShadesAndHandlesEvents() {
+        this.shadesAndHandlesEventsToUnbind = this.getPartsEvents('mousedown'),
+            this.shadesAndHandlesEventsToUnbind.concat(this.getPartsEvents('touchstart'));
+    }
+    /**
+     * Remove the mouse and touch events for the shades and handles only.
+     *
+     * @private
+     * @function Highcharts.Navigator#removeShadesAndHandelsEvents
+     */
+    removeShadesAndHandlesEvents() {
+        this.shadesAndHandlesEventsToUnbind.forEach((unbind) => {
+            unbind();
+        });
+        this.shadesAndHandlesEventsToUnbind = [];
     }
     /**
      * Generate events for handles and masks
@@ -4438,7 +4442,7 @@ class Navigator {
                 navigator.render(0, 0, navigator.otherHandlePos, chartX - left);
                 // Drag scrollbar or open area in navigator
             }
-            else if (navigator.grabbedCenter) {
+            else if (navigator.grabbedCenter && dragOffset) {
                 navigator.hasDragged = true;
                 if (chartX < dragOffset) { // Outside left
                     chartX = dragOffset;
@@ -4451,8 +4455,7 @@ class Navigator {
                 navigator.render(0, 0, chartX - dragOffset, chartX - dragOffset + range);
             }
             if (navigator.hasDragged &&
-                navigator.scrollbar &&
-                Navigator_pick(navigator.scrollbar.options.liveRedraw, 
+                Navigator_pick(navigator.scrollbarOptions?.liveRedraw, 
                 // By default, don't run live redraw on touch
                 // devices or if the chart is in boost.
                 !Navigator_isTouchDevice &&
@@ -4557,6 +4560,7 @@ class Navigator {
             });
             this.eventsToUnbind = void 0;
         }
+        this.removeShadesAndHandlesEvents();
         this.removeBaseSeriesEvents();
     }
     /**
@@ -4599,6 +4603,7 @@ class Navigator {
         const chartOptions = chart.options, navigatorOptions = chartOptions.navigator || {}, navigatorEnabled = navigatorOptions.enabled, scrollbarOptions = chartOptions.scrollbar || {}, scrollbarEnabled = scrollbarOptions.enabled, height = navigatorEnabled && navigatorOptions.height || 0, scrollbarHeight = scrollbarEnabled && scrollbarOptions.height || 0, scrollButtonSize = scrollbarOptions.buttonsEnabled && scrollbarHeight || 0;
         this.handles = [];
         this.shades = [];
+        this.shadesAndHandlesEventsToUnbind = [];
         this.chart = chart;
         this.setBaseSeries();
         this.height = height;
@@ -5935,7 +5940,7 @@ function redrawRangeSelector() {
         rangeSelector.render(extremes.min, extremes.max);
     }
     // Re-align the legend so that it's below the rangeselector
-    if (legend.display &&
+    if (legend?.display &&
         verticalAlign === 'top' &&
         verticalAlign === legend.options.verticalAlign) {
         // Create a new alignment box for the legend.
@@ -9444,7 +9449,7 @@ Pathfinder.prototype.algorithms = PathfinderAlgorithms;
 ;// ./code/es-modules/masters/modules/pathfinder.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v12.5.0 (2026-01-12)
+ * @license Highcharts Gantt JS v12.5.0-modified (2026-02-21)
  * @module highcharts/modules/pathfinder
  * @requires highcharts
  *
@@ -9564,21 +9569,24 @@ const StaticScale = {
  * height of the chart adjusts. Adding or removing items will make the chart
  * resize.
  *
- * @sample gantt/xrange-series/demo/
+ * @sample {gantt} gantt/xrange-series/demo/
  *         X-range series with static scale
+ * @sample {highcharts} highcharts/xaxis/staticscale
+ *         Static scale on X axis (horizontal bar chart)
  *
+ * @requires  modules/static-scale
  * @type      {number}
  * @default   50
  * @since     6.2.0
- * @product   gantt
- * @apioption yAxis.staticScale
+ * @product   highcharts highstock gantt
+ * @apioption xAxis.staticScale
  */
 ''; // Keeps doclets above in JS file
 
 ;// ./code/es-modules/masters/modules/static-scale.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v12.5.0 (2026-01-12)
+ * @license Highcharts Gantt JS v12.5.0-modified (2026-02-21)
  * @module highcharts/modules/static-scale
  * @requires highcharts
  *
@@ -10397,7 +10405,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 ;// ./code/es-modules/masters/modules/xrange.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.5.0 (2026-01-12)
+ * @license Highcharts JS v12.5.0-modified (2026-02-21)
  * @module highcharts/modules/xrange
  * @requires highcharts
  *
@@ -11581,7 +11589,7 @@ function onAfterInit() {
                     columns: void 0
                 }
             });
-            const column = new (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_highcharts_Axis_root_Highcharts_Axis_default())(axis.chart, columnOptions, 'yAxis');
+            const column = new (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_highcharts_Axis_root_Highcharts_Axis_default())(axis.chart, columnOptions, axis.coll);
             column.grid.isColumn = true;
             column.grid.columnIndex = columnIndex;
             // Remove column axis from chart axes array, and place it
@@ -12355,6 +12363,8 @@ const GridAxis = {
  *         Left axis as a table
  * @sample gantt/demo/treegrid-columns
  *         Collapsible tree grid with columns
+ * @sample gantt/grid-axis/horizontal-columns
+ *         Horizontal grid axis with columns rendered as rows
  *
  * @type      {Array<Highcharts.XAxisOptions>}
  * @apioption xAxis.grid.columns

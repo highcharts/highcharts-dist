@@ -187,7 +187,7 @@ const exporting = {
      * @since     5.0.0
      * @apioption exporting.libURL
      */
-    libURL: 'https://code.highcharts.com/12.5.0/lib/',
+    libURL: 'https://code.highcharts.com/12.5.0-modified/lib/',
     /**
      * Whether the chart should be exported using the browser's built-in
      * capabilities, allowing offline exports without requiring access to the

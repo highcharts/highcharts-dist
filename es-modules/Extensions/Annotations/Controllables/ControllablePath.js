@@ -123,6 +123,23 @@ class ControllablePath extends Controllable {
      *  Functions
      *
      * */
+    init(annotation, options, index) {
+        if (defined(options.yAxis)) {
+            options.points.forEach((point) => {
+                if (point && typeof point !== 'string') {
+                    point.yAxis = options.yAxis;
+                }
+            });
+        }
+        if (defined(options.xAxis)) {
+            options.points.forEach((point) => {
+                if (point && typeof point !== 'string') {
+                    point.xAxis = options.xAxis;
+                }
+            });
+        }
+        super.init(annotation, options, index);
+    }
     /**
      * Map the controllable path to 'd' path attribute.
      *

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.5.0 (2026-01-12)
+ * @license Highcharts JS v12.5.0-modified (2026-02-21)
  * @module highcharts/modules/annotations-advanced
  * @requires highcharts
  *
@@ -782,7 +782,9 @@ const AnnotationDefaults = {
      */
     shapeOptions: {
         /**
-         * The radius of the shape in y direction. Used for the ellipse.
+         * The radius of the `ellipse` shape in y direction. Can be defined in
+         * pixels or yAxis units, if
+         * [shapes.yAxis](#annotations.shapeOptions.yAxis) index is defined.
          *
          * @sample highcharts/annotations/ellipse/
          *         Ellipse annotation
@@ -791,21 +793,39 @@ const AnnotationDefaults = {
          * @apioption annotations.shapeOptions.ry
          **/
         /**
-         * The xAxis index to which the points should be attached.
-         * Used for the ellipse.
+         * The xAxis index which should be used for annotation's sizes and
+         * points coordinates conversion.
          *
+         * This option is used for `rect` shape
+         * [width](#annotations.shapeOptions.width), and all shapes
+         * [point](#annotations.shapes.point) and
+         * [points](#annotations.shapes.points) coordinates.
+         *
+         * @sample highcharts/annotations/shapes-axis-units/
+         *         Shapes created with axis units
          * @type      {number}
          * @apioption annotations.shapeOptions.xAxis
          **/
         /**
-         * The yAxis index to which the points should be attached.
-         * Used for the ellipse.
+         * The yAxis index which should be used for annotation's sizes and
+         * points coordinates conversion.
          *
+         * This option is used for `rect` shape
+         * [height](#annotations.shapeOptions.height), `circle` shape
+         * [radius](#annotations.shapeOptions.r), `ellipse`
+         * [y direction radius](#annotations.shapeOptions.ry), and all shapes
+         * [point](#annotations.shapes.point) and
+         * [points](#annotations.shapes.points) coordinates.
+         *
+         * @sample highcharts/annotations/shapes-axis-units/
+         *         Shapes created with axis units
          * @type      {number}
          * @apioption annotations.shapeOptions.yAxis
          **/
         /**
-         * The width of the shape.
+         * The width of the `rect` shape. Can be defined in pixels or xAxis
+         * units, if [shapes.xAxis](#annotations.shapeOptions.xAxis) index is
+         * defined.
          *
          * @sample highcharts/annotations/shape/
          *         Basic shape annotation
@@ -814,7 +834,9 @@ const AnnotationDefaults = {
          * @apioption annotations.shapeOptions.width
          **/
         /**
-         * The height of the shape.
+         * The height of the `rect` shape. Can be defined in pixels or yAxis
+         * units, if [shapes.yAxis](#annotations.shapeOptions.yAxis) index is
+         * defined.
          *
          * @sample highcharts/annotations/shape/
          *         Basic shape annotation
@@ -824,7 +846,7 @@ const AnnotationDefaults = {
          */
         /**
          * The type of the shape.
-         * Available options are circle, rect and ellipse.
+         * Available options are `circle`, `rect`, `ellipse` and `path`.
          *
          * @sample highcharts/annotations/shape/
          *         Basic shape annotation
@@ -883,7 +905,9 @@ const AnnotationDefaults = {
          */
         fill: 'rgba(0, 0, 0, 0.75)',
         /**
-         * The radius of the shape.
+         * The radius of the `circle` shape. Can be defined in pixels or yAxis
+         * units, if [shapes.yAxis](#annotations.shapeOptions.yAxis) index is
+         * defined.
          *
          * @sample highcharts/annotations/shape/
          *         Basic shape annotation
@@ -2312,6 +2336,14 @@ class Controllable {
         this.destroyControlTarget();
     }
     /**
+     * Get the pixel value from a start point to an end point on an axis.
+     * @internal
+     */
+    calculateAnnotationSize(startPoint, value, axis) {
+        const startPixel = axis.toPixels(startPoint, true), endPixel = axis.toPixels(startPoint + value, true);
+        return Math.abs(endPixel - startPixel);
+    }
+    /**
      * Init the controllable
      * @internal
      */
@@ -2709,6 +2741,23 @@ class ControllablePath extends Controllables_Controllable {
      *  Functions
      *
      * */
+    init(annotation, options, index) {
+        if (ControllablePath_defined(options.yAxis)) {
+            options.points.forEach((point) => {
+                if (point && typeof point !== 'string') {
+                    point.yAxis = options.yAxis;
+                }
+            });
+        }
+        if (ControllablePath_defined(options.xAxis)) {
+            options.points.forEach((point) => {
+                if (point && typeof point !== 'string') {
+                    point.xAxis = options.xAxis;
+                }
+            });
+        }
+        super.init(annotation, options, index);
+    }
     /**
      * Map the controllable path to 'd' path attribute.
      *
@@ -2860,7 +2909,7 @@ ControllablePath.attrsMap = {
 
 
 
-const { merge: ControllableRect_merge } = (external_highcharts_src_js_default_default());
+const { defined: ControllableRect_defined, merge: ControllableRect_merge } = (external_highcharts_src_js_default_default());
 /* *
  *
  *  Class
@@ -2905,6 +2954,18 @@ class ControllableRect extends Controllables_Controllable {
      *  Functions
      *
      * */
+    init(annotation, options, index) {
+        const { point, xAxis, yAxis } = options;
+        if (point && typeof point !== 'string') {
+            if (ControllableRect_defined(xAxis)) {
+                point.xAxis = xAxis;
+            }
+            if (ControllableRect_defined(yAxis)) {
+                point.yAxis = yAxis;
+            }
+        }
+        super.init(annotation, options, index);
+    }
     render(parent) {
         const attrs = this.attrsFromOptions(this.options);
         this.graphic = this.annotation.chart.renderer
@@ -2915,13 +2976,23 @@ class ControllableRect extends Controllables_Controllable {
     }
     redraw(animation) {
         if (this.graphic) {
-            const position = this.anchor(this.points[0]).absolutePosition;
+            const point = this.points[0], position = this.anchor(point).absolutePosition;
+            let width = this.options.width || 0, height = this.options.height || 0;
             if (position) {
+                const xAxis = ControllableRect_defined(this.options.xAxis) ?
+                    this.chart.xAxis[this.options.xAxis] : void 0, yAxis = ControllableRect_defined(this.options.yAxis) ?
+                    this.chart.yAxis[this.options.yAxis] : void 0;
+                if (xAxis && ControllableRect_defined(point.x)) {
+                    width = this.calculateAnnotationSize(point.x, width, xAxis);
+                }
+                if (yAxis && ControllableRect_defined(point.y)) {
+                    height = this.calculateAnnotationSize(point.y, height, yAxis);
+                }
                 this.graphic[animation ? 'animate' : 'attr']({
                     x: position.x,
                     y: position.y,
-                    width: this.options.width,
-                    height: this.options.height
+                    width,
+                    height
                 });
             }
             else {
@@ -2966,7 +3037,7 @@ ControllableRect.attrsMap = ControllableRect_merge(Controllables_ControllablePat
 
 
 
-const { merge: ControllableCircle_merge } = (external_highcharts_src_js_default_default());
+const { defined: ControllableCircle_defined, merge: ControllableCircle_merge } = (external_highcharts_src_js_default_default());
 /* *
  *
  *  Class
@@ -3006,14 +3077,32 @@ class ControllableCircle extends Controllables_Controllable {
      *  Functions
      *
      * */
+    init(annotation, options, index) {
+        const { point, xAxis, yAxis } = options;
+        if (point && typeof point !== 'string') {
+            if (ControllableCircle_defined(xAxis)) {
+                point.xAxis = xAxis;
+            }
+            if (ControllableCircle_defined(yAxis)) {
+                point.yAxis = yAxis;
+            }
+        }
+        super.init(annotation, options, index);
+    }
     redraw(animation) {
         if (this.graphic) {
-            const position = this.anchor(this.points[0]).absolutePosition;
+            const point = this.points[0], position = this.anchor(point).absolutePosition;
+            let r = this.options.r || 0;
             if (position) {
+                const yAxis = ControllableCircle_defined(this.options.yAxis) ?
+                    this.chart.yAxis[this.options.yAxis] : void 0;
+                if (yAxis && ControllableCircle_defined(point.y)) {
+                    r = this.calculateAnnotationSize(point.y, r, yAxis);
+                }
                 this.graphic[animation ? 'animate' : 'attr']({
                     x: position.x,
                     y: position.y,
-                    r: this.options.r
+                    r
                 });
             }
             else {
@@ -3119,12 +3208,16 @@ class ControllableEllipse extends Controllables_Controllable {
     init(annotation, options, index) {
         if (ControllableEllipse_defined(options.yAxis)) {
             options.points.forEach((point) => {
-                point.yAxis = options.yAxis;
+                if (point && typeof point !== 'string') {
+                    point.yAxis = options.yAxis;
+                }
             });
         }
         if (ControllableEllipse_defined(options.xAxis)) {
             options.points.forEach((point) => {
-                point.xAxis = options.xAxis;
+                if (point && typeof point !== 'string') {
+                    point.xAxis = options.xAxis;
+                }
             });
         }
         super.init(annotation, options, index);
@@ -5126,7 +5219,7 @@ function onNavigationBindingsShowPopup(config) {
         this.popup = new Popup_Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
             (this.chart.options.stockTools &&
                 this.chart.options.stockTools.gui.iconsURL) ||
-            'https://code.highcharts.com/12.5.0/gfx/stock-icons/'), this.chart);
+            'https://code.highcharts.com/12.5.0-modified/gfx/stock-icons/'), this.chart);
     }
     this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
 }
@@ -6329,7 +6422,7 @@ const navigation = {
      * from a different server.
      *
      * @type      {string}
-     * @default   https://code.highcharts.com/12.5.0/gfx/stock-icons/
+     * @default   https://code.highcharts.com/12.5.0-modified/gfx/stock-icons/
      * @since     7.1.3
      * @apioption navigation.iconsURL
      */

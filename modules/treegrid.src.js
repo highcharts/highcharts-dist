@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v12.5.0 (2026-01-12)
+ * @license Highcharts Gantt JS v12.5.0-modified (2026-02-21)
  * @module highcharts/modules/treegrid
  * @requires highcharts
  *
@@ -988,7 +988,7 @@ function onAfterInit() {
                     columns: void 0
                 }
             });
-            const column = new (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_highcharts_Axis_root_Highcharts_Axis_default())(axis.chart, columnOptions, 'yAxis');
+            const column = new (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_highcharts_Axis_root_Highcharts_Axis_default())(axis.chart, columnOptions, axis.coll);
             column.grid.isColumn = true;
             column.grid.columnIndex = columnIndex;
             // Remove column axis from chart axes array, and place it
@@ -1762,6 +1762,8 @@ const GridAxis = {
  *         Left axis as a table
  * @sample gantt/demo/treegrid-columns
  *         Collapsible tree grid with columns
+ * @sample gantt/grid-axis/horizontal-columns
+ *         Horizontal grid axis with columns rendered as rows
  *
  * @type      {Array<Highcharts.XAxisOptions>}
  * @apioption xAxis.grid.columns

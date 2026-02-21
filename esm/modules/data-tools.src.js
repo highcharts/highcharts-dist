@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.5.0 (2026-01-12)
+ * @license Highcharts JS v12.5.0-modified (2026-02-21)
  * @module highcharts/modules/data-tools
  * @requires highcharts
  *
@@ -78,6 +78,28 @@ const { addEvent, fireEvent, merge } = (external_highcharts_src_js_default_defau
  * Abstract class to provide an interface for modifying a table.
  */
 class DataModifier {
+    /**
+     * Adds a modifier class to the registry. The modifier class has to provide
+     * the `DataModifier.options` property and the `DataModifier.modifyTable`
+     * method to modify the table.
+     *
+     * @private
+     *
+     * @param {string} key
+     * Registry key of the modifier class.
+     *
+     * @param {DataModifierType} DataModifierClass
+     * Modifier class (aka class constructor) to register.
+     *
+     * @return {boolean}
+     * Returns true, if the registration was successful. False is returned, if
+     * their is already a modifier registered with this key.
+     */
+    static registerType(key, DataModifierClass) {
+        return (!!key &&
+            !DataModifier.types[key] &&
+            !!(DataModifier.types[key] = DataModifierClass));
+    }
     /* *
      *
      *  Functions
@@ -90,7 +112,7 @@ class DataModifier {
      * @param {DataTable} dataTable
      * The datatable to execute
      *
-     * @param {DataModifier.BenchmarkOptions} options
+     * @param {BenchmarkOptions} options
      * Options. Currently supports `iterations` for number of iterations.
      *
      * @return {Array<number>}
@@ -140,7 +162,7 @@ class DataModifier {
     /**
      * Emits an event on the modifier to all registered callbacks of this event.
      *
-     * @param {DataModifier.Event} [e]
+     * @param {DataModifierEvent} [e]
      * Event object containing additonal event information.
      */
     emit(e) {
@@ -154,7 +176,7 @@ class DataModifier {
      * @param {Highcharts.DataTable} table
      * Table to modify.
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @return {Promise<Highcharts.DataTable>}
@@ -185,7 +207,7 @@ class DataModifier {
      * @param {string} type
      * Event type as a string.
      *
-     * @param {DataEventEmitter.Callback} callback
+     * @param {DataEventCallback} callback
      * Function to register for an modifier callback.
      *
      * @return {Function}
@@ -197,57 +219,14 @@ class DataModifier {
 }
 /* *
  *
- *  Class Namespace
+ *  Static Properties
  *
  * */
 /**
- * Additionally provided types for modifier events and options.
+ * Registry as a record object with modifier names and their class
+ * constructor.
  */
-(function (DataModifier) {
-    /* *
-     *
-     *  Declarations
-     *
-     * */
-    /* *
-     *
-     *  Constants
-     *
-     * */
-    /**
-     * Registry as a record object with modifier names and their class
-     * constructor.
-     */
-    DataModifier.types = {};
-    /* *
-     *
-     *  Functions
-     *
-     * */
-    /**
-     * Adds a modifier class to the registry. The modifier class has to provide
-     * the `DataModifier.options` property and the `DataModifier.modifyTable`
-     * method to modify the table.
-     *
-     * @private
-     *
-     * @param {string} key
-     * Registry key of the modifier class.
-     *
-     * @param {DataModifierType} DataModifierClass
-     * Modifier class (aka class constructor) to register.
-     *
-     * @return {boolean}
-     * Returns true, if the registration was successful. False is returned, if
-     * their is already a modifier registered with this key.
-     */
-    function registerType(key, DataModifierClass) {
-        return (!!key &&
-            !DataModifier.types[key] &&
-            !!(DataModifier.types[key] = DataModifierClass));
-    }
-    DataModifier.registerType = registerType;
-})(DataModifier || (DataModifier = {}));
+DataModifier.types = {};
 /* *
  *
  *  Default Export
@@ -268,133 +247,123 @@ class DataModifier {
  *  - Dawid Dragula
  *
  * */
+/* *
+*
+* Functions
+*
+* */
 /**
- * Utility functions for columns that can be either arrays or typed arrays.
+ * Sets the length of the column array.
+ *
+ * @param {DataTableColumn} column
+ * Column to be modified.
+ *
+ * @param {number} length
+ * New length of the column.
+ *
+ * @param {boolean} asSubarray
+ * If column is a typed array, return a subarray instead of a new array. It
+ * is faster `O(1)`, but the entire buffer will be kept in memory until all
+ * views of it are destroyed. Default is `false`.
+ *
+ * @return {DataTableColumn}
+ * Modified column.
+ *
  * @private
  */
-var ColumnUtils;
-(function (ColumnUtils) {
-    /* *
-    *
-    *  Declarations
-    *
-    * */
-    /* *
-    *
-    * Functions
-    *
-    * */
-    /**
-     * Sets the length of the column array.
-     *
-     * @param {DataTable.Column} column
-     * Column to be modified.
-     *
-     * @param {number} length
-     * New length of the column.
-     *
-     * @param {boolean} asSubarray
-     * If column is a typed array, return a subarray instead of a new array. It
-     * is faster `O(1)`, but the entire buffer will be kept in memory until all
-     * views of it are destroyed. Default is `false`.
-     *
-     * @return {DataTable.Column}
-     * Modified column.
-     *
-     * @private
-     */
-    function setLength(column, length, asSubarray) {
-        if (Array.isArray(column)) {
-            column.length = length;
-            return column;
-        }
-        return column[asSubarray ? 'subarray' : 'slice'](0, length);
+function setLength(column, length, asSubarray) {
+    if (Array.isArray(column)) {
+        column.length = length;
+        return column;
     }
-    ColumnUtils.setLength = setLength;
-    /**
-     * Splices a column array.
-     *
-     * @param {DataTable.Column} column
-     * Column to be modified.
-     *
-     * @param {number} start
-     * Index at which to start changing the array.
-     *
-     * @param {number} deleteCount
-     * An integer indicating the number of old array elements to remove.
-     *
-     * @param {boolean} removedAsSubarray
-     * If column is a typed array, return a subarray instead of a new array. It
-     * is faster `O(1)`, but the entire buffer will be kept in memory until all
-     * views to it are destroyed. Default is `true`.
-     *
-     * @param {Array<number>|TypedArray} items
-     * The elements to add to the array, beginning at the start index. If you
-     * don't specify any elements, `splice()` will only remove elements from the
-     * array.
-     *
-     * @return {SpliceResult}
-     * Object containing removed elements and the modified column.
-     *
-     * @private
-     */
-    function splice(column, start, deleteCount, removedAsSubarray, items = []) {
-        if (Array.isArray(column)) {
-            if (!Array.isArray(items)) {
-                items = Array.from(items);
-            }
-            return {
-                removed: column.splice(start, deleteCount, ...items),
-                array: column
-            };
+    return column[asSubarray ? 'subarray' : 'slice'](0, length);
+}
+/**
+ * Splices a column array.
+ *
+ * @param {DataTableColumn} column
+ * Column to be modified.
+ *
+ * @param {number} start
+ * Index at which to start changing the array.
+ *
+ * @param {number} deleteCount
+ * An integer indicating the number of old array elements to remove.
+ *
+ * @param {boolean} removedAsSubarray
+ * If column is a typed array, return a subarray instead of a new array. It
+ * is faster `O(1)`, but the entire buffer will be kept in memory until all
+ * views to it are destroyed. Default is `true`.
+ *
+ * @param {Array<number>|TypedArray} items
+ * The elements to add to the array, beginning at the start index. If you
+ * don't specify any elements, `splice()` will only remove elements from the
+ * array.
+ *
+ * @return {SpliceResult}
+ * Object containing removed elements and the modified column.
+ *
+ * @private
+ */
+function splice(column, start, deleteCount, removedAsSubarray, items = []) {
+    if (Array.isArray(column)) {
+        if (!Array.isArray(items)) {
+            items = Array.from(items);
         }
-        const Constructor = Object.getPrototypeOf(column)
-            .constructor;
-        const removed = column[removedAsSubarray ? 'subarray' : 'slice'](start, start + deleteCount);
-        const newLength = column.length - deleteCount + items.length;
-        const result = new Constructor(newLength);
-        result.set(column.subarray(0, start), 0);
-        result.set(items, start);
-        result.set(column.subarray(start + deleteCount), start + items.length);
         return {
-            removed: removed,
-            array: result
+            removed: column.splice(start, deleteCount, ...items),
+            array: column
         };
     }
-    ColumnUtils.splice = splice;
-    /**
-     * Converts a cell value to a number.
-     *
-     * @param {DataTable.CellType} value
-     * Cell value to convert to a number.
-     *
-     * @param {boolean} useNaN
-     * If `true`, returns `NaN` for non-numeric values; if `false`,
-     * returns `null` instead.
-     *
-     * @return {number | null}
-     * Number or `null` if the value is not a number.
-     *
-     * @private
-     */
-    function convertToNumber(value, useNaN) {
-        switch (typeof value) {
-            case 'boolean':
-                return (value ? 1 : 0);
-            case 'number':
-                return (isNaN(value) && !useNaN ? null : value);
-            default:
-                value = parseFloat(`${value ?? ''}`);
-                return (isNaN(value) && !useNaN ? null : value);
-        }
+    const Constructor = Object.getPrototypeOf(column)
+        .constructor;
+    const removed = column[removedAsSubarray ? 'subarray' : 'slice'](start, start + deleteCount);
+    const newLength = column.length - deleteCount + items.length;
+    const result = new Constructor(newLength);
+    result.set(column.subarray(0, start), 0);
+    result.set(items, start);
+    result.set(column.subarray(start + deleteCount), start + items.length);
+    return {
+        removed: removed,
+        array: result
+    };
+}
+/**
+ * Converts a cell value to a number.
+ *
+ * @param {DataTableCellType} value
+ * Cell value to convert to a number.
+ *
+ * @param {boolean} useNaN
+ * If `true`, returns `NaN` for non-numeric values; if `false`,
+ * returns `null` instead.
+ *
+ * @return {number | null}
+ * Number or `null` if the value is not a number.
+ *
+ * @private
+ */
+function convertToNumber(value, useNaN) {
+    switch (typeof value) {
+        case 'boolean':
+            return (value ? 1 : 0);
+        case 'number':
+            return (isNaN(value) && !useNaN ? null : value);
+        default:
+            value = parseFloat(`${value ?? ''}`);
+            return (isNaN(value) && !useNaN ? null : value);
     }
-    ColumnUtils.convertToNumber = convertToNumber;
-})(ColumnUtils || (ColumnUtils = {}));
+}
 /* *
  *
  *  Default Export
  *
  * */
+const ColumnUtils = {
+    convertToNumber,
+    setLength,
+    splice
+};
 /* harmony default export */ const Data_ColumnUtils = (ColumnUtils);
 
 ;// ./code/es-modules/Data/DataTableCore.js
@@ -414,7 +383,7 @@ var ColumnUtils;
  * */
 
 
-const { setLength, splice } = Data_ColumnUtils;
+const { setLength: DataTableCore_setLength, splice: DataTableCore_splice } = Data_ColumnUtils;
 
 const { fireEvent: DataTableCore_fireEvent, objectEach, uniqueKey } = (external_highcharts_src_js_default_default());
 /* *
@@ -491,7 +460,7 @@ class DataTableCore {
         this.rowCount = rowCount;
         objectEach(this.columns, (column, columnId) => {
             if (column.length !== rowCount) {
-                this.columns[columnId] = setLength(column, rowCount);
+                this.columns[columnId] = DataTableCore_setLength(column, rowCount);
             }
         });
     }
@@ -514,7 +483,7 @@ class DataTableCore {
             let length = 0;
             objectEach(this.columns, (column, columnId) => {
                 this.columns[columnId] =
-                    splice(column, rowIndex, rowCount).array;
+                    DataTableCore_splice(column, rowIndex, rowCount).array;
                 length = column.length;
             });
             this.rowCount = length;
@@ -657,7 +626,7 @@ class DataTableCore {
             }
             if (column) {
                 if (insert) {
-                    column = splice(column, rowIndex, 0, true, [row[columnId] ?? null]).array;
+                    column = DataTableCore_splice(column, rowIndex, 0, true, [row[columnId] ?? null]).array;
                 }
                 else {
                     column[rowIndex] = row[columnId] ?? null;
@@ -983,7 +952,7 @@ class DataTable extends Data_DataTableCore {
      * event.
      * @private
      *
-     * @param {DataTable.Event} e
+     * @param {Event} e
      * Event object with event information.
      */
     emit(e) {
@@ -1723,6 +1692,28 @@ const { addEvent: DataConnector_addEvent, fireEvent: DataConnector_fireEvent, me
  */
 class DataConnector {
     /**
+     * Adds a connector class to the registry. The connector has to provide the
+     * `DataConnector.options` property and the `DataConnector.load` method to
+     * modify the table.
+     *
+     * @private
+     *
+     * @param {string} key
+     * Registry key of the connector class.
+     *
+     * @param {DataConnectorType} DataConnectorClass
+     * Connector class (aka class constructor) to register.
+     *
+     * @return {boolean}
+     * Returns true, if the registration was successful. False is returned, if
+     * their is already a connector registered with this key.
+     */
+    static registerType(key, DataConnectorClass) {
+        return (!!key &&
+            !DataConnector.types[key] &&
+            !!(DataConnector.types[key] = DataConnectorClass));
+    }
+    /**
      * Whether the connector is currently polling for new data.
      */
     get polling() {
@@ -1804,7 +1795,7 @@ class DataConnector {
      * @param {string} name
      * The name of the column to be described.
      *
-     * @param {DataConnector.MetaColumn} columnMeta
+     * @param {MetaColumn} columnMeta
      * The metadata to apply to the column.
      */
     describeColumn(name, columnMeta) {
@@ -1815,7 +1806,7 @@ class DataConnector {
     /**
      * Method for applying columns meta information to the whole DataConnector.
      *
-     * @param {Highcharts.Dictionary<DataConnector.MetaColumn>} columns
+     * @param {Record<string, MetaColumn>} columns
      * Pairs of column names and MetaColumn objects.
      */
     describeColumns(columns) {
@@ -1962,7 +1953,7 @@ class DataConnector {
      * Emits an event on the connector to all registered callbacks of this
      * event.
      *
-     * @param {DataConnector.Event} e
+     * @param {Event} e
      * Event object containing additional event information.
      */
     emit(e) {
@@ -1990,10 +1981,10 @@ class DataConnector {
      * @param {T}[data]
      * Data specific to the corresponding converter.
      *
-     * @param {DataConnector.CreateConverterFunction}[createConverter]
+     * @param {CreateConverterFunction}[createConverter]
      * Creates a specific converter combining the dataTable options.
      *
-     * @param {DataConnector.ParseDataFunction<T>}[parseData]
+     * @param {ParseDataFunction<T>}[parseData]
      * Runs the converter parse method with the specific data type.
      */
     initConverters(data, createConverter, parseData) {
@@ -2015,53 +2006,13 @@ class DataConnector {
 }
 /* *
  *
- *  Class Namespace
+ *  Static Properties
  *
  * */
-(function (DataConnector) {
-    /* *
-     *
-     *  Declarations
-     *
-     * */
-    /* *
-     *
-     *  Constants
-     *
-     * */
-    /**
-     * Registry as a record object with connector names and their class.
-     */
-    DataConnector.types = {};
-    /* *
-     *
-     *  Functions
-     *
-     * */
-    /**
-     * Adds a connector class to the registry. The connector has to provide the
-     * `DataConnector.options` property and the `DataConnector.load` method to
-     * modify the table.
-     *
-     * @private
-     *
-     * @param {string} key
-     * Registry key of the connector class.
-     *
-     * @param {DataConnectorType} DataConnectorClass
-     * Connector class (aka class constructor) to register.
-     *
-     * @return {boolean}
-     * Returns true, if the registration was successful. False is returned, if
-     * their is already a connector registered with this key.
-     */
-    function registerType(key, DataConnectorClass) {
-        return (!!key &&
-            !DataConnector.types[key] &&
-            !!(DataConnector.types[key] = DataConnectorClass));
-    }
-    DataConnector.registerType = registerType;
-})(DataConnector || (DataConnector = {}));
+/**
+ * Registry as a record object with connector names and their class.
+ */
+DataConnector.types = {};
 /* *
  *
  *  Default Export
@@ -2086,205 +2037,194 @@ class DataConnector {
 const { isNumber: DataConverterUtils_isNumber } = (external_highcharts_src_js_default_default());
 /* *
  *
- *  Namespace
+ *  Functions
  *
  * */
-var DataConverterUtils;
-(function (DataConverterUtils) {
-    /* *
-    *
-    *  Properties
-    *
-    * */
-    /* *
-    *
-    * Functions
-    *
-    * */
-    /**
-     * Converts a value to a Date.
-     *
-     * @param {DataConverter.Type} value
-     * Value to convert.
-     *
-     * @return {globalThis.Date}
-     * Converted value as a Date.
-     */
-    function asDate(value, converter) {
-        let timestamp;
-        if (typeof value === 'string') {
-            timestamp = converter.parseDate(value);
+/**
+ * Converts a value to a Date.
+ *
+ * @param {DataConverterType} value
+ * Value to convert.
+ *
+ * @return {globalThis.Date}
+ * Converted value as a Date.
+ */
+function asDate(value, converter) {
+    let timestamp;
+    if (typeof value === 'string') {
+        timestamp = converter.parseDate(value);
+    }
+    else if (typeof value === 'number') {
+        timestamp = value;
+    }
+    else if (value instanceof Date) {
+        return value;
+    }
+    else {
+        timestamp = converter.parseDate(asString(value));
+    }
+    return new Date(timestamp);
+}
+/**
+ * Converts a value to a number.
+ *
+ * @param {DataConverterType} value
+ * Value to convert.
+ *
+ * @return {number}
+ * Converted value as a number.
+ */
+function asNumber(value, decimalRegExp) {
+    if (typeof value === 'number') {
+        return value;
+    }
+    if (typeof value === 'boolean') {
+        return value ? 1 : 0;
+    }
+    if (typeof value === 'string') {
+        const decimalRegex = decimalRegExp;
+        if (value.indexOf(' ') > -1) {
+            value = value.replace(/\s+/g, '');
         }
-        else if (typeof value === 'number') {
-            timestamp = value;
+        if (decimalRegex) {
+            if (!decimalRegex.test(value)) {
+                return NaN;
+            }
+            value = value.replace(decimalRegex, '$1.$2');
         }
-        else if (value instanceof Date) {
-            return value;
+        return parseFloat(value);
+    }
+    if (value instanceof Date) {
+        return value.getDate();
+    }
+    if (value) {
+        return value.getRowCount();
+    }
+    return NaN;
+}
+/**
+ * Converts a value to a string.
+ *
+ * @param {DataConverterType} value
+ * Value to convert.
+ *
+ * @return {string}
+ * Converted value as a string.
+ */
+function asString(value) {
+    return '' + value;
+}
+/**
+ * Converts a value to a boolean.
+ *
+ * @param {DataConverterType} value
+ * Value to convert.
+ *
+ * @return {boolean}
+ * Converted value as a boolean.
+ */
+function asBoolean(value) {
+    if (typeof value === 'boolean') {
+        return value;
+    }
+    if (typeof value === 'string') {
+        return value !== '' && value !== '0' && value !== 'false';
+    }
+    return !!asNumber(value);
+}
+/**
+ * Guesses the potential type of a string value for parsing CSV etc.
+ *
+ * @param {*} value
+ * The value to examine.
+ *
+ * @return {'number' | 'string' | 'Date'}
+ * Type string, either `string`, `Date`, or `number`.
+ */
+function guessType(value, converter) {
+    let result = 'string';
+    if (typeof value === 'string') {
+        const trimedValue = trim(`${value}`), decimalRegExp = converter.decimalRegExp;
+        let innerTrimedValue = trim(trimedValue, true);
+        if (decimalRegExp) {
+            innerTrimedValue = (decimalRegExp.test(innerTrimedValue) ?
+                innerTrimedValue.replace(decimalRegExp, '$1.$2') :
+                '');
+        }
+        const floatValue = parseFloat(innerTrimedValue);
+        if (+innerTrimedValue === floatValue) {
+            // String is numeric
+            value = floatValue;
         }
         else {
-            timestamp = converter.parseDate(asString(value));
+            // Determine if a date string
+            const dateValue = converter.parseDate(value);
+            result = DataConverterUtils_isNumber(dateValue) ? 'Date' : 'string';
         }
-        return new Date(timestamp);
     }
-    DataConverterUtils.asDate = asDate;
-    /**
-     * Converts a value to a number.
-     *
-     * @param {DataConverter.Type} value
-     * Value to convert.
-     *
-     * @return {number}
-     * Converted value as a number.
-     */
-    function asNumber(value, decimalRegExp) {
-        if (typeof value === 'number') {
-            return value;
-        }
-        if (typeof value === 'boolean') {
-            return value ? 1 : 0;
-        }
-        if (typeof value === 'string') {
-            const decimalRegex = decimalRegExp;
-            if (value.indexOf(' ') > -1) {
-                value = value.replace(/\s+/g, '');
-            }
-            if (decimalRegex) {
-                if (!decimalRegex.test(value)) {
-                    return NaN;
-                }
-                value = value.replace(decimalRegex, '$1.$2');
-            }
-            return parseFloat(value);
-        }
-        if (value instanceof Date) {
-            return value.getDate();
-        }
-        if (value) {
-            return value.getRowCount();
-        }
-        return NaN;
+    if (typeof value === 'number') {
+        // Greater than milliseconds in a year assumed timestamp
+        result = value > 365 * 24 * 3600 * 1000 ? 'Date' : 'number';
     }
-    DataConverterUtils.asNumber = asNumber;
-    /**
-     * Converts a value to a string.
-     *
-     * @param {DataConverter.Type} value
-     * Value to convert.
-     *
-     * @return {string}
-     * Converted value as a string.
-     */
-    function asString(value) {
-        return '' + value;
+    return result;
+}
+/**
+ * Trim a string from whitespaces.
+ *
+ * @param {string} str
+ * String to trim.
+ *
+ * @param {boolean} [inside=false]
+ * Remove all spaces between numbers.
+ *
+ * @return {string}
+ * Trimed string
+ */
+function trim(str, inside) {
+    if (typeof str === 'string') {
+        str = str.replace(/^\s+|\s+$/g, '');
+        // Clear white space insdie the string, like thousands separators
+        if (inside && /^[\d\s]+$/.test(str)) {
+            str = str.replace(/\s/g, '');
+        }
     }
-    DataConverterUtils.asString = asString;
-    /**
-     * Converts a value to a boolean.
-     *
-     * @param {DataConverter.Type} value
-     * Value to convert.
-     *
-     * @return {boolean}
-     * Converted value as a boolean.
-     */
-    function asBoolean(value) {
-        if (typeof value === 'boolean') {
-            return value;
-        }
-        if (typeof value === 'string') {
-            return value !== '' && value !== '0' && value !== 'false';
-        }
-        return !!asNumber(value);
+    return str;
+}
+/**
+ * Parses an array of columns to a column collection. If more headers are
+ * provided, the corresponding, empty columns are added.
+ *
+ * @param {DataTableColumn[]} [columnsArray]
+ * Array of columns.
+ *
+ * @param {string[]} [headers]
+ * Column ids to use.
+ *
+ * @return {DataTableColumnCollection}
+ * Parsed columns.
+ */
+function getColumnsCollection(columnsArray = [], headers) {
+    const columns = {};
+    for (let i = 0, iEnd = Math.max(headers.length, columnsArray.length); i < iEnd; ++i) {
+        const columnId = headers[i] || `${i}`;
+        columns[columnId] = columnsArray[i] ? columnsArray[i].slice() : [];
     }
-    DataConverterUtils.asBoolean = asBoolean;
-    /**
-     * Guesses the potential type of a string value for parsing CSV etc.
-     *
-     * @param {*} value
-     * The value to examine.
-     *
-     * @return {'number' | 'string' | 'Date'}
-     * Type string, either `string`, `Date`, or `number`.
-     */
-    function guessType(value, converter) {
-        let result = 'string';
-        if (typeof value === 'string') {
-            const trimedValue = DataConverterUtils.trim(`${value}`), decimalRegExp = converter.decimalRegExp;
-            let innerTrimedValue = DataConverterUtils.trim(trimedValue, true);
-            if (decimalRegExp) {
-                innerTrimedValue = (decimalRegExp.test(innerTrimedValue) ?
-                    innerTrimedValue.replace(decimalRegExp, '$1.$2') :
-                    '');
-            }
-            const floatValue = parseFloat(innerTrimedValue);
-            if (+innerTrimedValue === floatValue) {
-                // String is numeric
-                value = floatValue;
-            }
-            else {
-                // Determine if a date string
-                const dateValue = converter.parseDate(value);
-                result = DataConverterUtils_isNumber(dateValue) ? 'Date' : 'string';
-            }
-        }
-        if (typeof value === 'number') {
-            // Greater than milliseconds in a year assumed timestamp
-            result = value > 365 * 24 * 3600 * 1000 ? 'Date' : 'number';
-        }
-        return result;
-    }
-    DataConverterUtils.guessType = guessType;
-    /**
-     * Trim a string from whitespaces.
-     *
-     * @param {string} str
-     * String to trim.
-     *
-     * @param {boolean} [inside=false]
-     * Remove all spaces between numbers.
-     *
-     * @return {string}
-     * Trimed string
-     */
-    function trim(str, inside) {
-        if (typeof str === 'string') {
-            str = str.replace(/^\s+|\s+$/g, '');
-            // Clear white space insdie the string, like thousands separators
-            if (inside && /^[\d\s]+$/.test(str)) {
-                str = str.replace(/\s/g, '');
-            }
-        }
-        return str;
-    }
-    DataConverterUtils.trim = trim;
-    /**
-     * Parses an array of columns to a column collection. If more headers are
-     * provided, the corresponding, empty columns are added.
-     *
-     * @param {DataTable.Column[]} [columnsArray]
-     * Array of columns.
-     *
-     * @param {string[]} [headers]
-     * Column ids to use.
-     *
-     * @return {DataTable.ColumnCollection}
-     * Parsed columns.
-     */
-    function getColumnsCollection(columnsArray = [], headers) {
-        const columns = {};
-        for (let i = 0, iEnd = Math.max(headers.length, columnsArray.length); i < iEnd; ++i) {
-            const columnId = headers[i] || `${i}`;
-            columns[columnId] = columnsArray[i] ? columnsArray[i].slice() : [];
-        }
-        return columns;
-    }
-    DataConverterUtils.getColumnsCollection = getColumnsCollection;
-})(DataConverterUtils || (DataConverterUtils = {}));
+    return columns;
+}
 /* *
  *
  *  Default Export
  *
  * */
+const DataConverterUtils = {
+    asBoolean,
+    asDate,
+    asNumber,
+    asString,
+    getColumnsCollection,
+    guessType,
+    trim
+};
 /* harmony default export */ const Converters_DataConverterUtils = (DataConverterUtils);
 
 ;// ./code/es-modules/Data/Converters/DataConverter.js
@@ -2321,6 +2261,26 @@ const { addEvent: DataConverter_addEvent, fireEvent: DataConverter_fireEvent, me
  * @private
  */
 class DataConverter {
+    /**
+     * Adds a converter class to the registry.
+     *
+     * @private
+     *
+     * @param {string} key
+     * Registry key of the converter class.
+     *
+     * @param {DataConverterTypes} DataConverterClass
+     * Connector class (aka class constructor) to register.
+     *
+     * @return {boolean}
+     * Returns true, if the registration was successful. False is returned, if
+     * their is already a converter registered with this key.
+     */
+    static registerType(key, DataConverterClass) {
+        return (!!key &&
+            !DataConverter.types[key] &&
+            !!(DataConverter.types[key] = DataConverterClass));
+    }
     /* *
      *
      *  Constructor
@@ -2329,7 +2289,7 @@ class DataConverter {
     /**
      * Constructs an instance of the DataConverter.
      *
-     * @param {DataConverter.UserOptions} [options]
+     * @param {UserOptions} [options]
      * Options for the DataConverter.
      */
     constructor(options) {
@@ -2527,7 +2487,7 @@ class DataConverter {
     /**
      * Emits an event on the DataConverter instance.
      *
-     * @param {DataConverter.Event} [e]
+     * @param {Event} [e]
      * Event object containing additional event data
      */
     emit(e) {
@@ -2539,7 +2499,7 @@ class DataConverter {
      * @param {string} type
      * Event type as a string.
      *
-     * @param {DataEventEmitter.Callback} callback
+     * @param {DataEventCallback} callback
      * Function to register for an modifier callback.
      *
      * @return {Function}
@@ -2619,56 +2579,10 @@ DataConverter.defaultOptions = {
     dateFormat: '',
     firstRowAsNames: true
 };
-/* *
- *
- *  Class Namespace
- *
- * */
 /**
- * Additionally provided types for events and conversion.
+ * Registry as a record object with converter names and their class.
  */
-(function (DataConverter) {
-    /* *
-     *
-     *  Declarations
-     *
-     * */
-    /* *
-     *
-     *  Constants
-     *
-     * */
-    /**
-     * Registry as a record object with connector names and their class.
-     */
-    DataConverter.types = {};
-    /* *
-     *
-     *  Functions
-     *
-     * */
-    /**
-     * Adds a converter class to the registry.
-     *
-     * @private
-     *
-     * @param {string} key
-     * Registry key of the converter class.
-     *
-     * @param {DataConverterTypes} DataConverterClass
-     * Connector class (aka class constructor) to register.
-     *
-     * @return {boolean}
-     * Returns true, if the registration was successful. False is returned, if
-     * their is already a converter registered with this key.
-     */
-    function registerType(key, DataConverterClass) {
-        return (!!key &&
-            !DataConverter.types[key] &&
-            !!(DataConverter.types[key] = DataConverterClass));
-    }
-    DataConverter.registerType = registerType;
-})(DataConverter || (DataConverter = {}));
+DataConverter.types = {};
 /* *
  *
  *  Default Export
@@ -2729,7 +2643,7 @@ class DataCursor {
      *
      * @example
      * ```TypeScript
-     * dataCursor.addListener(myTable.id, 'hover', (e: DataCursor.Event) => {
+     * dataCursor.addListener(myTable.id, 'hover', (e: DataCursorEvent) => {
      *     if (e.cursor.type === 'position') {
      *         console.log(`Hover over row #${e.cursor.row}.`);
      *     }
@@ -2738,13 +2652,13 @@ class DataCursor {
      *
      * @function #addListener
      *
-     * @param {Data.DataCursor.TableId} tableId
+     * @param {Data.DataCursorTableId} tableId
      * The ID of the table to listen to.
      *
-     * @param {Data.DataCursor.State} state
+     * @param {Data.DataCursorState} state
      * The state on the table to listen to.
      *
-     * @param {Data.DataCursor.Listener} listener
+     * @param {Data.DataCursorListener} listener
      * The listener to register.
      *
      * @return {Data.DataCursor}
@@ -2796,7 +2710,7 @@ class DataCursor {
      * @param {Data.DataTable} table
      * The related table of the cursor.
      *
-     * @param {Data.DataCursor.Type} cursor
+     * @param {Data.DataCursorType} cursor
      * The state cursor to emit.
      *
      * @param {Event} [event]
@@ -2819,7 +2733,7 @@ class DataCursor {
                 if (!cursors.length) {
                     stateMap[cursor.state] = cursors;
                 }
-                if (DataCursor.getIndex(cursor, cursors) === -1) {
+                if (getIndex(cursor, cursors) === -1) {
                     cursors.push(cursor);
                 }
             }
@@ -2859,7 +2773,7 @@ class DataCursor {
      * @param {string} tableId
      * ID of the related cursor table.
      *
-     * @param {Data.DataCursor.Type} cursor
+     * @param {Data.DataCursorType} cursor
      * Copy or reference of the cursor.
      *
      * @return {Data.DataCursor}
@@ -2869,7 +2783,7 @@ class DataCursor {
         const cursors = (this.stateMap[tableId] &&
             this.stateMap[tableId][cursor.state]);
         if (cursors) {
-            const index = DataCursor.getIndex(cursor, cursors);
+            const index = getIndex(cursor, cursors);
             if (index >= 0) {
                 cursors.splice(index, 1);
             }
@@ -2881,13 +2795,13 @@ class DataCursor {
      *
      * @function #addListener
      *
-     * @param {Data.DataCursor.TableId} tableId
+     * @param {Data.DataCursorTableId} tableId
      * The ID of the table the listener is connected to.
      *
-     * @param {Data.DataCursor.State} state
+     * @param {Data.DataCursorState} state
      * The state on the table the listener is listening to.
      *
-     * @param {Data.DataCursor.Listener} listener
+     * @param {Data.DataCursorListener} listener
      * The listener to deregister.
      *
      * @return {Data.DataCursor}
@@ -2907,149 +2821,129 @@ class DataCursor {
 }
 /* *
  *
- *  Class Namespace
+ *  Functions
  *
  * */
 /**
- * @class Data.DataCursor
+ * Finds the index of an cursor in an array.
+ * @private
  */
-(function (DataCursor) {
-    /* *
-     *
-     *  Declarations
-     *
-     * */
-    /* *
-     *
-     *  Functions
-     *
-     * */
-    /**
-     * Finds the index of an cursor in an array.
-     * @private
-     */
-    function getIndex(needle, cursors) {
-        if (needle.type === 'position') {
-            for (let cursor, i = 0, iEnd = cursors.length; i < iEnd; ++i) {
-                cursor = cursors[i];
-                if (cursor.type === 'position' &&
-                    cursor.state === needle.state &&
-                    cursor.column === needle.column &&
-                    cursor.row === needle.row) {
-                    return i;
-                }
+function getIndex(needle, cursors) {
+    if (needle.type === 'position') {
+        for (let cursor, i = 0, iEnd = cursors.length; i < iEnd; ++i) {
+            cursor = cursors[i];
+            if (cursor.type === 'position' &&
+                cursor.state === needle.state &&
+                cursor.column === needle.column &&
+                cursor.row === needle.row) {
+                return i;
             }
         }
-        else {
-            const columnNeedle = JSON.stringify(needle.columns);
-            for (let cursor, i = 0, iEnd = cursors.length; i < iEnd; ++i) {
-                cursor = cursors[i];
-                if (cursor.type === 'range' &&
-                    cursor.state === needle.state &&
-                    cursor.firstRow === needle.firstRow &&
-                    cursor.lastRow === needle.lastRow &&
-                    JSON.stringify(cursor.columns) === columnNeedle) {
-                    return i;
-                }
+    }
+    else {
+        const columnNeedle = JSON.stringify(needle.columns);
+        for (let cursor, i = 0, iEnd = cursors.length; i < iEnd; ++i) {
+            cursor = cursors[i];
+            if (cursor.type === 'range' &&
+                cursor.state === needle.state &&
+                cursor.firstRow === needle.firstRow &&
+                cursor.lastRow === needle.lastRow &&
+                JSON.stringify(cursor.columns) === columnNeedle) {
+                return i;
             }
         }
-        return -1;
     }
-    DataCursor.getIndex = getIndex;
-    /**
-     * Checks whether two cursor share the same properties.
-     * @private
-     */
-    function isEqual(cursorA, cursorB) {
-        if (cursorA.type === 'position' && cursorB.type === 'position') {
-            return (cursorA.column === cursorB.column &&
-                cursorA.row === cursorB.row &&
-                cursorA.state === cursorB.state);
-        }
-        if (cursorA.type === 'range' && cursorB.type === 'range') {
-            return (cursorA.firstRow === cursorB.firstRow &&
-                cursorA.lastRow === cursorB.lastRow &&
-                (JSON.stringify(cursorA.columns) ===
-                    JSON.stringify(cursorB.columns)));
-        }
-        return false;
+    return -1;
+}
+/**
+ * Checks whether two cursor share the same properties.
+ * @private
+ */
+function isEqual(cursorA, cursorB) {
+    if (cursorA.type === 'position' && cursorB.type === 'position') {
+        return (cursorA.column === cursorB.column &&
+            cursorA.row === cursorB.row &&
+            cursorA.state === cursorB.state);
     }
-    DataCursor.isEqual = isEqual;
-    /**
-     * Checks whether a cursor is in a range.
-     * @private
-     */
-    function isInRange(needle, range) {
-        if (range.type === 'position') {
-            range = toRange(range);
-        }
-        if (needle.type === 'position') {
-            needle = toRange(needle, range);
-        }
-        const needleColumns = needle.columns;
-        const rangeColumns = range.columns;
-        return (needle.firstRow >= range.firstRow &&
-            needle.lastRow <= range.lastRow &&
-            (!needleColumns ||
-                !rangeColumns ||
-                needleColumns.every((column) => rangeColumns.indexOf(column) >= 0)));
+    if (cursorA.type === 'range' && cursorB.type === 'range') {
+        return (cursorA.firstRow === cursorB.firstRow &&
+            cursorA.lastRow === cursorB.lastRow &&
+            (JSON.stringify(cursorA.columns) ===
+                JSON.stringify(cursorB.columns)));
     }
-    DataCursor.isInRange = isInRange;
-    /**
-     * @private
-     */
-    function toPositions(cursor) {
-        if (cursor.type === 'position') {
-            return [cursor];
-        }
-        const columns = (cursor.columns || []);
-        const positions = [];
-        const state = cursor.state;
-        for (let row = cursor.firstRow, rowEnd = cursor.lastRow; row < rowEnd; ++row) {
-            if (!columns.length) {
-                positions.push({
-                    type: 'position',
-                    row,
-                    state
-                });
-                continue;
-            }
-            for (let column = 0, columnEnd = columns.length; column < columnEnd; ++column) {
-                positions.push({
-                    type: 'position',
-                    column: columns[column],
-                    row,
-                    state
-                });
-            }
-        }
-        return positions;
+    return false;
+}
+/**
+ * Checks whether a cursor is in a range.
+ * @private
+ */
+function isInRange(needle, range) {
+    if (range.type === 'position') {
+        range = toRange(range);
     }
-    DataCursor.toPositions = toPositions;
-    /**
-     * @private
-     */
-    function toRange(cursor, defaultRange) {
-        if (cursor.type === 'range') {
-            return cursor;
-        }
-        const range = {
-            type: 'range',
-            firstRow: (cursor.row ??
-                (defaultRange && defaultRange.firstRow) ??
-                0),
-            lastRow: (cursor.row ??
-                (defaultRange && defaultRange.lastRow) ??
-                Number.MAX_VALUE),
-            state: cursor.state
-        };
-        if (typeof cursor.column !== 'undefined') {
-            range.columns = [cursor.column];
-        }
-        return range;
+    if (needle.type === 'position') {
+        needle = toRange(needle, range);
     }
-    DataCursor.toRange = toRange;
-})(DataCursor || (DataCursor = {}));
+    const needleColumns = needle.columns;
+    const rangeColumns = range.columns;
+    return (needle.firstRow >= range.firstRow &&
+        needle.lastRow <= range.lastRow &&
+        (!needleColumns ||
+            !rangeColumns ||
+            needleColumns.every((column) => rangeColumns.indexOf(column) >= 0)));
+}
+/**
+ * @private
+ */
+function toPositions(cursor) {
+    if (cursor.type === 'position') {
+        return [cursor];
+    }
+    const columns = (cursor.columns || []);
+    const positions = [];
+    const state = cursor.state;
+    for (let row = cursor.firstRow, rowEnd = cursor.lastRow; row < rowEnd; ++row) {
+        if (!columns.length) {
+            positions.push({
+                type: 'position',
+                row,
+                state
+            });
+            continue;
+        }
+        for (let column = 0, columnEnd = columns.length; column < columnEnd; ++column) {
+            positions.push({
+                type: 'position',
+                column: columns[column],
+                row,
+                state
+            });
+        }
+    }
+    return positions;
+}
+/**
+ * @private
+ */
+function toRange(cursor, defaultRange) {
+    if (cursor.type === 'range') {
+        return cursor;
+    }
+    const range = {
+        type: 'range',
+        firstRow: (cursor.row ??
+            (defaultRange && defaultRange.firstRow) ??
+            0),
+        lastRow: (cursor.row ??
+            (defaultRange && defaultRange.lastRow) ??
+            Number.MAX_VALUE),
+        state: cursor.state
+    };
+    if (typeof cursor.column !== 'undefined') {
+        range.columns = [cursor.column];
+    }
+    return range;
+}
 /* *
  *
  *  Default Export
@@ -3108,7 +3002,7 @@ class DataPool {
      * Emits an event on this data pool to all registered callbacks of the given
      * event.
      *
-     * @param {DataTable.Event} e
+     * @param {DataTableEvent} e
      * Event object with event information.
      */
     emit(e) {
@@ -3275,8 +3169,12 @@ class DataPool {
      *
      * @param options
      * Connector options to set.
+     *
+     * @param update
+     * Whether to update the existing connector with the new options and reload
+     * it (`true`) or replace it with a new connector instance (`false`).
      */
-    setConnectorOptions(options) {
+    async setConnectorOptions(options, update) {
         const connectorsOptions = this.options.connectors;
         const connectorsInstances = this.connectors;
         this.emit({
@@ -3289,12 +3187,20 @@ class DataPool {
                 break;
             }
         }
-        // TODO: Check if can be refactored
-        if (connectorsInstances[options.id]) {
-            connectorsInstances[options.id].stopPolling();
-            delete connectorsInstances[options.id];
+        let existingConnector = connectorsInstances[options.id];
+        if (existingConnector) {
+            if (update) {
+                await existingConnector.update(options, true);
+            }
+            else {
+                existingConnector.stopPolling();
+                existingConnector = void 0;
+                delete connectorsInstances[options.id];
+            }
         }
-        connectorsOptions.push(options);
+        if (!existingConnector) {
+            connectorsOptions.push(options);
+        }
         this.emit({
             type: 'afterSetConnectorOptions',
             options
@@ -4036,7 +3942,7 @@ function asLogicalString(value) {
  * @return {number}
  * Number value. `NaN` if not convertable.
  */
-function asNumber(value) {
+function FormulaProcessor_asNumber(value) {
     switch (typeof value) {
         case 'boolean':
             return value ? 1 : 0;
@@ -4090,8 +3996,8 @@ function basicOperation(operator, x, y) {
             }
             return asLogicalNumber(x) >= asLogicalNumber(y);
     }
-    x = asNumber(x);
-    y = asNumber(y);
+    x = FormulaProcessor_asNumber(x);
+    y = FormulaProcessor_asNumber(y);
     let result;
     switch (operator) {
         case '+':
@@ -4462,7 +4368,7 @@ function translateReferences(formula, columnDelta = 0, rowDelta = 0) {
  *
  * */
 const FormulaProcessor = {
-    asNumber,
+    asNumber: FormulaProcessor_asNumber,
     getArgumentValue,
     getArgumentsValues,
     getRangeValues,
@@ -5930,9 +5836,9 @@ class CSVConverter extends Converters_DataConverter {
      *
      * @param {Partial<CSVConverterOptions>} [options]
      * Options for the parser.
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
-     * @return {DataTable.ColumnCollection}
+     * @return {DataTableColumnCollection}
      * The parsed column collection.
      *
      * @emits CSVDataParser#parse
@@ -6299,7 +6205,7 @@ class CSVConnector extends Connectors_DataConnector {
      * Overrides the DataConnector method. Emits an event on the connector to
      * all registered callbacks of this event.
      *
-     * @param {CSVConnector.Event} e
+     * @param {Event} e
      * Event object containing additional event information.
      */
     emit(e) {
@@ -6308,7 +6214,7 @@ class CSVConnector extends Connectors_DataConnector {
     /**
      * Initiates the loading of the CSV source to the connector
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @emits CSVConnector#load
@@ -6453,7 +6359,7 @@ class JSONConverter extends Converters_DataConverter {
      * @param {Partial<JSONConverterOptions>}[options]
      * Options for the parser
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @emits JSONConverter#parse
@@ -6496,7 +6402,7 @@ class JSONConverter extends Converters_DataConverter {
     /**
      * Helper for parsing data in 'columns' orientation.
      *
-     * @param {DataTable.BasicColumn[]} [columnsArray]
+     * @param {DataTableBasicColumn[]} [columnsArray]
      * Array of columns.
      *
      * @param {unknown[]} [data]
@@ -6534,7 +6440,7 @@ class JSONConverter extends Converters_DataConverter {
     /**
      * Helper for parsing data in 'rows' orientation.
      *
-     * @param {DataTable.BasicColumn[]} [columnsArray]
+     * @param {DataTableBasicColumn[]} [columnsArray]
      * Array of columns.
      *
      * Helper for parsing data in 'rows' orientation.
@@ -6548,7 +6454,7 @@ class JSONConverter extends Converters_DataConverter {
      * @param {Array<string>} [columnIds]
      * Column ids to retrieve.
      *
-     * @return {DataTable.BasicColumn[]}
+     * @return {DataTableBasicColumn[]}
      * Parsed columns.
      */
     parseRowsOrientation(columnsArray, data, firstRowAsNames, columnIds) {
@@ -6688,7 +6594,7 @@ class JSONConnector extends Connectors_DataConnector {
      * Overrides the DataConnector method. Emits an event on the connector to
      * all registered callbacks of this event.
      *
-     * @param {JSONConnector.Event} e
+     * @param {Event} e
      * Event object containing additional event information.
      */
     emit(e) {
@@ -6697,7 +6603,7 @@ class JSONConnector extends Connectors_DataConnector {
     /**
      * Initiates the loading of the JSON source to the connector
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @emits JSONConnector#load
@@ -6849,7 +6755,7 @@ class GoogleSheetsConverter extends Converters_DataConverter {
      * @param {Partial<GoogleSheetsConverterOptions>}[options]
      * Options for the parser
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @emits GoogleSheetsParser#parse
@@ -6975,50 +6881,50 @@ function isGoogleError(json) {
  */
 class GoogleSheetsConnector extends Connectors_DataConnector {
     /* *
-     *
-     *  Constructor
-     *
-     * */
+ *
+ *  Constructor
+ *
+ * */
     /**
-     * Constructs an instance of GoogleSheetsConnector
-     *
-     * @param {Partial<GoogleSheetsConnectorOptions>} [options]
-     * Options for the connector and converter.
-     */
+ * Constructs an instance of GoogleSheetsConnector
+ *
+ * @param {Partial<GoogleSheetsConnectorOptions>} [options]
+ * Options for the connector and converter.
+ */
     constructor(options) {
         const mergedOptions = GoogleSheetsConnector_merge(GoogleSheetsConnector.defaultOptions, options);
         super(mergedOptions);
         this.options = mergedOptions;
     }
     /* *
-     *
-     *  Functions
-     *
-     * */
+ *
+ *  Functions
+ *
+ * */
     /**
-     * Overrides the DataConnector method. Emits an event on the connector to
-     * all registered callbacks of this event.
-     *
-     * @param {GoogleSheetsConnector.Event} e
-     * Event object containing additional event information.
-     */
+ * Overrides the DataConnector method. Emits an event on the connector to
+ * all registered callbacks of this event.
+ *
+ * @param {Event} e
+ * Event object containing additional event information.
+ */
     emit(e) {
         GoogleSheetsConnector_fireEvent(this, e.type, e);
     }
     /**
-     * Loads data from a Google Spreadsheet.
-     *
-     * @param {DataEvent.Detail} [eventDetail]
-     * Custom information for pending events.
-     *
-     * @return {Promise<this>}
-     * Same connector instance with modified table.
-     */
+ * Loads data from a Google Spreadsheet.
+ *
+ * @param {DataEventDetail} [eventDetail]
+ * Custom information for pending events.
+ *
+ * @return {Promise<this>}
+ * Same connector instance with modified table.
+ */
     load(eventDetail) {
         const connector = this;
         const options = connector.options;
         const { dataRefreshRate, enablePolling, googleAPIKey, googleSpreadsheetKey, dataTables } = options;
-        const url = GoogleSheetsConnector.buildFetchURL(googleAPIKey, googleSpreadsheetKey, options);
+        const url = buildFetchURL(googleAPIKey, googleSpreadsheetKey, options);
         connector.emit({
             type: 'load',
             detail: eventDetail,
@@ -7068,10 +6974,10 @@ class GoogleSheetsConnector extends Connectors_DataConnector {
     }
 }
 /* *
- *
- *  Static Properties
- *
- * */
+*
+*  Static Properties
+*
+* */
 GoogleSheetsConnector.defaultOptions = {
     id: 'google-sheets-connector',
     type: 'GoogleSheets',
@@ -7083,63 +6989,49 @@ GoogleSheetsConnector.defaultOptions = {
 };
 /* *
  *
- *  Class Namespace
+ *  Constants
  *
  * */
-(function (GoogleSheetsConnector) {
-    /* *
-     *
-     *  Declarations
-     *
-     * */
-    /* *
-     *
-     *  Constants
-     *
-     * */
-    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    /* *
-     *
-     *  Functions
-     *
-     * */
-    /**
-     * Creates GoogleSheets API v4 URL.
-     * @private
-     */
-    function buildFetchURL(apiKey, sheetKey, options = {}) {
-        const url = new URL(`https://sheets.googleapis.com/v4/spreadsheets/${sheetKey}/values/`);
-        const range = options.onlyColumnIds ?
-            'A1:Z1' : buildQueryRange(options);
-        url.pathname += range;
-        const searchParams = url.searchParams;
-        searchParams.set('alt', 'json');
-        if (!options.onlyColumnIds) {
-            searchParams.set('dateTimeRenderOption', 'FORMATTED_STRING');
-            searchParams.set('majorDimension', 'COLUMNS');
-            searchParams.set('valueRenderOption', 'UNFORMATTED_VALUE');
-        }
-        searchParams.set('prettyPrint', 'false');
-        searchParams.set('key', apiKey);
-        return url.href;
+const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+/* *
+ *
+ *  Functions
+ *
+ * */
+/**
+ * Creates GoogleSheets API v4 URL.
+ * @private
+ */
+function buildFetchURL(apiKey, sheetKey, options = {}) {
+    const url = new URL(`https://sheets.googleapis.com/v4/spreadsheets/${sheetKey}/values/`);
+    const range = options.onlyColumnIds ?
+        'A1:Z1' : buildQueryRange(options);
+    url.pathname += range;
+    const searchParams = url.searchParams;
+    searchParams.set('alt', 'json');
+    if (!options.onlyColumnIds) {
+        searchParams.set('dateTimeRenderOption', 'FORMATTED_STRING');
+        searchParams.set('majorDimension', 'COLUMNS');
+        searchParams.set('valueRenderOption', 'UNFORMATTED_VALUE');
     }
-    GoogleSheetsConnector.buildFetchURL = buildFetchURL;
-    /**
-     * Creates sheets range.
-     * @private
-     */
-    function buildQueryRange(options = {}) {
-        const { endColumn, endRow, googleSpreadsheetRange, startColumn, startRow } = options;
-        return googleSpreadsheetRange || ((alphabet[startColumn || 0] || 'A') +
-            (Math.max((startRow || 0), 0) + 1) +
-            ':' +
-            (alphabet[GoogleSheetsConnector_pick(endColumn, 25)] || 'Z') +
-            (endRow ?
-                Math.max(endRow, 0) :
-                'Z'));
-    }
-    GoogleSheetsConnector.buildQueryRange = buildQueryRange;
-})(GoogleSheetsConnector || (GoogleSheetsConnector = {}));
+    searchParams.set('prettyPrint', 'false');
+    searchParams.set('key', apiKey);
+    return url.href;
+}
+/**
+ * Creates sheets range.
+ * @private
+ */
+function buildQueryRange(options = {}) {
+    const { endColumn, endRow, googleSpreadsheetRange, startColumn, startRow } = options;
+    return googleSpreadsheetRange || ((alphabet[startColumn || 0] || 'A') +
+        (Math.max((startRow || 0), 0) + 1) +
+        ':' +
+        (alphabet[GoogleSheetsConnector_pick(endColumn, 25)] || 'Z') +
+        (endRow ?
+            Math.max(endRow, 0) :
+            'Z'));
+}
 /* *
  *
  *  Registry
@@ -7405,7 +7297,7 @@ class HTMLTableConverter extends Converters_DataConverter {
      * @param {Partial<HTMLTableConverterOptions>}[options]
      * Options for the parser
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @emits CSVDataParser#parse
@@ -7560,7 +7452,7 @@ class HTMLTableConnector extends Connectors_DataConnector {
     /**
      * Constructs an instance of HTMLTableConnector.
      *
-     * @param {HTMLTableConnector.CombinedHTMLTableConnectorOptions} [options]
+     * @param {CombinedHTMLTableConnectorOptions} [options]
      * Options for the connector and converter.
      */
     constructor(options) {
@@ -7572,7 +7464,7 @@ class HTMLTableConnector extends Connectors_DataConnector {
     /**
      * Initiates creating the dataconnector from the HTML table
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @emits HTMLTableConnector#load
@@ -7674,7 +7566,7 @@ class ChainModifier extends Modifiers_DataModifier {
     /**
      * Constructs an instance of the modifier chain.
      *
-     * @param {Partial<ChainModifier.Options>} [options]
+     * @param {Partial<ChainModifierOptions>} [options]
      * Options to configure the modifier chain.
      *
      * @param {...DataModifier} [chain]
@@ -7708,7 +7600,7 @@ class ChainModifier extends Modifiers_DataModifier {
      * @param {DataModifier} modifier
      * Configured modifier to add.
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      */
     add(modifier, eventDetail) {
@@ -7727,7 +7619,7 @@ class ChainModifier extends Modifiers_DataModifier {
     /**
      * Clears all modifiers from the chain.
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      */
     clear(eventDetail) {
@@ -7750,7 +7642,7 @@ class ChainModifier extends Modifiers_DataModifier {
      * @param {Highcharts.DataTable} table
      * Table to modify.
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @return {Promise<Highcharts.DataTable>}
@@ -7789,7 +7681,7 @@ class ChainModifier extends Modifiers_DataModifier {
      * @param {DataTable} table
      * Table to modify.
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @return {DataTable}
@@ -7828,7 +7720,7 @@ class ChainModifier extends Modifiers_DataModifier {
      * @param {DataModifier} modifier
      * Configured modifier to remove.
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      */
     remove(modifier, eventDetail) {
@@ -7908,7 +7800,7 @@ class InvertModifier extends Modifiers_DataModifier {
     /**
      * Constructs an instance of the invert modifier.
      *
-     * @param {Partial<InvertModifier.Options>} [options]
+     * @param {Partial<InvertModifierOptions>} [options]
      * Options to configure the invert modifier.
      */
     constructor(options) {
@@ -7928,7 +7820,7 @@ class InvertModifier extends Modifiers_DataModifier {
      * @param {DataTable} table
      * Table to invert.
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @return {DataTable}
@@ -8191,7 +8083,7 @@ class RangeModifier extends Modifiers_DataModifier {
     /**
      * Constructs an instance of the range modifier.
      *
-     * @param {Partial<RangeModifier.Options>} [options]
+     * @param {Partial<RangeModifierOptions>} [options]
      * Options to configure the range modifier.
      */
     constructor(options) {
@@ -8211,7 +8103,7 @@ class RangeModifier extends Modifiers_DataModifier {
      * @param {DataTable} table
      * Table to modify.
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @return {DataTable}
@@ -8316,7 +8208,7 @@ class SortModifier extends Modifiers_DataModifier {
     /**
      * Constructs an instance of the sort modifier.
      *
-     * @param {Partial<SortDataModifier.Options>} [options]
+     * @param {Partial<SortModifierOptions>} [options]
      * Options to configure the sort modifier.
      */
     constructor(options) {
@@ -8336,7 +8228,7 @@ class SortModifier extends Modifiers_DataModifier {
      * @param {Highcharts.DataTable} table
      * Table with rows to reference.
      *
-     * @return {Array<SortModifier.RowReference>}
+     * @return {Array<SortRowReference>}
      * Array of row references.
      */
     getRowReferences(table) {
@@ -8525,7 +8417,7 @@ class FilterModifier extends Modifiers_DataModifier {
     /**
      * Constructs an instance of the filter modifier.
      *
-     * @param {Partial<FilterModifier.Options>} [options]
+     * @param {Partial<FilterModifierOptions>} [options]
      * Options to configure the filter modifier.
      */
     constructor(options) {
@@ -8545,7 +8437,7 @@ class FilterModifier extends Modifiers_DataModifier {
      * @param {DataTable} table
      * Table to modify.
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @return {DataTable}

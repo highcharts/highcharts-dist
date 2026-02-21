@@ -1,0 +1,594 @@
+/* *
+ *
+ *  (c) 2010-2025 Torstein Honsi
+ *
+ *  License: www.highcharts.com/license
+ *
+ *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+ *
+ * */
+/// <reference types="@webgpu/types" />
+'use strict';
+import Color from '../../Core/Color/Color.js';
+import ContourPoint from './ContourPoint.js';
+import contourShader from './contourShader.js';
+import ContourSeriesDefaults from './ContourSeriesDefaults.js';
+import Delaunay from '../../Core/Delaunay.js';
+import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
+import U from '../../Core/Utilities.js';
+import SVGRenderer from '../../Core/Renderer/SVG/SVGRenderer.js';
+const { seriesTypes: { scatter: ScatterSeries } } = SeriesRegistry;
+const { diffObjects, error, extend, merge, normalizeTickInterval } = U;
+/* *
+ *
+ *  Class
+ *
+ * */
+class ContourSeries extends ScatterSeries {
+    /* Uniforms:
+     * - extremesUniform,
+     * - valueExtremesUniform,
+     * - contourInterval,
+     * - contourOffset,
+     * - smoothColoring,
+     * - lineWidth,
+     * - contourLineColor
+     * - colorAxisStops
+     * - colorAxisStopsCount
+     * - isInverted
+     */
+    /* *
+     *
+     * Methods
+     *
+     * */
+    getContourData() {
+        const points = this.points, len = points.length, points3d = new Float32Array(len * 3), points2d = new Float64Array(len * 2);
+        for (let i = 0; i < len; i++) {
+            const { x, y = 0, value } = points[i], index2d = i * 2, index3d = i * 3;
+            points2d[index2d] = x;
+            points2d[index2d + 1] = y;
+            points3d[index3d] = x;
+            points3d[index3d + 1] = y;
+            points3d[index3d + 2] = value ?? 0;
+        }
+        return [new Delaunay(points2d).triangles, points3d];
+    }
+    update(options, redraw) {
+        options = diffObjects(options, this.userOptions);
+        const uniformOptions = [
+            'smoothColoring',
+            'contourInterval',
+            'contourOffset',
+            'lineColor',
+            'lineWidth'
+        ];
+        const isUniformOption = (key) => (uniformOptions.includes(key));
+        const hasNonUniformOptions = Object.keys(options).some((key) => !isUniformOption(key));
+        // Only fetch plotOptions if all options are uniform related.
+        const allOptions = (hasNonUniformOptions ?
+            void 0 :
+            this.setOptions(merge(this.userOptions, options))), hasNonUniformPlotOptions = allOptions ?
+            Object.keys(diffObjects(allOptions, this.options)).some((key) => !isUniformOption(key)) :
+            false;
+        if (hasNonUniformOptions || hasNonUniformPlotOptions) {
+            super.update(options, redraw);
+        }
+        else {
+            this.options = allOptions;
+            // If only uniform-related options changed, avoid full series
+            // reconstruction and update uniforms only.
+            this.setUniforms();
+        }
+    }
+    drawPoints() {
+        const { group } = this;
+        if (!group) {
+            return;
+        }
+        if (!this.canvas) {
+            this.foreignObject = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
+            group.element.appendChild(this.foreignObject);
+            this.canvas = document.createElement('canvas');
+            this.foreignObject.appendChild(this.canvas);
+        }
+        const { canvas, xAxis, yAxis } = this, foreignObject = this.foreignObject, oldWidth = foreignObject.width.baseVal.value, oldHeight = foreignObject.height.baseVal.value, { devicePixelRatio: dpr } = window;
+        let width = xAxis.len, height = yAxis.len;
+        if (this.chart.inverted) {
+            [width, height] = [height, width];
+        }
+        if (oldWidth !== width) {
+            foreignObject.setAttribute('width', width);
+            canvas.width = width * dpr;
+            canvas.style.width = width + 'px';
+        }
+        if (oldHeight !== height) {
+            foreignObject.setAttribute('height', height);
+            canvas.height = height * dpr;
+            canvas.style.height = height + 'px';
+        }
+        if (this.renderFrame) {
+            this.renderFrame();
+        }
+        else {
+            this.run();
+        }
+    }
+    async run() {
+        const series = this, chart = series.chart, renderer = chart.renderer, canvas = series.canvas, gpu = navigator.gpu, context = series.context = canvas.getContext('webgpu');
+        renderer.asyncCounter += 1;
+        if (!gpu || !context) {
+            error(36, false);
+            return;
+        }
+        if (context) {
+            let device = this.device;
+            if (!this.adapter) {
+                this.adapter = await gpu.requestAdapter();
+            }
+            if (!device && this.adapter) {
+                device = this.device = await this.adapter.requestDevice();
+            }
+            const canvasFormat = gpu.getPreferredCanvasFormat();
+            if (device) {
+                context.configure({
+                    device: device,
+                    format: canvasFormat,
+                    colorSpace: 'display-p3',
+                    alphaMode: 'premultiplied',
+                    usage: (GPUTextureUsage.RENDER_ATTACHMENT |
+                        GPUTextureUsage.COPY_SRC)
+                });
+                const [indices, vertices] = this.getContourData();
+                // WebGPU Buffers grouped under a single object
+                const buffers = this.buffers = {
+                    vertex: device.createBuffer({
+                        size: vertices.byteLength,
+                        usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST
+                    }),
+                    index: device.createBuffer({
+                        size: indices.byteLength,
+                        usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST
+                    }),
+                    extremesUniform: device.createBuffer({
+                        size: Float32Array.BYTES_PER_ELEMENT * 4,
+                        usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+                    }),
+                    valueExtremesUniform: device.createBuffer({
+                        size: Float32Array.BYTES_PER_ELEMENT * 2,
+                        usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+                    }),
+                    contourIntervalUniform: device.createBuffer({
+                        size: 4,
+                        usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+                    }),
+                    contourOffsetUniform: device.createBuffer({
+                        size: 4,
+                        usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+                    }),
+                    smoothColoringUniform: device.createBuffer({
+                        size: 4,
+                        usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+                    }),
+                    lineWidthUniform: device.createBuffer({
+                        size: 4,
+                        usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+                    }),
+                    contourLineColor: device.createBuffer({
+                        size: 12,
+                        usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+                    }),
+                    colorAxisStopsCountUniform: device.createBuffer({
+                        size: 4,
+                        usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+                    }),
+                    colorAxisStopsUniform: device.createBuffer({
+                        size: Float32Array.BYTES_PER_ELEMENT * 64,
+                        usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST
+                    }),
+                    isInvertedUniform: device.createBuffer({
+                        size: 4,
+                        usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+                    })
+                };
+                const { vertex: vertexBuffer, index: indexBuffer, extremesUniform: extremesUniformBuffer, valueExtremesUniform: valueExtremesUniformBuffer, contourIntervalUniform: contourIntervalUniformBuffer, contourOffsetUniform: contourOffsetUniformBuffer, smoothColoringUniform: smoothColoringUniformBuffer, lineWidthUniform: lineWidthUniformBuffer, contourLineColor: contourLineColorBuffer, colorAxisStopsCountUniform: colAxisStopsCountUniformBuffer, colorAxisStopsUniform: colorAxisStopsUniformBuffer, isInvertedUniform: isInvertedUniformBuffer } = buffers;
+                device.queue.writeBuffer(vertexBuffer, 0, vertices);
+                device.queue.writeBuffer(indexBuffer, 0, indices);
+                const vertexBufferLayout = {
+                    arrayStride: 12,
+                    attributes: [{
+                            format: 'float32x3',
+                            offset: 0,
+                            shaderLocation: 0
+                        }]
+                };
+                const shaderModule = device.createShaderModule({
+                    code: contourShader
+                });
+                const pipeline = device.createRenderPipeline({
+                    layout: 'auto',
+                    vertex: {
+                        module: shaderModule,
+                        entryPoint: 'vertexMain',
+                        buffers: [vertexBufferLayout]
+                    },
+                    fragment: {
+                        module: shaderModule,
+                        entryPoint: 'fragmentMain',
+                        targets: [{
+                                format: canvasFormat
+                            }]
+                    },
+                    primitive: {
+                        topology: 'triangle-list'
+                    }
+                });
+                const bindGroup = device.createBindGroup({
+                    layout: pipeline.getBindGroupLayout(0),
+                    entries: [{
+                            binding: 0,
+                            resource: {
+                                buffer: extremesUniformBuffer,
+                                label: 'extremesUniformBuffer'
+                            }
+                        }, {
+                            binding: 1,
+                            resource: {
+                                buffer: valueExtremesUniformBuffer,
+                                label: 'valueExtremesUniformBuffer'
+                            }
+                        }, {
+                            binding: 2,
+                            resource: {
+                                buffer: colorAxisStopsUniformBuffer,
+                                label: 'colorAxisStopsBuffer'
+                            }
+                        }, {
+                            binding: 3,
+                            resource: {
+                                buffer: colAxisStopsCountUniformBuffer,
+                                label: 'colorAxisStopsCountBuffer'
+                            }
+                        }, {
+                            binding: 4,
+                            resource: {
+                                buffer: contourIntervalUniformBuffer,
+                                label: 'contourIntervalUniformBuffer'
+                            }
+                        }, {
+                            binding: 5,
+                            resource: {
+                                buffer: contourOffsetUniformBuffer,
+                                label: 'contourOffsetUniformBuffer'
+                            }
+                        }, {
+                            binding: 6,
+                            resource: {
+                                buffer: smoothColoringUniformBuffer,
+                                label: 'smoothColoringUniformBuffer'
+                            }
+                        }, {
+                            binding: 7,
+                            resource: {
+                                buffer: lineWidthUniformBuffer,
+                                label: 'lineWidthUniformBuffer'
+                            }
+                        }, {
+                            binding: 8,
+                            resource: {
+                                buffer: contourLineColorBuffer,
+                                label: 'contourLineColorBuffer'
+                            }
+                        }, {
+                            binding: 9,
+                            resource: {
+                                buffer: isInvertedUniformBuffer,
+                                label: 'isInvertedUniformBuffer'
+                            }
+                        }]
+                });
+                this.renderFrame = function () {
+                    this.setUniforms(false);
+                    const encoder = device.createCommandEncoder(), currentTexture = context.getCurrentTexture(), pass = encoder.beginRenderPass({
+                        colorAttachments: [{
+                                view: currentTexture.createView(),
+                                loadOp: 'clear',
+                                clearValue: [0, 0, 0, 0],
+                                storeOp: 'store'
+                            }]
+                    });
+                    pass.setPipeline(pipeline);
+                    pass.setVertexBuffer(0, vertexBuffer);
+                    pass.setIndexBuffer(indexBuffer, 'uint32');
+                    pass.setBindGroup(0, bindGroup);
+                    pass.drawIndexed(indices.length);
+                    pass.end();
+                    device.queue.submit([encoder.finish()]);
+                };
+                this.renderFrame();
+            }
+        }
+        renderer.asyncCounter--;
+        if (!renderer.asyncCounter && chart && !chart.hasLoaded) {
+            chart.onload();
+        }
+    }
+    destroy() {
+        // Remove the foreign object. The canvas will be removed with it.
+        // For some reason, `series.update` calls `series.destroy` even if
+        // update does not trigger a rerender. This causes the canvas to be
+        // removed here (unnecessarily) and that causes the flickering effect
+        // when updating.
+        this.canvas?.parentElement?.remove();
+        super.destroy();
+    }
+    drawGraph() {
+        // Do nothing
+    }
+    /**
+     * Set all the updateable uniforms.
+     *
+     * @param {boolean} renderFrame
+     * Whether to rerender the series' context after setting the uniforms.
+     * Defaults to `true`.
+     */
+    setUniforms(renderFrame = true) {
+        this.setFrameExtremesUniform(false);
+        this.setValueExtremesUniform(false);
+        this.setColorAxisStopsUniforms(false);
+        this.setContourIntervalUniform(false);
+        this.setContourOffsetUniform(false);
+        this.setSmoothColoringUniform(false);
+        this.setLineWidthUniform(false);
+        this.setContourLineColorUniform(false);
+        this.setIsInvertedUniform(renderFrame);
+    }
+    /**
+     * Set the contour interval uniform according to the series options.
+     *
+     * @param {boolean} renderFrame
+     * Whether to rerender the series' context after setting the uniform.
+     * Defaults to `true`.
+     */
+    setContourIntervalUniform(renderFrame = true) {
+        if (this.device && this.buffers?.contourIntervalUniform) {
+            this.device.queue.writeBuffer(this.buffers.contourIntervalUniform, 0, new Float32Array([this.getContourInterval()]));
+            if (renderFrame) {
+                this.renderFrame?.();
+            }
+        }
+    }
+    /**
+     * Set the contour offset uniform according to the series options.
+     */
+    setContourOffsetUniform(renderFrame = true) {
+        if (this.device && this.buffers?.contourOffsetUniform) {
+            this.device.queue.writeBuffer(this.buffers.contourOffsetUniform, 0, new Float32Array([this.getContourOffset()]));
+            if (renderFrame) {
+                this.renderFrame?.();
+            }
+        }
+    }
+    /**
+     * Set the smooth coloring uniform according to the series options.
+     */
+    setSmoothColoringUniform(renderFrame = true) {
+        if (this.device && this.buffers?.smoothColoringUniform) {
+            this.device.queue.writeBuffer(this.buffers.smoothColoringUniform, 0, new Float32Array([this.getSmoothColoring()]));
+            if (renderFrame) {
+                this.renderFrame?.();
+            }
+        }
+    }
+    /**
+     * Set the line width uniform according to the series options.
+     */
+    setLineWidthUniform(renderFrame = true) {
+        if (this.device && this.buffers?.lineWidthUniform) {
+            this.device.queue.writeBuffer(this.buffers.lineWidthUniform, 0, new Float32Array([this.getLineWidth()]));
+            if (renderFrame) {
+                this.renderFrame?.();
+            }
+        }
+    }
+    /**
+     * Set the contour line color uniform according to the series options.
+     */
+    setContourLineColorUniform(renderFrame = true) {
+        if (this.device && this.buffers?.contourLineColor) {
+            this.device.queue.writeBuffer(this.buffers.contourLineColor, 0, new Float32Array(this.getContourLineColor()));
+            if (renderFrame) {
+                this.renderFrame?.();
+            }
+        }
+    }
+    /**
+     * Set the frame extremes uniform according to the series options.
+     */
+    setFrameExtremesUniform(renderFrame = true) {
+        if (this.device && this.buffers?.extremesUniform) {
+            this.device.queue.writeBuffer(this.buffers.extremesUniform, 0, new Float32Array(this.getFrameExtremes()));
+            if (renderFrame) {
+                this.renderFrame?.();
+            }
+        }
+    }
+    /**
+     * Set the value extremes uniform according to the series data.
+     */
+    setValueExtremesUniform(renderFrame = true) {
+        if (this.device && this.buffers?.valueExtremesUniform) {
+            this.device.queue.writeBuffer(this.buffers.valueExtremesUniform, 0, new Float32Array(this.getValueAxisExtremes()));
+            if (renderFrame) {
+                this.renderFrame?.();
+            }
+        }
+    }
+    /**
+     * Set the color axis stops uniforms according to the color axis options.
+     */
+    setColorAxisStopsUniforms(renderFrame = true) {
+        const stopsBuffer = this.buffers?.colorAxisStopsUniform;
+        const countBuffer = this.buffers?.colorAxisStopsCountUniform;
+        if (this.device && stopsBuffer && countBuffer) {
+            const { array, length } = this.getColorAxisStopsData();
+            // Write the stops to the buffer
+            this.device.queue.writeBuffer(stopsBuffer, 0, array);
+            // Write the count to the buffer
+            this.device.queue.writeBuffer(countBuffer, 0, new Uint32Array([length]));
+            if (renderFrame) {
+                this.renderFrame?.();
+            }
+        }
+    }
+    /**
+     * Set the is inverted uniform according to the series options.
+     */
+    setIsInvertedUniform(renderFrame = true) {
+        if (this.device && this.buffers?.isInvertedUniform) {
+            this.device.queue.writeBuffer(this.buffers.isInvertedUniform, 0, new Uint32Array([this.chart.inverted ? 1 : 0]));
+            if (renderFrame) {
+                this.renderFrame?.();
+            }
+        }
+    }
+    /**
+     * Returns the contour interval from the series options in format of the
+     * WebGPU uniform.
+     */
+    getContourInterval() {
+        const interval = this.options.contourInterval ?? (() => {
+            const [min, max] = this.getValueAxisExtremes(), range = max - min;
+            return normalizeTickInterval(range / 10);
+        })();
+        if (isNaN(interval) || interval <= 0) {
+            return -1;
+        }
+        return interval;
+    }
+    /**
+     * Returns the contour offset from the series options in format of the
+     * WebGPU uniform.
+     */
+    getContourOffset() {
+        const offset = this.options.contourOffset ?? 0;
+        if (isNaN(offset) || offset <= 0) {
+            return 0;
+        }
+        return offset;
+    }
+    /**
+     * Returns the smooth coloring from the series options in format of the
+     * WebGPU uniform.
+     */
+    getSmoothColoring() {
+        return this.options.smoothColoring ? 1 : 0;
+    }
+    /**
+     * Returns the lineWidth from the series options, which controlls the
+     * visibility of contour lines, in format of the WebGPU uniform.
+     */
+    getLineWidth() {
+        return this.userOptions.lineWidth ?? 1;
+    }
+    /**
+     * Returns the contour line color from the series options in format of the
+     * WebGPU uniform.
+     */
+    getContourLineColor() {
+        const { lineColor = '#000000' } = this.options;
+        return ContourSeries.rgbaAsFrac(new Color(lineColor).rgba);
+    }
+    /**
+     * Returns the extremes of the x and y axes in format of the WebGPU uniform.
+     */
+    getFrameExtremes() {
+        const { xAxis, yAxis } = this;
+        return [
+            xAxis.toValue(0, true),
+            xAxis.toValue(xAxis.len, true),
+            yAxis.toValue(yAxis.len, true),
+            yAxis.toValue(0, true)
+        ];
+    }
+    /**
+     * Returns the extremes of the data in format of the WebGPU uniform.
+     */
+    getValueAxisExtremes() {
+        const series = this;
+        let min = series.valueMin;
+        if (isNaN(min || NaN)) {
+            min = series.colorAxis?.min;
+            if (isNaN(min || NaN)) {
+                min = Math.min(...series.points.map((point) => point.value || 0));
+            }
+        }
+        let max = series.valueMax;
+        if (isNaN(max || NaN)) {
+            max = series.colorAxis?.max;
+            if (isNaN(max || NaN)) {
+                max = Math.max(...series.points.map((point) => point.value || 0));
+            }
+        }
+        return [min || 0, max || 0];
+    }
+    getColorAxisStopsData() {
+        const colorAxisStops = this.colorAxis?.stops;
+        let flattenedData;
+        if (colorAxisStops) {
+            flattenedData = [];
+            for (const stop of colorAxisStops) {
+                const rgba = stop?.color?.rgba;
+                if (rgba) {
+                    flattenedData.push(stop[0], ...ContourSeries.rgbaAsFrac(rgba));
+                }
+            }
+        }
+        return {
+            array: new Float32Array(flattenedData ?? [
+                0, 0, 0, 0,
+                1, 1, 1, 1
+            ]),
+            length: colorAxisStops?.length || 2
+        };
+    }
+    /* *
+     *
+     * Static Methods
+     *
+     * */
+    /**
+     * Returns the RGBA color as a fraction of the 255 range.
+     */
+    static rgbaAsFrac(rgba) {
+        return [
+            rgba[0],
+            rgba[1],
+            rgba[2]
+        ].map((val) => val / 255);
+    }
+}
+/* *
+ *
+ * Static Properties
+ *
+ * */
+ContourSeries.defaultOptions = merge(ScatterSeries.defaultOptions, ContourSeriesDefaults);
+export default ContourSeries;
+function cross(x, y, w, h) {
+    return [
+        ['M', x, y],
+        ['L', x + w, y + h],
+        ['M', x + w, y],
+        ['L', x, y + h],
+        ['z']
+    ];
+}
+SVGRenderer.prototype.symbols.cross = cross;
+extend(ContourSeries.prototype, {
+    pointClass: ContourPoint,
+    pointArrayMap: ['y', 'value'],
+    keysAffectYAxis: ['y'],
+    invertible: false
+});
+SeriesRegistry.registerSeriesType('contour', ContourSeries);

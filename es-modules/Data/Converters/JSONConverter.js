@@ -61,7 +61,7 @@ class JSONConverter extends DataConverter {
      * @param {Partial<JSONConverterOptions>}[options]
      * Options for the parser
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @emits JSONConverter#parse
@@ -104,7 +104,7 @@ class JSONConverter extends DataConverter {
     /**
      * Helper for parsing data in 'columns' orientation.
      *
-     * @param {DataTable.BasicColumn[]} [columnsArray]
+     * @param {DataTableBasicColumn[]} [columnsArray]
      * Array of columns.
      *
      * @param {unknown[]} [data]
@@ -142,7 +142,7 @@ class JSONConverter extends DataConverter {
     /**
      * Helper for parsing data in 'rows' orientation.
      *
-     * @param {DataTable.BasicColumn[]} [columnsArray]
+     * @param {DataTableBasicColumn[]} [columnsArray]
      * Array of columns.
      *
      * Helper for parsing data in 'rows' orientation.
@@ -156,7 +156,7 @@ class JSONConverter extends DataConverter {
      * @param {Array<string>} [columnIds]
      * Column ids to retrieve.
      *
-     * @return {DataTable.BasicColumn[]}
+     * @return {DataTableBasicColumn[]}
      * Parsed columns.
      */
     parseRowsOrientation(columnsArray, data, firstRowAsNames, columnIds) {

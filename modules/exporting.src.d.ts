@@ -81,11 +81,17 @@ declare module "../highcharts.src" {
          *        the same `id`, or to the first item if a common id is not
          *        found.
          *
+         * @param async
+         *        Whether to get the SVG synchronously or asynchronously. The
+         *        async mode should be used when additional resources like
+         *        WebGPU canvas needs to be inlined before getting the SVG. In
+         *        async mode, `getSVG` returns a Promise.
+         *
          * @return The SVG representation of the rendered chart.
          *
          * @fires Highcharts.Chart#getSVG
          */
-        getSVG(chartOptions?: Options): string;
+        getSVG(chartOptions?: Options, async?: boolean): (string|Promise<string>);
         /**
          * Clears away other elements in the page and prints the chart as it is
          * displayed. By default, when the exporting module is enabled, a

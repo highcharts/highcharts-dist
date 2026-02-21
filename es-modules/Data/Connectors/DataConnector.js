@@ -29,6 +29,28 @@ const { addEvent, fireEvent, merge, pick } = U;
  */
 class DataConnector {
     /**
+     * Adds a connector class to the registry. The connector has to provide the
+     * `DataConnector.options` property and the `DataConnector.load` method to
+     * modify the table.
+     *
+     * @private
+     *
+     * @param {string} key
+     * Registry key of the connector class.
+     *
+     * @param {DataConnectorType} DataConnectorClass
+     * Connector class (aka class constructor) to register.
+     *
+     * @return {boolean}
+     * Returns true, if the registration was successful. False is returned, if
+     * their is already a connector registered with this key.
+     */
+    static registerType(key, DataConnectorClass) {
+        return (!!key &&
+            !DataConnector.types[key] &&
+            !!(DataConnector.types[key] = DataConnectorClass));
+    }
+    /**
      * Whether the connector is currently polling for new data.
      */
     get polling() {
@@ -110,7 +132,7 @@ class DataConnector {
      * @param {string} name
      * The name of the column to be described.
      *
-     * @param {DataConnector.MetaColumn} columnMeta
+     * @param {MetaColumn} columnMeta
      * The metadata to apply to the column.
      */
     describeColumn(name, columnMeta) {
@@ -121,7 +143,7 @@ class DataConnector {
     /**
      * Method for applying columns meta information to the whole DataConnector.
      *
-     * @param {Highcharts.Dictionary<DataConnector.MetaColumn>} columns
+     * @param {Record<string, MetaColumn>} columns
      * Pairs of column names and MetaColumn objects.
      */
     describeColumns(columns) {
@@ -268,7 +290,7 @@ class DataConnector {
      * Emits an event on the connector to all registered callbacks of this
      * event.
      *
-     * @param {DataConnector.Event} e
+     * @param {Event} e
      * Event object containing additional event information.
      */
     emit(e) {
@@ -296,10 +318,10 @@ class DataConnector {
      * @param {T}[data]
      * Data specific to the corresponding converter.
      *
-     * @param {DataConnector.CreateConverterFunction}[createConverter]
+     * @param {CreateConverterFunction}[createConverter]
      * Creates a specific converter combining the dataTable options.
      *
-     * @param {DataConnector.ParseDataFunction<T>}[parseData]
+     * @param {ParseDataFunction<T>}[parseData]
      * Runs the converter parse method with the specific data type.
      */
     initConverters(data, createConverter, parseData) {
@@ -321,53 +343,13 @@ class DataConnector {
 }
 /* *
  *
- *  Class Namespace
+ *  Static Properties
  *
  * */
-(function (DataConnector) {
-    /* *
-     *
-     *  Declarations
-     *
-     * */
-    /* *
-     *
-     *  Constants
-     *
-     * */
-    /**
-     * Registry as a record object with connector names and their class.
-     */
-    DataConnector.types = {};
-    /* *
-     *
-     *  Functions
-     *
-     * */
-    /**
-     * Adds a connector class to the registry. The connector has to provide the
-     * `DataConnector.options` property and the `DataConnector.load` method to
-     * modify the table.
-     *
-     * @private
-     *
-     * @param {string} key
-     * Registry key of the connector class.
-     *
-     * @param {DataConnectorType} DataConnectorClass
-     * Connector class (aka class constructor) to register.
-     *
-     * @return {boolean}
-     * Returns true, if the registration was successful. False is returned, if
-     * their is already a connector registered with this key.
-     */
-    function registerType(key, DataConnectorClass) {
-        return (!!key &&
-            !DataConnector.types[key] &&
-            !!(DataConnector.types[key] = DataConnectorClass));
-    }
-    DataConnector.registerType = registerType;
-})(DataConnector || (DataConnector = {}));
+/**
+ * Registry as a record object with connector names and their class.
+ */
+DataConnector.types = {};
 /* *
  *
  *  Default Export

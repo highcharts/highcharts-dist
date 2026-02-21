@@ -567,7 +567,7 @@ class Toolbar {
     getIconsURL() {
         return this.chart.options.navigation.iconsURL ||
             this.options.iconsURL ||
-            'https://code.highcharts.com/12.5.0/gfx/stock-icons/';
+            'https://code.highcharts.com/12.5.0-modified/gfx/stock-icons/';
     }
 }
 Toolbar.prototype.classMapping = {
