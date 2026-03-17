@@ -13,8 +13,7 @@
 'use strict';
 import H from '../../../Core/Globals.js';
 const { doc } = H;
-import U from '../../../Core/Utilities.js';
-const { addEvent, createElement } = U;
+import { addEvent, createElement } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Functions

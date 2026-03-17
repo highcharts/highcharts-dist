@@ -14,9 +14,8 @@
 'use strict';
 import Chart from '../../Core/Chart/Chart.js';
 import D from '../../Core/Defaults.js';
+import { addEvent } from '../../Shared/Utilities.js';
 const { setOptions } = D;
-import U from '../../Core/Utilities.js';
-const { addEvent } = U;
 /* *
  *
  *  Theme

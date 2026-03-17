@@ -15,8 +15,7 @@ import HeikinAshiPoint from './HeikinAshiPoint.js';
 import HeikinAshiSeriesDefaults from './HeikinAshiSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { candlestick: CandlestickSeries } = SeriesRegistry.seriesTypes;
-import U from '../../Core/Utilities.js';
-const { addEvent, merge, pushUnique } = U;
+import { addEvent, merge, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions

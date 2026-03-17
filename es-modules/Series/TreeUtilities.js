@@ -11,8 +11,7 @@
  * */
 'use strict';
 import Color from '../Core/Color/Color.js';
-import U from '../Core/Utilities.js';
-const { extend, isArray, isNumber, isObject, merge, pick, relativeLength } = U;
+import { extend, isArray, isNumber, isObject, merge, pick, relativeLength } from '../Shared/Utilities.js';
 /* *
  *
  *  Functions

@@ -16,8 +16,7 @@ import Point from '../Core/Series/Point.js';
 import SeriesRegistry from '../Core/Series/SeriesRegistry.js';
 const { bubble } = SeriesRegistry.seriesTypes;
 import SVGRenderer from '../Core/Renderer/SVG/SVGRenderer.js';
-import U from '../Core/Utilities.js';
-const { addEvent, defined, find, isNumber, pushUnique } = U;
+import { addEvent, defined, find, isNumber, pushUnique } from '../Shared/Utilities.js';
 /* *
  *
  *  Composition

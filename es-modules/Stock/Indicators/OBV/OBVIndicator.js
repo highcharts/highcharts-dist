@@ -8,8 +8,8 @@
 'use strict';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
-import U from '../../../Core/Utilities.js';
-const { isNumber, error, extend, merge } = U;
+import { extend, isNumber, merge } from '../../../Shared/Utilities.js';
+import { error } from '../../../Core/Utilities.js';
 /* *
  *
  *  Class

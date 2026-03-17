@@ -12,8 +12,7 @@
 import CandlestickSeriesDefaults from './CandlestickSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries, ohlc: OHLCSeries } = SeriesRegistry.seriesTypes;
-import U from '../../Core/Utilities.js';
-const { crisp, merge } = U;
+import { crisp, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class

@@ -13,8 +13,25 @@ import Color from './Color/Color.js';
 const { parse: color } = Color;
 import H from './Globals.js';
 const { charts, composed, isTouchDevice } = H;
-import U from './Utilities.js';
-const { addEvent, attr, css, extend, find, fireEvent, isNumber, isObject, objectEach, offset, pick, pushUnique, splat } = U;
+import { addEvent, attr, css, defined, extend, find, fireEvent, isNumber, isObject, objectEach, offset, pick, pushUnique, splat } from '../Shared/Utilities.js';
+/**
+ *
+ *  Functions
+ *
+ */
+/**
+ * Check whether the configured action key allows the interaction.
+ *
+ * @internal
+ * @param {Event} e
+ *        A mouse event.
+ * @param {string | undefined} key
+ *        Zoom or pan key.
+ * @return {boolean}
+ *         True if the key is undefined
+ *         or if the action key is pressed. False otherwise.
+ */
+const checkActionKey = (e, key) => !defined(key) || e[`${key}Key`];
 /* *
  *
  *  Class
@@ -212,7 +229,8 @@ class Pointer {
                 selectionMarker.attr(attrs);
             }
             // Panning
-            if (clickedInside && !selectionMarker && panningEnabled) {
+            if (clickedInside && !selectionMarker && panningEnabled &&
+                (checkActionKey(e, panKey))) {
                 chart.pan(e, panning);
             }
         }
@@ -1444,7 +1462,8 @@ class Pointer {
         this.zoomY = zoomY = /y/.test(zoomType);
         this.zoomHor = (zoomX && !inverted) || (zoomY && inverted);
         this.zoomVert = (zoomY && !inverted) || (zoomX && inverted);
-        this.hasZoom = zoomX || zoomY;
+        this.hasZoom = (zoomX || zoomY) &&
+            (checkActionKey(e, chart.zooming.key));
     }
 }
 /** @internal */

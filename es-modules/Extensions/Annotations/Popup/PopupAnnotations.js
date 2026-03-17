@@ -13,8 +13,7 @@
 'use strict';
 import H from '../../../Core/Globals.js';
 const { doc, isFirefox } = H;
-import U from '../../../Core/Utilities.js';
-const { createElement, isArray, isObject, objectEach, pick, stableSort } = U;
+import { createElement, isArray, isObject, objectEach, pick, stableSort } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Functions

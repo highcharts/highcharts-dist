@@ -18,8 +18,7 @@ import StockToolsBindings from './StockToolsBindings.js';
 import StockToolsDefaults from './StockToolsDefaults.js';
 import STU from './StockToolsUtilities.js';
 const { isNotNavigatorYAxis, isPriceIndicatorEnabled } = STU;
-import U from '../../Core/Utilities.js';
-const { correctFloat, defined, isNumber, pick } = U;
+import { correctFloat, defined, isNumber, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions

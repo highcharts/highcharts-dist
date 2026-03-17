@@ -26,8 +26,8 @@ import TreemapSeriesDefaults from './TreemapSeriesDefaults.js';
 import TreemapUtilities from './TreemapUtilities.js';
 import TU from '../TreeUtilities.js';
 const { getColor, getLevelOptions, updateRootId } = TU;
-import U from '../../Core/Utilities.js';
-const { addEvent, arrayMax, clamp, correctFloat, crisp, defined, error, extend, fireEvent, isArray, isNumber, isObject, isString, merge, pick, pushUnique, splat, stableSort } = U;
+import { addEvent, arrayMax, clamp, correctFloat, crisp, defined, extend, fireEvent, isArray, isNumber, isObject, isString, merge, pick, pushUnique, splat, stableSort } from '../../Shared/Utilities.js';
+import { error } from '../../Core/Utilities.js';
 Series.keepProps.push('simulation', 'hadOutsideDataLabels');
 /* *
  *
@@ -565,12 +565,11 @@ class TreemapSeries extends ScatterSeries {
                     style.width = `${dataLabelWidth}px`;
                     style.lineClamp ?? (style.lineClamp = Math.floor(height / 16));
                     style.visibility = 'inherit';
-                    // Make the label box itself fill the width
-                    if (options.headers) {
-                        point.dataLabel?.attr({
-                            width: dataLabelWidth
-                        });
-                    }
+                    // Make the label box itself fill the width. Reset when
+                    // no longer header (#23100).
+                    point.dataLabel?.attr({
+                        width: options.headers ? dataLabelWidth : void 0
+                    });
                     // Hide labels for shapes that are too small
                 }
                 else {

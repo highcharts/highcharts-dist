@@ -18,8 +18,7 @@ const { defaultOptions } = D;
 import LegendSymbol from '../../Legend/LegendSymbol.js';
 import SeriesRegistry from '../../Series/SeriesRegistry.js';
 const { series: Series } = SeriesRegistry;
-import U from '../../Utilities.js';
-const { defined, extend, fireEvent, isArray, isNumber, merge, pick, relativeLength } = U;
+import { defined, extend, fireEvent, isArray, isNumber, merge, pick, relativeLength } from '../../../Shared/Utilities.js';
 defaultOptions.colorAxis = merge(defaultOptions.xAxis, ColorAxisDefaults);
 /* *
  *
@@ -182,10 +181,6 @@ class ColorAxis extends Axis {
             });
             legend.render();
             this.chart.getMargins(true);
-            // If not drilling down/up
-            if (!this.chart.series.some((series) => series.isDrilling)) {
-                axis.isDirty = true; // Flag to fire drawChartBox
-            }
             // First time only
             if (!axis.added) {
                 axis.added = true;

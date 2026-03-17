@@ -18,10 +18,9 @@ import H from '../../Core/Globals.js';
 import OnSeriesComposition from '../OnSeriesComposition.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
-import U from '../../Core/Utilities.js';
-const { extend, merge, pick } = U;
 import WindbarbPoint from './WindbarbPoint.js';
 import WindbarbSeriesDefaults from './WindbarbSeriesDefaults.js';
+import { extend, merge, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions

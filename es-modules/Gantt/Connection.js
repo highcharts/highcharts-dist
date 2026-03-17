@@ -10,8 +10,8 @@
  * */
 'use strict';
 import H from '../Core/Globals.js';
-import U from '../Core/Utilities.js';
-const { defined, error, merge, objectEach } = U;
+import { defined, merge, objectEach } from '../Shared/Utilities.js';
+import { error } from '../Core/Utilities.js';
 /* *
  *
  *  Constants

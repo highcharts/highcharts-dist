@@ -10,9 +10,8 @@
  * */
 'use strict';
 import Color from '../../Color/Color.js';
+import { merge } from '../../../Shared/Utilities.js';
 const { parse: color } = Color;
-import U from '../../Utilities.js';
-const { merge } = U;
 /* *
  *
  *  Namespace

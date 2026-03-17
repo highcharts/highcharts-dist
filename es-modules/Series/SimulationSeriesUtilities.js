@@ -3,9 +3,8 @@
  *
  * */
 'use strict';
-import U from '../Core/Utilities.js';
-const { syncTimeout } = U;
 import A from '../Core/Animation/AnimationUtilities.js';
+import { syncTimeout } from '../Shared/Utilities.js';
 const { animObject } = A;
 /**
  * Create a setTimeout for the first drawDataLabels()

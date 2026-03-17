@@ -24,8 +24,7 @@ import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { 
 // Indirect dependency to keep product size low
 column: ColumnSeries, scatter: ScatterSeries } = SeriesRegistry.seriesTypes;
-import U from '../../Core/Utilities.js';
-const { extend, find, fireEvent, getNestedProperty, isArray, defined, isNumber, isObject, merge, objectEach, pick, splat } = U;
+import { defined, extend, find, fireEvent, getNestedProperty, isArray, isNumber, isObject, merge, objectEach, pick, splat } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class

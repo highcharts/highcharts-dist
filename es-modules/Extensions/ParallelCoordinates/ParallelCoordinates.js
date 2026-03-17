@@ -14,13 +14,13 @@
 import ParallelAxis from './ParallelAxis.js';
 import ParallelCoordinatesDefaults from './ParallelCoordinatesDefaults.js';
 import ParallelSeries from './ParallelSeries.js';
-import U from '../../Core/Utilities.js';
-const { addEvent, defined, merge, splat } = U;
+import { addEvent, defined, merge, splat } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
  *
  * */
+/** @internal */
 class ChartAdditions {
     /* *
      *
@@ -70,6 +70,7 @@ class ChartAdditions {
  *  Composition
  *
  * */
+/** @internal */
 var ParallelCoordinates;
 (function (ParallelCoordinates) {
     /* *
@@ -172,4 +173,5 @@ var ParallelCoordinates;
  *  Default Export
  *
  * */
+/** @internal */
 export default ParallelCoordinates;

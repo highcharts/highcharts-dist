@@ -10,8 +10,7 @@
  * */
 'use strict';
 import AreaRangePoint from '../AreaRange/AreaRangePoint.js';
-import U from '../../Core/Utilities.js';
-const { extend, pick } = U;
+import { extend, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class

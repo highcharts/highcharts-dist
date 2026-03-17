@@ -12,9 +12,9 @@
  * */
 'use strict';
 import H from '../Core/Globals.js';
-import U from '../Core/Utilities.js';
+import { addEvent, defined, extend, merge } from '../Shared/Utilities.js';
+import { uniqueKey } from '../Core/Utilities.js';
 const { deg2rad } = H;
-const { addEvent, merge, uniqueKey, defined, extend } = U;
 /**
  * Set a text path for a `text` or `label` element, allowing the text to
  * flow along a path.

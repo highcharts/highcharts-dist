@@ -14,8 +14,7 @@ import H from '../../Core/Globals.js';
 const { noop } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { seriesTypes: { arearange: AreaRangeSeries, column: ColumnSeries, column: { prototype: columnProto } } } = SeriesRegistry;
-import U from '../../Core/Utilities.js';
-const { addEvent, clamp, extend, isNumber, merge, pick } = U;
+import { addEvent, clamp, extend, isNumber, merge, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Constants

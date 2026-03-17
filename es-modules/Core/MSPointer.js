@@ -12,8 +12,7 @@
 import H from './Globals.js';
 const { charts, composed, doc, noop, win } = H;
 import Pointer from './Pointer.js';
-import U from './Utilities.js';
-const { addEvent, attr, css, defined, objectEach, pick, pushUnique, removeEvent } = U;
+import { addEvent, attr, css, defined, objectEach, pick, pushUnique, removeEvent } from '../Shared/Utilities.js';
 /* *
  *
  *  Constants

@@ -14,8 +14,7 @@
 'use strict';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { seriesTypes: { treemap: TreemapSeries } } = SeriesRegistry;
-import U from '../../Core/Utilities.js';
-const { isNumber, isObject, merge } = U;
+import { isNumber, isObject, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions

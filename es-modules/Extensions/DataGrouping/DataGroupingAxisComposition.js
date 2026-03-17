@@ -10,8 +10,7 @@
  * */
 'use strict';
 import DataGroupingDefaults from './DataGroupingDefaults.js';
-import U from '../../Core/Utilities.js';
-const { addEvent, extend, merge, pick } = U;
+import { addEvent, extend, merge, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Variables

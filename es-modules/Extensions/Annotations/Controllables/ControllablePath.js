@@ -7,8 +7,8 @@ import Controllable from './Controllable.js';
 import ControllableDefaults from './ControllableDefaults.js';
 const { defaultMarkers } = ControllableDefaults;
 import H from '../../../Core/Globals.js';
-import U from '../../../Core/Utilities.js';
-const { addEvent, defined, extend, merge, uniqueKey } = U;
+import { addEvent, defined, extend, merge } from '../../../Shared/Utilities.js';
+import { uniqueKey } from '../../../Core/Utilities.js';
 /* *
  *
  *  Constants
@@ -123,6 +123,23 @@ class ControllablePath extends Controllable {
      *  Functions
      *
      * */
+    init(annotation, options, index) {
+        if (defined(options.yAxis)) {
+            options.points.forEach((point) => {
+                if (point && typeof point !== 'string') {
+                    point.yAxis = options.yAxis;
+                }
+            });
+        }
+        if (defined(options.xAxis)) {
+            options.points.forEach((point) => {
+                if (point && typeof point !== 'string') {
+                    point.xAxis = options.xAxis;
+                }
+            });
+        }
+        super.init(annotation, options, index);
+    }
     /**
      * Map the controllable path to 'd' path attribute.
      *

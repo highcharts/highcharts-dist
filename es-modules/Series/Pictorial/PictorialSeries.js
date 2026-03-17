@@ -24,12 +24,11 @@ import Series from '../../Core/Series/Series.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import StackItem from '../../Core/Axis/Stacking/StackItem.js';
 import SVGRenderer from '../../Core/Renderer/SVG/SVGRenderer.js';
-import U from '../../Core/Utilities.js';
+import { addEvent, defined, merge, objectEach, pick } from '../../Shared/Utilities.js';
 const ColumnSeries = SeriesRegistry.seriesTypes.column;
 PatternFill.compose(Chart, Series, SVGRenderer);
 const { animObject } = A;
 const { getStackMetrics, invertShadowGroup, rescalePatternFill } = PictorialUtilities;
-const { addEvent, defined, merge, objectEach, pick } = U;
 /* *
  *
  *  Class

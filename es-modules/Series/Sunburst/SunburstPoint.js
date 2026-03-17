@@ -14,8 +14,7 @@
 'use strict';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: { prototype: { pointClass: Point } }, seriesTypes: { treemap: { prototype: { pointClass: TreemapPoint } } } } = SeriesRegistry;
-import U from '../../Core/Utilities.js';
-const { correctFloat, extend, pInt } = U;
+import { correctFloat, extend, pInt } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class

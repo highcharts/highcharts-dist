@@ -5,8 +5,7 @@
 'use strict';
 import SeriesRegistry from '../Core/Series/SeriesRegistry.js';
 const { series: { prototype: seriesProto, prototype: { pointClass: { prototype: pointProto } } } } = SeriesRegistry;
-import U from '../Core/Utilities.js';
-const { defined, extend, find, merge, pick } = U;
+import { defined, extend, find, merge, pick } from '../Shared/Utilities.js';
 /* *
  *
  *  Composition

@@ -17,8 +17,8 @@
 'use strict';
 import DataConverter from './DataConverter.js';
 import DataConverterUtils from './DataConverterUtils.js';
-import U from '../../Core/Utilities.js';
-const { merge, uniqueKey } = U;
+import { merge } from '../../Shared/Utilities.js';
+import { uniqueKey } from '../../Core/Utilities.js';
 /* *
  *
  *  Class
@@ -58,7 +58,7 @@ class GoogleSheetsConverter extends DataConverter {
      * @param {Partial<GoogleSheetsConverterOptions>}[options]
      * Options for the parser
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @emits GoogleSheetsParser#parse

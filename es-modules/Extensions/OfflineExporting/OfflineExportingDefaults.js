@@ -24,7 +24,9 @@ const exporting = {};
  *  Default Export
  *
  * */
+/** @internal */
 const OfflineExportingDefaults = {
     exporting
 };
+/** @internal */
 export default OfflineExportingDefaults;

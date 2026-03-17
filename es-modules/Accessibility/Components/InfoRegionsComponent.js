@@ -25,8 +25,7 @@ import H from '../../Core/Globals.js';
 const { doc } = H;
 import HU from '../Utils/HTMLUtilities.js';
 const { addClass, getElement, getHeadingTagNameForElement, stripHTMLTagsFromString, visuallyHideElement } = HU;
-import U from '../../Core/Utilities.js';
-const { attr, pick, replaceNested } = U;
+import { attr, pick, replaceNested } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -179,8 +178,8 @@ class InfoRegionsComponent extends AccessibilityComponent {
                 buildContent: function (chart) {
                     const formatter = accessibilityOptions.screenReaderSection
                         .beforeChartFormatter;
-                    return formatter ? formatter(chart) :
-                        component.defaultBeforeChartFormatter(chart);
+                    return formatter ? formatter(chart, component) :
+                        component.defaultBeforeChartFormatter();
                 },
                 insertIntoDOM: function (el, chart) {
                     chart.renderTo.insertBefore(el, chart.renderTo.firstChild);
@@ -199,7 +198,7 @@ class InfoRegionsComponent extends AccessibilityComponent {
                 buildContent: function (chart) {
                     const formatter = accessibilityOptions.screenReaderSection
                         .afterChartFormatter;
-                    return formatter ? formatter(chart) :
+                    return formatter ? formatter(chart, component) :
                         component.defaultAfterChartFormatter();
                 },
                 insertIntoDOM: function (el, chart) {
@@ -477,7 +476,7 @@ class InfoRegionsComponent extends AccessibilityComponent {
                 const onPlayAsSoundClick = (chart.options.accessibility &&
                     chart.options.accessibility.screenReaderSection
                         .onPlayAsSoundClick);
-                (onPlayAsSoundClick || defaultHandler).call(this, e, chart);
+                (onPlayAsSoundClick || defaultHandler).call(this, e, chart, this);
             };
         }
     }

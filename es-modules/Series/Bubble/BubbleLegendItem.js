@@ -13,8 +13,7 @@
 import F from '../../Core/Templating.js';
 import H from '../../Core/Globals.js';
 const { noop } = H;
-import U from '../../Core/Utilities.js';
-const { arrayMax, arrayMin, isNumber, merge, pick, stableSort } = U;
+import { arrayMax, arrayMin, isNumber, merge, pick, stableSort } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -289,7 +288,7 @@ class BubbleLegendItem {
         const options = this.options, formatter = options.labels.formatter, format = options.labels.format;
         const { numberFormatter } = this.chart;
         return format ? F.format(format, range, this.chart) :
-            formatter ? formatter.call(range) :
+            formatter ? formatter.call(range, range) :
                 numberFormatter(range.value, 1);
     }
     /**

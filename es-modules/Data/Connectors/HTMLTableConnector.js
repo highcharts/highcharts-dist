@@ -18,9 +18,8 @@
 import DataConnector from './DataConnector.js';
 import HTMLTableConverter from '../Converters/HTMLTableConverter.js';
 import H from '../../Core/Globals.js';
+import { merge } from '../../Shared/Utilities.js';
 const { win } = H;
-import U from '../../Core/Utilities.js';
-const { merge } = U;
 /* *
  *
  *  Class
@@ -40,7 +39,7 @@ class HTMLTableConnector extends DataConnector {
     /**
      * Constructs an instance of HTMLTableConnector.
      *
-     * @param {HTMLTableConnector.CombinedHTMLTableConnectorOptions} [options]
+     * @param {CombinedHTMLTableConnectorOptions} [options]
      * Options for the connector and converter.
      */
     constructor(options) {
@@ -52,7 +51,7 @@ class HTMLTableConnector extends DataConnector {
     /**
      * Initiates creating the dataconnector from the HTML table
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @emits HTMLTableConnector#load

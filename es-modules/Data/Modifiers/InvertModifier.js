@@ -13,8 +13,7 @@
  * */
 'use strict';
 import DataModifier from './DataModifier.js';
-import U from '../../Core/Utilities.js';
-const { merge } = U;
+import { merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -34,7 +33,7 @@ class InvertModifier extends DataModifier {
     /**
      * Constructs an instance of the invert modifier.
      *
-     * @param {Partial<InvertModifier.Options>} [options]
+     * @param {Partial<InvertModifierOptions>} [options]
      * Options to configure the invert modifier.
      */
     constructor(options) {
@@ -54,7 +53,7 @@ class InvertModifier extends DataModifier {
      * @param {DataTable} table
      * Table to invert.
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @return {DataTable}

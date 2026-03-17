@@ -60,6 +60,7 @@ const WordcloudSeriesDefaults = {
     clip: false, // Something goes wrong with clip. // @todo fix this
     colorByPoint: true,
     cropThreshold: Infinity,
+    colorKey: 'weight',
     /**
      * A threshold determining the minimum font size that can be applied to
      * a word.

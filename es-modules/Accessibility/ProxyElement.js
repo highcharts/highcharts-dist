@@ -17,12 +17,11 @@
 'use strict';
 import H from '../Core/Globals.js';
 const { doc, win } = H;
-import U from '../Core/Utilities.js';
-const { attr, css, merge } = U;
 import EventProvider from './Utils/EventProvider.js';
 import ChartUtilities from './Utils/ChartUtilities.js';
 const { fireEventOnWrappedOrUnwrappedElement } = ChartUtilities;
 import HTMLUtilities from './Utils/HTMLUtilities.js';
+import { attr, css, merge } from '../Shared/Utilities.js';
 const { cloneMouseEvent, cloneTouchEvent, getFakeMouseEvent, removeElement } = HTMLUtilities;
 /* *
  *
@@ -125,9 +124,7 @@ class ProxyElement {
      */
     updateCSSClassName() {
         const stringHasNoTooltip = (s) => (s.indexOf('highcharts-no-tooltip') > -1);
-        const legend = this.chart.legend;
-        const groupDiv = legend.group && legend.group.div;
-        const noTooltipOnGroup = stringHasNoTooltip(groupDiv && groupDiv.className || '');
+        const noTooltipOnGroup = stringHasNoTooltip(this.chart.legend?.group?.div?.className || '');
         const targetClassName = this.getTargetAttr(this.target.click, 'class') || '';
         const noTooltipOnTarget = stringHasNoTooltip(targetClassName);
         this.innerElement.className = noTooltipOnGroup || noTooltipOnTarget ?

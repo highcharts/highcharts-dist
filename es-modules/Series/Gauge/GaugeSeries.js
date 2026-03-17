@@ -14,8 +14,7 @@ import H from '../../Core/Globals.js';
 const { noop } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: Series, seriesTypes: { column: ColumnSeries } } = SeriesRegistry;
-import U from '../../Core/Utilities.js';
-const { clamp, isNumber, extend, merge, pick, pInt, defined } = U;
+import { clamp, defined, extend, isNumber, merge, pick, pInt } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class

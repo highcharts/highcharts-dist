@@ -14,8 +14,7 @@ import H from '../../Core/Globals.js';
 const { composed } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: Series } = SeriesRegistry;
-import U from '../../Core/Utilities.js';
-const { merge, pushUnique } = U;
+import { merge, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
  *  Composition

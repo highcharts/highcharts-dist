@@ -12,8 +12,7 @@
 import H from '../Globals.js';
 const { composed } = H;
 import StackItem from './Stacking/StackItem.js';
-import U from '../Utilities.js';
-const { addEvent, objectEach, pushUnique } = U;
+import { addEvent, objectEach, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
  *  Namespace

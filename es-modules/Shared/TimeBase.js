@@ -11,8 +11,8 @@
 'use strict';
 import H from '../Core/Globals.js';
 const { pageLang, win } = H;
-import U from '../Core/Utilities.js';
-const { defined, error, extend, isNumber, isObject, isString, merge, objectEach, pad, splat, timeUnits, ucfirst } = U;
+import { defined, extend, isObject, isNumber, isString, merge, objectEach, pad, splat, ucfirst } from './Utilities.js';
+import { error, timeUnits } from '../Core/Utilities.js';
 /* *
  *
  *  Constants
@@ -578,7 +578,7 @@ class TimeBase {
                     // Regex would do it in one line, but this is faster
                     while (format.indexOf('%' + key) !== -1) {
                         format = format.replace('%' + key, typeof val === 'function' ?
-                            val.call(time, timestamp) :
+                            val.call(time, timestamp, time) :
                             val);
                     }
                 }

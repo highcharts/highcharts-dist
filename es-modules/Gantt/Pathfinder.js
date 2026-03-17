@@ -13,8 +13,7 @@ import Connection from './Connection.js';
 import PathfinderAlgorithms from './PathfinderAlgorithms.js';
 import PathfinderComposition from './PathfinderComposition.js';
 import Point from '../Core/Series/Point.js';
-import U from '../Core/Utilities.js';
-const { addEvent, defined, pick, splat } = U;
+import { addEvent, defined, pick, splat } from '../Shared/Utilities.js';
 /* *
  *
  *  Constants

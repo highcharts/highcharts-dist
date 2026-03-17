@@ -12,8 +12,7 @@
  * */
 'use strict';
 import SeriesDefaults from '../../Core/Series/SeriesDefaults.js';
-import U from '../../Core/Utilities.js';
-const { merge } = U;
+import { merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  API Options

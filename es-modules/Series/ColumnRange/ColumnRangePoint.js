@@ -11,8 +11,7 @@
 'use strict';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { seriesTypes: { column: { prototype: { pointClass: { prototype: columnProto } } }, arearange: { prototype: { pointClass: AreaRangePoint } } } } = SeriesRegistry;
-import U from '../../Core/Utilities.js';
-const { extend, isNumber } = U;
+import { extend, isNumber } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class

@@ -10,8 +10,7 @@
  * */
 'use strict';
 import rect from '../../Core/Renderer/SVG/Symbols.js';
-import U from '../../Core/Utilities.js';
-const { relativeLength } = U;
+import { relativeLength } from '../../Shared/Utilities.js';
 /* *
  *
  *  Constants

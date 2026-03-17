@@ -9,8 +9,7 @@
  *
  * */
 'use strict';
-import U from '../Utilities.js';
-const { addEvent, normalizeTickInterval, pick } = U;
+import { addEvent, normalizeTickInterval, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class

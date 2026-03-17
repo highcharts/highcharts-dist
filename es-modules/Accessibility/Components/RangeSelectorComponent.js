@@ -16,8 +16,7 @@ import Announcer from '../Utils/Announcer.js';
 import ChartUtilities from '../Utils/ChartUtilities.js';
 const { unhideChartElementFromAT, getAxisRangeDescription } = ChartUtilities;
 import KeyboardNavigationHandler from '../KeyboardNavigationHandler.js';
-import U from '../../Core/Utilities.js';
-const { addEvent, attr } = U;
+import { addEvent, attr } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions

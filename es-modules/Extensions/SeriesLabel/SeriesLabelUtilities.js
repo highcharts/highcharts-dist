@@ -59,8 +59,10 @@ function intersectRect(r1, r2) {
  *  Default Export
  *
  * */
+/** @internal */
 const SeriesLabelUtilities = {
     boxIntersectLine,
     intersectRect
 };
+/** @internal */
 export default SeriesLabelUtilities;

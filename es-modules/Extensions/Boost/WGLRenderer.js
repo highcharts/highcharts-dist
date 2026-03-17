@@ -15,11 +15,10 @@ import Color from '../../Core/Color/Color.js';
 const { parse: color } = Color;
 import H from '../../Core/Globals.js';
 const { doc, win } = H;
-import U from '../../Core/Utilities.js';
-const { isNumber, isObject, merge, objectEach, pick } = U;
 import WGLDrawMode from './WGLDrawMode.js';
 import WGLShader from './WGLShader.js';
 import WGLVertexBuffer from './WGLVertexBuffer.js';
+import { isNumber, isObject, objectEach, merge, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Constants
@@ -994,7 +993,7 @@ class WGLRenderer {
             if (lineWidth > 0 || s.drawMode !== 'LINE_STRIP') {
                 const { x: cx, y: cy, width: cw, height: ch } = getBoostClipRect(chart, s.series);
                 gl.enable(gl.SCISSOR_TEST);
-                gl.scissor(cx, height - cy - ch, cw, ch);
+                gl.scissor(cx * pixelRatio, height - (cy + ch) * pixelRatio, cw * pixelRatio, ch * pixelRatio);
                 for (sindex = 0; sindex < s.segments.length; sindex++) {
                     vbuffer.render(s.segments[sindex].from, s.segments[sindex].to, s.drawMode);
                 }

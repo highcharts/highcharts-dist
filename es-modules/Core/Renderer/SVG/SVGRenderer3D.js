@@ -20,8 +20,7 @@ const { charts, deg2rad } = H;
 import Math3D from '../../Math3D.js';
 const { perspective, shapeArea } = Math3D;
 import SVGElement3D from './SVGElement3D.js';
-import U from '../../Utilities.js';
-const { defined, extend, merge, pick } = U;
+import { defined, extend, merge, pick } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Constants

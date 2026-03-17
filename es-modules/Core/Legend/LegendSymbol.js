@@ -9,8 +9,7 @@
  *
  * */
 'use strict';
-import U from '../Utilities.js';
-const { extend, merge, pick } = U;
+import { extend, merge, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Namespace

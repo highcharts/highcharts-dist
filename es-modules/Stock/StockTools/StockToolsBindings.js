@@ -15,8 +15,7 @@
 import H from '../../Core/Globals.js';
 import STU from './StockToolsUtilities.js';
 const { addFlagFromForm, attractToPoint, isNotNavigatorYAxis, isPriceIndicatorEnabled, manageIndicators, updateHeight, updateNthPoint, updateRectSize } = STU;
-import U from '../../Core/Utilities.js';
-const { fireEvent, merge } = U;
+import { fireEvent, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Constants

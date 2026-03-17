@@ -14,8 +14,7 @@
  *  Imports
  *
  * */
-import U from '../Utilities.js';
-const { clamp, pick, pushUnique, stableSort } = U;
+import { clamp, pick, pushUnique, stableSort } from '../../Shared/Utilities.js';
 /* *
  *
  *  Namespace
@@ -47,7 +46,7 @@ var RendererUtilities;
         // Original array will be altered with added .pos
         const origBoxes = boxes, reducedLen = origBoxes.reducedLen || len, sortByRank = (a, b) => (b.rank || 0) - (a.rank || 0), sortByTarget = (a, b) => a.target - b.target, restBoxes = [], // The outranked overshoot
         boxesLength = boxes.length, forDeletion = [], push = restBoxes.push;
-        let i, cursor, step, overlapping = true, box, target, total = 0, equalRank;
+        let i, overlapping = true, box, target, total = 0, equalRank;
         // If the total size exceeds the len, remove those boxes with the lowest
         // rank
         i = boxesLength;
@@ -58,23 +57,39 @@ var RendererUtilities;
         if (total > reducedLen) {
             stableSort(boxes, sortByRank);
             equalRank = boxes[0].rank === boxes[boxes.length - 1].rank;
-            step = equalRank ? boxesLength / 2 : -1;
-            cursor = equalRank ? step : boxesLength - 1;
-            // When the boxes have equal rank (pie data labels, flags - #10073),
-            // decimate the boxes by starting in the middle and gradually remove
-            // more items inside the array. When they are sorted by rank, just
-            // remove the ones with the lowest rank from the end.
-            while (step && total > reducedLen) {
-                i = Math.floor(cursor);
-                box = boxes[i];
-                if (pushUnique(forDeletion, i)) {
-                    total -= box.size;
+            // When all boxes have equal rank (pie data labels, flags - #10073),
+            // decimate from the center outwards by repeatedly splitting index
+            // ranges. This guarantees progress and avoids cursor/step stalling
+            // on repeated indices (#23541). When ranks differ, remove the
+            // lowest ranked boxes from the end.
+            if (equalRank) {
+                const ranges = [[0, boxesLength - 1]];
+                while (ranges.length && total > reducedLen) {
+                    const range = ranges.shift();
+                    if (!range) {
+                        break;
+                    }
+                    i = Math.floor((range[0] + range[1]) / 2);
+                    box = boxes[i];
+                    if (pushUnique(forDeletion, i)) {
+                        total -= box.size;
+                    }
+                    if (range[0] < i) {
+                        ranges.push([range[0], i - 1]);
+                    }
+                    if (i < range[1]) {
+                        ranges.push([i + 1, range[1]]);
+                    }
                 }
-                cursor += step;
-                // Start over the decimation with smaller steps
-                if (equalRank && cursor >= boxes.length) {
-                    step /= 2;
-                    cursor = step;
+            }
+            else {
+                i = boxesLength - 1;
+                while (total > reducedLen && i >= 0) {
+                    box = boxes[i];
+                    if (pushUnique(forDeletion, i)) {
+                        total -= box.size;
+                    }
+                    i--;
                 }
             }
             // Clean out the boxes marked for deletion

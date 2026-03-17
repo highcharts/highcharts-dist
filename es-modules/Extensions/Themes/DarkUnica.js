@@ -12,9 +12,8 @@
  * */
 'use strict';
 import D from '../../Core/Defaults.js';
+import { createElement } from '../../Shared/Utilities.js';
 const { setOptions } = D;
-import U from '../../Core/Utilities.js';
-const { createElement } = U;
 /* *
  *
  *  Theme

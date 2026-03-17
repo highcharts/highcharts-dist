@@ -21,8 +21,7 @@ import Color from '../Core/Color/Color.js';
 const { parse: color } = Color;
 import H from '../Core/Globals.js';
 const { doc, noop } = H;
-import U from '../Core/Utilities.js';
-const { addEvent, fireEvent, isNumber, merge, pick, wrap } = U;
+import { addEvent, fireEvent, internalClearTimeout, isNumber, merge, pick, wrap } from '../Shared/Utilities.js';
 /* *
  *
  *  Namespace
@@ -290,7 +289,7 @@ var BoostCanvas;
                     opacity: 1
                 }
             });
-            U.clearTimeout(destroyLoadingDiv);
+            internalClearTimeout(destroyLoadingDiv);
             chart.showLoading('Drawing...');
             chart.options.loading = loadingOptions; // Reset
         }

@@ -3,8 +3,7 @@
  *  Imports
  *
  * */
-import U from '../../Core/Utilities.js';
-const { isNumber } = U;
+import { isNumber } from '../../Shared/Utilities.js';
 /* *
  *
  *  Constants
@@ -25,7 +24,7 @@ const { isNumber } = U;
  * @excluding    boostThreshold, boostBlending,connectEnds, connectNulls,
  *               cropThreshold, dataSorting, dragDrop, jitter,
  *               legendSymbolColor, keys, pointPlacement, sizeByAbsoluteValue,
- *               step, xAxis, yAxis, zMax, zMin
+ *               step, xAxis, yAxis
  * @product      highcharts
  * @since        7.0.0
  * @requires     highcharts-more

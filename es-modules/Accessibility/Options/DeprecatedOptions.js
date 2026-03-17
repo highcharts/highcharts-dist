@@ -18,6 +18,8 @@
  *  chart.typeDescription -> accessibility.typeDescription
  *  series.description -> series.accessibility.description
  *  series.exposeElementToA11y -> series.accessibility.exposeAsGroupOnly
+ *  series.pointDescriptionFormat ->
+ *      series.accessibility.point.descriptionFormat
  *  series.pointDescriptionFormatter ->
  *      series.accessibility.pointDescriptionFormatter
  *  series.accessibility.pointDescriptionFormatter ->
@@ -61,8 +63,8 @@
  */
 /* eslint-enable max-len */
 'use strict';
-import U from '../../Core/Utilities.js';
-const { error, pick } = U;
+import { pick } from '../../Shared/Utilities.js';
+import { error } from '../../Core/Utilities.js';
 /* *
  *
  *  Functions
@@ -147,6 +149,9 @@ function copyDeprecatedSeriesOptions(chart) {
     const oldToNewSeriesOptions = {
         description: ['accessibility', 'description'],
         exposeElementToA11y: ['accessibility', 'exposeAsGroupOnly'],
+        pointDescriptionFormat: [
+            'accessibility', 'point', 'descriptionFormat'
+        ],
         pointDescriptionFormatter: [
             'accessibility', 'point', 'descriptionFormatter'
         ],

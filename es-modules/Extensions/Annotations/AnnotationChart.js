@@ -9,8 +9,7 @@
  *
  * */
 'use strict';
-import U from '../../Core/Utilities.js';
-const { addEvent, erase, find, fireEvent, isArray, isObject, pick, wrap } = U;
+import { addEvent, erase, find, fireEvent, isArray, isObject, pick, wrap } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions

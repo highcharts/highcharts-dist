@@ -5,8 +5,8 @@
   "license": "https://www.highcharts.com/license",
   "types": "highcharts.d.ts",
   "peerDependencies": {
-    "jspdf": "^3.0.0",
-    "svg2pdf.js": "^2.6.0"
+    "jspdf": "^4.1.0",
+    "svg2pdf.js": "^2.7.0"
   },
   "peerDependenciesMeta": {
     "jspdf": {

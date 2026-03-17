@@ -11,8 +11,7 @@
  *
  * */
 'use strict';
-import U from '../../Core/Utilities.js';
-const { correctFloat, isNumber, isObject } = U;
+import { isObject, isNumber, correctFloat } from '../../Shared/Utilities.js';
 /* *
  *
  *  Constants

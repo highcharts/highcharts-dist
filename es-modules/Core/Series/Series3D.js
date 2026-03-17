@@ -16,13 +16,13 @@ const { composed } = H;
 import Math3D from '../Math3D.js';
 const { perspective } = Math3D;
 import Series from '../Series/Series.js';
-import U from '../Utilities.js';
-const { addEvent, extend, isNumber, merge, pick, pushUnique } = U;
+import { addEvent, extend, isNumber, merge, pick, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
  *
  * */
+/** @internal */
 class Series3D extends Series {
     /* *
      *
@@ -57,7 +57,7 @@ class Series3D extends Series {
         let projectedPoint, zValue;
         series.zPadding = stack *
             (seriesOptions.depth || 0 + (seriesOptions.groupZPadding || 1));
-        series.data.forEach((rawPoint) => {
+        series.points.forEach((rawPoint) => {
             if (zAxis?.translate) {
                 zValue = zAxis.logarithmic && zAxis.val2lin ?
                     zAxis.val2lin(rawPoint.z) :
@@ -83,7 +83,7 @@ class Series3D extends Series {
         });
         series.rawPointsX = rawPointsX;
         const projectedPoints = perspective(rawPoints, chart, true);
-        series.data.forEach((rawPoint, i) => {
+        series.points.forEach((rawPoint, i) => {
             projectedPoint = projectedPoints[i];
             rawPoint.plotX = projectedPoint.x;
             rawPoint.plotY = projectedPoint.y;
@@ -102,4 +102,5 @@ Series3D.defaultOptions = merge(Series.defaultOptions);
  *  Default Export
  *
  * */
+/** @internal */
 export default Series3D;

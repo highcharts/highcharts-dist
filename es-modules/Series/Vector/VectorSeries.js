@@ -16,9 +16,8 @@ const { animObject } = A;
 import H from '../../Core/Globals.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: Series, seriesTypes: { scatter: ScatterSeries } } = SeriesRegistry;
-import U from '../../Core/Utilities.js';
-const { arrayMax, extend, merge, pick } = U;
 import VectorSeriesDefaults from './VectorSeriesDefaults.js';
+import { arrayMax, extend, merge, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class

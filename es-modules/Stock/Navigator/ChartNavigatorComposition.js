@@ -11,8 +11,7 @@
 'use strict';
 import H from '../../Core/Globals.js';
 const { isTouchDevice } = H;
-import U from '../../Core/Utilities.js';
-const { addEvent, merge, pick } = U;
+import { addEvent, merge, pick, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
  *  Constants
@@ -34,7 +33,7 @@ let NavigatorConstructor;
  * @private
  */
 function compose(ChartClass, NavigatorClass) {
-    if (U.pushUnique(composedMembers, ChartClass)) {
+    if (pushUnique(composedMembers, ChartClass)) {
         const chartProto = ChartClass.prototype;
         NavigatorConstructor = NavigatorClass;
         chartProto.callbacks.push(onChartCallback);

@@ -3,8 +3,7 @@
  *  Imports
  *
  * */
-import U from '../../Core/Utilities.js';
-const { addEvent, correctFloat, defined, pick } = U;
+import { addEvent, correctFloat, defined, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -119,7 +118,7 @@ function onChartAfterIsInsiderPlot(e) {
     }
 }
 /**
- *
+ * @internal
  */
 function onPointerAfterGetHoverData(eventArgs) {
     const chart = this.chart;
@@ -154,7 +153,9 @@ function onPointerBeforeGetHoverData(eventArgs) {
  *  Default Export
  *
  * */
+/** @internal */
 const PaneComposition = {
     compose
 };
+/** @internal */
 export default PaneComposition;

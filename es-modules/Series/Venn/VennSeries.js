@@ -29,8 +29,7 @@ const { scatter: ScatterSeries } = SeriesRegistry.seriesTypes;
 import VennPoint from './VennPoint.js';
 import VennSeriesDefaults from './VennSeriesDefaults.js';
 import VennUtils from './VennUtils.js';
-import U from '../../Core/Utilities.js';
-const { addEvent, extend, isArray, isNumber, isObject, merge } = U;
+import { addEvent, extend, isArray, isNumber, isObject, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class

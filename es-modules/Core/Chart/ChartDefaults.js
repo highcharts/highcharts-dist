@@ -386,6 +386,9 @@ const ChartDefaults = {
     /**
      * Callback function to override the default function that formats all
      * the numbers in the chart. Returns a string with the formatted number.
+     * Since v12.5.0, the callback also receives `ctx` as the last argument,
+     * so that arrow functions can access the same context as regular
+     * functions using `this`.
      *
      * @sample highcharts/members/highcharts-numberformat
      *      Arabic digits in Highcharts
@@ -438,6 +441,10 @@ const ChartDefaults = {
      * #tooltip.followTouchMove) option is `true` (default), panning
      * requires two fingers. To allow panning with one finger, set
      * `followTouchMove` to `false`.
+     *
+     * **Note:** If both zooming and panning are enabled without keys, zooming
+     * will take precedence by default. To prioritize panning, either set
+     * [chart.zooming.key](#chart.zooming.key) or panKey.
      *
      * @sample  {highcharts} highcharts/chart/pankey/ Zooming and panning
      * @sample  {highstock} stock/chart/panning/ Zooming and xy panning
@@ -1047,6 +1054,10 @@ const ChartDefaults = {
          * Set a key to hold when dragging to zoom the chart. This is useful to
          * avoid zooming while moving points. Should be set different than
          * [chart.panKey](#chart.panKey).
+         *
+         * **Note:** If both zooming and panning are enabled without keys,
+         * zooming will take precedence by default. To prioritize panning,
+         * either set zooming key or [chart.panKey](#chart.panKey).
          *
          * @type       {string}
          * @default    {highcharts} undefined

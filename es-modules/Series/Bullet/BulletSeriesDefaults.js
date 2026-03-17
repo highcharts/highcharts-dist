@@ -86,9 +86,7 @@ const BulletSeriesDefaults = {
         borderRadius: 0
     },
     tooltip: {
-        pointFormat: '<span style="color:{series.color}">\u25CF</span>' +
-            ' {series.name}: <b>{point.y}</b>. Target: <b>{point.target}' +
-            '</b><br/>'
+        pointFormat: '<span style="color:{series.color}">\u25CF</span> {series.name}: <b>{point.y}</b>. Target: <b>{point.target}</b><br/>'
     }
 };
 /**

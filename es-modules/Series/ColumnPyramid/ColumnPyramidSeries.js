@@ -12,8 +12,7 @@
 import ColumnPyramidSeriesDefaults from './ColumnPyramidSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
-import U from '../../Core/Utilities.js';
-const { clamp, merge, pick } = U;
+import { clamp, merge, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class

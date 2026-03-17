@@ -9,9 +9,8 @@
  *
  * */
 'use strict';
-import U from '../../Core/Utilities.js';
-const { addEvent, isObject, pick, defined, merge } = U;
 import NBU from '../Annotations/NavigationBindingsUtilities.js';
+import { addEvent, defined, internalClearTimeout, isObject, merge, pick } from '../../Shared/Utilities.js';
 const { getAssignedAxis } = NBU;
 /* *
  *
@@ -74,7 +73,7 @@ const zoomBy = function (chart, howMuch, xAxis, yAxis, mouseX, mouseY, options) 
     });
     if (hasZoomed) {
         if (defined(wheelTimer)) {
-            clearTimeout(wheelTimer);
+            internalClearTimeout(wheelTimer);
         }
         // Some time after the last mousewheel event, run drop. In case any of
         // the affected axes had `startOnTick` or `endOnTick`, they will be
@@ -116,9 +115,11 @@ function compose(ChartClass) {
  *  Default Export
  *
  * */
+/** @internal */
 const MouseWheelZoomComposition = {
     compose
 };
+/** @internal */
 export default MouseWheelZoomComposition;
 /* *
  *

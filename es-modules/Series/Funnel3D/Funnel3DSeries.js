@@ -21,8 +21,7 @@ import Math3D from '../../Core/Math3D.js';
 const { perspective } = Math3D;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: Series, seriesTypes: { column: ColumnSeries } } = SeriesRegistry;
-import U from '../../Core/Utilities.js';
-const { extend, merge, pick, relativeLength } = U;
+import { extend, merge, pick, relativeLength } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class

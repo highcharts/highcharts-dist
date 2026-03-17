@@ -14,8 +14,7 @@
 'use strict';
 import GeometryUtilities from '../Geometry/GeometryUtilities.js';
 const { pointInPolygon } = GeometryUtilities;
-import U from '../Utilities.js';
-const { addEvent, getAlignFactor, fireEvent, objectEach, pick } = U;
+import { addEvent, fireEvent, getAlignFactor, objectEach, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions

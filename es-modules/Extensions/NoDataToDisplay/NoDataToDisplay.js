@@ -14,8 +14,7 @@
 'use strict';
 import AST from '../../Core/Renderer/HTML/AST.js';
 import NoDataDefaults from './NoDataDefaults.js';
-import U from '../../Core/Utilities.js';
-const { addEvent, extend, merge } = U;
+import { addEvent, extend, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -41,7 +40,7 @@ function chartHasData() {
     return chart.loadingShown; // #4588
 }
 /**
- * Hide no-data message.
+ * Hide the no-data message.
  *
  * @internal
  * @function Highcharts.Chart#hideNoData
@@ -55,7 +54,8 @@ function chartHideNoData() {
     }
 }
 /**
- * Display a no-data message.
+ * Display the no-data message.
+ *
  * @internal
  * @function Highcharts.Chart#showNoData
  * @param {string} [str]
@@ -91,7 +91,7 @@ function compose(ChartClass, highchartsDefaultOptions) {
     }
 }
 /**
- * Add event listener to handle automatic show or hide no-data message.
+ * Add event listener to handle automatic show or hide the no-data message.
  * @internal
  */
 function onChartRender() {
@@ -108,7 +108,9 @@ function onChartRender() {
  *  Default Export
  *
  * */
+/** @internal */
 const NoDataToDisplay = {
     compose
 };
+/** @internal */
 export default NoDataToDisplay;

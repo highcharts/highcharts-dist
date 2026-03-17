@@ -11,8 +11,7 @@
  *
  * */
 'use strict';
-import U from '../Core/Utilities.js';
-const { addEvent, pick } = U;
+import { addEvent, pick } from '../Shared/Utilities.js';
 /* *
  *
  *  Composition

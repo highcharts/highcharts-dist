@@ -9,8 +9,7 @@
  *
  * */
 'use strict';
-import U from '../Core/Utilities.js';
-const { defined, extend, pick, wrap } = U;
+import { defined, extend, internalClearTimeout, pick, wrap } from '../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -84,7 +83,7 @@ var MapPointer;
         if (Math.abs(delta) >= 1) {
             totalWheelDelta += Math.abs(delta);
             if (totalWheelDeltaTimer) {
-                clearTimeout(totalWheelDeltaTimer);
+                internalClearTimeout(totalWheelDeltaTimer);
             }
             totalWheelDeltaTimer = setTimeout(() => {
                 totalWheelDelta = 0;

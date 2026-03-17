@@ -12,8 +12,7 @@
 'use strict';
 import DraggableChart from './DraggableChart.js';
 const { flipResizeSide } = DraggableChart;
-import U from '../../Core/Utilities.js';
-const { isNumber, merge, pick } = U;
+import { isNumber, merge, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Constants

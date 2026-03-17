@@ -12,8 +12,7 @@
 import SeriesRegistry from '../Core/Series/SeriesRegistry.js';
 const { column: { prototype: columnProto } } = SeriesRegistry.seriesTypes;
 import SVGElement from '../Core/Renderer/SVG/SVGElement.js';
-import U from '../Core/Utilities.js';
-const { addEvent, defined } = U;
+import { addEvent, defined } from '../Shared/Utilities.js';
 /* *
  *
  *  Composition

@@ -13,8 +13,7 @@
 import Chart from './Chart.js';
 import D from '../Defaults.js';
 const { defaultOptions } = D;
-import U from '../Utilities.js';
-const { isArray, merge, splat } = U;
+import { isArray, merge, splat } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class

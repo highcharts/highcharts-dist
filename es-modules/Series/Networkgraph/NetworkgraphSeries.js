@@ -24,9 +24,8 @@ import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: Series, seriesTypes: { column: { prototype: columnProto }, line: { prototype: lineProto } } } = SeriesRegistry;
 import D from '../SimulationSeriesUtilities.js';
 const { initDataLabels, initDataLabelsDefer } = D;
-import U from '../../Core/Utilities.js';
-const { addEvent, defined, extend, merge, pick } = U;
 import TextPath from '../../Extensions/TextPath.js';
+import { addEvent, defined, extend, merge, pick } from '../../Shared/Utilities.js';
 TextPath.compose(SVGElement);
 /* *
  *

@@ -16,8 +16,8 @@ import D from '../Defaults.js';
 const { defaultOptions } = D;
 import F from '../Templating.js';
 const { format } = F;
-import U from '../Utilities.js';
-const { addEvent, crisp, erase, extend, fireEvent, getNestedProperty, isArray, isFunction, isNumber, isObject, merge, pick, syncTimeout, removeEvent, uniqueKey } = U;
+import { addEvent, crisp, erase, extend, fireEvent, getNestedProperty, isArray, isFunction, isNumber, isObject, merge, pick, removeEvent, syncTimeout } from '../../Shared/Utilities.js';
+import { uniqueKey } from '../Utilities.js';
 /* eslint-disable no-invalid-this, valid-jsdoc */
 /* *
  *
@@ -288,9 +288,18 @@ class Point {
         options = Point.prototype.optionsToObject.call(this, options);
         // Copy options directly to point
         extend(point, options);
-        point.options = point.options ?
-            extend(point.options, options) :
-            options;
+        // If we're updating, extend or merge existing options
+        if (point.options) {
+            // If we're not allowed to mutate, merge new data into existing and
+            // return a copy, because `point.options` is a reference to
+            // `options.data[i]`
+            point.options = series.chart.options.chart.allowMutatingData ?
+                extend(point.options, options) :
+                merge(point.options, options);
+        }
+        else {
+            point.options = options;
+        }
         // Since options are copied into the Point instance, some accidental
         // options must be shielded (#5681)
         if (options.group) {
@@ -456,7 +465,8 @@ class Point {
         const point = this;
         return 'highcharts-point' +
             (point.selected ? ' highcharts-point-select' : '') +
-            (point.negative ? ' highcharts-negative' : '') +
+            (point.negative && point.series.options.negativeColor !== false ?
+                ' highcharts-negative' : '') +
             (point.isNull ? ' highcharts-null-point' : '') +
             (typeof point.colorIndex !== 'undefined' ?
                 ' highcharts-color-' + point.colorIndex : '') +
@@ -800,7 +810,7 @@ class Point {
      * @emits Highcharts.Point#event:update
      */
     update(options, redraw, animation, runEvent) {
-        const point = this, series = point.series, graphic = point.graphic, chart = series.chart, seriesOptions = series.options;
+        const point = this, series = point.series, graphic = point.graphic, chart = series.chart, seriesOptions = series.options, data = seriesOptions.data;
         let i;
         redraw = pick(redraw, true);
         /**
@@ -843,11 +853,12 @@ class Point {
             series.dataTable.setRow(row, i);
             // Record the options to options.data. If the old or the new config
             // is an object, use point options, otherwise use raw options
-            // (#4701, #4916).
-            seriesOptions.data[i] = (isObject(seriesOptions.data[i], true) ||
-                isObject(options, true)) ?
-                point.options :
-                pick(options, seriesOptions.data[i]);
+            // (#4701, #4916, #24225).
+            if (data) {
+                data[i] = (isObject(data[i], true) || isObject(options, true)) ?
+                    point.options :
+                    (options ?? data[i]);
+            }
             // Redraw
             series.isDirty = series.isDirtyData = true;
             if (!series.fixedBox && series.hasCartesianSeries) { // #1906, #2320

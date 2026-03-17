@@ -9,8 +9,7 @@
  *
  * */
 import SVGElement from './SVGElement.js';
-import U from '../../Utilities.js';
-const { defined, extend, getAlignFactor, isNumber, merge, pick, removeEvent } = U;
+import { defined, extend, getAlignFactor, isNumber, merge, pick, removeEvent } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Class

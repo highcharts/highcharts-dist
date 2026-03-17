@@ -15,8 +15,6 @@ import D from '../Core/Defaults.js';
 const { defaultOptions } = D;
 import H from '../Core/Globals.js';
 const { doc } = H;
-import U from '../Core/Utilities.js';
-const { addEvent, extend, fireEvent, merge } = U;
 import HU from './Utils/HTMLUtilities.js';
 const { removeElement } = HU;
 import A11yI18n from './A11yI18n.js';
@@ -37,6 +35,7 @@ import highContrastTheme from './HighContrastTheme.js';
 import defaultOptionsA11Y from './Options/A11yDefaults.js';
 import defaultLangOptions from './Options/LangDefaults.js';
 import copyDeprecatedOptions from './Options/DeprecatedOptions.js';
+import { addEvent, extend, fireEvent, merge } from '../Shared/Utilities.js';
 /* *
  *
  *  Class

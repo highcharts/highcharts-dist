@@ -17,9 +17,8 @@ import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: Series, seriesTypes: { column: ColumnSeries, scatter: ScatterSeries } } = SeriesRegistry;
 import SVGRenderer from '../../Core/Renderer/SVG/SVGRenderer.js';
 const { prototype: { symbols } } = SVGRenderer;
-import U from '../../Core/Utilities.js';
-const { addEvent, extend, fireEvent, isNumber, merge, pick } = U;
 import IU from '../InterpolationUtilities.js';
+import { addEvent, extend, fireEvent, isNumber, merge, pick } from '../../Shared/Utilities.js';
 const { colorFromPoint, getContext } = IU;
 /* *
  *
@@ -165,6 +164,10 @@ class HeatmapSeries extends ScatterSeries {
         // evaluation of borderRadius would be moved to `markerAttribs`.
         if (options.marker && isNumber(options.borderRadius)) {
             options.marker.r = options.borderRadius;
+        }
+        const canvas = this.canvas = document.createElement('canvas');
+        if (canvas) {
+            this.context = canvas?.getContext('webgpu');
         }
     }
     /**

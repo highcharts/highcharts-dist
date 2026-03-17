@@ -22,8 +22,7 @@ import { downloadURL, getBlobFromContent } from '../../Shared/DownloadURL.js';
 import ExportDataDefaults from './ExportDataDefaults.js';
 import G from '../../Core/Globals.js';
 const { composed, doc, win } = G;
-import U from '../../Core/Utilities.js';
-const { addEvent, defined, extend, find, fireEvent, isNumber, pick, pushUnique } = U;
+import { addEvent, defined, extend, find, fireEvent, isNumber, pick, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -112,7 +111,7 @@ var ExportData;
             exportingProto.viewData = viewData;
             // Update with defaults of the export data module
             setOptions(ExportDataDefaults);
-            // Additionaly, extend the menuItems with the export data variants
+            // Additionally, extend the menuItems with the export data variants
             const menuItems = getOptions().exporting?.buttons?.contextButton?.menuItems;
             menuItems && menuItems.push('separator', 'downloadCSV', 'downloadXLS', 'viewData');
             const { arearange: AreaRangeSeries, gantt: GanttSeries, map: MapSeries, mapbubble: MapBubbleSeries, treemap: TreemapSeries, xrange: XRangeSeries } = SeriesClass.types;

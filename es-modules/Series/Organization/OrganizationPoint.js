@@ -13,8 +13,7 @@
 'use strict';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { sankey: { prototype: { pointClass: SankeyPointClass } } } = SeriesRegistry.seriesTypes;
-import U from '../../Core/Utilities.js';
-const { defined, find, pick } = U;
+import { defined, find, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions

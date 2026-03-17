@@ -14,8 +14,7 @@
 import TimelineChannel from './TimelineChannel.js';
 import toMIDI from './MIDI.js';
 import { downloadURL } from '../../Shared/DownloadURL.js';
-import U from '../../Core/Utilities.js';
-const { defined, find, merge } = U;
+import { defined, find, merge } from '../../Shared/Utilities.js';
 /**
  * Get filtered channels. Timestamps are compensated, so that the first
  * event starts immediately.

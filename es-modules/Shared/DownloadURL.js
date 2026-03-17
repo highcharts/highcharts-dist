@@ -17,9 +17,8 @@
  *
  * */
 import H from '../Core/Globals.js';
+import { error } from '../Core/Utilities.js';
 const { isSafari, win, win: { document: doc } } = H;
-import U from '../Core/Utilities.js';
-const { error } = U;
 /* *
  *
  *  Constants

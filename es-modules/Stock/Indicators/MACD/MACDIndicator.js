@@ -10,8 +10,7 @@ import H from '../../../Core/Globals.js';
 const { noop } = H;
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
-import U from '../../../Core/Utilities.js';
-const { extend, correctFloat, defined, merge } = U;
+import { correctFloat, defined, extend, merge } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Class

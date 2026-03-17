@@ -32,8 +32,7 @@ const { composed } = H;
 import SeriesLabelDefaults from './SeriesLabelDefaults.js';
 import SLU from './SeriesLabelUtilities.js';
 const { boxIntersectLine, intersectRect } = SLU;
-import U from '../../Core/Utilities.js';
-const { addEvent, extend, fireEvent, isNumber, pick, pushUnique, syncTimeout } = U;
+import { addEvent, extend, fireEvent, internalClearTimeout, isNumber, pick, pushUnique, syncTimeout } from '../../Shared/Utilities.js';
 /* *
  *
  *  Constants
@@ -233,7 +232,7 @@ function drawSeriesLabels(chart) {
                     labelText = format(labelOptions.format, series, chart);
                 }
                 else if (labelOptions.formatter) {
-                    labelText = labelOptions.formatter.call(series);
+                    labelText = labelOptions.formatter.call(series, series);
                 }
                 series.labelBySeries = label = chart.renderer
                     .label(labelText, 0, 0, 'connector', 0, 0, labelOptions.useHTML)
@@ -560,7 +559,7 @@ function onChartRedraw(e) {
         chart.labelSeries = [];
         chart.labelSeriesMaxSum = 0;
         if (chart.seriesLabelTimer) {
-            U.clearTimeout(chart.seriesLabelTimer);
+            internalClearTimeout(chart.seriesLabelTimer);
         }
         // Which series should have labels
         chart.series.forEach(function (series) {
@@ -644,9 +643,11 @@ function symbolConnector(x, y, w, h, options) {
  *  Default Export
  *
  * */
+/** @internal */
 const SeriesLabel = {
     compose
 };
+/** @internal */
 export default SeriesLabel;
 /* *
  *

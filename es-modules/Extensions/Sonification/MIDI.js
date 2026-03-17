@@ -13,8 +13,7 @@
 /* eslint-disable no-multi-spaces */
 'use strict';
 import SonificationInstrument from './SonificationInstrument.js';
-import U from '../../Core/Utilities.js';
-const { pick } = U;
+import { pick } from '../../Shared/Utilities.js';
 const freqToNote = (f) => Math.round(12 * Math.log(f) / Math.LN2 - 48.37632), b = (byte, n) => n >>> 8 * byte & 0xFF, getHeader = (nTracks) => [
     0x4D, 0x54, 0x68, 0x64, // HD_TYPE
     0, 0, 0, 6, // HD_SIZE

@@ -12,8 +12,7 @@
 import Point from '../Core/Series/Point.js';
 const { tooltipFormatter: pointTooltipFormatter } = Point.prototype;
 import Series from '../Core/Series/Series.js';
-import U from '../Core/Utilities.js';
-const { addEvent, arrayMax, arrayMin, correctFloat, defined, isArray, isNumber, isString, pick } = U;
+import { addEvent, arrayMax, arrayMin, correctFloat, defined, isArray, isNumber, isString, pick } from '../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -401,7 +400,7 @@ var DataModifyComposition;
                     }
                     else {
                         const compareBase = this.series.options.compareBase;
-                        value = 100 * (value / compareValue) -
+                        value = 100 * (value / Math.abs(compareValue)) -
                             (compareBase === 100 ? 0 : 100);
                     }
                     // Record for tooltip etc.

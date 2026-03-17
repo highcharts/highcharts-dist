@@ -12,8 +12,7 @@
 import GraphLayout from '../GraphLayoutComposition.js';
 import PackedBubbleIntegration from './PackedBubbleIntegration.js';
 import ReingoldFruchtermanLayout from '../Networkgraph/ReingoldFruchtermanLayout.js';
-import U from '../../Core/Utilities.js';
-const { addEvent, defined, pick } = U;
+import { addEvent, defined, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions

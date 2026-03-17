@@ -13,9 +13,8 @@ import HLCPoint from './HLCPoint.js';
 import HLCSeriesDefaults from './HLCSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
-import U from '../../Core/Utilities.js';
-const { crisp, extend, merge } = U;
 import D from '../../Core/Defaults.js';
+import { crisp, extend, merge } from '../../Shared/Utilities.js';
 const { defaultOptions } = D;
 /* *
  *

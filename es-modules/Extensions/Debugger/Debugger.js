@@ -14,8 +14,7 @@ const { setOptions } = D;
 import ErrorMessages from './ErrorMessages.js';
 import H from '../../Core/Globals.js';
 const { composed } = H;
-import U from '../../Core/Utilities.js';
-const { addEvent, find, isNumber, pushUnique } = U;
+import { addEvent, find, isNumber, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
  *  Constants

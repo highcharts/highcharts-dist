@@ -18,8 +18,7 @@ import H from '../../Core/Globals.js';
 const { noop } = H;
 import Series from '../../Core/Series/Series.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-import U from '../../Core/Utilities.js';
-const { clamp, crisp, defined, extend, fireEvent, isArray, isNumber, merge, pick, objectEach } = U;
+import { clamp, crisp, defined, extend, fireEvent, isArray, isNumber, merge, objectEach, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -308,8 +307,9 @@ class ColumnSeries extends Series {
         //      - focusborders of null points are like those of "0" points
         // This ensures consistent dimensions between null/normal points.
         dense = series.dense =
-            series.closestPointRange * series.xAxis.transA < 2, borderWidth = series.borderWidth = pick(options.borderWidth, dense ? 0 : 1 // #3635
-        ), xAxis = series.xAxis, yAxis = series.yAxis, threshold = options.threshold, minPointLength = pick(options.minPointLength, 5), metrics = series.getColumnMetrics(), seriesPointWidth = metrics.width, seriesXOffset = series.pointXOffset = metrics.offset, dataMin = series.dataMin, dataMax = series.dataMax, translatedThreshold = series.translatedThreshold =
+            series.closestPointRange * series.xAxis.transA < 2, borderWidth = series.borderWidth =
+            options.borderWidth ?? (dense ? 0 : 1), // #3635
+        xAxis = series.xAxis, yAxis = series.yAxis, threshold = options.threshold, minPointLength = options.minPointLength ?? 5, metrics = series.getColumnMetrics(), seriesPointWidth = metrics.width, seriesXOffset = series.pointXOffset = metrics.offset, dataMin = series.dataMin, dataMax = series.dataMax, translatedThreshold = series.translatedThreshold =
             yAxis.getThreshold(threshold);
         // Postprocessed for border width
         let seriesBarW = series.barW =
@@ -324,7 +324,7 @@ class ColumnSeries extends Series {
         Series.prototype.translate.apply(series);
         // Record the new values
         series.points.forEach(function (point) {
-            const yBottom = pick(point.yBottom, translatedThreshold), safeDistance = 999 + Math.abs(yBottom), plotX = point.plotX || 0, 
+            const yBottom = point.yBottom ?? translatedThreshold, safeDistance = 999 + Math.abs(yBottom), plotX = point.plotX || 0, 
             // Don't draw too far outside plot area (#1303, #2241,
             // #4264)
             plotY = clamp(point.plotY, -safeDistance, yAxis.len + safeDistance);
@@ -352,7 +352,7 @@ class ColumnSeries extends Series {
                 // If stacked...
                 barY = (Math.abs(barY - translatedThreshold) > minPointLength ?
                     // ...keep position
-                    yBottom - minPointLength :
+                    yBottom - (up ? minPointLength : 0) :
                     // #1485, #4051
                     translatedThreshold -
                         (up ? minPointLength : 0));

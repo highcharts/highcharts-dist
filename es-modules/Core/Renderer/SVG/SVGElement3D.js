@@ -15,8 +15,7 @@ import Color from '../../Color/Color.js';
 const { parse: color } = Color;
 import RendererRegistry from '../RendererRegistry.js';
 const { Element: SVGElement } = RendererRegistry.getRendererType().prototype;
-import U from '../../Utilities.js';
-const { defined, pick } = U;
+import { defined, pick } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Class

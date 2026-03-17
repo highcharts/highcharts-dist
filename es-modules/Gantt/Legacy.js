@@ -9,8 +9,8 @@
  *
  * */
 'use strict';
-import U from '../Core/Utilities.js';
-const { error, merge, pick } = U;
+import { error } from '../Core/Utilities.js';
+import { merge, pick } from '../Shared/Utilities.js';
 /* *
  *
  *  Constants

@@ -10,8 +10,7 @@
  * */
 'use strict';
 import Fx from './Fx.js';
-import U from '../Utilities.js';
-const { defined, getStyle, isArray, isNumber, isObject, merge, objectEach, pick } = U;
+import { defined, getStyle, isArray, isNumber, isObject, merge, objectEach, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions

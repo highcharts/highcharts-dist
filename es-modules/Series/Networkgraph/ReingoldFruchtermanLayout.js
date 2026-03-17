@@ -16,9 +16,8 @@ import H from '../../Core/Globals.js';
 const { win } = H;
 import GraphLayout from '../GraphLayoutComposition.js';
 import QuadTree from './QuadTree.js';
-import U from '../../Core/Utilities.js';
-const { clamp, defined, isFunction, fireEvent, pick } = U;
 import VerletIntegration from './VerletIntegration.js';
+import { clamp, defined, fireEvent, isFunction, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class

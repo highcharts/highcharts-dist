@@ -9,9 +9,8 @@
  *
  * */
 'use strict';
-import ColorAxisBase from './Color/ColorAxisBase';
-import U from '../Utilities.js';
-const { extend } = U;
+import { extend } from '../../Shared/Utilities.js';
+import ColorAxisBase from './Color/ColorAxisBase.js';
 /* *
  *
  *  Functions

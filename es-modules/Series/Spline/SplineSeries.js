@@ -11,8 +11,7 @@
 'use strict';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { line: LineSeries } = SeriesRegistry.seriesTypes;
-import U from '../../Core/Utilities.js';
-const { merge, pick } = U;
+import { merge, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class

@@ -15,11 +15,10 @@ import H from '../../Core/Globals.js';
 const { noop } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
-import U from '../../Core/Utilities.js';
-const { extend, isArray, isNumber, isObject, merge } = U;
 import WordcloudPoint from './WordcloudPoint.js';
 import WordcloudSeriesDefaults from './WordcloudSeriesDefaults.js';
 import WU from './WordcloudUtils.js';
+import { extend, isArray, isNumber, isObject, merge } from '../../Shared/Utilities.js';
 const { archimedeanSpiral, extendPlayingField, getBoundingBoxFromPolygon, getPlayingField, getPolygon, getRandomPosition, getRotation, getScale, getSpiral, intersectionTesting, isPolygonsColliding, rectangularSpiral, rotate2DToOrigin, rotate2DToPoint, squareSpiral, updateFieldBoundaries } = WU;
 /* *
  *

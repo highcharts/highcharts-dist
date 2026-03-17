@@ -12,8 +12,7 @@
 import CU from '../../Series/CenteredUtilities.js';
 import PaneComposition from './PaneComposition.js';
 import PaneDefaults from './PaneDefaults.js';
-import U from '../../Core/Utilities.js';
-const { extend, merge, splat } = U;
+import { extend, merge, splat } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -197,6 +196,7 @@ Pane.compose = PaneComposition.compose;
  *  Default Export
  *
  * */
+/** @internal */
 export default Pane;
 /* *
  *

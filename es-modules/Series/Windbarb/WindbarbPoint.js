@@ -11,8 +11,7 @@
  *
  * */
 import ColumnSeries from '../Column/ColumnSeries.js';
-import U from '../../Core/Utilities.js';
-const { isNumber } = U;
+import { isNumber } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class

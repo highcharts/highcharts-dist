@@ -7,8 +7,7 @@
 'use strict';
 import Controllable from './Controllable.js';
 import ControllablePath from './ControllablePath.js';
-import U from '../../../Core/Utilities.js';
-const { merge, defined } = U;
+import { defined, merge } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -50,12 +49,16 @@ class ControllableEllipse extends Controllable {
     init(annotation, options, index) {
         if (defined(options.yAxis)) {
             options.points.forEach((point) => {
-                point.yAxis = options.yAxis;
+                if (point && typeof point !== 'string') {
+                    point.yAxis = options.yAxis;
+                }
             });
         }
         if (defined(options.xAxis)) {
             options.points.forEach((point) => {
-                point.xAxis = options.xAxis;
+                if (point && typeof point !== 'string') {
+                    point.xAxis = options.xAxis;
+                }
             });
         }
         super.init(annotation, options, index);

@@ -12,8 +12,7 @@
 import PC from '../Core/Geometry/PolygonClip.js';
 const { clipLineString, clipPolygon } = PC;
 import ProjectionRegistry from './Projections/ProjectionRegistry.js';
-import U from '../Core/Utilities.js';
-const { clamp, erase } = U;
+import { clamp, erase } from '../Shared/Utilities.js';
 /* *
  *
  *  Constants

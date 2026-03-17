@@ -9,8 +9,8 @@
  *
  * */
 'use strict';
-import U from '../../Core/Utilities.js';
-const { clamp, error, pick } = U;
+import { error } from '../../Core/Utilities.js';
+import { clamp, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Constants

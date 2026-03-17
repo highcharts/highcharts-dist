@@ -9,8 +9,7 @@
  *
  * */
 'use strict';
-import U from '../../Core/Utilities.js';
-const { defined, isNumber, pick } = U;
+import { defined, isNumber, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Constants

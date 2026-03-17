@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.5.0 (2026-01-12)
+ * @license Highcharts JS v12.5.0-modified (2026-03-17)
  * @module highcharts/modules/exporting
  * @requires highcharts
  *
@@ -14,7 +14,7 @@
  */
 'use strict';
 import Highcharts from '../../Core/Globals.js';
-import Exporting from '../../Extensions/Exporting/Exporting.js';
+import { Exporting } from '../../Extensions/Exporting/Exporting.js';
 import HttpUtilities from '../../Core/HttpUtilities.js';
 const G = Highcharts;
 // Class

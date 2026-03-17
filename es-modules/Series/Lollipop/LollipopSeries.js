@@ -15,8 +15,7 @@ import Series from '../../Core/Series/Series.js';
 const { seriesTypes: { column: { prototype: colProto }, dumbbell: { prototype: dumbbellProto }, 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 scatter: ScatterSeries } } = SeriesRegistry;
-import U from '../../Core/Utilities.js';
-const { extend, merge } = U;
+import { extend, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class

@@ -15,8 +15,7 @@ import F from '../../Core/Templating.js';
 const { format } = F;
 import H from '../../Core/Globals.js';
 const { composed } = H;
-import U from '../../Core/Utilities.js';
-const { addEvent, defined, extend, fireEvent, isString, merge, objectEach, pick, pushUnique } = U;
+import { addEvent, defined, extend, fireEvent, isString, merge, objectEach, pick, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -348,7 +347,11 @@ class Breadcrumbs {
                 breadcrumbsOptions.events.click;
             let callDefaultEvent;
             if (buttonEvents) {
-                callDefaultEvent = buttonEvents.call(breadcrumbs, e, breadcrumb);
+                callDefaultEvent = buttonEvents.call(breadcrumbs, e, breadcrumb, 
+                // Keep `ctx` for callback parity with arrow functions.
+                // Not documented in public API because Breadcrumbs
+                // is an internal class.
+                breadcrumbs);
             }
             // (difference in behaviour of showFullPath and drillUp)
             if (callDefaultEvent !== false) {
@@ -579,11 +582,8 @@ export default Breadcrumbs;
  * @param {Highcharts.Event} event
  * Event.
  *
- * @param {Highcharts.BreadcrumbOptions} options
+ * @param {Highcharts.BreadcrumbOptions} breadcrumb
  * Breadcrumb options.
- *
- * @param {global.Event} e
- * Event arguments.
  */
 /**
  * Callback function to format the breadcrumb text from scratch.

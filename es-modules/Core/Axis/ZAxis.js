@@ -12,8 +12,7 @@
 import Axis from './Axis.js';
 import D from '../Defaults.js';
 const { defaultOptions } = D;
-import U from '../Utilities.js';
-const { addEvent, merge, pick, splat } = U;
+import { splat, merge, pick, addEvent } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions

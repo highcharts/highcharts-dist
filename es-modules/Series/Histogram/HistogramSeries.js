@@ -13,8 +13,7 @@ import DerivedComposition from '../DerivedComposition.js';
 import HistogramSeriesDefaults from './HistogramSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
-import U from '../../Core/Utilities.js';
-const { arrayMax, arrayMin, correctFloat, isNumber, merge } = U;
+import { arrayMax, arrayMin, correctFloat, isNumber, merge } from '../../Shared/Utilities.js';
 /* ************************************************************************** *
  *  HISTOGRAM
  * ************************************************************************** */

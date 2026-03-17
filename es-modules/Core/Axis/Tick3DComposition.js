@@ -13,8 +13,7 @@
 'use strict';
 import H from '../Globals.js';
 const { composed } = H;
-import U from '../Utilities.js';
-const { addEvent, extend, pushUnique, wrap } = U;
+import { addEvent, extend, pushUnique, wrap } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions

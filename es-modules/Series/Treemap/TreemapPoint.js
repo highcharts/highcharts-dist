@@ -13,8 +13,7 @@
 import DPU from '../DrawPointUtilities.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { pie: { prototype: { pointClass: PiePoint } }, scatter: { prototype: { pointClass: ScatterPoint } } } = SeriesRegistry.seriesTypes;
-import U from '../../Core/Utilities.js';
-const { extend, isNumber, pick } = U;
+import { extend, isNumber, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class

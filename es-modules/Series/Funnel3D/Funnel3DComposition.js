@@ -15,8 +15,8 @@
 import SVGElement3DFunnel from './SVGElement3DFunnel.js';
 import H from '../../Core/Globals.js';
 const { charts } = H;
-import U from '../../Core/Utilities.js';
-const { error, extend, merge } = U;
+import { extend, merge } from '../../Shared/Utilities.js';
+import { error } from '../../Core/Utilities.js';
 /* *
  *
  *  Functions

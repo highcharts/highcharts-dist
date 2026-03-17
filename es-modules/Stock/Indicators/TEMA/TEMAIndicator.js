@@ -8,8 +8,7 @@
 'use strict';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 const { ema: EMAIndicator } = SeriesRegistry.seriesTypes;
-import U from '../../../Core/Utilities.js';
-const { correctFloat, isArray, merge } = U;
+import { correctFloat, isArray, merge } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Class

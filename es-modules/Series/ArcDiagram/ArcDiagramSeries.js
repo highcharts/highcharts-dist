@@ -17,13 +17,12 @@ import SankeyColumnComposition from '../Sankey/SankeyColumnComposition.js';
 import Series from '../../Core/Series/Series.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import SVGRenderer from '../../Core/Renderer/SVG/SVGRenderer.js';
-import U from '../../Core/Utilities.js';
 import SVGElement from '../../Core/Renderer/SVG/SVGElement.js';
 import TextPath from '../../Extensions/TextPath.js';
+import { crisp, extend, merge, pick, relativeLength } from '../../Shared/Utilities.js';
 TextPath.compose(SVGElement);
 const { prototype: { symbols } } = SVGRenderer;
 const { seriesTypes: { column: ColumnSeries, sankey: SankeySeries } } = SeriesRegistry;
-const { crisp, extend, merge, pick, relativeLength } = U;
 /* *
  *
  *  Class

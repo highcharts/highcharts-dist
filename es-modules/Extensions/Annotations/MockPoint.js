@@ -5,8 +5,7 @@
 'use strict';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: { prototype: seriesProto } } = SeriesRegistry;
-import U from '../../Core/Utilities.js';
-const { defined, fireEvent } = U;
+import { defined, fireEvent } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class

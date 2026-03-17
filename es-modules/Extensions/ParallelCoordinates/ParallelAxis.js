@@ -12,8 +12,7 @@
  * */
 'use strict';
 import ParallelCoordinatesDefaults from './ParallelCoordinatesDefaults.js';
-import U from '../../Core/Utilities.js';
-const { addEvent, arrayMax, arrayMin, isNumber, merge, pick } = U;
+import { addEvent, arrayMax, arrayMin, isNumber, merge, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -71,6 +70,7 @@ class ParallelAxisAdditions {
  *  Composition
  *
  * */
+/** @internal */
 var ParallelAxis;
 (function (ParallelAxis) {
     /* *
@@ -170,4 +170,5 @@ var ParallelAxis;
  *  Default Export
  *
  * */
+/** @internal */
 export default ParallelAxis;

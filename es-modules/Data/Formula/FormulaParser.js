@@ -11,8 +11,7 @@
  *
  * */
 'use strict';
-import U from '../../Core/Utilities.js';
-const { isString } = U;
+import { isString } from '../../Shared/Utilities.js';
 /* *
  *
  *  Constants

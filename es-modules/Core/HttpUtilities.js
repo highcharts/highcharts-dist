@@ -11,8 +11,7 @@
 'use strict';
 import G from '../Core/Globals.js';
 const { win } = G;
-import U from '../Core/Utilities.js';
-const { discardElement, objectEach } = U;
+import { discardElement, objectEach } from '../Shared/Utilities.js';
 /* *
  *
  *  Functions

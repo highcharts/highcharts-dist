@@ -11,13 +11,12 @@
  *
  * */
 'use strict';
-import U from '../../Core/Utilities.js';
-const { attr } = U;
 import AccessibilityComponent from '../AccessibilityComponent.js';
 import KeyboardNavigationHandler from '../KeyboardNavigationHandler.js';
 import ChartUtilities from '../Utils/ChartUtilities.js';
 const { getChartTitle, unhideChartElementFromAT } = ChartUtilities;
 import HTMLUtilities from '../Utils/HTMLUtilities.js';
+import { attr } from '../../Shared/Utilities.js';
 const { getFakeMouseEvent } = HTMLUtilities;
 /* *
  *

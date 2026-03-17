@@ -12,8 +12,7 @@
 'use strict';
 import A from '../../Core/Animation/AnimationUtilities.js';
 const { animObject } = A;
-import U from '../../Core/Utilities.js';
-const { addEvent, extend, fireEvent, merge, pick, syncTimeout } = U;
+import { addEvent, extend, fireEvent, isString, merge, splat, syncTimeout } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -28,31 +27,30 @@ function applyCursorCSS(element, cursor, addClass, styledMode) {
 }
 /** @internal */
 function columnAnimateDrilldown(init) {
-    const series = this, chart = series.chart, { drilldownLevels, styledMode } = chart, animationOptions = animObject(chart.options.drilldown?.animation), xAxis = this.xAxis;
+    const series = this, chart = series.chart, { drilldownLevels, styledMode } = chart, animationOptions = animObject(chart.options.drilldown?.animation), { xAxis, yAxis } = this;
     if (!init) {
         let animateFrom;
         drilldownLevels?.forEach((level) => {
             if (series.options._ddSeriesId ===
                 level.lowerSeriesOptions._ddSeriesId) {
                 animateFrom = level.shapeArgs;
-                if (!styledMode && animateFrom) {
-                    // Add the point colors to animate from
-                    animateFrom.fill = level.color;
+                if (animateFrom) {
+                    // Adjust for changing axis positions
+                    animateFrom.x = (animateFrom.x || 0) +
+                        (level.plotLeft ?? xAxis.pos) - xAxis.pos;
+                    animateFrom.y = (animateFrom.y || 0) +
+                        (level.plotTop ?? yAxis.pos) - yAxis.pos;
+                    if (!styledMode) {
+                        // Add the point colors to animate from
+                        animateFrom.fill = level.color;
+                    }
                 }
             }
         });
-        animateFrom.x += pick(xAxis.oldPos, xAxis.pos) - xAxis.pos;
         series.points.forEach((point) => {
-            const animateTo = point.shapeArgs;
-            if (!styledMode) {
-                // Add the point colors to animate to
-                animateTo.fill = point.color;
-            }
-            if (point.graphic) {
-                point.graphic
-                    .attr(animateFrom)
-                    .animate(extend(point.shapeArgs, { fill: point.color || series.color }), animationOptions);
-            }
+            point.graphic
+                ?.attr(animateFrom)
+                .animate(extend(point.shapeArgs, { fill: point.color || series.color }), animationOptions);
         });
         this.dataLabelsGroups?.forEach((g) => chart.drilldown?.fadeInGroup(g));
         // Reset to prototype
@@ -122,7 +120,7 @@ function columnAnimateDrillupFrom(level) {
  * Whether to initialize animation
  */
 function columnAnimateDrillupTo(init) {
-    const series = this, level = series.drilldownLevel;
+    const series = this, level = series.drilldownLevel, animation = animObject(series.chart.options.drilldown?.animation);
     if (!init) {
         // First hide all items before animating in again
         series.points.forEach((point) => {
@@ -165,7 +163,7 @@ function columnAnimateDrillupTo(init) {
                     }
                 });
             }
-        }, Math.max(series.chart.options.drilldown.animation.duration - 50, 0));
+        }, Math.max(animation.duration - 50, 0));
         // Reset to prototype
         delete this.animate;
     }
@@ -225,7 +223,8 @@ function mapAnimateDrilldown(init) {
             group.animate({ opacity: 1 }, chart.options.drilldown.animation, () => {
                 if (series.options) {
                     series.options.inactiveOtherPoints = false;
-                    series.options.enableMouseTracking = pick(series.userOptions?.enableMouseTracking, true);
+                    series.options.enableMouseTracking = (series.userOptions?.enableMouseTracking ??
+                        true);
                 }
             });
             series.dataLabelsGroups?.forEach((g) => chart.drilldown?.fadeInGroup(g));
@@ -324,18 +323,23 @@ function onPointUpdate(e) {
 }
 /** @internal */
 function onSeriesAfterDrawDataLabels() {
-    const series = this, chart = series.chart, css = chart.options.drilldown.activeDataLabelStyle, renderer = chart.renderer, styledMode = chart.styledMode;
+    const series = this, chart = series.chart, css = chart.options.drilldown?.activeDataLabelStyle || {}, renderer = chart.renderer, styledMode = chart.styledMode;
     for (const point of series.points) {
-        const dataLabelsOptions = point.options.dataLabels, pointCSS = pick(point.dlOptions, dataLabelsOptions && dataLabelsOptions.style, {});
+        const dataLabelsOptions = splat(point.options.dataLabels)[0] || {}, pointCSS = (point.dlOptions ||
+            dataLabelsOptions.style ||
+            {});
         if (point.drilldown && point.dataLabel) {
             if (css.color === 'contrast' && !styledMode) {
-                pointCSS.color = renderer.getContrast(point.color || series.color);
+                const itemColor = ((isString(point.color) && point.color) ||
+                    (isString(series.color) && series.color));
+                if (isString(itemColor)) {
+                    pointCSS.color = renderer.getContrast(itemColor);
+                }
             }
             if (dataLabelsOptions && dataLabelsOptions.color) {
                 pointCSS.color = dataLabelsOptions.color;
             }
-            point.dataLabel
-                .addClass('highcharts-drilldown-data-label');
+            point.dataLabel.addClass('highcharts-drilldown-data-label');
             if (!styledMode) {
                 point.dataLabel
                     .css(css)
@@ -358,28 +362,30 @@ function onSeriesAfterDrawTracker() {
 }
 /** @internal */
 function pieAnimateDrilldown(init) {
-    const series = this, chart = series.chart, points = series.points, level = chart.drilldownLevels[chart.drilldownLevels.length - 1], animationOptions = chart.options.drilldown.animation;
+    const series = this, chart = series.chart, points = series.points, drilldownLevels = chart.drilldownLevels || [], level = drilldownLevels[drilldownLevels.length - 1], animation = animObject(chart.options.drilldown?.animation);
     if (series.is('item')) {
-        animationOptions.duration = 0;
+        animation.duration = 0;
     }
     // Unable to drill down in the horizontal item series #13372
     if (series.center) {
-        const animateFrom = level.shapeArgs, start = animateFrom.start, angle = animateFrom.end - start, startAngle = angle / series.points.length, styledMode = chart.styledMode;
+        const animateFrom = level.shapeArgs || {}, start = animateFrom.start || 0, angle = (animateFrom.end || 0) - start, startAngle = angle / series.points.length, styledMode = chart.styledMode;
+        // Adjust for moving plot area, typically adjusting to breadcrumbs
+        animateFrom.y = (animateFrom.y || 0) +
+            ((level.plotTop ?? chart.plotTop) - chart.plotTop) / 2;
         if (!init) {
             let animateTo, point;
             for (let i = 0, iEnd = points.length; i < iEnd; ++i) {
                 point = points[i];
-                animateTo = point.shapeArgs;
+                animateTo = point.shapeArgs || {};
                 if (!styledMode) {
                     animateFrom.fill = level.color;
                     animateTo.fill = point.color;
                 }
-                if (point.graphic) {
-                    point.graphic.attr(merge(animateFrom, {
-                        start: start + i * startAngle,
-                        end: start + (i + 1) * startAngle
-                    }))[animationOptions ? 'animate' : 'attr'](animateTo, animationOptions);
-                }
+                const attr = merge(animateFrom, {
+                    start: start + i * startAngle,
+                    end: start + (i + 1) * startAngle
+                });
+                point.graphic?.attr(attr).animate(animateTo, animation);
             }
             series.dataLabelsGroups?.forEach((g) => chart.drilldown?.fadeInGroup(g));
             // Reset to prototype

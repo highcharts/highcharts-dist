@@ -12,8 +12,7 @@
 'use strict';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
-import U from '../../../Core/Utilities.js';
-const { isArray, extend, merge } = U;
+import { extend, isArray, merge } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -245,6 +244,8 @@ LinearRegressionIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
 extend(LinearRegressionIndicator.prototype, {
     nameBase: 'Linear Regression Indicator'
 });
+SeriesRegistry.registerSeriesType('linearregression', LinearRegressionIndicator);
+// Keep for backwards compatibility
 SeriesRegistry.registerSeriesType('linearRegression', LinearRegressionIndicator);
 /* *
  *

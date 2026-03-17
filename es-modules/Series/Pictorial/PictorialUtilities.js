@@ -8,8 +8,7 @@
  *
  *
  * */
-import U from '../../Core/Utilities.js';
-const { defined } = U;
+import { defined } from '../../Shared/Utilities.js';
 /**
  *
  */

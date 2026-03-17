@@ -12,8 +12,7 @@
 import F from '../Templating.js';
 import H from '../Globals.js';
 const { deg2rad } = H;
-import U from '../Utilities.js';
-const { clamp, correctFloat, defined, destroyObjectProperties, extend, fireEvent, getAlignFactor, isNumber, merge, objectEach, pick } = U;
+import { correctFloat, clamp, defined, extend, isNumber, merge, objectEach, pick, destroyObjectProperties, getAlignFactor, fireEvent } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class

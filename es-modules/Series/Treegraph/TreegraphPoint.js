@@ -12,8 +12,7 @@
 import Point from '../../Core/Series/Point.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { seriesTypes: { treemap: { prototype: { pointClass: TreemapPoint } } } } = SeriesRegistry;
-import U from '../../Core/Utilities.js';
-const { addEvent, fireEvent, merge } = U;
+import { addEvent, fireEvent, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class

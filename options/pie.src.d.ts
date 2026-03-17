@@ -257,8 +257,13 @@ declare module "../highcharts.src" {
          */
         depth?: number;
         /**
-         * (Highcharts, Highmaps) A description of the series to add to the
-         * screen reader information about the series.
+         * (Highcharts, Highmaps) Deprecated. Use
+         * plotOptions.series.accessibility.description instead.
+         *
+         * A description of the series to add to the screen reader information
+         * about the series.
+         *
+         * @deprecated 8.0.0
          */
         description?: string;
         /**
@@ -285,6 +290,36 @@ declare module "../highcharts.src" {
          * border thickness.
          */
         fillColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        /**
+         * (Highcharts, Highstock) Defines when to display a gap in the graph,
+         * together with the gapUnit option.
+         *
+         * In case when `dataGrouping` is enabled, points can be grouped into a
+         * larger time span. This can make the grouped points to have a greater
+         * distance than the absolute value of `gapSize` property, which will
+         * result in disappearing graph completely. To prevent this situation
+         * the mentioned distance between grouped points is used instead of
+         * previously defined `gapSize`.
+         *
+         * In practice, this option is most often used to visualize gaps in time
+         * series. In a stock chart, intraday data is available for daytime
+         * hours, while gaps will appear in nights and weekends.
+         */
+        gapSize?: number;
+        /**
+         * (Highcharts, Highstock) Together with gapSize, this option defines
+         * where to draw gaps in the graph.
+         *
+         * When the `gapUnit` is `"relative"` (default), a gap size of 5 means
+         * that if the distance between two points is greater than 5 times that
+         * of the two closest points, the graph will be broken.
+         *
+         * When the `gapUnit` is `"value"`, the gap is based on absolute axis
+         * values, which on a datetime axis is milliseconds. This also applies
+         * to the navigator series that inherits gap options from the base
+         * series.
+         */
+        gapUnit?: Highcharts.OptionsGapUnitValue;
         /**
          * (Highcharts, Highmaps) Equivalent to chart.ignoreHiddenSeries, this
          * option tells whether the series shall be redrawn as if the hidden
@@ -390,14 +425,21 @@ declare module "../highcharts.src" {
          */
         point?: Highcharts.PlotSeriesPointOptions;
         /**
-         * (Highcharts, Highmaps) Same as accessibility.point.descriptionFormat,
-         * but for an individual series. Overrides the chart wide configuration.
+         * (Highcharts, Highmaps) Deprecated. Use
+         * series.accessibility.point.descriptionFormat instead.
+         *
+         * Same as accessibility.point.descriptionFormat, but for an individual
+         * series. Overrides the chart wide configuration.
          */
         pointDescriptionFormat?: Function;
         /**
-         * (Highcharts, Highmaps) Same as
-         * accessibility.series.descriptionFormatter, but for an individual
-         * series. Overrides the chart wide configuration.
+         * (Highcharts, Highmaps) Deprecated. Use
+         * series.accessibility.point.descriptionFormatter instead.
+         *
+         * Same as accessibility.series.descriptionFormatter, but for an
+         * individual series. Overrides the chart wide configuration.
+         *
+         * @deprecated 8.0.0
          */
         pointDescriptionFormatter?: Function;
         /**
@@ -452,8 +494,13 @@ declare module "../highcharts.src" {
          */
         size?: (number|string|null);
         /**
-         * (Highcharts, Highmaps) If set to `true`, the accessibility module
-         * will skip past the points in this series for keyboard navigation.
+         * (Highcharts, Highmaps) Deprecated. Use
+         * series.accessibility.keyboardNavigation instead.
+         *
+         * If set to `true`, the accessibility module will skip past the points
+         * in this series for keyboard navigation.
+         *
+         * @deprecated 8.0.0
          */
         skipKeyboardNavigation?: boolean;
         /**
@@ -512,7 +559,7 @@ declare module "../highcharts.src" {
          * individual non-cartesian series. By default zooming is enabled for
          * all series.
          *
-         * Note: This option works only for non-cartesian series.
+         * **Note**: This option works only for non-cartesian series.
          */
         zoomEnabled?: boolean;
     }

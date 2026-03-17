@@ -26,8 +26,7 @@ const { defaultOptions } = D;
 import EventEmitter from './EventEmitter.js';
 import MockPoint from './MockPoint.js';
 import PopupComposition from './Popup/PopupComposition.js';
-import U from '../../Core/Utilities.js';
-const { destroyObjectProperties, erase, fireEvent, merge, pick, splat } = U;
+import { destroyObjectProperties, erase, fireEvent, merge, pick, splat } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions

@@ -363,8 +363,13 @@ declare module "../highcharts.src" {
          */
         dataSorting?: (Highcharts.DataSortingOptionsObject|Highcharts.PlotAreaDataSortingOptions);
         /**
-         * (Highcharts, Highstock) A description of the series to add to the
-         * screen reader information about the series.
+         * (Highcharts, Highstock) Deprecated. Use
+         * plotOptions.series.accessibility.description instead.
+         *
+         * A description of the series to add to the screen reader information
+         * about the series.
+         *
+         * @deprecated 8.0.0
          */
         description?: string;
         /**
@@ -418,8 +423,8 @@ declare module "../highcharts.src" {
          */
         findNearestPointBy?: Highcharts.OptionsFindNearestPointByValue;
         /**
-         * (Highstock) Defines when to display a gap in the graph, together with
-         * the gapUnit option.
+         * (Highcharts, Highstock) Defines when to display a gap in the graph,
+         * together with the gapUnit option.
          *
          * In case when `dataGrouping` is enabled, points can be grouped into a
          * larger time span. This can make the grouped points to have a greater
@@ -434,8 +439,8 @@ declare module "../highcharts.src" {
          */
         gapSize?: number;
         /**
-         * (Highstock) Together with gapSize, this option defines where to draw
-         * gaps in the graph.
+         * (Highcharts, Highstock) Together with gapSize, this option defines
+         * where to draw gaps in the graph.
          *
          * When the `gapUnit` is `"relative"` (default), a gap size of 5 means
          * that if the distance between two points is greater than 5 times that
@@ -604,15 +609,21 @@ declare module "../highcharts.src" {
          */
         point?: Highcharts.PlotSeriesPointOptions;
         /**
-         * (Highcharts, Highstock) Same as
-         * accessibility.point.descriptionFormat, but for an individual series.
-         * Overrides the chart wide configuration.
+         * (Highcharts, Highstock) Deprecated. Use
+         * series.accessibility.point.descriptionFormat instead.
+         *
+         * Same as accessibility.point.descriptionFormat, but for an individual
+         * series. Overrides the chart wide configuration.
          */
         pointDescriptionFormat?: Function;
         /**
-         * (Highcharts, Highstock) Same as
-         * accessibility.series.descriptionFormatter, but for an individual
-         * series. Overrides the chart wide configuration.
+         * (Highcharts, Highstock) Deprecated. Use
+         * series.accessibility.point.descriptionFormatter instead.
+         *
+         * Same as accessibility.series.descriptionFormatter, but for an
+         * individual series. Overrides the chart wide configuration.
+         *
+         * @deprecated 8.0.0
          */
         pointDescriptionFormatter?: Function;
         /**
@@ -744,8 +755,13 @@ declare module "../highcharts.src" {
          */
         showInNavigator?: boolean;
         /**
-         * (Highcharts, Highstock) If set to `true`, the accessibility module
-         * will skip past the points in this series for keyboard navigation.
+         * (Highcharts, Highstock) Deprecated. Use
+         * series.accessibility.keyboardNavigation instead.
+         *
+         * If set to `true`, the accessibility module will skip past the points
+         * in this series for keyboard navigation.
+         *
+         * @deprecated 8.0.0
          */
         skipKeyboardNavigation?: boolean;
         /**
@@ -874,7 +890,7 @@ declare module "../highcharts.src" {
          * individual non-cartesian series. By default zooming is enabled for
          * all series.
          *
-         * Note: This option works only for non-cartesian series.
+         * **Note**: This option works only for non-cartesian series.
          */
         zoomEnabled?: boolean;
     }

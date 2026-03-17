@@ -12,8 +12,7 @@
 import AreaSeriesDefaults from './AreaSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { seriesTypes: { line: LineSeries } } = SeriesRegistry;
-import U from '../../Core/Utilities.js';
-const { extend, merge, objectEach, pick } = U;
+import { defined, extend, merge, objectEach, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -107,19 +106,17 @@ class AreaSeries extends LineSeries {
         // series graph must be broken, and the area also fall down to
         // fill the gap left by the null point. #2069
         addDummyPoints = function (i, otherI, side) {
-            const point = points[i], stackedValues = stacking &&
-                stacks[point.x].points[seriesIndex], nullVal = point[side + 'Null'] || 0, cliffVal = point[side + 'Cliff'] || 0;
+            const point = points[i], otherPoint = points[otherI], stackedValues = stacking && (stacks[point.x].points[seriesIndex]), nullVal = point[side + 'Null'] || 0, cliffVal = point[side + 'Cliff'] || 0;
             let top, bottom, isNull = true;
-            if (cliffVal || nullVal) {
-                top = (nullVal ?
-                    stackedValues[0] :
-                    stackedValues[1]) + cliffVal;
+            if (stackedValues && (cliffVal || nullVal)) {
+                top = (nullVal ? stackedValues[0] : stackedValues[1]) + cliffVal;
                 bottom = stackedValues[0] + cliffVal;
                 isNull = !!nullVal;
             }
             else if (!stacking &&
-                points[otherI] &&
-                points[otherI].isNull) {
+                otherPoint &&
+                (otherPoint.isNull ||
+                    !defined(otherPoint.plotY))) {
                 top = bottom = threshold;
             }
             // Add to the top and bottom line of the area
@@ -154,7 +151,9 @@ class AreaSeries extends LineSeries {
                 points[i].leftCliff = points[i].rightCliff =
                     points[i].leftNull = points[i].rightNull = void 0;
             }
-            isNull = points[i].isNull;
+            // Treat points with undefined plotY as null (e.g. non-positive
+            // values on logarithmic axis, #18422)
+            isNull = points[i].isNull || !defined(points[i].plotY);
             plotX = pick(points[i].rectPlotX, points[i].plotX);
             yBottom = stacking ?
                 pick(points[i].yBottom, translatedThreshold) :
@@ -208,7 +207,7 @@ class AreaSeries extends LineSeries {
      * @private
      */
     getStackPoints(points) {
-        const series = this, segment = [], keys = [], xAxis = this.xAxis, yAxis = this.yAxis, stack = yAxis.stacking.stacks[this.stackKey], pointMap = {}, yAxisSeries = yAxis.series, seriesLength = yAxisSeries.length, upOrDown = yAxis.options.reversedStacks ? 1 : -1, seriesIndex = yAxisSeries.indexOf(series);
+        const series = this, segment = [], keys = [], xAxis = this.xAxis, yAxis = this.yAxis, stack = yAxis.stacking.stacks[this.stackKey], pointMap = {}, yAxisSeries = yAxis.series, seriesLength = yAxisSeries.length, upOrDown = yAxis.options.reversedStacks ? 1 : -1, seriesIndex = yAxisSeries.indexOf(series), translatedThreshold = yAxis.getThreshold(series.options.threshold || 0);
         points = points || this.points;
         if (this.options.stacking) {
             for (let i = 0; i < points.length; i++) {
@@ -298,16 +297,18 @@ class AreaSeries extends LineSeries {
                         // down
                         i += upOrDown;
                     }
-                    y = pick(y, 0);
-                    y = yAxis.translate(// #6272
-                    y, 0, 1, 0, 1);
+                    y || (y = 0);
+                    const plotY = yAxis.positiveValuesOnly && y <= 0 ?
+                        translatedThreshold :
+                        yAxis.translate(// #6272
+                        y, false, true, false, true);
                     segment.push({
                         isNull: true,
                         plotX: xAxis.translate(// #6272
-                        x, 0, 0, 0, 1),
+                        x, false, false, false, true),
                         x: x,
-                        plotY: y,
-                        yBottom: y
+                        plotY,
+                        yBottom: plotY
                     });
                 }
             });

@@ -15,8 +15,7 @@
 import Point from '../../Core/Series/Point.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { line: { prototype: { pointClass: LinePoint } }, pie: { prototype: { pointClass: PiePoint } } } = SeriesRegistry.seriesTypes;
-import U from '../../Core/Utilities.js';
-const { defined, isNumber, merge, objectEach, pick } = U;
+import { defined, isNumber, merge, objectEach, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class

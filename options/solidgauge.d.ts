@@ -322,13 +322,6 @@ declare module "../highcharts" {
          * in pixels.
          */
         y?: number;
-        /**
-         * (Highcharts) The z index of the data labels group. Does not apply
-         * below series level options.
-         *
-         * Use a `zIndex` of 6 to display it above the series, or use a `zIndex`
-         * of 2 to display it behind the series.
-         */
         zIndex?: number;
     }
     /**

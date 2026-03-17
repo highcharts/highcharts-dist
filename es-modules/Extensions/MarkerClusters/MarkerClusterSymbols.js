@@ -45,7 +45,10 @@ function cluster(x, y, width, height) {
     });
     return outer2.concat(outer1, inner);
 }
-/** @internal */
+/**
+ * Register marker cluster symbols.
+ * @internal
+ */
 function compose(SVGRendererClass) {
     symbols = SVGRendererClass.prototype.symbols;
     symbols.cluster = cluster;
@@ -55,7 +58,9 @@ function compose(SVGRendererClass) {
  *  Default Export
  *
  * */
+/** @internal */
 const MarkerClusterSymbols = {
     compose
 };
+/** @internal */
 export default MarkerClusterSymbols;

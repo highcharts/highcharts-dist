@@ -11,9 +11,8 @@
  * */
 'use strict';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
-const { linearRegression: LinearRegressionIndicator } = SeriesRegistry.seriesTypes;
-import U from '../../../Core/Utilities.js';
-const { extend, merge } = U;
+const { linearregression: LinearRegressionIndicator } = SeriesRegistry.seriesTypes;
+import { extend, merge } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -61,6 +60,8 @@ LinearRegressionInterceptIndicator.defaultOptions = merge(LinearRegressionIndica
 extend(LinearRegressionInterceptIndicator.prototype, {
     nameBase: 'Linear Regression Intercept Indicator'
 });
+SeriesRegistry.registerSeriesType('linearregressionintercept', LinearRegressionInterceptIndicator);
+// Keep for backwards compatibility
 SeriesRegistry.registerSeriesType('linearRegressionIntercept', LinearRegressionInterceptIndicator);
 /* *
  *

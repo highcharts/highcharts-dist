@@ -13,8 +13,7 @@ import T from '../../Templating.js';
 const { format } = T;
 import SeriesRegistry from '../../Series/SeriesRegistry.js';
 const { series: Series } = SeriesRegistry;
-import U from '../../Utilities.js';
-const { destroyObjectProperties, fireEvent, getAlignFactor, isNumber, pick } = U;
+import { destroyObjectProperties, fireEvent, getAlignFactor, isNumber, pick } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -84,9 +83,9 @@ class StackItem {
     render(group) {
         const chart = this.axis.chart, options = this.options, formatOption = options.format, 
         // Format the text in the label.
-        str = formatOption ?
+        str = (formatOption ?
             format(formatOption, this, chart) :
-            options.formatter.call(this);
+            options.formatter?.call(this, this)) || '';
         // Change the text to reflect the new total and set visibility to hidden
         // in case the series is hidden
         if (this.label) {

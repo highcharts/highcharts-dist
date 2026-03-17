@@ -9,9 +9,8 @@
  * */
 'use strict';
 import Geometry from './GeometryUtilities.js';
-import Utilities from '../Utilities';
+import { correctFloat } from '../../Shared/Utilities.js';
 const { getAngleBetweenPoints, getCenterOfPoints, getDistanceBetweenPoints } = Geometry;
-const { correctFloat } = Utilities;
 /* *
  *
  *  Namespace

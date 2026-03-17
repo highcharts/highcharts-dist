@@ -9,8 +9,7 @@
  *
  * */
 'use strict';
-import U from '../../Utilities.js';
-const { erase, extend, isNumber } = U;
+import { erase, extend, isNumber } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Composition
