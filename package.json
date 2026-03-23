@@ -22,7 +22,7 @@
   "license": "https://www.highcharts.com/license",
   "types": "highcharts.d.ts",
   "peerDependencies": {
-    "jspdf": "^3.0.0",
+    "jspdf": "^3.0.0 || ^4.0.0",
     "svg2pdf.js": "^2.6.0"
   },
   "peerDependenciesMeta": {
