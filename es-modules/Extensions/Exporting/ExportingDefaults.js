@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -187,7 +187,7 @@ const exporting = {
      * @since     5.0.0
      * @apioption exporting.libURL
      */
-    libURL: 'https://code.highcharts.com/12.5.0/lib/',
+    libURL: 'https://code.highcharts.com/12.6.0/lib/',
     /**
      * Whether the chart should be exported using the browser's built-in
      * capabilities, allowing offline exports without requiring access to the
@@ -751,7 +751,7 @@ const navigation = {
          * @sample highcharts/navigation/buttonoptions-symbolfill/
          *         Blue symbol stroke for one of the buttons
          *
-         * @type  {Highcharts.ColorString | Highcharts.GradientColorObject | Highcharts.PatternObject}
+         * @type  {Highcharts.ColorType}
          * @since 2.0
          */
         symbolFill: "#666666" /* Palette.neutralColor60 */,
@@ -791,7 +791,7 @@ const navigation = {
             /**
              * The default fill exists only to capture hover events.
              *
-             * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+             * @type {Highcharts.ColorType}
              */
             fill: "#ffffff" /* Palette.backgroundColor */,
             /**

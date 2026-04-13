@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -14,8 +14,7 @@ import ColumnSeries from '../Column/ColumnSeries.js';
 import ErrorBarSeriesDefaults from './ErrorBarSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { arearange: AreaRangeSeries } = SeriesRegistry.seriesTypes;
-import U from '../../Core/Utilities.js';
-const { addEvent, merge, extend } = U;
+import { addEvent, extend, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class

@@ -11,8 +11,7 @@
  *
  * */
 'use strict';
-import U from '../../Core/Utilities.js';
-const { isString } = U;
+import { isString } from '../../Shared/Utilities.js';
 /* *
  *
  *  Constants
@@ -85,26 +84,26 @@ const referenceR1C1RegExp = /^R(\d*|\[\d+\])C(\d*|\[\d+\])(?!\:)/;
  * @return {string}
  * Extracted parantheses. If not found an exception will be thrown.
  */
-function extractParantheses(text) {
-    let parantheseLevel = 0;
-    for (let i = 0, iEnd = text.length, char, parantheseStart = 1; i < iEnd; ++i) {
+function extractParentheses(text) {
+    let parenthesesLevel = 0;
+    for (let i = 0, iEnd = text.length, char, parenthesesStart = 1; i < iEnd; ++i) {
         char = text[i];
         if (char === '(') {
-            if (!parantheseLevel) {
-                parantheseStart = i + 1;
+            if (!parenthesesLevel) {
+                parenthesesStart = i + 1;
             }
-            ++parantheseLevel;
+            ++parenthesesLevel;
             continue;
         }
         if (char === ')') {
-            --parantheseLevel;
-            if (!parantheseLevel) {
-                return text.substring(parantheseStart, i);
+            --parenthesesLevel;
+            if (!parenthesesLevel) {
+                return text.substring(parenthesesStart, i);
             }
         }
     }
-    if (parantheseLevel > 0) {
-        const error = new Error('Incomplete parantheses.');
+    if (parenthesesLevel > 0) {
+        const error = new Error('Incomplete parentheses.');
         error.name = 'FormulaParseError';
         throw error;
     }
@@ -425,7 +424,7 @@ function parseFormula(text, alternativeSeparators) {
         match = next.match(functionRegExp);
         if (match) {
             next = next.substring(match[1].length).trim();
-            const parantheses = extractParantheses(next);
+            const parantheses = extractParentheses(next);
             formula.push({
                 type: 'function',
                 name: match[1],
@@ -434,13 +433,13 @@ function parseFormula(text, alternativeSeparators) {
             next = next.substring(parantheses.length + 2).trim();
             continue;
         }
-        // Check for a formula in parantheses
+        // Check for a formula in parentheses
         if (next[0] === '(') {
-            const paranteses = extractParantheses(next);
-            if (paranteses) {
+            const parentheses = extractParentheses(next);
+            if (parentheses) {
                 formula
-                    .push(parseFormula(paranteses, alternativeSeparators));
-                next = next.substring(paranteses.length + 2).trim();
+                    .push(parseFormula(parentheses, alternativeSeparators));
+                next = next.substring(parentheses.length + 2).trim();
                 continue;
             }
         }

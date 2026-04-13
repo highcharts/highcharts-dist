@@ -10,8 +10,7 @@
  * */
 'use strict';
 import PathUtilities from '../Series/PathUtilities.js';
-import U from '../Core/Utilities.js';
-const { pick } = U;
+import { pick } from '../Shared/Utilities.js';
 /* *
  *
  *  Constants

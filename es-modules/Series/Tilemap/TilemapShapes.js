@@ -1,6 +1,6 @@
 /* *
  *
- *  Tilemaps module
+ *  Tilemap module
  *
  *  (c) 2010-2026 Highsoft AS
  *  Author: Øystein Moseng
@@ -15,8 +15,7 @@ import H from '../../Core/Globals.js';
 const { noop } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { heatmap: HeatmapSeries, scatter: ScatterSeries } = SeriesRegistry.seriesTypes;
-import U from '../../Core/Utilities.js';
-const { clamp, pick } = U;
+import { clamp, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions

@@ -6,8 +6,7 @@
 import H from '../Core/Globals.js';
 const { noop } = H;
 import Series from '../Core/Series/Series.js';
-import U from '../Core/Utilities.js';
-const { addEvent, defined } = U;
+import { addEvent, defined } from '../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -44,7 +43,6 @@ var DerivedComposition;
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * @private
      */

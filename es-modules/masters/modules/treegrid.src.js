@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v12.5.0 (2026-01-12)
+ * @license Highcharts Gantt JS v12.6.0 (2026-04-13)
  * @module highcharts/modules/treegrid
  * @requires highcharts
  *
  * Tree Grid
  *
  * (c) 2016-2026 Highsoft AS
- * Author: Jon Arild Nygard
+ * Author: Jon Arild Nygård
  *
  * A commercial license may be required depending on use.
  * See www.highcharts.com/license

@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Christer Vasseng, Torstein Honsi
+ *  Author: Christer Vasseng, Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -11,8 +11,7 @@
 'use strict';
 import G from '../Core/Globals.js';
 const { win } = G;
-import U from '../Core/Utilities.js';
-const { discardElement, objectEach } = U;
+import { discardElement, objectEach } from '../Shared/Utilities.js';
 /* *
  *
  *  Functions

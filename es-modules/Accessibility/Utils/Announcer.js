@@ -17,8 +17,7 @@ import H from '../../Core/Globals.js';
 const { doc } = H;
 import HU from './HTMLUtilities.js';
 const { addClass, visuallyHideElement } = HU;
-import U from '../../Core/Utilities.js';
-const { attr } = U;
+import { attr, internalClearTimeout } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -48,7 +47,7 @@ class Announcer {
         // Delete contents after a little while to avoid user finding the live
         // region in the DOM.
         if (this.clearAnnouncementRegionTimer) {
-            clearTimeout(this.clearAnnouncementRegionTimer);
+            internalClearTimeout(this.clearAnnouncementRegionTimer);
         }
         this.clearAnnouncementRegionTimer = setTimeout(() => {
             this.announceRegion.innerHTML = AST.emptyHTML;

@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -27,7 +27,6 @@ class HollowCandlestickPoint extends CandlestickSeries.prototype.pointClass {
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * Update class name if needed.
      * @private

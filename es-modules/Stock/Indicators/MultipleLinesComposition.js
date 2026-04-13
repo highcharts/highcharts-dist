@@ -12,8 +12,8 @@
 'use strict';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { sma: { prototype: smaProto } } = SeriesRegistry.seriesTypes;
-import U from '../../Core/Utilities.js';
-const { defined, error, merge } = U;
+import { defined, merge } from '../../Shared/Utilities.js';
+import { error } from '../../Core/Utilities.js';
 /* *
  *
  *  Composition
@@ -105,7 +105,6 @@ var MultipleLinesComposition;
      * Generate the API name of the line
      *
      * @private
-     * @param propertyName name of the line
      */
     function getLineName(propertyName) {
         return ('plot' +
@@ -116,10 +115,6 @@ var MultipleLinesComposition;
      * Create translatedLines Collection based on pointArrayMap.
      *
      * @private
-     * @param {string} [excludedValue]
-     *        Main line id
-     * @return {Array<string>}
-     *         Returns translated lines names without excluded value.
      */
     function getTranslatedLinesNames(indicator, excludedValue) {
         const translatedLines = [];
@@ -211,7 +206,6 @@ var MultipleLinesComposition;
      * If indicator.nextPoints option is defined, create the areaFill.
      *
      * @private
-     * @param points Points on which the path should be created
      */
     function indicatorGetGraphPath(points) {
         let areaPath, path = [], higherAreaPath = [];

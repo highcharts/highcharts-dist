@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -81,7 +81,8 @@ const ScrollbarDefaults = {
     /**
      * Whether to redraw the main chart as the scrollbar or the navigator
      * zoomed window is moved. Defaults to `true` for modern browsers and
-     * `false` for legacy IE browsers as well as mobile devices.
+     * `false` for legacy IE browsers as well as mobile devices. This option
+     * works regardless of whether the scrollbar is enabled or not.
      *
      * @sample stock/scrollbar/liveredraw
      *         Setting live redraw to false
@@ -125,7 +126,7 @@ const ScrollbarDefaults = {
      * @sample stock/scrollbar/style/
      *         Scrollbar styling
      *
-     * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @type {Highcharts.ColorType}
      */
     barBackgroundColor: "#cccccc" /* Palette.neutralColor20 */,
     /**
@@ -138,7 +139,7 @@ const ScrollbarDefaults = {
     /**
      * The color of the scrollbar's border.
      *
-     * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @type {Highcharts.ColorType}
      */
     barBorderColor: "#cccccc" /* Palette.neutralColor20 */,
     /**
@@ -147,7 +148,7 @@ const ScrollbarDefaults = {
      * @sample stock/scrollbar/style/
      *         Scrollbar styling
      *
-     * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @type {Highcharts.ColorType}
      */
     buttonArrowColor: "#333333" /* Palette.neutralColor80 */,
     /**
@@ -156,7 +157,7 @@ const ScrollbarDefaults = {
      * @sample stock/scrollbar/style/
      *         Scrollbar styling
      *
-     * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @type {Highcharts.ColorType}
      */
     buttonBackgroundColor: "#e6e6e6" /* Palette.neutralColor10 */,
     /**
@@ -165,7 +166,7 @@ const ScrollbarDefaults = {
      * @sample stock/scrollbar/style/
      *         Scrollbar styling
      *
-     * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @type {Highcharts.ColorType}
      */
     buttonBorderColor: "#cccccc" /* Palette.neutralColor20 */,
     /**
@@ -178,7 +179,7 @@ const ScrollbarDefaults = {
     /**
      * The color of the small rifles in the middle of the scrollbar.
      *
-     * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @type {Highcharts.ColorType}
      */
     rifleColor: 'none',
     /**
@@ -187,7 +188,7 @@ const ScrollbarDefaults = {
      * @sample stock/scrollbar/style/
      *         Scrollbar styling
      *
-     * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @type {Highcharts.ColorType}
      */
     trackBackgroundColor: 'rgba(255, 255, 255, 0.001)', // #18922
     /**
@@ -196,7 +197,7 @@ const ScrollbarDefaults = {
      * @sample stock/scrollbar/style/
      *         Scrollbar styling
      *
-     * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @type {Highcharts.ColorType}
      */
     trackBorderColor: "#cccccc" /* Palette.neutralColor20 */,
     /**

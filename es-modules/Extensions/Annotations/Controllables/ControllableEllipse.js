@@ -1,14 +1,13 @@
 /* *
  *
- * Author: Pawel Lysy
+ * Author: Paweł Lysy
  *
  *
  * */
 'use strict';
 import Controllable from './Controllable.js';
 import ControllablePath from './ControllablePath.js';
-import U from '../../../Core/Utilities.js';
-const { merge, defined } = U;
+import { defined, merge } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -50,12 +49,16 @@ class ControllableEllipse extends Controllable {
     init(annotation, options, index) {
         if (defined(options.yAxis)) {
             options.points.forEach((point) => {
-                point.yAxis = options.yAxis;
+                if (point && typeof point !== 'string') {
+                    point.yAxis = options.yAxis;
+                }
             });
         }
         if (defined(options.xAxis)) {
             options.points.forEach((point) => {
-                point.xAxis = options.xAxis;
+                if (point && typeof point !== 'string') {
+                    point.xAxis = options.xAxis;
+                }
             });
         }
         super.init(annotation, options, index);
@@ -63,7 +66,7 @@ class ControllableEllipse extends Controllable {
     /**
      * Render the element.
      *
-     * @param parent
+     * @param {Highcharts.SVGElement} parent
      *        Parent SVG element.
      */
     render(parent) {
@@ -81,13 +84,13 @@ class ControllableEllipse extends Controllable {
     /**
      * Get the distance from the line to the point.
      *
-     * @param point1
+     * @param {object} point1
      *        First point which is on the line
-     * @param point2
+     * @param {object} point2
      *        Second point
-     * @param x0
+     * @param {number} x0
      *        Point's x value from which you want to calculate the distance from
-     * @param y0
+     * @param {number} y0
      *        Point's y value from which you want to calculate the distance from
      */
     getDistanceFromLine(point1, point2, x0, y0) {
@@ -99,9 +102,9 @@ class ControllableEllipse extends Controllable {
      * The function calculates the svg attributes of the ellipse, and returns
      * all parameters necessary to draw the ellipse.
      *
-     * @param position
+     * @param {Highcharts.BBoxObject} position
      *        Absolute position of the first point in points array
-     * @param position2
+     * @param {Highcharts.BBoxObject} position2
      *        Absolute position of the second point in points array
      */
     getAttrs(position, position2) {
@@ -132,7 +135,7 @@ class ControllableEllipse extends Controllable {
     /**
      * Get the absolute coordinates of the MockPoint.
      *
-     * @param point
+     * @param {Highcharts.AnnotationPointType} point
      *        MockPoint that is added through options
      */
     getAbsolutePosition(point) {
@@ -141,7 +144,7 @@ class ControllableEllipse extends Controllable {
     /**
      * Redraw the element.
      *
-     * @param animation
+     * @param {boolean} [animation]
      *        Display an animation
      */
     redraw(animation) {

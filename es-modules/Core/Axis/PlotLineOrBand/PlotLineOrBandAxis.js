@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -9,8 +9,7 @@
  *
  * */
 'use strict';
-import U from '../../Utilities.js';
-const { erase, extend, isNumber } = U;
+import { erase, extend, isNumber } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -155,7 +154,7 @@ var PlotLineOrBandAxis;
             acrossPanes: options.acrossPanes
         });
         let i, 
-        // #4964 check if chart is inverted or plotband is on yAxis
+        // #4964 check if chart is inverted or plot band is on yAxis
         plus = 1, isFlat;
         if (path && toPath) {
             // Flat paths don't need labels (#3836)

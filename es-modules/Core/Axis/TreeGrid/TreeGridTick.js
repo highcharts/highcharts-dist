@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2016-2026 Highsoft AS
- *  Authors: Jon Arild Nygard
+ *  Authors: Jon Arild Nygård
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -9,8 +9,7 @@
  *
  * */
 'use strict';
-import U from '../../Utilities.js';
-const { addEvent, correctFloat, removeEvent, isObject, isNumber, pick, wrap } = U;
+import { addEvent, correctFloat, isNumber, isObject, pick, removeEvent, wrap } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Functions

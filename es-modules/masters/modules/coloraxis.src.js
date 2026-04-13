@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.5.0 (2026-01-12)
+ * @license Highcharts JS v12.6.0 (2026-04-13)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
  * ColorAxis module
  *
  * (c) 2012-2026 Highsoft AS
- * Author: Pawel Potaczek
+ * Author: Paweł Potaczek
  *
  * A commercial license may be required depending on use.
  * See www.highcharts.com/license

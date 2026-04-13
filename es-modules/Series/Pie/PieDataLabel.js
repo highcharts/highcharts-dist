@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -16,13 +16,13 @@ import R from '../../Core/Renderer/RendererUtilities.js';
 const { distribute } = R;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: Series } = SeriesRegistry;
-import U from '../../Core/Utilities.js';
-const { arrayMax, clamp, defined, isNumber, pick, pushUnique, relativeLength } = U;
+import { arrayMax, clamp, defined, isNumber, pick, pushUnique, relativeLength } from '../../Shared/Utilities.js';
 /* *
  *
  *  Composition
  *
  * */
+/** @internal */
 var ColumnDataLabel;
 (function (ColumnDataLabel) {
     /* *
@@ -37,7 +37,7 @@ var ColumnDataLabel;
                 point.distributeBox.pos;
         },
         // Get the x - use the natural x position for labels near the top and
-        // bottom, to prevent the top and botton slice connectors from touching
+        // bottom, to prevent the top and bottom slice connectors from touching
         // each other on either side. Based on the value computed in Highcharts'
         // distribute algorithm.
         radialDistributionX: function (series, point, y, naturalY, dataLabel) {
@@ -81,7 +81,7 @@ var ColumnDataLabel;
      *  Functions
      *
      * */
-    /** @private */
+    /** @internal */
     function compose(PieSeriesClass) {
         DataLabel.compose(Series);
         if (pushUnique(composed, 'PieDataLabel')) {
@@ -95,7 +95,7 @@ var ColumnDataLabel;
         }
     }
     ColumnDataLabel.compose = compose;
-    /** @private */
+    /** @internal */
     function getDataLabelPosition(point, distance) {
         const halfPI = Math.PI / 2, { start = 0, end = 0 } = point.shapeArgs || {};
         let angle = point.angle || 0;
@@ -145,8 +145,8 @@ var ColumnDataLabel;
         };
     }
     /**
-     * Override the base drawDataLabels method by pie specific functionality
-     * @private
+     * Override the base drawDataLabels method by pie specific functionality.
+     * @internal
      */
     function drawDataLabels() {
         const series = this, points = series.points, chart = series.chart, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, plotLeft = chart.plotLeft, maxWidth = Math.round(chart.chartWidth / 3), seriesCenter = series.center, radius = seriesCenter[2] / 2, centerY = seriesCenter[1], halves = [
@@ -411,7 +411,7 @@ var ColumnDataLabel;
     /**
      * Perform the final placement of the data labels after we have verified
      * that they fall within the plot area.
-     * @private
+     * @internal
      */
     function placeDataLabels() {
         this.points.forEach((point) => {
@@ -445,7 +445,7 @@ var ColumnDataLabel;
      * Verify whether the data labels are allowed to draw, or we should run more
      * translation and data label positioning to keep them inside the plot area.
      * Returns true when data labels are ready to draw.
-     * @private
+     * @internal
      */
     function verifyDataLabelOverflow(overflow) {
         const center = this.center, options = this.options, centerOption = options.center, minSize = options.minSize || 80;
@@ -504,4 +504,5 @@ var ColumnDataLabel;
  *  Default Export
  *
  * */
+/** @internal */
 export default ColumnDataLabel;

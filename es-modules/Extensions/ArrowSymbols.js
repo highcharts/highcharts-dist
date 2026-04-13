@@ -87,9 +87,6 @@ function arrowHalf(x, y, w, h) {
  * Adds the arrow symbols to the SVGRenderer.
  *
  * @internal
- *
- * @param SVGRendererClass
- * The SVGRenderer class to extend.
  */
 function compose(SVGRendererClass) {
     const symbols = SVGRendererClass.prototype.symbols;

@@ -112,7 +112,7 @@ declare module "../highcharts" {
          * (Highcharts) Can set `color` on all nodes which lay on the same
          * level.
          */
-        color?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        color?: Highcharts.ColorType;
         /**
          * (Highcharts) Can set `colorByPoint` on all nodes which lay on the
          * same level.
@@ -296,7 +296,7 @@ declare module "../highcharts" {
          * `.highcharts-series-{n}` class, or individual classes given by the
          * `className` option.
          */
-        color?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        color?: Highcharts.ColorType;
         /**
          * (Highcharts, Highstock, Gantt) When using automatic point colors
          * pulled from the global colors or series-specific
@@ -322,7 +322,7 @@ declare module "../highcharts" {
          * specific color set to apply instead of the global colors when
          * colorByPoint is true.
          */
-        colors?: Array<(Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject)>;
+        colors?: Array<Highcharts.ColorType>;
         /**
          * (Highcharts) You can set the cursor to "pointer" if you have click
          * events attached to the series, to signal to the user that the points
@@ -355,8 +355,13 @@ declare module "../highcharts" {
          */
         dataLabels?: (Highcharts.SeriesOrganizationDataLabelsOptionsObject|Array<Highcharts.SeriesOrganizationDataLabelsOptionsObject>);
         /**
-         * (Highcharts) A description of the series to add to the screen reader
-         * information about the series.
+         * (Highcharts) Deprecated. Use
+         * plotOptions.series.accessibility.description instead.
+         *
+         * A description of the series to add to the screen reader information
+         * about the series.
+         *
+         * @deprecated 8.0.0
          */
         description?: string;
         /**
@@ -492,7 +497,7 @@ declare module "../highcharts" {
         /**
          * (Highcharts) In a horizontal chart, the minimum width of the
          * **hanging** nodes only, in pixels. In a vertical chart, the minimum
-         * height of the **haning** nodes only, in pixels too.
+         * height of the **hanging** nodes only, in pixels too.
          *
          * Note: Used only when hangingIndentTranslation is set to `shrink`.
          */
@@ -541,8 +546,8 @@ declare module "../highcharts" {
          * `null` should be interactive. When this is set to `true`, tooltips
          * may highlight these points, and this option also enables keyboard
          * navigation for such points. Format options for such points include
-         * `nullFormat` and `nullFormater`. Works for these series: `line`,
-         * `spline`, `area`, `area-spline`, `column`, `bar`, and* `timeline`.
+         * `nullFormat` and `nullFormatter`. Works for these series: `line`,
+         * `spline`, `area`, `area-spline`, `column`, `bar`, and `timeline`.
          */
         nullInteraction?: (boolean|undefined);
         /**
@@ -559,13 +564,21 @@ declare module "../highcharts" {
          */
         point?: Highcharts.PlotSeriesPointOptions;
         /**
-         * (Highcharts) Same as accessibility.point.descriptionFormat, but for
-         * an individual series. Overrides the chart wide configuration.
+         * (Highcharts) Deprecated. Use
+         * series.accessibility.point.descriptionFormat instead.
+         *
+         * Same as accessibility.point.descriptionFormat, but for an individual
+         * series. Overrides the chart wide configuration.
          */
         pointDescriptionFormat?: Function;
         /**
-         * (Highcharts) Same as accessibility.series.descriptionFormatter, but
-         * for an individual series. Overrides the chart wide configuration.
+         * (Highcharts) Deprecated. Use
+         * series.accessibility.point.descriptionFormatter instead.
+         *
+         * Same as accessibility.series.descriptionFormatter, but for an
+         * individual series. Overrides the chart wide configuration.
+         *
+         * @deprecated 8.0.0
          */
         pointDescriptionFormatter?: Function;
         /**
@@ -599,8 +612,13 @@ declare module "../highcharts" {
          */
         showInLegend?: boolean;
         /**
-         * (Highcharts) If set to `true`, the accessibility module will skip
-         * past the points in this series for keyboard navigation.
+         * (Highcharts) Deprecated. Use series.accessibility.keyboardNavigation
+         * instead.
+         *
+         * If set to `true`, the accessibility module will skip past the points
+         * in this series for keyboard navigation.
+         *
+         * @deprecated 8.0.0
          */
         skipKeyboardNavigation?: boolean;
         /**
@@ -661,7 +679,7 @@ declare module "../highcharts" {
          * is set, the option allows to disable zooming on an individual
          * non-cartesian series. By default zooming is enabled for all series.
          *
-         * Note: This option works only for non-cartesian series.
+         * **Note**: This option works only for non-cartesian series.
          */
         zoomEnabled?: boolean;
     }

@@ -3,7 +3,7 @@
  *  Highcharts variwide module
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -16,8 +16,7 @@ const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
 import VariwideComposition from './VariwideComposition.js';
 import VariwidePoint from './VariwidePoint.js';
 import VariwideSeriesDefaults from './VariwideSeriesDefaults.js';
-import U from '../../Core/Utilities.js';
-const { addEvent, arrayMin, arrayMax, crisp, extend, merge, pick } = U;
+import { addEvent, arrayMax, arrayMin, crisp, extend, merge, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -88,7 +87,6 @@ class VariwideSeries extends ColumnSeries {
             xInsideLinearSlot * (slotRight - slotLeft) /
                 (linearSlotRight - linearSlotLeft);
     }
-    /* eslint-enable valid-jsdoc */
     translate() {
         // Temporarily disable crisping when computing original shapeArgs
         this.crispOption = this.options.crisp;

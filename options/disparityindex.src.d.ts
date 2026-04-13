@@ -196,7 +196,7 @@ declare module "../highcharts.src" {
          * `.highcharts-series-{n}` class, or individual classes given by the
          * `className` option.
          */
-        color?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        color?: Highcharts.ColorType;
         /**
          * (Highstock) Styled mode only. A specific color index to use for the
          * series, so its graphic representations are given the class name
@@ -353,8 +353,13 @@ declare module "../highcharts.src" {
          */
         dataSorting?: (Highcharts.DataSortingOptionsObject|Highcharts.PlotDisparityindexDataSortingOptions);
         /**
-         * (Highstock) A description of the series to add to the screen reader
-         * information about the series.
+         * (Highstock) Deprecated. Use
+         * plotOptions.series.accessibility.description instead.
+         *
+         * A description of the series to add to the screen reader information
+         * about the series.
+         *
+         * @deprecated 8.0.0
          */
         description?: string;
         /**
@@ -381,8 +386,8 @@ declare module "../highcharts.src" {
          */
         findNearestPointBy?: Highcharts.OptionsFindNearestPointByValue;
         /**
-         * (Highstock) Defines when to display a gap in the graph, together with
-         * the gapUnit option.
+         * (Highcharts, Highstock) Defines when to display a gap in the graph,
+         * together with the gapUnit option.
          *
          * In case when `dataGrouping` is enabled, points can be grouped into a
          * larger time span. This can make the grouped points to have a greater
@@ -397,8 +402,8 @@ declare module "../highcharts.src" {
          */
         gapSize?: number;
         /**
-         * (Highstock) Together with gapSize, this option defines where to draw
-         * gaps in the graph.
+         * (Highcharts, Highstock) Together with gapSize, this option defines
+         * where to draw gaps in the graph.
          *
          * When the `gapUnit` is `"relative"` (default), a gap size of 5 means
          * that if the distance between two points is greater than 5 times that
@@ -464,11 +469,10 @@ declare module "../highcharts.src" {
          * symbol for this series. Defaults to undefined, in which case the
          * series color is used. Does not work with styled mode.
          */
-        legendSymbolColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        legendSymbolColor?: Highcharts.ColorType;
         /**
-         * (Highcharts, Highstock) The SVG value used for the `stroke-linecap`
-         * and `stroke-linejoin` of a line graph. Round means that lines are
-         * rounded in the ends and bends.
+         * (Highstock) The line cap used for line ends and line joins on the
+         * graph.
          */
         linecap?: Highcharts.SeriesLinecapValue;
         /**
@@ -504,14 +508,14 @@ declare module "../highcharts.src" {
          * negative color. Using `negativeColor` is equivalent to applying a
          * zone with value of 0.
          */
-        negativeColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        negativeColor?: Highcharts.ColorType;
         /**
          * (Highcharts, Highstock) Whether or not data-points with the value of
          * `null` should be interactive. When this is set to `true`, tooltips
          * may highlight these points, and this option also enables keyboard
          * navigation for such points. Format options for such points include
-         * `nullFormat` and `nullFormater`. Works for these series: `line`,
-         * `spline`, `area`, `area-spline`, `column`, `bar`, and* `timeline`.
+         * `nullFormat` and `nullFormatter`. Works for these series: `line`,
+         * `spline`, `area`, `area-spline`, `column`, `bar`, and `timeline`.
          */
         nullInteraction?: (boolean|undefined);
         /**
@@ -534,13 +538,21 @@ declare module "../highcharts.src" {
          */
         point?: Highcharts.PlotSeriesPointOptions;
         /**
-         * (Highstock) Same as accessibility.point.descriptionFormat, but for an
-         * individual series. Overrides the chart wide configuration.
+         * (Highstock) Deprecated. Use
+         * series.accessibility.point.descriptionFormat instead.
+         *
+         * Same as accessibility.point.descriptionFormat, but for an individual
+         * series. Overrides the chart wide configuration.
          */
         pointDescriptionFormat?: Function;
         /**
-         * (Highstock) Same as accessibility.series.descriptionFormatter, but
-         * for an individual series. Overrides the chart wide configuration.
+         * (Highstock) Deprecated. Use
+         * series.accessibility.point.descriptionFormatter instead.
+         *
+         * Same as accessibility.series.descriptionFormatter, but for an
+         * individual series. Overrides the chart wide configuration.
+         *
+         * @deprecated 8.0.0
          */
         pointDescriptionFormatter?: Function;
         /**
@@ -585,8 +597,13 @@ declare module "../highcharts.src" {
          */
         showInLegend?: boolean;
         /**
-         * (Highstock) If set to `true`, the accessibility module will skip past
-         * the points in this series for keyboard navigation.
+         * (Highstock) Deprecated. Use series.accessibility.keyboardNavigation
+         * instead.
+         *
+         * If set to `true`, the accessibility module will skip past the points
+         * in this series for keyboard navigation.
+         *
+         * @deprecated 8.0.0
          */
         skipKeyboardNavigation?: boolean;
         /**
@@ -685,7 +702,7 @@ declare module "../highcharts.src" {
          * is set, the option allows to disable zooming on an individual
          * non-cartesian series. By default zooming is enabled for all series.
          *
-         * Note: This option works only for non-cartesian series.
+         * **Note**: This option works only for non-cartesian series.
          */
         zoomEnabled?: boolean;
     }
@@ -712,51 +729,5 @@ declare module "../highcharts.src" {
          * slowly back to normal.
          */
         duration?: number;
-    }
-    /**
-     * (Highstock) The Disparity Index indicator series. If the type option is
-     * not specified, it is inherited from chart.type.
-     *
-     * Configuration options for the series are given in three levels:
-     *
-     * 1. Options for all series in a chart are defined in the
-     * plotOptions.series object.
-     *
-     * 2. Options for all `disparityindex` series are defined in
-     * plotOptions.disparityindex.
-     *
-     * 3. Options for one single series are given in the series instance array.
-     * (see online documentation for example)
-     *
-     * **TypeScript:**
-     *
-     * - type option should always be set, otherwise a broad set of unsupported
-     * options is allowed.
-     *
-     * - when accessing an array of series, the combined set of all series types
-     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
-     * specific type can be done by checking the `type` property. (see online
-     * documentation for example)
-     *
-     * You have to extend the `SeriesDisparityindexOptions` via an interface to
-     * allow custom properties: ``` declare interface
-     * SeriesDisparityindexOptions { customProperty: string; }
-     *
-     */
-    interface SeriesDisparityindexOptions extends Highcharts.PlotDisparityindexOptions, Highcharts.SeriesOptions {
-        /**
-         * Not available
-         */
-        dataParser?: undefined;
-        /**
-         * Not available
-         */
-        dataURL?: undefined;
-        /**
-         * (Highcharts, Highstock, Highmaps, Gantt) This property is only in
-         * TypeScript non-optional and might be `undefined` in series objects
-         * from unknown sources.
-         */
-        type: "disparityindex";
     }
 }

@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -15,8 +15,7 @@ import H from '../../Core/Globals.js';
 const { composed } = H;
 import ScrollbarAxis from '../../Core/Axis/ScrollbarAxis.js';
 import ScrollbarDefaults from './ScrollbarDefaults.js';
-import U from '../../Core/Utilities.js';
-const { addEvent, correctFloat, crisp, defined, destroyObjectProperties, extend, fireEvent, merge, pick, pushUnique, removeEvent } = U;
+import { addEvent, correctFloat, crisp, defined, destroyObjectProperties, extend, fireEvent, merge, pick, pushUnique, removeEvent } from '../../Shared/Utilities.js';
 /* *
  *
  *  Constants

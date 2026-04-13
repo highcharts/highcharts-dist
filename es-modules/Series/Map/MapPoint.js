@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -14,8 +14,7 @@ import MU from '../../Maps/MapUtilities.js';
 const { boundsFromPath } = MU;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const ScatterPoint = SeriesRegistry.seriesTypes.scatter.prototype.pointClass;
-import U from '../../Core/Utilities.js';
-const { extend, isNumber, pick } = U;
+import { extend, internalClearTimeout, isNumber, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -107,7 +106,7 @@ class MapPoint extends ScatterPoint {
      * @private
      */
     onMouseOver(e) {
-        U.clearTimeout(this.colorInterval);
+        internalClearTimeout(this.colorInterval);
         if (
         // Valid...
         (!this.isNull && this.visible) ||

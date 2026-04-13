@@ -12,7 +12,7 @@
 'use strict';
 /* *
  *
- *  API Optiions
+ *  API Options
  *
  * */
 /**

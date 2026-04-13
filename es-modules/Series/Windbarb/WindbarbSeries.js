@@ -3,7 +3,7 @@
  *  Wind barb series module
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -18,10 +18,9 @@ import H from '../../Core/Globals.js';
 import OnSeriesComposition from '../OnSeriesComposition.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
-import U from '../../Core/Utilities.js';
-const { extend, merge, pick } = U;
 import WindbarbPoint from './WindbarbPoint.js';
 import WindbarbSeriesDefaults from './WindbarbSeriesDefaults.js';
+import { extend, merge, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -112,7 +111,7 @@ class WindbarbSeries extends ColumnSeries {
         if (barbs > 0) {
             while (barbs--) {
                 path.push(pos === -10 ? ['L', 0, pos * u] : ['M', 0, pos * u], ['L', 5 * u, pos * u + 2], ['L', 0, pos * u + 4]);
-                // Substract from the rest and move position for next
+                // Subtract from the rest and move position for next
                 knots -= 50;
                 pos += 7;
             }

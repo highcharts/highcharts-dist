@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -13,14 +13,12 @@ import A from '../Animation/AnimationUtilities.js';
 const { getDeferredAnimation } = A;
 import F from '../Templating.js';
 const { format } = F;
-import U from '../Utilities.js';
-const { defined, extend, fireEvent, getAlignFactor, isArray, isString, merge, objectEach, pick, pInt, splat } = U;
+import { defined, extend, fireEvent, getAlignFactor, isArray, isString, merge, objectEach, pick, pInt, splat } from '../../Shared/Utilities.js';
 /* *
  *
  *  Composition
  *
  * */
-/** @internal */
 var DataLabel;
 (function (DataLabel) {
     /* *
@@ -313,7 +311,7 @@ var DataLabel;
                 // @note dataLabelAttribs (like pointAttribs) would eradicate
                 // the need for dlOptions, and simplify the section below.
                 pointOptions = splat(mergeArrays(seriesDlOptions, 
-                // The dlOptions prop is used in treemaps
+                // The dlOptions prop is used in treemap
                 point.dlOptions || point.options?.dataLabels));
                 // Handle each individual data label for this point
                 pointOptions.forEach((labelOptions, i) => {
@@ -321,7 +319,7 @@ var DataLabel;
                     // (can be multiple)
                     dataLabelsGroup =
                         this.initDataLabels(i, animationConfig, labelOptions);
-                    // Options for one datalabel
+                    // Options for one dataLabel
                     const labelEnabled = (labelOptions.enabled &&
                         (point.visible || point.dataLabelOnHidden) &&
                         // #2282, #4641, #7112, #10049
@@ -335,7 +333,7 @@ var DataLabel;
                         labelText = defined(formatString) ?
                             format(formatString, point, chart) :
                             (labelOptions[point.formatPrefix + 'Formatter'] ||
-                                labelOptions.formatter).call(point, labelOptions);
+                                labelOptions.formatter).call(point, labelOptions, point);
                         rotation = labelOptions.rotation;
                         if (!chart.styledMode) {
                             // Determine the color
@@ -628,7 +626,6 @@ var DataLabel;
  *  Default Export
  *
  * */
-/** @internal */
 export default DataLabel;
 /* *
  *

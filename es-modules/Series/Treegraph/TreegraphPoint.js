@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Pawel Lysy Grzegorz Blachlinski
+ *  Author: Paweł Lysy Grzegorz Blachliński
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -12,8 +12,7 @@
 import Point from '../../Core/Series/Point.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { seriesTypes: { treemap: { prototype: { pointClass: TreemapPoint } } } } = SeriesRegistry;
-import U from '../../Core/Utilities.js';
-const { addEvent, fireEvent, merge } = U;
+import { addEvent, fireEvent, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class

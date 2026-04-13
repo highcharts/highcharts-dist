@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -9,8 +9,7 @@
  *
  * */
 'use strict';
-import U from '../../Utilities.js';
-const { defined, isNumber, pick } = U;
+import { defined, isNumber, pick } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -39,18 +38,15 @@ function arc(cx, cy, w, h, options) {
         let start = options.start || 0, end = options.end || 0;
         const rx = pick(options.r, w), ry = pick(options.r, h || w), 
         // Subtract a small number to prevent cos and sin of start and end
-        // from becoming equal on 360 arcs (#1561). The size of the circle
-        // affects the constant, therefore the division by `rx`. If the
-        // proximity is too small, the arc disappears. If it is too great, a
-        // gap appears. This can be seen in the animation of the official
-        // bubble demo (#20585).
-        proximity = 0.0002 / (options.borderRadius ? 1 : Math.max(rx, 1)), fullCircle = (Math.abs(end - start - 2 * Math.PI) <
+        // from becoming equal on 360 arcs (#1561). See "Arc proximity"
+        // tests at samples/unit-tests/svgrenderer/symbol/demo.js
+        proximity = 0.0001, fullCircle = (Math.abs(end - start - 2 * Math.PI) <
             proximity);
         if (fullCircle) {
             start = Math.PI / 2;
             end = Math.PI * 2.5 - proximity;
         }
-        const innerRadius = options.innerR, open = pick(options.open, fullCircle), cosStart = Math.cos(start), sinStart = Math.sin(start), cosEnd = Math.cos(end), sinEnd = Math.sin(end), 
+        const innerRadius = options.innerR, open = pick(options.open, fullCircle), cosStart = fullCircle ? 0 : Math.cos(start), sinStart = fullCircle ? 1 : Math.sin(start), cosEnd = fullCircle ? 0 : Math.cos(end), sinEnd = fullCircle ? 1 : Math.sin(end), 
         // Proximity takes care of rounding errors around PI (#6971)
         longArc = pick(options.longArc, end - start - Math.PI < proximity ? 0 : 1);
         let arcSegment = [
@@ -60,7 +56,8 @@ function arc(cx, cy, w, h, options) {
             0, // Slanting
             longArc, // Long or short arc
             pick(options.clockwise, 1), // Clockwise
-            cx + rx * cosEnd,
+            // Use a static pixel offset for full circle (#21701)
+            cx + (fullCircle ? 0.001 : rx * cosEnd),
             cy + ry * sinEnd
         ];
         arcSegment.params = { start, end, cx, cy }; // Memo for border radius
@@ -78,7 +75,7 @@ function arc(cx, cy, w, h, options) {
                 longArc, // Long or short arc
                 // Clockwise - opposite to the outer arc clockwise
                 defined(options.clockwise) ? 1 - options.clockwise : 0,
-                cx + innerRadius * cosStart,
+                cx + (fullCircle ? -0.001 : innerRadius * cosStart),
                 cy + innerRadius * sinStart
             ];
             // Memo for border radius
@@ -108,9 +105,9 @@ function arc(cx, cy, w, h, options) {
 /**
  * Callout shape used for default tooltips.
  *
- * @param {number} cx
+ * @param {number} x
  * Center X
- * @param {number} cy
+ * @param {number} y
  * Center Y
  * @param {number} w
  * Width

@@ -13,8 +13,7 @@ import Connection from './Connection.js';
 import PathfinderAlgorithms from './PathfinderAlgorithms.js';
 import PathfinderComposition from './PathfinderComposition.js';
 import Point from '../Core/Series/Point.js';
-import U from '../Core/Utilities.js';
-const { addEvent, defined, pick, splat } = U;
+import { addEvent, defined, pick, splat } from '../Shared/Utilities.js';
 /* *
  *
  *  Constants
@@ -92,17 +91,17 @@ function calculateObstacleDistance(a, b, bbMargin) {
  */
 function calculateObstacleMargin(obstacles) {
     const len = obstacles.length, distances = [];
-    let onstacleDistance;
+    let obstacleDistance;
     // Go over all obstacles and compare them to the others.
     for (let i = 0; i < len; ++i) {
         // Compare to all obstacles ahead. We will already have compared this
         // obstacle to the ones before.
         for (let j = i + 1; j < len; ++j) {
-            onstacleDistance =
+            obstacleDistance =
                 calculateObstacleDistance(obstacles[i], obstacles[j]);
             // TODO: Magic number 80
-            if (onstacleDistance < 80) { // Ignore large distances
-                distances.push(onstacleDistance);
+            if (obstacleDistance < 80) { // Ignore large distances
+                distances.push(obstacleDistance);
             }
         }
     }

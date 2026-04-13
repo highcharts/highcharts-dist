@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -13,8 +13,7 @@ import AST from './AST.js';
 import H from '../../Globals.js';
 const { composed, isFirefox } = H;
 import SVGElement from '../SVG/SVGElement.js';
-import U from '../../Utilities.js';
-const { attr, css, createElement, defined, extend, getAlignFactor, isNumber, pInt, pushUnique } = U;
+import { attr, createElement, css, defined, extend, getAlignFactor, isNumber, pInt, pushUnique } from '../../../Shared/Utilities.js';
 /**
  * The opacity and visibility properties are set as attributes on the main
  * element and SVG groups, and as identical CSS properties on the HTML element
@@ -279,12 +278,17 @@ class HTMLElement extends SVGElement {
                 /[\-\s\u00AD]/.test(element.textContent || element.innerText) ||
                     element.style.textOverflow === 'ellipsis')) {
                     const usePxWidth = rotation || scaleX ||
-                        textPxLength > textWidthNum ||
-                        // Set width to prevent over-wrapping (#22609)
-                        willOverWrap;
+                        textPxLength > textWidthNum;
                     css(element, {
+                        // #16261
                         width: usePxWidth && isNumber(textWidth) ?
-                            textWidth + 'px' : 'auto', // #16261
+                            textWidth + 'px' :
+                            // Set width to prevent over-wrapping (#22609)
+                            (willOverWrap ?
+                                Math.min(
+                                // +1 for rounding errors
+                                textPxLength + 1, textWidthNum) + 'px' :
+                                'auto'),
                         display,
                         whiteSpace: whiteSpace || 'normal' // #3331
                     });
@@ -374,7 +378,7 @@ class HTMLElement extends SVGElement {
     }
     /**
      * Add the element to a group wrapper. For HTML elements, a parallel div
-     * will be created for each ancenstor SVG `g` element.
+     * will be created for each ancestor SVG `g` element.
      *
      * @internal
      */

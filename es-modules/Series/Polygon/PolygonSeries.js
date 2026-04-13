@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -14,8 +14,7 @@ const { noop } = H;
 import PolygonSeriesDefaults from './PolygonSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { area: AreaSeries, line: LineSeries, scatter: ScatterSeries } = SeriesRegistry.seriesTypes;
-import U from '../../Core/Utilities.js';
-const { extend, merge } = U;
+import { extend, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class

@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -14,8 +14,8 @@ const { animate, animObject, stop } = A;
 import Color from '../../Color/Color.js';
 import H from '../../Globals.js';
 const { deg2rad, doc, svg, SVG_NS, win, isFirefox } = H;
-import U from '../../Utilities.js';
-const { addEvent, attr, createElement, crisp, css, defined, erase, extend, fireEvent, getAlignFactor, isArray, isFunction, isNumber, isObject, isString, merge, objectEach, pick, pInt, pushUnique, replaceNested, syncTimeout, uniqueKey } = U;
+import { addEvent, attr, createElement, crisp, css, defined, erase, extend, fireEvent, getAlignFactor, isArray, isFunction, isNumber, isObject, isString, merge, objectEach, pInt, pick, pushUnique, replaceNested, syncTimeout } from '../../../Shared/Utilities.js';
+import { uniqueKey } from '../../Utilities.js';
 /* *
  *
  *  Class
@@ -27,7 +27,7 @@ const { addEvent, attr, createElement, crisp, css, defined, erase, extend, fireE
  * rendering layer of Highcharts. Combined with the
  * {@link Highcharts.SVGRenderer}
  * object, these prototypes allow freeform annotation in the charts or even in
- * HTML pages without instanciating a chart. The SVGElement can also wrap HTML
+ * HTML pages without instantiating a chart. The SVGElement can also wrap HTML
  * labels, when `text` or `label` elements are created with the `useHTML`
  * parameter.
  *
@@ -211,7 +211,7 @@ class SVGElement {
      */
     align(alignOptions, alignByTranslate, alignTo, redraw = true) {
         const renderer = this.renderer, alignedObjects = renderer.alignedObjects, initialAlignment = Boolean(alignOptions);
-        // First call on instanciate
+        // First call on instantiate
         if (alignOptions) {
             this.alignOptions = alignOptions;
             this.alignByTranslate = alignByTranslate;
@@ -857,7 +857,7 @@ class SVGElement {
     }
     /**
      * @internal
-     * @function Highcharts.SVGElement#dSettter
+     * @function Highcharts.SVGElement#dSetter
      * @param {number|string|Highcharts.SVGPathArray} value
      * @param {string} key
      * @param {Highcharts.SVGDOMElement} element
@@ -1852,7 +1852,7 @@ export default SVGElement;
 * @type {number|undefined}
 */ /**
 * @name Highcharts.SVGAttributes#fill
-* @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject|undefined}
+* @type {Highcharts.ColorType|undefined}
 */ /**
 * @name Highcharts.SVGAttributes#inverted
 * @type {boolean|undefined}
@@ -1876,7 +1876,7 @@ export default SVGElement;
 * @type {number|undefined}
 */ /**
 * @name Highcharts.SVGAttributes#stroke
-* @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject|undefined}
+* @type {Highcharts.ColorType|undefined}
 */ /**
 * @name Highcharts.SVGAttributes#style
 * @type {string|Highcharts.CSSObject|undefined}

@@ -15,8 +15,8 @@
 'use strict';
 import ColumnUtils from './ColumnUtils.js';
 const { setLength, splice } = ColumnUtils;
-import U from '../Core/Utilities.js';
-const { fireEvent, objectEach, uniqueKey } = U;
+import { fireEvent, objectEach } from '../Shared/Utilities.js';
+import { uniqueKey } from '../Core/Utilities.js';
 /* *
  *
  *  Class

@@ -12,8 +12,7 @@
 import FlowMapPoint from './FlowMapPoint.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: { prototype: { pointClass: Point } }, seriesTypes: { column: ColumnSeries, map: MapSeries, mapline: MapLineSeries } } = SeriesRegistry;
-import U from '../../Core/Utilities.js';
-const { addEvent, arrayMax, arrayMin, defined, extend, isArray, merge, pick, relativeLength } = U;
+import { addEvent, arrayMax, arrayMin, defined, extend, isArray, merge, pick, relativeLength } from '../../Shared/Utilities.js';
 /**
  * The flowmap series type
  *
@@ -440,7 +439,7 @@ FlowMapSeries.defaultOptions = merge(MapLineSeries.defaultOptions, {
      * used with the opacity set in
      * [fillOpacity](#plotOptions.flowmap.fillOpacity).
      *
-     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @type      {Highcharts.ColorType}
      * @apioption plotOptions.flowmap.fillColor
      */
     /**
@@ -649,7 +648,7 @@ export default FlowMapSeries;
 /**
  * The fill color of an individual link.
  *
- * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+ * @type      {Highcharts.ColorType}
  * @apioption series.flowmap.data.fillColor
  */
 /**
@@ -658,7 +657,7 @@ export default FlowMapSeries;
  * and `lat` properties.
  *
  * @sample {highmaps} maps/series-flowmap/from-to-lon-lat
- *         Flowmap point using lonlat coordinates
+ *         Flowmap point using lon-lat coordinates
  * @sample {highmaps} maps/series-flowmap/flight-routes
  *         Highmaps basic flight routes demo
  *
@@ -671,7 +670,7 @@ export default FlowMapSeries;
  * and `lat` properties.
  *
  * @sample {highmaps} maps/series-flowmap/from-to-lon-lat
- *         Flowmap point using lonlat coordinates
+ *         Flowmap point using lon-lat coordinates
  * @sample {highmaps} maps/series-flowmap/flight-routes
  *         Highmaps basic flight routes demo
  *

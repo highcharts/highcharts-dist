@@ -26,7 +26,6 @@ var ChartNavigationComposition;
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /** @internal */
     function compose(chart) {
         if (!chart.navigation) {

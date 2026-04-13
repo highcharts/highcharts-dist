@@ -37,7 +37,7 @@ declare module "../highcharts.src" {
      * especially with grayscale text, the text outline doesn't work well, in
      * which cases it can be disabled by setting it to `"none"`. When `useHTML`
      * is true, the `textOutline` will not be picked up. In this, case, the same
-     * effect can be acheived through the `text-shadow` CSS property.
+     * effect can be achieved through the `text-shadow` CSS property.
      *
      * For some series types, where each point has an extent, like for example
      * tree maps, the data label may overflow the point. There are two
@@ -105,14 +105,15 @@ declare module "../highcharts.src" {
     /**
      * (Highcharts, Highstock, Gantt) A partial fill for each point, typically
      * used to visualize how much of a task is performed. The partial fill
-     * object can be set either on series or point level.
+     * object can be set either on series or point level. When set as a number,
+     * works as `{ amount: number }`.
      */
     interface PlotXrangePartialFillOptions {
         /**
          * (Highcharts, Highstock, Gantt) The fill color to be used for partial
          * fills. Defaults to a darker shade of the point color.
          */
-        fill?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        fill?: Highcharts.ColorType;
     }
     /**
      * (Highcharts, Highstock, Gantt) Animation when not hovering over the

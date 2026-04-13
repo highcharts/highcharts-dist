@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -14,8 +14,7 @@ import H from '../../Core/Globals.js';
 const { composed } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: Series } = SeriesRegistry;
-import U from '../../Core/Utilities.js';
-const { merge, pushUnique } = U;
+import { merge, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -31,7 +30,7 @@ var ColumnDataLabel;
     /**
      * Override the basic data label alignment by adjusting for the position of
      * the column.
-     * @private
+     * @internal
      */
     function alignDataLabel(point, dataLabel, dlOptions, alignTo, isNew) {
         const { chart, options } = this, inverted = chart.inverted, xLen = this.xAxis?.len || chart.plotSizeX || 0, yLen = this.yAxis?.len || chart.plotSizeY || 0, 
@@ -93,7 +92,7 @@ var ColumnDataLabel;
             });
         }
     }
-    /** @private */
+    /** @internal */
     function compose(ColumnSeriesClass) {
         DataLabel.compose(Series);
         if (pushUnique(composed, 'ColumnDataLabel')) {

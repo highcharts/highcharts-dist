@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -12,8 +12,7 @@
 import A from '../../Core/Animation/AnimationUtilities.js';
 const { setAnimation } = A;
 import Point from '../../Core/Series/Point.js';
-import U from '../../Core/Utilities.js';
-const { addEvent, defined, extend, isNumber, pick, relativeLength } = U;
+import { addEvent, defined, extend, isNumber, pick, relativeLength } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -25,11 +24,10 @@ class PiePoint extends Point {
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * Extendable method for getting the path of the connector between the
      * data label and the pie slice.
-     * @private
+     * @internal
      */
     getConnectorPath(dataLabel) {
         const labelPosition = dataLabel.dataLabelPosition, options = (dataLabel.options || {}), connectorShape = options.connectorShape, shapeFunc = (this.connectorShapes[connectorShape] || connectorShape);
@@ -39,24 +37,20 @@ class PiePoint extends Point {
             alignment: labelPosition.alignment
         }, labelPosition.connectorPosition, options) || [];
     }
-    /**
-     * @private
-     */
+    /** @internal */
     getTranslate() {
         return this.sliced && this.slicedTranslation || {
             translateX: 0,
             translateY: 0
         };
     }
-    /**
-     * @private
-     */
+    /** @internal */
     haloPath(size) {
         const shapeArgs = this.shapeArgs;
         return this.sliced || !this.visible ?
             [] :
             this.series.chart.renderer.symbols.arc(shapeArgs.x, shapeArgs.y, shapeArgs.r + size, shapeArgs.r + size, {
-                // Substract 1px to ensure the background is not bleeding
+                // Subtract 1px to ensure the background is not bleeding
                 // through between the halo and the slice (#7495).
                 innerR: shapeArgs.r - 1,
                 start: shapeArgs.start,
@@ -66,10 +60,11 @@ class PiePoint extends Point {
     }
     /**
      * Initialize the pie slice.
-     * @private
+     * @internal
      */
     constructor(series, options, x) {
         super(series, options, x);
+        /** @internal */
         this.half = 0;
         this.name ?? (this.name = series.chart.options.lang.pieSliceName);
         // Add event listener for select
@@ -79,11 +74,9 @@ class PiePoint extends Point {
         addEvent(this, 'select', toggleSlice);
         addEvent(this, 'unselect', toggleSlice);
     }
-    /**
-     * Negative points are not valid (#1530, #3623, #5322)
-     * @private
-     */
+    /** @internal */
     isValid() {
+        // Negative points are not valid (#1530, #3623, #5322)
         return isNumber(this.y) && this.y >= 0;
     }
     /**
@@ -96,7 +89,7 @@ class PiePoint extends Point {
      * True to show the pie slice or other data point, false to hide. If
      * undefined, the visibility is toggled.
      *
-     * @param {boolean} [redraw] Whether to redraw the chart after the point is
+     * @param {boolean} [redraw=true] Whether to redraw the chart after the point is
      * altered. If doing more operations on the chart, it is a good idea to set
      * redraw to false and call {@link Chart#redraw|chart.redraw()} after.
      *
@@ -111,7 +104,8 @@ class PiePoint extends Point {
     }
     /**
      * Set or toggle whether the slice is cut out from the pie.
-     * @private
+     *
+     * @internal
      *
      * @param {boolean} sliced
      * When undefined, the slice state is toggled.

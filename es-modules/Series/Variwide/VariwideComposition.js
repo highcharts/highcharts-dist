@@ -3,7 +3,7 @@
  *  Highcharts variwide module
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -13,8 +13,7 @@
 'use strict';
 import H from '../../Core/Globals.js';
 const { composed } = H;
-import U from '../../Core/Utilities.js';
-const { addEvent, pushUnique, wrap } = U;
+import { addEvent, pushUnique, wrap } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions

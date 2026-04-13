@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -12,8 +12,7 @@
 import F from '../Templating.js';
 import H from '../Globals.js';
 const { deg2rad } = H;
-import U from '../Utilities.js';
-const { clamp, correctFloat, defined, destroyObjectProperties, extend, fireEvent, getAlignFactor, isNumber, merge, objectEach, pick } = U;
+import { correctFloat, clamp, defined, extend, isNumber, merge, objectEach, pick, destroyObjectProperties, getAlignFactor, fireEvent } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -381,7 +380,7 @@ class Tick {
     }
     /**
      * Handle the label overflow by adjusting the labels to the left and right
-     * edge, or hide them if they collide into the neighbour label.
+     * edge, or hide them if they collide into the neighbor label.
      *
      * @internal
      * @function Highcharts.Tick#handleOverflow
@@ -638,11 +637,7 @@ class Tick {
                 show = false;
                 // Handle label overflow and show or hide accordingly
             }
-            else if (horiz &&
-                !labelOptions.step &&
-                !labelOptions.rotation &&
-                !old &&
-                opacity !== 0) {
+            else if (horiz && !old && opacity !== 0) {
                 tick.handleOverflow(xy);
             }
             // Apply step

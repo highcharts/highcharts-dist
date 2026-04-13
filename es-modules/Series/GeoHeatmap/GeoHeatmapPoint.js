@@ -10,10 +10,9 @@
  *
  * */
 'use strict';
-import U from '../../Core/Utilities.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
+import { isNumber } from '../../Shared/Utilities.js';
 const { map: { prototype: { pointClass: MapPoint } } } = SeriesRegistry.seriesTypes;
-const { isNumber } = U;
 /* *
  *
  *  Class
@@ -25,7 +24,6 @@ class GeoHeatmapPoint extends MapPoint {
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * @private
      */
@@ -48,7 +46,6 @@ class GeoHeatmapPoint extends MapPoint {
             };
         }
         return point;
-        /* eslint-enable valid-jsdoc */
     }
 }
 /* *

@@ -13,8 +13,7 @@
 'use strict';
 import F from '../Core/Templating.js';
 const { format } = F;
-import U from '../Core/Utilities.js';
-const { getNestedProperty, pick } = U;
+import { getNestedProperty, pick } from '../Shared/Utilities.js';
 /* *
  *
  *  Composition

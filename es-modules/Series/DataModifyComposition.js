@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -12,8 +12,7 @@
 import Point from '../Core/Series/Point.js';
 const { tooltipFormatter: pointTooltipFormatter } = Point.prototype;
 import Series from '../Core/Series/Series.js';
-import U from '../Core/Utilities.js';
-const { addEvent, arrayMax, arrayMin, correctFloat, defined, isArray, isNumber, isString, pick } = U;
+import { addEvent, arrayMax, arrayMin, correctFloat, defined, isArray, isNumber, isString, pick } from '../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -36,15 +35,6 @@ var DataModifyComposition;
      * compare and cumulative support.
      *
      * @private
-     *
-     * @param SeriesClass
-     * Series class to use.
-     *
-     * @param AxisClass
-     * Axis class to extend.
-     *
-     * @param PointClass
-     * Point class to use.
      */
     function compose(SeriesClass, AxisClass, PointClass) {
         const axisProto = AxisClass.prototype, pointProto = PointClass.prototype, seriesProto = SeriesClass.prototype;
@@ -269,7 +259,7 @@ var DataModifyComposition;
      *  End value compare logic                                               *
      * ********************************************************************** */
     /* ********************************************************************** *
-     *  Start Cumulative Sum logic, author: Rafal Sebestjanski                *
+     *  Start Cumulative Sum logic, author: Rafał Sebestjański                *
      * ********************************************************************** */
     /**
      * Highcharts Stock only. Set the
@@ -365,7 +355,7 @@ var DataModifyComposition;
          * @function Highcharts.Series#getCumulativeExtremes
          *
          * @param {Array} [activeYData]
-         *        An array cointaining all the points' y values
+         *        An array containing all the points' y values
          *        in a visible range.
          */
         static getCumulativeExtremes(activeYData) {
@@ -401,7 +391,7 @@ var DataModifyComposition;
                     }
                     else {
                         const compareBase = this.series.options.compareBase;
-                        value = 100 * (value / compareValue) -
+                        value = 100 * (value / Math.abs(compareValue)) -
                             (compareBase === 100 ? 0 : 100);
                     }
                     // Record for tooltip etc.

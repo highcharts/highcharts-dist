@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -14,8 +14,7 @@ import D from '../Defaults.js';
 const { defaultOptions } = D;
 import H from '../Globals.js';
 const { composed, noop } = H;
-import U from '../Utilities.js';
-const { addEvent, correctFloat, defined, extend, fireEvent, isObject, merge, pick, pushUnique, relativeLength, splat, wrap } = U;
+import { addEvent, correctFloat, defined, extend, fireEvent, isObject, merge, pick, pushUnique, relativeLength, splat, wrap } from '../../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -35,7 +34,6 @@ var RadialAxis;
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * In case of auto connect, add one closestPointRange to the max value
      * right before tickPositions are computed, so that ticks will extend
@@ -332,7 +330,7 @@ var RadialAxis;
             b = (typeof outerRadius === 'string') ?
                 relativeLength(outerRadius, 1) :
                 (outerRadius / distance);
-            // To ensure that gridlines won't be displayed in area
+            // To ensure that gridLines won't be displayed in area
             // defined by innerSize in case of custom radiuses of pane's
             // background
             if (center && paneInnerR) {
@@ -442,9 +440,6 @@ var RadialAxis;
     /**
      * Modify radial axis.
      * @internal
-     *
-     * @param {Highcharts.Axis} radialAxis
-     * Radial axis to modify.
      */
     function modify(axis) {
         axis.beforeSetTickPositions = beforeSetTickPositions;
@@ -873,7 +868,6 @@ var RadialAxis;
         }
         return ret;
     }
-    /* eslint-enable valid-jsdoc */
 })(RadialAxis || (RadialAxis = {}));
 /* *
  *

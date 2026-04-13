@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Grzegorz Blachlinski, Sebastian Bochan
+ *  Author: Grzegorz Blachliński, Sebastian Bochan
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -22,10 +22,9 @@ import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: { prototype: seriesProto }, seriesTypes: { bubble: BubbleSeries } } = SeriesRegistry;
 import D from '../SimulationSeriesUtilities.js';
 const { initDataLabels, initDataLabelsDefer } = D;
-import U from '../../Core/Utilities.js';
-const { addEvent, clamp, defined, extend, fireEvent, isArray, isNumber, merge, pick } = U;
 import SVGElement from '../../Core/Renderer/SVG/SVGElement.js';
 import TextPath from '../../Extensions/TextPath.js';
+import { addEvent, clamp, defined, extend, fireEvent, isArray, isNumber, merge, pick } from '../../Shared/Utilities.js';
 TextPath.compose(SVGElement);
 /* *
  *
@@ -49,7 +48,6 @@ class PackedBubbleSeries extends BubbleSeries {
         super(...arguments);
         this.parentNodeMass = 0;
         this.deferDataLabels = true;
-        /* eslint-enable valid-jsdoc */
     }
     /* *
      *
@@ -66,7 +64,6 @@ class PackedBubbleSeries extends BubbleSeries {
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * Create a single array of all points from all series
      * @private
@@ -363,7 +360,7 @@ class PackedBubbleSeries extends BubbleSeries {
         // pointer = chart.pointer,
         // onMouseOver = function (e: PointerEvent): void {
         //     const point = pointer.getPointFromEvent(e);
-        //     // undefined on graph in scatterchart
+        //     // undefined on graph in scatter chart
         //     if (typeof point !== 'undefined') {
         //         pointer.isDirectTouch = true;
         //         point.onMouseOver(e);
@@ -435,7 +432,6 @@ class PackedBubbleSeries extends BubbleSeries {
     /**
      * Mouse up action, finalizing drag&drop.
      * @private
-     * @param {Highcharts.Point} point The point that event occurred.
      */
     onMouseUp(dnPoint) {
         const point = dnPoint;

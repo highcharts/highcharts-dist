@@ -10,15 +10,15 @@
  *  - Sophie Bremer
  *  - Gøran Slettemark
  *  - Jomar Hønsi
- *  - Dawid Dragula
+ *  - Dawid Draguła
  *
  * */
 'use strict';
 import DataTableCore from './DataTableCore.js';
 import ColumnUtils from './ColumnUtils.js';
 const { splice, setLength } = ColumnUtils;
-import U from '../Core/Utilities.js';
-const { addEvent, defined, extend, fireEvent, isNumber, uniqueKey } = U;
+import { addEvent, defined, extend, fireEvent, isNumber } from '../Shared/Utilities.js';
+import { uniqueKey } from '../Core/Utilities.js';
 /* *
  *
  *  Class
@@ -256,7 +256,7 @@ class DataTable extends DataTableCore {
      * event.
      * @private
      *
-     * @param {DataTable.Event} e
+     * @param {Event} e
      * Event object with event information.
      */
     emit(e) {

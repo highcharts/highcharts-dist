@@ -12,8 +12,7 @@
  *
  * */
 'use strict';
-import U from '../../Core/Utilities.js';
-const { addEvent, clamp, isNumber, relativeLength } = U;
+import { addEvent, clamp, isNumber, relativeLength } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class

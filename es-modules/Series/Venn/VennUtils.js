@@ -4,7 +4,7 @@
  *  diagram.
  *
  *  (c) 2016-2026 Highsoft AS
- *  Authors: Jon Arild Nygard
+ *  Authors: Jon Arild Nygård
  *
  *  Layout algorithm by Ben Frederickson:
  *  https://www.benfrederickson.com/better-venn-diagrams/
@@ -19,8 +19,7 @@ import CU from '../../Core/Geometry/CircleUtilities.js';
 const { getAreaOfCircle, getCircleCircleIntersection, getOverlapBetweenCircles: getOverlapBetweenCirclesByDistance, isPointInsideAllCircles, isPointInsideCircle, isPointOutsideAllCircles } = CU;
 import GU from '../../Core/Geometry/GeometryUtilities.js';
 const { getDistanceBetweenPoints } = GU;
-import U from '../../Core/Utilities.js';
-const { extend, isArray, isNumber, isObject, isString } = U;
+import { extend, isArray, isObject, isNumber, isString } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions

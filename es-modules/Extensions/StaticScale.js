@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2016-2026 Highsoft AS
- *  Author: Torstein Honsi, Lars Cabrera
+ *  Author: Torstein Hønsi, Lars Cabrera
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -9,8 +9,7 @@
  *
  * */
 'use strict';
-import U from '../Core/Utilities.js';
-const { addEvent, defined, isNumber } = U;
+import { addEvent, defined, isNumber } from '../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -95,13 +94,16 @@ export default StaticScale;
  * height of the chart adjusts. Adding or removing items will make the chart
  * resize.
  *
- * @sample gantt/xrange-series/demo/
+ * @sample {gantt} gantt/xrange-series/demo/
  *         X-range series with static scale
+ * @sample {highcharts} highcharts/xaxis/staticscale
+ *         Static scale on X axis (horizontal bar chart)
  *
+ * @requires  modules/static-scale
  * @type      {number}
  * @default   50
  * @since     6.2.0
- * @product   gantt
- * @apioption yAxis.staticScale
+ * @product   highcharts highstock gantt
+ * @apioption xAxis.staticScale
  */
 ''; // Keeps doclets above in JS file

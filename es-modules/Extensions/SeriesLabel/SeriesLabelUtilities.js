@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2009-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -59,8 +59,10 @@ function intersectRect(r1, r2) {
  *  Default Export
  *
  * */
+/** @internal */
 const SeriesLabelUtilities = {
     boxIntersectLine,
     intersectRect
 };
+/** @internal */
 export default SeriesLabelUtilities;

@@ -15,11 +15,10 @@ import Color from '../../Core/Color/Color.js';
 const { parse: color } = Color;
 import H from '../../Core/Globals.js';
 const { doc, win } = H;
-import U from '../../Core/Utilities.js';
-const { isNumber, isObject, merge, objectEach, pick } = U;
 import WGLDrawMode from './WGLDrawMode.js';
 import WGLShader from './WGLShader.js';
 import WGLVertexBuffer from './WGLVertexBuffer.js';
+import { isNumber, isObject, objectEach, merge, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Constants
@@ -49,7 +48,6 @@ const contexts = [
  *  Class
  *
  * */
-/* eslint-disable valid-jsdoc */
 /**
  * Main renderer. Used to render series.
  *
@@ -288,7 +286,7 @@ class WGLRenderer {
          * Push a vertice to the data buffer.
          * @internal
          */
-        const vertice = (x, y, checkTreshold, pointSize = 1, color) => {
+        const vertice = (x, y, checkThreshold, pointSize = 1, color) => {
             pushColor(color);
             // Correct for pixel ratio
             if (pixelRatio !== 1 && (!settings.useGPUTranslations ||
@@ -298,13 +296,13 @@ class WGLRenderer {
                 pointSize *= pixelRatio;
             }
             if (settings.usePreallocated && vbuffer) {
-                vbuffer.push(x, y, checkTreshold ? 1 : 0, pointSize);
+                vbuffer.push(x, y, checkThreshold ? 1 : 0, pointSize);
                 vlen += 4;
             }
             else {
                 data.push(x);
                 data.push(y);
-                data.push(checkTreshold ? pixelRatio : 0);
+                data.push(checkThreshold ? pixelRatio : 0);
                 data.push(pointSize);
             }
         };
@@ -729,7 +727,7 @@ class WGLRenderer {
      * If we render the series immediately, we don't have to loop later.
      *
      * @internal
-     * @param {Highchart.Series} s
+     * @param {Highcharts.Series} s
      * The series to push.
      */
     pushSeries(s) {
@@ -839,7 +837,7 @@ class WGLRenderer {
      * @internal
      * @param {boolean} has
      * Has threshold flag.
-     * @param {numbe} translation
+     * @param {number} translation
      * The threshold.
      */
     setThreshold(has, translation) {
@@ -994,7 +992,7 @@ class WGLRenderer {
             if (lineWidth > 0 || s.drawMode !== 'LINE_STRIP') {
                 const { x: cx, y: cy, width: cw, height: ch } = getBoostClipRect(chart, s.series);
                 gl.enable(gl.SCISSOR_TEST);
-                gl.scissor(cx, height - cy - ch, cw, ch);
+                gl.scissor(cx * pixelRatio, height - (cy + ch) * pixelRatio, cw * pixelRatio, ch * pixelRatio);
                 for (sindex = 0; sindex < s.segments.length; sindex++) {
                     vbuffer.render(s.segments[sindex].from, s.segments[sindex].to, s.drawMode);
                 }

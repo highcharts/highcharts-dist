@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -13,8 +13,8 @@ import H from '../Core/Globals.js';
 const { win } = H;
 import T from '../Core/Templating.js';
 const { format } = T;
-import U from '../Core/Utilities.js';
-const { error, extend, merge, wrap } = U;
+import { extend, merge, wrap } from '../Shared/Utilities.js';
+import { error } from '../Core/Utilities.js';
 /* *
  *
  *  Composition
@@ -233,7 +233,7 @@ var GeoJSONComposition;
                     name: typeof name === 'string' ? name : void 0,
                     /**
                      * In Highcharts Maps, when data is loaded from GeoJSON, the
-                     * GeoJSON item's properies are copied over here.
+                     * GeoJSON item's properties are copied over here.
                      *
                      * @requires modules/map
                      * @name Highcharts.Point#properties
@@ -297,8 +297,8 @@ var GeoJSONComposition;
                 return arcs.reduce((coordinates, arcNo, i) => {
                     let arc = arcNo < 0 ? arcsArray[~arcNo] : arcsArray[arcNo];
                     // The first point of an arc is always identical to the last
-                    // point of the previes arc, so slice it off to save further
-                    // processing.
+                    // point of the previous arc, so slice it off to save
+                    // further processing.
                     if (arcNo < 0) {
                         arc = arc.slice(0, i === 0 ? arc.length : arc.length - 1);
                         arc.reverse();

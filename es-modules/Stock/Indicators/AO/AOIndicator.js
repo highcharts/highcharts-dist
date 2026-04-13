@@ -10,8 +10,7 @@ import H from '../../../Core/Globals.js';
 const { noop } = H;
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 const { column: { prototype: columnProto }, sma: SMAIndicator } = SeriesRegistry.seriesTypes;
-import U from '../../../Core/Utilities.js';
-const { extend, merge, correctFloat, isArray } = U;
+import { correctFloat, extend, isArray, merge } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -130,7 +129,7 @@ AOIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
      * @sample {highstock} stock/indicators/ao/
      *         greaterBarColor
      *
-     * @type  {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @type  {Highcharts.ColorType}
      * @since 7.0.0
      */
     greaterBarColor: "#06b535" /* Palette.positiveColor */,
@@ -142,7 +141,7 @@ AOIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
      * @sample {highstock} stock/indicators/ao/
      *         lowerBarColor
      *
-     * @type  {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @type  {Highcharts.ColorType}
      * @since 7.0.0
      */
     lowerBarColor: "#f21313" /* Palette.negativeColor */,

@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -13,8 +13,7 @@ import H from '../../Core/Globals.js';
 const { composed } = H;
 import Math3D from '../../Core/Math3D.js';
 const { perspective } = Math3D;
-import U from '../../Core/Utilities.js';
-const { addEvent, extend, pick, pushUnique, wrap } = U;
+import { addEvent, extend, pick, pushUnique, wrap } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -250,7 +249,7 @@ function wrapColumnSeriesAnimate(proceed) {
                     }
                 }
             }
-            // Redraw datalabels to the correct position
+            // Redraw dataLabels to the correct position
             this.drawDataLabels();
         }
     }
@@ -311,7 +310,7 @@ function wrapColumnSeriesSetState(proceed, state, inherit) {
 }
 /**
  * When series is not added to group it is needed to change setVisible method to
- * allow correct Legend funcionality. This wrap is basing on pie chart series.
+ * allow correct Legend functionality. This wrap is basing on pie chart series.
  * @private
  */
 function wrapColumnSeriesSetVisible(proceed, vis) {
@@ -349,7 +348,7 @@ function wrapSeriesAlignDataLabel(proceed, point, _dataLabel, options, alignTo) 
     // Only do this for 3D columns and it's derived series
     if (chart.is3d() &&
         this.is('column')) {
-        const series = this, seriesOptions = series.options, inside = pick(options.inside, !!series.options.stacking), options3d = chart.options.chart.options3d, xOffset = point.pointWidth / 2 || 0;
+        const series = this, seriesOptions = series.options, inside = pick(options.inside, !!series.options.stacking), options3d = chart.options.chart.options3d, xOffset = (point.pointWidth || 0) / 2;
         let dLPosition = {
             x: alignTo.x + xOffset,
             y: alignTo.y,
@@ -358,7 +357,7 @@ function wrapSeriesAlignDataLabel(proceed, point, _dataLabel, options, alignTo) 
         if (chart.inverted) {
             // Inside dataLabels are positioned according to above
             // logic and there is no need to position them using
-            // non-3D algorighm (that use alignTo.width)
+            // non-3D algorithm (that use alignTo.width)
             if (inside) {
                 alignTo.width = 0;
                 dLPosition.x += point.shapeArgs.height / 2;

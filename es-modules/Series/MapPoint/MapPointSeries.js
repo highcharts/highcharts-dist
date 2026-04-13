@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -16,10 +16,9 @@ import MapPointSeriesDefaults from './MapPointSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { map: MapSeries, scatter: ScatterSeries } = SeriesRegistry.seriesTypes;
 import SVGRenderer from '../../Core/Renderer/SVG/SVGRenderer.js';
-import U from '../../Core/Utilities.js';
-const { extend, fireEvent, isNumber, merge } = U;
 import '../../Core/Defaults.js';
 import '../Scatter/ScatterSeries.js';
+import { extend, fireEvent, isNumber, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -41,14 +40,12 @@ class MapPointSeries extends ScatterSeries {
          * */
         super(...arguments);
         this.clearBounds = MapSeries.prototype.clearBounds;
-        /* eslint-enable valid-jsdoc */
     }
     /* *
      *
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     drawDataLabels() {
         super.drawDataLabels();
         this.dataLabelsGroups?.forEach((g) => {

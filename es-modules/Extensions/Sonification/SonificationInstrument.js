@@ -13,8 +13,7 @@
 'use strict';
 import SynthPatch from './SynthPatch.js';
 import InstrumentPresets from './InstrumentPresets.js';
-import U from '../../Core/Utilities.js';
-const { defined, extend } = U;
+import { defined, extend } from '../../Shared/Utilities.js';
 /**
  * The SonificationInstrument class. This class represents an instrument with
  * mapping capabilities. The instrument wraps a SynthPatch object, and extends
@@ -39,6 +38,7 @@ const { defined, extend } = U;
 class SonificationInstrument {
     constructor(audioContext, outputNode, options) {
         this.audioContext = audioContext;
+        /** @internal */
         this.curParams = {};
         this.midiTrackName = options.midiTrackName;
         this.masterVolNode = new GainNode(audioContext);
@@ -256,6 +256,7 @@ class SonificationInstrument {
         return 16.3516 * Math.pow(2, Math.min(notesFromC0, 107) / 12);
     }
 }
+/** @internal */
 SonificationInstrument.rampTime = SynthPatch.stopRampTime / 4;
 /* *
  *

@@ -11,8 +11,7 @@
 'use strict';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { seriesTypes: { mapline: { prototype: { pointClass: MapLinePoint } } } } = SeriesRegistry;
-import U from '../../Core/Utilities.js';
-const { pick, isString, isNumber } = U;
+import { isNumber, isString, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class

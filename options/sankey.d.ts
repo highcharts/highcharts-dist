@@ -108,7 +108,7 @@ declare module "../highcharts" {
          * (Highcharts) Can set `color` on all nodes which lay on the same
          * level.
          */
-        color?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        color?: Highcharts.ColorType;
         /**
          * (Highcharts) Can set `colorByPoint` on all nodes which lay on the
          * same level.

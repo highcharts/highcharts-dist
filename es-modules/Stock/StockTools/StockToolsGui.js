@@ -15,8 +15,7 @@ import D from '../../Core/Defaults.js';
 const { setOptions } = D;
 import StockToolsDefaults from './StockToolsDefaults.js';
 import Toolbar from './StockToolbar.js';
-import U from '../../Core/Utilities.js';
-const { addEvent, getStyle, merge, pick } = U;
+import { addEvent, getStyle, merge, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions

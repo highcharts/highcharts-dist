@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v12.5.0 (2026-01-12)
+ * @license Highstock JS v12.6.0 (2026-04-13)
  * @module highcharts/modules/full-screen
  * @requires highcharts
  *
  * Advanced Highcharts Stock tools
  *
  * (c) 2010-2026 Highsoft AS
- * Author: Torstein Honsi
+ * Author: Torstein Hønsi
  *
  * A commercial license may be required depending on use.
  * See www.highcharts.com/license

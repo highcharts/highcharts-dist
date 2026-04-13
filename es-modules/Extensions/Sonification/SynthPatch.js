@@ -12,8 +12,7 @@
  *
  * */
 'use strict';
-import U from '../../Core/Utilities.js';
-const { clamp, defined, pick } = U;
+import { clamp, defined, pick } from '../../Shared/Utilities.js';
 /**
  * Get the multiplier value from a pitch tracked multiplier. The parameter
  * specifies the multiplier at ca 3200Hz. It is 1 at ca 50Hz. In between

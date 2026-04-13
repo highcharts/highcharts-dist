@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  3D pie series
  *
@@ -16,8 +16,7 @@ const { composed, deg2rad } = H;
 import Pie3DPoint from './Pie3DPoint.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { pie: PieSeries } = SeriesRegistry.seriesTypes;
-import U from '../../Core/Utilities.js';
-const { extend, pick, pushUnique } = U;
+import { extend, pick, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -101,7 +100,7 @@ class Pie3DSeries extends PieSeries {
         const labelPosition = super.getDataLabelPosition(point, distance);
         if (this.chart.is3d()) {
             const options3d = this.chart.options.chart.options3d, shapeArgs = point.shapeArgs, r = shapeArgs.r, 
-            // #3240 issue with datalabels for 0 and null values
+            // #3240 issue with dataLabels for 0 and null values
             a1 = ((shapeArgs.alpha || options3d?.alpha) *
                 deg2rad), b1 = ((shapeArgs.beta || options3d?.beta) *
                 deg2rad), a2 = (shapeArgs.start + shapeArgs.end) / 2, connectorPosition = labelPosition.connectorPosition, yOffset = (-r * (1 - Math.cos(a1)) * Math.sin(a2)), xOffset = r * (Math.cos(b1) - 1) * Math.cos(a2);
@@ -208,4 +207,4 @@ export default Pie3DSeries;
  * @requires  highcharts-3d
  * @apioption plotOptions.pie.depth
  */
-''; // Keeps doclets above after transpiledion
+''; // Keeps doclets above after transpilation

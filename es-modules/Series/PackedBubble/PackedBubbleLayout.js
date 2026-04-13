@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Grzegorz Blachlinski, Sebastian Bochan
+ *  Author: Grzegorz Blachliński, Sebastian Bochan
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -12,8 +12,7 @@
 import GraphLayout from '../GraphLayoutComposition.js';
 import PackedBubbleIntegration from './PackedBubbleIntegration.js';
 import ReingoldFruchtermanLayout from '../Networkgraph/ReingoldFruchtermanLayout.js';
-import U from '../../Core/Utilities.js';
-const { addEvent, defined, pick } = U;
+import { addEvent, defined, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -129,7 +128,7 @@ class PackedBubbleLayout extends ReingoldFruchtermanLayout {
             const nodeSeries = node.series, fixedPosition = node.fixedPosition, paddedNodeRadius = ((node.marker?.radius || 0) +
                 bubblePadding);
             node.degree = node.mass;
-            node.neighbours = 0;
+            node.neighbors = 0;
             for (const repNode of nodes) {
                 const repNodeSeries = repNode.series;
                 if (
@@ -147,7 +146,7 @@ class PackedBubbleLayout extends ReingoldFruchtermanLayout {
                     // TODO padding configurable
                     if (distanceR < 0) {
                         node.degree += 0.01;
-                        forceTimesMass = (layout.repulsiveForce(-distanceR / Math.sqrt(++(node.neighbours)), k, node, repNode) *
+                        forceTimesMass = (layout.repulsiveForce(-distanceR / Math.sqrt(++(node.neighbors)), k, node, repNode) *
                             repNode.mass);
                     }
                     layout.force('repulsive', node, forceTimesMass || 0, distanceXY, repNode, distanceR);

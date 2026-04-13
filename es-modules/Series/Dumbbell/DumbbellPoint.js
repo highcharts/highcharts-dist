@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Sebastian Bochan, Rafal Sebestjanski
+ *  Author: Sebastian Bochan, Rafał Sebestjański
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -10,8 +10,7 @@
  * */
 'use strict';
 import AreaRangePoint from '../AreaRange/AreaRangePoint.js';
-import U from '../../Core/Utilities.js';
-const { extend, pick } = U;
+import { extend, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class

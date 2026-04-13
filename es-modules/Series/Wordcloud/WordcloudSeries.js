@@ -3,7 +3,7 @@
  *  Highcharts module which enables visualization of a word cloud.
  *
  *  (c) 2016-2026 Highsoft AS
- *  Authors: Jon Arild Nygard
+ *  Authors: Jon Arild Nygård
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -15,11 +15,10 @@ import H from '../../Core/Globals.js';
 const { noop } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
-import U from '../../Core/Utilities.js';
-const { extend, isArray, isNumber, isObject, merge } = U;
 import WordcloudPoint from './WordcloudPoint.js';
 import WordcloudSeriesDefaults from './WordcloudSeriesDefaults.js';
 import WU from './WordcloudUtils.js';
+import { extend, isArray, isNumber, isObject, merge } from '../../Shared/Utilities.js';
 const { archimedeanSpiral, extendPlayingField, getBoundingBoxFromPolygon, getPlayingField, getPolygon, getRandomPosition, getRotation, getScale, getSpiral, intersectionTesting, isPolygonsColliding, rectangularSpiral, rotate2DToOrigin, rotate2DToPoint, squareSpiral, updateFieldBoundaries } = WU;
 /* *
  *

@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -16,8 +16,7 @@ const { composed } = H;
 import MapNavigationDefaults from './MapNavigationDefaults.js';
 import MapPointer from './MapPointer.js';
 import MapSymbols from './MapSymbols.js';
-import U from '../Core/Utilities.js';
-const { addEvent, extend, merge, objectEach, pick, pushUnique } = U;
+import { extend, objectEach, merge, pick, pushUnique, addEvent } from '../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -176,7 +175,7 @@ class MapNavigation {
                 if (!chart.hasLoaded) {
                     // Align it after the plotBox is known (#12776)
                     const unbind = addEvent(chart, 'load', () => {
-                        // #15406: Make sure button hasnt been destroyed
+                        // #15406: Make sure button hasn't been destroyed
                         if (button.element) {
                             button.align(buttonOptions, false, buttonOptions.alignTo);
                         }
@@ -252,7 +251,7 @@ class MapNavigation {
         if (pick(options.enableMouseWheelZoom, options.enabled)) {
             this.unbindMouseWheel = this.unbindMouseWheel || addEvent(chart.container, 'wheel', function (e) {
                 // Prevent scrolling when the pointer is over the element
-                // with that class, for example anotation popup #12100.
+                // with that class, for example annotation popup #12100.
                 if (!chart.pointer.inClass(e.target, 'highcharts-no-mousewheel')) {
                     const initialZoom = chart.mapView?.zoom;
                     chart.pointer.onContainerMouseWheel(e);

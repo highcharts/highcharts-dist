@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -18,8 +18,16 @@ const { composed, dateFormats, doc, isSafari } = H;
 import R from './Renderer/RendererUtilities.js';
 const { distribute } = R;
 import RendererRegistry from './Renderer/RendererRegistry.js';
-import U from './Utilities.js';
-const { addEvent, clamp, css, clearTimeout, discardElement, extend, fireEvent, getAlignFactor, isArray, isNumber, isObject, isString, merge, pick, pushUnique, splat, syncTimeout } = U;
+import { addEvent, clamp, css, discardElement, extend, fireEvent, getAlignFactor, internalClearTimeout, isArray, isNumber, isObject, isString, merge, pick, pushUnique, splat, syncTimeout } from '../Shared/Utilities.js';
+/**
+ * Clear all timeouts for showing and hiding the tooltip.
+ *
+ * @internal
+ */
+const clearTimeouts = (tooltip) => {
+    clearTimeout(tooltip.hideTimer);
+    clearTimeout(tooltip.showTimer);
+};
 /* *
  *
  *  Class
@@ -118,7 +126,7 @@ class Tooltip {
         return points.map((point) => {
             const tooltipOptions = point.series.tooltipOptions, formatPrefix = point.formatPrefix || 'point';
             return (tooltipOptions[formatPrefix + 'Formatter'] ||
-                point.tooltipFormatter).call(point, tooltipOptions[formatPrefix + 'Format'] || '');
+                point.tooltipFormatter).call(point, tooltipOptions[formatPrefix + 'Format'] || '', point);
         });
     }
     /**
@@ -150,7 +158,7 @@ class Tooltip {
      *
      * @function Highcharts.Tooltip#defaultFormatter
      *
-     * @param {Highcharts.Tooltip} tooltip
+     * @param {Highcharts.Tooltip} tooltip The tooltip instance.
      *
      * @return {string|Array<string>}
      * Returns a string (single tooltip and shared)
@@ -187,7 +195,8 @@ class Tooltip {
             this.renderer = this.renderer.destroy();
             discardElement(this.container);
         }
-        clearTimeout(this.hideTimer);
+        internalClearTimeout(this.hideTimer);
+        clearTimeouts(this);
     }
     /**
      * Extendable method to get the anchor position of the tooltip
@@ -215,7 +224,7 @@ class Tooltip {
                 mouseEvent.chartX - plotLeft,
                 mouseEvent.chartY - plotTop
             ];
-            // Some series types use a specificly calculated tooltip position for
+            // Some series types use a specifically calculated tooltip position for
             // each point
         }
         else if (points[0].tooltipPos) {
@@ -532,6 +541,10 @@ class Tooltip {
             swap();
         }
         run();
+        if (outside) {
+            ret.x -= chartPosition.left;
+            ret.y -= chartPosition.top;
+        }
         return ret;
     }
     /**
@@ -568,7 +581,7 @@ class Tooltip {
     hide(delay) {
         const tooltip = this;
         // Disallow duplicate timers (#1728, #1766)
-        clearTimeout(this.hideTimer);
+        clearTimeouts(this);
         delay = pick(delay, this.options.hideDelay);
         if (!this.isHidden) {
             this.hideTimer = syncTimeout(function () {
@@ -727,7 +740,7 @@ class Tooltip {
         if (!options.enabled || !point.series) { // #16820
             return;
         }
-        clearTimeout(this.hideTimer);
+        clearTimeouts(this);
         // A switch saying if this specific tooltip configuration allows shared
         // or split modes
         tooltip.allowShared = !(!isArray(pointOrPoints) &&
@@ -747,7 +760,7 @@ class Tooltip {
         this.len = points.length; // #6128
         const text = isString(formatString) ?
             format(formatString, point, chart) :
-            formatter.call(point, tooltip);
+            formatter.call(point, tooltip, point);
         // Reset the preliminary circular references
         point.points = void 0;
         // Register the current series
@@ -758,79 +771,85 @@ class Tooltip {
             this.hide();
         }
         else {
-            // Update text
-            if (tooltip.split && tooltip.allowShared) { // #13868
-                this.renderSplit(text, points);
-            }
-            else {
-                let checkX = x;
-                let checkY = y;
-                if (mouseEvent && pointer.isDirectTouch) {
-                    checkX = mouseEvent.chartX - chart.plotLeft;
-                    checkY = mouseEvent.chartY - chart.plotTop;
-                }
-                // #11493, #13095
-                if (chart.polar ||
-                    currentSeries.options.clip === false ||
-                    points.some((p) => // #16004
-                     pointer.isDirectTouch || // ##17929
-                        p.series.shouldShowTooltip(checkX, checkY))) {
-                    const label = tooltip.getLabel(wasShared && tooltip.tt || {});
-                    // Prevent the tooltip from flowing over the chart box
-                    // (#6659)
-                    if (!options.style.width || styledMode) {
-                        label.css({
-                            width: (this.outside ?
-                                this.getPlayingField() :
-                                chart.spacingBox).width + 'px'
-                        });
-                    }
-                    label.attr({
-                        // Add class before the label BBox calculation (#21035)
-                        'class': tooltip.getClassName(point),
-                        text: text && text.join ?
-                            text.join('') :
-                            text
-                    });
-                    // When the length of the label has increased, immediately
-                    // update the x position to prevent tooltip from flowing
-                    // outside the viewport during animation (#21371)
-                    if (this.outside) {
-                        label.attr({
-                            x: clamp(label.x || 0, 0, this.getPlayingField().width -
-                                (label.width || 0) -
-                                1)
-                        });
-                    }
-                    if (!styledMode) {
-                        label.attr({
-                            stroke: (options.borderColor ||
-                                point.color ||
-                                currentSeries.color ||
-                                "#666666" /* Palette.neutralColor60 */)
-                        });
-                    }
-                    tooltip.updatePosition({
-                        plotX: x,
-                        plotY: y,
-                        negative: point.negative,
-                        ttBelow: point.ttBelow,
-                        series: currentSeries,
-                        h: anchor[2] || 0
-                    });
+            this.showTimer = syncTimeout(() => {
+                // Update text
+                if (tooltip.split && tooltip.allowShared) { // #13868
+                    tooltip.renderSplit(text, points);
                 }
                 else {
-                    tooltip.hide();
-                    return;
+                    let checkX = x;
+                    let checkY = y;
+                    if (mouseEvent && pointer.isDirectTouch) {
+                        checkX = mouseEvent.chartX - chart.plotLeft;
+                        checkY = mouseEvent.chartY - chart.plotTop;
+                    }
+                    // #11493, #13095
+                    if (chart.polar ||
+                        currentSeries.options.clip === false ||
+                        points.some((p) => // #16004
+                         pointer.isDirectTouch || // ##17929
+                            p.series.shouldShowTooltip(checkX, checkY))) {
+                        const label = tooltip.getLabel(wasShared && tooltip.tt || {});
+                        // Prevent the tooltip from flowing over the chart box
+                        // (#6659)
+                        if (!options.style.width || styledMode) {
+                            label.css({
+                                // Subtract padding on both sides so the box
+                                // stays within the available space (#24104)
+                                width: (this.outside ?
+                                    this.getPlayingField() :
+                                    chart.spacingBox).width - 2 * options.padding + 'px'
+                            });
+                        }
+                        label.attr({
+                            // Add class before the label BBox calculation
+                            // (#21035)
+                            'class': tooltip.getClassName(point),
+                            text: isArray(text) ?
+                                text.join('') :
+                                text
+                        });
+                        // When the length of the label has increased,
+                        // immediately update the x position to prevent
+                        // tooltip from flowing outside the viewport
+                        // during animation (#21371)
+                        if (this.outside) {
+                            label.attr({
+                                x: clamp(label.x || 0, 0, this.getPlayingField().width -
+                                    (label.width || 0) -
+                                    1)
+                            });
+                        }
+                        if (!styledMode) {
+                            label.attr({
+                                stroke: (options.borderColor ||
+                                    point.color ||
+                                    currentSeries.color ||
+                                    "#666666" /* Palette.neutralColor60 */)
+                            });
+                        }
+                        tooltip.updatePosition({
+                            plotX: x,
+                            plotY: y,
+                            negative: point.negative,
+                            ttBelow: point.ttBelow,
+                            series: currentSeries,
+                            h: anchor[2] || 0
+                        });
+                    }
+                    else {
+                        tooltip.hide();
+                        return;
+                    }
                 }
-            }
-            // Show it
-            if (tooltip.isHidden && tooltip.label) {
-                tooltip.label.attr({
-                    opacity: 1
-                }).show();
-            }
-            tooltip.isHidden = false;
+                // Show it
+                if (tooltip.isHidden && tooltip.label) {
+                    tooltip.label.attr({
+                        opacity: 1
+                    }).show();
+                }
+                tooltip.isHidden = false;
+            }, tooltip.isHidden ? options.showDelay || 0 : 0);
         }
         fireEvent(this, 'refresh');
     }
@@ -905,7 +924,7 @@ class Tooltip {
          * Calculate the position of the partial tooltip
          * @internal
          */
-        const defaultPositioner = function (boxWidth, boxHeight, point, anchor = [0, 0], alignedLeft = true) {
+        const defaultPositioner = function (boxWidth, boxHeight, point, ctx, anchor = [0, 0], alignedLeft = true) {
             let x, y;
             if (point.isHeader) {
                 y = headerTop ? 0 : adjustedPlotHeight;
@@ -1005,7 +1024,7 @@ class Tooltip {
                 }
                 const { anchorX, anchorY } = getAnchor(point);
                 if (typeof anchorY === 'number') {
-                    const size = bBox.height + 1, boxPosition = (positioner || defaultPositioner).call(tooltip, boxWidth, size, point, [anchorX, anchorY]);
+                    const size = bBox.height + 1, boxPosition = (positioner || defaultPositioner).call(tooltip, boxWidth, size, point, tooltip, [anchorX, anchorY]);
                     boxes.push({
                         // 0-align to the top, 1-align to the bottom
                         align: hasFixedPosition ? 0 : void 0,
@@ -1043,7 +1062,7 @@ class Tooltip {
                 bounds.right - boxStart > boxStart;
         })) {
             boxes = boxes.map((box) => {
-                const { x, y } = defaultPositioner.call(this, box.boxWidth, box.size, box.point, [box.anchorX, box.anchorY], false);
+                const { x, y } = defaultPositioner.call(this, box.boxWidth, box.size, box.point, void 0, [box.anchorX, box.anchorY], false);
                 return extend(box, {
                     target: y,
                     x
@@ -1180,9 +1199,7 @@ class Tooltip {
                 .add(label);
             // For a rapid move going outside of the elements keeping the
             // tooltip visible, cancel the hide (#23512).
-            addEvent(tooltip.tracker.element, 'mouseenter', () => {
-                clearTimeout(tooltip.hideTimer);
-            });
+            addEvent(tooltip.tracker.element, 'mouseenter', () => clearTimeouts(tooltip));
             if (!chart.styledMode) {
                 tooltip.tracker.attr({
                     fill: 'rgba(0,0,0,0)'
@@ -1254,25 +1271,22 @@ class Tooltip {
      * @internal
      * @function Highcharts.Tooltip#updatePosition
      *
-     * @param {Highcharts.Point} point
+     * @param {Highcharts.Point} point The point object.
      */
     updatePosition(point) {
         const { chart, container, distance, options, pointer, renderer } = this, label = this.getLabel(), { height = 0, width = 0 } = label, { fixed, positioner } = options, 
         // Needed for outside: true (#11688)
         { left, top, scaleX, scaleY } = pointer.getChartPosition(), pos = (positioner ||
             (fixed && this.getFixedPosition) ||
-            this.getPosition).call(this, width, height, point), doc = H.doc;
+            this.getPosition).call(this, width, height, point, this), doc = H.doc;
         let anchorX = (point.plotX || 0) + chart.plotLeft, anchorY = (point.plotY || 0) + chart.plotTop, pad;
         // Set the renderer size dynamically to prevent document size to change.
         // Renderer only exists when tooltip is outside.
         if (renderer && container) {
-            // Corrects positions, occurs with tooltip positioner (#16944)
-            if (positioner || fixed) {
-                const { scrollLeft = 0, scrollTop = 0 } = chart
-                    .scrollablePlotArea?.scrollingContainer || {};
-                pos.x += scrollLeft + left - distance;
-                pos.y += scrollTop + top - distance;
-            }
+            const { scrollLeft = 0, scrollTop = 0 } = chart
+                .scrollablePlotArea?.scrollingContainer || {};
+            pos.x += scrollLeft + left;
+            pos.y += scrollTop + top;
             // Pad it by the border width and distance. Add 2 to make room for
             // the default shadow (#19314).
             pad = (options.borderWidth || 0) + 2 * distance + 2;
@@ -1360,6 +1374,10 @@ export default Tooltip;
  * @param {Highcharts.Tooltip} tooltip
  * The tooltip instance
  *
+ * @param {Highcharts.Point} [ctx]
+ * Since v12.6.0, the point context passed as an extra argument for arrow
+ * functions.
+ *
  * @return {false|string|Array<(string|null|undefined)>|null|undefined}
  * Formatted text or false
  */
@@ -1379,6 +1397,10 @@ export default Tooltip;
  *
  * @param {Highcharts.TooltipPositionerPointObject} point
  * Point information for positioning a tooltip.
+ *
+ * @param {Highcharts.Tooltip} [ctx]
+ * Since v12.6.0, the tooltip context passed as an extra argument for arrow
+ * functions.
  *
  * @return {Highcharts.PositionObject}
  * New position for the tooltip.

@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -20,8 +20,8 @@ const { composed } = H;
 import Series from '../Core/Series/Series.js';
 import Pane from '../Extensions/Pane/Pane.js';
 import RadialAxis from '../Core/Axis/RadialAxis.js';
-import U from '../Core/Utilities.js';
-const { addEvent, defined, find, isNumber, isObject, merge, pick, pushUnique, relativeLength, splat, uniqueKey, wrap } = U;
+import { addEvent, clamp, defined, find, isNumber, isObject, merge, pick, pushUnique, relativeLength, splat, wrap } from '../Shared/Utilities.js';
+import { uniqueKey } from '../Core/Utilities.js';
 /* *
  *
  *  Functions
@@ -75,15 +75,12 @@ function findAlignments(angle, options) {
 /**
  * #6212 Calculate connectors for spline series in polar chart.
  * @private
- * @param {boolean} calculateNeighbours
- *        Check if connectors should be calculated for neighbour points as
- *        well allows short recurrence
  */
 function getConnectors(segment, index, calculateNeighbours, connectEnds) {
     const smoothing = 1.5, denom = smoothing + 1, addedNumber = connectEnds ? 1 : 0;
     let i, leftContX, leftContY, rightContX, rightContY, jointAngle;
     // Calculate final index of points depending on the initial index value.
-    // Because of calculating neighbours, index may be outside segment
+    // Because of calculating neighbors, index may be outside segment
     // array.
     if (index >= 0 && index <= segment.length - 1) {
         i = index;
@@ -507,7 +504,7 @@ function wrapColumnSeriesAlignDataLabel(proceed, point, dataLabel, options, alig
                             .xAxis.startAngleRad, 
                     // Radius
                     point.barX +
-                        point.pointWidth / 2);
+                        (point.pointWidth || 0) / 2);
                 alignTo = merge(alignTo, {
                     x: labelPos.x - chart.plotLeft,
                     y: labelPos.y - chart.plotTop
@@ -590,7 +587,7 @@ function onAfterColumnTranslate() {
                             // If starting point is beyond the
                             // range, set it to 0
                             if (defined(start)) {
-                                start = U.clamp(start, 0, visibleRange);
+                                start = clamp(start, 0, visibleRange);
                             }
                         }
                     }
@@ -639,7 +636,7 @@ function onAfterColumnTranslate() {
                 // In case when radius, inner radius or both are negative, a
                 // point is rendered but partially or as a center point
                 innerR = Math.max(barX, 0);
-                r = Math.max(barX + point.pointWidth, 0);
+                r = Math.max(barX + (point.pointWidth || 0), 0);
                 // Handle border radius
                 const brOption = options.borderRadius, brValue = typeof brOption === 'object' ?
                     brOption.radius : brOption, borderRadius = relativeLength(brValue || 0, r - innerR);
@@ -663,7 +660,7 @@ function onAfterColumnTranslate() {
             }
             else {
                 start = barX + startAngleRad;
-                point.shapeArgs = series.polar.arc(point.yBottom, point.plotY, start, start + point.pointWidth);
+                point.shapeArgs = series.polar.arc(point.yBottom, point.plotY, start, start + (point.pointWidth || 0));
                 // Disallow border radius on polar columns for now. It would
                 // take some refactoring to work with the `scope` and the
                 // `where` options. Those options would require that only
@@ -677,7 +674,7 @@ function onAfterColumnTranslate() {
             // Provided a correct coordinates for the tooltip
             series.polar.toXY(point);
             if (chart.inverted) {
-                tooltipPos = yAxis.postTranslate(point.rectPlotY, barX + point.pointWidth / 2);
+                tooltipPos = yAxis.postTranslate(point.rectPlotY, barX + (point.pointWidth || 0) / 2);
                 point.tooltipPos = [
                     tooltipPos.x - chart.plotLeft,
                     tooltipPos.y - chart.plotTop

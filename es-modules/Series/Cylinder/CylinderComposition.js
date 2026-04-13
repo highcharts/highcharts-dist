@@ -17,8 +17,7 @@ const { charts, deg2rad } = H;
 import Math3D from '../../Core/Math3D.js';
 const { perspective } = Math3D;
 import SVGElement3DCylinder from './SVGElement3DCylinder.js';
-import U from '../../Core/Utilities.js';
-const { extend, pick } = U;
+import { extend, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -60,7 +59,7 @@ function rendererCylinder(shapeArgs) {
 function rendererCylinderPath(shapeArgs) {
     const renderer = this, chart = charts[renderer.chartIndex], 
     // Decide zIndexes of parts based on cuboid logic, for consistency.
-    cuboidData = this.cuboidPath(shapeArgs), isTopFirst = !cuboidData.isTop, isFronFirst = !cuboidData.isFront, top = renderer.getCylinderEnd(chart, shapeArgs), bottom = renderer.getCylinderEnd(chart, shapeArgs, true);
+    cuboidData = this.cuboidPath(shapeArgs), isTopFirst = !cuboidData.isTop, isFrontFirst = !cuboidData.isFront, top = renderer.getCylinderEnd(chart, shapeArgs), bottom = renderer.getCylinderEnd(chart, shapeArgs, true);
     return {
         front: renderer.getCylinderFront(top, bottom),
         back: renderer.getCylinderBack(top, bottom),
@@ -69,8 +68,8 @@ function rendererCylinderPath(shapeArgs) {
         zIndexes: {
             top: isTopFirst ? 3 : 0,
             bottom: isTopFirst ? 0 : 3,
-            front: isFronFirst ? 2 : 1,
-            back: isFronFirst ? 1 : 2,
+            front: isFrontFirst ? 2 : 1,
+            back: isFrontFirst ? 1 : 2,
             group: cuboidData.zIndexes.group
         }
     };

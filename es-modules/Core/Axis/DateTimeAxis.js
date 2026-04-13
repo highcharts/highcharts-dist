@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -9,14 +9,13 @@
  *
  * */
 'use strict';
-import U from '../Utilities.js';
-const { addEvent, getMagnitude, normalizeTickInterval, timeUnits } = U;
+import { addEvent, getMagnitude, normalizeTickInterval } from '../../Shared/Utilities.js';
+import { timeUnits } from '../Utilities.js';
 /* *
  *
  *  Composition
  *
  * */
-/* eslint-disable valid-jsdoc */
 var DateTimeAxis;
 (function (DateTimeAxis) {
     /* *
@@ -51,12 +50,6 @@ var DateTimeAxis;
      *
      * @internal
      * @function Highcharts.Axis#getTimeTicks
-     * @param {Highcharts.TimeNormalizeObject} normalizedInterval
-     * The interval in axis values (ms) and the count.
-     * @param {number} min
-     * The minimum in axis values.
-     * @param {number} max
-     * The maximum in axis values.
      */
     function getTimeTicks() {
         return this.chart.time.getTimeTicks.apply(this.chart.time, arguments);
@@ -130,7 +123,7 @@ var DateTimeAxis;
                     null
                 ]]);
             let unit = units[units.length - 1], // Default unit is years
-            interval = timeUnits[unit[0]], multiples = unit[1], i;
+            interval = timeUnits[unit[0]], multiples = unit[1], i, match;
             // Loop through the units to find the one that best fits the
             // tickInterval
             for (i = 0; i < units.length; i++) {
@@ -145,6 +138,7 @@ var DateTimeAxis;
                         timeUnits[units[i + 1][0]]) / 2;
                     // Break and keep the current unit
                     if (tickInterval <= lessThan) {
+                        match = lessThan / tickInterval;
                         break;
                     }
                 }
@@ -160,7 +154,8 @@ var DateTimeAxis;
             return {
                 unitRange: interval,
                 count: count,
-                unitName: unit[0]
+                unitName: unit[0],
+                match
             };
         }
         /**

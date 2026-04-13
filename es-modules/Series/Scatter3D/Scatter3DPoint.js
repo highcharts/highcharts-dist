@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  Scatter 3D series.
  *
@@ -12,9 +12,8 @@
  * */
 'use strict';
 import ScatterSeries from '../Scatter/ScatterSeries.js';
+import { defined } from '../../Shared/Utilities.js';
 const { pointClass: ScatterPoint } = ScatterSeries.prototype;
-import U from '../../Core/Utilities.js';
-const { defined } = U;
 /* *
  *
  *  Class

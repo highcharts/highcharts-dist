@@ -12,9 +12,8 @@
  * */
 'use strict';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
+import { merge } from '../../../Shared/Utilities.js';
 const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
-import U from '../../../Core/Utilities.js';
-const { merge } = U;
 /* *
  *
  *  Functions

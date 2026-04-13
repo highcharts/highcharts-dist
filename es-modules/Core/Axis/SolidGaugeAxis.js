@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -9,9 +9,8 @@
  *
  * */
 'use strict';
-import ColorAxisBase from './Color/ColorAxisBase';
-import U from '../Utilities.js';
-const { extend } = U;
+import { extend } from '../../Shared/Utilities.js';
+import ColorAxisBase from './Color/ColorAxisBase.js';
 /* *
  *
  *  Functions

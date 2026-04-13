@@ -55,6 +55,9 @@ class TimelineChannel {
  *  Default Export
  *
  * */
+/**
+ * @internal
+ */
 export default TimelineChannel;
 /* *
  *

@@ -3,7 +3,7 @@
  *  Parallel coordinates module
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Pawel Fus
+ *  Author: Paweł Fus
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -14,13 +14,13 @@
 import ParallelAxis from './ParallelAxis.js';
 import ParallelCoordinatesDefaults from './ParallelCoordinatesDefaults.js';
 import ParallelSeries from './ParallelSeries.js';
-import U from '../../Core/Utilities.js';
-const { addEvent, defined, merge, splat } = U;
+import { addEvent, defined, merge, splat } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
  *
  * */
+/** @internal */
 class ChartAdditions {
     /* *
      *
@@ -36,7 +36,7 @@ class ChartAdditions {
      *
      * */
     /**
-     * Define how many parellel axes we have according to the longest dataset.
+     * Define how many parallel axes we have according to the longest dataset.
      * This is quite heavy - loop over all series and check series.data.length
      * Consider:
      *
@@ -70,6 +70,7 @@ class ChartAdditions {
  *  Composition
  *
  * */
+/** @internal */
 var ParallelCoordinates;
 (function (ParallelCoordinates) {
     /* *
@@ -172,4 +173,5 @@ var ParallelCoordinates;
  *  Default Export
  *
  * */
+/** @internal */
 export default ParallelCoordinates;

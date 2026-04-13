@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -9,8 +9,7 @@
  *
  * */
 'use strict';
-import U from '../Core/Utilities.js';
-const { defined, extend, pick, wrap } = U;
+import { defined, extend, internalClearTimeout, pick, wrap } from '../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -75,7 +74,7 @@ var MapPointer;
         // try wheelDelta first #15656
         const delta = (defined(e.wheelDelta) && -e.wheelDelta / 120) ||
             e.deltaY || e.detail;
-        // Wheel zooming on trackpads have different behaviours in Firefox vs
+        // Wheel zooming on trackpads have different behaviors in Firefox vs
         // WebKit. In Firefox the delta increments in steps by 1, so it is not
         // distinguishable from true mouse wheel. Therefore we use this timer
         // to avoid trackpad zooming going too fast and out of control. In
@@ -84,7 +83,7 @@ var MapPointer;
         if (Math.abs(delta) >= 1) {
             totalWheelDelta += Math.abs(delta);
             if (totalWheelDeltaTimer) {
-                clearTimeout(totalWheelDeltaTimer);
+                internalClearTimeout(totalWheelDeltaTimer);
             }
             totalWheelDeltaTimer = setTimeout(() => {
                 totalWheelDelta = 0;

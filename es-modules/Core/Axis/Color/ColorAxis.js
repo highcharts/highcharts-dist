@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -15,11 +15,9 @@ import ColorAxisComposition from './ColorAxisComposition.js';
 import ColorAxisDefaults from './ColorAxisDefaults.js';
 import D from '../../Defaults.js';
 const { defaultOptions } = D;
-import LegendSymbol from '../../Legend/LegendSymbol.js';
 import SeriesRegistry from '../../Series/SeriesRegistry.js';
 const { series: Series } = SeriesRegistry;
-import U from '../../Utilities.js';
-const { defined, extend, fireEvent, isArray, isNumber, merge, pick, relativeLength } = U;
+import { defined, extend, fireEvent, isArray, isNumber, merge, pick, relativeLength } from '../../../Shared/Utilities.js';
 defaultOptions.colorAxis = merge(defaultOptions.xAxis, ColorAxisDefaults);
 /* *
  *
@@ -124,15 +122,23 @@ class ColorAxis extends Axis {
         }
     }
     /**
-     * Extend the setOptions method to process extreme colors and color stops.
+     * Extend the setOptions method to process title, extreme colors and
+     * color stops.
      * @internal
      */
     setOptions(userOptions) {
-        const options = merge(defaultOptions.colorAxis, userOptions, 
+        const legend = this.chart.options.legend || {}, theme = defaultOptions.colorAxis, layout = userOptions.layout || legend.layout || theme.layout, horiz = layout !== 'vertical';
+        const sideSpecific = horiz ? { title: { rotation: 0 } } :
+            {
+                title: {
+                    rotation: 90,
+                    margin: 10
+                }
+            };
+        const options = merge(sideSpecific, theme, userOptions, 
         // Forced options
         {
             showEmpty: false,
-            title: null,
             visible: this.chart.options.legend.enabled &&
                 userOptions.visible !== false
         });
@@ -182,10 +188,6 @@ class ColorAxis extends Axis {
             });
             legend.render();
             this.chart.getMargins(true);
-            // If not drilling down/up
-            if (!this.chart.series.some((series) => series.isDrilling)) {
-                axis.isDirty = true; // Flag to fire drawChartBox
-            }
             // First time only
             if (!axis.added) {
                 axis.added = true;
@@ -227,6 +229,39 @@ class ColorAxis extends Axis {
         // vertical
         legendOptions.labelPadding, horiz ? 16 : 30);
         this.setLegendColor();
+        let titleHeight = 0;
+        let titleWidth = 0;
+        if (axis.options.title?.text && !axis.axisTitle) {
+            if (!axis.axisGroup) {
+                axis.axisParent = legendItem.group;
+                axis.createGroups();
+            }
+            // --- THE SVG TRANSFORM FIX ---
+            // Provide mock dimensions so getTitlePosition returns valid numbers
+            // on Pass 1. This ensures the rotation transform succeeds, allowing
+            // getBBox() to read the true ROTATED dimensions!
+            const tempLen = axis.len, tempTop = axis.top, tempLeft = axis.left, tempWidth = axis.width;
+            axis.len = horiz ? width : height;
+            axis.top = 0;
+            axis.left = 0;
+            axis.width = width;
+            axis.addTitle(true);
+            // Restore the original undefined values
+            // (setAxisSize will overwrite them later)
+            axis.len = tempLen;
+            axis.top = tempTop;
+            axis.left = tempLeft;
+            axis.width = tempWidth;
+            // -----------------------------
+        }
+        if (axis.axisTitle) {
+            const titleBBox = axis.axisTitle.getBBox();
+            titleHeight = titleBBox.height;
+            titleWidth = titleBBox.width;
+        }
+        const titleOptions = axis.options.title || {};
+        const titleMargin = axis.axisTitle ? (titleOptions.margin ?? 0) : 0;
+        const yShift = horiz ? (titleHeight + titleMargin) : 0;
         // Create the gradient
         if (!legendItem.symbol) {
             legendItem.symbol = this.chart.renderer.symbol('roundedRect')
@@ -237,18 +272,41 @@ class ColorAxis extends Axis {
         }
         legendItem.symbol.attr({
             x: 0,
-            y: (legend.baseline || 0) - 11,
+            y: (legend.baseline || 0) - 11 + yShift,
             width: width,
             height: height
         });
         // Set how much space this legend item takes up
-        legendItem.labelWidth = (width +
-            padding +
-            (horiz ?
-                itemDistance :
-                pick(labelOptions.x, labelOptions.distance) +
-                    (this.maxLabelLength || 0)));
-        legendItem.labelHeight = height + padding + (horiz ? labelPadding : 0);
+        if (horiz) {
+            legendItem.labelWidth = Math.max(width + padding + itemDistance, titleWidth || 0);
+            legendItem.labelHeight = height + padding + labelPadding +
+                titleHeight + titleMargin;
+        }
+        else {
+            legendItem.labelWidth = width + padding +
+                (labelOptions.x ?? labelOptions.distance ?? 0) +
+                (this.maxLabelLength || 0) +
+                (titleWidth || 0) + titleMargin;
+            legendItem.labelHeight = Math.max(height + padding, titleHeight || 0);
+        }
+    }
+    /**
+     * Override the title position to place it above the color bar
+     * for horizontal layouts, or outside the labels for vertical layouts.
+     * @internal
+     */
+    getTitlePosition(axisTitle) {
+        // Pass the argument down to the base class
+        const pos = super.getTitlePosition(axisTitle), titleMargin = this.options.title?.margin ?? 0;
+        if (this.horiz && axisTitle) {
+            pos.y = this.top - titleMargin;
+        }
+        else if (!this.horiz && axisTitle) {
+            const labelOptions = this.options.labels || {}, labelDistance = labelOptions.x ?? labelOptions.distance ?? 0;
+            pos.x = this.left + this.width + labelDistance +
+                (this.maxLabelLength || 0) + titleMargin;
+        }
+        return pos;
     }
     /**
      * Fool the legend.
@@ -478,7 +536,7 @@ class ColorAxis extends Axis {
                     chart,
                     name,
                     options: {},
-                    drawLegendSymbol: LegendSymbol.rectangle,
+                    drawLegendSymbol: Series.prototype.drawLegendSymbol,
                     visible: true,
                     isDataClass: true,
                     // Override setState to set either normal or inactive

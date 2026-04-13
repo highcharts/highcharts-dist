@@ -14,8 +14,7 @@
 import NodesComposition from '../NodesComposition.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: { prototype: seriesProto, prototype: { pointClass: Point } } } = SeriesRegistry;
-import U from '../../Core/Utilities.js';
-const { addEvent, css, defined, extend, pick } = U;
+import { addEvent, css, defined, extend, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class

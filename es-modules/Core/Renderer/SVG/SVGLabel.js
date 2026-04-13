@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -9,8 +9,7 @@
  *
  * */
 import SVGElement from './SVGElement.js';
-import U from '../../Utilities.js';
-const { defined, extend, getAlignFactor, isNumber, merge, pick, removeEvent } = U;
+import { defined, extend, getAlignFactor, isNumber, merge, pick, removeEvent } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Class

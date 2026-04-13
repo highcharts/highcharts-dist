@@ -13,8 +13,7 @@
 'use strict';
 import H from '../../../Core/Globals.js';
 const { composed } = H;
-import U from '../../../Core/Utilities.js';
-const { addEvent, merge, pushUnique } = U;
+import { addEvent, merge, pushUnique } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -149,7 +148,7 @@ var ForcedMarkersComposition;
     function seriesOnRender() {
         const series = this, options = series.options;
         if (shouldForceMarkers(series)) {
-            if (options.marker && options.marker.enabled === false) {
+            if (options.marker?.enabled === false) {
                 series.a11yMarkersForced = true;
                 forceZeroOpacityMarkerOptions(series.options);
             }
@@ -162,9 +161,16 @@ var ForcedMarkersComposition;
             // Mark series dirty to ensure marker graphics are cleaned up
             series.isDirty = true;
             unforceSeriesMarkerOptions(series);
-            if (options.marker && options.marker.enabled === false) { // #23329
+            if (options.marker?.enabled === false) { // #23329
                 delete series.resetA11yMarkerOptions; // #16624
             }
+        }
+        else if (series.chart.styledMode &&
+            options.marker?.enabled === false &&
+            !hasIndividualPointMarkerOptions(series)) {
+            // `a11yMarkersForced` can be reset during `Series.update`.
+            // Clean up stale marker graphics that may still exist (#24164).
+            destroyPointMarkerGraphics(series);
         }
     }
     /**
@@ -190,6 +196,16 @@ var ForcedMarkersComposition;
         });
     }
     /**
+     * @private
+     */
+    function destroyPointMarkerGraphics(series) {
+        series.points?.forEach((point) => {
+            if (point.graphic) {
+                point.graphic = point.graphic.destroy();
+            }
+        });
+    }
+    /**
      * Reset markers to normal
      * @private
      */
@@ -201,13 +217,8 @@ var ForcedMarkersComposition;
                 resetMarkerOptions.states.normal.opacity;
             // Prevent ghost markers when zooming out (#23878).
             if (series.chart.styledMode &&
-                resetMarkerOptions.enabled === false &&
-                series.points) {
-                series.points.forEach((point) => {
-                    if (point.graphic) {
-                        point.graphic = point.graphic.destroy();
-                    }
-                });
+                resetMarkerOptions.enabled === false) {
+                destroyPointMarkerGraphics(series);
             }
             // Temporarily set the old marker options to enabled in order to
             // trigger destruction of the markers in Series.update.

@@ -14,8 +14,7 @@
 import DataTable from '../../Data/DataTable.js';
 import H from '../Globals.js';
 const { composed } = H;
-import U from '../Utilities.js';
-const { addEvent, fireEvent, isNumber, merge, pushUnique, wrap } = U;
+import { addEvent, fireEvent, isNumber, merge, pushUnique, wrap } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions

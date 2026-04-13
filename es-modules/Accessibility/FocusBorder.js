@@ -11,8 +11,7 @@
  *
  * */
 'use strict';
-import U from '../Core/Utilities.js';
-const { addEvent, pick } = U;
+import { addEvent, pick } from '../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -118,7 +117,7 @@ var FocusBorderComposition;
      * Add hook to destroy focus border if SVG element is destroyed, unless
      * hook already exists.
      * @private
-     * @param el Element to add destroy hook to
+     * @param {object} el Element to add destroy hook to
      */
     function svgElementAddDestroyFocusBorderHook(el) {
         if (el.focusBorderDestroyHook) {
@@ -189,7 +188,7 @@ var FocusBorderComposition;
                 borderPosX = attrX - (bb.width * correction.x) - pad;
             }
             if (!isNaN(attrY)) {
-                // Correct by line height if "text-achor" == "start", #19335.
+                // Correct by line height if "text-anchor" == "start", #19335.
                 const dim = this.attr('text-anchor') === 'start' ?
                     lineHeight :
                     bb.height;
@@ -226,8 +225,8 @@ var FocusBorderComposition;
      * Add hooks to update the focus border of an element when the element
      * size/position is updated, unless already added.
      * @private
-     * @param el Element to add update hooks to
-     * @param updateParams Parameters to pass through to addFocusBorder when updating.
+     * @param {object} el Element to add update hooks to
+     * @param {...*} updateParams Parameters to pass through to addFocusBorder when updating.
      */
     function avgElementAddUpdateFocusBorderHooks(el, ...updateParams) {
         if (el.focusBorderUpdateHooks) {
@@ -249,7 +248,7 @@ var FocusBorderComposition;
      * Remove hook from SVG element added by addDestroyFocusBorderHook, if
      * existing.
      * @private
-     * @param el Element to remove destroy hook from
+     * @param {object} el Element to remove destroy hook from
      */
     function svgElementRemoveDestroyFocusBorderHook(el) {
         if (!el.focusBorderDestroyHook) {
@@ -276,7 +275,7 @@ var FocusBorderComposition;
      * Remove hooks from SVG element added by addUpdateFocusBorderHooks, if
      * existing.
      * @private
-     * @param el Element to remove update hooks from
+     * @param {object} el Element to remove update hooks from
      */
     function svgElementRemoveUpdateFocusBorderHooks(el) {
         if (!el.focusBorderUpdateHooks) {

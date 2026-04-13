@@ -13,8 +13,7 @@
 'use strict';
 import H from '../../../Core/Globals.js';
 const { doc, isFirefox } = H;
-import U from '../../../Core/Utilities.js';
-const { createElement, isArray, isObject, objectEach, pick, stableSort } = U;
+import { createElement, isArray, isObject, objectEach, pick, stableSort } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -61,9 +60,12 @@ function addForm(chart, options, callback, isInit) {
  * (edit / remove) and text label.
  *
  * @internal
- * @param {Highcharts.Chart} - chart
- * @param {Highcharts.AnnotationsOptions} - options
- * @param {Function} - on click callback
+ * @param {Highcharts.Chart} chart
+ *        The Chart instance
+ * @param {Highcharts.AnnotationsOptions} options
+ *        Annotation options
+ * @param {Function} callback
+ *        On click callback
  */
 function addToolbar(chart, options, callback) {
     const lang = this.lang, popupDiv = this.container, showForm = this.showForm, toolbarClass = 'highcharts-annotation-toolbar';

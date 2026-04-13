@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -17,9 +17,8 @@ import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: Series, seriesTypes: { column: ColumnSeries, scatter: ScatterSeries } } = SeriesRegistry;
 import SVGRenderer from '../../Core/Renderer/SVG/SVGRenderer.js';
 const { prototype: { symbols } } = SVGRenderer;
-import U from '../../Core/Utilities.js';
-const { addEvent, extend, fireEvent, isNumber, merge, pick } = U;
 import IU from '../InterpolationUtilities.js';
+import { addEvent, extend, fireEvent, isNumber, merge, pick } from '../../Shared/Utilities.js';
 const { colorFromPoint, getContext } = IU;
 /* *
  *
@@ -44,7 +43,6 @@ class HeatmapSeries extends ScatterSeries {
         this.valueMax = NaN;
         this.valueMin = NaN;
         this.isDirtyCanvas = true;
-        /* eslint-enable valid-jsdoc */
     }
     /* *
      *
@@ -165,6 +163,10 @@ class HeatmapSeries extends ScatterSeries {
         // evaluation of borderRadius would be moved to `markerAttribs`.
         if (options.marker && isNumber(options.borderRadius)) {
             options.marker.r = options.borderRadius;
+        }
+        const canvas = this.canvas = document.createElement('canvas');
+        if (canvas) {
+            this.context = canvas?.getContext('webgpu');
         }
     }
     /**

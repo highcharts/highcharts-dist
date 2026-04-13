@@ -9,8 +9,8 @@
  *
  * */
 'use strict';
-import U from '../../Core/Utilities.js';
-const { clamp, error, pick } = U;
+import { error } from '../../Core/Utilities.js';
+import { clamp, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Constants
@@ -153,7 +153,7 @@ const vertexShader = [
     '}',
     'return translate(value, 0.0, xAxisTrans, xAxisMin, xAxisMinPad, xAxisPointRange, xAxisLen, xAxisCVSCoord, xAxisIsLog, xAxisReversed);// + xAxisPos;',
     '}',
-    'float yToPixels(float value, float checkTreshold) {',
+    'float yToPixels(float value, float checkThreshold) {',
     'float v;',
     'if (skipTranslation){',
     'v = value;// + yAxisPos;',
@@ -163,7 +163,7 @@ const vertexShader = [
     'v = yAxisLen;',
     '}',
     '}',
-    'if (checkTreshold > 0.0 && hasThreshold) {',
+    'if (checkThreshold > 0.0 && hasThreshold) {',
     'v = min(v, translatedThreshold);',
     '}',
     'return v;',
@@ -205,7 +205,6 @@ const vertexShader = [
  *  Class
  *
  * */
-/* eslint-disable valid-jsdoc */
 /**
  * A static shader mimicking axis translation functions found in Core/Axis.
  *

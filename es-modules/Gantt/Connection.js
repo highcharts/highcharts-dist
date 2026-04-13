@@ -10,8 +10,8 @@
  * */
 'use strict';
 import H from '../Core/Globals.js';
-import U from '../Core/Utilities.js';
-const { defined, error, merge, objectEach } = U;
+import { defined, merge, objectEach } from '../Shared/Utilities.js';
+import { error } from '../Core/Utilities.js';
 /* *
  *
  *  Constants
@@ -77,9 +77,6 @@ class Connection {
      *
      * @param {Highcharts.SVGAttributes} [attribs]
      *        SVG attributes for the path.
-     *
-     * @param {Partial<Highcharts.AnimationOptionsObject>} [animation]
-     *        Animation options for the rendering.
      */
     renderPath(path, attribs) {
         const connection = this, chart = this.chart, styledMode = chart.styledMode, pathfinder = this.pathfinder, anim = {};

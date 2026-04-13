@@ -22,7 +22,6 @@ var FlagsSymbols;
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * @private
      */
@@ -48,8 +47,6 @@ var FlagsSymbols;
      */
     function flag(x, y, w, h, options) {
         const anchorX = (options && options.anchorX) || x, anchorY = (options && options.anchorY) || y;
-        // To do: unwanted any cast because symbols.circle has wrong type, it
-        // actually returns an SVGPathArray
         const path = this.circle(anchorX - 1, anchorY - 1, 2, 2);
         path.push(['M', anchorX, anchorY], ['L', x, y + h], ['L', x, y], ['L', x + w, y], ['L', x + w, y + h], ['L', x, y + h], ['Z']);
         return path;

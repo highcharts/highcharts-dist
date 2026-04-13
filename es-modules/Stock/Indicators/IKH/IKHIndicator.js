@@ -11,8 +11,7 @@ import Color from '../../../Core/Color/Color.js';
 const { parse: color } = Color;
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
-import U from '../../../Core/Utilities.js';
-const { defined, extend, isArray, isNumber, getClosestDistance, merge, objectEach } = U;
+import { defined, extend, getClosestDistance, isArray, isNumber, merge, objectEach } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -619,7 +618,7 @@ IKHIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
          * @sample stock/indicators/ichimoku-kinko-hyo
          *         Ichimoku Kinko Hyo color
          *
-         * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+         * @type      {Highcharts.ColorType}
          * @since     7.0.0
          * @apioption plotOptions.ikh.senkouSpan.color
          */
@@ -630,7 +629,7 @@ IKHIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
          * @sample stock/indicators/ikh-negative-color
          *         Ichimoku Kinko Hyo negativeColor
          *
-         * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+         * @type      {Highcharts.ColorType}
          * @since     7.0.0
          * @apioption plotOptions.ikh.senkouSpan.negativeColor
          */
@@ -639,7 +638,7 @@ IKHIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
              * Color of the area between Senkou Span A and B.
              *
              * @deprecated
-             * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+             * @type {Highcharts.ColorType}
              */
             fill: 'rgba(255, 0, 0, 0.5)'
         }

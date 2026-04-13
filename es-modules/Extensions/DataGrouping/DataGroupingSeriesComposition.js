@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -16,8 +16,8 @@ import DateTimeAxis from '../../Core/Axis/DateTimeAxis.js';
 import D from '../../Core/Defaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: { prototype: seriesProto } } = SeriesRegistry;
-import U from '../../Core/Utilities.js';
-const { addEvent, defined, error, extend, isNumber, merge, pick, splat } = U;
+import { addEvent, defined, extend, isNumber, merge, pick, splat } from '../../Shared/Utilities.js';
+import { error } from '../../Core/Utilities.js';
 /* *
  *
  *  Constants

@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -11,8 +11,8 @@
 'use strict';
 import H from '../Core/Globals.js';
 const { pageLang, win } = H;
-import U from '../Core/Utilities.js';
-const { defined, error, extend, isNumber, isObject, isString, merge, objectEach, pad, splat, timeUnits, ucfirst } = U;
+import { defined, extend, isObject, isNumber, isString, merge, objectEach, pad, splat, ucfirst } from './Utilities.js';
+import { error, timeUnits } from '../Core/Utilities.js';
 /* *
  *
  *  Constants
@@ -428,8 +428,8 @@ class TimeBase {
      * | `%o` | Month number, 1 through 12                   |       |
      * | `%y` | Two digits year, like 24 for 2024            |       |
      * | `%Y` | Four digits year, like 2024                  |       |
-     * | `%H` | Two digits hours in 24h format, 00 through 23 | Depending on the locale, 12h format may be instered. |
-     * | `%k` | Hours in 24h format, 0 through 23            | Depending on the locale, 12h format may be instered. |
+     * | `%H` | Two digits hours in 24h format, 00 through 23 | Depending on the locale, 12h format may be inserted. |
+     * | `%k` | Hours in 24h format, 0 through 23            | Depending on the locale, 12h format may be inserted. |
      * | `%I` | Two digits hours in 12h format, 00 through 11 | N/A. The locale determines the hour format. |
      * | `%l` | Hours in 12h format, 1 through 12            | N/A. The locale determines the hour format. |
      * | `%M` | Two digits minutes, 00 through 59            |       |
@@ -578,7 +578,7 @@ class TimeBase {
                     // Regex would do it in one line, but this is faster
                     while (format.indexOf('%' + key) !== -1) {
                         format = format.replace('%' + key, typeof val === 'function' ?
-                            val.call(time, timestamp) :
+                            val.call(time, timestamp, time) :
                             val);
                     }
                 }

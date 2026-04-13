@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -11,8 +11,7 @@
 'use strict';
 import H from '../Globals.js';
 const { composed } = H;
-import U from '../Utilities.js';
-const { addEvent, correctFloat, defined, pick, pushUnique } = U;
+import { addEvent, correctFloat, defined, pick, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
  *  Composition

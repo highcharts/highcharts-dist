@@ -1,6 +1,6 @@
 /* *
  *
- *  Tilemaps module
+ *  Tilemap module
  *
  *  (c) 2010-2026 Highsoft AS
  *  Author: Øystein Moseng
@@ -13,9 +13,8 @@
 'use strict';
 import ColorAxisComposition from '../../Core/Axis/Color/ColorAxisComposition.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
+import { extend } from '../../Shared/Utilities.js';
 const { series: { prototype: { pointClass: Point } }, seriesTypes: { heatmap: { prototype: { pointClass: HeatmapPoint } } } } = SeriesRegistry;
-import U from '../../Core/Utilities.js';
-const { extend } = U;
 /* *
  *
  *  Class

@@ -242,7 +242,7 @@ declare module "../highcharts.src" {
          * (Highcharts) Can set a `color` on all points which lies on the same
          * level.
          */
-        color?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        color?: Highcharts.ColorType;
         /**
          * (Highcharts) Determines whether the chart should receive one color
          * per point based on this level.
@@ -365,12 +365,12 @@ declare module "../highcharts.src" {
          * (Highcharts, Highmaps) The color of the border surrounding each
          * slice. When `null`, the border takes the same color as the slice
          * fill. This can be used together with a `borderWidth` to fill drawing
-         * gaps created by antialiazing artefacts in borderless pies.
+         * gaps created by antialiasing artifacts in border-less pies.
          *
          * In styled mode, the border stroke is given in the `.highcharts-point`
          * class.
          */
-        borderColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        borderColor?: Highcharts.ColorType;
         /**
          * (Highcharts) The corner radius of the border surrounding each slice.
          * A number signifies pixels. A percentage string, like for example
@@ -382,7 +382,7 @@ declare module "../highcharts.src" {
          * slice.
          *
          * When setting the border width to 0, there may be small gaps between
-         * the slices due to SVG antialiasing artefacts. To work around this,
+         * the slices due to SVG antialiasing artifacts. To work around this,
          * keep the border width at 0.5 or 1, but set the `borderColor` to
          * `null` instead.
          *
@@ -419,7 +419,7 @@ declare module "../highcharts.src" {
          * `.highcharts-series-{n}` class, or individual classes given by the
          * `className` option.
          */
-        color?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        color?: Highcharts.ColorType;
         colorByPoint?: boolean;
         /**
          * (Highcharts) Styled mode only. A specific color index to use for the
@@ -434,7 +434,7 @@ declare module "../highcharts.src" {
          * (Highcharts, Highmaps) A series specific or series type specific
          * color set to use instead of the global colors.
          */
-        colors?: Array<(Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject)>;
+        colors?: Array<Highcharts.ColorType>;
         /**
          * (Highcharts, Highstock, Gantt) When true, each point or column edge
          * is rounded to its nearest pixel in order to render sharp on screen.
@@ -472,8 +472,13 @@ declare module "../highcharts.src" {
          */
         dataLabels?: (Highcharts.SeriesSunburstDataLabelsOptionsObject|Array<Highcharts.SeriesSunburstDataLabelsOptionsObject>);
         /**
-         * (Highcharts) A description of the series to add to the screen reader
-         * information about the series.
+         * (Highcharts) Deprecated. Use
+         * plotOptions.series.accessibility.description instead.
+         *
+         * A description of the series to add to the screen reader information
+         * about the series.
+         *
+         * @deprecated 8.0.0
          */
         description?: string;
         /**
@@ -494,7 +499,7 @@ declare module "../highcharts.src" {
          * color of that circle. Use pie.borderWidth to set the border
          * thickness.
          */
-        fillColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        fillColor?: Highcharts.ColorType;
         /**
          * (Highcharts) Highlight only the hovered point and fade the remaining
          * points.
@@ -528,7 +533,7 @@ declare module "../highcharts.src" {
          * symbol for this series. Defaults to undefined, in which case the
          * series color is used. Does not work with styled mode.
          */
-        legendSymbolColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        legendSymbolColor?: Highcharts.ColorType;
         /**
          * (Highcharts) Used together with the levels and `allowDrillToNode`
          * options. When set to false the first level visible when drilling is
@@ -550,8 +555,8 @@ declare module "../highcharts.src" {
          * `null` should be interactive. When this is set to `true`, tooltips
          * may highlight these points, and this option also enables keyboard
          * navigation for such points. Format options for such points include
-         * `nullFormat` and `nullFormater`. Works for these series: `line`,
-         * `spline`, `area`, `area-spline`, `column`, `bar`, and* `timeline`.
+         * `nullFormat` and `nullFormatter`. Works for these series: `line`,
+         * `spline`, `area`, `area-spline`, `column`, `bar`, and `timeline`.
          */
         nullInteraction?: (boolean|undefined);
         /**
@@ -569,13 +574,21 @@ declare module "../highcharts.src" {
          */
         point?: Highcharts.PlotSeriesPointOptions;
         /**
-         * (Highcharts) Same as accessibility.point.descriptionFormat, but for
-         * an individual series. Overrides the chart wide configuration.
+         * (Highcharts) Deprecated. Use
+         * series.accessibility.point.descriptionFormat instead.
+         *
+         * Same as accessibility.point.descriptionFormat, but for an individual
+         * series. Overrides the chart wide configuration.
          */
         pointDescriptionFormat?: Function;
         /**
-         * (Highcharts) Same as accessibility.series.descriptionFormatter, but
-         * for an individual series. Overrides the chart wide configuration.
+         * (Highcharts) Deprecated. Use
+         * series.accessibility.point.descriptionFormatter instead.
+         *
+         * Same as accessibility.series.descriptionFormatter, but for an
+         * individual series. Overrides the chart wide configuration.
+         *
+         * @deprecated 8.0.0
          */
         pointDescriptionFormatter?: Function;
         /**
@@ -625,7 +638,7 @@ declare module "../highcharts.src" {
         /**
          * (Highcharts, Highmaps) The diameter of the pie relative to the plot
          * area. Can be a percentage or pixel value. Pixel values are given as
-         * integers. The default behaviour (as of 3.0) is to scale to the plot
+         * integers. The default behavior (as of 3.0) is to scale to the plot
          * area and give room for data labels within the plot area. slicedOffset
          * is also included in the default size calculation. As a consequence,
          * the size of the pie may vary when points are updated and data labels
@@ -634,8 +647,13 @@ declare module "../highcharts.src" {
          */
         size?: (number|string|null);
         /**
-         * (Highcharts) If set to `true`, the accessibility module will skip
-         * past the points in this series for keyboard navigation.
+         * (Highcharts) Deprecated. Use series.accessibility.keyboardNavigation
+         * instead.
+         *
+         * If set to `true`, the accessibility module will skip past the points
+         * in this series for keyboard navigation.
+         *
+         * @deprecated 8.0.0
          */
         skipKeyboardNavigation?: boolean;
         /**
@@ -687,7 +705,7 @@ declare module "../highcharts.src" {
          * is set, the option allows to disable zooming on an individual
          * non-cartesian series. By default zooming is enabled for all series.
          *
-         * Note: This option works only for non-cartesian series.
+         * **Note**: This option works only for non-cartesian series.
          */
         zoomEnabled?: boolean;
     }

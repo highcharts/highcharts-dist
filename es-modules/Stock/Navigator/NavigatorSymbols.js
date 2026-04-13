@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -10,8 +10,7 @@
  * */
 'use strict';
 import rect from '../../Core/Renderer/SVG/Symbols.js';
-import U from '../../Core/Utilities.js';
-const { relativeLength } = U;
+import { relativeLength } from '../../Shared/Utilities.js';
 /* *
  *
  *  Constants

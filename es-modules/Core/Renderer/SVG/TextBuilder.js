@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -12,8 +12,7 @@
 import AST from '../HTML/AST.js';
 import H from '../../Globals.js';
 const { doc, SVG_NS, win } = H;
-import U from '../../Utilities.js';
-const { attr, extend, fireEvent, isString, objectEach, pick } = U;
+import { attr, extend, fireEvent, isString, objectEach, pick } from '../../../Shared/Utilities.js';
 // Function used to test string length including an ellipsis
 const stringWithEllipsis = (text, currentIndex) => text.substring(0, currentIndex) + '\u2026';
 /* *
@@ -31,7 +30,6 @@ class TextBuilder {
     /**
      * Constructs a new TextBuilder instance.
      * @internal
-     * @param svgElement The SVG element to build text for.
      */
     constructor(svgElement) {
         const textStyles = svgElement.styles;

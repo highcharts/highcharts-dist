@@ -3,7 +3,7 @@
  *  X-range series module
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi, Lars A. V. Cabrera
+ *  Author: Torstein Hønsi, Lars A. V. Cabrera
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -17,10 +17,9 @@ import Color from '../../Core/Color/Color.js';
 const { parse: color } = Color;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
-import U from '../../Core/Utilities.js';
-const { addEvent, clamp, crisp, defined, extend, find, isNumber, isObject, merge, pick, pushUnique, relativeLength } = U;
 import XRangeSeriesDefaults from './XRangeSeriesDefaults.js';
 import XRangePoint from './XRangePoint.js';
+import { addEvent, clamp, crisp, defined, extend, find, isNumber, isObject, merge, pick, pushUnique, relativeLength } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -249,11 +248,11 @@ class XRangeSeries extends ColumnSeries {
         }
         tooltipPos[yIndex] = clamp(tooltipPos[yIndex] + ((inverted ? -1 : 1) * tooltipYOffset), yAxis.top - plotTop, yAxis.top + yAxis.len - plotTop - 1);
         // Add a partShapeArgs to the point, based on the shapeArgs property
-        partialFill = point.partialFill;
+        partialFill = point.partialFill ?? 0;
         if (partialFill) {
             // Get the partial fill amount
             if (isObject(partialFill)) {
-                partialFill = partialFill.amount;
+                partialFill = partialFill.amount || 0;
             }
             // If it was not a number, assume 0
             if (!isNumber(partialFill)) {

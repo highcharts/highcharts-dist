@@ -139,7 +139,7 @@ declare module "../highcharts.src" {
      * especially with grayscale text, the text outline doesn't work well, in
      * which cases it can be disabled by setting it to `"none"`. When `useHTML`
      * is true, the `textOutline` will not be picked up. In this, case, the same
-     * effect can be acheived through the `text-shadow` CSS property.
+     * effect can be achieved through the `text-shadow` CSS property.
      *
      * For some series types, where each point has an extent, like for example
      * tree maps, the data label may overflow the point. There are two

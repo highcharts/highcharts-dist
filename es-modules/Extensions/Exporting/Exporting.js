@@ -3,7 +3,7 @@
  *  Exporting module
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -23,8 +23,8 @@ import Fullscreen from './Fullscreen.js';
 import G from '../../Core/Globals.js';
 const { composed, doc, isFirefox, isMS, isSafari, SVG_NS, win } = G;
 import HU from '../../Core/HttpUtilities.js';
-import U from '../../Core/Utilities.js';
-const { addEvent, clearTimeout, createElement, css, discardElement, error, extend, find, fireEvent, isObject, merge, objectEach, pick, pushUnique, removeEvent, splat, uniqueKey } = U;
+import { addEvent, createElement, css, discardElement, extend, find, fireEvent, internalClearTimeout, isObject, merge, objectEach, pick, pushUnique, removeEvent, splat } from '../../Shared/Utilities.js';
+import { error, uniqueKey } from '../../Core/Utilities.js';
 AST.allowedAttributes.push('data-z-index', 'fill-opacity', 'filter', 'preserveAspectRatio', 'rx', 'ry', 'stroke-dasharray', 'stroke-linejoin', 'stroke-opacity', 'text-anchor', 'transform', 'transform-origin', 'version', 'viewBox', 'visibility', 'xmlns', 'xmlns:xlink');
 AST.allowedTags.push('desc', 'clippath', 'fedropshadow', 'femorphology', 'g', 'image');
 /* *
@@ -50,7 +50,7 @@ const domurl = win.URL || win.webkitURL || win;
  * @param {Highcharts.Chart} chart
  * The chart instance.
  */
-class Exporting {
+export class Exporting {
     /* *
      *
      *  Constructor
@@ -124,11 +124,16 @@ class Exporting {
     }
     /** @internal */
     static async fetchCSS(href) {
-        const content = await fetch(href)
-            .then((res) => res.text());
-        const newSheet = new CSSStyleSheet();
-        newSheet.replaceSync(content);
-        return newSheet;
+        try {
+            const res = await fetch(href);
+            const content = await res.text();
+            const newSheet = new CSSStyleSheet();
+            newSheet.replaceSync(content);
+            return newSheet;
+        }
+        catch {
+            error(`Warning: Failed to fetch CSS from ${href}`, false);
+        }
     }
     /** @internal */
     static async handleStyleSheet(sheet, resultArray) {
@@ -136,7 +141,9 @@ class Exporting {
             for (const rule of Array.from(sheet.cssRules)) {
                 if (rule instanceof CSSImportRule) {
                     const sheet = await Exporting.fetchCSS(rule.href);
-                    await Exporting.handleStyleSheet(sheet, resultArray);
+                    if (sheet) {
+                        await Exporting.handleStyleSheet(sheet, resultArray);
+                    }
                 }
                 if (rule instanceof CSSFontFaceRule) {
                     let cssText = rule.cssText;
@@ -155,7 +162,9 @@ class Exporting {
         catch {
             if (sheet.href) {
                 const newSheet = await Exporting.fetchCSS(sheet.href);
-                await Exporting.handleStyleSheet(newSheet, resultArray);
+                if (newSheet) {
+                    await Exporting.handleStyleSheet(newSheet, resultArray);
+                }
             }
         }
     }
@@ -267,7 +276,7 @@ class Exporting {
                 '.' +
                 (type === 'image/svg+xml' ? 'svg' : type.split('/')[1])),
             scale: exportingOptions?.scale || 1,
-            // Allow libURL to end with or without fordward slash
+            // Allow libURL to end with or without forward slash
             libURL: libURL?.slice(-1) !== '/' ? libURL + '/' : libURL
         };
     }
@@ -298,7 +307,9 @@ class Exporting {
         svg = svg.substr(0, split);
         if (useForeignObject) {
             // Some tags needs to be closed in xhtml (#13726)
-            svg = svg.replace(/(<(?:img|br).*?(?=\>))>/g, '$1 />');
+            svg = svg
+                .replace(/(<(?:img|br).*?(?=\>))>/g, '$1 />')
+                .replace(/(<svg(?![^>]*xmlns=)[^>]*)>/g, '$1 xmlns="http://www.w3.org/2000/svg">');
             // Move HTML into a foreignObject
         }
         else if (html && options?.exporting?.allowHTML) {
@@ -307,7 +318,9 @@ class Exporting {
                 'height="' + options.chart.height + '">' +
                 '<body xmlns="http://www.w3.org/1999/xhtml">' +
                 // Some tags needs to be closed in xhtml (#13726)
-                html.replace(/(<(?:img|br).*?(?=\>))>/g, '$1 />') +
+                html
+                    .replace(/(<(?:img|br).*?(?=\>))>/g, '$1 />')
+                    .replace(/(<svg(?![^>]*xmlns=)[^>]*)>/g, '$1 xmlns="http://www.w3.org/2000/svg">') +
                 '</body>' +
                 '</foreignObject>';
             svg = svg.replace('</svg>', html + '</svg>');
@@ -320,6 +333,8 @@ class Exporting {
             .replace(/url\([^#]+#/g, 'url(#')
             .replace(/<svg /, '<svg xmlns:xlink="http://www.w3.org/1999/xlink" ')
             .replace(/ (NS\d+\:)?href=/g, ' xlink:href=') // #3567
+            // #24102- restore href for image elements (boost)
+            .replace(/(<image[^>]*) xlink:href=/g, '$1 href=')
             .replace(/\n+/g, ' ')
             // Replace HTML entities, issue #347
             .replace(/&nbsp;/g, '\u00A0') // No-break space
@@ -390,7 +405,7 @@ class Exporting {
                 if (e) {
                     e.stopPropagation();
                 }
-                onclick.call(chart, e);
+                onclick.call(chart, e, chart);
             };
         }
         else if (menuItems) {
@@ -595,14 +610,14 @@ class Exporting {
                 // #10361, #9998
                 css(chart.renderTo, { overflow: 'hidden' });
                 css(chart.container, { overflow: 'hidden' });
-                clearTimeout(menu.hideTimer);
+                internalClearTimeout(menu.hideTimer);
                 fireEvent(chart, 'exportMenuHidden');
             };
             // Hide the menu some time after mouse leave (#1357)
             exporting.events?.push(addEvent(menu, 'mouseleave', function () {
                 menu.hideTimer = win.setTimeout(menu.hideMenu, 500);
             }), addEvent(menu, 'mouseenter', function () {
-                clearTimeout(menu.hideTimer);
+                internalClearTimeout(menu.hideTimer);
             }), 
             // Hide it on clicking or touching outside the menu (#2258,
             // #2335, #2407)
@@ -732,7 +747,7 @@ class Exporting {
         divElements.forEach(function (elem, i) {
             if (elem) {
                 // Remove the event handler
-                clearTimeout(elem.hideTimer); // #5427
+                internalClearTimeout(elem.hideTimer); // #5427
                 removeEvent(elem, 'mouseleave');
                 // Remove inline events
                 divElements[i] =
@@ -766,7 +781,6 @@ class Exporting {
      * Highcharts options pointing to our server.
      *
      * @async
-     * @internal
      * @function Highcharts.Exporting#downloadSVG
      *
      * @param {string} svg
@@ -909,7 +923,7 @@ class Exporting {
         }
         else {
             // Get the SVG representation
-            const svg = this.getSVGForExport(exportingOptions, chartOptions);
+            const svg = await this.getSVGForExport(exportingOptions, chartOptions);
             // Do the post
             if (exportingOptions.url) {
                 await HU.post(exportingOptions.url, {
@@ -954,7 +968,7 @@ class Exporting {
         else if (exportingOptions.type === 'application/pdf') {
             // The local must be false to fallback to server for PDF export
             exportingOptions.local = false;
-            // Allow fallbacking to server only for PDFs that failed locally
+            // Allow fallback to server only for PDFs that failed locally
             await this.exportChart(exportingOptions);
         }
     }
@@ -980,6 +994,16 @@ class Exporting {
             this.inlineStyles();
         }
         this.resolveCSSVariables();
+        // Move canvas contents over to SVG image elements
+        chart.container.querySelectorAll('canvas').forEach(function (canvas) {
+            const imageDataURL = canvas.toDataURL('image/png'), foreignObject = canvas.parentNode, imageElem = chart.renderer.image(imageDataURL, 0, 0, canvas.width, canvas.height);
+            css(imageElem.element, {
+                width: canvas.style.width,
+                height: canvas.style.height
+            });
+            foreignObject.parentNode.insertBefore(imageElem.element, foreignObject);
+            foreignObject.remove();
+        });
         return chart.container.innerHTML;
     }
     /**
@@ -1029,14 +1053,20 @@ class Exporting {
      * either merged in to the original item of the same `id`, or to the first
      * item if a common id is not found.
      *
-     * @return {string}
+     * @param {boolean} [async=false]
+     * Whether to get the SVG synchronously or asynchronously. The async mode
+     * should be used when additional resources like WebGPU canvas needs to be
+     * inlined before getting the SVG. In async mode, `getSVG` returns a
+     * Promise.
+     *
+     * @return {string|Promise<string>}
      * The SVG representation of the rendered chart.
      *
      * @emits Highcharts.Chart#event:getSVG
      *
      * @requires modules/exporting
      */
-    getSVG(chartOptions) {
+    getSVG(chartOptions, async) {
         const chart = this.chart;
         let svg, seriesOptions, 
         // Copy the options and add extra options
@@ -1076,12 +1106,12 @@ class Exporting {
         delete options.data; // #3004
         // Prepare for replicating the chart
         options.series = [];
-        chart.series.forEach(function (serie) {
-            seriesOptions = merge(serie.userOptions, {
+        chart.series.forEach(function (s) {
+            seriesOptions = merge(s.userOptions, {
                 animation: false, // Turn off animation
                 enableMouseTracking: false,
                 showCheckbox: false,
-                visible: serie.visible
+                visible: s.visible
             });
             // Used for the navigator series that has its own option set
             if (!seriesOptions.isInternal) {
@@ -1112,49 +1142,106 @@ class Exporting {
         // in the chart copy's user options, because a color axis should only be
         // added when the user actually applies it.
         options.colorAxis = chart.userOptions.colorAxis;
-        // Generate the chart copy
-        const chartCopy = new chart.constructor(options, chart.callback);
-        // Axis options and series options  (#2022, #3900, #5982)
-        if (chartOptions) {
-            ['xAxis', 'yAxis', 'series'].forEach(function (coll) {
-                if (chartOptions[coll]) {
-                    chartCopy.update({
-                        [coll]: chartOptions[coll]
-                    });
+        // Operations to carry out on the chart copy when created. We need to do
+        // this in a callback so that we can handle both sync and async calls.
+        const postprocessAndGetSVG = (chartCopy) => {
+            // Axis options and series options  (#2022, #3900, #5982)
+            if (chartOptions) {
+                ['xAxis', 'yAxis', 'series'].forEach(function (coll) {
+                    if (chartOptions[coll]) {
+                        chartCopy.update({
+                            [coll]: chartOptions[coll]
+                        });
+                    }
+                });
+            }
+            // Reflect axis extremes in the export (#5924)
+            chart.axes.forEach(function (axis) {
+                const axisCopy = find(chartCopy.axes, (copy) => copy.options.internalKey === axis.userOptions.internalKey);
+                if (axisCopy) {
+                    const extremes = axis.getExtremes(), 
+                    // Make sure min and max overrides in the
+                    // `exporting.chartOptions.xAxis` settings are
+                    // reflected. These should override user-set extremes
+                    // via zooming, scrollbar etc (#7873).
+                    exportOverride = splat(chartOptions?.[axis.coll] || {})[0], userMin = 'min' in exportOverride ?
+                        exportOverride.min :
+                        extremes.userMin, userMax = 'max' in exportOverride ?
+                        exportOverride.max :
+                        extremes.userMax;
+                    if (((typeof userMin !== 'undefined' &&
+                        userMin !== axisCopy.min) || (typeof userMax !== 'undefined' &&
+                        userMax !== axisCopy.max))) {
+                        axisCopy.setExtremes(userMin ?? void 0, userMax ?? void 0, true, false);
+                    }
                 }
             });
-        }
-        // Reflect axis extremes in the export (#5924)
-        chart.axes.forEach(function (axis) {
-            const axisCopy = find(chartCopy.axes, (copy) => copy.options.internalKey === axis.userOptions.internalKey);
-            if (axisCopy) {
-                const extremes = axis.getExtremes(), 
-                // Make sure min and max overrides in the
-                // `exporting.chartOptions.xAxis` settings are reflected.
-                // These should override user-set extremes via zooming,
-                // scrollbar etc (#7873).
-                exportOverride = splat(chartOptions?.[axis.coll] || {})[0], userMin = 'min' in exportOverride ?
-                    exportOverride.min :
-                    extremes.userMin, userMax = 'max' in exportOverride ?
-                    exportOverride.max :
-                    extremes.userMax;
-                if (((typeof userMin !== 'undefined' &&
-                    userMin !== axisCopy.min) || (typeof userMax !== 'undefined' &&
-                    userMax !== axisCopy.max))) {
-                    axisCopy.setExtremes(userMin ?? void 0, userMax ?? void 0, true, false);
-                }
+            const exporting = chartCopy.exporting;
+            // Prepare shadow DOM styles
+            if (exporting?.options.applyStyleSheets) {
+                this.applyShadowDOMStyles(chartCopy);
             }
+            // Get the SVG from the container's innerHTML
+            svg = exporting?.getChartHTML(chart.styledMode ||
+                options?.exporting?.applyStyleSheets) || '';
+            fireEvent(chart, 'getSVG', { chartCopy: chartCopy });
+            svg = Exporting.sanitizeSVG(svg, options);
+            // Free up memory
+            options = void 0;
+            chartCopy.destroy();
+            discardElement(sandbox);
+            return svg;
+        };
+        // Return a string in sync mode
+        if (!async) {
+            const chartCopy = new chart.constructor(options, chart.callback);
+            return postprocessAndGetSVG(chartCopy);
+        }
+        // Otherwise return a promise
+        return new Promise((resolve) => new chart.constructor(options || {}, function (e) {
+            chart.callback?.call(this, e);
+            resolve(postprocessAndGetSVG(this));
+        }));
+    }
+    /**
+     * Apply styles from the shadow DOM.
+     *
+     * @internal
+     * @function Highcharts.Exporting#applyShadowDOMStyles
+     *
+     * @param {Highcharts.Chart} chartCopy
+     * The copy of a chart for the export process.
+     *
+     * @requires modules/exporting
+     */
+    applyShadowDOMStyles(chartCopy) {
+        // Get the original chart
+        const chart = this.chart, shadowStyles = [];
+        // Set the original chart's container as the first node
+        let node = chart.container, rootNode;
+        // Find the shadow DOM root node
+        while (node) {
+            rootNode = node.getRootNode();
+            if (rootNode && typeof rootNode.host === 'object') {
+                break;
+            }
+            node = node.parentNode;
+            rootNode = null;
+        }
+        // Append shadow DOM styles into copied chart's container so the
+        // getComputedStyle sees them
+        rootNode?.querySelectorAll('style').forEach((style) => {
+            const clonedStyle = style.cloneNode(true);
+            chartCopy.container.appendChild(clonedStyle);
+            // Store for the later removal
+            shadowStyles.push(clonedStyle);
         });
-        // Get the SVG from the container's innerHTML
-        svg = chartCopy.exporting?.getChartHTML(chart.styledMode ||
-            options.exporting?.applyStyleSheets) || '';
-        fireEvent(chart, 'getSVG', { chartCopy: chartCopy });
-        svg = Exporting.sanitizeSVG(svg, options);
-        // Free up memory
-        options = void 0;
-        chartCopy.destroy();
-        discardElement(sandbox);
-        return svg;
+        addEvent(chart, 'getSVG', () => {
+            // Remove temporary Shadow DOM styles
+            shadowStyles.forEach((style) => {
+                style.remove();
+            });
+        });
     }
     /**
      * Gets the SVG for export using the getSVG function with additional
@@ -1173,16 +1260,16 @@ class Exporting {
      *
      * @requires modules/exporting
      */
-    getSVGForExport(exportingOptions, chartOptions) {
+    async getSVGForExport(exportingOptions, chartOptions) {
         const currentExportingOptions = this.options;
-        return this.getSVG(merge({ chart: { borderRadius: 0 } }, currentExportingOptions.chartOptions, chartOptions, {
+        return await this.getSVG(merge({ chart: { borderRadius: 0 } }, currentExportingOptions.chartOptions, chartOptions, {
             exporting: {
                 sourceWidth: (exportingOptions?.sourceWidth ||
                     currentExportingOptions.sourceWidth),
                 sourceHeight: (exportingOptions?.sourceHeight ||
                     currentExportingOptions.sourceHeight)
             }
-        }));
+        }), true);
     }
     /**
      * Analyze inherited styles from stylesheets and add them inline.
@@ -1231,7 +1318,7 @@ class Exporting {
              * @internal
              * @function filterStyles
              *
-             * @param {string | number | Highcharts.GradientColor | Highcharts.PatternObject | undefined} val
+             * @param {string|number|Highcharts.GradientColorObject|Highcharts.PatternObject|undefined} val
              * Style value.
              * @param {string} prop
              * Style property name.
@@ -1426,7 +1513,7 @@ class Exporting {
         });
         try {
             // Trigger hook to get chart copy
-            this.getSVGForExport(exportingOptions, chartOptions);
+            await this.getSVGForExport(exportingOptions, chartOptions);
             // Get the static array
             const imagesArray = images ? Array.from(images) : [];
             // Go through the images we want to embed
@@ -1707,7 +1794,7 @@ Exporting.unstyledElements = [
                 return this.exporting?.getFilename();
             },
             getSVG: function (chartOptions) {
-                return this.exporting?.getSVG(chartOptions);
+                return this.exporting?.getSVG(chartOptions, false);
             },
             print: function () {
                 return this.exporting?.print();
@@ -1761,21 +1848,27 @@ Exporting.unstyledElements = [
         // testing of export
         // let button, viewImage, viewSource;
         // if (!chart.renderer.forExport) {
-        //     viewImage = function (): void {
+        //     viewImage = async function (): Promise<void> {
         //         const div = doc.createElement('div');
-        //         div.innerHTML = chart.exporting?.getSVGForExport() || '';
+        //         div.style.margin = '10px';
+        //         div.innerHTML = await chart.exporting?.getSVGForExport() ||
+        //             '';
         //         chart.renderTo.parentNode.appendChild(div);
         //     };
-        //     viewSource = function (): void {
+        //     viewSource = async function (): Promise<void> {
         //         const pre = doc.createElement('pre');
-        //         pre.innerHTML = chart.exporting?.getSVGForExport()
+        //         pre.style.margin = '10px';
+        //         pre.innerHTML = (
+        //             await chart.exporting?.getSVGForExport() || ''
+        //         )
         //             .replace(/</g, '\n&lt;')
-        //             .replace(/>/g, '&gt;') || '';
+        //             .replace(/>/g, '&gt;');
         //         chart.renderTo.parentNode.appendChild(pre);
         //     };
-        //     viewImage();
+        //     viewImage().catch;
         //     // View SVG Image
         //     button = doc.createElement('button');
+        //     button.style.margin = '10px';
         //     button.innerHTML = 'View SVG Image';
         //     chart.renderTo.parentNode.appendChild(button);
         //     button.onclick = viewImage;
@@ -1850,12 +1943,6 @@ Exporting.unstyledElements = [
         }
     }
 })(Exporting || (Exporting = {}));
-/* *
- *
- *  Default Export
- *
- * */
-export default Exporting;
 /* *
  *
  *  API Declarations

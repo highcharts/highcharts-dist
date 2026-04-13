@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -12,8 +12,7 @@
 import H from './Globals.js';
 const { charts, composed, doc, noop, win } = H;
 import Pointer from './Pointer.js';
-import U from './Utilities.js';
-const { addEvent, attr, css, defined, objectEach, pick, pushUnique, removeEvent } = U;
+import { addEvent, attr, css, defined, objectEach, pick, pushUnique, removeEvent } from '../Shared/Utilities.js';
 /* *
  *
  *  Constants
@@ -27,7 +26,6 @@ const hasPointerEvent = !!win.PointerEvent;
  *  Functions
  *
  * */
-/* eslint-disable valid-jsdoc */
 /** @internal */
 function getWebkitTouches() {
     const fake = [];

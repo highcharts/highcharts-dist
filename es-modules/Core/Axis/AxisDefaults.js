@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -193,6 +193,9 @@ var AxisDefaults;
          * Configure a crosshair that follows either the mouse pointer or the
          * hovered point.
          *
+         * Support boolean or object definition. If `true`, a crosshair with
+         * default settings will be displayed.
+         *
          * In styled mode, the crosshairs are styled in the
          * `.highcharts-crosshair`, `.highcharts-crosshair-thin` or
          * `.highcharts-xaxis-category` classes.
@@ -333,6 +336,9 @@ var AxisDefaults;
          */
         /**
          * Formatter function for the label text.
+         * Since v12.6.0, the callback also receives `ctx` as the second
+         * argument, so that arrow functions can access the same context as
+         * regular functions using `this`.
          *
          * @type      {Highcharts.XAxisCrosshairLabelFormatterCallbackFunction}
          * @since     2.1
@@ -365,6 +371,17 @@ var AxisDefaults;
          * @since     2.1
          * @product   highstock
          * @apioption xAxis.crosshair.label.style
+         */
+        /**
+         * The number of milliseconds to wait until the crosshair is shown when
+         * the mouse is over a point. Works on initial hover.
+         *
+         * @sample {highcharts|highstock} highcharts/tooltip/showdelay/
+         *
+         * @type      {number}
+         * @default   0
+         * @since     next
+         * @apioption xAxis.crosshair.showDelay
          */
         /**
          * Whether the crosshair should snap to the point or follow the pointer
@@ -884,6 +901,8 @@ var AxisDefaults;
              *         Linked category names
              * @sample {highcharts} highcharts/xaxis/labels-format-custom/
              *         Custom number format
+             * @sample {highstock} stock/xaxis/labels-format/
+             *         Added units on Y axis
              *
              * @type      {string}
              * @since     3.0
@@ -893,7 +912,9 @@ var AxisDefaults;
              * Callback JavaScript function to format the label. The value
              * is given by `this.value`. Additional properties for `this` are
              * `axis`, `chart`, `isFirst`, `isLast` and `text` which holds the
-             * value of the default formatter.
+             * value of the default formatter. Since v12.6.0, the callback also
+             * receives `ctx` as the first argument, so that arrow functions can
+             * access the same context as regular functions using `this`.
              *
              * Defaults to a built in function returning a formatted string
              * depending on whether the axis is `category`, `datetime`,
@@ -1740,10 +1761,13 @@ var AxisDefaults;
         tickPosition: 'outside',
         /**
          * A callback function returning array defining where the ticks are
-         * laid out on the axis. This overrides the default behaviour of
+         * laid out on the axis. This overrides the default behavior of
          * [tickPixelInterval](#xAxis.tickPixelInterval) and [tickInterval](
          * #xAxis.tickInterval). The automatic tick positions are accessible
          * through `this.tickPositions` and can be modified by the callback.
+         * Since v12.6.0, the callback also receives `ctx` as the third
+         * argument, so that arrow functions can access the same context as
+         * regular functions using `this`.
          *
          * @see [tickPositions](#xAxis.tickPositions)
          *
@@ -1757,7 +1781,7 @@ var AxisDefaults;
          */
         /**
          * An array defining where the ticks are laid out on the axis. This
-         * overrides the default behaviour of [tickPixelInterval](
+         * overrides the default behavior of [tickPixelInterval](
          * #xAxis.tickPixelInterval) and [tickInterval](#xAxis.tickInterval).
          *
          * Note: When working with date-time axes, be aware of time zone
@@ -2731,7 +2755,7 @@ var AxisDefaults;
          * The actual text of the axis title. Horizontal texts can contain
          * HTML, but rotated texts are painted using vector techniques and
          * must be clean text. The Y axis title is disabled by setting the
-         * `text` option to `undefined`. The default value is overriden by
+         * `text` option to `undefined`. The default value is overridden by
          * the `lang.yAxisTitle` language option.
          *
          * @sample {highcharts} highcharts/xaxis/title-text/
@@ -2995,10 +3019,11 @@ var AxisDefaults;
              * @since 7.1.3
              */
             overflow: 'justify',
-            /* eslint-disable valid-jsdoc */
             /**
              * Callback JavaScript function to format the label. The value is
-             * given by `this.total`.
+             * given by `this.total`. Since v12.6.0, the callback also receives
+             * `ctx` as the first argument, so that arrow functions can access
+             * the same context as regular functions using `this`.
              *
              * @sample {highcharts} highcharts/yaxis/stacklabels-formatter/
              *         Added units to stack total value
@@ -3008,9 +3033,7 @@ var AxisDefaults;
              * @product highcharts
              */
             formatter: function () {
-                const { numberFormatter } = this.axis.chart;
-                /* eslint-enable valid-jsdoc */
-                return numberFormatter(this.total || 0, -1);
+                return this.axis.chart.numberFormatter(this.total || 0, -1);
             },
             /**
              * CSS styles for the label.

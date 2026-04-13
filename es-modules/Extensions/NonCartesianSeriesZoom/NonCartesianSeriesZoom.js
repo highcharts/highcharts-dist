@@ -11,9 +11,8 @@
 'use strict';
 import H from '../../Core/Globals.js';
 const { composed } = H;
-import U from '../../Core/Utilities.js';
-const { addEvent, pushUnique } = U;
-/* /* *
+import { addEvent, pushUnique } from '../../Shared/Utilities.js';
+/* *
  *
  *  Functions
  *
@@ -272,15 +271,7 @@ function onInitDataLabelsGroup({ index, zIndex }) {
  *  Class
  *
  * */
-/**
- * The series type
- *
- * @internal
- * @class
- * @name Highcharts.seriesTypes.tiledwebmap
- *
- * @augments Highcharts.Series
- */
+/** @internal */
 class NonCartesianSeriesZoom {
     /* *
      *
@@ -303,6 +294,7 @@ class NonCartesianSeriesZoom {
  *  Default Export
  *
  * */
+/** @internal */
 export default NonCartesianSeriesZoom;
 /* *
  *
@@ -314,21 +306,12 @@ export default NonCartesianSeriesZoom;
  * allows to disable zooming on an individual non-cartesian series. By default
  * zooming is enabled for all series.
  *
- * Note: This option works only for non-cartesian series.
+ * **Note**: This option works only for non-cartesian series.
  *
  * @type      {boolean}
- * @since 12.3.0
+ * @default   true
+ * @since     12.3.0
+ * @requires  modules/non-cartesian-zoom
  * @apioption plotOptions.series.zoomEnabled
- */
-/**
- * Whether to zoom non-cartesian series. If `chart.zooming` is set, the option
- * allows to disable zooming on an individual non-cartesian series. By default
- * zooming is enabled for all series.
- *
- * Note: This option works only for non-cartesian series.
- *
- * @type      {boolean}
- * @since 12.3.0
- * @apioption series.zoomEnabled
  */
 (''); // Keeps doclets above in JS file

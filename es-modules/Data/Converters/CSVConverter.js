@@ -17,8 +17,7 @@
 'use strict';
 import DataConverter from './DataConverter.js';
 import DataConverterUtils from './DataConverterUtils.js';
-import U from '../../Core/Utilities.js';
-const { merge } = U;
+import { merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -65,9 +64,9 @@ class CSVConverter extends DataConverter {
      *
      * @param {Partial<CSVConverterOptions>} [options]
      * Options for the parser.
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
-     * @return {DataTable.ColumnCollection}
+     * @return {DataTableColumnCollection}
      * The parsed column collection.
      *
      * @emits CSVDataParser#parse
@@ -271,7 +270,7 @@ class CSVConverter extends DataConverter {
         }, linesCount = lines.length;
         for (let i = 0; i < linesCount; i++) {
             let inStr = false, c, cn, cl, token = '';
-            // We should be able to detect dateformats within 13 rows
+            // We should be able to detect dateFormats within 13 rows
             if (i > 13) {
                 break;
             }

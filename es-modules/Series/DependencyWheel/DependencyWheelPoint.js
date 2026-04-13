@@ -3,7 +3,7 @@
  *  Dependency wheel module
  *
  *  (c) 2018-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -13,8 +13,7 @@
 'use strict';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { sankey: { prototype: { pointClass: SankeyPoint } } } = SeriesRegistry.seriesTypes;
-import U from '../../Core/Utilities.js';
-const { pInt, wrap } = U;
+import { pInt, wrap } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class

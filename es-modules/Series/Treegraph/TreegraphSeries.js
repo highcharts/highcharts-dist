@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Pawel Lysy Grzegorz Blachlinski
+ *  Author: Paweł Lysy Grzegorz Blachliński
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -19,13 +19,12 @@ import TreegraphNode from './TreegraphNode.js';
 import TreegraphPoint from './TreegraphPoint.js';
 import TU from '../TreeUtilities.js';
 const { getLevelOptions, getNodeWidth } = TU;
-import U from '../../Core/Utilities.js';
-const { arrayMax, crisp, extend, merge, pick, relativeLength, splat } = U;
 import TreegraphLink from './TreegraphLink.js';
 import TreegraphLayout from './TreegraphLayout.js';
 import TreegraphSeriesDefaults from './TreegraphSeriesDefaults.js';
 import SVGElement from '../../Core/Renderer/SVG/SVGElement.js';
 import TextPath from '../../Extensions/TextPath.js';
+import { arrayMax, crisp, extend, merge, pick, relativeLength, splat } from '../../Shared/Utilities.js';
 TextPath.compose(SVGElement);
 /* *
  *
@@ -59,7 +58,7 @@ class TreegraphSeries extends TreemapSeries {
      * */
     init() {
         super.init.apply(this, arguments);
-        this.layoutAlgorythm = new TreegraphLayout();
+        this.layoutAlgorithm = new TreegraphLayout();
         // Register the link data labels in the label collector for overlap
         // detection.
         const series = this, collectors = this.chart.labelCollectors, collectorFunc = function () {
@@ -212,7 +211,7 @@ class TreegraphSeries extends TreemapSeries {
         this.setCollapsedStatus(tree, true);
         series.links = series.getLinks();
         series.setTreeValues(tree);
-        this.layoutAlgorythm.calculatePositions(series);
+        this.layoutAlgorithm.calculatePositions(series);
         series.layoutModifier = this.getLayoutModifiers();
         this.points.forEach((point) => {
             this.translateNode(point);
@@ -332,7 +331,7 @@ class TreegraphSeries extends TreemapSeries {
         point.visible = visible;
     }
     /**
-     * Treegraph has two separate collecions of nodes and lines,
+     * Treegraph has two separate collections of nodes and lines,
      * render dataLabels for both sets.
      */
     drawDataLabels() {

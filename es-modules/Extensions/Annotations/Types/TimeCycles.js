@@ -1,6 +1,6 @@
 /* *
  *
- *  Authors: Rafal Sebestjanski and Pawel Lysy
+ *  Authors: Rafał Sebestjański and Paweł Lysy
  *
  *
  * */
@@ -10,8 +10,7 @@ import CrookedLine from './CrookedLine.js';
 import D from '../../../Core/Defaults.js';
 const { defaultOptions } = D;
 import ControlPoint from '../ControlPoint.js';
-import U from '../../../Core/Utilities.js';
-const { merge, isNumber, defined } = U;
+import { defined, isNumber, merge } from '../../../Shared/Utilities.js';
 if (defaultOptions.annotations?.types) {
     defaultOptions.annotations.types.timeCycles = merge(defaultOptions.annotations.types.crookedLine, 
     /**

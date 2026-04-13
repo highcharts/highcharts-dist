@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2009-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -10,8 +10,7 @@
  * */
 'use strict';
 import StackItem from './Stacking/StackItem.js';
-import U from '../Utilities.js';
-const { addEvent, find, fireEvent, isArray, isNumber, pick } = U;
+import { addEvent, find, fireEvent, isArray, isNumber, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -194,7 +193,7 @@ var BrokenAxis;
          *
          * @type      {number}
          * @default   0
-         * @product   highstock
+         * @product   highcharts highstock
          * @requires  modules/broken-axis
          * @apioption plotOptions.series.gapSize
          */
@@ -217,7 +216,7 @@ var BrokenAxis;
          * @type       {string}
          * @default    relative
          * @since      5.0.13
-         * @product    highstock
+         * @product    highcharts highstock
          * @validvalue ["relative", "value"]
          * @requires   modules/broken-axis
          * @apioption  plotOptions.series.gapUnit

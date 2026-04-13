@@ -12,8 +12,8 @@
 import Axis from './Axis.js';
 import H from '../Globals.js';
 const { dateFormats } = H;
-import U from '../Utilities.js';
-const { addEvent, defined, erase, find, isArray, isNumber, merge, pick, timeUnits, wrap } = U;
+import { defined, find, erase, isArray, isNumber, isObject as isObjectUtils, merge, pick, wrap, addEvent } from '../../Shared/Utilities.js';
+import { timeUnits } from '../Utilities.js';
 /* *
  *
  *  Enums
@@ -42,7 +42,7 @@ function argsToArray(args) {
 /** @internal */
 function isObject(x) {
     // Always use strict mode
-    return U.isObject(x, true);
+    return isObjectUtils(x, true);
 }
 /** @internal */
 function applyGridOptions(axis) {
@@ -240,7 +240,7 @@ function onAfterInit() {
                     columns: void 0
                 }
             });
-            const column = new Axis(axis.chart, columnOptions, 'yAxis');
+            const column = new Axis(axis.chart, columnOptions, axis.coll);
             column.grid.isColumn = true;
             column.grid.columnIndex = columnIndex;
             // Remove column axis from chart axes array, and place it
@@ -1014,6 +1014,8 @@ export default GridAxis;
  *         Left axis as a table
  * @sample gantt/demo/treegrid-columns
  *         Collapsible tree grid with columns
+ * @sample gantt/grid-axis/horizontal-columns
+ *         Horizontal grid axis with columns rendered as rows
  *
  * @type      {Array<Highcharts.XAxisOptions>}
  * @apioption xAxis.grid.columns
@@ -1038,7 +1040,7 @@ export default GridAxis;
  * the [#yAxis.staticScale](yAxis.staticScale) option.
  *
  * @sample gantt/grid-axis/cellheight
- *         Gant chart with custom cell height
+ *         Gantt chart with custom cell height
  * @type      {number}
  * @apioption xAxis.grid.cellHeight
  */

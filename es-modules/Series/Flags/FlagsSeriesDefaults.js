@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -172,7 +172,7 @@ const FlagsSeriesDefaults = {
     /**
      * The fill color for the flags.
      *
-     * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @type    {Highcharts.ColorType}
      * @product highstock
      */
     fillColor: "#ffffff" /* Palette.backgroundColor */,
@@ -182,7 +182,7 @@ const FlagsSeriesDefaults = {
      * In styled mode, the stroke is set in the
      * `.highcharts-flag-series.highcharts-point` rule.
      *
-     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @type      {Highcharts.ColorType}
      * @default   #000000
      * @product   highstock
      * @apioption plotOptions.flags.lineColor
@@ -202,14 +202,14 @@ const FlagsSeriesDefaults = {
             /**
              * The color of the line/border of the flag.
              *
-             * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+             * @type    {Highcharts.ColorType}
              * @product highstock
              */
             lineColor: "#000000" /* Palette.neutralColor100 */,
             /**
              * The fill or background color of the flag.
              *
-             * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+             * @type    {Highcharts.ColorType}
              * @product highstock
              */
             fillColor: "#ccd3ff" /* Palette.highlightColor20 */
@@ -277,7 +277,7 @@ const FlagsSeriesDefaults = {
  * The fill color of an individual flag. By default it inherits from
  * the series color.
  *
- * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+ * @type      {Highcharts.ColorType}
  * @product   highstock
  * @apioption series.flags.data.fillColor
  */

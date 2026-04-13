@@ -7,8 +7,7 @@ import Controllable from './Controllable.js';
 import F from '../../../Core/Templating.js';
 const { format } = F;
 import MockPoint from '../MockPoint.js';
-import U from '../../../Core/Utilities.js';
-const { extend, getAlignFactor, isNumber, pick } = U;
+import { extend, getAlignFactor, isNumber, pick } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -251,7 +250,7 @@ class ControllableLabel extends Controllable {
         label.attr({
             text: text ?
                 format(String(text), point, this.annotation.chart) :
-                options.formatter.call(point, this)
+                options.formatter.call(point, point)
         });
         const anchor = this.anchor(point);
         const attrs = this.position(anchor);
@@ -310,7 +309,7 @@ class ControllableLabel extends Controllable {
                 });
             }
             else if (itemOptions.positioner) {
-                itemPosition = itemOptions.positioner.call(this);
+                itemPosition = itemOptions.positioner.call(this, this);
             }
             else {
                 alignTo = {

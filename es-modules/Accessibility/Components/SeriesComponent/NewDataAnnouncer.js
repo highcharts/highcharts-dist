@@ -13,20 +13,18 @@
 'use strict';
 import H from '../../../Core/Globals.js';
 const { composed } = H;
-import U from '../../../Core/Utilities.js';
-const { addEvent, defined, pushUnique } = U;
 import Announcer from '../../Utils/Announcer.js';
 import ChartUtilities from '../../Utils/ChartUtilities.js';
 const { getChartTitle } = ChartUtilities;
 import EventProvider from '../../Utils/EventProvider.js';
 import SeriesDescriber from './SeriesDescriber.js';
+import { addEvent, defined, internalClearTimeout, pushUnique } from '../../../Shared/Utilities.js';
 const { defaultPointDescriptionFormatter, defaultSeriesDescriptionFormatter } = SeriesDescriber;
 /* *
  *
  *  Functions
  *
  * */
-/* eslint-disable valid-jsdoc */
 /**
  * @private
  */
@@ -80,7 +78,6 @@ class NewDataAnnouncer {
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * Initialize the new data announcer.
      * @private
@@ -184,7 +181,7 @@ class NewDataAnnouncer {
             if (message) {
                 // Is there already one queued?
                 if (this.queuedAnnouncement) {
-                    clearTimeout(this.queuedAnnouncementTimer);
+                    internalClearTimeout(this.queuedAnnouncementTimer);
                 }
                 // Build the announcement
                 this.queuedAnnouncement = {
@@ -221,7 +218,7 @@ class NewDataAnnouncer {
         const chart = this.chart, annOptions = chart.options.accessibility.announceNewData;
         // User supplied formatter?
         if (annOptions.announcementFormatter) {
-            const formatterRes = annOptions.announcementFormatter(dirtySeries, newSeries, newPoint);
+            const formatterRes = annOptions.announcementFormatter(dirtySeries, newSeries, newPoint, this);
             if (formatterRes !== false) {
                 return formatterRes.length ? formatterRes : null;
             }
@@ -289,7 +286,6 @@ class NewDataAnnouncer {
     /**
      * On new data in the series, make sure we add it to the dirty list.
      * @private
-     * @param {Highcharts.Series} series
      */
     function seriesOnUpdatedData() {
         const chart = this.chart, newDataAnnouncer = chart.accessibility?.components

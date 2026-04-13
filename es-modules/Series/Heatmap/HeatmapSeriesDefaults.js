@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -9,8 +9,7 @@
  *
  * */
 'use strict';
-import U from '../../Core/Utilities.js';
-const { isNumber } = U;
+import { isNumber } from '../../Shared/Utilities.js';
 /* *
  *
  *  API Options
@@ -72,7 +71,7 @@ const HeatmapSeriesDefaults = {
      * options are set in the [colorAxis](#colorAxis), the default value
      * is pulled from the [options.colors](#colors) array.
      *
-     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @type      {Highcharts.ColorType}
      * @since     4.0
      * @product   highcharts
      * @apioption plotOptions.heatmap.color
@@ -120,7 +119,7 @@ const HeatmapSeriesDefaults = {
      * The color applied to null points. In styled mode, a general CSS class
      * is applied instead.
      *
-     * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @type {Highcharts.ColorType}
      */
     nullColor: "#f7f7f7" /* Palette.neutralColor3 */,
     dataLabels: {
@@ -377,7 +376,7 @@ const HeatmapSeriesDefaults = {
  * explicitly, as we use the color to denote the `value`. Options for
  * this are set in the [colorAxis](#colorAxis) configuration.
  *
- * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+ * @type      {Highcharts.ColorType}
  * @product   highcharts highmaps
  * @apioption series.heatmap.data.color
  */

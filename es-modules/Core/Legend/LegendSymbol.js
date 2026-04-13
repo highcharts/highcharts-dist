@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -9,8 +9,7 @@
  *
  * */
 'use strict';
-import U from '../Utilities.js';
-const { extend, merge, pick } = U;
+import { extend, merge, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Namespace
@@ -107,32 +106,6 @@ var LegendSymbol;
         }
     }
     LegendSymbol.lineMarker = lineMarker;
-    /**
-     * Get the series' symbol in the legend.
-     *
-     * This method should be overridable to create custom symbols through
-     * Highcharts.seriesTypes[type].prototype.drawLegendSymbol.
-     *
-     * @function Highcharts.LegendSymbolMixin.rectangle
-     *
-     * @param {Highcharts.Legend} legend
-     * The legend object
-     *
-     * @param {Highcharts.Point|Highcharts.Series} item
-     * The series (this) or point
-     */
-    function rectangle(legend, item) {
-        const legendItem = item.legendItem || {}, options = legend.options, symbolHeight = legend.symbolHeight, square = options.squareSymbol, symbolWidth = square ? symbolHeight : legend.symbolWidth;
-        legendItem.symbol = this.chart.renderer
-            .rect(square ? (legend.symbolWidth - symbolHeight) / 2 : 0, legend.baseline - symbolHeight + 1, // #3988
-        symbolWidth, symbolHeight, pick(legend.options.symbolRadius, symbolHeight / 2))
-            .addClass('highcharts-point')
-            .attr({
-            zIndex: 3
-        })
-            .add(legendItem.group);
-    }
-    LegendSymbol.rectangle = rectangle;
 })(LegendSymbol || (LegendSymbol = {}));
 /* *
  *

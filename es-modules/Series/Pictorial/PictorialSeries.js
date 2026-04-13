@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi, Magdalena Gut
+ *  Author: Torstein Hønsi, Magdalena Gut
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -24,12 +24,11 @@ import Series from '../../Core/Series/Series.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import StackItem from '../../Core/Axis/Stacking/StackItem.js';
 import SVGRenderer from '../../Core/Renderer/SVG/SVGRenderer.js';
-import U from '../../Core/Utilities.js';
+import { addEvent, defined, merge, objectEach, pick } from '../../Shared/Utilities.js';
 const ColumnSeries = SeriesRegistry.seriesTypes.column;
 PatternFill.compose(Chart, Series, SVGRenderer);
 const { animObject } = A;
 const { getStackMetrics, invertShadowGroup, rescalePatternFill } = PictorialUtilities;
-const { addEvent, defined, merge, objectEach, pick } = U;
 /* *
  *
  *  Class
@@ -50,7 +49,6 @@ class PictorialSeries extends ColumnSeries {
      * Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * Animate in the series. Called internally twice. First with the `init`
      * parameter set to true, which sets up the initial state of the
@@ -485,7 +483,7 @@ export default PictorialSeries;
  * The color of the `stackShadow` border.
  *
  * @declare   Highcharts.YAxisOptions
- * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+ * @type      {Highcharts.ColorType}
  * @default   transparent
  * @product   highcharts
  * @requires  modules/pictorial
@@ -505,7 +503,7 @@ export default PictorialSeries;
  * The color of the `stackShadow`.
  *
  * @declare   Highcharts.YAxisOptions
- * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+ * @type      {Highcharts.ColorType}
  * @default   #dedede
  * @product   highcharts
  * @requires  modules/pictorial

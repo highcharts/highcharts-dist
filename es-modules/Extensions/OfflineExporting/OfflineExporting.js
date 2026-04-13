@@ -3,7 +3,7 @@
  *  Client side exporting module
  *
  *  (c) 2015-2026 Highsoft AS
- *  Author: Torstein Honsi / Oystein Moseng
+ *  Author: Torstein Hønsi / Øystein Moseng
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -19,8 +19,7 @@ import { downloadURL, getScript } from '../../Shared/DownloadURL.js';
 import G from '../../Core/Globals.js';
 const { composed, doc, win } = G;
 import OfflineExportingDefaults from './OfflineExportingDefaults.js';
-import U from '../../Core/Utilities.js';
-const { addEvent, extend, pushUnique } = U;
+import { addEvent, extend, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -91,9 +90,9 @@ var OfflineExporting;
         });
         // Update with defaults of the offline exporting module
         setOptions(OfflineExportingDefaults);
-        // Additionaly, extend the menuItems with the offline exporting variants
+        // Additionally, extend menuItems with the offline exporting variants
         const menuItems = getOptions().exporting?.buttons?.contextButton?.menuItems;
-        menuItems && menuItems.push('downloadPDF');
+        menuItems?.push('downloadPDF');
     }
     OfflineExporting.compose = compose;
     /**

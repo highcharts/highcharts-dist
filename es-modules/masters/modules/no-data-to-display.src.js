@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.5.0 (2026-01-12)
+ * @license Highcharts JS v12.6.0 (2026-04-13)
  * @module highcharts/modules/no-data-to-display
  * @requires highcharts
  *
  * Plugin for displaying a message when there is no data visible in chart.
  *
  * (c) 2010-2026 Highsoft AS
- * Author: Oystein Moseng
+ * Author: Øystein Moseng
  *
  * A commercial license may be required depending on use.
  * See www.highcharts.com/license

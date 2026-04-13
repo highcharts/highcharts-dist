@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.5.0 (2026-01-12)
+ * @license Highcharts JS v12.6.0 (2026-04-13)
  * @module highcharts/modules/data-tools
  * @requires highcharts
  *
@@ -99,6 +99,1368 @@ __webpack_require__.d(__webpack_exports__, {
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts"],"commonjs":["highcharts"],"commonjs2":["highcharts"],"root":["Highcharts"]}
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_ = __webpack_require__(944);
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default = /*#__PURE__*/__webpack_require__.n(highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_);
+;// ./code/es-modules/Shared/Utilities.js
+/* *
+ *
+ *  (c) 2009-2026 Highsoft AS
+ *
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
+ *
+ *
+ * */
+
+const { doc, win } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+/**
+ * Add an event listener.
+ *
+ * @function Highcharts.addEvent<T>
+ *
+ * @param  {Highcharts.Class<T>|T} el
+ *         The element or object to add a listener to. It can be a
+ *         {@link HTMLDOMElement}, an {@link SVGElement} or any other object.
+ *
+ * @param  {string} type
+ *         The event type.
+ *
+ * @param  {Highcharts.EventCallbackFunction<T>|Function} fn
+ *         The function callback to execute when the event is fired.
+ *
+ * @param  {Highcharts.EventOptionsObject} [options]
+ *         Options for adding the event.
+ *
+ * @sample highcharts/members/addevent
+ *         Use a general `render` event to draw shapes on a chart
+ *
+ * @return {Function}
+ *         A callback function to remove the added event.
+ */
+function addEvent(el, type, fn, options = {}) {
+    // Add hcEvents to either the prototype (in case we're running addEvent on a
+    // class) or the instance. If hasOwnProperty('hcEvents') is false, it is
+    // inherited down the prototype chain, in which case we need to set the
+    // property on this instance (which may itself be a prototype).
+    const owner = typeof el === 'function' && el.prototype || el;
+    if (!Object.hasOwnProperty.call(owner, 'hcEvents')) {
+        owner.hcEvents = {};
+    }
+    const events = owner.hcEvents;
+    // Allow click events added to points, otherwise they will be prevented by
+    // the TouchPointer.pinch function after a pinch zoom operation (#7091).
+    if ((highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default()).Point && // Without H a dependency loop occurs
+        el instanceof (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default()).Point &&
+        el.series &&
+        el.series.chart) {
+        el.series.chart.runTrackerClick = true;
+    }
+    // Handle DOM events
+    // If the browser supports passive events, add it to improve performance
+    // on touch events (#11353).
+    const addEventListener = el.addEventListener;
+    if (addEventListener) {
+        addEventListener.call(el, type, fn, (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default()).supportsPassiveEvents ? {
+            passive: options.passive === void 0 ?
+                type.indexOf('touch') !== -1 : options.passive,
+            capture: false
+        } : false);
+    }
+    if (!events[type]) {
+        events[type] = [];
+    }
+    const eventObject = {
+        fn,
+        order: typeof options.order === 'number' ? options.order : Infinity
+    };
+    events[type].push(eventObject);
+    // Order the calls
+    events[type].sort((a, b) => a.order - b.order);
+    // Return a function that can be called to remove this event.
+    return function () {
+        removeEvent(el, type, fn);
+    };
+}
+/**
+ * Non-recursive method to find the lowest member of an array. `Math.min` raises
+ * a maximum call stack size exceeded error in Chrome when trying to apply more
+ * than 150.000 points. This method is slightly slower, but safe.
+ *
+ * @function Highcharts.arrayMin
+ *
+ * @param {Array<*>} data
+ *        An array of numbers.
+ *
+ * @return {number}
+ *         The lowest number.
+ */
+function arrayMin(data) {
+    let i = data.length, min = data[0];
+    while (i--) {
+        if (data[i] < min) {
+            min = data[i];
+        }
+    }
+    return min;
+}
+/**
+ * Non-recursive method to find the lowest member of an array. `Math.max` raises
+ * a maximum call stack size exceeded error in Chrome when trying to apply more
+ * than 150.000 points. This method is slightly slower, but safe.
+ *
+ * @function Highcharts.arrayMax
+ *
+ * @param {Array<*>} data
+ *        An array of numbers.
+ *
+ * @return {number}
+ *         The highest number.
+ */
+function arrayMax(data) {
+    let i = data.length, max = data[0];
+    while (i--) {
+        if (data[i] > max) {
+            max = data[i];
+        }
+    }
+    return max;
+}
+/**
+ * Set or get an attribute or an object of attributes.
+ *
+ * To use as a setter, pass a key and a value, or let the second argument be a
+ * collection of keys and values. When using a collection, passing a value of
+ * `null` or `undefined` will remove the attribute.
+ *
+ * To use as a getter, pass only a string as the second argument.
+ *
+ * @function Highcharts.attr
+ *
+ * @param {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement} elem
+ *        The DOM element to receive the attribute(s).
+ *
+ * @param {string|Highcharts.HTMLAttributes|Highcharts.SVGAttributes} [keyOrAttribs]
+ *        The property or an object of key-value pairs.
+ *
+ * @param {number|string} [value]
+ *        The value if a single property is set.
+ *
+ * @return {string|null|undefined}
+ *         When used as a getter, return the value.
+ */
+function attr(elem, keyOrAttribs, value) {
+    const isGetter = isString(keyOrAttribs) && !defined(value);
+    let ret;
+    const attrSingle = (value, key) => {
+        // Set the value
+        if (defined(value)) {
+            elem.setAttribute(key, value);
+            // Get the value
+        }
+        else if (isGetter) {
+            ret = elem.getAttribute(key);
+            // IE7 and below cannot get class through getAttribute (#7850)
+            if (!ret && key === 'class') {
+                ret = elem.getAttribute(key + 'Name');
+            }
+            // Remove the value
+        }
+        else {
+            elem.removeAttribute(key);
+        }
+    };
+    // If keyOrAttribs is a string
+    if (isString(keyOrAttribs)) {
+        attrSingle(value, keyOrAttribs);
+        // Else if keyOrAttribs is defined, it is a hash of key/value pairs
+    }
+    else {
+        objectEach(keyOrAttribs, attrSingle);
+    }
+    return ret;
+}
+/**
+ * Constrain a value to within a lower and upper threshold.
+ *
+ * @internal
+ * @param {number} value The initial value
+ * @param {number} min The lower threshold
+ * @param {number} max The upper threshold
+ * @return {number} Returns a number value within min and max.
+ */
+function clamp(value, min, max) {
+    return value > min ? value < max ? value : max : min;
+}
+/**
+ * Fix JS round off float errors.
+ *
+ * @function Highcharts.correctFloat
+ *
+ * @param {number} num
+ *        A float number to fix.
+ *
+ * @param {number} [prec=14]
+ *        The precision.
+ *
+ * @return {number}
+ *         The corrected float number.
+ */
+function correctFloat(num, prec) {
+    // When the number is higher than 1e14 use the number (#16275)
+    return num > 1e14 ? num : parseFloat(num.toPrecision(prec || 14));
+}
+/**
+ * Utility function to create an HTML element with attributes and styles.
+ *
+ * @function Highcharts.createElement
+ *
+ * @param {string} tag
+ *        The HTML tag.
+ *
+ * @param {Highcharts.HTMLAttributes} [attribs]
+ *        Attributes as an object of key-value pairs.
+ *
+ * @param {Highcharts.CSSObject} [styles]
+ *        Styles as an object of key-value pairs.
+ *
+ * @param {Highcharts.HTMLDOMElement} [parent]
+ *        The parent HTML object.
+ *
+ * @param {boolean} [nopad=false]
+ *        If true, remove all padding, border and margin.
+ *
+ * @return {Highcharts.HTMLDOMElement}
+ *         The created DOM element.
+ */
+function createElement(tag, attribs, styles, parent, nopad) {
+    const el = doc.createElement(tag);
+    if (attribs) {
+        extend(el, attribs);
+    }
+    if (nopad) {
+        css(el, { padding: '0', border: 'none', margin: '0' });
+    }
+    if (styles) {
+        css(el, styles);
+    }
+    if (parent) {
+        parent.appendChild(el);
+    }
+    return el;
+}
+/**
+ * Utility for crisping a line position to the nearest full pixel depending on
+ * the line width.
+ *
+ * @internal
+ * @param {number} value       The raw pixel position
+ * @param {number} lineWidth   The line width
+ * @param {boolean} [inverted] Whether the containing group is inverted.
+ *                             Crisping round numbers on the y-scale need to go
+ *                             to the other side because the coordinate system
+ *                             is flipped (scaleY is -1)
+ * @return {number}            The pixel position to use for a crisp display
+ */
+function crisp(value, lineWidth = 0, inverted) {
+    const mod = lineWidth % 2 / 2, inverter = inverted ? -1 : 1;
+    return (Math.round(value * inverter - mod) + mod) * inverter;
+}
+/**
+ * Set CSS on a given element.
+ *
+ * @function Highcharts.css
+ *
+ * @param {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement} el
+ *        An HTML DOM element.
+ *
+ * @param {Highcharts.CSSObject} styles
+ *        Style object with camel case property names.
+ *
+ * @return {void}
+ */
+function css(el, styles) {
+    extend(el.style, styles);
+}
+/**
+ * Check if an object is null or undefined.
+ *
+ * @function Highcharts.defined
+ *
+ * @param {*} obj
+ *        The object to check.
+ *
+ * @return {boolean}
+ *         False if the object is null or undefined, otherwise true.
+ */
+function defined(obj) {
+    return typeof obj !== 'undefined' && obj !== null;
+}
+/**
+ * Utility method that destroys any SVGElement instances that are properties on
+ * the given object. It loops all properties and invokes destroy if there is a
+ * destroy method. The property is then delete.
+ *
+ * @function Highcharts.destroyObjectProperties
+ *
+ * @param {*} obj
+ *        The object to destroy properties on.
+ *
+ * @param {*} [except]
+ *        Exception, do not destroy this property, only delete it.
+ */
+function destroyObjectProperties(obj, except, destructablesOnly) {
+    objectEach(obj, function (val, n) {
+        // If the object is non-null and destroy is defined
+        if (val !== except && val?.destroy) {
+            // Invoke the destroy
+            val.destroy();
+        }
+        // Delete the property from the object
+        if (val?.destroy || !destructablesOnly) {
+            delete obj[n];
+        }
+    });
+}
+/**
+ * Discard a HTML element
+ *
+ * @function Highcharts.discardElement
+ *
+ * @param {Highcharts.HTMLDOMElement} element
+ *        The HTML node to discard.
+ */
+function discardElement(element) {
+    element?.parentElement?.removeChild(element);
+}
+// eslint-disable-next-line valid-jsdoc
+/**
+ * Return the deep difference between two objects. It can either return the new
+ * properties, or optionally return the old values of new properties.
+ * @internal
+ */
+function diffObjects(newer, older, keepOlder, collectionsWithUpdate) {
+    const ret = {};
+    /**
+     * Recurse over a set of options and its current values, and store the
+     * current values in the ret object.
+     */
+    function diff(newer, older, ret, depth) {
+        const keeper = keepOlder ? older : newer;
+        objectEach(newer, function (newerVal, key) {
+            if (!depth &&
+                collectionsWithUpdate &&
+                collectionsWithUpdate.indexOf(key) > -1 &&
+                older[key]) {
+                newerVal = splat(newerVal);
+                ret[key] = [];
+                // Iterate over collections like series, xAxis or yAxis and map
+                // the items by index.
+                for (let i = 0; i < Math.max(newerVal.length, older[key].length); i++) {
+                    // Item exists in current data (#6347)
+                    if (older[key][i]) {
+                        // If the item is missing from the new data, we need to
+                        // save the whole config structure. Like when
+                        // responsively updating from a dual axis layout to a
+                        // single axis and back (#13544).
+                        if (newerVal[i] === void 0) {
+                            ret[key][i] = older[key][i];
+                            // Otherwise, proceed
+                        }
+                        else {
+                            ret[key][i] = {};
+                            diff(newerVal[i], older[key][i], ret[key][i], depth + 1);
+                        }
+                    }
+                }
+            }
+            else if (isObject(newerVal, true) &&
+                !newerVal.nodeType // #10044
+            ) {
+                ret[key] = isArray(newerVal) ? [] : {};
+                diff(newerVal, older[key] || {}, ret[key], depth + 1);
+                // Delete empty nested objects
+                if (Object.keys(ret[key]).length === 0 &&
+                    // Except colorAxis which is a special case where the empty
+                    // object means it is enabled. Which is unfortunate and we
+                    // should try to find a better way.
+                    !(key === 'colorAxis' && depth === 0)) {
+                    delete ret[key];
+                }
+            }
+            else if (newer[key] !== older[key] ||
+                // If the newer key is explicitly undefined, keep it (#10525)
+                (key in newer && !(key in older))) {
+                if (key !== '__proto__' && key !== 'constructor') {
+                    ret[key] = keeper[key];
+                }
+            }
+        });
+    }
+    diff(newer, older, ret, 0);
+    return ret;
+}
+/**
+ * Remove the last occurrence of an item from an array.
+ *
+ * @function Highcharts.erase
+ *
+ * @param {Array<*>} arr
+ *        The array.
+ *
+ * @param {*} item
+ *        The item to remove.
+ *
+ * @return {void}
+ */
+function erase(arr, item) {
+    let i = arr.length;
+    while (i--) {
+        if (arr[i] === item) {
+            arr.splice(i, 1);
+            break;
+        }
+    }
+}
+/**
+ * Utility function to extend an object with the members of another.
+ *
+ * @function Highcharts.extend<T>
+ *
+ * @param {T|undefined} a
+ *        The object to be extended.
+ *
+ * @param {Partial<T>} b
+ *        The object to add to the first one.
+ *
+ * @return {T}
+ *         Object a, the original object.
+ */
+function extend(a, b) {
+    let n;
+    if (!a) {
+        a = {};
+    }
+    for (n in b) { // eslint-disable-line guard-for-in
+        a[n] = b[n];
+    }
+    return a;
+}
+// eslint-disable-next-line valid-jsdoc
+/**
+ * Extend a prototyped class by new members.
+ *
+ * @deprecated
+ * @function Highcharts.extendClass<T>
+ *
+ * @param {Highcharts.Class<T>} parent
+ *        The parent prototype to inherit.
+ *
+ * @param {Highcharts.Dictionary<*>} members
+ *        A collection of prototype members to add or override compared to the
+ *        parent prototype.
+ *
+ * @return {Highcharts.Class<T>}
+ *         A new prototype.
+ */
+function extendClass(parent, members) {
+    const obj = (function () { });
+    obj.prototype = new parent(); // eslint-disable-line new-cap
+    extend(obj.prototype, members);
+    return obj;
+}
+/**
+ * Fire an event that was registered with {@link Highcharts#addEvent}.
+ *
+ * @function Highcharts.fireEvent<T>
+ *
+ * @param {T} el
+ *        The object to fire the event on. It can be a {@link HTMLDOMElement},
+ *        an {@link SVGElement} or any other object.
+ *
+ * @param {string} type
+ *        The type of event.
+ *
+ * @param {Highcharts.Dictionary<*>|Event} [eventArguments]
+ *        Custom event arguments that are passed on as an argument to the event
+ *        handler.
+ *
+ * @param {Highcharts.EventCallbackFunction<T>|Function} [defaultFunction]
+ *        The default function to execute if the other listeners haven't
+ *        returned false.
+ *
+ * @return {void}
+ */
+function fireEvent(el, type, eventArguments, defaultFunction) {
+    eventArguments = eventArguments || {};
+    if (doc?.createEvent &&
+        (el.dispatchEvent ||
+            (el.fireEvent &&
+                // Enable firing events on Highcharts instance.
+                el !== (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default())))) {
+        const e = doc.createEvent('Events');
+        e.initEvent(type, true, true);
+        eventArguments = extend(e, eventArguments);
+        if (el.dispatchEvent) {
+            el.dispatchEvent(eventArguments);
+        }
+        else {
+            el.fireEvent(type, eventArguments);
+        }
+    }
+    else if (el.hcEvents) {
+        if (!eventArguments.target) {
+            // We're running a custom event
+            extend(eventArguments, {
+                // Attach a simple preventDefault function to skip
+                // default handler if called. The built-in
+                // defaultPrevented property is not overwritable (#5112)
+                preventDefault: function () {
+                    eventArguments.defaultPrevented = true;
+                },
+                // Setting target to native events fails with clicking
+                // the zoom-out button in Chrome.
+                target: el,
+                // If the type is not set, we're running a custom event
+                // (#2297). If it is set, we're running a browser event.
+                type: type
+            });
+        }
+        const events = [];
+        let object = el;
+        let multilevel = false;
+        // Recurse up the inheritance chain and collect hcEvents set as own
+        // objects on the prototypes.
+        while (object.hcEvents) {
+            if (Object.hasOwnProperty.call(object, 'hcEvents') &&
+                object.hcEvents[type]) {
+                if (events.length) {
+                    multilevel = true;
+                }
+                events.unshift.apply(events, object.hcEvents[type]);
+            }
+            object = Object.getPrototypeOf(object);
+        }
+        // For performance reasons, only sort the event handlers in case we are
+        // dealing with multiple levels in the prototype chain. Otherwise, the
+        // events are already sorted in the addEvent function.
+        if (multilevel) {
+            // Order the calls
+            events.sort((a, b) => a.order - b.order);
+        }
+        // Call the collected event handlers
+        events.forEach((obj) => {
+            // If the event handler returns false, prevent the default handler
+            // from executing
+            if (obj.fn.call(el, eventArguments, el) === false) {
+                eventArguments.preventDefault();
+            }
+        });
+    }
+    // Run the default if not prevented
+    if (defaultFunction && !eventArguments.defaultPrevented) {
+        defaultFunction.call(el, eventArguments);
+    }
+}
+/**
+ * Convenience function to get the align factor, used several places for
+ * computing positions
+ * @internal
+ */
+const getAlignFactor = (align = '') => ({
+    center: 0.5,
+    right: 1,
+    middle: 0.5,
+    bottom: 1
+}[align] || 0);
+/**
+ * Find the closest distance between two values of a two-dimensional array
+ * @internal
+ * @function Highcharts.getClosestDistance
+ *
+ * @param {Array<Array<number>>} arrays
+ *          An array of arrays of numbers
+ *
+ * @return {number | undefined}
+ *          The closest distance between values
+ */
+function getClosestDistance(arrays, onError) {
+    const allowNegative = !onError;
+    let closest, loopLength, distance, i;
+    arrays.forEach((xData) => {
+        if (xData.length > 1) {
+            loopLength = xData.length - 1;
+            for (i = loopLength; i > 0; i--) {
+                distance = xData[i] - xData[i - 1];
+                if (distance < 0 && !allowNegative) {
+                    onError?.();
+                    // Only one call
+                    onError = void 0;
+                }
+                else if (distance && (typeof closest === 'undefined' || distance < closest)) {
+                    closest = distance;
+                }
+            }
+        }
+    });
+    return closest;
+}
+/**
+ * Get the magnitude of a number.
+ *
+ * @function Highcharts.getMagnitude
+ *
+ * @param {number} num
+ *        The number.
+ *
+ * @return {number}
+ *         The magnitude, where 1-9 are magnitude 1, 10-99 magnitude 2 etc.
+ */
+function getMagnitude(num) {
+    return Math.pow(10, Math.floor(Math.log(num) / Math.LN10));
+}
+/**
+ * Returns the value of a property path on a given object.
+ *
+ * @internal
+ * @function getNestedProperty
+ *
+ * @param {string} path
+ * Path to the property, for example `custom.myValue`.
+ *
+ * @param {unknown} parent
+ * Instance containing the property on the specific path.
+ *
+ * @return {unknown}
+ * The unknown property value.
+ */
+function getNestedProperty(path, parent) {
+    const pathElements = path.split('.');
+    while (pathElements.length && defined(parent)) {
+        const pathElement = pathElements.shift();
+        // Filter on the key
+        if (typeof pathElement === 'undefined' ||
+            pathElement === '__proto__') {
+            return; // Undefined
+        }
+        if (pathElement === 'this') {
+            let thisProp;
+            if (isObject(parent)) {
+                thisProp = parent['@this'];
+            }
+            return thisProp ?? parent;
+        }
+        const child = parent[pathElement.replace(/[\\'"]/g, '')];
+        // Filter on the child
+        if (!defined(child) ||
+            typeof child === 'function' ||
+            typeof child.nodeType === 'number' ||
+            child === win) {
+            return; // Undefined
+        }
+        // Else, proceed
+        parent = child;
+    }
+    return parent;
+}
+/**
+ * Get the computed CSS value for given element and property, only for numerical
+ * properties. For width and height, the dimension of the inner box (excluding
+ * padding) is returned. Used for fitting the chart within the container.
+ *
+ * @function Highcharts.getStyle
+ *
+ * @param {Highcharts.HTMLDOMElement} el
+ * An HTML element.
+ *
+ * @param {string} prop
+ * The property name.
+ *
+ * @param {boolean} [toInt=true]
+ * Parse to integer.
+ *
+ * @return {number|string|undefined}
+ * The style value.
+ */
+function getStyle(el, prop, toInt) {
+    let style;
+    // For width and height, return the actual inner pixel size (#4913)
+    if (prop === 'width') {
+        let offsetWidth = Math.min(el.offsetWidth, el.scrollWidth);
+        // In flex boxes, we need to use getBoundingClientRect and floor it,
+        // because scrollWidth doesn't support subpixel precision (#6427) ...
+        const boundingClientRectWidth = el.getBoundingClientRect?.().width;
+        // ...unless if the containing div or its parents are transform-scaled
+        // down, in which case the boundingClientRect can't be used as it is
+        // also scaled down (#9871, #10498).
+        if (boundingClientRectWidth < offsetWidth &&
+            boundingClientRectWidth >= offsetWidth - 1) {
+            offsetWidth = Math.floor(boundingClientRectWidth);
+        }
+        return Math.max(0, // #8377
+        (offsetWidth -
+            (getStyle(el, 'padding-left', true) || 0) -
+            (getStyle(el, 'padding-right', true) || 0)));
+    }
+    if (prop === 'height') {
+        return Math.max(0, // #8377
+        (Math.min(el.offsetHeight, el.scrollHeight) -
+            (getStyle(el, 'padding-top', true) || 0) -
+            (getStyle(el, 'padding-bottom', true) || 0)));
+    }
+    // Otherwise, get the computed style
+    const css = win.getComputedStyle(el, void 0); // eslint-disable-line no-undefined
+    if (css) {
+        style = css.getPropertyValue(prop);
+        if (pick(toInt, prop !== 'opacity')) {
+            style = pInt(style);
+        }
+    }
+    return style;
+}
+/**
+ * Return the value of the first element in the array that satisfies the
+ * provided testing function.
+ *
+ * @function Highcharts.find<T>
+ *
+ * @param {Array<T>} arr
+ *        The array to test.
+ *
+ * @param {Function} callback
+ *        The callback function. The function receives the item as the first
+ *        argument. Return `true` if this item satisfies the condition.
+ *
+ * @return {T|undefined}
+ *         The value of the element.
+ */
+const find = Array.prototype.find ?
+    function (arr, callback) {
+        return arr.find(callback);
+    } :
+    // Legacy implementation. PhantomJS, IE <= 11 etc. #7223.
+    function (arr, callback) {
+        let i;
+        const length = arr.length;
+        for (i = 0; i < length; i++) {
+            if (callback(arr[i], i)) { // eslint-disable-line node/callback-return
+                return arr[i];
+            }
+        }
+    };
+/**
+ * Internal clear timeout. The function checks that the `id` was not removed
+ * (e.g. by `chart.destroy()`). For the details see
+ * [issue #7901](https://github.com/highcharts/highcharts/issues/7901).
+ *
+ * @internal
+ *
+ * @function Highcharts.clearTimeout
+ *
+ * @param {number|undefined} id
+ * Id of a timeout.
+ */
+function internalClearTimeout(id) {
+    if (defined(id)) {
+        clearTimeout(id);
+    }
+}
+/**
+ * Utility function to check if an Object is a HTML Element.
+ *
+ * @function Highcharts.isDOMElement
+ *
+ * @param {*} obj
+ *        The item to check.
+ *
+ * @return {boolean}
+ *         True if the argument is a HTML Element.
+ */
+function isDOMElement(obj) {
+    return isObject(obj) && typeof obj.nodeType === 'number';
+}
+/**
+ * Utility function to check if an Object is a class.
+ *
+ * @function Highcharts.isClass
+ *
+ * @param {object|undefined} obj
+ *        The item to check.
+ *
+ * @return {boolean}
+ *         True if the argument is a class.
+ */
+function isClass(obj) {
+    const c = obj?.constructor;
+    return !!(isObject(obj, true) &&
+        !isDOMElement(obj) &&
+        (c?.name && c.name !== 'Object'));
+}
+/**
+ * Utility function to check if an item is a number and it is finite (not NaN,
+ * Infinity or -Infinity).
+ *
+ * @function Highcharts.isNumber
+ *
+ * @param {*} n
+ *        The item to check.
+ *
+ * @return {boolean}
+ *         True if the item is a finite number
+ */
+function isNumber(n) {
+    return typeof n === 'number' && !isNaN(n) && n < Infinity && n > -Infinity;
+}
+/**
+ * Utility function to check for string type.
+ *
+ * @function Highcharts.isString
+ *
+ * @param {*} s
+ *        The item to check.
+ *
+ * @return {boolean}
+ *         True if the argument is a string.
+ */
+function isString(s) {
+    return typeof s === 'string';
+}
+/**
+ * Utility function to check if an item is an array.
+ *
+ * @function Highcharts.isArray
+ *
+ * @param {*} obj
+ *        The item to check.
+ *
+ * @return {boolean}
+ *         True if the argument is an array.
+ */
+function isArray(obj) {
+    const str = Object.prototype.toString.call(obj);
+    return str === '[object Array]' || str === '[object Array Iterator]';
+}
+/**
+ * Utility function to check if object is a function.
+ *
+ * @function Highcharts.isFunction
+ *
+ * @param {*} obj
+ *        The item to check.
+ *
+ * @return {boolean}
+ *         True if the argument is a function.
+ */
+function isFunction(obj) {
+    return typeof obj === 'function';
+}
+/**
+ * Utility function to check if an item is of type object.
+ *
+ * @function Highcharts.isObject
+ *
+ * @param {*} obj
+ *        The item to check.
+ *
+ * @param {boolean} [strict=false]
+ *        Also checks that the object is not an array.
+ *
+ * @return {boolean}
+ *         True if the argument is an object.
+ */
+function isObject(obj, strict) {
+    return (!!obj &&
+        typeof obj === 'object' &&
+        (!strict || !isArray(obj))); // eslint-disable-line @typescript-eslint/no-explicit-any
+}
+/**
+ * Utility function to deep merge two or more objects and return a third object.
+ * If the first argument is true, the contents of the second object is copied
+ * into the first object. The merge function can also be used with a single
+ * object argument to create a deep copy of an object.
+ *
+ * @function Highcharts.merge<T>
+ *
+ * @param {true | T} extendOrSource
+ *        Whether to extend the left-side object,
+ *        or the first object to merge as a deep copy.
+ *
+ * @param {...Array<object|undefined>} [sources]
+ *        Object(s) to merge into the previous one.
+ *
+ * @return {T}
+ *         The merged object. If the first argument is true, the return is the
+ *         same as the second argument.
+ */
+function merge(extendOrSource, ...sources) {
+    let i, args = [extendOrSource, ...sources], ret = {};
+    const doCopy = function (copy, original) {
+        // An object is replacing a primitive
+        if (typeof copy !== 'object') {
+            copy = {};
+        }
+        objectEach(original, function (value, key) {
+            // Prototype pollution (#14883)
+            if (key === '__proto__' || key === 'constructor') {
+                return;
+            }
+            // Copy the contents of objects, but not arrays or DOM nodes
+            if (isObject(value, true) &&
+                !isClass(value) &&
+                !isDOMElement(value)) {
+                copy[key] = doCopy(copy[key] || {}, value);
+                // Primitives and arrays are copied over directly
+            }
+            else {
+                copy[key] = original[key];
+            }
+        });
+        return copy;
+    };
+    // If first argument is true, copy into the existing object. Used in
+    // setOptions.
+    if (extendOrSource === true) {
+        ret = args[1];
+        args = Array.prototype.slice.call(args, 2);
+    }
+    // For each argument, extend the return
+    const len = args.length;
+    for (i = 0; i < len; i++) {
+        ret = doCopy(ret, args[i]);
+    }
+    return ret;
+}
+/**
+ * Take an interval and normalize it to multiples of round numbers.
+ *
+ * @deprecated
+ * @function Highcharts.normalizeTickInterval
+ *
+ * @param {number} interval
+ *        The raw, un-rounded interval.
+ *
+ * @param {Array<*>} [multiples]
+ *        Allowed multiples.
+ *
+ * @param {number} [magnitude]
+ *        The magnitude of the number.
+ *
+ * @param {boolean} [allowDecimals]
+ *        Whether to allow decimals.
+ *
+ * @param {boolean} [hasTickAmount]
+ *        If it has tickAmount, avoid landing on tick intervals lower than
+ *        original.
+ *
+ * @return {number}
+ *         The normalized interval.
+ *
+ * @todo
+ * Move this function to the Axis prototype. It is here only for historical
+ * reasons.
+ */
+function normalizeTickInterval(interval, multiples, magnitude, allowDecimals, hasTickAmount) {
+    let i, retInterval = interval;
+    // Round to a tenfold of 1, 2, 2.5 or 5
+    magnitude = pick(magnitude, getMagnitude(interval));
+    const normalized = interval / magnitude;
+    // Multiples for a linear scale
+    if (!multiples) {
+        multiples = hasTickAmount ?
+            // Finer grained ticks when the tick amount is hard set, including
+            // when alignTicks is true on multiple axes (#4580).
+            [1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10] :
+            // Else, let ticks fall on rounder numbers
+            [1, 2, 2.5, 5, 10];
+        // The allowDecimals option
+        if (allowDecimals === false) {
+            if (magnitude === 1) {
+                multiples = multiples.filter(function (num) {
+                    return num % 1 === 0;
+                });
+            }
+            else if (magnitude <= 0.1) {
+                multiples = [1 / magnitude];
+            }
+        }
+    }
+    // Normalize the interval to the nearest multiple
+    for (i = 0; i < multiples.length; i++) {
+        retInterval = multiples[i];
+        // Only allow tick amounts smaller than natural
+        if ((hasTickAmount &&
+            retInterval * magnitude >= interval) ||
+            (!hasTickAmount &&
+                (normalized <=
+                    (multiples[i] +
+                        (multiples[i + 1] || multiples[i])) / 2))) {
+            break;
+        }
+    }
+    // Multiply back to the correct magnitude. Correct floats to appropriate
+    // precision (#6085).
+    retInterval = correctFloat(retInterval * magnitude, -Math.round(Math.log(0.001) / Math.LN10));
+    return retInterval;
+}
+/**
+ * Iterate over object key pairs in an object.
+ *
+ * @function Highcharts.objectEach<T>
+ *
+ * @param {*} obj
+ *        The object to iterate over.
+ *
+ * @param {Highcharts.ObjectEachCallbackFunction<T>} fn
+ *        The iterator callback. It passes three arguments:
+ *        * value - The property value.
+ *        * key - The property key.
+ *        * obj - The object that objectEach is being applied to.
+ *
+ * @param {T} [ctx]
+ *        The context.
+ */
+function objectEach(obj, fn, ctx) {
+    for (const key in obj) {
+        if (Object.hasOwnProperty.call(obj, key)) {
+            fn.call(ctx || obj[key], obj[key], key, obj);
+        }
+    }
+}
+/**
+ * Get the element's offset position, corrected for `overflow: auto`.
+ *
+ * @function Highcharts.offset
+ *
+ * @param {global.Element} el
+ *        The DOM element.
+ *
+ * @return {Highcharts.OffsetObject}
+ *         An object containing `left` and `top` properties for the position in
+ *         the page.
+ */
+function offset(el) {
+    const docElem = doc.documentElement, box = (el.parentElement || el.parentNode) ?
+        el.getBoundingClientRect() :
+        { top: 0, left: 0, width: 0, height: 0 };
+    return {
+        top: box.top + (win.pageYOffset || docElem.scrollTop) -
+            (docElem.clientTop || 0),
+        left: box.left + (win.pageXOffset || docElem.scrollLeft) -
+            (docElem.clientLeft || 0),
+        width: box.width,
+        height: box.height
+    };
+}
+/**
+ * Left-pad a string to a given length by adding a character repetitively.
+ *
+ * @function Highcharts.pad
+ *
+ * @param {number} number
+ *        The input string or number.
+ *
+ * @param {number} [length]
+ *        The desired string length.
+ *
+ * @param {string} [padder=0]
+ *        The character to pad with.
+ *
+ * @return {string}
+ *         The padded string.
+ */
+function pad(number, length, padder) {
+    return new Array((length || 2) +
+        1 -
+        String(number)
+            .replace('-', '')
+            .length).join(padder || '0') + number;
+}
+/* eslint-disable jsdoc/check-param-names */
+/**
+ * Return the first value that is not null or undefined.
+ *
+ * @function Highcharts.pick<T>
+ *
+ * @param {...Array<T|null|undefined>} items
+ *        Variable number of arguments to inspect.
+ *
+ * @return {T}
+ *         The value of the first argument that is not null or undefined.
+ */
+function pick() {
+    const args = arguments;
+    const length = args.length;
+    for (let i = 0; i < length; i++) {
+        const arg = args[i];
+        if (typeof arg !== 'undefined' && arg !== null) {
+            return arg;
+        }
+    }
+}
+/* eslint-enable jsdoc/check-param-names */
+/**
+ * Shortcut for parseInt
+ *
+ * @internal
+ * @function Highcharts.pInt
+ *
+ * @param {*} s
+ *        any
+ *
+ * @param {number} [mag]
+ *        Magnitude
+ *
+ * @return {number}
+ *         number
+ */
+function pInt(s, mag) {
+    return parseInt(s, mag || 10);
+}
+/**
+ * Adds an item to an array, if it is not present in the array.
+ *
+ * @internal
+ *
+ * @function Highcharts.pushUnique
+ *
+ * @param {Array<unknown>} array
+ * The array to add the item to.
+ *
+ * @param {unknown} item
+ * The item to add.
+ *
+ * @return {boolean}
+ * Returns true, if the item was not present and has been added.
+ */
+function pushUnique(array, item) {
+    return array.indexOf(item) < 0 && !!array.push(item);
+}
+/**
+ * Return a length based on either the integer value, or a percentage of a base.
+ *
+ * @function Highcharts.relativeLength
+ *
+ * @param {Highcharts.RelativeSize} value
+ *        A percentage string or a number.
+ *
+ * @param {number} base
+ *        The full length that represents 100%.
+ *
+ * @param {number} [offset=0]
+ *        A pixel offset to apply for percentage values. Used internally in
+ *        axis positioning.
+ *
+ * @return {number}
+ *         The computed length.
+ */
+function relativeLength(value, base, offset) {
+    return (/%$/).test(value) ?
+        (base * parseFloat(value) / 100) + (offset || 0) :
+        parseFloat(value);
+}
+/**
+ * Replaces text in a string with a given replacement in a loop to catch nested
+ * matches after previous replacements.
+ *
+ * @internal
+ *
+ * @function Highcharts.replaceNested
+ *
+ * @param {string} text
+ * Text to search and modify.
+ *
+ * @param {...Array<(RegExp|string)>} replacements
+ * One or multiple tuples with search pattern (`[0]: (string|RegExp)`) and
+ * replacement (`[1]: string`) for matching text.
+ *
+ * @return {string}
+ * Text with replacements.
+ */
+function replaceNested(text, ...replacements) {
+    let previous, replacement;
+    do {
+        previous = text;
+        for (replacement of replacements) {
+            text = text.replace(replacement[0], replacement[1]);
+        }
+    } while (text !== previous);
+    return text;
+}
+/**
+ * Remove an event that was added with {@link Highcharts#addEvent}.
+ *
+ * @function Highcharts.removeEvent<T>
+ *
+ * @param {Highcharts.Class<T>|T} el
+ *        The element to remove events on.
+ *
+ * @param {string} [type]
+ *        The type of events to remove. If undefined, all events are removed
+ *        from the element.
+ *
+ * @param {Highcharts.EventCallbackFunction<T>} [fn]
+ *        The specific callback to remove. If undefined, all events that match
+ *        the element and optionally the type are removed.
+ *
+ * @return {void}
+ */
+function removeEvent(el, type, fn) {
+    /** @internal */
+    function removeOneEvent(type, fn) {
+        const removeEventListener = el.removeEventListener;
+        if (removeEventListener) {
+            removeEventListener.call(el, type, fn, false);
+        }
+    }
+    /** @internal */
+    function removeAllEvents(eventCollection) {
+        let types, len;
+        if (!el.nodeName) {
+            return; // Break on non-DOM events
+        }
+        if (type) {
+            types = {};
+            types[type] = true;
+        }
+        else {
+            types = eventCollection;
+        }
+        objectEach(types, function (_val, n) {
+            if (eventCollection[n]) {
+                len = eventCollection[n].length;
+                while (len--) {
+                    removeOneEvent(n, eventCollection[n][len].fn);
+                }
+            }
+        });
+    }
+    const owner = typeof el === 'function' && el.prototype || el;
+    if (Object.hasOwnProperty.call(owner, 'hcEvents')) {
+        const events = owner.hcEvents;
+        if (type) {
+            const typeEvents = (events[type] || []);
+            if (fn) {
+                events[type] = typeEvents.filter(function (obj) {
+                    return fn !== obj.fn;
+                });
+                removeOneEvent(type, fn);
+            }
+            else {
+                removeAllEvents(events);
+                events[type] = [];
+            }
+        }
+        else {
+            removeAllEvents(events);
+            delete owner.hcEvents;
+        }
+    }
+}
+/**
+ * Check if an element is an array, and if not, make it into an array.
+ *
+ * @function Highcharts.splat
+ *
+ * @param {*} obj
+ *        The object to splat.
+ *
+ * @return {Array}
+ *         The produced or original array.
+ */
+function splat(obj) {
+    return isArray(obj) ? obj : [obj];
+}
+/**
+ * Sort an object array and keep the order of equal items. The ECMAScript
+ * standard does not specify the behavior when items are equal.
+ *
+ * @function Highcharts.stableSort
+ *
+ * @param {Array<*>} arr
+ *        The array to sort.
+ *
+ * @param {Function} sortFunction
+ *        The function to sort it with, like with regular Array.prototype.sort.
+ */
+function stableSort(arr, sortFunction) {
+    // @todo It seems like Chrome since v70 sorts in a stable way internally,
+    // plus all other browsers do it, so over time we may be able to remove this
+    // function
+    const length = arr.length;
+    let sortValue, i;
+    // Add index to each item
+    for (i = 0; i < length; i++) {
+        arr[i].safeI = i; // Stable sort index
+    }
+    arr.sort(function (a, b) {
+        sortValue = sortFunction(a, b);
+        return sortValue === 0 ? a.safeI - b.safeI : sortValue;
+    });
+    // Remove index from items
+    for (i = 0; i < length; i++) {
+        delete arr[i].safeI; // Stable sort index
+    }
+}
+/**
+ * Set a timeout if the delay is given, otherwise perform the function
+ * synchronously.
+ *
+ * @function Highcharts.syncTimeout
+ *
+ * @param {Function} fn
+ *        The function callback.
+ *
+ * @param {number} delay
+ *        Delay in milliseconds.
+ *
+ * @param {*} [context]
+ *        An optional context to send to the function callback.
+ *
+ * @return {number}
+ *         An identifier for the timeout that can later be cleared with
+ *         Highcharts.clearTimeout. Returns -1 if there is no timeout.
+ */
+function syncTimeout(fn, delay, context) {
+    if (delay > 0) {
+        return setTimeout(fn, delay, context);
+    }
+    fn.call(0, context);
+    return -1;
+}
+/**
+ * @internal
+ */
+function ucfirst(s) {
+    return ((isString(s) ?
+        s.substring(0, 1).toUpperCase() + s.substring(1) :
+        String(s)));
+}
+/**
+ * Wrap a method with extended functionality, preserving the original function.
+ *
+ * @function Highcharts.wrap
+ *
+ * @param {*} obj
+ *        The context object that the method belongs to. In real cases, this is
+ *        often a prototype.
+ *
+ * @param {string} method
+ *        The name of the method to extend.
+ *
+ * @param {Highcharts.WrapProceedFunction} func
+ *        A wrapper function callback. This function is called with the same
+ *        arguments as the original function, except that the original function
+ *        is unshifted and passed as the first argument.
+ */
+function wrap(obj, method, func) {
+    const proceed = obj[method];
+    obj[method] = function () {
+        const outerArgs = arguments, scope = this;
+        return func.apply(this, [
+            function () {
+                return proceed.apply(scope, arguments.length ? arguments : outerArgs);
+            }
+        ].concat([].slice.call(arguments)));
+    };
+}
+
 ;// ./code/es-modules/Data/Modifiers/DataModifier.js
 /* *
  *
@@ -111,12 +1473,11 @@ var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default 
  *  Authors:
  *  - Sophie Bremer
  *  - Gøran Slettemark
- *  - Dawid Dragula
+ *  - Dawid Draguła
  *
  * */
 
 
-const { addEvent, fireEvent, merge } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
  *  Class
@@ -126,6 +1487,28 @@ const { addEvent, fireEvent, merge } = (highcharts_commonjs_highcharts_commonjs2
  * Abstract class to provide an interface for modifying a table.
  */
 class DataModifier {
+    /**
+     * Adds a modifier class to the registry. The modifier class has to provide
+     * the `DataModifier.options` property and the `DataModifier.modifyTable`
+     * method to modify the table.
+     *
+     * @private
+     *
+     * @param {string} key
+     * Registry key of the modifier class.
+     *
+     * @param {DataModifierType} DataModifierClass
+     * Modifier class (aka class constructor) to register.
+     *
+     * @return {boolean}
+     * Returns true, if the registration was successful. False is returned, if
+     * their is already a modifier registered with this key.
+     */
+    static registerType(key, DataModifierClass) {
+        return (!!key &&
+            !DataModifier.types[key] &&
+            !!(DataModifier.types[key] = DataModifierClass));
+    }
     /* *
      *
      *  Functions
@@ -138,7 +1521,7 @@ class DataModifier {
      * @param {DataTable} dataTable
      * The datatable to execute
      *
-     * @param {DataModifier.BenchmarkOptions} options
+     * @param {BenchmarkOptions} options
      * Options. Currently supports `iterations` for number of iterations.
      *
      * @return {Array<number>}
@@ -188,8 +1571,8 @@ class DataModifier {
     /**
      * Emits an event on the modifier to all registered callbacks of this event.
      *
-     * @param {DataModifier.Event} [e]
-     * Event object containing additonal event information.
+     * @param {DataModifierEvent} [e]
+     * Event object containing additional event information.
      */
     emit(e) {
         fireEvent(this, e.type, e);
@@ -202,7 +1585,7 @@ class DataModifier {
      * @param {Highcharts.DataTable} table
      * Table to modify.
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @return {Promise<Highcharts.DataTable>}
@@ -233,7 +1616,7 @@ class DataModifier {
      * @param {string} type
      * Event type as a string.
      *
-     * @param {DataEventEmitter.Callback} callback
+     * @param {DataEventCallback} callback
      * Function to register for an modifier callback.
      *
      * @return {Function}
@@ -245,57 +1628,14 @@ class DataModifier {
 }
 /* *
  *
- *  Class Namespace
+ *  Static Properties
  *
  * */
 /**
- * Additionally provided types for modifier events and options.
+ * Registry as a record object with modifier names and their class
+ * constructor.
  */
-(function (DataModifier) {
-    /* *
-     *
-     *  Declarations
-     *
-     * */
-    /* *
-     *
-     *  Constants
-     *
-     * */
-    /**
-     * Registry as a record object with modifier names and their class
-     * constructor.
-     */
-    DataModifier.types = {};
-    /* *
-     *
-     *  Functions
-     *
-     * */
-    /**
-     * Adds a modifier class to the registry. The modifier class has to provide
-     * the `DataModifier.options` property and the `DataModifier.modifyTable`
-     * method to modify the table.
-     *
-     * @private
-     *
-     * @param {string} key
-     * Registry key of the modifier class.
-     *
-     * @param {DataModifierType} DataModifierClass
-     * Modifier class (aka class constructor) to register.
-     *
-     * @return {boolean}
-     * Returns true, if the registration was successful. False is returned, if
-     * their is already a modifier registered with this key.
-     */
-    function registerType(key, DataModifierClass) {
-        return (!!key &&
-            !DataModifier.types[key] &&
-            !!(DataModifier.types[key] = DataModifierClass));
-    }
-    DataModifier.registerType = registerType;
-})(DataModifier || (DataModifier = {}));
+DataModifier.types = {};
 /* *
  *
  *  Default Export
@@ -313,136 +1653,126 @@ class DataModifier {
  *
  *
  *  Authors:
- *  - Dawid Dragula
+ *  - Dawid Draguła
  *
  * */
+/* *
+*
+* Functions
+*
+* */
 /**
- * Utility functions for columns that can be either arrays or typed arrays.
+ * Sets the length of the column array.
+ *
+ * @param {DataTableColumn} column
+ * Column to be modified.
+ *
+ * @param {number} length
+ * New length of the column.
+ *
+ * @param {boolean} asSubarray
+ * If column is a typed array, return a subarray instead of a new array. It
+ * is faster `O(1)`, but the entire buffer will be kept in memory until all
+ * views of it are destroyed. Default is `false`.
+ *
+ * @return {DataTableColumn}
+ * Modified column.
+ *
  * @private
  */
-var ColumnUtils;
-(function (ColumnUtils) {
-    /* *
-    *
-    *  Declarations
-    *
-    * */
-    /* *
-    *
-    * Functions
-    *
-    * */
-    /**
-     * Sets the length of the column array.
-     *
-     * @param {DataTable.Column} column
-     * Column to be modified.
-     *
-     * @param {number} length
-     * New length of the column.
-     *
-     * @param {boolean} asSubarray
-     * If column is a typed array, return a subarray instead of a new array. It
-     * is faster `O(1)`, but the entire buffer will be kept in memory until all
-     * views of it are destroyed. Default is `false`.
-     *
-     * @return {DataTable.Column}
-     * Modified column.
-     *
-     * @private
-     */
-    function setLength(column, length, asSubarray) {
-        if (Array.isArray(column)) {
-            column.length = length;
-            return column;
-        }
-        return column[asSubarray ? 'subarray' : 'slice'](0, length);
+function setLength(column, length, asSubarray) {
+    if (Array.isArray(column)) {
+        column.length = length;
+        return column;
     }
-    ColumnUtils.setLength = setLength;
-    /**
-     * Splices a column array.
-     *
-     * @param {DataTable.Column} column
-     * Column to be modified.
-     *
-     * @param {number} start
-     * Index at which to start changing the array.
-     *
-     * @param {number} deleteCount
-     * An integer indicating the number of old array elements to remove.
-     *
-     * @param {boolean} removedAsSubarray
-     * If column is a typed array, return a subarray instead of a new array. It
-     * is faster `O(1)`, but the entire buffer will be kept in memory until all
-     * views to it are destroyed. Default is `true`.
-     *
-     * @param {Array<number>|TypedArray} items
-     * The elements to add to the array, beginning at the start index. If you
-     * don't specify any elements, `splice()` will only remove elements from the
-     * array.
-     *
-     * @return {SpliceResult}
-     * Object containing removed elements and the modified column.
-     *
-     * @private
-     */
-    function splice(column, start, deleteCount, removedAsSubarray, items = []) {
-        if (Array.isArray(column)) {
-            if (!Array.isArray(items)) {
-                items = Array.from(items);
-            }
-            return {
-                removed: column.splice(start, deleteCount, ...items),
-                array: column
-            };
+    return column[asSubarray ? 'subarray' : 'slice'](0, length);
+}
+/**
+ * Splices a column array.
+ *
+ * @param {DataTableColumn} column
+ * Column to be modified.
+ *
+ * @param {number} start
+ * Index at which to start changing the array.
+ *
+ * @param {number} deleteCount
+ * An integer indicating the number of old array elements to remove.
+ *
+ * @param {boolean} removedAsSubarray
+ * If column is a typed array, return a subarray instead of a new array. It
+ * is faster `O(1)`, but the entire buffer will be kept in memory until all
+ * views to it are destroyed. Default is `true`.
+ *
+ * @param {Array<number>|TypedArray} items
+ * The elements to add to the array, beginning at the start index. If you
+ * don't specify any elements, `splice()` will only remove elements from the
+ * array.
+ *
+ * @return {SpliceResult}
+ * Object containing removed elements and the modified column.
+ *
+ * @private
+ */
+function splice(column, start, deleteCount, removedAsSubarray, items = []) {
+    if (Array.isArray(column)) {
+        if (!Array.isArray(items)) {
+            items = Array.from(items);
         }
-        const Constructor = Object.getPrototypeOf(column)
-            .constructor;
-        const removed = column[removedAsSubarray ? 'subarray' : 'slice'](start, start + deleteCount);
-        const newLength = column.length - deleteCount + items.length;
-        const result = new Constructor(newLength);
-        result.set(column.subarray(0, start), 0);
-        result.set(items, start);
-        result.set(column.subarray(start + deleteCount), start + items.length);
         return {
-            removed: removed,
-            array: result
+            removed: column.splice(start, deleteCount, ...items),
+            array: column
         };
     }
-    ColumnUtils.splice = splice;
-    /**
-     * Converts a cell value to a number.
-     *
-     * @param {DataTable.CellType} value
-     * Cell value to convert to a number.
-     *
-     * @param {boolean} useNaN
-     * If `true`, returns `NaN` for non-numeric values; if `false`,
-     * returns `null` instead.
-     *
-     * @return {number | null}
-     * Number or `null` if the value is not a number.
-     *
-     * @private
-     */
-    function convertToNumber(value, useNaN) {
-        switch (typeof value) {
-            case 'boolean':
-                return (value ? 1 : 0);
-            case 'number':
-                return (isNaN(value) && !useNaN ? null : value);
-            default:
-                value = parseFloat(`${value ?? ''}`);
-                return (isNaN(value) && !useNaN ? null : value);
-        }
+    const Constructor = Object.getPrototypeOf(column)
+        .constructor;
+    const removed = column[removedAsSubarray ? 'subarray' : 'slice'](start, start + deleteCount);
+    const newLength = column.length - deleteCount + items.length;
+    const result = new Constructor(newLength);
+    result.set(column.subarray(0, start), 0);
+    result.set(items, start);
+    result.set(column.subarray(start + deleteCount), start + items.length);
+    return {
+        removed: removed,
+        array: result
+    };
+}
+/**
+ * Converts a cell value to a number.
+ *
+ * @param {DataTableCellType} value
+ * Cell value to convert to a number.
+ *
+ * @param {boolean} useNaN
+ * If `true`, returns `NaN` for non-numeric values; if `false`,
+ * returns `null` instead.
+ *
+ * @return {number | null}
+ * Number or `null` if the value is not a number.
+ *
+ * @private
+ */
+function convertToNumber(value, useNaN) {
+    switch (typeof value) {
+        case 'boolean':
+            return (value ? 1 : 0);
+        case 'number':
+            return (isNaN(value) && !useNaN ? null : value);
+        default:
+            value = parseFloat(`${value ?? ''}`);
+            return (isNaN(value) && !useNaN ? null : value);
     }
-    ColumnUtils.convertToNumber = convertToNumber;
-})(ColumnUtils || (ColumnUtils = {}));
+}
 /* *
  *
  *  Default Export
  *
  * */
+const ColumnUtils = {
+    convertToNumber,
+    setLength,
+    splice
+};
 /* harmony default export */ const Data_ColumnUtils = (ColumnUtils);
 
 ;// ./code/es-modules/Data/DataTableCore.js
@@ -462,9 +1792,9 @@ var ColumnUtils;
  * */
 
 
-const { setLength, splice } = Data_ColumnUtils;
+const { setLength: DataTableCore_setLength, splice: DataTableCore_splice } = Data_ColumnUtils;
 
-const { fireEvent: DataTableCore_fireEvent, objectEach, uniqueKey } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+
 /* *
  *
  *  Class
@@ -513,9 +1843,9 @@ class DataTableCore {
          * @name Highcharts.DataTable#id
          * @type {string}
          */
-        this.id = (options.id || uniqueKey());
+        this.id = (options.id || (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.uniqueKey)());
         this.rowCount = 0;
-        this.versionTag = uniqueKey();
+        this.versionTag = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.uniqueKey)();
         let rowCount = 0;
         objectEach(options.columns || {}, (column, columnId) => {
             this.columns[columnId] = column.slice();
@@ -539,7 +1869,7 @@ class DataTableCore {
         this.rowCount = rowCount;
         objectEach(this.columns, (column, columnId) => {
             if (column.length !== rowCount) {
-                this.columns[columnId] = setLength(column, rowCount);
+                this.columns[columnId] = DataTableCore_setLength(column, rowCount);
             }
         });
     }
@@ -562,13 +1892,13 @@ class DataTableCore {
             let length = 0;
             objectEach(this.columns, (column, columnId) => {
                 this.columns[columnId] =
-                    splice(column, rowIndex, rowCount).array;
+                    DataTableCore_splice(column, rowIndex, rowCount).array;
                 length = column.length;
             });
             this.rowCount = length;
         }
-        DataTableCore_fireEvent(this, 'afterDeleteRows', { rowIndex, rowCount });
-        this.versionTag = uniqueKey();
+        fireEvent(this, 'afterDeleteRows', { rowIndex, rowCount });
+        this.versionTag = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.uniqueKey)();
     }
     /**
      * Fetches the given column by the canonical column name. Simplified version
@@ -666,8 +1996,8 @@ class DataTableCore {
         });
         this.applyRowCount(rowCount);
         if (!eventDetail?.silent) {
-            DataTableCore_fireEvent(this, 'afterSetColumns');
-            this.versionTag = uniqueKey();
+            fireEvent(this, 'afterSetColumns');
+            this.versionTag = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.uniqueKey)();
         }
     }
     /**
@@ -705,7 +2035,7 @@ class DataTableCore {
             }
             if (column) {
                 if (insert) {
-                    column = splice(column, rowIndex, 0, true, [row[columnId] ?? null]).array;
+                    column = DataTableCore_splice(column, rowIndex, 0, true, [row[columnId] ?? null]).array;
                 }
                 else {
                     column[rowIndex] = row[columnId] ?? null;
@@ -717,8 +2047,8 @@ class DataTableCore {
             this.applyRowCount(indexRowCount);
         }
         if (!eventDetail?.silent) {
-            DataTableCore_fireEvent(this, 'afterSetRows');
-            this.versionTag = uniqueKey();
+            fireEvent(this, 'afterSetRows');
+            this.versionTag = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.uniqueKey)();
         }
     }
     /**
@@ -785,7 +2115,7 @@ class DataTableCore {
  *  - Sophie Bremer
  *  - Gøran Slettemark
  *  - Jomar Hønsi
- *  - Dawid Dragula
+ *  - Dawid Draguła
  *
  * */
 
@@ -793,7 +2123,7 @@ class DataTableCore {
 
 const { splice: DataTable_splice, setLength: DataTable_setLength } = Data_ColumnUtils;
 
-const { addEvent: DataTable_addEvent, defined, extend, fireEvent: DataTable_fireEvent, isNumber, uniqueKey: DataTable_uniqueKey } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+
 /* *
  *
  *  Class
@@ -1031,7 +2361,7 @@ class DataTable extends Data_DataTableCore {
      * event.
      * @private
      *
-     * @param {DataTable.Event} e
+     * @param {Event} e
      * Event object with event information.
      */
     emit(e) {
@@ -1042,9 +2372,9 @@ class DataTable extends Data_DataTableCore {
             'afterSetColumns',
             'afterSetRows'
         ].includes(e.type)) {
-            this.versionTag = DataTable_uniqueKey();
+            this.versionTag = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.uniqueKey)();
         }
-        DataTable_fireEvent(this, e.type, e);
+        fireEvent(this, e.type, e);
     }
     /**
      * Fetches a single cell value.
@@ -1396,7 +2726,7 @@ class DataTable extends Data_DataTableCore {
      * Function to unregister callback from the event.
      */
     on(type, callback) {
-        return DataTable_addEvent(this, type, callback);
+        return addEvent(this, type, callback);
     }
     /**
      * Changes the ID of an existing column to a new ID, effectively renaming
@@ -1752,7 +3082,7 @@ class DataTable extends Data_DataTableCore {
  *  - Sophie Bremer
  *  - Wojciech Chmiel
  *  - Gøran Slettemark
- *  - Dawid Dragula
+ *  - Dawid Draguła
  *  - Kamil Kubik
  *
  * */
@@ -1760,7 +3090,6 @@ class DataTable extends Data_DataTableCore {
 
 
 
-const { addEvent: DataConnector_addEvent, fireEvent: DataConnector_fireEvent, merge: DataConnector_merge, pick } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
  *  Class
@@ -1770,6 +3099,28 @@ const { addEvent: DataConnector_addEvent, fireEvent: DataConnector_fireEvent, me
  * Abstract class providing an interface for managing a DataConnector.
  */
 class DataConnector {
+    /**
+     * Adds a connector class to the registry. The connector has to provide the
+     * `DataConnector.options` property and the `DataConnector.load` method to
+     * modify the table.
+     *
+     * @private
+     *
+     * @param {string} key
+     * Registry key of the connector class.
+     *
+     * @param {DataConnectorType} DataConnectorClass
+     * Connector class (aka class constructor) to register.
+     *
+     * @return {boolean}
+     * Returns true, if the registration was successful. False is returned, if
+     * their is already a connector registered with this key.
+     */
+    static registerType(key, DataConnectorClass) {
+        return (!!key &&
+            !DataConnector.types[key] &&
+            !!(DataConnector.types[key] = DataConnectorClass));
+    }
     /**
      * Whether the connector is currently polling for new data.
      */
@@ -1852,18 +3203,18 @@ class DataConnector {
      * @param {string} name
      * The name of the column to be described.
      *
-     * @param {DataConnector.MetaColumn} columnMeta
+     * @param {MetaColumn} columnMeta
      * The metadata to apply to the column.
      */
     describeColumn(name, columnMeta) {
         const connector = this;
         const columns = connector.metadata.columns;
-        columns[name] = DataConnector_merge(columns[name] || {}, columnMeta);
+        columns[name] = merge(columns[name] || {}, columnMeta);
     }
     /**
      * Method for applying columns meta information to the whole DataConnector.
      *
-     * @param {Highcharts.Dictionary<DataConnector.MetaColumn>} columns
+     * @param {Record<string, MetaColumn>} columns
      * Pairs of column names and MetaColumn objects.
      */
     describeColumns(columns) {
@@ -1911,15 +3262,15 @@ class DataConnector {
     /**
      * Updates the connector with new options.
      *
-     * @param newOptions
+     * @param {object} newOptions
      * The new options to be applied to the connector.
      *
-     * @param reload
+     * @param {boolean} [reload=true]
      * Whether to reload the connector after applying the new options.
      */
     async update(newOptions, reload = true) {
         this.emit({ type: 'beforeUpdate' });
-        DataConnector_merge(true, this.options, newOptions);
+        merge(true, this.options, newOptions);
         const { options } = this;
         if ('enablePolling' in newOptions || 'dataRefreshRate' in newOptions) {
             if ('enablePolling' in options && options.enablePolling) {
@@ -1955,7 +3306,7 @@ class DataConnector {
     async applyTableModifiers() {
         const tableOptionsArray = this.options?.dataTables;
         for (const [key, table] of Object.entries(this.dataTables)) {
-            // Take data modifier options from the corresponsing data table
+            // Take data modifier options from the corresponding data table
             // options, otherwise take the data modifier options from the
             // connector options.
             const dataModifierOptions = tableOptionsArray?.find((dataTable) => dataTable.key === key)?.dataModifier ?? this.options?.dataModifier;
@@ -2010,26 +3361,26 @@ class DataConnector {
      * Emits an event on the connector to all registered callbacks of this
      * event.
      *
-     * @param {DataConnector.Event} e
+     * @param {Event} e
      * Event object containing additional event information.
      */
     emit(e) {
-        DataConnector_fireEvent(this, e.type, e);
+        fireEvent(this, e.type, e);
     }
     /**
      * Registers a callback for a specific connector event.
      *
-     * @param type
+     * @param {string} type
      * Event type.
      *
-     * @param callback
+     * @param {Function} callback
      * Function to register for the connector callback.
      *
      * @return {Function}
      * Function to unregister callback from the connector event.
      */
     on(type, callback) {
-        return DataConnector_addEvent(this, type, callback);
+        return addEvent(this, type, callback);
     }
     /**
      * Iterates over the dataTables and initiates the corresponding converters.
@@ -2038,10 +3389,10 @@ class DataConnector {
      * @param {T}[data]
      * Data specific to the corresponding converter.
      *
-     * @param {DataConnector.CreateConverterFunction}[createConverter]
+     * @param {CreateConverterFunction}[createConverter]
      * Creates a specific converter combining the dataTable options.
      *
-     * @param {DataConnector.ParseDataFunction<T>}[parseData]
+     * @param {ParseDataFunction<T>}[parseData]
      * Runs the converter parse method with the specific data type.
      */
     initConverters(data, createConverter, parseData) {
@@ -2063,53 +3414,13 @@ class DataConnector {
 }
 /* *
  *
- *  Class Namespace
+ *  Static Properties
  *
  * */
-(function (DataConnector) {
-    /* *
-     *
-     *  Declarations
-     *
-     * */
-    /* *
-     *
-     *  Constants
-     *
-     * */
-    /**
-     * Registry as a record object with connector names and their class.
-     */
-    DataConnector.types = {};
-    /* *
-     *
-     *  Functions
-     *
-     * */
-    /**
-     * Adds a connector class to the registry. The connector has to provide the
-     * `DataConnector.options` property and the `DataConnector.load` method to
-     * modify the table.
-     *
-     * @private
-     *
-     * @param {string} key
-     * Registry key of the connector class.
-     *
-     * @param {DataConnectorType} DataConnectorClass
-     * Connector class (aka class constructor) to register.
-     *
-     * @return {boolean}
-     * Returns true, if the registration was successful. False is returned, if
-     * their is already a connector registered with this key.
-     */
-    function registerType(key, DataConnectorClass) {
-        return (!!key &&
-            !DataConnector.types[key] &&
-            !!(DataConnector.types[key] = DataConnectorClass));
-    }
-    DataConnector.registerType = registerType;
-})(DataConnector || (DataConnector = {}));
+/**
+ * Registry as a record object with connector names and their class.
+ */
+DataConnector.types = {};
 /* *
  *
  *  Default Export
@@ -2131,208 +3442,196 @@ class DataConnector {
  *
  * */
 
-const { isNumber: DataConverterUtils_isNumber } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
- *  Namespace
+ *  Functions
  *
  * */
-var DataConverterUtils;
-(function (DataConverterUtils) {
-    /* *
-    *
-    *  Properties
-    *
-    * */
-    /* *
-    *
-    * Functions
-    *
-    * */
-    /**
-     * Converts a value to a Date.
-     *
-     * @param {DataConverter.Type} value
-     * Value to convert.
-     *
-     * @return {globalThis.Date}
-     * Converted value as a Date.
-     */
-    function asDate(value, converter) {
-        let timestamp;
-        if (typeof value === 'string') {
-            timestamp = converter.parseDate(value);
+/**
+ * Converts a value to a Date.
+ *
+ * @param {DataConverterType} value
+ * Value to convert.
+ *
+ * @return {globalThis.Date}
+ * Converted value as a Date.
+ */
+function asDate(value, converter) {
+    let timestamp;
+    if (typeof value === 'string') {
+        timestamp = converter.parseDate(value);
+    }
+    else if (typeof value === 'number') {
+        timestamp = value;
+    }
+    else if (value instanceof Date) {
+        return value;
+    }
+    else {
+        timestamp = converter.parseDate(asString(value));
+    }
+    return new Date(timestamp);
+}
+/**
+ * Converts a value to a number.
+ *
+ * @param {DataConverterType} value
+ * Value to convert.
+ *
+ * @return {number}
+ * Converted value as a number.
+ */
+function asNumber(value, decimalRegExp) {
+    if (typeof value === 'number') {
+        return value;
+    }
+    if (typeof value === 'boolean') {
+        return value ? 1 : 0;
+    }
+    if (typeof value === 'string') {
+        const decimalRegex = decimalRegExp;
+        if (value.indexOf(' ') > -1) {
+            value = value.replace(/\s+/g, '');
         }
-        else if (typeof value === 'number') {
-            timestamp = value;
+        if (decimalRegex) {
+            if (!decimalRegex.test(value)) {
+                return NaN;
+            }
+            value = value.replace(decimalRegex, '$1.$2');
         }
-        else if (value instanceof Date) {
-            return value;
+        return parseFloat(value);
+    }
+    if (value instanceof Date) {
+        return value.getDate();
+    }
+    if (value) {
+        return value.getRowCount();
+    }
+    return NaN;
+}
+/**
+ * Converts a value to a string.
+ *
+ * @param {DataConverterType} value
+ * Value to convert.
+ *
+ * @return {string}
+ * Converted value as a string.
+ */
+function asString(value) {
+    return '' + value;
+}
+/**
+ * Converts a value to a boolean.
+ *
+ * @param {DataConverterType} value
+ * Value to convert.
+ *
+ * @return {boolean}
+ * Converted value as a boolean.
+ */
+function asBoolean(value) {
+    if (typeof value === 'boolean') {
+        return value;
+    }
+    if (typeof value === 'string') {
+        return value !== '' && value !== '0' && value !== 'false';
+    }
+    return !!asNumber(value);
+}
+/**
+ * Guesses the potential type of a string value for parsing CSV etc.
+ *
+ * @param {*} value
+ * The value to examine.
+ *
+ * @return {'number' | 'string' | 'Date'}
+ * Type string, either `string`, `Date`, or `number`.
+ */
+function guessType(value, converter) {
+    let result = 'string';
+    if (typeof value === 'string') {
+        const trimedValue = trim(`${value}`), decimalRegExp = converter.decimalRegExp;
+        let innerTrimedValue = trim(trimedValue, true);
+        if (decimalRegExp) {
+            innerTrimedValue = (decimalRegExp.test(innerTrimedValue) ?
+                innerTrimedValue.replace(decimalRegExp, '$1.$2') :
+                '');
+        }
+        const floatValue = parseFloat(innerTrimedValue);
+        if (+innerTrimedValue === floatValue) {
+            // String is numeric
+            value = floatValue;
         }
         else {
-            timestamp = converter.parseDate(asString(value));
+            // Determine if a date string
+            const dateValue = converter.parseDate(value);
+            result = isNumber(dateValue) ? 'Date' : 'string';
         }
-        return new Date(timestamp);
     }
-    DataConverterUtils.asDate = asDate;
-    /**
-     * Converts a value to a number.
-     *
-     * @param {DataConverter.Type} value
-     * Value to convert.
-     *
-     * @return {number}
-     * Converted value as a number.
-     */
-    function asNumber(value, decimalRegExp) {
-        if (typeof value === 'number') {
-            return value;
-        }
-        if (typeof value === 'boolean') {
-            return value ? 1 : 0;
-        }
-        if (typeof value === 'string') {
-            const decimalRegex = decimalRegExp;
-            if (value.indexOf(' ') > -1) {
-                value = value.replace(/\s+/g, '');
-            }
-            if (decimalRegex) {
-                if (!decimalRegex.test(value)) {
-                    return NaN;
-                }
-                value = value.replace(decimalRegex, '$1.$2');
-            }
-            return parseFloat(value);
-        }
-        if (value instanceof Date) {
-            return value.getDate();
-        }
-        if (value) {
-            return value.getRowCount();
-        }
-        return NaN;
+    if (typeof value === 'number') {
+        // Greater than milliseconds in a year assumed timestamp
+        result = value > 365 * 24 * 3600 * 1000 ? 'Date' : 'number';
     }
-    DataConverterUtils.asNumber = asNumber;
-    /**
-     * Converts a value to a string.
-     *
-     * @param {DataConverter.Type} value
-     * Value to convert.
-     *
-     * @return {string}
-     * Converted value as a string.
-     */
-    function asString(value) {
-        return '' + value;
+    return result;
+}
+/**
+ * Trim a string from whitespaces.
+ *
+ * @param {string} str
+ * String to trim.
+ *
+ * @param {boolean} [inside=false]
+ * Remove all spaces between numbers.
+ *
+ * @return {string}
+ * Trimmed string
+ */
+function trim(str, inside) {
+    if (typeof str === 'string') {
+        str = str.replace(/^\s+|\s+$/g, '');
+        // Clear white space inside the string, like thousands separators
+        if (inside && /^[\d\s]+$/.test(str)) {
+            str = str.replace(/\s/g, '');
+        }
     }
-    DataConverterUtils.asString = asString;
-    /**
-     * Converts a value to a boolean.
-     *
-     * @param {DataConverter.Type} value
-     * Value to convert.
-     *
-     * @return {boolean}
-     * Converted value as a boolean.
-     */
-    function asBoolean(value) {
-        if (typeof value === 'boolean') {
-            return value;
-        }
-        if (typeof value === 'string') {
-            return value !== '' && value !== '0' && value !== 'false';
-        }
-        return !!asNumber(value);
+    return str;
+}
+/**
+ * Parses an array of columns to a column collection. If more headers are
+ * provided, the corresponding, empty columns are added.
+ *
+ * @param {DataTableColumn[]} [columnsArray]
+ * Array of columns.
+ *
+ * @param {string[]} [headers]
+ * Column ids to use.
+ *
+ * @return {DataTableColumnCollection}
+ * Parsed columns.
+ */
+function getColumnsCollection(columnsArray = [], headers) {
+    const columns = {};
+    for (let i = 0, iEnd = Math.max(headers.length, columnsArray.length); i < iEnd; ++i) {
+        const columnId = headers[i] || `${i}`;
+        columns[columnId] = columnsArray[i] ? columnsArray[i].slice() : [];
     }
-    DataConverterUtils.asBoolean = asBoolean;
-    /**
-     * Guesses the potential type of a string value for parsing CSV etc.
-     *
-     * @param {*} value
-     * The value to examine.
-     *
-     * @return {'number' | 'string' | 'Date'}
-     * Type string, either `string`, `Date`, or `number`.
-     */
-    function guessType(value, converter) {
-        let result = 'string';
-        if (typeof value === 'string') {
-            const trimedValue = DataConverterUtils.trim(`${value}`), decimalRegExp = converter.decimalRegExp;
-            let innerTrimedValue = DataConverterUtils.trim(trimedValue, true);
-            if (decimalRegExp) {
-                innerTrimedValue = (decimalRegExp.test(innerTrimedValue) ?
-                    innerTrimedValue.replace(decimalRegExp, '$1.$2') :
-                    '');
-            }
-            const floatValue = parseFloat(innerTrimedValue);
-            if (+innerTrimedValue === floatValue) {
-                // String is numeric
-                value = floatValue;
-            }
-            else {
-                // Determine if a date string
-                const dateValue = converter.parseDate(value);
-                result = DataConverterUtils_isNumber(dateValue) ? 'Date' : 'string';
-            }
-        }
-        if (typeof value === 'number') {
-            // Greater than milliseconds in a year assumed timestamp
-            result = value > 365 * 24 * 3600 * 1000 ? 'Date' : 'number';
-        }
-        return result;
-    }
-    DataConverterUtils.guessType = guessType;
-    /**
-     * Trim a string from whitespaces.
-     *
-     * @param {string} str
-     * String to trim.
-     *
-     * @param {boolean} [inside=false]
-     * Remove all spaces between numbers.
-     *
-     * @return {string}
-     * Trimed string
-     */
-    function trim(str, inside) {
-        if (typeof str === 'string') {
-            str = str.replace(/^\s+|\s+$/g, '');
-            // Clear white space insdie the string, like thousands separators
-            if (inside && /^[\d\s]+$/.test(str)) {
-                str = str.replace(/\s/g, '');
-            }
-        }
-        return str;
-    }
-    DataConverterUtils.trim = trim;
-    /**
-     * Parses an array of columns to a column collection. If more headers are
-     * provided, the corresponding, empty columns are added.
-     *
-     * @param {DataTable.Column[]} [columnsArray]
-     * Array of columns.
-     *
-     * @param {string[]} [headers]
-     * Column ids to use.
-     *
-     * @return {DataTable.ColumnCollection}
-     * Parsed columns.
-     */
-    function getColumnsCollection(columnsArray = [], headers) {
-        const columns = {};
-        for (let i = 0, iEnd = Math.max(headers.length, columnsArray.length); i < iEnd; ++i) {
-            const columnId = headers[i] || `${i}`;
-            columns[columnId] = columnsArray[i] ? columnsArray[i].slice() : [];
-        }
-        return columns;
-    }
-    DataConverterUtils.getColumnsCollection = getColumnsCollection;
-})(DataConverterUtils || (DataConverterUtils = {}));
+    return columns;
+}
 /* *
  *
  *  Default Export
  *
  * */
+const DataConverterUtils = {
+    asBoolean,
+    asDate,
+    asNumber,
+    asString,
+    getColumnsCollection,
+    guessType,
+    trim
+};
 /* harmony default export */ const Converters_DataConverterUtils = (DataConverterUtils);
 
 ;// ./code/es-modules/Data/Converters/DataConverter.js
@@ -2357,7 +3656,6 @@ var DataConverterUtils;
 
 
 
-const { addEvent: DataConverter_addEvent, fireEvent: DataConverter_fireEvent, merge: DataConverter_merge } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
  *  Class
@@ -2369,6 +3667,26 @@ const { addEvent: DataConverter_addEvent, fireEvent: DataConverter_fireEvent, me
  * @private
  */
 class DataConverter {
+    /**
+     * Adds a converter class to the registry.
+     *
+     * @private
+     *
+     * @param {string} key
+     * Registry key of the converter class.
+     *
+     * @param {DataConverterTypes} DataConverterClass
+     * Connector class (aka class constructor) to register.
+     *
+     * @return {boolean}
+     * Returns true, if the registration was successful. False is returned, if
+     * their is already a converter registered with this key.
+     */
+    static registerType(key, DataConverterClass) {
+        return (!!key &&
+            !DataConverter.types[key] &&
+            !!(DataConverter.types[key] = DataConverterClass));
+    }
     /* *
      *
      *  Constructor
@@ -2377,7 +3695,7 @@ class DataConverter {
     /**
      * Constructs an instance of the DataConverter.
      *
-     * @param {DataConverter.UserOptions} [options]
+     * @param {UserOptions} [options]
      * Options for the DataConverter.
      */
     constructor(options) {
@@ -2439,7 +3757,7 @@ class DataConverter {
                 }
             }
         };
-        const mergedOptions = DataConverter_merge(DataConverter.defaultOptions, options);
+        const mergedOptions = merge(DataConverter.defaultOptions, options);
         let regExpPoint = mergedOptions.decimalPoint;
         if (regExpPoint === '.' || regExpPoint === ',') {
             regExpPoint = regExpPoint === '.' ? '\\.' : ',';
@@ -2563,7 +3881,7 @@ class DataConverter {
                 guessedFormat[2] = 'YY';
             }
             format = guessedFormat.join('/');
-            // If the caculated format is not valid, we need to present an
+            // If the calculated format is not valid, we need to present an
             // error.
         }
         // Save the deduced format in the converter options.
@@ -2575,11 +3893,11 @@ class DataConverter {
     /**
      * Emits an event on the DataConverter instance.
      *
-     * @param {DataConverter.Event} [e]
+     * @param {Event} [e]
      * Event object containing additional event data
      */
     emit(e) {
-        DataConverter_fireEvent(this, e.type, e);
+        fireEvent(this, e.type, e);
     }
     /**
      * Registers a callback for a specific event.
@@ -2587,14 +3905,14 @@ class DataConverter {
      * @param {string} type
      * Event type as a string.
      *
-     * @param {DataEventEmitter.Callback} callback
+     * @param {DataEventCallback} callback
      * Function to register for an modifier callback.
      *
      * @return {Function}
      * Function to unregister callback from the modifier event.
      */
     on(type, callback) {
-        return DataConverter_addEvent(this, type, callback);
+        return addEvent(this, type, callback);
     }
     /**
      * Parse a date and return it as a number.
@@ -2667,56 +3985,10 @@ DataConverter.defaultOptions = {
     dateFormat: '',
     firstRowAsNames: true
 };
-/* *
- *
- *  Class Namespace
- *
- * */
 /**
- * Additionally provided types for events and conversion.
+ * Registry as a record object with converter names and their class.
  */
-(function (DataConverter) {
-    /* *
-     *
-     *  Declarations
-     *
-     * */
-    /* *
-     *
-     *  Constants
-     *
-     * */
-    /**
-     * Registry as a record object with connector names and their class.
-     */
-    DataConverter.types = {};
-    /* *
-     *
-     *  Functions
-     *
-     * */
-    /**
-     * Adds a converter class to the registry.
-     *
-     * @private
-     *
-     * @param {string} key
-     * Registry key of the converter class.
-     *
-     * @param {DataConverterTypes} DataConverterClass
-     * Connector class (aka class constructor) to register.
-     *
-     * @return {boolean}
-     * Returns true, if the registration was successful. False is returned, if
-     * their is already a converter registered with this key.
-     */
-    function registerType(key, DataConverterClass) {
-        return (!!key &&
-            !DataConverter.types[key] &&
-            !!(DataConverter.types[key] = DataConverterClass));
-    }
-    DataConverter.registerType = registerType;
-})(DataConverter || (DataConverter = {}));
+DataConverter.types = {};
 /* *
  *
  *  Default Export
@@ -2777,7 +4049,7 @@ class DataCursor {
      *
      * @example
      * ```TypeScript
-     * dataCursor.addListener(myTable.id, 'hover', (e: DataCursor.Event) => {
+     * dataCursor.addListener(myTable.id, 'hover', (e: DataCursorEvent) => {
      *     if (e.cursor.type === 'position') {
      *         console.log(`Hover over row #${e.cursor.row}.`);
      *     }
@@ -2786,13 +4058,13 @@ class DataCursor {
      *
      * @function #addListener
      *
-     * @param {Data.DataCursor.TableId} tableId
+     * @param {Data.DataCursorTableId} tableId
      * The ID of the table to listen to.
      *
-     * @param {Data.DataCursor.State} state
+     * @param {Data.DataCursorState} state
      * The state on the table to listen to.
      *
-     * @param {Data.DataCursor.Listener} listener
+     * @param {Data.DataCursorListener} listener
      * The listener to register.
      *
      * @return {Data.DataCursor}
@@ -2844,7 +4116,7 @@ class DataCursor {
      * @param {Data.DataTable} table
      * The related table of the cursor.
      *
-     * @param {Data.DataCursor.Type} cursor
+     * @param {Data.DataCursorType} cursor
      * The state cursor to emit.
      *
      * @param {Event} [event]
@@ -2867,7 +4139,7 @@ class DataCursor {
                 if (!cursors.length) {
                     stateMap[cursor.state] = cursors;
                 }
-                if (DataCursor.getIndex(cursor, cursors) === -1) {
+                if (getIndex(cursor, cursors) === -1) {
                     cursors.push(cursor);
                 }
             }
@@ -2907,7 +4179,7 @@ class DataCursor {
      * @param {string} tableId
      * ID of the related cursor table.
      *
-     * @param {Data.DataCursor.Type} cursor
+     * @param {Data.DataCursorType} cursor
      * Copy or reference of the cursor.
      *
      * @return {Data.DataCursor}
@@ -2917,7 +4189,7 @@ class DataCursor {
         const cursors = (this.stateMap[tableId] &&
             this.stateMap[tableId][cursor.state]);
         if (cursors) {
-            const index = DataCursor.getIndex(cursor, cursors);
+            const index = getIndex(cursor, cursors);
             if (index >= 0) {
                 cursors.splice(index, 1);
             }
@@ -2929,13 +4201,13 @@ class DataCursor {
      *
      * @function #addListener
      *
-     * @param {Data.DataCursor.TableId} tableId
+     * @param {Data.DataCursorTableId} tableId
      * The ID of the table the listener is connected to.
      *
-     * @param {Data.DataCursor.State} state
+     * @param {Data.DataCursorState} state
      * The state on the table the listener is listening to.
      *
-     * @param {Data.DataCursor.Listener} listener
+     * @param {Data.DataCursorListener} listener
      * The listener to deregister.
      *
      * @return {Data.DataCursor}
@@ -2955,149 +4227,129 @@ class DataCursor {
 }
 /* *
  *
- *  Class Namespace
+ *  Functions
  *
  * */
 /**
- * @class Data.DataCursor
+ * Finds the index of an cursor in an array.
+ * @private
  */
-(function (DataCursor) {
-    /* *
-     *
-     *  Declarations
-     *
-     * */
-    /* *
-     *
-     *  Functions
-     *
-     * */
-    /**
-     * Finds the index of an cursor in an array.
-     * @private
-     */
-    function getIndex(needle, cursors) {
-        if (needle.type === 'position') {
-            for (let cursor, i = 0, iEnd = cursors.length; i < iEnd; ++i) {
-                cursor = cursors[i];
-                if (cursor.type === 'position' &&
-                    cursor.state === needle.state &&
-                    cursor.column === needle.column &&
-                    cursor.row === needle.row) {
-                    return i;
-                }
+function getIndex(needle, cursors) {
+    if (needle.type === 'position') {
+        for (let cursor, i = 0, iEnd = cursors.length; i < iEnd; ++i) {
+            cursor = cursors[i];
+            if (cursor.type === 'position' &&
+                cursor.state === needle.state &&
+                cursor.column === needle.column &&
+                cursor.row === needle.row) {
+                return i;
             }
         }
-        else {
-            const columnNeedle = JSON.stringify(needle.columns);
-            for (let cursor, i = 0, iEnd = cursors.length; i < iEnd; ++i) {
-                cursor = cursors[i];
-                if (cursor.type === 'range' &&
-                    cursor.state === needle.state &&
-                    cursor.firstRow === needle.firstRow &&
-                    cursor.lastRow === needle.lastRow &&
-                    JSON.stringify(cursor.columns) === columnNeedle) {
-                    return i;
-                }
+    }
+    else {
+        const columnNeedle = JSON.stringify(needle.columns);
+        for (let cursor, i = 0, iEnd = cursors.length; i < iEnd; ++i) {
+            cursor = cursors[i];
+            if (cursor.type === 'range' &&
+                cursor.state === needle.state &&
+                cursor.firstRow === needle.firstRow &&
+                cursor.lastRow === needle.lastRow &&
+                JSON.stringify(cursor.columns) === columnNeedle) {
+                return i;
             }
         }
-        return -1;
     }
-    DataCursor.getIndex = getIndex;
-    /**
-     * Checks whether two cursor share the same properties.
-     * @private
-     */
-    function isEqual(cursorA, cursorB) {
-        if (cursorA.type === 'position' && cursorB.type === 'position') {
-            return (cursorA.column === cursorB.column &&
-                cursorA.row === cursorB.row &&
-                cursorA.state === cursorB.state);
-        }
-        if (cursorA.type === 'range' && cursorB.type === 'range') {
-            return (cursorA.firstRow === cursorB.firstRow &&
-                cursorA.lastRow === cursorB.lastRow &&
-                (JSON.stringify(cursorA.columns) ===
-                    JSON.stringify(cursorB.columns)));
-        }
-        return false;
+    return -1;
+}
+/**
+ * Checks whether two cursor share the same properties.
+ * @private
+ */
+function isEqual(cursorA, cursorB) {
+    if (cursorA.type === 'position' && cursorB.type === 'position') {
+        return (cursorA.column === cursorB.column &&
+            cursorA.row === cursorB.row &&
+            cursorA.state === cursorB.state);
     }
-    DataCursor.isEqual = isEqual;
-    /**
-     * Checks whether a cursor is in a range.
-     * @private
-     */
-    function isInRange(needle, range) {
-        if (range.type === 'position') {
-            range = toRange(range);
-        }
-        if (needle.type === 'position') {
-            needle = toRange(needle, range);
-        }
-        const needleColumns = needle.columns;
-        const rangeColumns = range.columns;
-        return (needle.firstRow >= range.firstRow &&
-            needle.lastRow <= range.lastRow &&
-            (!needleColumns ||
-                !rangeColumns ||
-                needleColumns.every((column) => rangeColumns.indexOf(column) >= 0)));
+    if (cursorA.type === 'range' && cursorB.type === 'range') {
+        return (cursorA.firstRow === cursorB.firstRow &&
+            cursorA.lastRow === cursorB.lastRow &&
+            (JSON.stringify(cursorA.columns) ===
+                JSON.stringify(cursorB.columns)));
     }
-    DataCursor.isInRange = isInRange;
-    /**
-     * @private
-     */
-    function toPositions(cursor) {
-        if (cursor.type === 'position') {
-            return [cursor];
-        }
-        const columns = (cursor.columns || []);
-        const positions = [];
-        const state = cursor.state;
-        for (let row = cursor.firstRow, rowEnd = cursor.lastRow; row < rowEnd; ++row) {
-            if (!columns.length) {
-                positions.push({
-                    type: 'position',
-                    row,
-                    state
-                });
-                continue;
-            }
-            for (let column = 0, columnEnd = columns.length; column < columnEnd; ++column) {
-                positions.push({
-                    type: 'position',
-                    column: columns[column],
-                    row,
-                    state
-                });
-            }
-        }
-        return positions;
+    return false;
+}
+/**
+ * Checks whether a cursor is in a range.
+ * @private
+ */
+function isInRange(needle, range) {
+    if (range.type === 'position') {
+        range = toRange(range);
     }
-    DataCursor.toPositions = toPositions;
-    /**
-     * @private
-     */
-    function toRange(cursor, defaultRange) {
-        if (cursor.type === 'range') {
-            return cursor;
-        }
-        const range = {
-            type: 'range',
-            firstRow: (cursor.row ??
-                (defaultRange && defaultRange.firstRow) ??
-                0),
-            lastRow: (cursor.row ??
-                (defaultRange && defaultRange.lastRow) ??
-                Number.MAX_VALUE),
-            state: cursor.state
-        };
-        if (typeof cursor.column !== 'undefined') {
-            range.columns = [cursor.column];
-        }
-        return range;
+    if (needle.type === 'position') {
+        needle = toRange(needle, range);
     }
-    DataCursor.toRange = toRange;
-})(DataCursor || (DataCursor = {}));
+    const needleColumns = needle.columns;
+    const rangeColumns = range.columns;
+    return (needle.firstRow >= range.firstRow &&
+        needle.lastRow <= range.lastRow &&
+        (!needleColumns ||
+            !rangeColumns ||
+            needleColumns.every((column) => rangeColumns.indexOf(column) >= 0)));
+}
+/**
+ * @private
+ */
+function toPositions(cursor) {
+    if (cursor.type === 'position') {
+        return [cursor];
+    }
+    const columns = (cursor.columns || []);
+    const positions = [];
+    const state = cursor.state;
+    for (let row = cursor.firstRow, rowEnd = cursor.lastRow; row < rowEnd; ++row) {
+        if (!columns.length) {
+            positions.push({
+                type: 'position',
+                row,
+                state
+            });
+            continue;
+        }
+        for (let column = 0, columnEnd = columns.length; column < columnEnd; ++column) {
+            positions.push({
+                type: 'position',
+                column: columns[column],
+                row,
+                state
+            });
+        }
+    }
+    return positions;
+}
+/**
+ * @private
+ */
+function toRange(cursor, defaultRange) {
+    if (cursor.type === 'range') {
+        return cursor;
+    }
+    const range = {
+        type: 'range',
+        firstRow: (cursor.row ??
+            (defaultRange && defaultRange.firstRow) ??
+            0),
+        lastRow: (cursor.row ??
+            (defaultRange && defaultRange.lastRow) ??
+            Number.MAX_VALUE),
+        state: cursor.state
+    };
+    if (typeof cursor.column !== 'undefined') {
+        range.columns = [cursor.column];
+    }
+    return range;
+}
 /* *
  *
  *  Default Export
@@ -3121,7 +4373,6 @@ class DataCursor {
 
 
 
-const { addEvent: DataPool_addEvent, fireEvent: DataPool_fireEvent, merge: DataPool_merge } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
  *  Class
@@ -3143,7 +4394,7 @@ class DataPool {
      *
      * */
     constructor(options) {
-        this.options = DataPool_merge(DataPool.defaultOptions, options);
+        this.options = merge(DataPool.defaultOptions, options);
         this.connectors = {};
         this.waiting = {};
     }
@@ -3156,11 +4407,11 @@ class DataPool {
      * Emits an event on this data pool to all registered callbacks of the given
      * event.
      *
-     * @param {DataTable.Event} e
+     * @param {DataTableEvent} e
      * Event object with event information.
      */
     emit(e) {
-        DataPool_fireEvent(this, e.type, e);
+        fireEvent(this, e.type, e);
     }
     /**
      * Loads the connector.
@@ -3316,15 +4567,19 @@ class DataPool {
      * Function to unregister callback from the event.
      */
     on(type, callback) {
-        return DataPool_addEvent(this, type, callback);
+        return addEvent(this, type, callback);
     }
     /**
      * Sets connector options under the specified `options.id`.
      *
-     * @param options
+     * @param {object} options
      * Connector options to set.
+     *
+     * @param {boolean} [update]
+     * Whether to update the existing connector with the new options and reload
+     * it (`true`) or replace it with a new connector instance (`false`).
      */
-    setConnectorOptions(options) {
+    async setConnectorOptions(options, update) {
         const connectorsOptions = this.options.connectors;
         const connectorsInstances = this.connectors;
         this.emit({
@@ -3337,12 +4592,20 @@ class DataPool {
                 break;
             }
         }
-        // TODO: Check if can be refactored
-        if (connectorsInstances[options.id]) {
-            connectorsInstances[options.id].stopPolling();
-            delete connectorsInstances[options.id];
+        let existingConnector = connectorsInstances[options.id];
+        if (existingConnector) {
+            if (update) {
+                await existingConnector.update(options, true);
+            }
+            else {
+                existingConnector.stopPolling();
+                existingConnector = void 0;
+                delete connectorsInstances[options.id];
+            }
         }
-        connectorsOptions.push(options);
+        if (!existingConnector) {
+            connectorsOptions.push(options);
+        }
         this.emit({
             type: 'afterSetConnectorOptions',
             options
@@ -3379,7 +4642,6 @@ DataPool.defaultOptions = {
  * */
 
 
-const { isString } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
  *  Constants
@@ -3452,26 +4714,26 @@ const referenceR1C1RegExp = /^R(\d*|\[\d+\])C(\d*|\[\d+\])(?!\:)/;
  * @return {string}
  * Extracted parantheses. If not found an exception will be thrown.
  */
-function extractParantheses(text) {
-    let parantheseLevel = 0;
-    for (let i = 0, iEnd = text.length, char, parantheseStart = 1; i < iEnd; ++i) {
+function extractParentheses(text) {
+    let parenthesesLevel = 0;
+    for (let i = 0, iEnd = text.length, char, parenthesesStart = 1; i < iEnd; ++i) {
         char = text[i];
         if (char === '(') {
-            if (!parantheseLevel) {
-                parantheseStart = i + 1;
+            if (!parenthesesLevel) {
+                parenthesesStart = i + 1;
             }
-            ++parantheseLevel;
+            ++parenthesesLevel;
             continue;
         }
         if (char === ')') {
-            --parantheseLevel;
-            if (!parantheseLevel) {
-                return text.substring(parantheseStart, i);
+            --parenthesesLevel;
+            if (!parenthesesLevel) {
+                return text.substring(parenthesesStart, i);
             }
         }
     }
-    if (parantheseLevel > 0) {
-        const error = new Error('Incomplete parantheses.');
+    if (parenthesesLevel > 0) {
+        const error = new Error('Incomplete parentheses.');
         error.name = 'FormulaParseError';
         throw error;
     }
@@ -3792,7 +5054,7 @@ function parseFormula(text, alternativeSeparators) {
         match = next.match(functionRegExp);
         if (match) {
             next = next.substring(match[1].length).trim();
-            const parantheses = extractParantheses(next);
+            const parantheses = extractParentheses(next);
             formula.push({
                 type: 'function',
                 name: match[1],
@@ -3801,13 +5063,13 @@ function parseFormula(text, alternativeSeparators) {
             next = next.substring(parantheses.length + 2).trim();
             continue;
         }
-        // Check for a formula in parantheses
+        // Check for a formula in parentheses
         if (next[0] === '(') {
-            const paranteses = extractParantheses(next);
-            if (paranteses) {
+            const parentheses = extractParentheses(next);
+            if (parentheses) {
                 formula
-                    .push(parseFormula(paranteses, alternativeSeparators));
-                next = next.substring(paranteses.length + 2).trim();
+                    .push(parseFormula(parentheses, alternativeSeparators));
+                next = next.substring(parentheses.length + 2).trim();
                 continue;
             }
         }
@@ -3908,7 +5170,7 @@ function isFormula(item) {
  * @return {boolean}
  * `true`, if the item is a formula function.
  */
-function isFunction(item) {
+function FormulaTypes_isFunction(item) {
     return (typeof item === 'object' &&
         !(Array.isArray(item)) &&
         item.type === 'function');
@@ -3983,7 +5245,7 @@ function isValue(item) {
  * */
 const MathFormula = {
     isFormula,
-    isFunction,
+    isFunction: FormulaTypes_isFunction,
     isOperator,
     isRange,
     isReference,
@@ -4006,9 +5268,8 @@ const MathFormula = {
  * */
 
 
-const { isFormula: FormulaProcessor_isFormula, isFunction: FormulaProcessor_isFunction, isOperator: FormulaProcessor_isOperator, isRange: FormulaProcessor_isRange, isReference: FormulaProcessor_isReference, isValue: FormulaProcessor_isValue } = FormulaTypes;
 
-const { defined: FormulaProcessor_defined } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { isFormula: FormulaProcessor_isFormula, isFunction: FormulaProcessor_isFunction, isOperator: FormulaProcessor_isOperator, isRange: FormulaProcessor_isRange, isReference: FormulaProcessor_isReference, isValue: FormulaProcessor_isValue } = FormulaTypes;
 /* *
  *
  *  Constants
@@ -4084,7 +5345,7 @@ function asLogicalString(value) {
  * @return {number}
  * Number value. `NaN` if not convertable.
  */
-function asNumber(value) {
+function FormulaProcessor_asNumber(value) {
     switch (typeof value) {
         case 'boolean':
             return value ? 1 : 0;
@@ -4138,8 +5399,8 @@ function basicOperation(operator, x, y) {
             }
             return asLogicalNumber(x) >= asLogicalNumber(y);
     }
-    x = asNumber(x);
-    y = asNumber(y);
+    x = FormulaProcessor_asNumber(x);
+    y = FormulaProcessor_asNumber(y);
     let result;
     switch (operator) {
         case '+':
@@ -4302,7 +5563,7 @@ function applyOperator(values, operators) {
     const secondValue = values.pop();
     const firstValue = values.pop();
     const operator = operators.pop();
-    if (!FormulaProcessor_defined(secondValue) || !FormulaProcessor_defined(firstValue) || !FormulaProcessor_defined(operator)) {
+    if (!defined(secondValue) || !defined(firstValue) || !defined(operator)) {
         values.push(NaN);
     }
     else {
@@ -4510,7 +5771,7 @@ function translateReferences(formula, columnDelta = 0, rowDelta = 0) {
  *
  * */
 const FormulaProcessor = {
-    asNumber,
+    asNumber: FormulaProcessor_asNumber,
     getArgumentValue,
     getArgumentsValues,
     getRangeValues,
@@ -5931,7 +7192,6 @@ const Formula = {
 
 
 
-const { merge: CSVConverter_merge } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
  *  Class
@@ -5955,7 +7215,7 @@ class CSVConverter extends Converters_DataConverter {
      * Options for the CSV parser.
      */
     constructor(options) {
-        const mergedOptions = CSVConverter_merge(CSVConverter.defaultOptions, options);
+        const mergedOptions = merge(CSVConverter.defaultOptions, options);
         super(mergedOptions);
         /* *
          *
@@ -5978,16 +7238,16 @@ class CSVConverter extends Converters_DataConverter {
      *
      * @param {Partial<CSVConverterOptions>} [options]
      * Options for the parser.
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
-     * @return {DataTable.ColumnCollection}
+     * @return {DataTableColumnCollection}
      * The parsed column collection.
      *
      * @emits CSVDataParser#parse
      * @emits CSVDataParser#afterParse
      */
     parse(options, eventDetail) {
-        const converter = this, dataTypes = converter.dataTypes, parserOptions = CSVConverter_merge(this.options, options), { beforeParse, lineDelimiter, firstRowAsNames, itemDelimiter } = parserOptions;
+        const converter = this, dataTypes = converter.dataTypes, parserOptions = merge(this.options, options), { beforeParse, lineDelimiter, firstRowAsNames, itemDelimiter } = parserOptions;
         let lines, rowIt = 0, { csv, startRow, endRow } = parserOptions, column;
         const columnsArray = [];
         converter.emit({
@@ -6184,7 +7444,7 @@ class CSVConverter extends Converters_DataConverter {
         }, linesCount = lines.length;
         for (let i = 0; i < linesCount; i++) {
             let inStr = false, c, cn, cl, token = '';
-            // We should be able to detect dateformats within 13 rows
+            // We should be able to detect dateFormats within 13 rows
             if (i > 13) {
                 break;
             }
@@ -6307,7 +7567,6 @@ Converters_DataConverter.registerType('CSV', CSVConverter);
 
 
 
-const { merge: CSVConnector_merge, fireEvent: CSVConnector_fireEvent } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
  *  Class
@@ -6331,7 +7590,7 @@ class CSVConnector extends Connectors_DataConnector {
      * Options for the connector and converter.
      */
     constructor(options) {
-        const mergedOptions = CSVConnector_merge(CSVConnector.defaultOptions, options);
+        const mergedOptions = merge(CSVConnector.defaultOptions, options);
         super(mergedOptions);
         this.options = mergedOptions;
         if (mergedOptions.enablePolling) {
@@ -6347,16 +7606,16 @@ class CSVConnector extends Connectors_DataConnector {
      * Overrides the DataConnector method. Emits an event on the connector to
      * all registered callbacks of this event.
      *
-     * @param {CSVConnector.Event} e
+     * @param {Event} e
      * Event object containing additional event information.
      */
     emit(e) {
-        CSVConnector_fireEvent(this, e.type, e);
+        fireEvent(this, e.type, e);
     }
     /**
      * Initiates the loading of the CSV source to the connector
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @emits CSVConnector#load
@@ -6388,7 +7647,7 @@ class CSVConnector extends Connectors_DataConnector {
                         firstRowAsNames,
                         beforeParse
                     };
-                    return new Converters_CSVConverter(CSVConnector_merge(options, converterOptions));
+                    return new Converters_CSVConverter(merge(options, converterOptions));
                 }, (converter, data) => converter.parse({ csv: data }));
             }
             return connector.applyTableModifiers().then(() => csv);
@@ -6447,7 +7706,7 @@ Connectors_DataConnector.registerType('CSV', CSVConnector);
  *
  *
  *  Authors:
- *  - Pawel Lysy
+ *  - Paweł Lysy
  *  - Kamil Kubik
  *
  * */
@@ -6455,7 +7714,7 @@ Connectors_DataConnector.registerType('CSV', CSVConnector);
 
 
 
-const { error, isArray, merge: JSONConverter_merge, objectEach: JSONConverter_objectEach } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+
 /* *
  *
  *  Class
@@ -6479,7 +7738,7 @@ class JSONConverter extends Converters_DataConverter {
      * Options for the JSON parser.
      */
     constructor(options) {
-        const mergedOptions = JSONConverter_merge(JSONConverter.defaultOptions, options);
+        const mergedOptions = merge(JSONConverter.defaultOptions, options);
         super(mergedOptions);
         /* *
          *
@@ -6501,7 +7760,7 @@ class JSONConverter extends Converters_DataConverter {
      * @param {Partial<JSONConverterOptions>}[options]
      * Options for the parser
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @emits JSONConverter#parse
@@ -6509,7 +7768,7 @@ class JSONConverter extends Converters_DataConverter {
      */
     parse(options, eventDetail) {
         const converter = this;
-        options = JSONConverter_merge(converter.options, options);
+        options = merge(converter.options, options);
         const { beforeParse, orientation, firstRowAsNames, columnIds } = options;
         let data = options.data;
         if (!data) {
@@ -6544,7 +7803,7 @@ class JSONConverter extends Converters_DataConverter {
     /**
      * Helper for parsing data in 'columns' orientation.
      *
-     * @param {DataTable.BasicColumn[]} [columnsArray]
+     * @param {DataTableBasicColumn[]} [columnsArray]
      * Array of columns.
      *
      * @param {unknown[]} [data]
@@ -6575,14 +7834,14 @@ class JSONConverter extends Converters_DataConverter {
                 columnsArray.push(item);
             }
             else {
-                error('JSONConverter: Invalid `columnIds` option.', false);
+                (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.error)('JSONConverter: Invalid `columnIds` option.', false);
             }
         }
     }
     /**
      * Helper for parsing data in 'rows' orientation.
      *
-     * @param {DataTable.BasicColumn[]} [columnsArray]
+     * @param {DataTableBasicColumn[]} [columnsArray]
      * Array of columns.
      *
      * Helper for parsing data in 'rows' orientation.
@@ -6596,7 +7855,7 @@ class JSONConverter extends Converters_DataConverter {
      * @param {Array<string>} [columnIds]
      * Column ids to retrieve.
      *
-     * @return {DataTable.BasicColumn[]}
+     * @return {DataTableBasicColumn[]}
      * Parsed columns.
      */
     parseRowsOrientation(columnsArray, data, firstRowAsNames, columnIds) {
@@ -6624,7 +7883,7 @@ class JSONConverter extends Converters_DataConverter {
                             columnIndex.toString());
                     }
                     else {
-                        error('JSONConverter: Invalid `columnIds` option.', false);
+                        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.error)('JSONConverter: Invalid `columnIds` option.', false);
                     }
                 }
             }
@@ -6646,7 +7905,7 @@ class JSONConverter extends Converters_DataConverter {
         const converter = this;
         if (columnIds && !(Array.isArray(columnIds))) {
             const newRow = [];
-            JSONConverter_objectEach(columnIds, (arrayWithPath, name) => {
+            objectEach(columnIds, (arrayWithPath, name) => {
                 newRow.push(arrayWithPath.reduce((acc, key) => acc[key], rowObj));
                 if (converter.headers.indexOf(name) < 0) {
                     converter.headers.push(name);
@@ -6688,7 +7947,7 @@ Converters_DataConverter.registerType('JSON', JSONConverter);
  *
  *
  *  Authors:
- *  - Pawel Lysy
+ *  - Paweł Lysy
  *  - Kamil Kubik
  *
  * */
@@ -6696,7 +7955,6 @@ Converters_DataConverter.registerType('JSON', JSONConverter);
 
 
 
-const { merge: JSONConnector_merge, fireEvent: JSONConnector_fireEvent } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
  *  Class
@@ -6720,7 +7978,7 @@ class JSONConnector extends Connectors_DataConnector {
      * Options for the connector and converter.
      */
     constructor(options) {
-        const mergedOptions = JSONConnector_merge(JSONConnector.defaultOptions, options);
+        const mergedOptions = merge(JSONConnector.defaultOptions, options);
         super(mergedOptions);
         this.options = mergedOptions;
         if (mergedOptions.enablePolling) {
@@ -6736,16 +7994,16 @@ class JSONConnector extends Connectors_DataConnector {
      * Overrides the DataConnector method. Emits an event on the connector to
      * all registered callbacks of this event.
      *
-     * @param {JSONConnector.Event} e
+     * @param {Event} e
      * Event object containing additional event information.
      */
     emit(e) {
-        JSONConnector_fireEvent(this, e.type, e);
+        fireEvent(this, e.type, e);
     }
     /**
      * Initiates the loading of the JSON source to the connector
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @emits JSONConnector#load
@@ -6857,7 +8115,7 @@ Connectors_DataConnector.registerType('JSON', JSONConnector);
 
 
 
-const { merge: GoogleSheetsConverter_merge, uniqueKey: GoogleSheetsConverter_uniqueKey } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+
 /* *
  *
  *  Class
@@ -6881,7 +8139,7 @@ class GoogleSheetsConverter extends Converters_DataConverter {
      * Options for the GoogleSheetsConverter.
      */
     constructor(options) {
-        const mergedOptions = GoogleSheetsConverter_merge(GoogleSheetsConverter.defaultOptions, options);
+        const mergedOptions = merge(GoogleSheetsConverter.defaultOptions, options);
         super(mergedOptions);
         this.header = [];
         this.options = mergedOptions;
@@ -6897,14 +8155,14 @@ class GoogleSheetsConverter extends Converters_DataConverter {
      * @param {Partial<GoogleSheetsConverterOptions>}[options]
      * Options for the parser
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @emits GoogleSheetsParser#parse
      * @emits GoogleSheetsParser#afterParse
      */
     parse(options, eventDetail) {
-        const converter = this, parseOptions = GoogleSheetsConverter_merge(converter.options, options);
+        const converter = this, parseOptions = merge(converter.options, options);
         let columnsArray = ((parseOptions.json?.values) || []).map((column) => column.slice());
         if (columnsArray.length === 0) {
             return {};
@@ -6926,7 +8184,7 @@ class GoogleSheetsConverter extends Converters_DataConverter {
             column = columnsArray[i];
             converter.header[i] = (parseOptions.firstRowAsNames ?
                 `${column.shift()}` :
-                GoogleSheetsConverter_uniqueKey());
+                (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.uniqueKey)());
             for (let j = 0, jEnd = column.length; j < jEnd; ++j) {
                 let cellValue = column[j];
                 if (isDateObject(cellValue)) {
@@ -6995,7 +8253,6 @@ function isDateObject(value) {
 
 
 
-const { merge: GoogleSheetsConnector_merge, pick: GoogleSheetsConnector_pick, fireEvent: GoogleSheetsConnector_fireEvent } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
  *  Functions
@@ -7023,50 +8280,50 @@ function isGoogleError(json) {
  */
 class GoogleSheetsConnector extends Connectors_DataConnector {
     /* *
-     *
-     *  Constructor
-     *
-     * */
+ *
+ *  Constructor
+ *
+ * */
     /**
-     * Constructs an instance of GoogleSheetsConnector
-     *
-     * @param {Partial<GoogleSheetsConnectorOptions>} [options]
-     * Options for the connector and converter.
-     */
+ * Constructs an instance of GoogleSheetsConnector
+ *
+ * @param {Partial<GoogleSheetsConnectorOptions>} [options]
+ * Options for the connector and converter.
+ */
     constructor(options) {
-        const mergedOptions = GoogleSheetsConnector_merge(GoogleSheetsConnector.defaultOptions, options);
+        const mergedOptions = merge(GoogleSheetsConnector.defaultOptions, options);
         super(mergedOptions);
         this.options = mergedOptions;
     }
     /* *
-     *
-     *  Functions
-     *
-     * */
+ *
+ *  Functions
+ *
+ * */
     /**
-     * Overrides the DataConnector method. Emits an event on the connector to
-     * all registered callbacks of this event.
-     *
-     * @param {GoogleSheetsConnector.Event} e
-     * Event object containing additional event information.
-     */
+ * Overrides the DataConnector method. Emits an event on the connector to
+ * all registered callbacks of this event.
+ *
+ * @param {Event} e
+ * Event object containing additional event information.
+ */
     emit(e) {
-        GoogleSheetsConnector_fireEvent(this, e.type, e);
+        fireEvent(this, e.type, e);
     }
     /**
-     * Loads data from a Google Spreadsheet.
-     *
-     * @param {DataEvent.Detail} [eventDetail]
-     * Custom information for pending events.
-     *
-     * @return {Promise<this>}
-     * Same connector instance with modified table.
-     */
+ * Loads data from a Google Spreadsheet.
+ *
+ * @param {DataEventDetail} [eventDetail]
+ * Custom information for pending events.
+ *
+ * @return {Promise<this>}
+ * Same connector instance with modified table.
+ */
     load(eventDetail) {
         const connector = this;
         const options = connector.options;
         const { dataRefreshRate, enablePolling, googleAPIKey, googleSpreadsheetKey, dataTables } = options;
-        const url = GoogleSheetsConnector.buildFetchURL(googleAPIKey, googleSpreadsheetKey, options);
+        const url = buildFetchURL(googleAPIKey, googleSpreadsheetKey, options);
         connector.emit({
             type: 'load',
             detail: eventDetail,
@@ -7116,10 +8373,10 @@ class GoogleSheetsConnector extends Connectors_DataConnector {
     }
 }
 /* *
- *
- *  Static Properties
- *
- * */
+*
+*  Static Properties
+*
+* */
 GoogleSheetsConnector.defaultOptions = {
     id: 'google-sheets-connector',
     type: 'GoogleSheets',
@@ -7131,63 +8388,49 @@ GoogleSheetsConnector.defaultOptions = {
 };
 /* *
  *
- *  Class Namespace
+ *  Constants
  *
  * */
-(function (GoogleSheetsConnector) {
-    /* *
-     *
-     *  Declarations
-     *
-     * */
-    /* *
-     *
-     *  Constants
-     *
-     * */
-    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    /* *
-     *
-     *  Functions
-     *
-     * */
-    /**
-     * Creates GoogleSheets API v4 URL.
-     * @private
-     */
-    function buildFetchURL(apiKey, sheetKey, options = {}) {
-        const url = new URL(`https://sheets.googleapis.com/v4/spreadsheets/${sheetKey}/values/`);
-        const range = options.onlyColumnIds ?
-            'A1:Z1' : buildQueryRange(options);
-        url.pathname += range;
-        const searchParams = url.searchParams;
-        searchParams.set('alt', 'json');
-        if (!options.onlyColumnIds) {
-            searchParams.set('dateTimeRenderOption', 'FORMATTED_STRING');
-            searchParams.set('majorDimension', 'COLUMNS');
-            searchParams.set('valueRenderOption', 'UNFORMATTED_VALUE');
-        }
-        searchParams.set('prettyPrint', 'false');
-        searchParams.set('key', apiKey);
-        return url.href;
+const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+/* *
+ *
+ *  Functions
+ *
+ * */
+/**
+ * Creates GoogleSheets API v4 URL.
+ * @private
+ */
+function buildFetchURL(apiKey, sheetKey, options = {}) {
+    const url = new URL(`https://sheets.googleapis.com/v4/spreadsheets/${sheetKey}/values/`);
+    const range = options.onlyColumnIds ?
+        'A1:Z1' : buildQueryRange(options);
+    url.pathname += range;
+    const searchParams = url.searchParams;
+    searchParams.set('alt', 'json');
+    if (!options.onlyColumnIds) {
+        searchParams.set('dateTimeRenderOption', 'FORMATTED_STRING');
+        searchParams.set('majorDimension', 'COLUMNS');
+        searchParams.set('valueRenderOption', 'UNFORMATTED_VALUE');
     }
-    GoogleSheetsConnector.buildFetchURL = buildFetchURL;
-    /**
-     * Creates sheets range.
-     * @private
-     */
-    function buildQueryRange(options = {}) {
-        const { endColumn, endRow, googleSpreadsheetRange, startColumn, startRow } = options;
-        return googleSpreadsheetRange || ((alphabet[startColumn || 0] || 'A') +
-            (Math.max((startRow || 0), 0) + 1) +
-            ':' +
-            (alphabet[GoogleSheetsConnector_pick(endColumn, 25)] || 'Z') +
-            (endRow ?
-                Math.max(endRow, 0) :
-                'Z'));
-    }
-    GoogleSheetsConnector.buildQueryRange = buildQueryRange;
-})(GoogleSheetsConnector || (GoogleSheetsConnector = {}));
+    searchParams.set('prettyPrint', 'false');
+    searchParams.set('key', apiKey);
+    return url.href;
+}
+/**
+ * Creates sheets range.
+ * @private
+ */
+function buildQueryRange(options = {}) {
+    const { endColumn, endRow, googleSpreadsheetRange, startColumn, startRow } = options;
+    return googleSpreadsheetRange || ((alphabet[startColumn || 0] || 'A') +
+        (Math.max((startRow || 0), 0) + 1) +
+        ':' +
+        (alphabet[pick(endColumn, 25)] || 'Z') +
+        (endRow ?
+            Math.max(endRow, 0) :
+            'Z'));
+}
 /* *
  *
  *  Registry
@@ -7222,7 +8465,6 @@ Connectors_DataConnector.registerType('GoogleSheets', GoogleSheetsConnector);
 
 
 
-const { merge: HTMLTableConverter_merge } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
  *  Functions
@@ -7268,7 +8510,7 @@ class HTMLTableConverter extends Converters_DataConverter {
      * Options for the HTMLTableConverter.
      */
     constructor(options) {
-        const mergedOptions = HTMLTableConverter_merge(HTMLTableConverter.defaultOptions, options);
+        const mergedOptions = merge(HTMLTableConverter.defaultOptions, options);
         super(mergedOptions);
         this.headers = [];
         this.options = mergedOptions;
@@ -7453,7 +8695,7 @@ class HTMLTableConverter extends Converters_DataConverter {
      * @param {Partial<HTMLTableConverterOptions>}[options]
      * Options for the parser
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @emits CSVDataParser#parse
@@ -7461,7 +8703,7 @@ class HTMLTableConverter extends Converters_DataConverter {
      * @emits HTMLTableParser#parseError
      */
     parse(options, eventDetail) {
-        const converter = this, columnsArray = [], headers = [], parseOptions = HTMLTableConverter_merge(converter.options, options), { endRow, startColumn, endColumn, firstRowAsNames } = parseOptions, tableHTML = parseOptions.tableElement || this.tableElement;
+        const converter = this, columnsArray = [], headers = [], parseOptions = merge(converter.options, options), { endRow, startColumn, endColumn, firstRowAsNames } = parseOptions, tableHTML = parseOptions.tableElement || this.tableElement;
         if (!(tableHTML instanceof HTMLElement)) {
             converter.emit({
                 type: 'parseError',
@@ -7586,9 +8828,8 @@ Converters_DataConverter.registerType('HTMLTable', HTMLTableConverter);
 
 
 
-const { win } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { merge: HTMLTableConnector_merge } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { win: HTMLTableConnector_win } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
  *  Class
@@ -7608,11 +8849,11 @@ class HTMLTableConnector extends Connectors_DataConnector {
     /**
      * Constructs an instance of HTMLTableConnector.
      *
-     * @param {HTMLTableConnector.CombinedHTMLTableConnectorOptions} [options]
+     * @param {CombinedHTMLTableConnectorOptions} [options]
      * Options for the connector and converter.
      */
     constructor(options) {
-        const mergedOptions = HTMLTableConnector_merge(HTMLTableConnector.defaultOptions, options);
+        const mergedOptions = merge(HTMLTableConnector.defaultOptions, options);
         super(mergedOptions);
         this.options = mergedOptions;
         this.converter = new Converters_HTMLTableConverter(mergedOptions);
@@ -7620,7 +8861,7 @@ class HTMLTableConnector extends Connectors_DataConnector {
     /**
      * Initiates creating the dataconnector from the HTML table
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @emits HTMLTableConnector#load
@@ -7640,7 +8881,7 @@ class HTMLTableConnector extends Connectors_DataConnector {
         let tableElement;
         if (typeof htmlTable === 'string') {
             connector.tableID = htmlTable;
-            tableElement = win.document.getElementById(htmlTable);
+            tableElement = HTMLTableConnector_win.document.getElementById(htmlTable);
         }
         else {
             tableElement = htmlTable;
@@ -7656,7 +8897,7 @@ class HTMLTableConnector extends Connectors_DataConnector {
             });
             return Promise.reject(new Error(error));
         }
-        const columns = converter.parse(HTMLTableConnector_merge({ tableElement: connector.tableElement }, options), eventDetail);
+        const columns = converter.parse(merge({ tableElement: connector.tableElement }, options), eventDetail);
         // If already loaded, clear the current rows
         table.deleteColumns();
         table.setColumns(columns);
@@ -7697,13 +8938,12 @@ Connectors_DataConnector.registerType('HTMLTable', HTMLTableConnector);
  *
  *  Authors:
  *  - Sophie Bremer
- *  - Dawid Dragula
+ *  - Dawid Draguła
  *
  * */
 
 
 
-const { addEvent: ChainModifier_addEvent, fireEvent: ChainModifier_fireEvent, merge: ChainModifier_merge } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
  *  Class
@@ -7722,7 +8962,7 @@ class ChainModifier extends Modifiers_DataModifier {
     /**
      * Constructs an instance of the modifier chain.
      *
-     * @param {Partial<ChainModifier.Options>} [options]
+     * @param {Partial<ChainModifierOptions>} [options]
      * Options to configure the modifier chain.
      *
      * @param {...DataModifier} [chain]
@@ -7731,7 +8971,7 @@ class ChainModifier extends Modifiers_DataModifier {
     constructor(options, ...chain) {
         super();
         this.chain = chain;
-        this.options = ChainModifier_merge(ChainModifier.defaultOptions, options);
+        this.options = merge(ChainModifier.defaultOptions, options);
         const optionsChain = this.options.chain || [];
         for (let i = 0, iEnd = optionsChain.length, modifierOptions, ModifierClass; i < iEnd; ++i) {
             modifierOptions = optionsChain[i];
@@ -7756,7 +8996,7 @@ class ChainModifier extends Modifiers_DataModifier {
      * @param {DataModifier} modifier
      * Configured modifier to add.
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      */
     add(modifier, eventDetail) {
@@ -7775,7 +9015,7 @@ class ChainModifier extends Modifiers_DataModifier {
     /**
      * Clears all modifiers from the chain.
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      */
     clear(eventDetail) {
@@ -7798,7 +9038,7 @@ class ChainModifier extends Modifiers_DataModifier {
      * @param {Highcharts.DataTable} table
      * Table to modify.
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @return {Promise<Highcharts.DataTable>}
@@ -7837,7 +9077,7 @@ class ChainModifier extends Modifiers_DataModifier {
      * @param {DataTable} table
      * Table to modify.
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @return {DataTable}
@@ -7876,7 +9116,7 @@ class ChainModifier extends Modifiers_DataModifier {
      * @param {DataModifier} modifier
      * Configured modifier to remove.
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      */
     remove(modifier, eventDetail) {
@@ -7894,10 +9134,10 @@ class ChainModifier extends Modifiers_DataModifier {
         });
     }
     emit(e) {
-        ChainModifier_fireEvent(this, e.type, e);
+        fireEvent(this, e.type, e);
     }
     on(type, callback) {
-        return ChainModifier_addEvent(this, type, callback);
+        return addEvent(this, type, callback);
     }
 }
 /* *
@@ -7936,7 +9176,6 @@ Modifiers_DataModifier.registerType('Chain', ChainModifier);
 
 
 
-const { merge: InvertModifier_merge } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
  *  Class
@@ -7956,12 +9195,12 @@ class InvertModifier extends Modifiers_DataModifier {
     /**
      * Constructs an instance of the invert modifier.
      *
-     * @param {Partial<InvertModifier.Options>} [options]
+     * @param {Partial<InvertModifierOptions>} [options]
      * Options to configure the invert modifier.
      */
     constructor(options) {
         super();
-        this.options = InvertModifier_merge(InvertModifier.defaultOptions, options);
+        this.options = merge(InvertModifier.defaultOptions, options);
     }
     /* *
      *
@@ -7976,7 +9215,7 @@ class InvertModifier extends Modifiers_DataModifier {
      * @param {DataTable} table
      * Table to invert.
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @return {DataTable}
@@ -8215,13 +9454,12 @@ Modifiers_DataModifier.registerType('Math', MathModifier);
  *
  *  Authors:
  *  - Sophie Bremer
- *  - Dawid Dragula
+ *  - Dawid Draguła
  *
  * */
 
 
 
-const { merge: RangeModifier_merge } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
  *  Class
@@ -8239,12 +9477,12 @@ class RangeModifier extends Modifiers_DataModifier {
     /**
      * Constructs an instance of the range modifier.
      *
-     * @param {Partial<RangeModifier.Options>} [options]
+     * @param {Partial<RangeModifierOptions>} [options]
      * Options to configure the range modifier.
      */
     constructor(options) {
         super();
-        this.options = RangeModifier_merge(RangeModifier.defaultOptions, options);
+        this.options = merge(RangeModifier.defaultOptions, options);
     }
     /* *
      *
@@ -8259,7 +9497,7 @@ class RangeModifier extends Modifiers_DataModifier {
      * @param {DataTable} table
      * Table to modify.
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @return {DataTable}
@@ -8313,13 +9551,12 @@ Modifiers_DataModifier.registerType('Range', RangeModifier);
  *
  *  Authors:
  *  - Sophie Bremer
- *  - Dawid Dragula
+ *  - Dawid Draguła
  *
  * */
 
 
 
-const { merge: SortModifier_merge } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
  *  Class
@@ -8364,12 +9601,12 @@ class SortModifier extends Modifiers_DataModifier {
     /**
      * Constructs an instance of the sort modifier.
      *
-     * @param {Partial<SortDataModifier.Options>} [options]
+     * @param {Partial<SortModifierOptions>} [options]
      * Options to configure the sort modifier.
      */
     constructor(options) {
         super();
-        this.options = SortModifier_merge(SortModifier.defaultOptions, options);
+        this.options = merge(SortModifier.defaultOptions, options);
     }
     /* *
      *
@@ -8384,7 +9621,7 @@ class SortModifier extends Modifiers_DataModifier {
      * @param {Highcharts.DataTable} table
      * Table with rows to reference.
      *
-     * @return {Array<SortModifier.RowReference>}
+     * @return {Array<SortRowReference>}
      * Array of row references.
      */
     getRowReferences(table) {
@@ -8484,13 +9721,12 @@ Modifiers_DataModifier.registerType('Sort', SortModifier);
  *
  *
  *  Authors:
- *  - Dawid Dragula
+ *  - Dawid Draguła
  *
  * */
 
 
 
-const { isFunction: FilterModifier_isFunction, merge: FilterModifier_merge } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
  *  Class
@@ -8512,7 +9748,7 @@ class FilterModifier extends Modifiers_DataModifier {
      * Condition to compile.
      */
     static compile(condition) {
-        if (FilterModifier_isFunction(condition)) {
+        if (isFunction(condition)) {
             return condition;
         }
         const op = condition.operator;
@@ -8573,12 +9809,12 @@ class FilterModifier extends Modifiers_DataModifier {
     /**
      * Constructs an instance of the filter modifier.
      *
-     * @param {Partial<FilterModifier.Options>} [options]
+     * @param {Partial<FilterModifierOptions>} [options]
      * Options to configure the filter modifier.
      */
     constructor(options) {
         super();
-        this.options = FilterModifier_merge(FilterModifier.defaultOptions, options);
+        this.options = merge(FilterModifier.defaultOptions, options);
     }
     /* *
      *
@@ -8593,7 +9829,7 @@ class FilterModifier extends Modifiers_DataModifier {
      * @param {DataTable} table
      * Table to modify.
      *
-     * @param {DataEvent.Detail} [eventDetail]
+     * @param {DataEventDetail} [eventDetail]
      * Custom information for pending events.
      *
      * @return {DataTable}

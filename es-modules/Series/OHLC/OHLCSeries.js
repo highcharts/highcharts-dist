@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -15,8 +15,7 @@ import OHLCPoint from './OHLCPoint.js';
 import OHLCSeriesDefaults from './OHLCSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { hlc: HLCSeries } = SeriesRegistry.seriesTypes;
-import U from '../../Core/Utilities.js';
-const { addEvent, crisp, extend, merge, pushUnique } = U;
+import { addEvent, crisp, extend, merge, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions

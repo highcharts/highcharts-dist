@@ -11,8 +11,7 @@
  *
  * */
 'use strict';
-import U from '../Core/Utilities.js';
-const { find } = U;
+import { find } from '../Shared/Utilities.js';
 /* *
  *
  *  Class

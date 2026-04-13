@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -23,12 +23,13 @@ const { defaultOptions } = D;
  * @sample {highcharts} highcharts/demo/gauge-speedometer/
  *         Speedometer gauge with multiple backgrounds
  *
- * @type         {Array<*>}
+ * @type         {*|Array<*>}
+ * @requires     highcharts-more
  * @optionparent pane.background
  */
 const background = {
     /**
-     * The class name for this background.
+     * An additional class name to apply to the pane background.
      *
      * @sample {highcharts} highcharts/css/pane/
      *         Panes styled by CSS
@@ -38,8 +39,8 @@ const background = {
      *         Panes styled by CSS
      *
      * @type      {string}
-     * @default   highcharts-pane
      * @since     5.0.0
+     * @requires  highcharts-more
      * @apioption pane.background.className
      */
     /**
@@ -50,6 +51,7 @@ const background = {
      * @type    {Highcharts.PaneBackgroundShapeValue}
      * @since   2.3.0
      * @product highcharts
+     * @requires highcharts-more
      */
     shape: 'circle',
     /**
@@ -61,6 +63,7 @@ const background = {
      *          Circular gauge and pane with equal border radius
      * @product highcharts
      * @type    {number|string}
+     * @requires highcharts-more
      */
     borderRadius: 0,
     /**
@@ -68,23 +71,26 @@ const background = {
      *
      * @since 2.3.0
      * @product highcharts
+     * @requires highcharts-more
      */
     borderWidth: 1,
     /**
      * The pane background border color.
      *
-     * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @type    {Highcharts.ColorType}
      * @since   2.3.0
      * @product highcharts
+     * @requires highcharts-more
      */
     borderColor: "#cccccc" /* Palette.neutralColor20 */,
     /**
      * The background color or gradient for the pane.
      *
-     * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @type    {Highcharts.ColorType}
      * @default { linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 }, stops: [[0, #ffffff], [1, #e6e6e6]] }
      * @since   2.3.0
      * @product highcharts
+     * @requires highcharts-more
      */
     backgroundColor: {
         /** @ignore-option */
@@ -104,6 +110,7 @@ const background = {
      * @type    {number|string}
      * @since   2.3.0
      * @product highcharts
+     * @requires highcharts-more
      */
     innerRadius: 0,
     /** @ignore-option */
@@ -115,6 +122,7 @@ const background = {
      * @type     {number|string}
      * @since    2.3.0
      * @product  highcharts
+     * @requires highcharts-more
      */
     outerRadius: '105%'
 };
@@ -135,8 +143,8 @@ const pane = {
     background,
     /**
      * The end angle of the polar X axis or gauge value axis, given in
-     * degrees where 0 is north. Defaults to [startAngle](#pane.startAngle)
-     * + 360.
+     * degrees where 0 is north. Defaults to
+     * [startAngle](#pane.startAngle) plus 360.
      *
      * @sample {highcharts} highcharts/demo/gauge-vu-meter/
      *         VU-meter with custom start and end angle
@@ -144,6 +152,7 @@ const pane = {
      * @type      {number}
      * @since     2.3.0
      * @product   highcharts
+     * @requires  highcharts-more
      * @apioption pane.endAngle
      */
     /**
@@ -155,9 +164,9 @@ const pane = {
      *         Two gauges with different center
      *
      * @type    {Array<string|number>}
-     * @default ["50%", "50%"]
      * @since   2.3.0
      * @product highcharts
+     * @requires highcharts-more
      */
     center: ['50%', '50%'],
     /**
@@ -170,6 +179,7 @@ const pane = {
      *
      * @type    {number|string}
      * @product highcharts
+     * @requires highcharts-more
      */
     size: '85%',
     /**
@@ -181,17 +191,19 @@ const pane = {
      *
      * @type    {number|string}
      * @product highcharts
+     * @requires highcharts-more
      */
     innerSize: '0%',
     /**
      * The start angle of the polar X axis or gauge axis, given in degrees
-     * where 0 is north. Defaults to 0.
+     * where 0 is north.
      *
      * @sample {highcharts} highcharts/demo/gauge-vu-meter/
      *         VU-meter with custom start and end angle
      *
      * @since   2.3.0
      * @product highcharts
+     * @requires highcharts-more
      */
     startAngle: 0
 };
@@ -201,8 +213,10 @@ defaultOptions.pane = pane;
  *  Default Export
  *
  * */
+/** @internal */
 const PaneDefaults = {
     pane,
     background
 };
+/** @internal */
 export default PaneDefaults;

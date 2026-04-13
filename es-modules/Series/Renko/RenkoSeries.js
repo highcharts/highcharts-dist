@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Pawel Lysy
+ *  Author: Paweł Lysy
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -13,8 +13,7 @@ import RenkoPoint from './RenkoPoint.js';
 import RenkoSeriesDefaults from './RenkoSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import ColumnSeries from '../Column/ColumnSeries.js';
-import U from '../../Core/Utilities.js';
-const { extend, merge, relativeLength, isNumber } = U;
+import { extend, isNumber, merge, relativeLength } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class

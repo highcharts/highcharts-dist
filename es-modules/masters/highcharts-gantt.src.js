@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v12.5.0 (2026-01-12)
+ * @license Highcharts Gantt JS v12.6.0 (2026-04-13)
  * @module highcharts/highcharts-gantt
  *
  * (c) 2017-2026 Highsoft AS
@@ -10,9 +10,9 @@
  *
  * Authors:
  * - Lars Cabrera
- * - Torstein Honsi
- * - Jon Arild Nygard
- * - Oystein Moseng
+ * - Torstein Hønsi
+ * - Jon Arild Nygård
+ * - Øystein Moseng
  */
 'use strict';
 import Highcharts from './highcharts.src.js';

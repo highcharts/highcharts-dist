@@ -49,8 +49,13 @@ declare module "../highcharts.src" {
          */
         custom?: Highcharts.Dictionary<any>;
         /**
-         * (Highmaps) A description of the series to add to the screen reader
-         * information about the series.
+         * (Highmaps) Deprecated. Use
+         * plotOptions.series.accessibility.description instead.
+         *
+         * A description of the series to add to the screen reader information
+         * about the series.
+         *
+         * @deprecated 8.0.0
          */
         description?: string;
         /**
@@ -82,13 +87,21 @@ declare module "../highcharts.src" {
          */
         legendSymbol?: Highcharts.OptionsLegendSymbolValue;
         /**
+         * (Highmaps) The line cap used for line ends and line joins on the
+         * graph.
+         */
+        linecap?: string;
+        /**
          * (Highmaps) Opacity of a series parts: line, fill (e.g. area) and
          * dataLabels.
          */
         opacity?: number;
         /**
-         * (Highmaps) Same as accessibility.point.descriptionFormat, but for an
-         * individual series. Overrides the chart wide configuration.
+         * (Highmaps) Deprecated. Use
+         * series.accessibility.point.descriptionFormat instead.
+         *
+         * Same as accessibility.point.descriptionFormat, but for an individual
+         * series. Overrides the chart wide configuration.
          */
         pointDescriptionFormat?: Function;
         /**
@@ -103,8 +116,13 @@ declare module "../highcharts.src" {
          */
         showInLegend?: boolean;
         /**
-         * (Highmaps) If set to `true`, the accessibility module will skip past
-         * the points in this series for keyboard navigation.
+         * (Highmaps) Deprecated. Use series.accessibility.keyboardNavigation
+         * instead.
+         *
+         * If set to `true`, the accessibility module will skip past the points
+         * in this series for keyboard navigation.
+         *
+         * @deprecated 8.0.0
          */
         skipKeyboardNavigation?: boolean;
         /**
@@ -124,7 +142,7 @@ declare module "../highcharts.src" {
          * is set, the option allows to disable zooming on an individual
          * non-cartesian series. By default zooming is enabled for all series.
          *
-         * Note: This option works only for non-cartesian series.
+         * **Note**: This option works only for non-cartesian series.
          */
         zoomEnabled?: boolean;
     }
@@ -169,6 +187,10 @@ declare module "../highcharts.src" {
          * Not available
          */
         affectsMapView?: undefined;
+        /**
+         * Not available
+         */
+        allAreas?: undefined;
         /**
          * Not available
          */

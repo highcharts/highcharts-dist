@@ -18,8 +18,7 @@ import StockToolsBindings from './StockToolsBindings.js';
 import StockToolsDefaults from './StockToolsDefaults.js';
 import STU from './StockToolsUtilities.js';
 const { isNotNavigatorYAxis, isPriceIndicatorEnabled } = STU;
-import U from '../../Core/Utilities.js';
-const { correctFloat, defined, isNumber, pick } = U;
+import { correctFloat, defined, isNumber, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -202,7 +201,7 @@ function navigationRecalculateYAxisPositions(positions, changedSpace, modifyHeig
  * @private
  */
 function navigationResizeYAxes(removedYAxisProps) {
-    // The height of the new axis before rescalling. In %, but as a number.
+    // The height of the new axis before rescaling. In %, but as a number.
     const defaultHeight = 20;
     const chart = this.chart, 
     // Only non-navigator axes

@@ -11,6 +11,7 @@
  *
  * */
 'use strict';
+/** @internal */
 const InstrumentPresets = {
     // PIANO ----------------------------
     piano: {
@@ -862,6 +863,7 @@ const InstrumentPresets = {
  *  Default Export
  *
  * */
+/** @internal */
 export default InstrumentPresets;
 /* *
  *

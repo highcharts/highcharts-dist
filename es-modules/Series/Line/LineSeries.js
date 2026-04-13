@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -11,8 +11,7 @@
 'use strict';
 import Series from '../../Core/Series/Series.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-import U from '../../Core/Utilities.js';
-const { defined, merge, isObject } = U;
+import { defined, isObject, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -21,7 +20,7 @@ const { defined, merge, isObject } = U;
 /**
  * The line series is the base type and is therefor the series base prototype.
  *
- * @private
+ * @internal
  */
 class LineSeries extends Series {
     /* *
@@ -37,6 +36,7 @@ class LineSeries extends Series {
      * positions and attributes.
      *
      * @function Highcharts.Series#drawGraph
+     * @internal
      */
     drawGraph() {
         const options = this.options, graphPath = (this.gappedPath || this.getGraphPath).call(this), styledMode = this.chart.styledMode;
@@ -60,6 +60,7 @@ class LineSeries extends Series {
                  *
                  * @name Highcharts.Series#graph
                  * @type {Highcharts.SVGElement|undefined}
+                 * @internal
                  */
                 owner.graph = graph = this.chart.renderer
                     .path(graphPath)
@@ -90,13 +91,17 @@ class LineSeries extends Series {
                     attribs['stroke-linecap'] =
                         attribs['stroke-linejoin'] = 'round';
                 }
-                graph[verb](attribs)
-                    // Add shadow to normal series as well as zones
-                    .shadow(options.shadow &&
-                    // If shadow is defined, call function with
-                    // `filterUnits: 'userSpaceOnUse'` to avoid known
-                    // SVG filter bug (#19093)
-                    merge({ filterUnits: 'userSpaceOnUse' }, isObject(options.shadow) ? options.shadow : {}));
+                graph[verb](attribs);
+                // Add shadow only to the main series (not zones)
+                // If shadow is defined, use `filterUnits: 'userSpaceOnUse'`
+                // to avoid known SVG filter bug (#19093)
+                if (options.shadow) {
+                    const isInverted = this.chart.inverted;
+                    const filterUnits = { filterUnits: 'userSpaceOnUse' };
+                    const shadowOptions = isObject(options.shadow) ?
+                        merge(isInverted ? {} : filterUnits, options.shadow) : (isInverted ? true : filterUnits);
+                    graph.shadow(shadowOptions);
+                }
             }
             // Helpers for animation
             if (graph) {
@@ -109,7 +114,7 @@ class LineSeries extends Series {
     /**
      * Get the graph path.
      *
-     * @private
+     * @internal
      */
     getGraphPath(points, nullsAsZeroes, connectCliffs) {
         const series = this, options = series.options, graphPath = [], xMap = [];
@@ -224,13 +229,19 @@ class LineSeries extends Series {
  *  Static Functions
  *
  * */
-LineSeries.defaultOptions = merge(Series.defaultOptions, 
-/**
- * General options for all series types.
- *
- * @optionparent plotOptions.series
- */
-{
+LineSeries.defaultOptions = merge(Series.defaultOptions, {
+    /**
+     * What type of legend symbol to render for this series. Can be one
+     * of `areaMarker`, `lineMarker` or `rectangle`.
+     *
+     * @sample {highcharts} highcharts/series/legend-symbol/
+     *         Change the legend symbol
+     *
+     * @type      {string}
+     * @default   lineMarker
+     * @since     11.0.1
+     * @apioption plotOptions.line.legendSymbol
+     */
     legendSymbol: 'lineMarker'
 });
 SeriesRegistry.registerSeriesType('line', LineSeries);
@@ -239,6 +250,7 @@ SeriesRegistry.registerSeriesType('line', LineSeries);
  *  Default Export
  *
  * */
+/** @internal */
 export default LineSeries;
 /* *
  *
@@ -257,16 +269,6 @@ export default LineSeries;
  * @extends   plotOptions.series
  * @product   highcharts highstock
  * @apioption plotOptions.line
- */
-/**
- * The SVG value used for the `stroke-linecap` and `stroke-linejoin`
- * of a line graph. Round means that lines are rounded in the ends and
- * bends.
- *
- * @type       {Highcharts.SeriesLinecapValue}
- * @default    round
- * @since      3.0.7
- * @apioption  plotOptions.line.linecap
  */
 /**
  * A `line` series. If the [type](#series.line.type) option is not
@@ -368,7 +370,7 @@ export default LineSeries;
  * @sample {highcharts} highcharts/point/color/
  *         Mark the highest point
  *
- * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+ * @type      {Highcharts.ColorType}
  * @product   highcharts highstock gantt
  * @apioption series.line.data.color
  */
@@ -416,15 +418,6 @@ export default LineSeries;
  * @excluding zIndex
  * @product   highcharts highstock gantt
  * @apioption series.line.data.dataLabels
- */
-/**
- * A description of the point to add to the screen reader information
- * about the point.
- *
- * @type      {string}
- * @since     5.0.0
- * @requires  modules/accessibility
- * @apioption series.line.data.description
  */
 /**
  * An id for the point. This can be used after render time to get a

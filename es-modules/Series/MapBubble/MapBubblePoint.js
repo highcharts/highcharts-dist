@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -16,9 +16,8 @@
  * */
 import BubblePoint from '../Bubble/BubblePoint.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
+import { extend } from '../../Shared/Utilities.js';
 const { seriesTypes: { map: { prototype: { pointClass: { prototype: mapPointProto } } } } } = SeriesRegistry;
-import U from '../../Core/Utilities.js';
-const { extend } = U;
 /* *
  *
  *  Class

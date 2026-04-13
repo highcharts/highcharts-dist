@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v12.5.0 (2026-01-12)
+ * @license Highmaps JS v12.6.0 (2026-04-13)
  * @module highcharts/modules/tilemap
  * @requires highcharts
  * @requires highcharts/modules/map

@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -14,8 +14,7 @@ const { defaultOptions } = D;
 import H from '../../Core/Globals.js';
 const { composed } = H;
 import RangeSelectorDefaults from './RangeSelectorDefaults.js';
-import U from '../../Core/Utilities.js';
-const { addEvent, defined, extend, isNumber, merge, pick, pushUnique } = U;
+import { addEvent, defined, extend, isNumber, merge, pick, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
  *  Constants
@@ -180,7 +179,7 @@ function redrawRangeSelector() {
         rangeSelector.render(extremes.min, extremes.max);
     }
     // Re-align the legend so that it's below the rangeselector
-    if (legend.display &&
+    if (legend?.display &&
         verticalAlign === 'top' &&
         verticalAlign === legend.options.verticalAlign) {
         // Create a new alignment box for the legend.

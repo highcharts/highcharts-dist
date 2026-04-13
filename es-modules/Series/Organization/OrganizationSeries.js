@@ -3,7 +3,7 @@
  *  Organization chart module
  *
  *  (c) 2018-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -16,9 +16,8 @@ import OrganizationSeriesDefaults from './OrganizationSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import PathUtilities from '../PathUtilities.js';
 const { sankey: SankeySeries } = SeriesRegistry.seriesTypes;
-import U from '../../Core/Utilities.js';
-const { css, crisp, extend, isNumber, merge, pick } = U;
 import SVGElement from '../../Core/Renderer/SVG/SVGElement.js';
+import { crisp, css, extend, isNumber, merge, pick } from '../../Shared/Utilities.js';
 import TextPath from '../../Extensions/TextPath.js';
 TextPath.compose(SVGElement);
 /* *
@@ -43,15 +42,15 @@ class OrganizationSeries extends SankeySeries {
         // Align the data label to the point graphic
         const shapeArgs = point.shapeArgs, text = dataLabel.text;
         if (options.useHTML && shapeArgs) {
-            const padjust = (this.options.borderWidth +
+            const pAdjust = (this.options.borderWidth +
                 2 * this.options.dataLabels.padding);
             let width = shapeArgs.width || 0, height = shapeArgs.height || 0;
             if (this.chart.inverted) {
                 width = height;
                 height = shapeArgs.width || 0;
             }
-            height -= padjust;
-            width -= padjust;
+            height -= pAdjust;
+            width -= pAdjust;
             text.foreignObject?.attr({
                 x: 0,
                 y: 0,

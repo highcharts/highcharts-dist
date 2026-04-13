@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -16,8 +16,7 @@ const { stop } = A;
 import H from '../Core/Globals.js';
 const { composed } = H;
 import RendererRegistry from '../Core/Renderer/RendererRegistry.js';
-import U from '../Core/Utilities.js';
-const { addEvent, createElement, css, defined, erase, merge, pushUnique } = U;
+import { addEvent, createElement, css, defined, erase, merge, pushUnique } from '../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -238,7 +237,7 @@ class ScrollablePlotArea {
      * @internal
      */
     moveFixedElements() {
-        const { container, inverted, scrollablePixelsX, scrollablePixelsY } = this.chart, fixedRenderer = this.fixedRenderer, fixedSelectors = ScrollablePlotArea.fixedSelectors;
+        const { container, inverted, scrollablePixelsX, scrollablePixelsY } = this.chart, fixedRenderer = this.fixedRenderer, fixedSelectors = ScrollablePlotArea.fixedSelectors.slice();
         let axisClass;
         if (scrollablePixelsX && !inverted) {
             axisClass = '.highcharts-yaxis';

@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -15,7 +15,7 @@
  *
  * */
 /**
- * The area range series is a carteseian series with higher and lower values for
+ * The area range series is a cartesian series with higher and lower values for
  * each point along an X axis, where the area between the values is shaded.
  *
  * @sample {highcharts} highcharts/demo/arearange/
@@ -29,13 +29,14 @@
  * @requires     highcharts-more
  * @optionparent plotOptions.arearange
  *
- * @private
+ * @internal
  */
 const AreaRangeSeriesDefaults = {
     /**
      * @see [fillColor](#plotOptions.arearange.fillColor)
      * @see [fillOpacity](#plotOptions.arearange.fillOpacity)
      *
+     * @type      {Highcharts.ColorType}
      * @apioption plotOptions.arearange.color
      */
     /**
@@ -46,6 +47,7 @@ const AreaRangeSeriesDefaults = {
      * @see [color](#plotOptions.arearange.color)
      * @see [fillOpacity](#plotOptions.arearange.fillOpacity)
      *
+     * @type      {Highcharts.ColorType}
      * @apioption plotOptions.arearange.fillColor
      */
     /**
@@ -70,7 +72,7 @@ const AreaRangeSeriesDefaults = {
      *
      * @since 2.3.0
      *
-     * @private
+     * @internal
      */
     lineWidth: 1,
     /**
@@ -87,7 +89,7 @@ const AreaRangeSeriesDefaults = {
      *
      * @since 2.3.0
      *
-     * @private
+     * @internal
      */
     trackByArea: true,
     /**
@@ -100,8 +102,7 @@ const AreaRangeSeriesDefaults = {
      * @exclude x, y
      * @since   2.3.0
      * @product highcharts highstock
-     *
-     * @private
+     * @apioption plotOptions.arearange.dataLabels
      */
     dataLabels: {
         align: void 0,
@@ -153,6 +154,7 @@ const AreaRangeSeriesDefaults = {
  * @see [fillColor](#series.arearange.fillColor)
  * @see [fillOpacity](#series.arearange.fillOpacity)
  *
+ * @type      {Highcharts.ColorType}
  * @apioption series.arearange.color
  */
 /**
@@ -225,27 +227,26 @@ const AreaRangeSeriesDefaults = {
  * @see [color](#series.arearange.color)
  * @see [fillColor](#series.arearange.fillColor)
  *
+ * @type      {number}
  * @default   {highcharts} 0.75
  * @default   {highstock} 0.75
  * @apioption series.arearange.fillOpacity
  */
 /**
  * Options for the lower markers of the arearange-like series. When `lowMarker`
- * is not defined, options inherit form the marker.
+ * is not defined, options inherit from the marker.
  *
  * @see [marker](#series.arearange.marker)
- *
- * @declare   Highcharts.PointMarkerOptionsObject
- * @extends   plotOptions.series.marker
- * @default   undefined
- * @product   highcharts highstock
- * @apioption plotOptions.arearange.lowMarker
- */
-/**
  *
  * @sample {highcharts} highcharts/series-arearange/lowmarker/
  *         Area range chart with `lowMarker` option
  *
+ * @declare   Highcharts.PointMarkerOptionsObject
+ * @extends   plotOptions.series.marker
+ * @product   highcharts highstock
+ * @apioption plotOptions.arearange.lowMarker
+ */
+/**
  * @declare   Highcharts.PointMarkerOptionsObject
  * @extends   plotOptions.series.marker.symbol
  * @product   highcharts highstock
@@ -271,4 +272,5 @@ const AreaRangeSeriesDefaults = {
  *  Default Export
  *
  * */
+/** @internal */
 export default AreaRangeSeriesDefaults;

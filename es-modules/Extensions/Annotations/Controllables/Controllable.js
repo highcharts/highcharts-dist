@@ -4,8 +4,7 @@
  * */
 'use strict';
 import ControlTarget from '../ControlTarget.js';
-import U from '../../../Core/Utilities.js';
-const { merge } = U;
+import { merge } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -77,6 +76,14 @@ class Controllable {
             this.tracker = this.tracker.destroy();
         }
         this.destroyControlTarget();
+    }
+    /**
+     * Get the pixel value from a start point to an end point on an axis.
+     * @internal
+     */
+    calculateAnnotationSize(startPoint, value, axis) {
+        const startPixel = axis.toPixels(startPoint, true), endPixel = axis.toPixels(startPoint + value, true);
+        return Math.abs(endPixel - startPixel);
     }
     /**
      * Init the controllable

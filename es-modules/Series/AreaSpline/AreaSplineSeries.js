@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -12,8 +12,7 @@
 import SplineSeries from '../Spline/SplineSeries.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { area: AreaSeries, area: { prototype: areaProto } } = SeriesRegistry.seriesTypes;
-import U from '../../Core/Utilities.js';
-const { extend, merge } = U;
+import { extend, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -22,7 +21,7 @@ const { extend, merge } = U;
 /**
  * AreaSpline series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.areaspline
  *
@@ -47,6 +46,7 @@ SeriesRegistry.registerSeriesType('areaspline', AreaSplineSeries);
  *  Default Export
  *
  * */
+/** @internal */
 export default AreaSplineSeries;
 /* *
  *

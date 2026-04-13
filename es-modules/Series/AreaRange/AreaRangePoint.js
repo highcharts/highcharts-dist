@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -11,13 +11,13 @@
 'use strict';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { area: { prototype: { pointClass: AreaPoint, pointClass: { prototype: areaProto } } } } = SeriesRegistry.seriesTypes;
-import U from '../../Core/Utilities.js';
-const { defined, isNumber } = U;
+import { defined, isNumber } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
  *
  * */
+/** @internal */
 class AreaRangePoint extends AreaPoint {
     /* *
      *
@@ -25,7 +25,7 @@ class AreaRangePoint extends AreaPoint {
      *
      * */
     /**
-     * @private
+     * @internal
      */
     setState() {
         const prevState = this.state, series = this.series, isPolar = series.chart.polar;
@@ -95,6 +95,7 @@ class AreaRangePoint extends AreaPoint {
  *  Default Export
  *
  * */
+/** @internal */
 export default AreaRangePoint;
 /* *
  *

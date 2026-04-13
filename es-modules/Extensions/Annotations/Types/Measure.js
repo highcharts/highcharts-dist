@@ -7,8 +7,7 @@ import Annotation from '../Annotation.js';
 import ControlPoint from '../ControlPoint.js';
 import D from '../../../Core/Defaults.js';
 const { defaultOptions } = D;
-import U from '../../../Core/Utilities.js';
-const { defined, extend, isNumber, merge, pick } = U;
+import { defined, extend, isNumber, merge, pick } from '../../../Shared/Utilities.js';
 if (defaultOptions.annotations?.types) {
     /**
      * Options for the measure annotation type.
@@ -580,7 +579,7 @@ class Measure extends Annotation {
             return;
         }
         if (this.labels.length > 0) {
-            (this.labels[0]).text = ((formatter && formatter.call(this)) ||
+            (this.labels[0]).text = (formatter?.call(this, this) ||
                 defaultFormatter.call(this));
         }
         else {
@@ -607,7 +606,7 @@ class Measure extends Annotation {
                         yAxis: pick(typeOptions.yAxis, options.yAxis)
                     };
                 },
-                text: ((formatter && formatter.call(this)) ||
+                text: (formatter?.call(this, this) ||
                     defaultFormatter.call(this))
             }, typeOptions.label), void 0);
         }

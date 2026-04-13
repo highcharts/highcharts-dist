@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.5.0 (2026-01-12)
+ * @license Highcharts JS v12.6.0 (2026-04-13)
  * @module highcharts/modules/arrow-symbols
  * @requires highcharts
  *
@@ -190,9 +190,6 @@ function arrowHalf(x, y, w, h) {
  * Adds the arrow symbols to the SVGRenderer.
  *
  * @internal
- *
- * @param SVGRendererClass
- * The SVGRenderer class to extend.
  */
 function compose(SVGRendererClass) {
     const symbols = SVGRendererClass.prototype.symbols;

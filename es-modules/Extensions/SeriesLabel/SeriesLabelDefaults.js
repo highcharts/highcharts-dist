@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2009-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -51,7 +51,7 @@ const SeriesLabelDefaults = {
      */
     connectorAllowed: false,
     /**
-     * If the label is closer than this to a neighbour graph, draw a
+     * If the label is closer than this to a neighbor graph, draw a
      * connector.
      */
     connectorNeighbourDistance: 24,
@@ -70,6 +70,9 @@ const SeriesLabelDefaults = {
      * Callback function to format each of the series' labels. The
      * `this` keyword refers to the series object. By default the
      * `formatter` is undefined and the `series.name` is rendered.
+     * Since v12.6.0, the callback also receives `ctx` as the first argument,
+     * so that arrow functions can access the same context as regular
+     * functions using `this`.
      *
      * @type {Highcharts.FormatterCallbackFunction<Series>}
      * @since 8.1.0
@@ -135,4 +138,5 @@ const SeriesLabelDefaults = {
  *  Default Export
  *
  * */
+/** @internal */
 export default SeriesLabelDefaults;

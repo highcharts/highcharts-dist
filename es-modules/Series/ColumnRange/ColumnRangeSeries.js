@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -14,8 +14,7 @@ import H from '../../Core/Globals.js';
 const { noop } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { seriesTypes: { arearange: AreaRangeSeries, column: ColumnSeries, column: { prototype: columnProto } } } = SeriesRegistry;
-import U from '../../Core/Utilities.js';
-const { addEvent, clamp, extend, isNumber, merge, pick } = U;
+import { addEvent, clamp, extend, isNumber, merge, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Constants
@@ -158,7 +157,7 @@ class ColumnRangeSeries extends AreaRangeSeries {
                 if (isRadial && this.polar) {
                     start = point.barX + startAngleRad;
                     point.shapeType = 'arc';
-                    point.shapeArgs = this.polar.arc(y + height, y, start, start + point.pointWidth);
+                    point.shapeArgs = this.polar.arc(y + height, y, start, start + (point.pointWidth || 0));
                 }
                 else {
                     shapeArgs.height = height;

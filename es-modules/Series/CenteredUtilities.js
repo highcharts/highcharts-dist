@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -12,8 +12,7 @@
 import H from '../Core/Globals.js';
 const { deg2rad } = H;
 import Series from '../Core/Series/Series.js';
-import U from '../Core/Utilities.js';
-const { fireEvent, isNumber, pick, relativeLength } = U;
+import { fireEvent, isNumber, pick, relativeLength } from '../Shared/Utilities.js';
 /**
  * @private
  */
@@ -29,7 +28,6 @@ var CenteredUtilities;
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * Get the center of the pie based on the size and center options relative
      * to the plot area. Borrowed by the polar and gauge series types.

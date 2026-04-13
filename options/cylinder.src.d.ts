@@ -136,13 +136,13 @@ declare module "../highcharts.src" {
          * gradient for the data label. Setting it to `auto` will use the
          * point's color.
          */
-        backgroundColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        backgroundColor?: Highcharts.ColorType;
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) The border color for the
          * data label. Setting it to `auto` will use the point's color. Defaults
          * to `undefined`.
          */
-        borderColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        borderColor?: Highcharts.ColorType;
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) The border radius in pixels
          * for the data label.
@@ -200,7 +200,8 @@ declare module "../highcharts.src" {
          * designed for use when callback functions are not available, like when
          * the chart options require a pure JSON structure or for use with
          * graphical editors. For programmatic control, use the `formatter`
-         * instead, and return `undefined` to disable a single data label.
+         * instead, and return `undefined` to disable a single data label. (see
+         * online documentation for example)
          */
         filter?: Highcharts.DataLabelsFilterOptionsObject;
         /**
@@ -302,7 +303,7 @@ declare module "../highcharts.src" {
          * cases, especially with grayscale text, the text outline doesn't work
          * well, in which cases it can be disabled by setting it to `"none"`.
          * When `useHTML` is true, the `textOutline` will not be picked up. In
-         * this, case, the same effect can be acheived through the `text-shadow`
+         * this, case, the same effect can be achieved through the `text-shadow`
          * CSS property.
          *
          * For some series types, where each point has an extent, like for
@@ -344,14 +345,6 @@ declare module "../highcharts.src" {
          * label relative to the point in pixels.
          */
         y?: number;
-        /**
-         * (Highcharts, Highstock, Highmaps, Gantt) The z index of the data
-         * labels group. Does not apply below series level options.
-         *
-         * Use a `zIndex` of 6 to display it above the series, or use a `zIndex`
-         * of 2 to display it behind the series.
-         */
-        zIndex?: number;
     }
     /**
      * (Highcharts, Highstock, Gantt) Styles for the series label. The color
@@ -462,7 +455,7 @@ declare module "../highcharts.src" {
          * In styled mode, the border stroke can be set with the
          * `.highcharts-point` rule.
          */
-        borderColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        borderColor?: Highcharts.ColorType;
         /**
          * (Highcharts, Highstock, Gantt) The corner radius of the border
          * surrounding each column or bar. A number signifies pixels. A
@@ -515,7 +508,7 @@ declare module "../highcharts.src" {
          * `.highcharts-series-{n}` class, or individual classes given by the
          * `className` option.
          */
-        color?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        color?: Highcharts.ColorType;
         /**
          * (Highcharts, Highstock, Gantt) When using automatic point colors
          * pulled from the global colors or series-specific
@@ -548,7 +541,7 @@ declare module "../highcharts.src" {
          * specific color set to apply instead of the global colors when
          * colorByPoint is true.
          */
-        colors?: Array<(Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject)>;
+        colors?: Array<Highcharts.ColorType>;
         /**
          * (Highcharts, Highstock, Gantt) When true, each point or column edge
          * is rounded to its nearest pixel in order to render sharp on screen.
@@ -560,7 +553,7 @@ declare module "../highcharts.src" {
         crisp?: boolean;
         /**
          * (Highcharts, Highstock, Gantt) When the series contains less points
-         * than the crop threshold, all points are drawn, event if the points
+         * than the crop threshold, all points are drawn, even if the points
          * fall outside the visible plot area at the current zoom. The advantage
          * of drawing all points (including markers and columns), is that
          * animation is performed on updates. On the other hand, when the series
@@ -614,8 +607,13 @@ declare module "../highcharts.src" {
          */
         depth?: number;
         /**
-         * (Highcharts) A description of the series to add to the screen reader
-         * information about the series.
+         * (Highcharts) Deprecated. Use
+         * plotOptions.series.accessibility.description instead.
+         *
+         * A description of the series to add to the screen reader information
+         * about the series.
+         *
+         * @deprecated 8.0.0
          */
         description?: string;
         /**
@@ -716,7 +714,7 @@ declare module "../highcharts.src" {
          * symbol for this series. Defaults to undefined, in which case the
          * series color is used. Does not work with styled mode.
          */
-        legendSymbolColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        legendSymbolColor?: Highcharts.ColorType;
         /**
          * (Highcharts, Highstock, Gantt) The id of another series to link to.
          * Additionally, the value can be ":previous" to link to the previous
@@ -753,14 +751,14 @@ declare module "../highcharts.src" {
          * negative color. Using `negativeColor` is equivalent to applying a
          * zone with value of 0.
          */
-        negativeColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        negativeColor?: Highcharts.ColorType;
         /**
          * (Highcharts, Highstock) Whether or not data-points with the value of
          * `null` should be interactive. When this is set to `true`, tooltips
          * may highlight these points, and this option also enables keyboard
          * navigation for such points. Format options for such points include
-         * `nullFormat` and `nullFormater`. Works for these series: `line`,
-         * `spline`, `area`, `area-spline`, `column`, `bar`, and* `timeline`.
+         * `nullFormat` and `nullFormatter`. Works for these series: `line`,
+         * `spline`, `area`, `area-spline`, `column`, `bar`, and `timeline`.
          */
         nullInteraction?: (boolean|undefined);
         /**
@@ -778,13 +776,21 @@ declare module "../highcharts.src" {
          */
         point?: Highcharts.PlotSeriesPointOptions;
         /**
-         * (Highcharts) Same as accessibility.point.descriptionFormat, but for
-         * an individual series. Overrides the chart wide configuration.
+         * (Highcharts) Deprecated. Use
+         * series.accessibility.point.descriptionFormat instead.
+         *
+         * Same as accessibility.point.descriptionFormat, but for an individual
+         * series. Overrides the chart wide configuration.
          */
         pointDescriptionFormat?: Function;
         /**
-         * (Highcharts) Same as accessibility.series.descriptionFormatter, but
-         * for an individual series. Overrides the chart wide configuration.
+         * (Highcharts) Deprecated. Use
+         * series.accessibility.point.descriptionFormatter instead.
+         *
+         * Same as accessibility.series.descriptionFormatter, but for an
+         * individual series. Overrides the chart wide configuration.
+         *
+         * @deprecated 8.0.0
          */
         pointDescriptionFormatter?: Function;
         /**
@@ -830,7 +836,7 @@ declare module "../highcharts.src" {
          * create any padding of the X axis. In a polar column chart this means
          * that the first column points directly north. If the pointPlacement is
          * `"between"`, the columns will be laid out between ticks. This is
-         * useful for example for visualising an amount between two points in
+         * useful for example for visualizing an amount between two points in
          * time or in a certain sector of a polar chart.
          *
          * Since Highcharts 3.0.2, the point placement can also be numeric,
@@ -929,8 +935,13 @@ declare module "../highcharts.src" {
          */
         showInLegend?: boolean;
         /**
-         * (Highcharts) If set to `true`, the accessibility module will skip
-         * past the points in this series for keyboard navigation.
+         * (Highcharts) Deprecated. Use series.accessibility.keyboardNavigation
+         * instead.
+         *
+         * If set to `true`, the accessibility module will skip past the points
+         * in this series for keyboard navigation.
+         *
+         * @deprecated 8.0.0
          */
         skipKeyboardNavigation?: boolean;
         /**
@@ -1037,7 +1048,7 @@ declare module "../highcharts.src" {
          * is set, the option allows to disable zooming on an individual
          * non-cartesian series. By default zooming is enabled for all series.
          *
-         * Note: This option works only for non-cartesian series.
+         * **Note**: This option works only for non-cartesian series.
          */
         zoomEnabled?: boolean;
     }
@@ -1082,88 +1093,27 @@ declare module "../highcharts.src" {
         y?: number;
     }
     /**
-     * (Highcharts, Highstock, Gantt) Enable or disable the initial animation
-     * when a series is displayed for the `dataLabels`. The animation can also
-     * be set as a configuration object. Please note that this option only
-     * applies to the initial animation.
-     *
-     * For other animations, see chart.animation and the animation parameter
-     * under the API methods. The following properties are supported:
-     *
-     * - `defer`: The animation delay time in milliseconds.
+     * (Highcharts, Highstock) Animation setting for hovering the graph in
+     * line-type series.
      */
-    interface SeriesCylinderDataDataLabelsAnimationOptions {
+    interface SeriesCylinderDataStatesHoverAnimationOptions {
         /**
-         * (Highcharts, Highstock, Gantt) The animation delay time in
-         * milliseconds. Set to `0` to render the data labels immediately. As
-         * `undefined` inherits defer time from the series.animation.defer.
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
          */
-        defer?: number;
-    }
-    /**
-     * (Highcharts, Highstock) Animation when not hovering over the marker.
-     */
-    interface SeriesCylinderDataStatesInactiveAnimationOptions {
         duration?: number;
     }
     /**
-     * (Highcharts) A `cylinder` series. If the type option is not specified, it
-     * is inherited from chart.type.
-     *
-     * Configuration options for the series are given in three levels:
-     *
-     * 1. Options for all series in a chart are defined in the
-     * plotOptions.series object.
-     *
-     * 2. Options for all `cylinder` series are defined in plotOptions.cylinder.
-     *
-     * 3. Options for one single series are given in the series instance array.
-     * (see online documentation for example)
-     *
-     * **TypeScript:**
-     *
-     * - type option should always be set, otherwise a broad set of unsupported
-     * options is allowed.
-     *
-     * - when accessing an array of series, the combined set of all series types
-     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
-     * specific type can be done by checking the `type` property. (see online
-     * documentation for example)
-     *
-     * You have to extend the `SeriesCylinderOptions` via an interface to allow
-     * custom properties: ``` declare interface SeriesCylinderOptions {
-     * customProperty: string; }
-     *
+     * (Highcharts, Highstock) Animation setting for hovering the graph in
+     * line-type series.
      */
-    interface SeriesCylinderOptions extends Highcharts.PlotCylinderOptions, Highcharts.SeriesOptions {
+    interface SeriesCylinderDataStatesSelectAnimationOptions {
         /**
-         * (Highcharts, Highstock) An array of data points for the series. For
-         * the `cylinder` series type, points can be given in the following
-         * ways:
-         *
-         * 1. An array of numerical values. In this case, the numerical values
-         * will be interpreted as `y` options. The `x` values will be
-         * automatically calculated, either starting at 0 and incremented by 1,
-         * or from `pointStart` and `pointInterval` given in the series options.
-         * If the axis has categories, these will be used. Example: (see online
-         * documentation for example)
-         *
-         * 2. An array of arrays with 2 values. In this case, the values
-         * correspond to `x,y`. If the first value is a string, it is applied as
-         * the name of the point, and the `x` value is inferred. (see online
-         * documentation for example)
-         *
-         * 3. An array of objects with named values. The following snippet shows
-         * only a few settings, see the complete options set below. If the total
-         * number of data points exceeds the series' turboThreshold, this option
-         * is not available. (see online documentation for example)
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
          */
-        data?: Array<(number|[(number|string), (number|null)]|null|Highcharts.PointOptionsObject)>;
-        /**
-         * (Highcharts, Highstock, Highmaps, Gantt) This property is only in
-         * TypeScript non-optional and might be `undefined` in series objects
-         * from unknown sources.
-         */
-        type: "cylinder";
+        duration?: number;
     }
 }

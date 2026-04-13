@@ -209,6 +209,15 @@ const langOptions = {
             changeAnnouncement: '{axisRangeDescription}'
         },
         /**
+         * Stock tools language options for accessibility.
+         *
+         * @since next
+         */
+        stockTools: {
+            groupLabel: 'Stock chart tools',
+            arrowLabel: 'Toggle submenu'
+        },
+        /**
          * Accessibility language options for the data table.
          *
          * @since 8.0.0

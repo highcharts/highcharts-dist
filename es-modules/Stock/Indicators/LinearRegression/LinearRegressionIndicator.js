@@ -12,8 +12,7 @@
 'use strict';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
-import U from '../../../Core/Utilities.js';
-const { isArray, extend, merge } = U;
+import { extend, isArray, merge } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -216,7 +215,7 @@ LinearRegressionIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
          * @sample {highstock} stock/plotoptions/linear-regression-xaxisunit
          *         xAxisUnit set to 1 minute
          *
-         * @example
+         * ```js
          * // In Liniear Regression Slope Indicator series `xAxisUnit`is
          * // `86400000` (1 day) and period is `3`. There're 3 points in
          * // the base series:
@@ -231,7 +230,8 @@ LinearRegressionIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
          * // has a `y` value of `2` (slope of the regression line). If
          * // we change the `xAxisUnit` to `1` (ms) the value of the
          * // indicator's point will be `2.3148148148148148e-8` which is
-         * // harder to interpert for a human.
+         * // harder to interpret for a human.
+         * ```
          *
          * @type    {null|number}
          * @product highstock
@@ -245,6 +245,8 @@ LinearRegressionIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
 extend(LinearRegressionIndicator.prototype, {
     nameBase: 'Linear Regression Indicator'
 });
+SeriesRegistry.registerSeriesType('linearregression', LinearRegressionIndicator);
+// Keep for backwards compatibility
 SeriesRegistry.registerSeriesType('linearRegression', LinearRegressionIndicator);
 /* *
  *

@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -11,14 +11,13 @@
 'use strict';
 import Color from '../../Color/Color.js';
 const { parse: color } = Color;
-import U from '../../Utilities.js';
-const { addEvent, extend, merge, pick, splat } = U;
+import { addEvent, extend, merge, pick, splat } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Composition
  *
  * */
-var ColorAxisComposition;
+export var ColorAxisComposition;
 (function (ColorAxisComposition) {
     /* *
      *
@@ -72,7 +71,7 @@ var ColorAxisComposition;
         const { userOptions } = this;
         this.colorAxis = [];
         // If a `colorAxis` config is present in the user options (not in a
-        // theme), instanciate it.
+        // theme), instantiate it.
         if (userOptions.colorAxis) {
             userOptions.colorAxis = splat(userOptions.colorAxis);
             userOptions.colorAxis.map((axisOptions) => (new ColorAxisConstructor(this, axisOptions)));
@@ -172,9 +171,9 @@ var ColorAxisComposition;
      * @function Highcharts.colorPointMixin.setVisible
      * @param {boolean} visible
      */
-    function pointSetVisible(vis) {
-        const point = this, method = vis ? 'show' : 'hide';
-        point.visible = point.options.visible = Boolean(vis);
+    function pointSetVisible(visible) {
+        const point = this, method = visible ? 'show' : 'hide';
+        point.visible = point.options.visible = Boolean(visible);
         // Show and hide associated elements
         ['graphic', 'dataLabel'].forEach(function (key) {
             if (point[key]) {

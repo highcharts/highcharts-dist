@@ -17,8 +17,7 @@ import CylinderPoint from './CylinderPoint.js';
 import CylinderSeriesDefaults from './CylinderSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
-import U from '../../Core/Utilities.js';
-const { extend, merge } = U;
+import { extend, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class

@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2015-2026 Highsoft AS
- *  Author: Oystein Moseng
+ *  Author: Øystein Moseng
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -17,9 +17,8 @@
  *
  * */
 import H from '../Core/Globals.js';
+import { error } from '../Core/Utilities.js';
 const { isSafari, win, win: { document: doc } } = H;
-import U from '../Core/Utilities.js';
-const { error } = U;
 /* *
  *
  *  Constants
@@ -137,7 +136,7 @@ export function getScript(scriptLocation) {
         // Set type and location for the script
         script.type = 'text/javascript';
         script.src = scriptLocation;
-        // Resolve in case of a succesful script fetching
+        // Resolve in case of a successful script fetching
         script.onload = () => {
             resolve();
         };

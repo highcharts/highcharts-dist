@@ -1,5 +1,5 @@
 /**
- * Highcharts Maps v12.5.0 (2026-01-12)
+ * Highcharts Maps v12.6.0 (2026-04-13)
  * @module highcharts/highmaps
  *
  * (c) 2011-2026 Highsoft AS

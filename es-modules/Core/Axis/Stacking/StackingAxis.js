@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -14,8 +14,7 @@ const { getDeferredAnimation } = A;
 import SeriesRegistry from '../../Series/SeriesRegistry.js';
 const { series: { prototype: seriesProto } } = SeriesRegistry;
 import StackItem from './StackItem.js';
-import U from '../../Utilities.js';
-const { addEvent, correctFloat, defined, destroyObjectProperties, fireEvent, isNumber, objectEach, pick } = U;
+import { addEvent, correctFloat, defined, destroyObjectProperties, fireEvent, isNumber, objectEach, pick } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Functions

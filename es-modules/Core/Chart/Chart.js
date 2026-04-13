@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -26,10 +26,10 @@ import SeriesRegistry from '../Series/SeriesRegistry.js';
 const { seriesTypes } = SeriesRegistry;
 import SVGRenderer from '../Renderer/SVG/SVGRenderer.js';
 import Time from '../Time.js';
-import U from '../Utilities.js';
 import AST from '../Renderer/HTML/AST.js';
 import Tick from '../Axis/Tick.js';
-const { addEvent, attr, createElement, css, defined, diffObjects, discardElement, erase, error, extend, find, fireEvent, getAlignFactor, getStyle, isArray, isNumber, isObject, isString, merge, objectEach, pick, pInt, relativeLength, removeEvent, splat, syncTimeout, uniqueKey } = U;
+import { addEvent, attr, createElement, css, defined, diffObjects, discardElement, erase, extend, find, fireEvent, getAlignFactor, getStyle, internalClearTimeout, isArray, isNumber, isObject, isString, merge, objectEach, pick, pInt, relativeLength, removeEvent, splat, syncTimeout } from '../../Shared/Utilities.js';
+import { error, uniqueKey } from '../Utilities.js';
 /* *
  *
  *  Class
@@ -65,6 +65,7 @@ const { addEvent, attr, createElement, css, defined, diffObjects, discardElement
  *        handler is equivalent.
  */
 class Chart {
+    /* eslint-disable jsdoc/check-param-names */
     /**
      * Factory function for basic charts.
      *
@@ -107,6 +108,11 @@ class Chart {
     ) {
         /** @internal */
         this.sharedClips = {};
+        // Return early if there's no browser API (server environment).
+        if (!doc) {
+            error(36, false, this);
+            return;
+        }
         const args = [
             // ES5 builds fail unless we cast it to an Array
             ...arguments
@@ -369,13 +375,6 @@ class Chart {
             for (let i = fromIndex, iEnd = collection.length; i < iEnd; ++i) {
                 const item = collection[i];
                 if (item) {
-                    /**
-                     * Contains the series' index in the `Chart.series` array.
-                     *
-                     * @name Highcharts.Series#index
-                     * @type {number}
-                     * @readonly
-                     */
                     item.index = i;
                     if (item instanceof Series) {
                         item.name = item.getName();
@@ -389,7 +388,7 @@ class Chart {
         }
     }
     /**
-     * Get the clipping for a series. Could be called for a series to initialate
+     * Get the clipping for a series. Could be called for a series to initialize
      * animating the clip or to set the final clip (only width and x).
      *
      * @internal
@@ -859,18 +858,18 @@ class Chart {
                     y: verticalAlign === 'bottom' ?
                         baseline :
                         offset + baseline
-                }, {
-                    align: key === 'title' ?
-                        // Title defaults to center for short titles,
-                        // left for word-wrapped titles
-                        (uncappedScale < minScale ? 'left' : 'center') :
-                        // Subtitle defaults to the title.align
-                        this.title?.alignValue
                 }, descOptions), width = (descOptions.width || ((uncappedScale > minScale ?
                     // One line
                     this.chartWidth :
                     // Allow word wrap
                     alignTo.width) / scale)) + 'px';
+                // Handle auto alignment
+                alignAttr.align ?? (alignAttr.align = key === 'title' ?
+                    // Title defaults to center for short titles,
+                    // left for word-wrapped titles
+                    (uncappedScale < minScale ? 'left' : 'center') :
+                    // Subtitle defaults to the title.align
+                    this.title?.alignValue);
                 // No animation when switching alignment
                 if (desc.alignValue !== alignAttr.align) {
                     desc.placed = false;
@@ -1011,7 +1010,7 @@ class Chart {
                     doc.body.appendChild(node);
                 }
                 if (getStyle(node, 'display', false) === 'none' ||
-                    node.hcOricDetached) {
+                    node.hcOrigDetached) {
                     node.hcOrigStyle = {
                         display: node.style.display,
                         height: node.style.height,
@@ -1277,7 +1276,7 @@ class Chart {
             containerBox.width) {
             if (containerBox.width !== oldBox.width ||
                 containerBox.height !== oldBox.height) {
-                U.clearTimeout(chart.reflowTimeout);
+                internalClearTimeout(chart.reflowTimeout);
                 // When called from window.resize, e is set, else it's called
                 // directly (#2224)
                 chart.reflowTimeout = syncTimeout(function () {
@@ -1285,6 +1284,12 @@ class Chart {
                     // (#1257)
                     if (chart.container) {
                         chart.setSize(void 0, void 0, false);
+                        // #23712: sync containerBox with reflowed height to
+                        // break infinite loop
+                        const box = chart.containerBox;
+                        if (box) {
+                            box.height = chart.chartHeight;
+                        }
                     }
                 }, e ? 100 : 0);
             }
@@ -1681,15 +1686,6 @@ class Chart {
                 // #3341 avoid mutual linking
                 linkedParent.linkedParent !== series) {
                 linkedParent.linkedSeries.push(series);
-                /**
-                 * The parent series of the current series, if the current
-                 * series has a [linkedTo](https://api.highcharts.com/highcharts/series.line.linkedTo)
-                 * setting.
-                 *
-                 * @name Highcharts.Series#linkedParent
-                 * @type {Highcharts.Series}
-                 * @readonly
-                 */
                 series.linkedParent = linkedParent;
                 if (linkedParent.enabledDataSorting) {
                     series.setDataSortingOptions();
@@ -1772,14 +1768,25 @@ class Chart {
         while ((redoHorizontal || redoVertical || axisLayoutRuns > 1) &&
             run < axisLayoutRuns // #19794
         ) {
-            const tempWidth = chart.plotWidth, tempHeight = chart.plotHeight;
+            const tempWidth = chart.plotWidth, tempHeight = chart.plotHeight, threshold = [1.05, 1.1];
             for (const axis of axes) {
+                const horizNum = +(axis.horiz || 0);
                 if (run === 0) {
                     // Get margins by pre-rendering axes
                     axis.setScale();
+                    // On datetime axes, consider the tick interval match. A
+                    // match close to 1 means that the current normalized tick
+                    // interval is an insecure match to the requested tick
+                    // interval, on the brink of landing on a higher unit. In
+                    // this case, we should redo the axis to get a more
+                    // appropriate tick interval (#17393).
+                    const tickIntervalMatch = axis.tickPositions?.info?.match;
+                    if (tickIntervalMatch) {
+                        threshold[horizNum] = Math.min(tickIntervalMatch, threshold[horizNum]);
+                    }
                 }
-                else if ((axis.horiz && redoHorizontal) ||
-                    (!axis.horiz && redoVertical)) {
+                else if ((horizNum && redoHorizontal) ||
+                    (!horizNum && redoVertical)) {
                     // Update to reflect the new margins
                     axis.setTickInterval(true);
                 }
@@ -1791,8 +1798,10 @@ class Chart {
                 // Check again for new, rotated or moved labels
                 chart.getMargins();
             }
-            redoHorizontal = (tempWidth / chart.plotWidth) > (run ? 1 : 1.1);
-            redoVertical = (tempHeight / chart.plotHeight) > (run ? 1 : 1.05);
+            redoHorizontal = (tempWidth / chart.plotWidth) >
+                (run ? 1 : threshold[1]);
+            redoVertical = (tempHeight / chart.plotHeight) >
+                (run ? 1 : threshold[0]);
             run++;
         }
         // Draw the borders and backgrounds
@@ -1843,15 +1852,22 @@ class Chart {
              */
             this.credits = this.renderer.text(creds.text + (this.mapCredits || ''), 0, 0)
                 .addClass('highcharts-credits')
-                .on('click', function () {
-                if (creds.href) {
-                    win.location.href = creds.href;
-                }
+                .on('click', function (e) {
+                // Fire the event with browser redirect as default function
+                fireEvent(chart, 'creditsClick', e, () => {
+                    if (creds.href) {
+                        win.location.href = creds.href;
+                    }
+                });
             })
                 .attr({
                 align: creds.position.align,
                 zIndex: 8
             });
+            // If creds.events?.click exists, add it as an event listener
+            if (creds.events?.click) {
+                addEvent(chart, 'creditsClick', creds.events.click);
+            }
             if (!chart.styledMode) {
                 this.credits.css(creds.style);
             }
@@ -1966,7 +1982,7 @@ class Chart {
         chart.render();
         chart.pointer?.getChartPosition(); // #14973
         // Fire the load event if there are no external images
-        if (!chart.renderer.imgCount && !chart.hasLoaded) {
+        if (!chart.renderer.asyncCounter && !chart.hasLoaded) {
             chart.onload();
         }
         // If the chart was rendered outside the top container, put it back in
@@ -2159,7 +2175,7 @@ class Chart {
      * @param {string} coll
      * An axis type.
      *
-     * @param {...Array<*>} arguments
+     * @param {...Array<*>} options
      * All arguments for the constructor.
      *
      * @return {Highcharts.Axis}
@@ -2192,13 +2208,13 @@ class Chart {
      *        [lang.loading](https://api.highcharts.com/highcharts/lang.loading).
      */
     showLoading(str) {
-        const chart = this, options = chart.options, loadingOptions = options.loading, setLoadingSize = function () {
+        const chart = this, options = chart.options, loadingOptions = options.loading, loadingStyle = loadingOptions?.style ?? {}, setLoadingSize = function () {
             if (loadingDiv) {
                 css(loadingDiv, {
-                    left: chart.plotLeft + 'px',
-                    top: chart.plotTop + 'px',
-                    width: chart.plotWidth + 'px',
-                    height: chart.plotHeight + 'px'
+                    left: loadingStyle.left ?? chart.plotLeft + 'px',
+                    top: loadingStyle.top ?? chart.plotTop + 'px',
+                    width: loadingStyle.width ?? chart.plotWidth + 'px',
+                    height: loadingStyle.height ?? chart.plotHeight + 'px'
                 });
             }
         };
@@ -2218,10 +2234,8 @@ class Chart {
         AST.setElementHTML(loadingSpan, pick(str, options.lang.loading, ''));
         if (!chart.styledMode) {
             // Update visuals
-            css(loadingDiv, extend(loadingOptions.style, {
-                zIndex: 10
-            }));
-            css(loadingSpan, loadingOptions.labelStyle);
+            css(loadingDiv, extend(loadingStyle, { zIndex: 10 }));
+            css(loadingSpan, loadingOptions?.labelStyle ?? {});
             // Show it
             if (!chart.loadingShown) {
                 css(loadingDiv, {
@@ -2229,9 +2243,9 @@ class Chart {
                     display: ''
                 });
                 animate(loadingDiv, {
-                    opacity: loadingOptions.style.opacity || 0.5
+                    opacity: loadingStyle.opacity ?? 0.5
                 }, {
-                    duration: loadingOptions.showDuration || 0
+                    duration: loadingOptions?.showDuration ?? 0
                 });
             }
         }
@@ -2259,7 +2273,7 @@ class Chart {
                 animate(loadingDiv, {
                     opacity: 0
                 }, {
-                    duration: options.loading.hideDuration || 100,
+                    duration: options.loading?.hideDuration ?? 100,
                     complete: function () {
                         css(loadingDiv, { display: 'none' });
                     }
@@ -2428,9 +2442,12 @@ class Chart {
         // update the first series in the chart. Setting two series without
         // an id will update the first and the second respectively (#6019)
         // chart.update and responsive.
-        this.collectionsWithUpdate.forEach(function (coll) {
+        this.collectionsWithUpdate.forEach((coll) => {
             if (options[coll]) {
-                splat(options[coll]).forEach(function (newOptions, i) {
+                splat(options[coll]).forEach((newOptions, i) => {
+                    if (!newOptions) {
+                        return;
+                    }
                     const hasId = defined(newOptions.id);
                     let item;
                     // Match by id
@@ -2469,7 +2486,7 @@ class Chart {
                 });
                 // Add items for removal
                 if (oneToOne) {
-                    chart[coll].forEach(function (item) {
+                    chart[coll].forEach((item) => {
                         if (!item.touched && !item.options.isInternal) {
                             itemsForRemoval.push(item);
                         }
@@ -2480,7 +2497,7 @@ class Chart {
                 }
             }
         });
-        itemsForRemoval.forEach(function (item) {
+        itemsForRemoval.forEach((item) => {
             if (item.chart && item.remove) { // #9097, avoid removing twice
                 item.remove(false);
             }
@@ -2922,6 +2939,10 @@ export default Chart;
  * @param {string} [thousandsSep]
  *        The thousands separator, defaults to the one given in the lang
  *        options, or a space character.
+ *
+ * @param {Highcharts.Chart} [ctx]
+ *        Since v12.6.0, the chart context passed as an extra argument for
+ *        arrow functions.
  *
  * @return {string} The formatted number.
  */

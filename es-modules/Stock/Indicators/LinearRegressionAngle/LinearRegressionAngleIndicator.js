@@ -11,9 +11,8 @@
  * */
 'use strict';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
-const { linearRegression: LinearRegressionIndicator } = SeriesRegistry.seriesTypes;
-import U from '../../../Core/Utilities.js';
-const { extend, merge } = U;
+const { linearregression: LinearRegressionIndicator } = SeriesRegistry.seriesTypes;
+import { extend, merge } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -76,6 +75,8 @@ LinearRegressionAngleIndicator.defaultOptions = merge(LinearRegressionIndicator.
 extend(LinearRegressionAngleIndicator.prototype, {
     nameBase: 'Linear Regression Angle Indicator'
 });
+SeriesRegistry.registerSeriesType('linearregressionangle', LinearRegressionAngleIndicator);
+// Keep for backwards compatibility
 SeriesRegistry.registerSeriesType('linearRegressionAngle', LinearRegressionAngleIndicator);
 /* *
  *

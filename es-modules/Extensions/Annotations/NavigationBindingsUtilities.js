@@ -9,8 +9,7 @@
  *
  * */
 'use strict';
-import U from '../../Core/Utilities.js';
-const { defined, isNumber, pick } = U;
+import { defined, isNumber, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Constants
@@ -22,15 +21,16 @@ const { defined, isNumber, pick } = U;
  * @internal
  */
 const annotationsFieldsTypes = {
-    backgroundColor: 'string',
-    borderColor: 'string',
+    backgroundColor: 'color',
+    backgroundColors: 'color',
+    borderColor: 'color',
     borderRadius: 'string',
-    color: 'string',
-    fill: 'string',
+    color: 'color',
+    fill: 'color',
     fontSize: 'string',
     labels: 'string',
     name: 'string',
-    stroke: 'string',
+    stroke: 'color',
     title: 'string'
 };
 /* *
@@ -68,11 +68,8 @@ function getAssignedAxis(coords) {
  *
  * @internal
  *
- * @param {'boolean'|'number'|'string'} value
- * Atomic type (one of: string, number, boolean)
- *
- * @return {'checkbox'|'number'|'text'}
- * Field type (one of: text, number, checkbox)
+ * @return {'checkbox'|'color'|'number'|'text'}
+ * Field type (one of: text, number, checkbox, color)
  */
 function getFieldType(key, value) {
     const predefinedType = annotationsFieldsTypes[key];
@@ -83,7 +80,8 @@ function getFieldType(key, value) {
     return {
         'string': 'text',
         'number': 'number',
-        'boolean': 'checkbox'
+        'boolean': 'checkbox',
+        'color': 'color'
     }[fieldType];
 }
 /* *

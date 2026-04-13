@@ -14,8 +14,7 @@ import BellcurveSeriesDefaults from './BellcurveSeriesDefaults.js';
 import DerivedComposition from '../DerivedComposition.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { areaspline: AreaSplineSeries } = SeriesRegistry.seriesTypes;
-import U from '../../Core/Utilities.js';
-const { correctFloat, isNumber, merge } = U;
+import { correctFloat, isNumber, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -68,8 +67,13 @@ class BellcurveSeries extends AreaSplineSeries {
     setData(data, redraw = true, animation, updatePoints) {
         let alteredData;
         if (typeof data !== 'undefined' && data.length > 0) {
-            data = data.filter(isNumber),
-                this.setMean(data);
+            // Support data array of objects (#24073).
+            data = data
+                .map(function (item) {
+                return isNumber(item) ? item : item?.y;
+            })
+                .filter(isNumber);
+            this.setMean(data);
             this.setStandardDeviation(data);
             alteredData = this.derivedData(this.mean || 0, this.standardDeviation || 0);
         }

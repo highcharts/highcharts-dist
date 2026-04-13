@@ -18,8 +18,6 @@
  * */
 import D from '../../Core/Defaults.js';
 const { defaultOptions, getOptions } = D;
-import U from '../../Core/Utilities.js';
-const { addEvent, extend, fireEvent, merge, pick } = U;
 import H from '../../Core/Globals.js';
 const { doc, win } = H;
 import defaultSonificationOptions from './Options.js';
@@ -28,6 +26,7 @@ import SonificationSpeaker from './SonificationSpeaker.js';
 import SynthPatch from './SynthPatch.js';
 import InstrumentPresets from './InstrumentPresets.js';
 import timelineFromChart from './TimelineFromChart.js';
+import { addEvent, extend, fireEvent, internalClearTimeout, merge, pick } from '../../Shared/Utilities.js';
 /**
  * The Sonification class. This class represents a chart's sonification
  * capabilities. A chart automatically gets an instance of this class when
@@ -47,9 +46,11 @@ import timelineFromChart from './TimelineFromChart.js';
  */
 class Sonification {
     constructor(chart) {
-        this.chart = chart;
+        /** @internal */
         this.retryContextCounter = 0;
+        /** @internal */
         this.lastUpdate = 0;
+        this.chart = chart;
         this.unbindKeydown = addEvent(doc, 'keydown', function (e) {
             if (chart && chart.sonification &&
                 (e.key === 'Esc' || e.key === 'Escape')) {
@@ -354,7 +355,7 @@ class Sonification {
         // Don't update too often, it gets performance intensive
         const now = Date.now(), updateInterval = sOpts.updateInterval;
         if (now - this.lastUpdate < updateInterval && !this.forceReady) {
-            clearTimeout(this.scheduledUpdate);
+            internalClearTimeout(this.scheduledUpdate);
             this.scheduledUpdate = setTimeout(this.update.bind(this), updateInterval / 2);
             return;
         }
@@ -567,6 +568,7 @@ merge(true, defaultOptions, defaultSonificationOptions);
  *  Default Export
  *
  * */
+/** @internal */
 export default Sonification;
 /* *
  *

@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -10,8 +10,7 @@
  * */
 'use strict';
 import Fx from './Fx.js';
-import U from '../Utilities.js';
-const { defined, getStyle, isArray, isNumber, isObject, merge, objectEach, pick } = U;
+import { defined, getStyle, isArray, isNumber, isObject, merge, objectEach, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions

@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -11,8 +11,7 @@
 'use strict';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { line: LineSeries } = SeriesRegistry.seriesTypes;
-import U from '../../Core/Utilities.js';
-const { merge, pick } = U;
+import { merge, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -29,9 +28,8 @@ class SplineSeries extends LineSeries {
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
-     * Get the spline segment from a given point's previous neighbour to the
+     * Get the spline segment from a given point's previous neighbor to the
      * given point.
      *
      * @private
@@ -71,7 +69,7 @@ class SplineSeries extends LineSeries {
             leftContY += correction;
             rightContY += correction;
             // To prevent false extremes, check that control points are
-            // between neighbouring points' y values
+            // between neighboring points' y values
             if (leftContY > lastY && leftContY > plotY) {
                 leftContY = Math.max(lastY, plotY);
                 // Mirror of left control point

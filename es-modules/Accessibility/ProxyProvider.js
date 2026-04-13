@@ -17,14 +17,13 @@
 'use strict';
 import H from '../Core/Globals.js';
 const { doc } = H;
-import U from '../Core/Utilities.js';
-const { attr, css } = U;
 import CU from './Utils/ChartUtilities.js';
 const { unhideChartElementFromAT } = CU;
 import DOMElementProvider from './Utils/DOMElementProvider.js';
 import HU from './Utils/HTMLUtilities.js';
 const { removeChildNodes } = HU;
 import ProxyElement from './ProxyElement.js';
+import { attr, css } from '../Shared/Utilities.js';
 /* *
  *
  *  Class

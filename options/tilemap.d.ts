@@ -107,7 +107,7 @@ declare module "../highcharts" {
          * In styled mode, the border stroke is given in the `.highcharts-point`
          * class.
          */
-        borderColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        borderColor?: Highcharts.ColorType;
         /**
          * (Highcharts, Highmaps) The border radius for each heatmap item. The
          * border's color and width can be set in marker options.
@@ -138,7 +138,7 @@ declare module "../highcharts" {
          * point. Unless options are set in the colorAxis, the default value is
          * pulled from the options.colors array.
          */
-        color?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        color?: Highcharts.ColorType;
         /**
          * (Highcharts, Highstock, Highmaps) When using dual or multiple color
          * axes, this number defines which colorAxis the particular series is
@@ -209,8 +209,13 @@ declare module "../highcharts" {
          */
         dataLabels?: (Highcharts.PlotTilemapDataLabelsOptions|Array<Highcharts.PlotTilemapDataLabelsOptions>);
         /**
-         * (Highcharts, Highmaps) A description of the series to add to the
-         * screen reader information about the series.
+         * (Highcharts, Highmaps) Deprecated. Use
+         * plotOptions.series.accessibility.description instead.
+         *
+         * A description of the series to add to the screen reader information
+         * about the series.
+         *
+         * @deprecated 8.0.0
          */
         description?: string;
         /**
@@ -225,6 +230,36 @@ declare module "../highcharts" {
          * using the `Highcharts.addEvent` function.
          */
         events?: Highcharts.SeriesEventsOptionsObject;
+        /**
+         * (Highcharts, Highstock) Defines when to display a gap in the graph,
+         * together with the gapUnit option.
+         *
+         * In case when `dataGrouping` is enabled, points can be grouped into a
+         * larger time span. This can make the grouped points to have a greater
+         * distance than the absolute value of `gapSize` property, which will
+         * result in disappearing graph completely. To prevent this situation
+         * the mentioned distance between grouped points is used instead of
+         * previously defined `gapSize`.
+         *
+         * In practice, this option is most often used to visualize gaps in time
+         * series. In a stock chart, intraday data is available for daytime
+         * hours, while gaps will appear in nights and weekends.
+         */
+        gapSize?: number;
+        /**
+         * (Highcharts, Highstock) Together with gapSize, this option defines
+         * where to draw gaps in the graph.
+         *
+         * When the `gapUnit` is `"relative"` (default), a gap size of 5 means
+         * that if the distance between two points is greater than 5 times that
+         * of the two closest points, the graph will be broken.
+         *
+         * When the `gapUnit` is `"value"`, the gap is based on absolute axis
+         * values, which on a datetime axis is milliseconds. This also applies
+         * to the navigator series that inherits gap options from the base
+         * series.
+         */
+        gapUnit?: Highcharts.OptionsGapUnitValue;
         /**
          * (Highcharts, Highmaps) Highlight only the hovered point and fade the
          * remaining points.
@@ -291,19 +326,19 @@ declare module "../highcharts" {
          * the negative color. Using `negativeColor` is equivalent to applying a
          * zone with value of 0.
          */
-        negativeColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        negativeColor?: Highcharts.ColorType;
         /**
          * (Highcharts, Highmaps) The color applied to null points. In styled
          * mode, a general CSS class is applied instead.
          */
-        nullColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        nullColor?: Highcharts.ColorType;
         /**
          * (Highcharts, Highstock) Whether or not data-points with the value of
          * `null` should be interactive. When this is set to `true`, tooltips
          * may highlight these points, and this option also enables keyboard
          * navigation for such points. Format options for such points include
-         * `nullFormat` and `nullFormater`. Works for these series: `line`,
-         * `spline`, `area`, `area-spline`, `column`, `bar`, and* `timeline`.
+         * `nullFormat` and `nullFormatter`. Works for these series: `line`,
+         * `spline`, `area`, `area-spline`, `column`, `bar`, and `timeline`.
          */
         nullInteraction?: (boolean|undefined);
         /**
@@ -321,14 +356,21 @@ declare module "../highcharts" {
          */
         point?: Highcharts.PlotSeriesPointOptions;
         /**
-         * (Highcharts, Highmaps) Same as accessibility.point.descriptionFormat,
-         * but for an individual series. Overrides the chart wide configuration.
+         * (Highcharts, Highmaps) Deprecated. Use
+         * series.accessibility.point.descriptionFormat instead.
+         *
+         * Same as accessibility.point.descriptionFormat, but for an individual
+         * series. Overrides the chart wide configuration.
          */
         pointDescriptionFormat?: Function;
         /**
-         * (Highcharts, Highmaps) Same as
-         * accessibility.series.descriptionFormatter, but for an individual
-         * series. Overrides the chart wide configuration.
+         * (Highcharts, Highmaps) Deprecated. Use
+         * series.accessibility.point.descriptionFormatter instead.
+         *
+         * Same as accessibility.series.descriptionFormatter, but for an
+         * individual series. Overrides the chart wide configuration.
+         *
+         * @deprecated 8.0.0
          */
         pointDescriptionFormatter?: Function;
         /**
@@ -371,8 +413,13 @@ declare module "../highcharts" {
          */
         showInLegend?: boolean;
         /**
-         * (Highcharts, Highmaps) If set to `true`, the accessibility module
-         * will skip past the points in this series for keyboard navigation.
+         * (Highcharts, Highmaps) Deprecated. Use
+         * series.accessibility.keyboardNavigation instead.
+         *
+         * If set to `true`, the accessibility module will skip past the points
+         * in this series for keyboard navigation.
+         *
+         * @deprecated 8.0.0
          */
         skipKeyboardNavigation?: boolean;
         /**
@@ -459,7 +506,7 @@ declare module "../highcharts" {
          * individual non-cartesian series. By default zooming is enabled for
          * all series.
          *
-         * Note: This option works only for non-cartesian series.
+         * **Note**: This option works only for non-cartesian series.
          */
         zoomEnabled?: boolean;
     }
@@ -512,6 +559,10 @@ declare module "../highcharts" {
      *
      */
     interface SeriesTilemapOptions extends Highcharts.PlotTilemapOptions, Highcharts.SeriesOptions {
+        /**
+         * Not available
+         */
+        allAreas?: undefined;
         /**
          * (Highcharts, Highmaps) An array of data points for the series. For
          * the `tilemap` series type, points can be given in the following ways:

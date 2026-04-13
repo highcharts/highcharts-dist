@@ -18,6 +18,8 @@
  *  chart.typeDescription -> accessibility.typeDescription
  *  series.description -> series.accessibility.description
  *  series.exposeElementToA11y -> series.accessibility.exposeAsGroupOnly
+ *  series.pointDescriptionFormat ->
+ *      series.accessibility.point.descriptionFormat
  *  series.pointDescriptionFormatter ->
  *      series.accessibility.pointDescriptionFormatter
  *  series.accessibility.pointDescriptionFormatter ->
@@ -61,19 +63,18 @@
  */
 /* eslint-enable max-len */
 'use strict';
-import U from '../../Core/Utilities.js';
-const { error, pick } = U;
+import { pick } from '../../Shared/Utilities.js';
+import { error } from '../../Core/Utilities.js';
 /* *
  *
  *  Functions
  *
  * */
-/* eslint-disable valid-jsdoc */
 /**
  * Set a new option on a root prop, where the option is defined as an array of
  * suboptions.
  * @private
- * @param root
+ * @param {Record<string, *>} root
  * @param {Array<string>} optionAsArray
  * @param {*} val
  * @return {void}
@@ -147,6 +148,9 @@ function copyDeprecatedSeriesOptions(chart) {
     const oldToNewSeriesOptions = {
         description: ['accessibility', 'description'],
         exposeElementToA11y: ['accessibility', 'exposeAsGroupOnly'],
+        pointDescriptionFormat: [
+            'accessibility', 'point', 'descriptionFormat'
+        ],
         pointDescriptionFormatter: [
             'accessibility', 'point', 'descriptionFormatter'
         ],

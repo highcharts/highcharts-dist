@@ -167,7 +167,7 @@ const Funnel3DSeriesDefaults = {
  * @product   highcharts
  * @apioption series.funnel3d.data.gradientForSides
  */
-''; // Detachs doclets above
+''; // Keeps doclets above
 /* *
  *
  *  Default Export

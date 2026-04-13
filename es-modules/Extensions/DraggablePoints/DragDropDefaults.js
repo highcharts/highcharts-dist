@@ -277,7 +277,7 @@ const DragDropDefaults = {
         /**
          * The fill color of the drag handles.
          *
-         * @type  {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+         * @type  {Highcharts.ColorType}
          * @since 6.2.0
          */
         color: '#fff',
@@ -340,7 +340,7 @@ const DragDropDefaults = {
             /**
              * Guide box fill color.
              *
-             * @type  {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+             * @type  {Highcharts.ColorType}
              * @since 6.2.0
              */
             color: 'rgba(0, 0, 0, 0.1)',

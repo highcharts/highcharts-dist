@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -19,8 +19,7 @@ import PieSeriesDefaults from './PieSeriesDefaults.js';
 import Series from '../../Core/Series/Series.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import Symbols from '../../Core/Renderer/SVG/Symbols.js';
-import U from '../../Core/Utilities.js';
-const { clamp, extend, fireEvent, merge, pick } = U;
+import { clamp, extend, fireEvent, merge, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -29,7 +28,7 @@ const { clamp, extend, fireEvent, merge, pick } = U;
 /**
  * Pie series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.pie
  *
@@ -41,10 +40,9 @@ class PieSeries extends Series {
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * Animates the pies in.
-     * @private
+     * @internal
      */
     animate(init) {
         const series = this, points = series.points, startAngleRad = series.startAngleRad;
@@ -71,10 +69,10 @@ class PieSeries extends Series {
     }
     /**
      * Called internally to draw auxiliary graph in pie-like series in
-     * situtation when the default graph is not sufficient enough to present
+     * situation when the default graph is not sufficient enough to present
      * the data well. Auxiliary graph is saved in the same object as
      * regular graph.
-     * @private
+     * @internal
      */
     drawEmpty() {
         const start = this.startAngleRad, end = this.endAngleRad, options = this.options;
@@ -111,7 +109,7 @@ class PieSeries extends Series {
     /**
      * Slices in pie chart are initialized in DOM, but it's shapes and
      * animations are normally run in `drawPoints()`.
-     * @private
+     * @internal
      */
     drawPoints() {
         const renderer = this.chart.renderer;
@@ -131,16 +129,16 @@ class PieSeries extends Series {
     /**
      * Extend the generatePoints method by adding total and percentage
      * properties to each point
-     * @private
+     * @internal
      */
     generatePoints() {
         super.generatePoints();
         this.updateTotals();
     }
     /**
-     * Utility for getting the x value from a given y, used for anticollision
+     * Utility for getting the x value from a given y, used for anti-collision
      * logic in data labels.
-     * @private
+     * @internal
      */
     getX(y, left, point, dataLabel) {
         const center = this.center, 
@@ -160,14 +158,14 @@ class PieSeries extends Series {
     /**
      * Define hasData function for non-cartesian series. Returns true if the
      * series has at least one visible point (#23235)
-     * @private
+     * @internal
      */
     hasData() {
         return this.points.some((point) => point.visible);
     }
     /**
      * Draw the data points
-     * @private
+     * @internal
      */
     redrawPoints() {
         const series = this, chart = series.chart;
@@ -225,7 +223,7 @@ class PieSeries extends Series {
     }
     /**
      * Utility for sorting data labels.
-     * @private
+     * @internal
      */
     sortByAngle(points, sign) {
         points.sort(function (a, b) {
@@ -235,13 +233,12 @@ class PieSeries extends Series {
     }
     /**
      * Do translation for pie slices
-     * @private
+     * @internal
      */
     translate(positions) {
         fireEvent(this, 'translate');
         this.generatePoints();
-        const series = this, precision = 1000, // Issue #172
-        options = series.options, slicedOffset = options.slicedOffset, radians = getStartAndEndRadians(options.startAngle, options.endAngle), startAngleRad = series.startAngleRad = radians.start, endAngleRad = series.endAngleRad = radians.end, circ = endAngleRad - startAngleRad, // 2 * Math.PI,
+        const series = this, options = series.options, slicedOffset = options.slicedOffset, radians = getStartAndEndRadians(options.startAngle, options.endAngle), startAngleRad = series.startAngleRad = radians.start, endAngleRad = series.endAngleRad = radians.end, circ = endAngleRad - startAngleRad, // 2 * Math.PI,
         points = series.points, ignoreHiddenPoint = options.ignoreHiddenPoint, len = points.length;
         let start, end, angle, 
         // The x component of the radius vector for a given point
@@ -276,8 +273,8 @@ class PieSeries extends Series {
                 y: positions[1],
                 r: positions[2] / 2,
                 innerR: positions[3] / 2,
-                start: Math.round(start * precision) / precision,
-                end: Math.round(end * precision) / precision
+                start,
+                end
             };
             point.shapeType = 'arc';
             point.shapeArgs = shapeArgs;
@@ -310,7 +307,7 @@ class PieSeries extends Series {
     }
     /**
      * Recompute total chart sum and update percentages of points.
-     * @private
+     * @internal
      */
     updateTotals() {
         const points = this.points, len = points.length, ignoreHiddenPoint = this.options.ignoreHiddenPoint;
@@ -363,4 +360,5 @@ SeriesRegistry.registerSeriesType('pie', PieSeries);
  *  Default Export
  *
  * */
+/** @internal */
 export default PieSeries;

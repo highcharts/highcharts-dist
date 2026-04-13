@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -20,8 +20,8 @@ import SVGElement from './SVGElement.js';
 import SVGLabel from './SVGLabel.js';
 import Symbols from './Symbols.js';
 import TextBuilder from './TextBuilder.js';
-import U from '../../Utilities.js';
-const { addEvent, attr, createElement, crisp, css, defined, destroyObjectProperties, extend, isArray, isNumber, isObject, isString, merge, pick, pInt, replaceNested, uniqueKey } = U;
+import { addEvent, attr, createElement, crisp, css, defined, destroyObjectProperties, extend, isArray, isNumber, isObject, isString, merge, pick, pInt, replaceNested } from '../../../Shared/Utilities.js';
+import { uniqueKey } from '../../Utilities.js';
 /* *
  *
  *  Variables
@@ -174,7 +174,7 @@ class SVGRenderer {
         this.url = this.getReferenceURL();
         // Add description
         const desc = this.createElement('desc').add();
-        desc.element.appendChild(doc.createTextNode('Created with Highcharts 12.5.0'));
+        desc.element.appendChild(doc.createTextNode('Created with Highcharts 12.6.0'));
         this.defs = this.createElement('defs').add();
         this.allowHTML = allowHTML;
         this.forExport = forExport;
@@ -182,7 +182,7 @@ class SVGRenderer {
         this.gradients = {}; // Object where gradient SvgElements are stored
         this.cache = {}; // Cache for numerical bounding boxes
         this.cacheKeys = [];
-        this.imgCount = 0;
+        this.asyncCounter = 0;
         this.rootFontSize = boxWrapper.getStyle('font-size');
         renderer.setSize(width, height, false);
         // Issue 110 workaround:
@@ -314,7 +314,7 @@ class SVGRenderer {
                 // Scan alert #[72]: Loop for nested patterns
                 return replaceNested(win.location.href.split('#')[0], // Remove hash
                 [/<[^>]*>/g, ''], // Wing cut HTML
-                [/([\('\)])/g, '\\$1'], // Escape parantheses and quotes
+                [/([\('\)])/g, '\\$1'], // Escape parentheses and quotes
                 [/ /g, '%20'] // Replace spaces (needed for Safari only)
                 );
             }
@@ -662,7 +662,7 @@ class SVGRenderer {
         });
     }
     /**
-     * Make a straight line crisper by not spilling out to neighbour pixels.
+     * Make a straight line crisper by not spilling out to neighbor pixels.
      *
      * @function Highcharts.SVGRenderer#crispLine
      *
@@ -712,7 +712,7 @@ class SVGRenderer {
     *
     * @function Highcharts.SVGRenderer#path
     *
-    * @param {Highcharts.SVGAttributes} [attribs]
+    * @param {Highcharts.SVGAttributes|Highcharts.SVGPathArray} [path]
     * The initial attributes.
     *
     * @return {Highcharts.SVGElement}
@@ -730,6 +730,7 @@ class SVGRenderer {
         }
         return this.createElement('path').attr(attribs);
     }
+    /* eslint-disable jsdoc/check-param-names */
     /**
      * Draw a circle, wraps the SVG `circle` element.
      *
@@ -770,6 +771,7 @@ class SVGRenderer {
         };
         return wrapper.attr(attribs);
     }
+    /* eslint-disable jsdoc/check-param-names */
     /**
      * Draw and return an arc.
      *
@@ -831,6 +833,8 @@ class SVGRenderer {
         arc.r = r; // #959
         return arc;
     }
+    /* eslint-enable jsdoc/check-param-names */
+    /* eslint-disable jsdoc/check-param-names */
     /**
      * Draw and return a rectangle.
      *
@@ -903,6 +907,7 @@ class SVGRenderer {
         };
         return wrapper.attr(attribs);
     }
+    /* eslint-enable jsdoc/check-param-names */
     /**
      * Draw and return a rectangle with advanced corner rounding options.
      *
@@ -1087,7 +1092,7 @@ class SVGRenderer {
             if (!ren.styledMode) {
                 obj.attr('fill', 'none');
             }
-            // Expando properties for use in animate and attr
+            // Expand properties for use in animate and attr
             extend(obj, {
                 symbolName: (sym || void 0),
                 x: x,
@@ -1160,7 +1165,6 @@ class SVGRenderer {
                 });
             }
             img.isImg = true;
-            img.symbolUrl = symbol;
             if (defined(img.imgwidth) && defined(img.imgheight)) {
                 centerImage(img);
             }
@@ -1198,14 +1202,14 @@ class SVGRenderer {
                         }
                         // Fire the load event when all external images are
                         // loaded
-                        ren.imgCount--;
-                        if (!ren.imgCount && chart && !chart.hasLoaded) {
+                        ren.asyncCounter--;
+                        if (!ren.asyncCounter && chart && !chart.hasLoaded) {
                             chart.onload();
                         }
                     },
                     src: imageSrc
                 });
-                this.imgCount++;
+                this.asyncCounter++;
             }
         }
         return obj;
@@ -1675,7 +1679,14 @@ extend(SVGRenderer.prototype, {
         '"': '&quot;'
     },
     /**
-     * An extendable collection of functions for defining symbol paths.
+     * An extendable collection of functions for defining symbol paths. Each
+     * symbol function takes five parameters: `x`, `y`, `width`, `height` and
+     * `options`, and returns an `SVGPath` array.
+     *
+     * @sample highcharts/members/renderer-symbols
+     *         Renderer symbols overview
+     * @sample highcharts/plotoptions/series-marker-symbol
+     *         Custom marker symbol
      *
      * @name Highcharts.SVGRenderer#symbols
      * @type {Highcharts.SymbolDictionary}

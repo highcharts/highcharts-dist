@@ -12,8 +12,7 @@
 import BoostableMap from './BoostableMap.js';
 import H from '../../Core/Globals.js';
 const { composed } = H;
-import U from '../../Core/Utilities.js';
-const { addEvent, pick, pushUnique } = U;
+import { addEvent, pick, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions

@@ -11,8 +11,7 @@
 'use strict';
 import H from '../../Core/Globals.js';
 const { doc, isTouchDevice } = H;
-import U from '../../Core/Utilities.js';
-const { addEvent, fireEvent, objectEach, pick, removeEvent } = U;
+import { addEvent, fireEvent, objectEach, pick, removeEvent } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -47,7 +46,7 @@ class EventEmitter {
         objectEach(emitter.options.events, (event, type) => {
             const eventHandler = function (e) {
                 if (type !== 'click' || !emitter.cancelClick) {
-                    event.call(emitter, emitter.chart.pointer?.normalize(e), emitter.target);
+                    event.call(emitter, emitter.chart.pointer?.normalize(e), emitter.target, emitter);
                 }
             };
             if ((emitter.nonDOMEvents || []).indexOf(type) === -1) {

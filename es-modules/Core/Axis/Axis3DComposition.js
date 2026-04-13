@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  Extension for 3d axes
  *
@@ -19,8 +19,7 @@ const { deg2rad } = H;
 import Math3D from '../Math3D.js';
 const { perspective, perspective3D, shapeArea } = Math3D;
 import Tick3D from './Tick3DComposition.js';
-import U from '../Utilities.js';
-const { addEvent, merge, pick, wrap } = U;
+import { addEvent, merge, pick, wrap } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -54,7 +53,7 @@ function onAxisInit() {
     }
 }
 /**
- * Do not draw axislines in 3D.
+ * Do not draw axis lines in 3D.
  * @internal
  */
 function wrapAxisGetLinePath(proceed) {
@@ -270,8 +269,6 @@ class Axis3DAdditions {
      * */
     /**
      * @internal
-     * @param {Highcharts.Axis} axis
-     * Related axis.
      * @param {Highcharts.Position3DObject} pos
      * Position to fix.
      * @param {boolean} [isTitle]

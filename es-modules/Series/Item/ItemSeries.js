@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2019-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  Item series type for Highcharts
  *
@@ -15,8 +15,7 @@ import ItemPoint from './ItemPoint.js';
 import ItemSeriesDefaults from './ItemSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { pie: PieSeries } = SeriesRegistry.seriesTypes;
-import U from '../../Core/Utilities.js';
-const { defined, extend, fireEvent, isNumber, merge, pick } = U;
+import { defined, extend, fireEvent, isNumber, merge, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class

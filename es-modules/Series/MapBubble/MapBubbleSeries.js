@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -13,8 +13,7 @@ import BubbleSeries from '../Bubble/BubbleSeries.js';
 import MapBubblePoint from './MapBubblePoint.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { seriesTypes: { map: { prototype: mapProto }, mappoint: { prototype: mapPointProto } } } = SeriesRegistry;
-import U from '../../Core/Utilities.js';
-const { extend, merge } = U;
+import { extend, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -72,7 +71,7 @@ MapBubbleSeries.defaultOptions = merge(BubbleSeries.defaultOptions, {
      * @sample {highmaps} maps/plotoptions/mapbubble-color/
      *         Pink bubbles
      *
-     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @type      {Highcharts.ColorType}
      * @apioption plotOptions.mapbubble.color
      */
     /**
@@ -102,7 +101,7 @@ MapBubbleSeries.defaultOptions = merge(BubbleSeries.defaultOptions, {
      * @sample {highmaps} maps/plotoptions/spider-map-line-color/
      *         Different line color
      *
-     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @type      {Highcharts.ColorType}
      * @apioption plotOptions.mapbubble.lineColor
      */
     /**
@@ -151,7 +150,7 @@ MapBubbleSeries.defaultOptions = merge(BubbleSeries.defaultOptions, {
      * @sample {highmaps} maps/plotoptions/mapbubble-negativecolor/
      *         Negative color below a threshold
      *
-     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @type      {Highcharts.ColorType}
      * @apioption plotOptions.mapbubble.negativeColor
      */
     /**

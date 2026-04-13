@@ -8,8 +8,7 @@
 'use strict';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 const { atr: ATRIndicator, sma: SMAIndicator } = SeriesRegistry.seriesTypes;
-import U from '../../../Core/Utilities.js';
-const { addEvent, correctFloat, isArray, isNumber, extend, merge, objectEach } = U;
+import { addEvent, correctFloat, extend, isArray, isNumber, merge, objectEach } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -72,7 +71,7 @@ class SupertrendIndicator extends SMAIndicator {
         mainSeries = indicator.linkedParent, mainXData = mainSeries.getColumn('x'), mainLinePoints = (mainSeries ? mainSeries.points : []), indicPoints = indicator.points, indicPath = indicator.graph, 
         // Points offset between lines
         tempOffset = mainLinePoints.length - indicPoints.length, offset = tempOffset > 0 ? tempOffset : 0, 
-        // @todo: fix when ichi-moku indicator is merged to master.
+        // @todo: fix when ichimoku indicator is merged to master.
         gappedExtend = {
             options: {
                 gapSize: indicOptions.gapSize
@@ -394,7 +393,7 @@ SupertrendIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
      * @sample {highstock} stock/indicators/supertrend/
      *         Example with risingTrendColor
      *
-     * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @type {Highcharts.ColorType}
      */
     risingTrendColor: "#06b535" /* Palette.positiveColor */,
     /**
@@ -403,7 +402,7 @@ SupertrendIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
      * @sample {highstock} stock/indicators/supertrend/
      *         Example with fallingTrendColor
      *
-     * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @type {Highcharts.ColorType}
      */
     fallingTrendColor: "#f21313" /* Palette.negativeColor */,
     /**

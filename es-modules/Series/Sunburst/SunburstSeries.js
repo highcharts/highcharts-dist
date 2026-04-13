@@ -4,7 +4,7 @@
  *
  *  (c) 2016-2026 Highsoft AS
  *
- *  Authors: Jon Arild Nygard
+ *  Authors: Jon Arild Nygård
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -22,12 +22,12 @@ import SunburstPoint from './SunburstPoint.js';
 import SunburstUtilities from './SunburstUtilities.js';
 import TU from '../TreeUtilities.js';
 const { getColor, getLevelOptions, setTreeValues, updateRootId } = TU;
-import U from '../../Core/Utilities.js';
 import SunburstNode from './SunburstNode.js';
 import SunburstSeriesDefaults from './SunburstSeriesDefaults.js';
-const { defined, error, extend, fireEvent, isNumber, isObject, isString, merge, splat } = U;
 import SVGElement from '../../Core/Renderer/SVG/SVGElement.js';
 import TextPath from '../../Extensions/TextPath.js';
+import { defined, extend, fireEvent, isNumber, isObject, isString, merge, splat } from '../../Shared/Utilities.js';
+import { error } from '../../Core/Utilities.js';
 TextPath.compose(SVGElement);
 /* *
  *

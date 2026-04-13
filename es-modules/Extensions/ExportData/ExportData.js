@@ -3,7 +3,7 @@
  *  Experimental data export module for Highcharts
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -22,8 +22,7 @@ import { downloadURL, getBlobFromContent } from '../../Shared/DownloadURL.js';
 import ExportDataDefaults from './ExportDataDefaults.js';
 import G from '../../Core/Globals.js';
 const { composed, doc, win } = G;
-import U from '../../Core/Utilities.js';
-const { addEvent, defined, extend, find, fireEvent, isNumber, pick, pushUnique } = U;
+import { addEvent, defined, extend, find, fireEvent, isNumber, pick, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -112,7 +111,7 @@ var ExportData;
             exportingProto.viewData = viewData;
             // Update with defaults of the export data module
             setOptions(ExportDataDefaults);
-            // Additionaly, extend the menuItems with the export data variants
+            // Additionally, extend the menuItems with the export data variants
             const menuItems = getOptions().exporting?.buttons?.contextButton?.menuItems;
             menuItems && menuItems.push('separator', 'downloadCSV', 'downloadXLS', 'viewData');
             const { arearange: AreaRangeSeries, gantt: GanttSeries, map: MapSeries, mapbubble: MapBubbleSeries, treemap: TreemapSeries, xrange: XRangeSeries } = SeriesClass.types;
@@ -374,7 +373,9 @@ var ExportData;
                     autoIncrement: series.autoIncrement,
                     options: series.options,
                     pointArrayMap: series.pointArrayMap,
-                    index: series.index
+                    index: series.index,
+                    // Allows correct date formatting for string date, #23654.
+                    xAxis: series.xAxis
                 };
                 // Export directly from options.data because we need the
                 // uncropped data (#7913), and we need to support Boost (#7026).

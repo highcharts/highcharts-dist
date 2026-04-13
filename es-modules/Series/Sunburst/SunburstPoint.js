@@ -4,7 +4,7 @@
  *
  *  (c) 2016-2026 Highsoft AS
  *
- *  Authors: Jon Arild Nygard
+ *  Authors: Jon Arild Nygård
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -14,8 +14,7 @@
 'use strict';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: { prototype: { pointClass: Point } }, seriesTypes: { treemap: { prototype: { pointClass: TreemapPoint } } } } = SeriesRegistry;
-import U from '../../Core/Utilities.js';
-const { correctFloat, extend, pInt } = U;
+import { correctFloat, extend, pInt } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class

@@ -9,8 +9,8 @@
 import Chart from '../../../Core/Chart/Chart.js';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 const { line: LineSeries } = SeriesRegistry.seriesTypes;
-import U from '../../../Core/Utilities.js';
-const { addEvent, fireEvent, error, extend, isArray, merge, pick } = U;
+import { addEvent, extend, fireEvent, isArray, merge, pick } from '../../../Shared/Utilities.js';
+import { error } from '../../../Core/Utilities.js';
 /**
  *
  * Return the parent series values in the legacy two-dimensional yData
@@ -198,7 +198,7 @@ class SMAIndicator extends LineSeries {
         indicator.linkedParent.yData = yData;
         indicator.linkedParent.processedYData = processedYData;
         const pointArrayMap = indicator.pointArrayMap || ['y'], valueColumns = {};
-        // Split legacy twodimensional values into value columns
+        // Split legacy two-dimensional values into value columns
         processedData.yData
             .forEach((values) => {
             pointArrayMap.forEach((key, index) => {
@@ -216,7 +216,7 @@ class SMAIndicator extends LineSeries {
             !indicator.hasGroupedData &&
             indicator.visible &&
             indicator.points) {
-            // When data is cropped update only avaliable points (#9493)
+            // When data is cropped update only available points (#9493)
             if (indicator.cropped) {
                 if (indicator.xAxis) {
                     min = indicator.xAxis.min;

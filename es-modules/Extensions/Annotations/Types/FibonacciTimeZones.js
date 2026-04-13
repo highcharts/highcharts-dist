@@ -1,7 +1,11 @@
 /* *
  *
- *  Author: Rafal Sebestjanski
+ *  (c) 2009-2026 Highsoft AS
  *
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
+ *
+ *  Author: Rafał Sebestjański
  *
  * */
 'use strict';
@@ -12,8 +16,7 @@ import D from '../../../Core/Defaults.js';
 const { defaultOptions } = D;
 import InfinityLine from './InfinityLine.js';
 import MockPoint from '../MockPoint.js';
-import U from '../../../Core/Utilities.js';
-const { merge } = U;
+import { merge } from '../../../Shared/Utilities.js';
 if (defaultOptions.annotations?.types) {
     defaultOptions.annotations.types.fibonacciTimeZones = merge(defaultOptions.annotations.types.crookedLine, 
     /**

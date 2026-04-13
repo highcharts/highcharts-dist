@@ -11,10 +11,9 @@
  *
  * */
 'use strict';
+import { defined } from '../../Shared/Utilities.js';
 import FormulaTypes from './FormulaTypes.js';
 const { isFormula, isFunction, isOperator, isRange, isReference, isValue } = FormulaTypes;
-import U from '../../Core/Utilities.js';
-const { defined } = U;
 /* *
  *
  *  Constants

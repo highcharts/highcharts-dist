@@ -12,9 +12,8 @@
  * */
 'use strict';
 import H from '../../Core/Globals.js';
+import { css } from '../../Shared/Utilities.js';
 const { doc, win } = H;
-import U from '../../Core/Utilities.js';
-const { css } = U;
 /* *
  *
  *  Constants
@@ -26,7 +25,6 @@ const simulatedEventTarget = win.EventTarget && new win.EventTarget() || 'none';
  *  Functions
  *
  * */
-/* eslint-disable valid-jsdoc */
 /**
  * @private
  * @param {Highcharts.HTMLDOMElement} el

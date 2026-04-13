@@ -1,5 +1,5 @@
 let o;/**
- * Highcharts JS v12.5.0 (2026-01-12)
+ * Highcharts JS v12.6.0 (2026-04-13)
  * @module highcharts/themes/high-contrast-dark
  * @requires highcharts
  *

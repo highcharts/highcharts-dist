@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  Extensions to the SVGRenderer class to enable 3D shapes
  *
@@ -20,8 +20,7 @@ const { charts, deg2rad } = H;
 import Math3D from '../../Math3D.js';
 const { perspective, shapeArea } = Math3D;
 import SVGElement3D from './SVGElement3D.js';
-import U from '../../Utilities.js';
-const { defined, extend, merge, pick } = U;
+import { defined, extend, merge, pick } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Constants
@@ -489,7 +488,7 @@ var SVGRenderer3D;
             const parent = wrapper.parentGroup, className = wrapper.attr('class');
             wrapper.top.add(wrapper);
             // These faces are added outside the wrapper group because the
-            // z-index relates to neighbour elements as well
+            // z-index relates to neighbor elements as well
             for (const face of ['out', 'inn', 'side1', 'side2']) {
                 wrapper[face]
                     .attr({

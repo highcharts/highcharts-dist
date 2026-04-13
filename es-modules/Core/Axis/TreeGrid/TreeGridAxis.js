@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2016-2026 Highsoft AS
- *  Authors: Jon Arild Nygard
+ *  Authors: Jon Arild Nygård
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -15,8 +15,7 @@ import Tree from '../../../Gantt/Tree.js';
 import TreeGridTick from './TreeGridTick.js';
 import TU from '../../../Series/TreeUtilities.js';
 const { getLevelOptions } = TU;
-import U from '../../Utilities.js';
-const { addEvent, isArray, splat, find, fireEvent, isObject, isString, merge, removeEvent, wrap } = U;
+import { addEvent, find, fireEvent, isArray, isObject, isString, merge, removeEvent, splat, wrap } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Variables
@@ -186,9 +185,6 @@ function getTreeGridFromData(data, uniqueNames, numberOfSeries) {
 /**
  * Builds the tree of categories and calculates its positions.
  * @internal
- * @param {Object} e Event object
- * @param {Object} e.target The chart instance which the event was fired on.
- * @param {object[]} e.target.axes The axes of the chart.
  */
 function onBeforeRender(e) {
     const chart = e.target, axes = chart.axes;
@@ -352,14 +348,14 @@ function wrapInit(proceed, chart, userOptions, coll) {
         // NOTE Preferably these events should be set on the axis.
         addEvent(chart, 'beforeRender', onBeforeRender);
         addEvent(chart, 'beforeRedraw', onBeforeRender);
-        // Add new collapsed nodes on addseries
+        // Add new collapsed nodes on addSeries
         addEvent(chart, 'addSeries', function (e) {
             if (e.options.data) {
                 const treeGrid = getTreeGridFromData(e.options.data, userOptions.uniqueNames || false, 1);
                 axis.treeGrid.collapsedNodes = (axis.treeGrid.collapsedNodes || []).concat(treeGrid.collapsedNodes);
             }
         });
-        // Collapse all nodes in axis.treegrid.collapsednodes
+        // Collapse all nodes in axis.treegrid.collapsedNodes
         // where collapsed equals true.
         addEvent(axis, 'foundExtremes', function () {
             axis.treeGrid.collapsedNodes?.forEach(function (node) {
@@ -587,12 +583,6 @@ class TreeGridAxisAdditions {
      * Set the collapse status.
      *
      * @internal
-     *
-     * @param {Highcharts.Axis} axis
-     * The axis to check against.
-     *
-     * @param {Highcharts.GridNode} node
-     * The node to collapse.
      */
     setCollapsedStatus(node) {
         const axis = this.axis, chart = axis.chart;
@@ -612,15 +602,6 @@ class TreeGridAxisAdditions {
      *
      * @internal
      *
-     * @param {Highcharts.Axis} axis
-     * The axis to check against.
-     *
-     * @param {Highcharts.GridNode} node
-     * The node to collapse.
-     *
-     * @param {number} pos
-     * The tick position to collapse.
-     *
      * @return {Array<object>}
      * Returns an array of the new breaks for the axis.
      */
@@ -637,14 +618,8 @@ class TreeGridAxisAdditions {
      *
      * @internal
      *
-     * @param {Highcharts.Axis} axis
-     * The axis to check against.
-     *
      * @param {Highcharts.GridNode} node
      * The node to expand.
-     *
-     * @param {number} pos
-     * The tick position to expand.
      *
      * @return {Array<object>}
      * Returns an array of the new breaks for the axis.
@@ -706,9 +681,6 @@ class TreeGridAxisAdditions {
      * expanded it will be collapsed.
      *
      * @internal
-     *
-     * @param {Highcharts.Axis} axis
-     * The axis to check against.
      *
      * @param {Highcharts.GridNode} node
      * The node to toggle.

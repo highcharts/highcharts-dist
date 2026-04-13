@@ -13,8 +13,7 @@ import DerivedComposition from '../DerivedComposition.js';
 import HistogramSeriesDefaults from './HistogramSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
-import U from '../../Core/Utilities.js';
-const { arrayMax, arrayMin, correctFloat, isNumber, merge } = U;
+import { arrayMax, arrayMin, correctFloat, isNumber, merge } from '../../Shared/Utilities.js';
 /* ************************************************************************** *
  *  HISTOGRAM
  * ************************************************************************** */
@@ -78,6 +77,10 @@ class HistogramSeries extends ColumnSeries {
     setData(data, redraw = true, animation, updatePoints) {
         let alteredData;
         if (typeof data !== 'undefined' && data.length > 0) {
+            // Support data array of objects (#24073).
+            data = data.map(function (item) {
+                return isNumber(item) ? item : item?.y ?? 0;
+            });
             alteredData = this.derivedData(data.filter(isNumber), this.binsNumber(data), this.options.binWidth);
         }
         super.setData.call(this, alteredData, redraw, animation, updatePoints);

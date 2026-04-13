@@ -37,7 +37,6 @@ class SeriesComponent extends AccessibilityComponent {
      *  Static Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * @private
      */

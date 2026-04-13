@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Sebastian Bochan, Rafal Sebestjanski
+ *  Author: Sebastian Bochan, Rafał Sebestjański
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -16,8 +16,7 @@ const { noop } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { arearange: AreaRangeSeries, column: ColumnSeries, columnrange: ColumnRangeSeries } = SeriesRegistry.seriesTypes;
 import SVGRenderer from '../../Core/Renderer/SVG/SVGRenderer.js';
-import U from '../../Core/Utilities.js';
-const { extend, merge, pick } = U;
+import { extend, merge, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -219,7 +218,7 @@ class DumbbellSeries extends AreaRangeSeries {
         return pointAttribs;
     }
     /**
-     * Set the shape arguments for dummbells.
+     * Set the shape arguments for dumbbells.
      * @private
      */
     setShapeArgs() {

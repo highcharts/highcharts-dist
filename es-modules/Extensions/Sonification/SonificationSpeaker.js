@@ -11,8 +11,7 @@
  *
  * */
 'use strict';
-import U from '../../Core/Utilities.js';
-const { pick } = U;
+import { pick } from '../../Shared/Utilities.js';
 /**
  * The SonificationSpeaker class. This class represents an announcer using
  * speech synthesis. It allows for scheduling speech announcements, as well
@@ -32,6 +31,7 @@ const { pick } = U;
 class SonificationSpeaker {
     constructor(options) {
         this.options = options;
+        /** @internal */
         this.masterVolume = 1;
         this.synthesis = window.speechSynthesis;
         if (typeof speechSynthesis.onvoiceschanged !== 'undefined') {

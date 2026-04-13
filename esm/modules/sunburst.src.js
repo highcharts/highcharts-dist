@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.5.0 (2026-01-12)
+ * @license Highcharts JS v12.6.0 (2026-04-13)
  * @module highcharts/modules/sunburst
  * @requires highcharts
  *
  * (c) 2016-2026 Highsoft AS
- * Authors: Jon Arild Nygard
+ * Authors: Jon Arild Nygård
  *
  * A commercial license may be required depending on use.
  * See www.highcharts.com/license
@@ -55,7 +55,7 @@ var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require_
  *
  *  Highcharts Breadcrumbs module
  *
- *  Authors: Grzegorz Blachlinski, Karol Kolodziej
+ *  Authors: Grzegorz Blachliński, Karol Kołodziej
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -136,14 +136,13 @@ const options = {
         }
     },
     /**
-     * Fires when clicking on the breadcrumbs button. Two arguments are
-     * passed to the function. First breadcrumb button as an SVG element.
-     * Second is the breadcrumbs class, containing reference to the chart,
-     * series etc.
+     * Fires when clicking on a breadcrumb button. Two arguments are passed
+     * to the function. First is the click event. Second is the breadcrumb
+     * options for the clicked button.
      *
      * ```js
-     * click: function(button, breadcrumbs) {
-     *   console.log(button);
+     * click: function (e, breadcrumb) {
+     *   console.log(breadcrumb.level);
      * }
      * ```
      *
@@ -325,12 +324,1374 @@ const BreadcrumbsDefaults = {
 ;// external ["../highcharts.src.js","default","Templating"]
 const external_highcharts_src_js_default_Templating_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Templating;
 var external_highcharts_src_js_default_Templating_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Templating_namespaceObject);
+;// ./code/es-modules/Shared/Utilities.js
+/* *
+ *
+ *  (c) 2009-2026 Highsoft AS
+ *
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
+ *
+ *
+ * */
+
+const { doc, win } = (external_highcharts_src_js_default_default());
+/**
+ * Add an event listener.
+ *
+ * @function Highcharts.addEvent<T>
+ *
+ * @param  {Highcharts.Class<T>|T} el
+ *         The element or object to add a listener to. It can be a
+ *         {@link HTMLDOMElement}, an {@link SVGElement} or any other object.
+ *
+ * @param  {string} type
+ *         The event type.
+ *
+ * @param  {Highcharts.EventCallbackFunction<T>|Function} fn
+ *         The function callback to execute when the event is fired.
+ *
+ * @param  {Highcharts.EventOptionsObject} [options]
+ *         Options for adding the event.
+ *
+ * @sample highcharts/members/addevent
+ *         Use a general `render` event to draw shapes on a chart
+ *
+ * @return {Function}
+ *         A callback function to remove the added event.
+ */
+function addEvent(el, type, fn, options = {}) {
+    // Add hcEvents to either the prototype (in case we're running addEvent on a
+    // class) or the instance. If hasOwnProperty('hcEvents') is false, it is
+    // inherited down the prototype chain, in which case we need to set the
+    // property on this instance (which may itself be a prototype).
+    const owner = typeof el === 'function' && el.prototype || el;
+    if (!Object.hasOwnProperty.call(owner, 'hcEvents')) {
+        owner.hcEvents = {};
+    }
+    const events = owner.hcEvents;
+    // Allow click events added to points, otherwise they will be prevented by
+    // the TouchPointer.pinch function after a pinch zoom operation (#7091).
+    if ((external_highcharts_src_js_default_default()).Point && // Without H a dependency loop occurs
+        el instanceof (external_highcharts_src_js_default_default()).Point &&
+        el.series &&
+        el.series.chart) {
+        el.series.chart.runTrackerClick = true;
+    }
+    // Handle DOM events
+    // If the browser supports passive events, add it to improve performance
+    // on touch events (#11353).
+    const addEventListener = el.addEventListener;
+    if (addEventListener) {
+        addEventListener.call(el, type, fn, (external_highcharts_src_js_default_default()).supportsPassiveEvents ? {
+            passive: options.passive === void 0 ?
+                type.indexOf('touch') !== -1 : options.passive,
+            capture: false
+        } : false);
+    }
+    if (!events[type]) {
+        events[type] = [];
+    }
+    const eventObject = {
+        fn,
+        order: typeof options.order === 'number' ? options.order : Infinity
+    };
+    events[type].push(eventObject);
+    // Order the calls
+    events[type].sort((a, b) => a.order - b.order);
+    // Return a function that can be called to remove this event.
+    return function () {
+        removeEvent(el, type, fn);
+    };
+}
+/**
+ * Non-recursive method to find the lowest member of an array. `Math.min` raises
+ * a maximum call stack size exceeded error in Chrome when trying to apply more
+ * than 150.000 points. This method is slightly slower, but safe.
+ *
+ * @function Highcharts.arrayMin
+ *
+ * @param {Array<*>} data
+ *        An array of numbers.
+ *
+ * @return {number}
+ *         The lowest number.
+ */
+function arrayMin(data) {
+    let i = data.length, min = data[0];
+    while (i--) {
+        if (data[i] < min) {
+            min = data[i];
+        }
+    }
+    return min;
+}
+/**
+ * Non-recursive method to find the lowest member of an array. `Math.max` raises
+ * a maximum call stack size exceeded error in Chrome when trying to apply more
+ * than 150.000 points. This method is slightly slower, but safe.
+ *
+ * @function Highcharts.arrayMax
+ *
+ * @param {Array<*>} data
+ *        An array of numbers.
+ *
+ * @return {number}
+ *         The highest number.
+ */
+function arrayMax(data) {
+    let i = data.length, max = data[0];
+    while (i--) {
+        if (data[i] > max) {
+            max = data[i];
+        }
+    }
+    return max;
+}
+/**
+ * Set or get an attribute or an object of attributes.
+ *
+ * To use as a setter, pass a key and a value, or let the second argument be a
+ * collection of keys and values. When using a collection, passing a value of
+ * `null` or `undefined` will remove the attribute.
+ *
+ * To use as a getter, pass only a string as the second argument.
+ *
+ * @function Highcharts.attr
+ *
+ * @param {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement} elem
+ *        The DOM element to receive the attribute(s).
+ *
+ * @param {string|Highcharts.HTMLAttributes|Highcharts.SVGAttributes} [keyOrAttribs]
+ *        The property or an object of key-value pairs.
+ *
+ * @param {number|string} [value]
+ *        The value if a single property is set.
+ *
+ * @return {string|null|undefined}
+ *         When used as a getter, return the value.
+ */
+function attr(elem, keyOrAttribs, value) {
+    const isGetter = isString(keyOrAttribs) && !defined(value);
+    let ret;
+    const attrSingle = (value, key) => {
+        // Set the value
+        if (defined(value)) {
+            elem.setAttribute(key, value);
+            // Get the value
+        }
+        else if (isGetter) {
+            ret = elem.getAttribute(key);
+            // IE7 and below cannot get class through getAttribute (#7850)
+            if (!ret && key === 'class') {
+                ret = elem.getAttribute(key + 'Name');
+            }
+            // Remove the value
+        }
+        else {
+            elem.removeAttribute(key);
+        }
+    };
+    // If keyOrAttribs is a string
+    if (isString(keyOrAttribs)) {
+        attrSingle(value, keyOrAttribs);
+        // Else if keyOrAttribs is defined, it is a hash of key/value pairs
+    }
+    else {
+        objectEach(keyOrAttribs, attrSingle);
+    }
+    return ret;
+}
+/**
+ * Constrain a value to within a lower and upper threshold.
+ *
+ * @internal
+ * @param {number} value The initial value
+ * @param {number} min The lower threshold
+ * @param {number} max The upper threshold
+ * @return {number} Returns a number value within min and max.
+ */
+function clamp(value, min, max) {
+    return value > min ? value < max ? value : max : min;
+}
+/**
+ * Fix JS round off float errors.
+ *
+ * @function Highcharts.correctFloat
+ *
+ * @param {number} num
+ *        A float number to fix.
+ *
+ * @param {number} [prec=14]
+ *        The precision.
+ *
+ * @return {number}
+ *         The corrected float number.
+ */
+function correctFloat(num, prec) {
+    // When the number is higher than 1e14 use the number (#16275)
+    return num > 1e14 ? num : parseFloat(num.toPrecision(prec || 14));
+}
+/**
+ * Utility function to create an HTML element with attributes and styles.
+ *
+ * @function Highcharts.createElement
+ *
+ * @param {string} tag
+ *        The HTML tag.
+ *
+ * @param {Highcharts.HTMLAttributes} [attribs]
+ *        Attributes as an object of key-value pairs.
+ *
+ * @param {Highcharts.CSSObject} [styles]
+ *        Styles as an object of key-value pairs.
+ *
+ * @param {Highcharts.HTMLDOMElement} [parent]
+ *        The parent HTML object.
+ *
+ * @param {boolean} [nopad=false]
+ *        If true, remove all padding, border and margin.
+ *
+ * @return {Highcharts.HTMLDOMElement}
+ *         The created DOM element.
+ */
+function createElement(tag, attribs, styles, parent, nopad) {
+    const el = doc.createElement(tag);
+    if (attribs) {
+        extend(el, attribs);
+    }
+    if (nopad) {
+        css(el, { padding: '0', border: 'none', margin: '0' });
+    }
+    if (styles) {
+        css(el, styles);
+    }
+    if (parent) {
+        parent.appendChild(el);
+    }
+    return el;
+}
+/**
+ * Utility for crisping a line position to the nearest full pixel depending on
+ * the line width.
+ *
+ * @internal
+ * @param {number} value       The raw pixel position
+ * @param {number} lineWidth   The line width
+ * @param {boolean} [inverted] Whether the containing group is inverted.
+ *                             Crisping round numbers on the y-scale need to go
+ *                             to the other side because the coordinate system
+ *                             is flipped (scaleY is -1)
+ * @return {number}            The pixel position to use for a crisp display
+ */
+function crisp(value, lineWidth = 0, inverted) {
+    const mod = lineWidth % 2 / 2, inverter = inverted ? -1 : 1;
+    return (Math.round(value * inverter - mod) + mod) * inverter;
+}
+/**
+ * Set CSS on a given element.
+ *
+ * @function Highcharts.css
+ *
+ * @param {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement} el
+ *        An HTML DOM element.
+ *
+ * @param {Highcharts.CSSObject} styles
+ *        Style object with camel case property names.
+ *
+ * @return {void}
+ */
+function css(el, styles) {
+    extend(el.style, styles);
+}
+/**
+ * Check if an object is null or undefined.
+ *
+ * @function Highcharts.defined
+ *
+ * @param {*} obj
+ *        The object to check.
+ *
+ * @return {boolean}
+ *         False if the object is null or undefined, otherwise true.
+ */
+function defined(obj) {
+    return typeof obj !== 'undefined' && obj !== null;
+}
+/**
+ * Utility method that destroys any SVGElement instances that are properties on
+ * the given object. It loops all properties and invokes destroy if there is a
+ * destroy method. The property is then delete.
+ *
+ * @function Highcharts.destroyObjectProperties
+ *
+ * @param {*} obj
+ *        The object to destroy properties on.
+ *
+ * @param {*} [except]
+ *        Exception, do not destroy this property, only delete it.
+ */
+function destroyObjectProperties(obj, except, destructablesOnly) {
+    objectEach(obj, function (val, n) {
+        // If the object is non-null and destroy is defined
+        if (val !== except && val?.destroy) {
+            // Invoke the destroy
+            val.destroy();
+        }
+        // Delete the property from the object
+        if (val?.destroy || !destructablesOnly) {
+            delete obj[n];
+        }
+    });
+}
+/**
+ * Discard a HTML element
+ *
+ * @function Highcharts.discardElement
+ *
+ * @param {Highcharts.HTMLDOMElement} element
+ *        The HTML node to discard.
+ */
+function discardElement(element) {
+    element?.parentElement?.removeChild(element);
+}
+// eslint-disable-next-line valid-jsdoc
+/**
+ * Return the deep difference between two objects. It can either return the new
+ * properties, or optionally return the old values of new properties.
+ * @internal
+ */
+function diffObjects(newer, older, keepOlder, collectionsWithUpdate) {
+    const ret = {};
+    /**
+     * Recurse over a set of options and its current values, and store the
+     * current values in the ret object.
+     */
+    function diff(newer, older, ret, depth) {
+        const keeper = keepOlder ? older : newer;
+        objectEach(newer, function (newerVal, key) {
+            if (!depth &&
+                collectionsWithUpdate &&
+                collectionsWithUpdate.indexOf(key) > -1 &&
+                older[key]) {
+                newerVal = splat(newerVal);
+                ret[key] = [];
+                // Iterate over collections like series, xAxis or yAxis and map
+                // the items by index.
+                for (let i = 0; i < Math.max(newerVal.length, older[key].length); i++) {
+                    // Item exists in current data (#6347)
+                    if (older[key][i]) {
+                        // If the item is missing from the new data, we need to
+                        // save the whole config structure. Like when
+                        // responsively updating from a dual axis layout to a
+                        // single axis and back (#13544).
+                        if (newerVal[i] === void 0) {
+                            ret[key][i] = older[key][i];
+                            // Otherwise, proceed
+                        }
+                        else {
+                            ret[key][i] = {};
+                            diff(newerVal[i], older[key][i], ret[key][i], depth + 1);
+                        }
+                    }
+                }
+            }
+            else if (isObject(newerVal, true) &&
+                !newerVal.nodeType // #10044
+            ) {
+                ret[key] = isArray(newerVal) ? [] : {};
+                diff(newerVal, older[key] || {}, ret[key], depth + 1);
+                // Delete empty nested objects
+                if (Object.keys(ret[key]).length === 0 &&
+                    // Except colorAxis which is a special case where the empty
+                    // object means it is enabled. Which is unfortunate and we
+                    // should try to find a better way.
+                    !(key === 'colorAxis' && depth === 0)) {
+                    delete ret[key];
+                }
+            }
+            else if (newer[key] !== older[key] ||
+                // If the newer key is explicitly undefined, keep it (#10525)
+                (key in newer && !(key in older))) {
+                if (key !== '__proto__' && key !== 'constructor') {
+                    ret[key] = keeper[key];
+                }
+            }
+        });
+    }
+    diff(newer, older, ret, 0);
+    return ret;
+}
+/**
+ * Remove the last occurrence of an item from an array.
+ *
+ * @function Highcharts.erase
+ *
+ * @param {Array<*>} arr
+ *        The array.
+ *
+ * @param {*} item
+ *        The item to remove.
+ *
+ * @return {void}
+ */
+function erase(arr, item) {
+    let i = arr.length;
+    while (i--) {
+        if (arr[i] === item) {
+            arr.splice(i, 1);
+            break;
+        }
+    }
+}
+/**
+ * Utility function to extend an object with the members of another.
+ *
+ * @function Highcharts.extend<T>
+ *
+ * @param {T|undefined} a
+ *        The object to be extended.
+ *
+ * @param {Partial<T>} b
+ *        The object to add to the first one.
+ *
+ * @return {T}
+ *         Object a, the original object.
+ */
+function extend(a, b) {
+    let n;
+    if (!a) {
+        a = {};
+    }
+    for (n in b) { // eslint-disable-line guard-for-in
+        a[n] = b[n];
+    }
+    return a;
+}
+// eslint-disable-next-line valid-jsdoc
+/**
+ * Extend a prototyped class by new members.
+ *
+ * @deprecated
+ * @function Highcharts.extendClass<T>
+ *
+ * @param {Highcharts.Class<T>} parent
+ *        The parent prototype to inherit.
+ *
+ * @param {Highcharts.Dictionary<*>} members
+ *        A collection of prototype members to add or override compared to the
+ *        parent prototype.
+ *
+ * @return {Highcharts.Class<T>}
+ *         A new prototype.
+ */
+function extendClass(parent, members) {
+    const obj = (function () { });
+    obj.prototype = new parent(); // eslint-disable-line new-cap
+    extend(obj.prototype, members);
+    return obj;
+}
+/**
+ * Fire an event that was registered with {@link Highcharts#addEvent}.
+ *
+ * @function Highcharts.fireEvent<T>
+ *
+ * @param {T} el
+ *        The object to fire the event on. It can be a {@link HTMLDOMElement},
+ *        an {@link SVGElement} or any other object.
+ *
+ * @param {string} type
+ *        The type of event.
+ *
+ * @param {Highcharts.Dictionary<*>|Event} [eventArguments]
+ *        Custom event arguments that are passed on as an argument to the event
+ *        handler.
+ *
+ * @param {Highcharts.EventCallbackFunction<T>|Function} [defaultFunction]
+ *        The default function to execute if the other listeners haven't
+ *        returned false.
+ *
+ * @return {void}
+ */
+function fireEvent(el, type, eventArguments, defaultFunction) {
+    eventArguments = eventArguments || {};
+    if (doc?.createEvent &&
+        (el.dispatchEvent ||
+            (el.fireEvent &&
+                // Enable firing events on Highcharts instance.
+                el !== (external_highcharts_src_js_default_default())))) {
+        const e = doc.createEvent('Events');
+        e.initEvent(type, true, true);
+        eventArguments = extend(e, eventArguments);
+        if (el.dispatchEvent) {
+            el.dispatchEvent(eventArguments);
+        }
+        else {
+            el.fireEvent(type, eventArguments);
+        }
+    }
+    else if (el.hcEvents) {
+        if (!eventArguments.target) {
+            // We're running a custom event
+            extend(eventArguments, {
+                // Attach a simple preventDefault function to skip
+                // default handler if called. The built-in
+                // defaultPrevented property is not overwritable (#5112)
+                preventDefault: function () {
+                    eventArguments.defaultPrevented = true;
+                },
+                // Setting target to native events fails with clicking
+                // the zoom-out button in Chrome.
+                target: el,
+                // If the type is not set, we're running a custom event
+                // (#2297). If it is set, we're running a browser event.
+                type: type
+            });
+        }
+        const events = [];
+        let object = el;
+        let multilevel = false;
+        // Recurse up the inheritance chain and collect hcEvents set as own
+        // objects on the prototypes.
+        while (object.hcEvents) {
+            if (Object.hasOwnProperty.call(object, 'hcEvents') &&
+                object.hcEvents[type]) {
+                if (events.length) {
+                    multilevel = true;
+                }
+                events.unshift.apply(events, object.hcEvents[type]);
+            }
+            object = Object.getPrototypeOf(object);
+        }
+        // For performance reasons, only sort the event handlers in case we are
+        // dealing with multiple levels in the prototype chain. Otherwise, the
+        // events are already sorted in the addEvent function.
+        if (multilevel) {
+            // Order the calls
+            events.sort((a, b) => a.order - b.order);
+        }
+        // Call the collected event handlers
+        events.forEach((obj) => {
+            // If the event handler returns false, prevent the default handler
+            // from executing
+            if (obj.fn.call(el, eventArguments, el) === false) {
+                eventArguments.preventDefault();
+            }
+        });
+    }
+    // Run the default if not prevented
+    if (defaultFunction && !eventArguments.defaultPrevented) {
+        defaultFunction.call(el, eventArguments);
+    }
+}
+/**
+ * Convenience function to get the align factor, used several places for
+ * computing positions
+ * @internal
+ */
+const getAlignFactor = (align = '') => ({
+    center: 0.5,
+    right: 1,
+    middle: 0.5,
+    bottom: 1
+}[align] || 0);
+/**
+ * Find the closest distance between two values of a two-dimensional array
+ * @internal
+ * @function Highcharts.getClosestDistance
+ *
+ * @param {Array<Array<number>>} arrays
+ *          An array of arrays of numbers
+ *
+ * @return {number | undefined}
+ *          The closest distance between values
+ */
+function getClosestDistance(arrays, onError) {
+    const allowNegative = !onError;
+    let closest, loopLength, distance, i;
+    arrays.forEach((xData) => {
+        if (xData.length > 1) {
+            loopLength = xData.length - 1;
+            for (i = loopLength; i > 0; i--) {
+                distance = xData[i] - xData[i - 1];
+                if (distance < 0 && !allowNegative) {
+                    onError?.();
+                    // Only one call
+                    onError = void 0;
+                }
+                else if (distance && (typeof closest === 'undefined' || distance < closest)) {
+                    closest = distance;
+                }
+            }
+        }
+    });
+    return closest;
+}
+/**
+ * Get the magnitude of a number.
+ *
+ * @function Highcharts.getMagnitude
+ *
+ * @param {number} num
+ *        The number.
+ *
+ * @return {number}
+ *         The magnitude, where 1-9 are magnitude 1, 10-99 magnitude 2 etc.
+ */
+function getMagnitude(num) {
+    return Math.pow(10, Math.floor(Math.log(num) / Math.LN10));
+}
+/**
+ * Returns the value of a property path on a given object.
+ *
+ * @internal
+ * @function getNestedProperty
+ *
+ * @param {string} path
+ * Path to the property, for example `custom.myValue`.
+ *
+ * @param {unknown} parent
+ * Instance containing the property on the specific path.
+ *
+ * @return {unknown}
+ * The unknown property value.
+ */
+function getNestedProperty(path, parent) {
+    const pathElements = path.split('.');
+    while (pathElements.length && defined(parent)) {
+        const pathElement = pathElements.shift();
+        // Filter on the key
+        if (typeof pathElement === 'undefined' ||
+            pathElement === '__proto__') {
+            return; // Undefined
+        }
+        if (pathElement === 'this') {
+            let thisProp;
+            if (isObject(parent)) {
+                thisProp = parent['@this'];
+            }
+            return thisProp ?? parent;
+        }
+        const child = parent[pathElement.replace(/[\\'"]/g, '')];
+        // Filter on the child
+        if (!defined(child) ||
+            typeof child === 'function' ||
+            typeof child.nodeType === 'number' ||
+            child === win) {
+            return; // Undefined
+        }
+        // Else, proceed
+        parent = child;
+    }
+    return parent;
+}
+/**
+ * Get the computed CSS value for given element and property, only for numerical
+ * properties. For width and height, the dimension of the inner box (excluding
+ * padding) is returned. Used for fitting the chart within the container.
+ *
+ * @function Highcharts.getStyle
+ *
+ * @param {Highcharts.HTMLDOMElement} el
+ * An HTML element.
+ *
+ * @param {string} prop
+ * The property name.
+ *
+ * @param {boolean} [toInt=true]
+ * Parse to integer.
+ *
+ * @return {number|string|undefined}
+ * The style value.
+ */
+function getStyle(el, prop, toInt) {
+    let style;
+    // For width and height, return the actual inner pixel size (#4913)
+    if (prop === 'width') {
+        let offsetWidth = Math.min(el.offsetWidth, el.scrollWidth);
+        // In flex boxes, we need to use getBoundingClientRect and floor it,
+        // because scrollWidth doesn't support subpixel precision (#6427) ...
+        const boundingClientRectWidth = el.getBoundingClientRect?.().width;
+        // ...unless if the containing div or its parents are transform-scaled
+        // down, in which case the boundingClientRect can't be used as it is
+        // also scaled down (#9871, #10498).
+        if (boundingClientRectWidth < offsetWidth &&
+            boundingClientRectWidth >= offsetWidth - 1) {
+            offsetWidth = Math.floor(boundingClientRectWidth);
+        }
+        return Math.max(0, // #8377
+        (offsetWidth -
+            (getStyle(el, 'padding-left', true) || 0) -
+            (getStyle(el, 'padding-right', true) || 0)));
+    }
+    if (prop === 'height') {
+        return Math.max(0, // #8377
+        (Math.min(el.offsetHeight, el.scrollHeight) -
+            (getStyle(el, 'padding-top', true) || 0) -
+            (getStyle(el, 'padding-bottom', true) || 0)));
+    }
+    // Otherwise, get the computed style
+    const css = win.getComputedStyle(el, void 0); // eslint-disable-line no-undefined
+    if (css) {
+        style = css.getPropertyValue(prop);
+        if (pick(toInt, prop !== 'opacity')) {
+            style = pInt(style);
+        }
+    }
+    return style;
+}
+/**
+ * Return the value of the first element in the array that satisfies the
+ * provided testing function.
+ *
+ * @function Highcharts.find<T>
+ *
+ * @param {Array<T>} arr
+ *        The array to test.
+ *
+ * @param {Function} callback
+ *        The callback function. The function receives the item as the first
+ *        argument. Return `true` if this item satisfies the condition.
+ *
+ * @return {T|undefined}
+ *         The value of the element.
+ */
+const find = Array.prototype.find ?
+    function (arr, callback) {
+        return arr.find(callback);
+    } :
+    // Legacy implementation. PhantomJS, IE <= 11 etc. #7223.
+    function (arr, callback) {
+        let i;
+        const length = arr.length;
+        for (i = 0; i < length; i++) {
+            if (callback(arr[i], i)) { // eslint-disable-line node/callback-return
+                return arr[i];
+            }
+        }
+    };
+/**
+ * Internal clear timeout. The function checks that the `id` was not removed
+ * (e.g. by `chart.destroy()`). For the details see
+ * [issue #7901](https://github.com/highcharts/highcharts/issues/7901).
+ *
+ * @internal
+ *
+ * @function Highcharts.clearTimeout
+ *
+ * @param {number|undefined} id
+ * Id of a timeout.
+ */
+function internalClearTimeout(id) {
+    if (defined(id)) {
+        clearTimeout(id);
+    }
+}
+/**
+ * Utility function to check if an Object is a HTML Element.
+ *
+ * @function Highcharts.isDOMElement
+ *
+ * @param {*} obj
+ *        The item to check.
+ *
+ * @return {boolean}
+ *         True if the argument is a HTML Element.
+ */
+function isDOMElement(obj) {
+    return isObject(obj) && typeof obj.nodeType === 'number';
+}
+/**
+ * Utility function to check if an Object is a class.
+ *
+ * @function Highcharts.isClass
+ *
+ * @param {object|undefined} obj
+ *        The item to check.
+ *
+ * @return {boolean}
+ *         True if the argument is a class.
+ */
+function isClass(obj) {
+    const c = obj?.constructor;
+    return !!(isObject(obj, true) &&
+        !isDOMElement(obj) &&
+        (c?.name && c.name !== 'Object'));
+}
+/**
+ * Utility function to check if an item is a number and it is finite (not NaN,
+ * Infinity or -Infinity).
+ *
+ * @function Highcharts.isNumber
+ *
+ * @param {*} n
+ *        The item to check.
+ *
+ * @return {boolean}
+ *         True if the item is a finite number
+ */
+function isNumber(n) {
+    return typeof n === 'number' && !isNaN(n) && n < Infinity && n > -Infinity;
+}
+/**
+ * Utility function to check for string type.
+ *
+ * @function Highcharts.isString
+ *
+ * @param {*} s
+ *        The item to check.
+ *
+ * @return {boolean}
+ *         True if the argument is a string.
+ */
+function isString(s) {
+    return typeof s === 'string';
+}
+/**
+ * Utility function to check if an item is an array.
+ *
+ * @function Highcharts.isArray
+ *
+ * @param {*} obj
+ *        The item to check.
+ *
+ * @return {boolean}
+ *         True if the argument is an array.
+ */
+function isArray(obj) {
+    const str = Object.prototype.toString.call(obj);
+    return str === '[object Array]' || str === '[object Array Iterator]';
+}
+/**
+ * Utility function to check if object is a function.
+ *
+ * @function Highcharts.isFunction
+ *
+ * @param {*} obj
+ *        The item to check.
+ *
+ * @return {boolean}
+ *         True if the argument is a function.
+ */
+function isFunction(obj) {
+    return typeof obj === 'function';
+}
+/**
+ * Utility function to check if an item is of type object.
+ *
+ * @function Highcharts.isObject
+ *
+ * @param {*} obj
+ *        The item to check.
+ *
+ * @param {boolean} [strict=false]
+ *        Also checks that the object is not an array.
+ *
+ * @return {boolean}
+ *         True if the argument is an object.
+ */
+function isObject(obj, strict) {
+    return (!!obj &&
+        typeof obj === 'object' &&
+        (!strict || !isArray(obj))); // eslint-disable-line @typescript-eslint/no-explicit-any
+}
+/**
+ * Utility function to deep merge two or more objects and return a third object.
+ * If the first argument is true, the contents of the second object is copied
+ * into the first object. The merge function can also be used with a single
+ * object argument to create a deep copy of an object.
+ *
+ * @function Highcharts.merge<T>
+ *
+ * @param {true | T} extendOrSource
+ *        Whether to extend the left-side object,
+ *        or the first object to merge as a deep copy.
+ *
+ * @param {...Array<object|undefined>} [sources]
+ *        Object(s) to merge into the previous one.
+ *
+ * @return {T}
+ *         The merged object. If the first argument is true, the return is the
+ *         same as the second argument.
+ */
+function merge(extendOrSource, ...sources) {
+    let i, args = [extendOrSource, ...sources], ret = {};
+    const doCopy = function (copy, original) {
+        // An object is replacing a primitive
+        if (typeof copy !== 'object') {
+            copy = {};
+        }
+        objectEach(original, function (value, key) {
+            // Prototype pollution (#14883)
+            if (key === '__proto__' || key === 'constructor') {
+                return;
+            }
+            // Copy the contents of objects, but not arrays or DOM nodes
+            if (isObject(value, true) &&
+                !isClass(value) &&
+                !isDOMElement(value)) {
+                copy[key] = doCopy(copy[key] || {}, value);
+                // Primitives and arrays are copied over directly
+            }
+            else {
+                copy[key] = original[key];
+            }
+        });
+        return copy;
+    };
+    // If first argument is true, copy into the existing object. Used in
+    // setOptions.
+    if (extendOrSource === true) {
+        ret = args[1];
+        args = Array.prototype.slice.call(args, 2);
+    }
+    // For each argument, extend the return
+    const len = args.length;
+    for (i = 0; i < len; i++) {
+        ret = doCopy(ret, args[i]);
+    }
+    return ret;
+}
+/**
+ * Take an interval and normalize it to multiples of round numbers.
+ *
+ * @deprecated
+ * @function Highcharts.normalizeTickInterval
+ *
+ * @param {number} interval
+ *        The raw, un-rounded interval.
+ *
+ * @param {Array<*>} [multiples]
+ *        Allowed multiples.
+ *
+ * @param {number} [magnitude]
+ *        The magnitude of the number.
+ *
+ * @param {boolean} [allowDecimals]
+ *        Whether to allow decimals.
+ *
+ * @param {boolean} [hasTickAmount]
+ *        If it has tickAmount, avoid landing on tick intervals lower than
+ *        original.
+ *
+ * @return {number}
+ *         The normalized interval.
+ *
+ * @todo
+ * Move this function to the Axis prototype. It is here only for historical
+ * reasons.
+ */
+function normalizeTickInterval(interval, multiples, magnitude, allowDecimals, hasTickAmount) {
+    let i, retInterval = interval;
+    // Round to a tenfold of 1, 2, 2.5 or 5
+    magnitude = pick(magnitude, getMagnitude(interval));
+    const normalized = interval / magnitude;
+    // Multiples for a linear scale
+    if (!multiples) {
+        multiples = hasTickAmount ?
+            // Finer grained ticks when the tick amount is hard set, including
+            // when alignTicks is true on multiple axes (#4580).
+            [1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10] :
+            // Else, let ticks fall on rounder numbers
+            [1, 2, 2.5, 5, 10];
+        // The allowDecimals option
+        if (allowDecimals === false) {
+            if (magnitude === 1) {
+                multiples = multiples.filter(function (num) {
+                    return num % 1 === 0;
+                });
+            }
+            else if (magnitude <= 0.1) {
+                multiples = [1 / magnitude];
+            }
+        }
+    }
+    // Normalize the interval to the nearest multiple
+    for (i = 0; i < multiples.length; i++) {
+        retInterval = multiples[i];
+        // Only allow tick amounts smaller than natural
+        if ((hasTickAmount &&
+            retInterval * magnitude >= interval) ||
+            (!hasTickAmount &&
+                (normalized <=
+                    (multiples[i] +
+                        (multiples[i + 1] || multiples[i])) / 2))) {
+            break;
+        }
+    }
+    // Multiply back to the correct magnitude. Correct floats to appropriate
+    // precision (#6085).
+    retInterval = correctFloat(retInterval * magnitude, -Math.round(Math.log(0.001) / Math.LN10));
+    return retInterval;
+}
+/**
+ * Iterate over object key pairs in an object.
+ *
+ * @function Highcharts.objectEach<T>
+ *
+ * @param {*} obj
+ *        The object to iterate over.
+ *
+ * @param {Highcharts.ObjectEachCallbackFunction<T>} fn
+ *        The iterator callback. It passes three arguments:
+ *        * value - The property value.
+ *        * key - The property key.
+ *        * obj - The object that objectEach is being applied to.
+ *
+ * @param {T} [ctx]
+ *        The context.
+ */
+function objectEach(obj, fn, ctx) {
+    for (const key in obj) {
+        if (Object.hasOwnProperty.call(obj, key)) {
+            fn.call(ctx || obj[key], obj[key], key, obj);
+        }
+    }
+}
+/**
+ * Get the element's offset position, corrected for `overflow: auto`.
+ *
+ * @function Highcharts.offset
+ *
+ * @param {global.Element} el
+ *        The DOM element.
+ *
+ * @return {Highcharts.OffsetObject}
+ *         An object containing `left` and `top` properties for the position in
+ *         the page.
+ */
+function offset(el) {
+    const docElem = doc.documentElement, box = (el.parentElement || el.parentNode) ?
+        el.getBoundingClientRect() :
+        { top: 0, left: 0, width: 0, height: 0 };
+    return {
+        top: box.top + (win.pageYOffset || docElem.scrollTop) -
+            (docElem.clientTop || 0),
+        left: box.left + (win.pageXOffset || docElem.scrollLeft) -
+            (docElem.clientLeft || 0),
+        width: box.width,
+        height: box.height
+    };
+}
+/**
+ * Left-pad a string to a given length by adding a character repetitively.
+ *
+ * @function Highcharts.pad
+ *
+ * @param {number} number
+ *        The input string or number.
+ *
+ * @param {number} [length]
+ *        The desired string length.
+ *
+ * @param {string} [padder=0]
+ *        The character to pad with.
+ *
+ * @return {string}
+ *         The padded string.
+ */
+function pad(number, length, padder) {
+    return new Array((length || 2) +
+        1 -
+        String(number)
+            .replace('-', '')
+            .length).join(padder || '0') + number;
+}
+/* eslint-disable jsdoc/check-param-names */
+/**
+ * Return the first value that is not null or undefined.
+ *
+ * @function Highcharts.pick<T>
+ *
+ * @param {...Array<T|null|undefined>} items
+ *        Variable number of arguments to inspect.
+ *
+ * @return {T}
+ *         The value of the first argument that is not null or undefined.
+ */
+function pick() {
+    const args = arguments;
+    const length = args.length;
+    for (let i = 0; i < length; i++) {
+        const arg = args[i];
+        if (typeof arg !== 'undefined' && arg !== null) {
+            return arg;
+        }
+    }
+}
+/* eslint-enable jsdoc/check-param-names */
+/**
+ * Shortcut for parseInt
+ *
+ * @internal
+ * @function Highcharts.pInt
+ *
+ * @param {*} s
+ *        any
+ *
+ * @param {number} [mag]
+ *        Magnitude
+ *
+ * @return {number}
+ *         number
+ */
+function pInt(s, mag) {
+    return parseInt(s, mag || 10);
+}
+/**
+ * Adds an item to an array, if it is not present in the array.
+ *
+ * @internal
+ *
+ * @function Highcharts.pushUnique
+ *
+ * @param {Array<unknown>} array
+ * The array to add the item to.
+ *
+ * @param {unknown} item
+ * The item to add.
+ *
+ * @return {boolean}
+ * Returns true, if the item was not present and has been added.
+ */
+function pushUnique(array, item) {
+    return array.indexOf(item) < 0 && !!array.push(item);
+}
+/**
+ * Return a length based on either the integer value, or a percentage of a base.
+ *
+ * @function Highcharts.relativeLength
+ *
+ * @param {Highcharts.RelativeSize} value
+ *        A percentage string or a number.
+ *
+ * @param {number} base
+ *        The full length that represents 100%.
+ *
+ * @param {number} [offset=0]
+ *        A pixel offset to apply for percentage values. Used internally in
+ *        axis positioning.
+ *
+ * @return {number}
+ *         The computed length.
+ */
+function relativeLength(value, base, offset) {
+    return (/%$/).test(value) ?
+        (base * parseFloat(value) / 100) + (offset || 0) :
+        parseFloat(value);
+}
+/**
+ * Replaces text in a string with a given replacement in a loop to catch nested
+ * matches after previous replacements.
+ *
+ * @internal
+ *
+ * @function Highcharts.replaceNested
+ *
+ * @param {string} text
+ * Text to search and modify.
+ *
+ * @param {...Array<(RegExp|string)>} replacements
+ * One or multiple tuples with search pattern (`[0]: (string|RegExp)`) and
+ * replacement (`[1]: string`) for matching text.
+ *
+ * @return {string}
+ * Text with replacements.
+ */
+function replaceNested(text, ...replacements) {
+    let previous, replacement;
+    do {
+        previous = text;
+        for (replacement of replacements) {
+            text = text.replace(replacement[0], replacement[1]);
+        }
+    } while (text !== previous);
+    return text;
+}
+/**
+ * Remove an event that was added with {@link Highcharts#addEvent}.
+ *
+ * @function Highcharts.removeEvent<T>
+ *
+ * @param {Highcharts.Class<T>|T} el
+ *        The element to remove events on.
+ *
+ * @param {string} [type]
+ *        The type of events to remove. If undefined, all events are removed
+ *        from the element.
+ *
+ * @param {Highcharts.EventCallbackFunction<T>} [fn]
+ *        The specific callback to remove. If undefined, all events that match
+ *        the element and optionally the type are removed.
+ *
+ * @return {void}
+ */
+function removeEvent(el, type, fn) {
+    /** @internal */
+    function removeOneEvent(type, fn) {
+        const removeEventListener = el.removeEventListener;
+        if (removeEventListener) {
+            removeEventListener.call(el, type, fn, false);
+        }
+    }
+    /** @internal */
+    function removeAllEvents(eventCollection) {
+        let types, len;
+        if (!el.nodeName) {
+            return; // Break on non-DOM events
+        }
+        if (type) {
+            types = {};
+            types[type] = true;
+        }
+        else {
+            types = eventCollection;
+        }
+        objectEach(types, function (_val, n) {
+            if (eventCollection[n]) {
+                len = eventCollection[n].length;
+                while (len--) {
+                    removeOneEvent(n, eventCollection[n][len].fn);
+                }
+            }
+        });
+    }
+    const owner = typeof el === 'function' && el.prototype || el;
+    if (Object.hasOwnProperty.call(owner, 'hcEvents')) {
+        const events = owner.hcEvents;
+        if (type) {
+            const typeEvents = (events[type] || []);
+            if (fn) {
+                events[type] = typeEvents.filter(function (obj) {
+                    return fn !== obj.fn;
+                });
+                removeOneEvent(type, fn);
+            }
+            else {
+                removeAllEvents(events);
+                events[type] = [];
+            }
+        }
+        else {
+            removeAllEvents(events);
+            delete owner.hcEvents;
+        }
+    }
+}
+/**
+ * Check if an element is an array, and if not, make it into an array.
+ *
+ * @function Highcharts.splat
+ *
+ * @param {*} obj
+ *        The object to splat.
+ *
+ * @return {Array}
+ *         The produced or original array.
+ */
+function splat(obj) {
+    return isArray(obj) ? obj : [obj];
+}
+/**
+ * Sort an object array and keep the order of equal items. The ECMAScript
+ * standard does not specify the behavior when items are equal.
+ *
+ * @function Highcharts.stableSort
+ *
+ * @param {Array<*>} arr
+ *        The array to sort.
+ *
+ * @param {Function} sortFunction
+ *        The function to sort it with, like with regular Array.prototype.sort.
+ */
+function stableSort(arr, sortFunction) {
+    // @todo It seems like Chrome since v70 sorts in a stable way internally,
+    // plus all other browsers do it, so over time we may be able to remove this
+    // function
+    const length = arr.length;
+    let sortValue, i;
+    // Add index to each item
+    for (i = 0; i < length; i++) {
+        arr[i].safeI = i; // Stable sort index
+    }
+    arr.sort(function (a, b) {
+        sortValue = sortFunction(a, b);
+        return sortValue === 0 ? a.safeI - b.safeI : sortValue;
+    });
+    // Remove index from items
+    for (i = 0; i < length; i++) {
+        delete arr[i].safeI; // Stable sort index
+    }
+}
+/**
+ * Set a timeout if the delay is given, otherwise perform the function
+ * synchronously.
+ *
+ * @function Highcharts.syncTimeout
+ *
+ * @param {Function} fn
+ *        The function callback.
+ *
+ * @param {number} delay
+ *        Delay in milliseconds.
+ *
+ * @param {*} [context]
+ *        An optional context to send to the function callback.
+ *
+ * @return {number}
+ *         An identifier for the timeout that can later be cleared with
+ *         Highcharts.clearTimeout. Returns -1 if there is no timeout.
+ */
+function syncTimeout(fn, delay, context) {
+    if (delay > 0) {
+        return setTimeout(fn, delay, context);
+    }
+    fn.call(0, context);
+    return -1;
+}
+/**
+ * @internal
+ */
+function ucfirst(s) {
+    return ((isString(s) ?
+        s.substring(0, 1).toUpperCase() + s.substring(1) :
+        String(s)));
+}
+/**
+ * Wrap a method with extended functionality, preserving the original function.
+ *
+ * @function Highcharts.wrap
+ *
+ * @param {*} obj
+ *        The context object that the method belongs to. In real cases, this is
+ *        often a prototype.
+ *
+ * @param {string} method
+ *        The name of the method to extend.
+ *
+ * @param {Highcharts.WrapProceedFunction} func
+ *        A wrapper function callback. This function is called with the same
+ *        arguments as the original function, except that the original function
+ *        is unshifted and passed as the first argument.
+ */
+function wrap(obj, method, func) {
+    const proceed = obj[method];
+    obj[method] = function () {
+        const outerArgs = arguments, scope = this;
+        return func.apply(this, [
+            function () {
+                return proceed.apply(scope, arguments.length ? arguments : outerArgs);
+            }
+        ].concat([].slice.call(arguments)));
+    };
+}
+
 ;// ./code/es-modules/Extensions/Breadcrumbs/Breadcrumbs.js
 /* *
  *
  *  Highcharts Breadcrumbs module
  *
- *  Authors: Grzegorz Blachlinski, Karol Kolodziej
+ *  Authors: Grzegorz Blachliński, Karol Kołodziej
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -344,7 +1705,6 @@ const { format } = (external_highcharts_src_js_default_Templating_default());
 
 const { composed } = (external_highcharts_src_js_default_default());
 
-const { addEvent, defined, extend, fireEvent, isString, merge, objectEach, pick, pushUnique } = (external_highcharts_src_js_default_default());
 /* *
  *
  *  Functions
@@ -473,8 +1833,6 @@ class Breadcrumbs {
      * Update Breadcrumbs properties, like level and list.
      *
      * @function Highcharts.Breadcrumbs#updateProperties
-     * @param {Highcharts.Breadcrumbs} this
-     *        Breadcrumbs class.
      */
     updateProperties(list) {
         this.setList(list);
@@ -491,8 +1849,6 @@ class Breadcrumbs {
      * Calculate level on which chart currently is.
      *
      * @function Highcharts.Breadcrumbs#setLevel
-     * @param {Highcharts.Breadcrumbs} this
-     *        Breadcrumbs class.
      */
     setLevel() {
         this.level = this.list.length && this.list.length - 1;
@@ -501,8 +1857,6 @@ class Breadcrumbs {
      * Get Breadcrumbs level
      *
      * @function Highcharts.Breadcrumbs#getLevel
-     * @param {Highcharts.Breadcrumbs} this
-     *        Breadcrumbs class.
      */
     getLevel() {
         return this.level;
@@ -511,9 +1865,7 @@ class Breadcrumbs {
      * Default button text formatter.
      *
      * @function Highcharts.Breadcrumbs#getButtonText
-     * @param {Highcharts.Breadcrumbs} this
-     *        Breadcrumbs class.
-     * @param {Highcharts.Breadcrumbs} breadcrumb
+     * @param {Highcharts.BreadcrumbsOptions} breadcrumb
      *        Breadcrumb.
      * @return {string}
      *         Formatted text.
@@ -538,8 +1890,6 @@ class Breadcrumbs {
      * Redraw.
      *
      * @function Highcharts.Breadcrumbs#redraw
-     * @param {Highcharts.Breadcrumbs} this
-     *        Breadcrumbs class.
      */
     redraw() {
         if (this.isDirty) {
@@ -554,8 +1904,6 @@ class Breadcrumbs {
      * Create a group, then draw breadcrumbs together with the separators.
      *
      * @function Highcharts.Breadcrumbs#render
-     * @param {Highcharts.Breadcrumbs} this
-     *        Breadcrumbs class.
      */
     render() {
         const breadcrumbs = this, chart = breadcrumbs.chart, breadcrumbsOptions = breadcrumbs.options;
@@ -582,8 +1930,6 @@ class Breadcrumbs {
      * Draw breadcrumbs together with the separators.
      *
      * @function Highcharts.Breadcrumbs#renderFullPathButtons
-     * @param {Highcharts.Breadcrumbs} this
-     *        Breadcrumbs class.
      */
     renderFullPathButtons() {
         // Make sure that only one type of button is visible.
@@ -597,7 +1943,6 @@ class Breadcrumbs {
      * similar to the old drillUpButton
      *
      * @function Highcharts.Breadcrumbs#renderSingleButton
-     * @param {Highcharts.Breadcrumbs} this Breadcrumbs class.
      */
     renderSingleButton() {
         const breadcrumbs = this, chart = breadcrumbs.chart, list = breadcrumbs.list, breadcrumbsOptions = breadcrumbs.options, buttonSpacing = breadcrumbsOptions.buttonSpacing;
@@ -625,9 +1970,9 @@ class Breadcrumbs {
     /**
      * Update group position based on align and it's width.
      *
-     * @function Highcharts.Breadcrumbs#renderSingleButton
-     * @param {Highcharts.Breadcrumbs} this
-     *        Breadcrumbs class.
+     * @function Highcharts.Breadcrumbs#alignBreadcrumbsGroup
+     * @param {number} [xOffset]
+     *        Optional horizontal offset.
      */
     alignBreadcrumbsGroup(xOffset) {
         const breadcrumbs = this;
@@ -656,13 +2001,11 @@ class Breadcrumbs {
      * Render a button.
      *
      * @function Highcharts.Breadcrumbs#renderButton
-     * @param {Highcharts.Breadcrumbs} this
-     *        Breadcrumbs class.
      * @param {Highcharts.Breadcrumbs} breadcrumb
      *        Current breadcrumb
-     * @param {Highcharts.Breadcrumbs} posX
+     * @param {number} posX
      *        Initial horizontal position
-     * @param {Highcharts.Breadcrumbs} posY
+     * @param {number} posY
      *        Initial vertical position
      * @return {SVGElement|void}
      *        Returns the SVG button
@@ -676,9 +2019,13 @@ class Breadcrumbs {
                 breadcrumbsOptions.events.click;
             let callDefaultEvent;
             if (buttonEvents) {
-                callDefaultEvent = buttonEvents.call(breadcrumbs, e, breadcrumb);
+                callDefaultEvent = buttonEvents.call(breadcrumbs, e, breadcrumb, 
+                // Keep `ctx` for callback parity with arrow functions.
+                // Not documented in public API because Breadcrumbs
+                // is an internal class.
+                breadcrumbs);
             }
-            // (difference in behaviour of showFullPath and drillUp)
+            // (difference in behavior of showFullPath and drillUp)
             if (callDefaultEvent !== false) {
                 // For single button we are not going to the button
                 // level, but the one level up
@@ -702,11 +2049,9 @@ class Breadcrumbs {
      * Render a separator.
      *
      * @function Highcharts.Breadcrumbs#renderSeparator
-     * @param {Highcharts.Breadcrumbs} this
-     *        Breadcrumbs class.
-     * @param {Highcharts.Breadcrumbs} posX
+     * @param {number} posX
      *        Initial horizontal position
-     * @param {Highcharts.Breadcrumbs} posY
+     * @param {number} posY
      *        Initial vertical position
      * @return {Highcharts.SVGElement}
      *        Returns the SVG button
@@ -730,9 +2075,6 @@ class Breadcrumbs {
     /**
      * Update button text when the showFullPath set to false.
      * @function Highcharts.Breadcrumbs#updateSingleButton
-     *
-     * @param {Highcharts.Breadcrumbs} this
-     *        Breadcrumbs class.
      */
     updateSingleButton() {
         const chart = this.chart, currentBreadcrumb = this.list[this.level - 1];
@@ -746,8 +2088,6 @@ class Breadcrumbs {
      * Destroy the chosen breadcrumbs group
      *
      * @function Highcharts.Breadcrumbs#destroy
-     * @param {Highcharts.Breadcrumbs} this
-     *        Breadcrumbs class.
      */
     destroy() {
         this.destroySingleButton();
@@ -764,8 +2104,6 @@ class Breadcrumbs {
      * Destroy the elements' buttons and separators.
      *
      * @function Highcharts.Breadcrumbs#destroyListElements
-     * @param {Highcharts.Breadcrumbs} this
-     *        Breadcrumbs class.
      */
     destroyListElements(force) {
         const elementList = this.elementList;
@@ -788,8 +2126,6 @@ class Breadcrumbs {
      * Destroy the single button if exists.
      *
      * @function Highcharts.Breadcrumbs#destroySingleButton
-     * @param {Highcharts.Breadcrumbs} this
-     *        Breadcrumbs class.
      */
     destroySingleButton() {
         if (this.chart.drillUpButton) {
@@ -801,8 +2137,6 @@ class Breadcrumbs {
      * Reset state for all buttons in elementList.
      *
      * @function Highcharts.Breadcrumbs#resetElementListState
-     * @param {Highcharts.Breadcrumbs} this
-     *        Breadcrumbs class.
      */
     resetElementListState() {
         objectEach(this.elementList, (element) => {
@@ -813,9 +2147,6 @@ class Breadcrumbs {
      * Update rendered elements inside the elementList.
      *
      * @function Highcharts.Breadcrumbs#updateListElements
-     *
-     * @param {Highcharts.Breadcrumbs} this
-     *        Breadcrumbs class.
      */
     updateListElements() {
         const breadcrumbs = this, elementList = breadcrumbs.elementList, buttonSpacing = breadcrumbs.options.buttonSpacing, posY = buttonSpacing, list = breadcrumbs.list, rtl = breadcrumbs.options.rtl, rtlFactor = rtl ? -1 : 1, updateXPosition = function (element, spacing) {
@@ -907,11 +2238,8 @@ Breadcrumbs.defaultOptions = Breadcrumbs_BreadcrumbsDefaults.options;
  * @param {Highcharts.Event} event
  * Event.
  *
- * @param {Highcharts.BreadcrumbOptions} options
+ * @param {Highcharts.BreadcrumbOptions} breadcrumb
  * Breadcrumb options.
- *
- * @param {global.Event} e
- * Event arguments.
  */
 /**
  * Callback function to format the breadcrumb text from scratch.
@@ -981,7 +2309,7 @@ var external_highcharts_src_js_default_SVGElement_default = /*#__PURE__*/__webpa
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -993,7 +2321,6 @@ var external_highcharts_src_js_default_SVGElement_default = /*#__PURE__*/__webpa
 const { column: { prototype: columnProto } } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
 
 
-const { addEvent: ColorMapComposition_addEvent, defined: ColorMapComposition_defined } = (external_highcharts_src_js_default_default());
 /* *
  *
  *  Composition
@@ -1030,7 +2357,7 @@ var ColorMapComposition;
      */
     function compose(SeriesClass) {
         const PointClass = SeriesClass.prototype.pointClass;
-        ColorMapComposition_addEvent(PointClass, 'afterSetState', onPointAfterSetState);
+        addEvent(PointClass, 'afterSetState', onPointAfterSetState);
         return SeriesClass;
     }
     ColorMapComposition.compose = compose;
@@ -1091,7 +2418,7 @@ var ColorMapComposition;
      */
     function seriesColorAttribs(point) {
         const ret = {};
-        if (ColorMapComposition_defined(point.color) &&
+        if (defined(point.color) &&
             (!point.state || point.state === 'normal') // #15746
         ) {
             ret[this.colorProp || 'fill'] = point.color;
@@ -1114,7 +2441,7 @@ var external_highcharts_src_js_default_Series_default = /*#__PURE__*/__webpack_r
  *
  *  (c) 2014-2026 Highsoft AS
  *
- *  Authors: Jon Arild Nygard / Oystein Moseng
+ *  Authors: Jon Arild Nygård / Øystein Moseng
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -1206,7 +2533,7 @@ class TreemapAlgorithmGroup {
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Pawel Lysy
+ *  Author: Paweł Lysy
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -1339,7 +2666,7 @@ const DrawPointUtilities = {
  *
  *  (c) 2014-2026 Highsoft AS
  *
- *  Authors: Jon Arild Nygard / Oystein Moseng
+ *  Authors: Jon Arild Nygård / Øystein Moseng
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -1351,7 +2678,6 @@ const DrawPointUtilities = {
 
 const { pie: { prototype: { pointClass: PiePoint } }, scatter: { prototype: { pointClass: ScatterPoint } } } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
 
-const { extend: TreemapPoint_extend, isNumber, pick: TreemapPoint_pick } = (external_highcharts_src_js_default_default());
 /* *
  *
  *  Class
@@ -1387,7 +2713,7 @@ class TreemapPoint extends ScatterPoint {
         else if (!this.node.isGroup &&
             !this.node.isLeaf &&
             !series.nodeMap[series.rootNode].isGroup &&
-            !TreemapPoint_pick(options.interactByLeaf, !options.allowTraversingTree)) {
+            !pick(options.interactByLeaf, !options.allowTraversingTree)) {
             className += ' highcharts-internal-node-interactive';
         }
         else if (!this.node.isGroup &&
@@ -1420,7 +2746,7 @@ class TreemapPoint extends ScatterPoint {
         return isNumber(this.plotY) && this.y !== null;
     }
 }
-TreemapPoint_extend(TreemapPoint.prototype, {
+extend(TreemapPoint.prototype, {
     setVisible: PiePoint.prototype.setVisible
 });
 /* *
@@ -1435,7 +2761,7 @@ TreemapPoint_extend(TreemapPoint.prototype, {
  *
  *  (c) 2014-2026 Highsoft AS
  *
- *  Authors: Jon Arild Nygard / Oystein Moseng
+ *  Authors: Jon Arild Nygård / Øystein Moseng
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -1445,7 +2771,6 @@ TreemapPoint_extend(TreemapPoint.prototype, {
 
 
 
-const { isString: TreemapSeriesDefaults_isString } = (external_highcharts_src_js_default_default());
 /* *
  *
  *  API Options
@@ -1510,7 +2835,7 @@ const TreemapSeriesDefaults = {
      */
     /**
      * When the series contains less points than the crop threshold, all
-     * points are drawn, event if the points fall outside the visible plot
+     * points are drawn, even if the points fall outside the visible plot
      * area at the current zoom. The advantage of drawing all points
      * (including markers and columns), is that animation is performed on
      * updates. On the other hand, when the series contains more points than
@@ -1571,7 +2896,7 @@ const TreemapSeriesDefaults = {
      * of the global [colors](#colors) when
      * [colorByPoint](#plotOptions.treemap.colorByPoint) is true.
      *
-     * @type      {Array<Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject>}
+     * @type      {Array<Highcharts.ColorType>}
      * @since     3.0
      * @product   highcharts
      * @apioption plotOptions.treemap.colors
@@ -1605,7 +2930,7 @@ const TreemapSeriesDefaults = {
         formatter: function () {
             const point = this && this.point ?
                 this.point :
-                {}, name = TreemapSeriesDefaults_isString(point.name) ? point.name : '';
+                {}, name = isString(point.name) ? point.name : '';
             return name;
         },
         /**
@@ -1629,18 +2954,6 @@ const TreemapSeriesDefaults = {
     tooltip: {
         headerFormat: '',
         pointFormat: '<b>{point.name}</b>: {point.value}<br/>',
-        /**
-         * The HTML of the grouped point's nodes in the tooltip. Works only for
-         * Treemap series grouping and analogously to
-         * [pointFormat](#tooltip.pointFormat).
-         *
-         * The grouped nodes point tooltip can be also formatted using
-         * `tooltip.formatter` callback function and `point.isGroupNode` flag.
-         *
-         * @type      {string}
-         * @default   '+ {point.groupedPointsAmount} more...'
-         * @apioption tooltip.clusterFormat
-         */
         clusterFormat: '+ {point.groupedPointsAmount} more...<br/>'
     },
     /**
@@ -1803,7 +3116,7 @@ const TreemapSeriesDefaults = {
     /**
      * Can set a color on all points which lies on the same level.
      *
-     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @type      {Highcharts.ColorType}
      * @since     4.1.0
      * @product   highcharts
      * @apioption plotOptions.treemap.levels.color
@@ -1998,7 +3311,7 @@ const TreemapSeriesDefaults = {
          * Individual color for the grouped point. By default the color is
          * pulled from the parent color.
          *
-         * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+         * @type      {Highcharts.ColorType}
          * @product   highcharts
          */
         color: void 0,
@@ -2163,7 +3476,7 @@ const TreemapSeriesDefaults = {
  *
  *  (c) 2014-2026 Highsoft AS
  *
- *  Authors: Jon Arild Nygard / Oystein Moseng
+ *  Authors: Jon Arild Nygård / Øystein Moseng
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -2212,7 +3525,7 @@ var TreemapUtilities;
  *
  *  (c) 2014-2026 Highsoft AS
  *
- *  Authors: Jon Arild Nygard / Oystein Moseng
+ *  Authors: Jon Arild Nygård / Øystein Moseng
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -2222,13 +3535,11 @@ var TreemapUtilities;
 
 
 
-const { extend: TreeUtilities_extend, isArray, isNumber: TreeUtilities_isNumber, isObject, merge: TreeUtilities_merge, pick: TreeUtilities_pick, relativeLength } = (external_highcharts_src_js_default_default());
 /* *
  *
  *  Functions
  *
  * */
-/* eslint-disable valid-jsdoc */
 /**
  * @private
  */
@@ -2260,9 +3571,9 @@ function getColor(node, options) {
         }
         // Select either point color, level color or inherited color.
         if (!series.chart.styledMode) {
-            color = TreeUtilities_pick(point && point.options.color, level && level.color, colorByPoint, parentColor && variateColor(parentColor), series.color);
+            color = pick(point && point.options.color, level && level.color, colorByPoint, parentColor && variateColor(parentColor), series.color);
         }
-        colorIndex = TreeUtilities_pick(point && point.options.colorIndex, level && level.colorIndex, colorIndexByPoint, parentColorIndex, options.colorIndex);
+        colorIndex = pick(point && point.options.colorIndex, level && level.colorIndex, colorIndexByPoint, parentColorIndex, options.colorIndex);
     }
     return {
         color: color,
@@ -2290,23 +3601,23 @@ function getLevelOptions(params) {
     const result = {};
     let defaults, converted, i, from, to, levels;
     if (isObject(params)) {
-        from = TreeUtilities_isNumber(params.from) ? params.from : 1;
+        from = isNumber(params.from) ? params.from : 1;
         levels = params.levels;
         converted = {};
         defaults = isObject(params.defaults) ? params.defaults : {};
         if (isArray(levels)) {
             converted = levels.reduce((obj, item) => {
                 let level, levelIsConstant, options;
-                if (isObject(item) && TreeUtilities_isNumber(item.level)) {
-                    options = TreeUtilities_merge({}, item);
-                    levelIsConstant = TreeUtilities_pick(options.levelIsConstant, defaults.levelIsConstant);
+                if (isObject(item) && isNumber(item.level)) {
+                    options = merge({}, item);
+                    levelIsConstant = pick(options.levelIsConstant, defaults.levelIsConstant);
                     // Delete redundant properties.
                     delete options.levelIsConstant;
                     delete options.level;
                     // Calculate which level these options apply to.
                     level = item.level + (levelIsConstant ? 0 : from - 1);
                     if (isObject(obj[level])) {
-                        TreeUtilities_merge(true, obj[level], options); // #16329
+                        merge(true, obj[level], options); // #16329
                     }
                     else {
                         obj[level] = options;
@@ -2315,9 +3626,9 @@ function getLevelOptions(params) {
                 return obj;
             }, {});
         }
-        to = TreeUtilities_isNumber(params.to) ? params.to : 1;
+        to = isNumber(params.to) ? params.to : 1;
         for (i = 0; i <= to; i++) {
-            result[i] = TreeUtilities_merge({}, defaults, isObject(converted[i]) ? converted[i] : {});
+            result[i] = merge({}, defaults, isObject(converted[i]) ? converted[i] : {});
         }
     }
     return result;
@@ -2331,7 +3642,7 @@ function setTreeValues(tree, options) {
     const before = options.before, idRoot = options.idRoot, mapIdToNode = options.mapIdToNode, nodeRoot = mapIdToNode[idRoot], levelIsConstant = (options.levelIsConstant !== false), points = options.points, point = points[tree.i], optionsPoint = point && point.options || {}, children = [];
     let childrenTotal = 0;
     tree.levelDynamic = tree.level - (levelIsConstant ? 0 : nodeRoot.level);
-    tree.name = TreeUtilities_pick(point && point.name, '');
+    tree.name = pick(point && point.name, '');
     tree.visible = (idRoot === tree.id ||
         options.visible === true);
     if (typeof before === 'function') {
@@ -2339,8 +3650,8 @@ function setTreeValues(tree, options) {
     }
     // First give the children some values
     tree.children.forEach((child, i) => {
-        const newOptions = TreeUtilities_extend({}, options);
-        TreeUtilities_extend(newOptions, {
+        const newOptions = extend({}, options);
+        extend(newOptions, {
             index: i,
             siblings: tree.children.length,
             visible: tree.visible
@@ -2352,7 +3663,7 @@ function setTreeValues(tree, options) {
         }
     });
     // Set the values
-    const value = TreeUtilities_pick(optionsPoint.value, childrenTotal);
+    const value = pick(optionsPoint.value, childrenTotal);
     tree.visible = value >= 0 && (childrenTotal > 0 || tree.visible);
     tree.children = children;
     tree.childrenTotal = childrenTotal;
@@ -2378,7 +3689,7 @@ function updateRootId(series) {
         // Get the series options.
         options = isObject(series.options) ? series.options : {};
         // Calculate the rootId.
-        rootId = TreeUtilities_pick(series.rootNode, options.rootId, '');
+        rootId = pick(series.rootNode, options.rootId, '');
         // Set rootId on series.userOptions to pick it up in exporting.
         if (isObject(series.userOptions)) {
             series.userOptions.rootId = rootId;
@@ -2428,7 +3739,7 @@ const TreeUtilities = {
  *
  *  (c) 2014-2026 Highsoft AS
  *
- *  Authors: Jon Arild Nygard / Oystein Moseng
+ *  Authors: Jon Arild Nygård / Øystein Moseng
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -2453,7 +3764,7 @@ const { column: ColumnSeries, scatter: ScatterSeries } = (external_highcharts_sr
 
 const { getColor: TreemapSeries_getColor, getLevelOptions: TreemapSeries_getLevelOptions, updateRootId: TreemapSeries_updateRootId } = Series_TreeUtilities;
 
-const { addEvent: TreemapSeries_addEvent, arrayMax, clamp, correctFloat, crisp, defined: TreemapSeries_defined, error, extend: TreemapSeries_extend, fireEvent: TreemapSeries_fireEvent, isArray: TreemapSeries_isArray, isNumber: TreemapSeries_isNumber, isObject: TreemapSeries_isObject, isString: TreemapSeries_isString, merge: TreemapSeries_merge, pick: TreemapSeries_pick, pushUnique: TreemapSeries_pushUnique, splat, stableSort } = (external_highcharts_src_js_default_default());
+
 external_highcharts_src_js_default_Series_default().keepProps.push('simulation', 'hadOutsideDataLabels');
 /* *
  *
@@ -2490,9 +3801,9 @@ function onSeriesAfterBindAxes() {
                 treeAxisDefaults.max = axisMax;
                 treeAxisDefaults.tickPositions = [];
             }
-            TreemapSeries_merge(true, xAxis.options, treeAxisDefaults, xAxis.userOptions);
-            TreemapSeries_merge(true, yAxis.options, treeAxisDefaults, yAxis.userOptions);
-            // Set the propertys on the axis object
+            merge(true, xAxis.options, treeAxisDefaults, xAxis.userOptions);
+            merge(true, yAxis.options, treeAxisDefaults, yAxis.userOptions);
+            // Set the properties on the axis object
             xAxis.visible = xAxis.options.visible;
             yAxis.visible = yAxis.options.visible;
             // Set `isCartesian` conditionally. Because non-cartesian zoom won't
@@ -2530,7 +3841,6 @@ class TreemapSeries extends ScatterSeries {
          * */
         super(...arguments);
         this.simulation = 0;
-        /* eslint-enable valid-jsdoc */
     }
     /* *
      *
@@ -2538,8 +3848,8 @@ class TreemapSeries extends ScatterSeries {
      *
      * */
     static compose(SeriesClass) {
-        if (TreemapSeries_pushUnique(TreemapSeries_composed, 'TreemapSeries')) {
-            TreemapSeries_addEvent(SeriesClass, 'afterBindAxes', onSeriesAfterBindAxes);
+        if (pushUnique(TreemapSeries_composed, 'TreemapSeries')) {
+            addEvent(SeriesClass, 'afterBindAxes', onSeriesAfterBindAxes);
         }
     }
     /* *
@@ -2547,7 +3857,6 @@ class TreemapSeries extends ScatterSeries {
      *  Function
      *
      * */
-    /* eslint-disable valid-jsdoc */
     algorithmCalcPoints(directionChange, last, group, childrenArea) {
         const plot = group.plot, end = group.elArr.length - 1;
         let pX, pY, pW, pH, gW = group.lW, gH = group.lH, keep, i = 0;
@@ -2686,13 +3995,13 @@ class TreemapSeries extends ScatterSeries {
             const checkIfHide = (node) => {
                 if (node?.point?.shapeArgs) {
                     const { width = 0, height = 0 } = node.point.shapeArgs, area = width * height;
-                    const { pixelWidth = 0, pixelHeight = 0 } = cluster, compareHeight = TreemapSeries_defined(pixelHeight), thresholdArea = pixelHeight ?
+                    const { pixelWidth = 0, pixelHeight = 0 } = cluster, compareHeight = defined(pixelHeight), thresholdArea = pixelHeight ?
                         pixelWidth * pixelHeight :
                         pixelWidth * pixelWidth;
                     if (width < pixelWidth ||
                         height < (compareHeight ? pixelHeight : pixelWidth) ||
                         area < thresholdArea) {
-                        if (!node.isGroup && TreemapSeries_defined(node.parent)) {
+                        if (!node.isGroup && defined(node.parent)) {
                             if (!parentGroups[node.parent]) {
                                 parentGroups[node.parent] = [];
                             }
@@ -2725,7 +4034,7 @@ class TreemapSeries extends ScatterSeries {
                                         isGroup: true,
                                         value: 0
                                     });
-                                    TreemapSeries_extend(groupPoint, {
+                                    extend(groupPoint, {
                                         formatPrefix: 'cluster'
                                     });
                                     series.points.push(groupPoint);
@@ -2769,7 +4078,7 @@ class TreemapSeries extends ScatterSeries {
      * The rectangular area of the parent.
      */
     calculateChildrenAreas(parent, area) {
-        const series = this, options = series.options, mapOptionsToLevel = series.mapOptionsToLevel, level = mapOptionsToLevel[parent.level + 1], algorithm = TreemapSeries_pick((level?.layoutAlgorithm &&
+        const series = this, options = series.options, mapOptionsToLevel = series.mapOptionsToLevel, level = mapOptionsToLevel[parent.level + 1], algorithm = pick((level?.layoutAlgorithm &&
             series[level?.layoutAlgorithm] &&
             level.layoutAlgorithm), options.layoutAlgorithm), alternate = options.alternateStartingDirection, 
         // Collect all children which should be included
@@ -2792,7 +4101,7 @@ class TreemapSeries extends ScatterSeries {
                 axisHeight = values.height;
             }
             const groupPaddingXValues = groupPadding / (series.xAxis.len / axisHeight), groupPaddingYValues = groupPadding / (series.yAxis.len / axisHeight);
-            child.values = TreemapSeries_merge(values, {
+            child.values = merge(values, {
                 val: child.childrenTotal,
                 direction: (alternate ? 1 - area.direction : area.direction)
             });
@@ -2814,7 +4123,7 @@ class TreemapSeries extends ScatterSeries {
                 child.values.y += yPad;
                 child.values.height -= 2 * yPad;
             }
-            child.pointValues = TreemapSeries_merge(values, {
+            child.pointValues = merge(values, {
                 x: (values.x / series.axisRatio),
                 // Flip y-values to avoid visual regression with csvCoord in
                 // Axis.translate at setPointValues. #12488
@@ -2847,8 +4156,8 @@ class TreemapSeries extends ScatterSeries {
             // Sizing by leaf value is not possible if any of the groups have
             // explicit values
             !getChildrenRecursive(rootNode, void 0, false)
-                .some((point) => TreemapSeries_isNumber(point.options.value)) &&
-            !TreemapSeries_isNumber(rootNode.point?.options.value)) {
+                .some((point) => isNumber(point.options.value)) &&
+            !isNumber(rootNode.point?.options.value)) {
             const leaves = getChildrenRecursive(rootNode), values = leaves.map((point) => point.options.value || 0), 
             // Areas in terms of axis units squared
             areas = leaves.map(({ node: { pointValues } }) => (pointValues ?
@@ -2955,8 +4264,8 @@ class TreemapSeries extends ScatterSeries {
      */
     drawDataLabels() {
         const series = this, mapOptionsToLevel = series.mapOptionsToLevel, points = series.points.filter(function (n) {
-            return n.node.visible || TreemapSeries_defined(n.dataLabel);
-        }), padding = splat(series.options.dataLabels || {})[0]?.padding, positionsAreSet = points.some((p) => TreemapSeries_isNumber(p.plotY));
+            return n.node.visible || defined(n.dataLabel);
+        }), padding = splat(series.options.dataLabels || {})[0]?.padding, positionsAreSet = points.some((p) => isNumber(p.plotY));
         for (const point of points) {
             const style = {}, 
             // Set options to new object to avoid problems with scope
@@ -2970,7 +4279,7 @@ class TreemapSeries extends ScatterSeries {
             }
             // If options for level exists, include them as well
             if (level?.dataLabels) {
-                TreemapSeries_merge(true, options, splat(level.dataLabels)[0]);
+                merge(true, options, splat(level.dataLabels)[0]);
                 series.hasDataLabels = () => true;
             }
             // Headers are always top-aligned. Leaf nodes no not support
@@ -2990,13 +4299,16 @@ class TreemapSeries extends ScatterSeries {
                         2 * (options.padding || padding || 0);
                     style.width = `${dataLabelWidth}px`;
                     style.lineClamp ?? (style.lineClamp = Math.floor(height / 16));
-                    style.visibility = 'inherit';
-                    // Make the label box itself fill the width
-                    if (options.headers) {
-                        point.dataLabel?.attr({
-                            width: dataLabelWidth
-                        });
+                    // Only set this in traversal mode, with zooming data labels
+                    // should not inherit group visibility (#24220).
+                    if (this.options.allowTraversingTree) {
+                        style.visibility = 'inherit';
                     }
+                    // Make the label box itself fill the width. Reset when
+                    // no longer header (#23100).
+                    point.dataLabel?.attr({
+                        width: options.headers ? dataLabelWidth : void 0
+                    });
                     // Hide labels for shapes that are too small
                 }
                 else {
@@ -3005,7 +4317,7 @@ class TreemapSeries extends ScatterSeries {
                 }
             }
             // Merge custom options with point options
-            point.dlOptions = TreemapSeries_merge(options, point.options.dataLabels, {
+            point.dlOptions = merge(options, point.options.dataLabels, {
                 zIndex: void 0
             });
         }
@@ -3025,7 +4337,7 @@ class TreemapSeries extends ScatterSeries {
                 if (borderRadius) {
                     attribs.r = borderRadius;
                 }
-                TreemapSeries_merge(true, // Extend object
+                merge(true, // Extend object
                 // Which object to extend
                 shouldAnimate ? animatableAttribs : attribs, 
                 // Add shapeArgs to animate/attr if graphic exists
@@ -3039,7 +4351,7 @@ class TreemapSeries extends ScatterSeries {
                 // the fill attribute.
                 if (series.colorAttribs && styledMode) {
                     // Heatmap is loaded
-                    TreemapSeries_extend(css, series.colorAttribs(point));
+                    extend(css, series.colorAttribs(point));
                 }
                 if (!series[groupKey]) {
                     series[groupKey] = renderer.g(groupKey)
@@ -3114,12 +4426,12 @@ class TreemapSeries extends ScatterSeries {
      * @private
      */
     drillToNode(id, redraw) {
-        error(32, false, void 0, { 'treemap.drillToNode': 'use treemap.setRootNode' });
+        (0,external_highcharts_src_js_default_namespaceObject.error)(32, false, void 0, { 'treemap.drillToNode': 'use treemap.setRootNode' });
         this.setRootNode(id, redraw);
     }
     drillUp() {
         const series = this, node = series.nodeMap[series.rootNode];
-        if (node && TreemapSeries_isString(node.parent)) {
+        if (node && isString(node.parent)) {
             series.setRootNode(node.parent, true, { trigger: 'traverseUpButton' });
         }
     }
@@ -3132,7 +4444,7 @@ class TreemapSeries extends ScatterSeries {
         return super.getExtremes();
     }
     /**
-     * Creates an object map from parent id to childrens index.
+     * Creates an object map from parent id to children index.
      *
      * @private
      * @function Highcharts.Series#getListOfParents
@@ -3147,8 +4459,8 @@ class TreemapSeries extends ScatterSeries {
      *         Map from parent id to children index in data.
      */
     getListOfParents(data, existingIds) {
-        const arr = TreemapSeries_isArray(data) ? data : [], ids = TreemapSeries_isArray(existingIds) ? existingIds : [], listOfParents = arr.reduce(function (prev, curr, i) {
-            const parent = TreemapSeries_pick(curr.parent, '');
+        const arr = isArray(data) ? data : [], ids = isArray(existingIds) ? existingIds : [], listOfParents = arr.reduce(function (prev, curr, i) {
+            const parent = pick(curr.parent, '');
             if (typeof prev[parent] === 'undefined') {
                 prev[parent] = [];
             }
@@ -3204,7 +4516,7 @@ class TreemapSeries extends ScatterSeries {
             point.node = node;
             node.point = point;
             // Handle x-axis value for treegraph
-            if (!TreemapSeries_defined(point.options.x)) {
+            if (!defined(point.options.x)) {
                 point.x = level;
             }
         }
@@ -3219,16 +4531,16 @@ class TreemapSeries extends ScatterSeries {
         return !!this.dataTable.rowCount;
     }
     init(chart, options) {
-        const series = this, breadcrumbsOptions = TreemapSeries_merge(options.drillUpButton, options.breadcrumbs), setOptionsEvent = TreemapSeries_addEvent(series, 'setOptions', (event) => {
+        const series = this, breadcrumbsOptions = merge(options.drillUpButton, options.breadcrumbs), setOptionsEvent = addEvent(series, 'setOptions', (event) => {
             const options = event.userOptions;
             // Deprecated options
-            if (TreemapSeries_defined(options.allowDrillToNode) &&
-                !TreemapSeries_defined(options.allowTraversingTree)) {
+            if (defined(options.allowDrillToNode) &&
+                !defined(options.allowTraversingTree)) {
                 options.allowTraversingTree = options.allowDrillToNode;
                 delete options.allowDrillToNode;
             }
-            if (TreemapSeries_defined(options.drillUpButton) &&
-                !TreemapSeries_defined(options.traverseUpButton)) {
+            if (defined(options.drillUpButton) &&
+                !defined(options.traverseUpButton)) {
                 options.traverseUpButton = options.drillUpButton;
                 delete options.drillUpButton;
             }
@@ -3245,15 +4557,15 @@ class TreemapSeries extends ScatterSeries {
         // Handle deprecated options.
         series.eventsToUnbind.push(setOptionsEvent);
         if (series.options.allowTraversingTree) {
-            series.eventsToUnbind.push(TreemapSeries_addEvent(series, 'click', series.onClickDrillToNode));
-            series.eventsToUnbind.push(TreemapSeries_addEvent(series, 'setRootNode', function (e) {
+            series.eventsToUnbind.push(addEvent(series, 'click', series.onClickDrillToNode));
+            series.eventsToUnbind.push(addEvent(series, 'setRootNode', function (e) {
                 const chart = series.chart;
                 if (chart.breadcrumbs) {
                     // Create a list using the event after drilldown.
                     chart.breadcrumbs.updateProperties(series.createList(e));
                 }
             }));
-            series.eventsToUnbind.push(TreemapSeries_addEvent(series, 'update', 
+            series.eventsToUnbind.push(addEvent(series, 'update', 
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             function (e, redraw) {
                 const breadcrumbs = this.chart.breadcrumbs;
@@ -3262,7 +4574,7 @@ class TreemapSeries extends ScatterSeries {
                 }
                 this.hadOutsideDataLabels = this.hasOutsideDataLabels;
             }));
-            series.eventsToUnbind.push(TreemapSeries_addEvent(series, 'destroy', function destroyEvents(e) {
+            series.eventsToUnbind.push(addEvent(series, 'destroy', function destroyEvents(e) {
                 const chart = this.chart;
                 if (chart.breadcrumbs && !e.keepEventsForUpdate) {
                     chart.breadcrumbs.destroy();
@@ -3273,7 +4585,7 @@ class TreemapSeries extends ScatterSeries {
         if (!chart.breadcrumbs) {
             chart.breadcrumbs = new Breadcrumbs_Breadcrumbs(chart, breadcrumbsOptions);
         }
-        series.eventsToUnbind.push(TreemapSeries_addEvent(chart.breadcrumbs, 'up', function (e) {
+        series.eventsToUnbind.push(addEvent(chart.breadcrumbs, 'up', function (e) {
             const drillUpsNumber = this.level - e.newLevel;
             for (let i = 0; i < drillUpsNumber; i++) {
                 series.drillUp();
@@ -3287,7 +4599,7 @@ class TreemapSeries extends ScatterSeries {
     onClickDrillToNode(event) {
         const series = this, point = event.point, drillId = point?.drillId;
         // If a drill id is returned, add click event and cursor.
-        if (TreemapSeries_isString(drillId)) {
+        if (isString(drillId)) {
             point.setState(''); // Remove hover
             series.setRootNode(drillId, true, { trigger: 'click' });
         }
@@ -3297,7 +4609,7 @@ class TreemapSeries extends ScatterSeries {
      * @private
      */
     pointAttribs(point, state) {
-        const series = this, mapOptionsToLevel = (TreemapSeries_isObject(series.mapOptionsToLevel) ?
+        const series = this, mapOptionsToLevel = (isObject(series.mapOptionsToLevel) ?
             series.mapOptionsToLevel :
             {}), level = point && mapOptionsToLevel[point.node.level] || {}, options = this.options, stateOptions = state && options.states && options.states[state] || {}, className = point?.getClassName() || '', 
         // Set attributes by precedence. Point trumps level trumps series.
@@ -3307,7 +4619,7 @@ class TreemapSeries extends ScatterSeries {
                 level.borderColor ||
                 stateOptions.borderColor ||
                 options.borderColor,
-            'stroke-width': TreemapSeries_pick(point && point.borderWidth, level.borderWidth, stateOptions.borderWidth, options.borderWidth),
+            'stroke-width': pick(point && point.borderWidth, level.borderWidth, stateOptions.borderWidth, options.borderWidth),
             'dashstyle': point?.borderDashStyle ||
                 level.borderDashStyle ||
                 stateOptions.borderDashStyle ||
@@ -3382,7 +4694,7 @@ class TreemapSeries extends ScatterSeries {
             if (values && visible) {
                 const { height, width, x, y } = values, strokeWidth = getStrokeWidth(point), xValue = xAxis.toPixels(x, true), x2Value = xAxis.toPixels(x + width, true), yValue = yAxis.toPixels(y, true), y2Value = yAxis.toPixels(y + height, true), 
                 // If the edge of a rectangle is on the edge, make sure it
-                // stays within the plot area by adding or substracting half
+                // stays within the plot area by adding or subtracting half
                 // of the stroke width.
                 x1 = xValue === 0 ?
                     strokeWidth / 2 :
@@ -3445,10 +4757,10 @@ class TreemapSeries extends ScatterSeries {
      * @emits Highcharts.Series#event:setRootNode
      */
     setRootNode(id, redraw, eventArguments) {
-        const series = this, eventArgs = TreemapSeries_extend({
+        const series = this, eventArgs = extend({
             newRootId: id,
             previousRootId: series.rootNode,
-            redraw: TreemapSeries_pick(redraw, true),
+            redraw: pick(redraw, true),
             series: series
         }, eventArguments);
         /**
@@ -3476,7 +4788,7 @@ class TreemapSeries extends ScatterSeries {
             }
         };
         // Fire setRootNode event.
-        TreemapSeries_fireEvent(series, 'setRootNode', eventArgs, defaultFn);
+        fireEvent(series, 'setRootNode', eventArgs, defaultFn);
     }
     /**
      * Workaround for `inactive` state. Since `series.opacity` option is
@@ -3505,7 +4817,7 @@ class TreemapSeries extends ScatterSeries {
         // Sort the children
         stableSort(children, (a, b) => ((a.sortIndex || 0) - (b.sortIndex || 0)));
         // Set the values
-        let val = TreemapSeries_pick(point?.simulatedValue, point?.options.value, childrenTotal);
+        let val = pick(point?.simulatedValue, point?.options.value, childrenTotal);
         if (point) {
             point.value = val;
         }
@@ -3515,18 +4827,18 @@ class TreemapSeries extends ScatterSeries {
         if (tree.parentNode?.point?.isGroup && series.rootNode !== tree.parent) {
             tree.visible = false;
         }
-        TreemapSeries_extend(tree, {
+        extend(tree, {
             children: children,
             childrenTotal: childrenTotal,
             // Ignore this node if point is not visible
-            ignore: !(TreemapSeries_pick(point?.visible, true) && (val > 0)),
+            ignore: !(pick(point?.visible, true) && (val > 0)),
             isLeaf: tree.visible && !(series.type === 'treegraph' ?
                 children.length > 0 :
                 childrenTotal),
             isGroup: point?.isGroup,
             levelDynamic: (tree.level - (levelIsConstant ? 0 : nodeRoot.level)),
-            name: TreemapSeries_pick(point?.name, ''),
-            sortIndex: TreemapSeries_pick(point?.sortIndex, -val),
+            name: pick(point?.name, ''),
+            sortIndex: pick(point?.sortIndex, -val),
             val: val
         });
         return tree;
@@ -3608,7 +4920,7 @@ class TreemapSeries extends ScatterSeries {
             width: axisMax,
             height: axisMax
         };
-        series.nodeMap[''].values = seriesArea = TreemapSeries_merge(pointValues, {
+        series.nodeMap[''].values = seriesArea = merge(pointValues, {
             width: (pointValues.width * series.axisRatio),
             direction: (options.layoutStartingDirection === 'vertical' ? 0 : 1),
             val: tree.val
@@ -3639,8 +4951,8 @@ class TreemapSeries extends ScatterSeries {
         }
     }
 }
-TreemapSeries.defaultOptions = TreemapSeries_merge(ScatterSeries.defaultOptions, Treemap_TreemapSeriesDefaults);
-TreemapSeries_extend(TreemapSeries.prototype, {
+TreemapSeries.defaultOptions = merge(ScatterSeries.defaultOptions, Treemap_TreemapSeriesDefaults);
+extend(TreemapSeries.prototype, {
     buildKDTree: noop,
     colorAttribs: Series_ColorMapComposition.seriesMembers.colorAttribs,
     colorKey: 'colorValue', // Point color option key
@@ -3668,7 +4980,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -3680,7 +4992,6 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 const { deg2rad } = (external_highcharts_src_js_default_default());
 
 
-const { fireEvent: CenteredUtilities_fireEvent, isNumber: CenteredUtilities_isNumber, pick: CenteredUtilities_pick, relativeLength: CenteredUtilities_relativeLength } = (external_highcharts_src_js_default_default());
 /**
  * @private
  */
@@ -3696,7 +5007,6 @@ var CenteredUtilities;
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * Get the center of the pie based on the size and center options relative
      * to the plot area. Borrowed by the polar and gauge series types.
@@ -3714,11 +5024,11 @@ var CenteredUtilities;
             innerSize = parseFloat(innerSize);
         }
         const positions = [
-            CenteredUtilities_pick(centerOption?.[0], '50%'),
-            CenteredUtilities_pick(centerOption?.[1], '50%'),
+            pick(centerOption?.[0], '50%'),
+            pick(centerOption?.[1], '50%'),
             // Prevent from negative values
-            CenteredUtilities_pick(size && size < 0 ? void 0 : options.size, '100%'),
-            CenteredUtilities_pick(innerSize && innerSize < 0 ? void 0 : options.innerSize || 0, '0%')
+            pick(size && size < 0 ? void 0 : options.size, '100%'),
+            pick(innerSize && innerSize < 0 ? void 0 : options.innerSize || 0, '0%')
         ];
         // No need for inner size in angular (gauges) series but still required
         // for pie series
@@ -3732,18 +5042,18 @@ var CenteredUtilities;
             // i == 1: centerY, relative to height
             // i == 2: size, relative to smallestSize
             // i == 3: innerSize, relative to size
-            positions[i] = CenteredUtilities_relativeLength(value, [plotWidth, plotHeight, smallestSize, positions[2]][i]) + (handleSlicingRoom ? slicingRoom : 0);
+            positions[i] = relativeLength(value, [plotWidth, plotHeight, smallestSize, positions[2]][i]) + (handleSlicingRoom ? slicingRoom : 0);
         }
         // Inner size cannot be larger than size (#3632)
         if (positions[3] > positions[2]) {
             positions[3] = positions[2];
         }
         // Thickness overrides innerSize, need to be less than pie size (#6647)
-        if (CenteredUtilities_isNumber(thickness) &&
+        if (isNumber(thickness) &&
             thickness * 2 < positions[2] && thickness > 0) {
             positions[3] = positions[2] - thickness * 2;
         }
-        CenteredUtilities_fireEvent(this, 'afterGetCenter', { positions });
+        fireEvent(this, 'afterGetCenter', { positions });
         return positions;
     }
     CenteredUtilities.getCenter = getCenter;
@@ -3764,8 +5074,8 @@ var CenteredUtilities;
      *         Returns an object containing start and end angles as radians.
      */
     function getStartAndEndRadians(start, end) {
-        const startAngle = CenteredUtilities_isNumber(start) ? start : 0, // Must be a number
-        endAngle = ((CenteredUtilities_isNumber(end) && // Must be a number
+        const startAngle = isNumber(start) ? start : 0, // Must be a number
+        endAngle = ((isNumber(end) && // Must be a number
             end > startAngle && // Must be larger than the start angle
             // difference must be less than 360 degrees
             (end - startAngle) < 360) ?
@@ -3808,7 +5118,7 @@ var CenteredUtilities;
  *
  *  (c) 2016-2026 Highsoft AS
  *
- *  Authors: Jon Arild Nygard
+ *  Authors: Jon Arild Nygård
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -3819,7 +5129,6 @@ var CenteredUtilities;
 
 const { series: { prototype: { pointClass: Point } }, seriesTypes: { treemap: { prototype: { pointClass: SunburstPoint_TreemapPoint } } } } = (external_highcharts_src_js_default_SeriesRegistry_default());
 
-const { correctFloat: SunburstPoint_correctFloat, extend: SunburstPoint_extend, pInt } = (external_highcharts_src_js_default_default());
 /* *
  *
  *  Class
@@ -3840,7 +5149,7 @@ class SunburstPoint extends SunburstPoint_TreemapPoint {
             angle > Math.PI, moreThanHalf;
         // Check if point is a full circle
         if (start === -Math.PI / 2 &&
-            SunburstPoint_correctFloat(end) === SunburstPoint_correctFloat(Math.PI * 1.5)) {
+            correctFloat(end) === correctFloat(Math.PI * 1.5)) {
             start = -Math.PI + Math.PI / 360;
             end = -Math.PI / 360;
             upperHalf = true;
@@ -3880,7 +5189,7 @@ class SunburstPoint extends SunburstPoint_TreemapPoint {
         return true;
     }
 }
-SunburstPoint_extend(SunburstPoint.prototype, {
+extend(SunburstPoint.prototype, {
     getClassName: Point.prototype.getClassName,
     haloPath: Point.prototype.haloPath,
     setState: Point.prototype.setState
@@ -3899,7 +5208,7 @@ SunburstPoint_extend(SunburstPoint.prototype, {
  *
  *  (c) 2016-2026 Highsoft AS
  *
- *  Authors: Jon Arild Nygard
+ *  Authors: Jon Arild Nygård
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -3910,7 +5219,6 @@ SunburstPoint_extend(SunburstPoint.prototype, {
 
 const { seriesTypes: { treemap: SunburstUtilities_TreemapSeries } } = (external_highcharts_src_js_default_SeriesRegistry_default());
 
-const { isNumber: SunburstUtilities_isNumber, isObject: SunburstUtilities_isObject, merge: SunburstUtilities_merge } = (external_highcharts_src_js_default_default());
 /* *
  *
  *  Functions
@@ -3930,15 +5238,15 @@ const { isNumber: SunburstUtilities_isNumber, isObject: SunburstUtilities_isObje
  * Returns the modified options, or undefined.
  */
 function calculateLevelSizes(levelOptions, params) {
-    const p = SunburstUtilities_isObject(params) ? params : {};
+    const p = isObject(params) ? params : {};
     let result, totalWeight = 0, diffRadius, levels, levelsNotIncluded, remainingSize, from, to;
-    if (SunburstUtilities_isObject(levelOptions)) {
-        result = SunburstUtilities_merge({}, levelOptions);
-        from = SunburstUtilities_isNumber(p.from) ? p.from : 0;
-        to = SunburstUtilities_isNumber(p.to) ? p.to : 0;
+    if (isObject(levelOptions)) {
+        result = merge({}, levelOptions);
+        from = isNumber(p.from) ? p.from : 0;
+        to = isNumber(p.to) ? p.to : 0;
         levels = range(from, to);
         levelsNotIncluded = Object.keys(result).filter((key) => (levels.indexOf(+key) === -1));
-        diffRadius = remainingSize = SunburstUtilities_isNumber(p.diffRadius) ?
+        diffRadius = remainingSize = isNumber(p.diffRadius) ?
             p.diffRadius : 0;
         // Convert percentage to pixels.
         // Calculate the remaining size to divide between "weight" levels.
@@ -3997,7 +5305,7 @@ function getLevelFromAndTo({ level, height }) {
  */
 function range(from, to) {
     const result = [];
-    if (SunburstUtilities_isNumber(from) && SunburstUtilities_isNumber(to) && from <= to) {
+    if (isNumber(from) && isNumber(to) && from <= to) {
         for (let i = from; i <= to; i++) {
             result.push(i);
         }
@@ -4021,7 +5329,7 @@ const SunburstUtilities = {
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Pawel Lysy
+ *  Author: Paweł Lysy
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -4051,7 +5359,7 @@ class SunburstNode extends Treemap_TreemapNode {
  *
  *  (c) 2016-2026 Highsoft AS
  *
- *  Authors: Jon Arild Nygard
+ *  Authors: Jon Arild Nygård
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -4125,7 +5433,7 @@ const SunburstSeriesDefaults = {
     /**
      * Can set a `color` on all points which lies on the same level.
      *
-     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @type      {Highcharts.ColorType}
      * @apioption plotOptions.sunburst.levels.color
      */
     /**
@@ -4407,7 +5715,7 @@ const SunburstSeriesDefaults = {
  *  Highcharts module with textPath functionality.
  *
  *  (c) 2009-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -4417,8 +5725,8 @@ const SunburstSeriesDefaults = {
 
 
 
+
 const { deg2rad: TextPath_deg2rad } = (external_highcharts_src_js_default_default());
-const { addEvent: TextPath_addEvent, merge: TextPath_merge, uniqueKey, defined: TextPath_defined, extend: TextPath_extend } = (external_highcharts_src_js_default_default());
 /**
  * Set a text path for a `text` or `label` element, allowing the text to
  * flow along a path.
@@ -4445,7 +5753,7 @@ const { addEvent: TextPath_addEvent, merge: TextPath_merge, uniqueKey, defined: 
  */
 function setTextPath(path, textPathOptions) {
     // Defaults
-    textPathOptions = TextPath_merge(true, {
+    textPathOptions = merge(true, {
         enabled: true,
         attributes: {
             dy: -5,
@@ -4460,12 +5768,12 @@ function setTextPath(path, textPathOptions) {
         textPath.undo();
     }
     if (path && enabled) {
-        const undo = TextPath_addEvent(textWrapper, 'afterModifyTree', (e) => {
+        const undo = addEvent(textWrapper, 'afterModifyTree', (e) => {
             if (path && enabled) {
                 // Set ID for the path
                 let textPathId = path.attr('id');
                 if (!textPathId) {
-                    path.attr('id', textPathId = uniqueKey());
+                    path.attr('id', textPathId = (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)());
                 }
                 // Set attributes for the <text>
                 const textAttribs = {
@@ -4474,11 +5782,11 @@ function setTextPath(path, textPathOptions) {
                     x: 0,
                     y: 0
                 };
-                if (TextPath_defined(attributes.dx)) {
+                if (defined(attributes.dx)) {
                     textAttribs.dx = attributes.dx;
                     delete attributes.dx;
                 }
-                if (TextPath_defined(attributes.dy)) {
+                if (defined(attributes.dy)) {
                     textAttribs.dy = attributes.dy;
                     delete attributes.dy;
                 }
@@ -4493,7 +5801,7 @@ function setTextPath(path, textPathOptions) {
                 e.nodes.length = 0;
                 e.nodes[0] = {
                     tagName: 'textPath',
-                    attributes: TextPath_extend(attributes, {
+                    attributes: extend(attributes, {
                         'text-anchor': attributes.textAnchor,
                         href: `${url}#${textPathId}`
                     }),
@@ -4619,8 +5927,8 @@ function drawTextPath(event) {
     }
 }
 function compose(SVGElementClass) {
-    TextPath_addEvent(SVGElementClass, 'afterGetBBox', setPolygon);
-    TextPath_addEvent(SVGElementClass, 'beforeAddingDataLabel', drawTextPath);
+    addEvent(SVGElementClass, 'afterGetBBox', setPolygon);
+    addEvent(SVGElementClass, 'beforeAddingDataLabel', drawTextPath);
     const svgElementProto = SVGElementClass.prototype;
     if (!svgElementProto.setTextPath) {
         svgElementProto.setTextPath = setTextPath;
@@ -4638,7 +5946,7 @@ const TextPath = {
  *
  *  (c) 2016-2026 Highsoft AS
  *
- *  Authors: Jon Arild Nygard
+ *  Authors: Jon Arild Nygård
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -4659,7 +5967,7 @@ const { getColor: SunburstSeries_getColor, getLevelOptions: SunburstSeries_getLe
 
 
 
-const { defined: SunburstSeries_defined, error: SunburstSeries_error, extend: SunburstSeries_extend, fireEvent: SunburstSeries_fireEvent, isNumber: SunburstSeries_isNumber, isObject: SunburstSeries_isObject, isString: SunburstSeries_isString, merge: SunburstSeries_merge, splat: SunburstSeries_splat } = (external_highcharts_src_js_default_default());
+
 
 
 Extensions_TextPath.compose((external_highcharts_src_js_default_SVGElement_default()));
@@ -4709,17 +6017,17 @@ const getEndPoint = function getEndPoint(x, y, angle, distance) {
 /** @private */
 function getDlOptions(params) {
     // Set options to new object to avoid problems with scope
-    const point = params.point, shape = SunburstSeries_isObject(params.shapeArgs) ? params.shapeArgs : {}, { end = 0, radius = 0, start = 0 } = shape, optionsPoint = (SunburstSeries_isObject(params.optionsPoint) ?
+    const point = params.point, shape = isObject(params.shapeArgs) ? params.shapeArgs : {}, { end = 0, radius = 0, start = 0 } = shape, optionsPoint = (isObject(params.optionsPoint) ?
         params.optionsPoint.dataLabels :
         {}), 
     // The splat was used because levels dataLabels
     // options doesn't work as an array
-    optionsLevel = SunburstSeries_splat(SunburstSeries_isObject(params.level) ?
+    optionsLevel = splat(isObject(params.level) ?
         params.level.dataLabels :
-        {})[0], options = SunburstSeries_merge(optionsLevel, optionsPoint), style = options.style = options.style || {}, { innerArcLength = 0, outerArcLength = 0 } = point;
-    let rotationRad, rotation, rotationMode = options.rotationMode, width = SunburstSeries_defined(style.width) ?
+        {})[0], options = merge(optionsLevel, optionsPoint), style = options.style = options.style || {}, { innerArcLength = 0, outerArcLength = 0 } = point;
+    let rotationRad, rotation, rotationMode = options.rotationMode, width = defined(style.width) ?
         parseInt(style.width || '0', 10) : void 0;
-    if (!SunburstSeries_isNumber(options.rotation)) {
+    if (!isNumber(options.rotation)) {
         if (rotationMode === 'auto' || rotationMode === 'circular') {
             if (options.useHTML &&
                 rotationMode === 'circular') {
@@ -4777,7 +6085,7 @@ function getDlOptions(params) {
             width = Math.min(radius * 2.5, (outerArcLength + innerArcLength) / 2);
         }
         else {
-            if (!SunburstSeries_defined(width) && radius) {
+            if (!defined(width) && radius) {
                 width = point.node.level === 1 ? 2 * radius : radius;
             }
         }
@@ -5054,7 +6362,7 @@ class SunburstSeries extends SunburstSeries_TreemapSeries {
                     from: {}
                 };
             }
-            SunburstSeries_extend(point, {
+            extend(point, {
                 shapeExisting: shape, // Store for use in animation
                 tooltipPos: [shape.plotX, shape.plotY],
                 drillId: getDrillId(point, idRoot, nodeMap),
@@ -5080,7 +6388,7 @@ class SunburstSeries extends SunburstSeries_TreemapSeries {
             }
             point.draw({
                 animatableAttribs: animationInfo.to,
-                attribs: SunburstSeries_extend(animationInfo.from, (!chart.styledMode && series.pointAttribs(point, (point.selected && 'select')))),
+                attribs: extend(animationInfo.from, (!chart.styledMode && series.pointAttribs(point, (point.selected && 'select')))),
                 onComplete,
                 group,
                 renderer,
@@ -5113,10 +6421,10 @@ class SunburstSeries extends SunburstSeries_TreemapSeries {
     layoutAlgorithm(parent, children, options) {
         let startAngle = parent.start;
         const range = parent.end - startAngle, total = parent.val, x = parent.x, y = parent.y, radius = ((options &&
-            SunburstSeries_isObject(options.levelSize) &&
-            SunburstSeries_isNumber(options.levelSize.value)) ?
+            isObject(options.levelSize) &&
+            isNumber(options.levelSize.value)) ?
             options.levelSize.value :
-            0), innerRadius = parent.r, outerRadius = innerRadius + radius, slicedOffset = options && SunburstSeries_isNumber(options.slicedOffset) ?
+            0), innerRadius = parent.r, outerRadius = innerRadius + radius, slicedOffset = options && isNumber(options.slicedOffset) ?
             options.slicedOffset :
             0;
         return (children || []).reduce((arr, child) => {
@@ -5174,11 +6482,11 @@ class SunburstSeries extends SunburstSeries_TreemapSeries {
                 this.points[child.i].innerArcLength = radians * values.innerR;
                 this.points[child.i].outerArcLength = radians * values.r;
             }
-            child.shapeArgs = SunburstSeries_merge(values, {
+            child.shapeArgs = merge(values, {
                 plotX: center.x,
                 plotY: center.y
             });
-            child.values = SunburstSeries_merge(values, {
+            child.values = merge(values, {
                 val: val
             });
             // If node has children, then call method recursively
@@ -5194,13 +6502,13 @@ class SunburstSeries extends SunburstSeries_TreemapSeries {
         let mapIdToNode = series.nodeMap, mapOptionsToLevel, nodeRoot = mapIdToNode && mapIdToNode[rootId], nodeIds = {};
         series.shapeRoot = nodeRoot && nodeRoot.shapeArgs;
         series.generatePoints();
-        SunburstSeries_fireEvent(series, 'afterTranslate');
+        fireEvent(series, 'afterTranslate');
         // @todo Only if series.isDirtyData is true
         const tree = series.tree = series.getTree();
         // Render traverseUpButton, after series.nodeMap i calculated.
         mapIdToNode = series.nodeMap;
         nodeRoot = mapIdToNode[rootId];
-        const idTop = SunburstSeries_isString(nodeRoot.parent) ? nodeRoot.parent : '', nodeTop = mapIdToNode[idTop], { from, to } = Sunburst_SunburstUtilities.getLevelFromAndTo(nodeRoot);
+        const idTop = isString(nodeRoot.parent) ? nodeRoot.parent : '', nodeTop = mapIdToNode[idTop], { from, to } = Sunburst_SunburstUtilities.getLevelFromAndTo(nodeRoot);
         mapOptionsToLevel = SunburstSeries_getLevelOptions({
             from,
             levels: series.options.levels,
@@ -5245,7 +6553,7 @@ class SunburstSeries extends SunburstSeries_TreemapSeries {
         // #10669 - verify if all nodes have unique ids
         for (const point of series.points) {
             if (nodeIds[point.id]) {
-                SunburstSeries_error(31, false, series.chart);
+                (0,external_highcharts_src_js_default_namespaceObject.error)(31, false, series.chart);
             }
             // Map
             nodeIds[point.id] = true;
@@ -5259,8 +6567,8 @@ class SunburstSeries extends SunburstSeries_TreemapSeries {
  *  Static Properties
  *
  * */
-SunburstSeries.defaultOptions = SunburstSeries_merge(SunburstSeries_TreemapSeries.defaultOptions, Sunburst_SunburstSeriesDefaults);
-SunburstSeries_extend(SunburstSeries.prototype, {
+SunburstSeries.defaultOptions = merge(SunburstSeries_TreemapSeries.defaultOptions, Sunburst_SunburstSeriesDefaults);
+extend(SunburstSeries.prototype, {
     axisTypes: [],
     drawDataLabels: SunburstSeries_noop, // `drawDataLabels` is called in `drawPoints`
     getCenter: getCenter,

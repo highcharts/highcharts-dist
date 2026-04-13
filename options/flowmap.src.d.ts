@@ -113,7 +113,7 @@ declare module "../highcharts.src" {
         /**
          * (Highmaps) The fill color of an individual link.
          */
-        fillColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        fillColor?: Highcharts.ColorType;
         /**
          * (Highmaps) The opacity of the link color fill.
          */

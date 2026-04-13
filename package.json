@@ -2,7 +2,7 @@
   "name": "highcharts",
   "description": "JavaScript charting framework",
   "homepage": "http://www.highcharts.com",
-  "version": "12.5.0",
+  "version": "12.6.0",
   "author": "Highsoft AS <support@highcharts.com> (http://www.highcharts.com/about)",
   "main": "highcharts.js",
   "repository": {
@@ -22,8 +22,8 @@
   "license": "https://www.highcharts.com/license",
   "types": "highcharts.d.ts",
   "peerDependencies": {
-    "jspdf": "^3.0.0",
-    "svg2pdf.js": "^2.6.0"
+    "jspdf": "^4.1.0",
+    "svg2pdf.js": "^2.7.0"
   },
   "peerDependenciesMeta": {
     "jspdf": {

@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -14,8 +14,7 @@ import H from '../../Core/Globals.js';
 const { noop } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: Series, seriesTypes: { column: ColumnSeries } } = SeriesRegistry;
-import U from '../../Core/Utilities.js';
-const { clamp, isNumber, extend, merge, pick, pInt, defined } = U;
+import { clamp, defined, extend, isNumber, merge, pick, pInt } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -37,7 +36,6 @@ class GaugeSeries extends Series {
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * Calculate paths etc
      * @private
@@ -261,7 +259,7 @@ GaugeSeries.defaultOptions = merge(Series.defaultOptions, {
          * @sample {highcharts} highcharts/plotoptions/gauge-dial/
          *         Dial options demonstrated
          *
-         * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+         * @type      {Highcharts.ColorType}
          * @default   #000000
          * @since     2.3.0
          * @product   highcharts
@@ -304,7 +302,7 @@ GaugeSeries.defaultOptions = merge(Series.defaultOptions, {
          * @sample {highcharts} highcharts/plotoptions/gauge-dial/
          *         Dial options demonstrated
          *
-         * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+         * @type      {Highcharts.ColorType}
          * @default   #cccccc
          * @since     2.3.0
          * @product   highcharts
@@ -443,7 +441,7 @@ GaugeSeries.defaultOptions = merge(Series.defaultOptions, {
          * @sample {highcharts} highcharts/plotoptions/gauge-pivot/
          *         Pivot options demonstrated
          *
-         * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+         * @type      {Highcharts.ColorType}
          * @default   #cccccc
          * @since     2.3.0
          * @product   highcharts
@@ -456,7 +454,7 @@ GaugeSeries.defaultOptions = merge(Series.defaultOptions, {
          * @sample {highcharts} highcharts/plotoptions/gauge-pivot/
          *         Pivot options demonstrated
          *
-         * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+         * @type      {Highcharts.ColorType}
          * @default   #000000
          * @since     2.3.0
          * @product   highcharts

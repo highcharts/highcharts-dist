@@ -17,8 +17,7 @@ const { addEvents, countProps, getFirstProp, getNormalizedEvent } = DDU;
 import DragDropDefaults from './DragDropDefaults.js';
 import H from '../../Core/Globals.js';
 const { doc } = H;
-import U from '../../Core/Utilities.js';
-const { addEvent, isArray, merge } = U;
+import { addEvent, isArray, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -247,7 +246,7 @@ function getGroupedPoints(point) {
  * @param {Highcharts.PointerEventObject} newPos
  *        Event with the new position of the mouse (chartX/Y properties).
  *
- * @return {Highchats.Dictionary<object>}
+ * @return {Highcharts.Dictionary<object>}
  *         Hashmap with point.id mapped to an object with the original point
  *         reference, as well as the new data values.
  */

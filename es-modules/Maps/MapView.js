@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -19,8 +19,7 @@ const { topo2geo } = GeoJSONComposition;
 import MU from './MapUtilities.js';
 const { boundsFromPath } = MU;
 import Projection from './Projection.js';
-import U from '../Core/Utilities.js';
-const { addEvent, clamp, crisp, fireEvent, isArray, isNumber, isObject, isString, merge, pick, pushUnique, relativeLength } = U;
+import { addEvent, clamp, crisp, fireEvent, isArray, isNumber, isObject, isString, merge, pick, pushUnique, relativeLength } from '../Shared/Utilities.js';
 /* *
  *
  *  Constants
@@ -845,11 +844,17 @@ class MapView {
     }
     /** @internal */
     render() {
-        // We need a group for the insets
+        const chart = this.chart;
+        // We need a group and clip for the group for the insets
         if (!this.group) {
-            this.group = this.chart.renderer.g('map-view')
+            this.groupClipRect = chart.renderer.clipRect(chart.plotBox);
+            this.group = chart.renderer.g('map-view')
                 .attr({ zIndex: 4 })
+                .clip(this.groupClipRect)
                 .add();
+        }
+        else if (this.groupClipRect) {
+            this.groupClipRect.animate(chart.plotBox);
         }
     }
     /**

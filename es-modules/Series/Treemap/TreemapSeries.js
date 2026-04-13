@@ -2,7 +2,7 @@
  *
  *  (c) 2014-2026 Highsoft AS
  *
- *  Authors: Jon Arild Nygard / Oystein Moseng
+ *  Authors: Jon Arild Nygård / Øystein Moseng
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -26,8 +26,8 @@ import TreemapSeriesDefaults from './TreemapSeriesDefaults.js';
 import TreemapUtilities from './TreemapUtilities.js';
 import TU from '../TreeUtilities.js';
 const { getColor, getLevelOptions, updateRootId } = TU;
-import U from '../../Core/Utilities.js';
-const { addEvent, arrayMax, clamp, correctFloat, crisp, defined, error, extend, fireEvent, isArray, isNumber, isObject, isString, merge, pick, pushUnique, splat, stableSort } = U;
+import { addEvent, arrayMax, clamp, correctFloat, crisp, defined, extend, fireEvent, isArray, isNumber, isObject, isString, merge, pick, pushUnique, splat, stableSort } from '../../Shared/Utilities.js';
+import { error } from '../../Core/Utilities.js';
 Series.keepProps.push('simulation', 'hadOutsideDataLabels');
 /* *
  *
@@ -66,7 +66,7 @@ function onSeriesAfterBindAxes() {
             }
             merge(true, xAxis.options, treeAxisDefaults, xAxis.userOptions);
             merge(true, yAxis.options, treeAxisDefaults, yAxis.userOptions);
-            // Set the propertys on the axis object
+            // Set the properties on the axis object
             xAxis.visible = xAxis.options.visible;
             yAxis.visible = yAxis.options.visible;
             // Set `isCartesian` conditionally. Because non-cartesian zoom won't
@@ -104,7 +104,6 @@ class TreemapSeries extends ScatterSeries {
          * */
         super(...arguments);
         this.simulation = 0;
-        /* eslint-enable valid-jsdoc */
     }
     /* *
      *
@@ -121,7 +120,6 @@ class TreemapSeries extends ScatterSeries {
      *  Function
      *
      * */
-    /* eslint-disable valid-jsdoc */
     algorithmCalcPoints(directionChange, last, group, childrenArea) {
         const plot = group.plot, end = group.elArr.length - 1;
         let pX, pY, pW, pH, gW = group.lW, gH = group.lH, keep, i = 0;
@@ -564,13 +562,16 @@ class TreemapSeries extends ScatterSeries {
                         2 * (options.padding || padding || 0);
                     style.width = `${dataLabelWidth}px`;
                     style.lineClamp ?? (style.lineClamp = Math.floor(height / 16));
-                    style.visibility = 'inherit';
-                    // Make the label box itself fill the width
-                    if (options.headers) {
-                        point.dataLabel?.attr({
-                            width: dataLabelWidth
-                        });
+                    // Only set this in traversal mode, with zooming data labels
+                    // should not inherit group visibility (#24220).
+                    if (this.options.allowTraversingTree) {
+                        style.visibility = 'inherit';
                     }
+                    // Make the label box itself fill the width. Reset when
+                    // no longer header (#23100).
+                    point.dataLabel?.attr({
+                        width: options.headers ? dataLabelWidth : void 0
+                    });
                     // Hide labels for shapes that are too small
                 }
                 else {
@@ -706,7 +707,7 @@ class TreemapSeries extends ScatterSeries {
         return super.getExtremes();
     }
     /**
-     * Creates an object map from parent id to childrens index.
+     * Creates an object map from parent id to children index.
      *
      * @private
      * @function Highcharts.Series#getListOfParents
@@ -956,7 +957,7 @@ class TreemapSeries extends ScatterSeries {
             if (values && visible) {
                 const { height, width, x, y } = values, strokeWidth = getStrokeWidth(point), xValue = xAxis.toPixels(x, true), x2Value = xAxis.toPixels(x + width, true), yValue = yAxis.toPixels(y, true), y2Value = yAxis.toPixels(y + height, true), 
                 // If the edge of a rectangle is on the edge, make sure it
-                // stays within the plot area by adding or substracting half
+                // stays within the plot area by adding or subtracting half
                 // of the stroke width.
                 x1 = xValue === 0 ?
                     strokeWidth / 2 :

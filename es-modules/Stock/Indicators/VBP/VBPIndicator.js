@@ -18,8 +18,8 @@ import H from '../../../Core/Globals.js';
 const { noop } = H;
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 const { column: { prototype: columnProto }, sma: SMAIndicator } = SeriesRegistry.seriesTypes;
-import U from '../../../Core/Utilities.js';
-const { addEvent, arrayMax, arrayMin, correctFloat, defined, error, extend, isArray, merge } = U;
+import { addEvent, arrayMax, arrayMin, correctFloat, defined, extend, isArray, merge } from '../../../Shared/Utilities.js';
+import { error } from '../../../Core/Utilities.js';
 /* *
  *
  *  Constants

@@ -9,8 +9,7 @@
  *
  * */
 'use strict';
-import U from '../../Core/Utilities.js';
-const { addEvent, erase, find, fireEvent, isArray, isObject, pick, wrap } = U;
+import { addEvent, erase, find, fireEvent, isArray, isObject, pick, wrap } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -32,8 +31,8 @@ const { addEvent, erase, find, fireEvent, isArray, isObject, pick, wrap } = U;
  * @return {Highcharts.Annotation}
  *         The newly generated annotation.
  */
-function chartAddAnnotation(userOptions, redraw) {
-    const annotation = this.initAnnotation(userOptions);
+function chartAddAnnotation(options, redraw) {
+    const annotation = this.initAnnotation(options);
     this.options.annotations.push(annotation.options);
     if (pick(redraw, true)) {
         annotation.redraw();

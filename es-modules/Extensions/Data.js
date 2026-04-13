@@ -3,7 +3,7 @@
  *  Data module
  *
  *  (c) 2012-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -22,8 +22,7 @@ const { ajax } = HU;
 import Point from '../Core/Series/Point.js';
 import SeriesRegistry from '../Core/Series/SeriesRegistry.js';
 const { seriesTypes } = SeriesRegistry;
-import U from '../Core/Utilities.js';
-const { addEvent, defined, extend, fireEvent, isNumber, merge, objectEach, pick, splat } = U;
+import { addEvent, defined, extend, fireEvent, internalClearTimeout, isNumber, merge, objectEach, pick, splat } from '../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -222,10 +221,10 @@ class Data {
             new RegExp('^(-?[0-9]+)' + decimalPoint + '([0-9]+)$'));
         // Always stop old polling when we have new options
         if (this.liveDataTimeout !== void 0) {
-            clearTimeout(this.liveDataTimeout);
+            internalClearTimeout(this.liveDataTimeout);
         }
         // This is a two-dimensional array holding the raw, trimmed string
-        // values with the same organisation as the columns array. It makes it
+        // values with the same organization as the columns array. It makes it
         // possible for example to revert from interpreted timestamps to
         // string-based categories.
         this.rawColumns = [];
@@ -514,7 +513,7 @@ class Data {
             let points = 0, commas = 0, guessed = false;
             lines.some(function (columnStr, i) {
                 let inStr = false, c, cn, cl, token = '';
-                // We should be able to detect dateformats within 13 rows
+                // We should be able to detect dateFormats within 13 rows
                 if (i > 13) {
                     return true;
                 }
@@ -695,7 +694,7 @@ class Data {
             return format;
         }
         if (csv && options.beforeParse) {
-            csv = options.beforeParse.call(this, csv);
+            csv = options.beforeParse.call(this, csv, this);
         }
         if (csv) {
             lines = csv
@@ -835,7 +834,7 @@ class Data {
                     return false;
                 }
                 if (initialFetch) {
-                    clearTimeout(data.liveDataTimeout);
+                    internalClearTimeout(data.liveDataTimeout);
                     chart.liveDataURL = url;
                 }
                 /**
@@ -999,7 +998,7 @@ class Data {
      *        Remove all spaces between numbers.
      *
      * @return {string}
-     *         Trimed string
+     *         Trimmed string
      */
     trim(str, inside) {
         if (typeof str === 'string') {
@@ -1229,7 +1228,7 @@ class Data {
      */
     parsed() {
         if (this.options.parsed) {
-            return this.options.parsed.call(this, this.columns);
+            return this.options.parsed.call(this, this.columns, this);
         }
     }
     /**
@@ -1922,9 +1921,10 @@ export default Data;
  * If given, it takes precedence over `startColumn`, `endColumn`, `startRow` and
  * `endRow`.
  *
- * @example
+ * ```js
  * googleSpreadsheetRange: 'Fruit Consumption' // Load a named worksheet
  * googleSpreadsheetRange: 'A:Z' // Load columns A to Z
+ * ```
  *
  * @sample {highcharts} highcharts/data/google-spreadsheet/
  *         Load a Google Spreadsheet
@@ -2069,7 +2069,7 @@ export default Data;
  * An URL to a remote CSV dataset. Will be fetched when the chart is created
  * using Ajax.
  *
- * @sample highcharts/data/livedata-columns
+ * @sample highcharts/demo/livedata-columns
  *         Categorized bar chart with CSV and live polling
  * @sample highcharts/data/livedata-csv
  *         Time based line chart with CSV and live polling
@@ -2091,7 +2091,7 @@ export default Data;
  * A URL to a remote JSON dataset, structured as a column array.
  * Will be fetched when the chart is created using Ajax.
  *
- * @sample highcharts/data/livedata-columns
+ * @sample highcharts/demo/livedata-columns
  *         Columns with live polling
  *
  * @type      {string}
@@ -2126,7 +2126,7 @@ export default Data;
  *
  * @sample highcharts/demo/live-data
  *         Live data
- * @sample highcharts/data/livedata-columns
+ * @sample highcharts/demo/livedata-columns
  *         Categorized bar chart with CSV and live polling
  *
  * @type      {boolean}

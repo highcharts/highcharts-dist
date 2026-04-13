@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -19,8 +19,7 @@ import RangeSelectorDefaults from '../../Stock/RangeSelector/RangeSelectorDefaul
 import ScrollbarDefaults from '../../Stock/Scrollbar/ScrollbarDefaults.js';
 import StockUtilities from '../../Stock/Utilities/StockUtilities.js';
 const { setFixedRange } = StockUtilities;
-import U from '../Utilities.js';
-const { addEvent, clamp, crisp, defined, extend, find, isNumber, isString, merge, pick, splat } = U;
+import { addEvent, clamp, crisp, defined, extend, find, isNumber, isString, merge, pick, splat } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -339,7 +338,7 @@ addEvent(Chart, 'update', function (e) {
             text = format(formatOption, { value }, chart);
         }
         else if (options.formatter && isNumber(value)) {
-            text = options.formatter.call(axis, value);
+            text = options.formatter.call(axis, value, axis);
         }
         crossLabel.attr({
             text,

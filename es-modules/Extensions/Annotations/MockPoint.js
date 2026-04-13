@@ -5,8 +5,7 @@
 'use strict';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: { prototype: seriesProto } } = SeriesRegistry;
-import U from '../../Core/Utilities.js';
-const { defined, fireEvent } = U;
+import { defined, fireEvent } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -126,10 +125,7 @@ class MockPoint {
          *
          * */
         /**
-         * A flag indicating that a point is not the real one.
-         *
-         * @type {boolean}
-         * @default true
+         * A flag indicating that a point is not a real one.
          */
         this.mock = true;
         // Circular reference for formats and formatters
@@ -370,18 +366,6 @@ class MockPoint {
      * Translate the point.
      *
      * @internal
-     *
-     * @param {number|undefined} cx
-     * Origin x transformation.
-     *
-     * @param {number|undefined} cy
-     * Origin y transformation.
-     *
-     * @param {number} dx
-     * Translation for x coordinate.
-     *
-     * @param {number} dy
-     * Translation for y coordinate.
      **/
     translate(_cx, _cy, dx, dy) {
         if (!this.hasDynamicOptions()) {

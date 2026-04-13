@@ -3,7 +3,7 @@
  *  Parallel coordinates module
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Pawel Fus
+ *  Author: Paweł Fus
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -15,13 +15,14 @@ import H from '../../Core/Globals.js';
 const { composed } = H;
 import T from '../../Core/Templating.js';
 const { format } = T;
-import U from '../../Core/Utilities.js';
-const { addEvent, defined, erase, extend, insertItem, isArray, isNumber, pushUnique } = U;
+import { addEvent, defined, erase, extend, isArray, isNumber, pushUnique } from '../../Shared/Utilities.js';
+import { insertItem } from '../../Core/Utilities.js';
 /* *
  *
  *  Composition
  *
  * */
+/** @internal */
 var ParallelSeries;
 (function (ParallelSeries) {
     /* *
@@ -152,4 +153,5 @@ var ParallelSeries;
  *  Default Export
  *
  * */
+/** @internal */
 export default ParallelSeries;

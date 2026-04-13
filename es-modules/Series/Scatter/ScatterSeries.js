@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -12,8 +12,7 @@
 import ScatterSeriesDefaults from './ScatterSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries, line: LineSeries } = SeriesRegistry.seriesTypes;
-import U from '../../Core/Utilities.js';
-const { addEvent, extend, merge } = U;
+import { addEvent, extend, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -87,6 +86,7 @@ class ScatterSeries extends LineSeries {
  * */
 ScatterSeries.defaultOptions = merge(LineSeries.defaultOptions, ScatterSeriesDefaults);
 extend(ScatterSeries.prototype, {
+    allowOutsidePlotInteraction: true,
     drawTracker: ColumnSeries.prototype.drawTracker,
     sorted: false,
     requireSorting: false,

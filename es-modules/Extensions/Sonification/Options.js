@@ -13,21 +13,6 @@
 'use strict';
 const Options = {
     /**
-     * Options for configuring sonification and audio charts. Requires the
-     * [sonification module](https://code.highcharts.com/modules/sonification.js)
-     * to be loaded.
-     *
-     * @sample  highcharts/demo/all-instruments
-     *          All predefined instruments
-     * @sample  highcharts/demo/audio-boxplot
-     *          Audio boxplots
-     * @sample  highcharts/demo/plotline-context
-     *          Context tracks
-     * @sample  highcharts/demo/sonification-music
-     *          Musical chart
-     *
-     * @since        11.0.0
-     * @requires     modules/sonification
      * @optionparent sonification
      */
     sonification: {
@@ -922,25 +907,26 @@ const Options = {
             }
         }
     },
-    /**
-     * @optionparent lang
-     * @internal
-     */
     lang: {
         /**
          * The text for the MIDI download menu item in the export menu.
+         *
          * @requires modules/sonification
          * @since 11.0.0
+         * @apioption lang.downloadMIDI
          */
         downloadMIDI: 'Download MIDI',
         /**
          * The text for the Play as sound menu item in the export menu.
+         *
          * @requires modules/sonification
          * @since 11.0.0
+         * @apioption lang.playAsSound
          */
         playAsSound: 'Play as sound'
     }
 };
+/** @internal */
 export default Options;
 /* *
  *

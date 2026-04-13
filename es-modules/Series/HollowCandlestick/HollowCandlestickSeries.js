@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -16,10 +16,9 @@
  * */
 import HollowCandlestickPoint from './HollowCandlestickPoint.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-import U from '../../Core/Utilities.js';
 import Axis from '../../Core/Axis/Axis.js';
+import { addEvent, merge } from '../../Shared/Utilities.js';
 const { seriesTypes: { candlestick: CandlestickSeries } } = SeriesRegistry;
-const { addEvent, merge } = U;
 /* *
  *
  *  Code
@@ -43,7 +42,6 @@ class HollowCandlestickSeries extends CandlestickSeries {
          * */
         super(...arguments);
         this.hollowCandlestickData = [];
-        /* eslint-disable valid-jsdoc */
     }
     /* *
      *
@@ -255,8 +253,7 @@ addEvent(Axis, 'postProcessData', function () {
     const axis = this, series = axis.series;
     series.forEach(function (series) {
         if (series.is('hollowcandlestick')) {
-            const hollowcandlestickSeries = series;
-            hollowcandlestickSeries.getPriceMovement();
+            series.getPriceMovement();
         }
     });
 });

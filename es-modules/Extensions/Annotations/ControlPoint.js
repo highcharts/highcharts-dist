@@ -4,8 +4,7 @@
  * */
 'use strict';
 import EventEmitter from './EventEmitter.js';
-import U from '../../Core/Utilities.js';
-const { merge, pick } = U;
+import { merge, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -81,7 +80,7 @@ class ControlPoint extends EventEmitter {
      * @param {boolean} [animation]
      */
     redraw(animation) {
-        this.graphic[animation ? 'animate' : 'attr'](this.options.positioner.call(this, this.target));
+        this.graphic[animation ? 'animate' : 'attr'](this.options.positioner.call(this, this.target, this));
     }
     /**
      * Render the control point.

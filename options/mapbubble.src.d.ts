@@ -86,12 +86,6 @@ declare module "../highcharts.src" {
          */
         accessibility?: Highcharts.SeriesAccessibilityOptionsObject;
         /**
-         * (Highmaps) Whether all areas of the map defined in `mapData` should
-         * be rendered. If `true`, areas which don't correspond to a data point,
-         * are rendered as `null` points. If `false`, those areas are skipped.
-         */
-        allAreas?: boolean;
-        /**
          * (Highmaps) Allow this series' points to be selected by clicking on
          * the graphic (columns, point markers, pie slices, map areas etc).
          *
@@ -154,7 +148,7 @@ declare module "../highcharts.src" {
          * In styled mode, the border stroke is given in the `.highcharts-point`
          * class.
          */
-        borderColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        borderColor?: Highcharts.ColorType;
         /**
          * (Highmaps) The border width of each map area.
          *
@@ -182,7 +176,7 @@ declare module "../highcharts.src" {
          * fill and the stroke of the bubble. For enhanced control, use `marker`
          * options.
          */
-        color?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        color?: Highcharts.ColorType;
         /**
          * (Highcharts, Highstock, Highmaps) When using dual or multiple color
          * axes, this number defines which colorAxis the particular series is
@@ -247,8 +241,13 @@ declare module "../highcharts.src" {
          */
         dataLabels?: (Highcharts.PlotMapbubbleDataLabelsOptions|Array<Highcharts.PlotMapbubbleDataLabelsOptions>);
         /**
-         * (Highmaps) A description of the series to add to the screen reader
-         * information about the series.
+         * (Highmaps) Deprecated. Use
+         * plotOptions.series.accessibility.description instead.
+         *
+         * A description of the series to add to the screen reader information
+         * about the series.
+         *
+         * @deprecated 8.0.0
          */
         description?: string;
         /**
@@ -333,6 +332,11 @@ declare module "../highcharts.src" {
          */
         legendSymbol?: Highcharts.OptionsLegendSymbolValue;
         /**
+         * (Highmaps) The line cap used for line ends and line joins on the
+         * graph.
+         */
+        linecap?: Highcharts.SeriesLinecapValue;
+        /**
          * (Highmaps) Color of the line connecting bubbles. The default value is
          * the same as series' color.
          *
@@ -342,7 +346,7 @@ declare module "../highcharts.src" {
          * `.highcharts-series-{n}` class, or individual classes given by the
          * `className` option.
          */
-        lineColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        lineColor?: Highcharts.ColorType;
         /**
          * (Highmaps) Pixel width of the line connecting bubbles.
          */
@@ -388,13 +392,21 @@ declare module "../highcharts.src" {
          */
         point?: Highcharts.PlotSeriesPointOptions;
         /**
-         * (Highmaps) Same as accessibility.point.descriptionFormat, but for an
-         * individual series. Overrides the chart wide configuration.
+         * (Highmaps) Deprecated. Use
+         * series.accessibility.point.descriptionFormat instead.
+         *
+         * Same as accessibility.point.descriptionFormat, but for an individual
+         * series. Overrides the chart wide configuration.
          */
         pointDescriptionFormat?: Function;
         /**
-         * (Highmaps) Same as accessibility.series.descriptionFormatter, but for
-         * an individual series. Overrides the chart wide configuration.
+         * (Highmaps) Deprecated. Use
+         * series.accessibility.point.descriptionFormatter instead.
+         *
+         * Same as accessibility.series.descriptionFormatter, but for an
+         * individual series. Overrides the chart wide configuration.
+         *
+         * @deprecated 8.0.0
          */
         pointDescriptionFormatter?: Function;
         /**
@@ -423,8 +435,13 @@ declare module "../highcharts.src" {
          */
         sizeBy?: Highcharts.BubbleSizeByValue;
         /**
-         * (Highmaps) If set to `true`, the accessibility module will skip past
-         * the points in this series for keyboard navigation.
+         * (Highmaps) Deprecated. Use series.accessibility.keyboardNavigation
+         * instead.
+         *
+         * If set to `true`, the accessibility module will skip past the points
+         * in this series for keyboard navigation.
+         *
+         * @deprecated 8.0.0
          */
         skipKeyboardNavigation?: boolean;
         /**
@@ -468,7 +485,7 @@ declare module "../highcharts.src" {
          * is set, the option allows to disable zooming on an individual
          * non-cartesian series. By default zooming is enabled for all series.
          *
-         * Note: This option works only for non-cartesian series.
+         * **Note**: This option works only for non-cartesian series.
          */
         zoomEnabled?: boolean;
     }
@@ -528,7 +545,7 @@ declare module "../highcharts.src" {
          * either used to denote the value, or pulled from the global `colors`
          * array.
          */
-        color?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        color?: Highcharts.ColorType;
         /**
          * (Highmaps) Individual data label for each point. The options are the
          * same as the ones for plotOptions.series.dataLabels.

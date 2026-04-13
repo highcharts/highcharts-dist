@@ -11,9 +11,8 @@
  * */
 'use strict';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
-const { linearRegression: LinearRegressionIndicator } = SeriesRegistry.seriesTypes;
-import U from '../../../Core/Utilities.js';
-const { extend, merge } = U;
+const { linearregression: LinearRegressionIndicator } = SeriesRegistry.seriesTypes;
+import { extend, merge } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -61,6 +60,8 @@ LinearRegressionSlopesIndicator.defaultOptions = merge(LinearRegressionIndicator
 extend(LinearRegressionSlopesIndicator.prototype, {
     nameBase: 'Linear Regression Slope Indicator'
 });
+SeriesRegistry.registerSeriesType('linearregressionslope', LinearRegressionSlopesIndicator);
+// Keep for backwards compatibility
 SeriesRegistry.registerSeriesType('linearRegressionSlope', LinearRegressionSlopesIndicator);
 /* *
  *

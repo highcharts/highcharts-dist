@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -10,8 +10,7 @@
  * */
 'use strict';
 import PlotLineOrBandAxis from './PlotLineOrBandAxis.js';
-import U from '../../Utilities.js';
-const { addEvent, arrayMax, arrayMin, defined, destroyObjectProperties, erase, fireEvent, merge, objectEach, pick } = U;
+import { addEvent, arrayMax, arrayMin, defined, destroyObjectProperties, erase, fireEvent, merge, objectEach, pick } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -165,7 +164,7 @@ class PlotLineOrBand {
         if (!this.eventsAdded && events) {
             objectEach(events, (_event, eventType) => {
                 svgElem?.on(eventType, (e) => {
-                    events[eventType].apply(this, [e]);
+                    events[eventType].apply(this, [e, this]);
                 });
             });
             this.eventsAdded = true;
@@ -268,8 +267,8 @@ class PlotLineOrBand {
                     !inside) ? (label.rotation === 90 ?
                     axis.height - (label.alignAttr.y -
                         axis.top) : (optionsLabel.clip ?
-                    axis.width :
-                    axis.chart.chartWidth) - (label.alignAttr.x - axis.left)) :
+                    (axis.width + axis.left) :
+                    axis.chart.chartWidth) - label.alignAttr.x) :
                     bBoxWidth)) + 'px'
             });
         }
@@ -282,8 +281,7 @@ class PlotLineOrBand {
      */
     getLabelText(optionsLabel) {
         return defined(optionsLabel.formatter) ?
-            optionsLabel.formatter
-                .call(this) :
+            optionsLabel.formatter.call(this, this) :
             optionsLabel.text;
     }
     /**
@@ -398,7 +396,7 @@ export default PlotLineOrBand;
  * @sample {highstock} stock/xaxis/plotbands/
  *         Plot band on Y axis
  *
- * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+ * @type      {Highcharts.ColorType}
  * @default   ${palette.highlightColor10}
  * @apioption xAxis.plotBands.color
  */
@@ -811,7 +809,9 @@ export default PlotLineOrBand;
 /**
  * Callback JavaScript function to format the label. Useful properties like
  * the value of plot line or the range of plot band (`from` & `to`
- * properties) can be found in `this.options` object.
+ * properties) can be found in `this.options` object. Since v12.6.0, the
+ * callback also receives `ctx` as the first argument, so that arrow functions
+ * can access the same context as regular functions using `this`.
  *
  * @sample {highcharts} highcharts/xaxis/plotlines-plotbands-label-formatter
  *         Label formatters for plot line and plot band.

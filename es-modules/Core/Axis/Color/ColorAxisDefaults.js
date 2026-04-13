@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -40,7 +40,7 @@
  * convenient to add each category to a separate series.
  *
  * Color axis does not work with: `sankey`, `sunburst`, `dependencywheel`,
- * `networkgraph`, `wordcloud`, `venn`, `gauge` and `solidgauge` series
+ * `networkgraph`, `venn`, `gauge` and `solidgauge` series
  * types.
  *
  * Since v7.2.0 `colorAxis` can also be an array of options objects.
@@ -62,8 +62,7 @@
  *               categories, crosshair, dateTimeLabelFormats, left,
  *               lineWidth, linkedTo, maxZoom, minRange, minTickInterval,
  *               offset, opposite, pane, plotBands, plotLines,
- *               reversedStacks, scrollbar, showEmpty, title, top,
- *               zoomEnabled
+ *               reversedStacks, scrollbar, showEmpty, top, zoomEnabled
  * @product      highcharts highstock highmaps
  * @type         {*|Array<*>}
  * @optionparent colorAxis
@@ -116,7 +115,7 @@ const colorAxisDefaults = {
      * @sample {highmaps} maps/demo/data-class-two-ranges/
      *         Explicit colors
      *
-     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @type      {Highcharts.ColorType}
      * @product   highcharts highstock highmaps
      * @apioption colorAxis.dataClasses.color
      */
@@ -219,7 +218,7 @@ const colorAxisDefaults = {
      * @sample {highmaps} maps/coloraxis/gridlines/
      *         Grid lines demonstrated
      *
-     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @type      {Highcharts.ColorType}
      * @product   highcharts highstock highmaps
      */
     gridLineColor: "#ffffff" /* Palette.backgroundColor */,
@@ -294,7 +293,7 @@ const colorAxisDefaults = {
         /**
          * The color of the marker.
          *
-         * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+         * @type    {Highcharts.ColorType}
          * @product highcharts highstock highmaps
          */
         color: "#999999" /* Palette.neutralColor40 */
@@ -337,7 +336,7 @@ const colorAxisDefaults = {
      * @sample {highmaps} maps/coloraxis/mincolor-maxcolor-dataclasses/
      *         On data classes
      *
-     * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @type    {Highcharts.ColorType}
      * @product highcharts highstock highmaps
      */
     minColor: "#e6e9ff" /* Palette.highlightColor10 */,
@@ -356,7 +355,7 @@ const colorAxisDefaults = {
      * @sample {highmaps} maps/coloraxis/mincolor-maxcolor-dataclasses/
      *         On data classes
      *
-     * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @type    {Highcharts.ColorType}
      * @product highcharts highstock highmaps
      */
     maxColor: "#0022ff" /* Palette.highlightColor100 */,
@@ -382,6 +381,19 @@ const colorAxisDefaults = {
      * The pixel length of the main tick marks on the color axis.
      */
     tickLength: 5,
+    /**
+     * The color axis title. Displayed alongside the color axis. When the
+     * legend is vertical the title is rotated accordingly.
+     *
+     * @sample highcharts/coloraxis/coloraxis-title/
+     * Color axis with title
+     *
+     * @type      {Highcharts.AxisTitleOptions}
+     * @product   highcharts highstock highmaps
+     */
+    title: {
+        margin: 5
+    },
     /**
      * The type of interpolation to use for the color axis. Can be
      * `linear` or `logarithmic`.

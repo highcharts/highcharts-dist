@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Stock JS v12.5.0 (2026-01-12)
+ * @license Highcharts Stock JS v12.6.0 (2026-04-13)
  * @module highcharts/indicators/klinger
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -8,7 +8,7 @@
  * Indicator series type for Highcharts Stock
  *
  * (c) 2010-2026 Highsoft AS
- * Author: Karol Kolodziej
+ * Author: Karol Kołodziej
  *
  * A commercial license may be required depending on use.
  * See www.highcharts.com/license

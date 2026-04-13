@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -14,15 +14,14 @@ import H from '../../Core/Globals.js';
 const { noop } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { area: AreaSeries, area: { prototype: areaProto }, column: { prototype: columnProto } } = SeriesRegistry.seriesTypes;
-import U from '../../Core/Utilities.js';
-const { addEvent, defined, extend, isArray, isNumber, pick, merge } = U;
+import { addEvent, defined, extend, isArray, isNumber, merge, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Constants
  *
  * */
 /**
- * The area range series is a carteseian series with higher and lower values for
+ * The area range series is a cartesian series with higher and lower values for
  * each point along an X axis, where the area between the values is shaded.
  *
  * @sample {highcharts} highcharts/demo/arearange/
@@ -36,7 +35,7 @@ const { addEvent, defined, extend, isArray, isNumber, pick, merge } = U;
  * @requires     highcharts-more
  * @optionparent plotOptions.arearange
  *
- * @private
+ * @internal
  */
 const areaRangeSeriesOptions = {
     /**
@@ -77,7 +76,7 @@ const areaRangeSeriesOptions = {
      *
      * @since 2.3.0
      *
-     * @private
+     * @internal
      */
     lineWidth: 1,
     /**
@@ -94,7 +93,7 @@ const areaRangeSeriesOptions = {
      *
      * @since 2.3.0
      *
-     * @private
+     * @internal
      */
     trackByArea: true,
     /**
@@ -108,7 +107,7 @@ const areaRangeSeriesOptions = {
      * @since   2.3.0
      * @product highcharts highstock
      *
-     * @private
+     * @internal
      */
     dataLabels: {
         align: void 0,
@@ -153,7 +152,7 @@ const areaRangeSeriesOptions = {
 /**
  * The AreaRange series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.arearange
  *
@@ -171,9 +170,9 @@ class AreaRangeSeries extends AreaSeries {
     /**
      * Translate a point's plotHigh from the internal angle and radius measures
      * to true plotHigh coordinates. This is an addition of the toXY method
-     * found in Polar.js, because it runs too early for arearanges to be
+     * found in Polar.js, because it runs too early for arearange to be
      * considered (#3419).
-     * @private
+     * @internal
      */
     highToXY(point) {
         // Find the polar plotX and plotY
@@ -185,7 +184,7 @@ class AreaRangeSeries extends AreaSeries {
     /**
      * Extend the line series' getSegmentPath method by applying the segment
      * path to both lower and higher values of the range.
-     * @private
+     * @internal
      */
     getGraphPath(points) {
         const highPoints = [], highAreaPoints = [], getGraphPath = areaProto.getGraphPath, options = this.options, polar = this.chart.polar, connectEnds = polar && options.connectEnds !== false, connectNulls = options.connectNulls;
@@ -271,7 +270,7 @@ class AreaRangeSeries extends AreaSeries {
     /**
      * Extend the basic drawDataLabels method by running it for both lower and
      * higher values.
-     * @private
+     * @internal
      */
     drawDataLabels() {
         const data = this.points, length = data.length, originalDataLabels = [], dataLabelOptions = this.options.dataLabels, inverted = this.chart.inverted;
@@ -567,4 +566,5 @@ SeriesRegistry.registerSeriesType('arearange', AreaRangeSeries);
  *  Default Export
  *
  * */
+/** @internal */
 export default AreaRangeSeries;

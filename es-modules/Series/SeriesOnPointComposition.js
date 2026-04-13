@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Rafal Sebestjanski, Piotr Madej
+ *  Author: Rafał Sebestjański, Piotr Madej
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -16,8 +16,7 @@ import Point from '../Core/Series/Point.js';
 import SeriesRegistry from '../Core/Series/SeriesRegistry.js';
 const { bubble } = SeriesRegistry.seriesTypes;
 import SVGRenderer from '../Core/Renderer/SVG/SVGRenderer.js';
-import U from '../Core/Utilities.js';
-const { addEvent, defined, find, isNumber, pushUnique } = U;
+import { addEvent, defined, find, isNumber, pushUnique } from '../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -39,12 +38,6 @@ var SeriesOnPointComposition;
      * Extends the series with a small addition.
      *
      * @private
-     *
-     * @param SeriesClass
-     * Series class to use.
-     *
-     * @param ChartClass
-     * Chart class to use.
      */
     function compose(SeriesClass, ChartClass) {
         if (pushUnique(composed, 'SeriesOnPoint')) {

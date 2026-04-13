@@ -9,8 +9,8 @@
 import MultipleLinesComposition from '../MultipleLinesComposition.js';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 const { ema: EMAIndicator, sma: SMAIndicator } = SeriesRegistry.seriesTypes;
-import U from '../../../Core/Utilities.js';
-const { correctFloat, error, extend, isArray, merge } = U;
+import { correctFloat, extend, isArray, merge } from '../../../Shared/Utilities.js';
+import { error } from '../../../Core/Utilities.js';
 /* *
  *
  *  Class
@@ -54,8 +54,8 @@ class KlingerIndicator extends SMAIndicator {
         });
         return !!(isLengthValid && isSeriesOHLC);
     }
-    getCM(previousCM, DM, trend, previousTrend, prevoiusDM) {
-        return correctFloat(DM + (trend === previousTrend ? previousCM : prevoiusDM));
+    getCM(previousCM, DM, trend, previousTrend, previousDM) {
+        return correctFloat(DM + (trend === previousTrend ? previousCM : previousDM));
     }
     getDM(high, low) {
         return correctFloat(high - low);
@@ -71,9 +71,9 @@ class KlingerIndicator extends SMAIndicator {
             trend = this.calculateTrend(yVal, i);
             DM = this.getDM(yVal[i][1], yVal[i][2]);
             // For the first iteration when the previousTrend doesn't exist,
-            // previousCM doesn't exist either, but it doesn't matter becouse
-            // it's filltered out in the getCM method in else statement,
-            // (in this iteration, previousCM can be raplaced with the DM).
+            // previousCM doesn't exist either, but it doesn't matter because
+            // it's filtered out in the getCM method in else statement,
+            // (in this iteration, previousCM can be replaced with the DM).
             CM = this.getCM(previousCM, DM, trend, previousTrend, previousDM);
             force = this.volumeSeries.getColumn('y')[i] *
                 trend * Math.abs(2 * ((DM / CM) - 1)) * 100;
@@ -93,7 +93,7 @@ class KlingerIndicator extends SMAIndicator {
             .accumulatePeriodPoints(period, index, values) / period;
     }
     getValues(series, params) {
-        const Klinger = [], xVal = series.xData, yVal = series.yData, xData = [], yData = [], calcSingal = [];
+        const Klinger = [], xVal = series.xData, yVal = series.yData, xData = [], yData = [], calcSignal = [];
         let KO, i = 0, fastEMA = 0, slowEMA, previousFastEMA = void 0, previousSlowEMA = void 0, signal = null;
         // If the necessary conditions are not fulfilled, don't proceed.
         if (!this.isValidData(yVal[0])) {
@@ -117,10 +117,10 @@ class KlingerIndicator extends SMAIndicator {
                 slowEMA = this.getEMA(volumeForce, previousSlowEMA, SMASlow, slowEMApercent, 0, i, xVal)[1];
                 previousSlowEMA = slowEMA;
                 KO = correctFloat(fastEMA - slowEMA);
-                calcSingal.push(KO);
+                calcSignal.push(KO);
                 // Calculate signal SMA
-                if (calcSingal.length >= params.signalPeriod) {
-                    signal = calcSingal.slice(-params.signalPeriod)
+                if (calcSignal.length >= params.signalPeriod) {
+                    signal = calcSignal.slice(-params.signalPeriod)
                         .reduce((prev, curr) => prev + curr) / params.signalPeriod;
                 }
                 Klinger.push([xVal[i], KO, signal]);

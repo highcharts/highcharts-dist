@@ -13,8 +13,7 @@
 'use strict';
 import H from '../../../Core/Globals.js';
 const { doc } = H;
-import U from '../../../Core/Utilities.js';
-const { addEvent, createElement } = U;
+import { addEvent, createElement } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -97,8 +96,8 @@ function init(chart) {
  * Set tab as visible.
  *
  * @internal
- * @param {globals.Element} - current tab
- * @param {number} - Index of tab in menu
+ * @param {globals.Element} tab The current tab
+ * @param {number} index Index of the tab in the menu
  */
 function selectTab(tab, index) {
     const allTabs = this.container

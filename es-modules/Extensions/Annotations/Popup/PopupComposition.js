@@ -14,18 +14,17 @@
 import H from '../../../Core/Globals.js';
 const { composed } = H;
 import Popup from './Popup.js';
-import U from '../../../Core/Utilities.js';
-const { addEvent, pushUnique, wrap } = U;
+import { addEvent, pushUnique, wrap } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Functions
  *
  * */
 /** @internal */
-function compose(NagivationBindingsClass, PointerClass) {
+function compose(NavigationBindingsClass, PointerClass) {
     if (pushUnique(composed, 'Popup')) {
-        addEvent(NagivationBindingsClass, 'closePopup', onNavigationBindingsClosePopup);
-        addEvent(NagivationBindingsClass, 'showPopup', onNavigationBindingsShowPopup);
+        addEvent(NavigationBindingsClass, 'closePopup', onNavigationBindingsClosePopup);
+        addEvent(NavigationBindingsClass, 'showPopup', onNavigationBindingsShowPopup);
         wrap(PointerClass.prototype, 'onContainerMouseDown', wrapPointerOnContainerMouserDown);
     }
 }
@@ -42,7 +41,7 @@ function onNavigationBindingsShowPopup(config) {
         this.popup = new Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
             (this.chart.options.stockTools &&
                 this.chart.options.stockTools.gui.iconsURL) ||
-            'https://code.highcharts.com/12.5.0/gfx/stock-icons/'), this.chart);
+            'https://code.highcharts.com/12.6.0/gfx/stock-icons/'), this.chart);
     }
     this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
 }

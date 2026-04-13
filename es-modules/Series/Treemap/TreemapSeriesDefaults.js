@@ -2,7 +2,7 @@
  *
  *  (c) 2014-2026 Highsoft AS
  *
- *  Authors: Jon Arild Nygard / Oystein Moseng
+ *  Authors: Jon Arild Nygård / Øystein Moseng
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -11,8 +11,7 @@
  * */
 'use strict';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-import U from '../../Core/Utilities.js';
-const { isString } = U;
+import { isString } from '../../Shared/Utilities.js';
 /* *
  *
  *  API Options
@@ -77,7 +76,7 @@ const TreemapSeriesDefaults = {
      */
     /**
      * When the series contains less points than the crop threshold, all
-     * points are drawn, event if the points fall outside the visible plot
+     * points are drawn, even if the points fall outside the visible plot
      * area at the current zoom. The advantage of drawing all points
      * (including markers and columns), is that animation is performed on
      * updates. On the other hand, when the series contains more points than
@@ -138,7 +137,7 @@ const TreemapSeriesDefaults = {
      * of the global [colors](#colors) when
      * [colorByPoint](#plotOptions.treemap.colorByPoint) is true.
      *
-     * @type      {Array<Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject>}
+     * @type      {Array<Highcharts.ColorType>}
      * @since     3.0
      * @product   highcharts
      * @apioption plotOptions.treemap.colors
@@ -196,18 +195,6 @@ const TreemapSeriesDefaults = {
     tooltip: {
         headerFormat: '',
         pointFormat: '<b>{point.name}</b>: {point.value}<br/>',
-        /**
-         * The HTML of the grouped point's nodes in the tooltip. Works only for
-         * Treemap series grouping and analogously to
-         * [pointFormat](#tooltip.pointFormat).
-         *
-         * The grouped nodes point tooltip can be also formatted using
-         * `tooltip.formatter` callback function and `point.isGroupNode` flag.
-         *
-         * @type      {string}
-         * @default   '+ {point.groupedPointsAmount} more...'
-         * @apioption tooltip.clusterFormat
-         */
         clusterFormat: '+ {point.groupedPointsAmount} more...<br/>'
     },
     /**
@@ -370,7 +357,7 @@ const TreemapSeriesDefaults = {
     /**
      * Can set a color on all points which lies on the same level.
      *
-     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @type      {Highcharts.ColorType}
      * @since     4.1.0
      * @product   highcharts
      * @apioption plotOptions.treemap.levels.color
@@ -565,7 +552,7 @@ const TreemapSeriesDefaults = {
          * Individual color for the grouped point. By default the color is
          * pulled from the parent color.
          *
-         * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+         * @type      {Highcharts.ColorType}
          * @product   highcharts
          */
         color: void 0,

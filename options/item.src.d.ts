@@ -187,7 +187,7 @@ declare module "../highcharts.src" {
         borderRadius?: (number|string|Highcharts.BorderRadiusOptionsObject);
         /**
          * (Highcharts, Highmaps) The center of the pie chart relative to the
-         * plot area. Can be percentages or pixel values. The default behaviour
+         * plot area. Can be percentages or pixel values. The default behavior
          * (as of 3.0) is to center the pie so that all slices and data labels
          * are within the plot area. As a consequence, the pie may actually jump
          * around in a chart with dynamic values, as the data labels move. In
@@ -221,7 +221,7 @@ declare module "../highcharts.src" {
          * `.highcharts-series-{n}` class, or individual classes given by the
          * `className` option.
          */
-        color?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        color?: Highcharts.ColorType;
         /**
          * (Highcharts, Highstock, Highmaps) When using dual or multiple color
          * axes, this number defines which colorAxis the particular series is
@@ -254,7 +254,7 @@ declare module "../highcharts.src" {
          * (Highcharts, Highmaps) A series specific or series type specific
          * color set to use instead of the global colors.
          */
-        colors?: Array<(Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject)>;
+        colors?: Array<Highcharts.ColorType>;
         /**
          * (Highcharts, Highstock, Gantt) When true, each point or column edge
          * is rounded to its nearest pixel in order to render sharp on screen.
@@ -292,8 +292,13 @@ declare module "../highcharts.src" {
          */
         dataLabels?: (Highcharts.SeriesPieDataLabelsOptionsObject|Array<Highcharts.SeriesPieDataLabelsOptionsObject>);
         /**
-         * (Highcharts) A description of the series to add to the screen reader
-         * information about the series.
+         * (Highcharts) Deprecated. Use
+         * plotOptions.series.accessibility.description instead.
+         *
+         * A description of the series to add to the screen reader information
+         * about the series.
+         *
+         * @deprecated 8.0.0
          */
         description?: string;
         /**
@@ -319,7 +324,37 @@ declare module "../highcharts.src" {
          * color of that circle. Use pie.borderWidth to set the border
          * thickness.
          */
-        fillColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        fillColor?: Highcharts.ColorType;
+        /**
+         * (Highcharts, Highstock) Defines when to display a gap in the graph,
+         * together with the gapUnit option.
+         *
+         * In case when `dataGrouping` is enabled, points can be grouped into a
+         * larger time span. This can make the grouped points to have a greater
+         * distance than the absolute value of `gapSize` property, which will
+         * result in disappearing graph completely. To prevent this situation
+         * the mentioned distance between grouped points is used instead of
+         * previously defined `gapSize`.
+         *
+         * In practice, this option is most often used to visualize gaps in time
+         * series. In a stock chart, intraday data is available for daytime
+         * hours, while gaps will appear in nights and weekends.
+         */
+        gapSize?: number;
+        /**
+         * (Highcharts, Highstock) Together with gapSize, this option defines
+         * where to draw gaps in the graph.
+         *
+         * When the `gapUnit` is `"relative"` (default), a gap size of 5 means
+         * that if the distance between two points is greater than 5 times that
+         * of the two closest points, the graph will be broken.
+         *
+         * When the `gapUnit` is `"value"`, the gap is based on absolute axis
+         * values, which on a datetime axis is milliseconds. This also applies
+         * to the navigator series that inherits gap options from the base
+         * series.
+         */
+        gapUnit?: Highcharts.OptionsGapUnitValue;
         /**
          * (Highcharts, Highmaps) Equivalent to chart.ignoreHiddenSeries, this
          * option tells whether the series shall be redrawn as if the hidden
@@ -380,7 +415,7 @@ declare module "../highcharts.src" {
          * symbol for this series. Defaults to undefined, in which case the
          * series color is used. Does not work with styled mode.
          */
-        legendSymbolColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        legendSymbolColor?: Highcharts.ColorType;
         /**
          * (Highcharts) Options for the point markers of line and scatter-like
          * series. Properties like `fillColor`, `lineColor` and `lineWidth`
@@ -404,8 +439,8 @@ declare module "../highcharts.src" {
          * `null` should be interactive. When this is set to `true`, tooltips
          * may highlight these points, and this option also enables keyboard
          * navigation for such points. Format options for such points include
-         * `nullFormat` and `nullFormater`. Works for these series: `line`,
-         * `spline`, `area`, `area-spline`, `column`, `bar`, and* `timeline`.
+         * `nullFormat` and `nullFormatter`. Works for these series: `line`,
+         * `spline`, `area`, `area-spline`, `column`, `bar`, and `timeline`.
          */
         nullInteraction?: (boolean|undefined);
         /**
@@ -423,13 +458,21 @@ declare module "../highcharts.src" {
          */
         point?: Highcharts.PlotSeriesPointOptions;
         /**
-         * (Highcharts) Same as accessibility.point.descriptionFormat, but for
-         * an individual series. Overrides the chart wide configuration.
+         * (Highcharts) Deprecated. Use
+         * series.accessibility.point.descriptionFormat instead.
+         *
+         * Same as accessibility.point.descriptionFormat, but for an individual
+         * series. Overrides the chart wide configuration.
          */
         pointDescriptionFormat?: Function;
         /**
-         * (Highcharts) Same as accessibility.series.descriptionFormatter, but
-         * for an individual series. Overrides the chart wide configuration.
+         * (Highcharts) Deprecated. Use
+         * series.accessibility.point.descriptionFormatter instead.
+         *
+         * Same as accessibility.series.descriptionFormatter, but for an
+         * individual series. Overrides the chart wide configuration.
+         *
+         * @deprecated 8.0.0
          */
         pointDescriptionFormatter?: Function;
         /**
@@ -470,7 +513,7 @@ declare module "../highcharts.src" {
         /**
          * (Highcharts, Highmaps) The diameter of the pie relative to the plot
          * area. Can be a percentage or pixel value. Pixel values are given as
-         * integers. The default behaviour (as of 3.0) is to scale to the plot
+         * integers. The default behavior (as of 3.0) is to scale to the plot
          * area and give room for data labels within the plot area. slicedOffset
          * is also included in the default size calculation. As a consequence,
          * the size of the pie may vary when points are updated and data labels
@@ -479,8 +522,13 @@ declare module "../highcharts.src" {
          */
         size?: (number|string|null);
         /**
-         * (Highcharts) If set to `true`, the accessibility module will skip
-         * past the points in this series for keyboard navigation.
+         * (Highcharts) Deprecated. Use series.accessibility.keyboardNavigation
+         * instead.
+         *
+         * If set to `true`, the accessibility module will skip past the points
+         * in this series for keyboard navigation.
+         *
+         * @deprecated 8.0.0
          */
         skipKeyboardNavigation?: boolean;
         /**
@@ -527,7 +575,7 @@ declare module "../highcharts.src" {
          * is set, the option allows to disable zooming on an individual
          * non-cartesian series. By default zooming is enabled for all series.
          *
-         * Note: This option works only for non-cartesian series.
+         * **Note**: This option works only for non-cartesian series.
          */
         zoomEnabled?: boolean;
     }

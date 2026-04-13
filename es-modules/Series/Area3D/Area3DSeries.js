@@ -15,15 +15,15 @@ import Math3D from '../../Core/Math3D.js';
 const { perspective } = Math3D;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { line: { prototype: lineProto } } = SeriesRegistry.seriesTypes;
-import U from '../../Core/Utilities.js';
-const { pushUnique, wrap } = U;
+import { pushUnique, wrap } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
  *
  * */
 /**
- *
+ * Adds 3D behavior to the area series.
+ * @internal
  */
 function compose(AreaSeriesClass) {
     if (pushUnique(composed, 'Area3DSeries')) {
@@ -31,7 +31,8 @@ function compose(AreaSeriesClass) {
     }
 }
 /**
- *
+ * Extends the area path with a projected bottom path in 3D charts.
+ * @internal
  */
 function wrapAreaSeriesGetGraphPath(proceed) {
     const series = this, svgPath = proceed.apply(series, [].slice.call(arguments, 1));
@@ -89,7 +90,9 @@ function wrapAreaSeriesGetGraphPath(proceed) {
  *  Default Export
  *
  * */
+/** @internal */
 const Area3DSeries = {
     compose
 };
+/** @internal */
 export default Area3DSeries;

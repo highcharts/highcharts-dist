@@ -19,8 +19,7 @@ const { composed, doc, win } = H;
 import NavigationBindingDefaults from './NavigationBindingsDefaults.js';
 import NBU from './NavigationBindingsUtilities.js';
 const { getAssignedAxis, getFieldType } = NBU;
-import U from '../../Core/Utilities.js';
-const { addEvent, attr, defined, fireEvent, isArray, isFunction, isNumber, isObject, merge, objectEach, pick, pushUnique } = U;
+import { addEvent, attr, defined, fireEvent, isArray, isFunction, isNumber, isObject, merge, objectEach, pick, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -160,7 +159,7 @@ function selectableAnnotation(annotationType) {
                         navigation.deselectAnnotation();
                         const typeOptions = config.typeOptions;
                         if (annotation.options.type === 'measure') {
-                            // Manually disable crooshars according to
+                            // Manually disable crosshairs according to
                             // stroke width of the shape:
                             typeOptions.crosshairY.enabled = (typeOptions.crosshairY
                                 .strokeWidth !== 0);
@@ -454,13 +453,6 @@ class NavigationBindings {
      * Hook for mouse move on a chart's container. It calls current step.
      *
      * @internal
-     * @function Highcharts.NavigationBindings#bindingsContainerMouseMove
-     *
-     * @param {Highcharts.HTMLDOMElement} container
-     *        Chart's container.
-     *
-     * @param {global.Event} moveEvent
-     *        Browser's move event.
      */
     bindingsContainerMouseMove(_container, moveEvent) {
         if (this.mouseMoveEvent) {

@@ -136,13 +136,13 @@ declare module "../highcharts" {
          * gradient for the data label. Setting it to `auto` will use the
          * point's color.
          */
-        backgroundColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        backgroundColor?: Highcharts.ColorType;
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) The border color for the
          * data label. Setting it to `auto` will use the point's color. Defaults
          * to `undefined`.
          */
-        borderColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        borderColor?: Highcharts.ColorType;
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) The border radius in pixels
          * for the data label.
@@ -200,7 +200,8 @@ declare module "../highcharts" {
          * designed for use when callback functions are not available, like when
          * the chart options require a pure JSON structure or for use with
          * graphical editors. For programmatic control, use the `formatter`
-         * instead, and return `undefined` to disable a single data label.
+         * instead, and return `undefined` to disable a single data label. (see
+         * online documentation for example)
          */
         filter?: Highcharts.DataLabelsFilterOptionsObject;
         /**
@@ -302,7 +303,7 @@ declare module "../highcharts" {
          * cases, especially with grayscale text, the text outline doesn't work
          * well, in which cases it can be disabled by setting it to `"none"`.
          * When `useHTML` is true, the `textOutline` will not be picked up. In
-         * this, case, the same effect can be acheived through the `text-shadow`
+         * this, case, the same effect can be achieved through the `text-shadow`
          * CSS property.
          *
          * For some series types, where each point has an extent, like for
@@ -344,14 +345,6 @@ declare module "../highcharts" {
          * label relative to the point in pixels.
          */
         y?: number;
-        /**
-         * (Highcharts, Highstock, Highmaps, Gantt) The z index of the data
-         * labels group. Does not apply below series level options.
-         *
-         * Use a `zIndex` of 6 to display it above the series, or use a `zIndex`
-         * of 2 to display it behind the series.
-         */
-        zIndex?: number;
     }
     /**
      * (Highcharts, Highstock, Gantt) Styles for the series label. The color
@@ -464,7 +457,7 @@ declare module "../highcharts" {
          * In styled mode, the border stroke can be set with the
          * `.highcharts-point` rule.
          */
-        borderColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        borderColor?: Highcharts.ColorType;
         /**
          * (Highcharts, Highstock, Gantt) The corner radius of the border
          * surrounding each column or bar. A number signifies pixels. A
@@ -517,7 +510,7 @@ declare module "../highcharts" {
          * `.highcharts-series-{n}` class, or individual classes given by the
          * `className` option.
          */
-        color?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        color?: Highcharts.ColorType;
         /**
          * (Highcharts, Highstock, Highmaps) When using dual or multiple color
          * axes, this number defines which colorAxis the particular series is
@@ -562,7 +555,7 @@ declare module "../highcharts" {
          * specific color set to apply instead of the global colors when
          * colorByPoint is true.
          */
-        colors?: Array<(Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject)>;
+        colors?: Array<Highcharts.ColorType>;
         /**
          * (Highstock) Compare the values of the series against the first
          * non-null, non- zero value in the visible range. The y axis will show
@@ -663,8 +656,13 @@ declare module "../highcharts" {
          */
         depth?: number;
         /**
-         * (Highcharts, Highstock) A description of the series to add to the
-         * screen reader information about the series.
+         * (Highcharts, Highstock) Deprecated. Use
+         * plotOptions.series.accessibility.description instead.
+         *
+         * A description of the series to add to the screen reader information
+         * about the series.
+         *
+         * @deprecated 8.0.0
          */
         description?: string;
         /**
@@ -774,7 +772,7 @@ declare module "../highcharts" {
          * symbol for this series. Defaults to undefined, in which case the
          * series color is used. Does not work with styled mode.
          */
-        legendSymbolColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        legendSymbolColor?: Highcharts.ColorType;
         /**
          * (Highcharts, Highstock) The line width of the wind barb symbols.
          */
@@ -824,14 +822,14 @@ declare module "../highcharts" {
          * precedence over the negative color. Using `negativeColor` is
          * equivalent to applying a zone with value of 0.
          */
-        negativeColor?: (Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject);
+        negativeColor?: Highcharts.ColorType;
         /**
          * (Highcharts, Highstock) Whether or not data-points with the value of
          * `null` should be interactive. When this is set to `true`, tooltips
          * may highlight these points, and this option also enables keyboard
          * navigation for such points. Format options for such points include
-         * `nullFormat` and `nullFormater`. Works for these series: `line`,
-         * `spline`, `area`, `area-spline`, `column`, `bar`, and* `timeline`.
+         * `nullFormat` and `nullFormatter`. Works for these series: `line`,
+         * `spline`, `area`, `area-spline`, `column`, `bar`, and `timeline`.
          */
         nullInteraction?: (boolean|undefined);
         /**
@@ -855,15 +853,21 @@ declare module "../highcharts" {
          */
         point?: Highcharts.PlotSeriesPointOptions;
         /**
-         * (Highcharts, Highstock) Same as
-         * accessibility.point.descriptionFormat, but for an individual series.
-         * Overrides the chart wide configuration.
+         * (Highcharts, Highstock) Deprecated. Use
+         * series.accessibility.point.descriptionFormat instead.
+         *
+         * Same as accessibility.point.descriptionFormat, but for an individual
+         * series. Overrides the chart wide configuration.
          */
         pointDescriptionFormat?: Function;
         /**
-         * (Highcharts, Highstock) Same as
-         * accessibility.series.descriptionFormatter, but for an individual
-         * series. Overrides the chart wide configuration.
+         * (Highcharts, Highstock) Deprecated. Use
+         * series.accessibility.point.descriptionFormatter instead.
+         *
+         * Same as accessibility.series.descriptionFormatter, but for an
+         * individual series. Overrides the chart wide configuration.
+         *
+         * @deprecated 8.0.0
          */
         pointDescriptionFormatter?: Function;
         /**
@@ -909,7 +913,7 @@ declare module "../highcharts" {
          * create any padding of the X axis. In a polar column chart this means
          * that the first column points directly north. If the pointPlacement is
          * `"between"`, the columns will be laid out between ticks. This is
-         * useful for example for visualising an amount between two points in
+         * useful for example for visualizing an amount between two points in
          * time or in a certain sector of a polar chart.
          *
          * Since Highcharts 3.0.2, the point placement can also be numeric,
@@ -1002,8 +1006,13 @@ declare module "../highcharts" {
          */
         showInNavigator?: boolean;
         /**
-         * (Highcharts, Highstock) If set to `true`, the accessibility module
-         * will skip past the points in this series for keyboard navigation.
+         * (Highcharts, Highstock) Deprecated. Use
+         * series.accessibility.keyboardNavigation instead.
+         *
+         * If set to `true`, the accessibility module will skip past the points
+         * in this series for keyboard navigation.
+         *
+         * @deprecated 8.0.0
          */
         skipKeyboardNavigation?: boolean;
         /**
@@ -1118,7 +1127,7 @@ declare module "../highcharts" {
          * individual non-cartesian series. By default zooming is enabled for
          * all series.
          *
-         * Note: This option works only for non-cartesian series.
+         * **Note**: This option works only for non-cartesian series.
          */
         zoomEnabled?: boolean;
     }

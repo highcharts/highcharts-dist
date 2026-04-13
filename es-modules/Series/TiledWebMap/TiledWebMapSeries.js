@@ -15,8 +15,8 @@ import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { map: MapSeries } = SeriesRegistry.seriesTypes;
 import TilesProviderRegistry from '../../Maps/TilesProviders/TilesProviderRegistry.js';
 import TiledWebMapSeriesDefaults from './TiledWebMapSeriesDefaults.js';
-import U from '../../Core/Utilities.js';
-const { addEvent, defined, error, merge, pick, pushUnique } = U;
+import { addEvent, defined, merge, pick, pushUnique } from '../../Shared/Utilities.js';
+import { error } from '../../Core/Utilities.js';
 /* *
  *
  *  Functions
@@ -113,12 +113,6 @@ class TiledWebMapSeries extends MapSeries {
     /**
      * Convert tile to map coordinates in longitude/latitude
      * @private
-     * @param  xTile
-     *         Position x of the tile
-     * @param  yTile
-     *         Position y of the tile
-     * @param  zTile
-     *         Zoom of the tile
      * @return {Highcharts.MapLonLatObject}
      *         The map coordinates
      */

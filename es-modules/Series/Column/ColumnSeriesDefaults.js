@@ -1,7 +1,7 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -73,7 +73,7 @@ const ColumnSeriesDefaults = {
      * of the global [colors](#colors) when [colorByPoint](
      * #plotOptions.column.colorByPoint) is true.
      *
-     * @type      {Array<Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject>}
+     * @type      {Array<Highcharts.ColorType>}
      * @since     3.0
      * @product   highcharts highstock gantt
      * @apioption plotOptions.column.colors
@@ -199,7 +199,7 @@ const ColumnSeriesDefaults = {
     minPointLength: 0,
     /**
      * When the series contains less points than the crop threshold, all
-     * points are drawn, event if the points fall outside the visible plot
+     * points are drawn, even if the points fall outside the visible plot
      * area at the current zoom. The advantage of drawing all points
      * (including markers and columns), is that animation is performed on
      * updates. On the other hand, when the series contains more points than
@@ -247,14 +247,14 @@ const ColumnSeriesDefaults = {
              * A specific border color for the hovered point. Defaults to
              * inherit the normal state border color.
              *
-             * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+             * @type      {Highcharts.ColorType}
              * @product   highcharts gantt
              * @apioption plotOptions.column.states.hover.borderColor
              */
             /**
              * A specific color for the hovered point.
              *
-             * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+             * @type      {Highcharts.ColorType}
              * @product   highcharts gantt
              * @apioption plotOptions.column.states.hover.color
              */
@@ -284,7 +284,7 @@ const ColumnSeriesDefaults = {
             /**
              * A specific color for the selected point.
              *
-             * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+             * @type    {Highcharts.ColorType}
              * @default #cccccc
              * @product highcharts highstock gantt
              */
@@ -292,7 +292,7 @@ const ColumnSeriesDefaults = {
             /**
              * A specific border color for the selected point.
              *
-             * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+             * @type    {Highcharts.ColorType}
              * @default #000000
              * @product highcharts highstock gantt
              */
@@ -352,7 +352,7 @@ const ColumnSeriesDefaults = {
      * @sample {highcharts} highcharts/plotoptions/column-bordercolor/
      *         Dark gray border
      *
-     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @type      {Highcharts.ColorType}
      * @default   #ffffff
      * @product   highcharts highstock gantt
      */
@@ -437,7 +437,7 @@ const ColumnSeriesDefaults = {
  * @sample {highcharts} highcharts/plotoptions/column-bordercolor/
  *         Dark gray border
  *
- * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+ * @type      {Highcharts.ColorType}
  * @product   highcharts highstock
  * @apioption series.column.data.borderColor
  */

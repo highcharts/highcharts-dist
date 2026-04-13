@@ -11,9 +11,13 @@
  *
  * */
 'use strict';
+/* *
+ *
+ *  Imports
+ *
+ * */
+import { addEvent } from '../../Shared/Utilities.js';
 import H from '../../Core/Globals.js';
-import U from '../../Core/Utilities.js';
-const { addEvent } = U;
 /**
  * @private
  */

@@ -3,7 +3,7 @@
  *  Sankey diagram module
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Honsi
+ *  Author: Torstein Hønsi
  *
  *  A commercial license may be required depending on use.
  *  See www.highcharts.com/license
@@ -11,8 +11,7 @@
  *
  * */
 'use strict';
-import U from '../../Core/Utilities.js';
-const { defined, getAlignFactor, relativeLength } = U;
+import { defined, getAlignFactor, relativeLength } from '../../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -159,13 +158,6 @@ var SankeyColumnComposition;
         /**
          * Calculate sum of all nodes inside specific column
          * @private
-         * @function Highcharts.SankeyColumn#sum
-         *
-         * @param {ArrayComposition} this
-         * Sankey Column Array
-         *
-         * @return {number} sum
-         * Sum of all nodes inside column
          */
         sum() {
             return this.points.reduce((sum, node) => (sum + node.getSum()), 0);
