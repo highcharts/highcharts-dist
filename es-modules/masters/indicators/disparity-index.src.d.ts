@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Stock/Indicators/DisparityIndex/DisparityIndexIndicator.js';
+import * as Highcharts from '../../../indicators/disparity-index.src';
 export default Highcharts;

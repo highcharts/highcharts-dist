@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Series/Treegraph/TreegraphSeries.js';
+import * as Highcharts from '../../../modules/treegraph.src';
 export default Highcharts;

@@ -80,6 +80,50 @@ declare module "../highcharts" {
         duration?: number;
     }
     /**
+     * (Highcharts, Highstock, Highmaps) Options for the tooltip header when
+     * tooltip.split is enabled. The header is the box containing the X value in
+     * a split tooltip.
+     */
+    interface PlotMaplineTooltipHeaderOptions {
+        /**
+         * (Highcharts, Highstock, Highmaps) Background color for the tooltip
+         * header when tooltip.split is enabled.
+         */
+        backgroundColor?: Highcharts.ColorType;
+        /**
+         * (Highcharts, Highstock, Highmaps) Border color for the tooltip header
+         * when tooltip.split is enabled.
+         */
+        borderColor?: Highcharts.ColorType;
+        /**
+         * (Highcharts, Highstock, Highmaps) The width of the border for the
+         * tooltip header when tooltip.split is enabled.
+         */
+        borderWidth?: number;
+        /**
+         * (Highcharts, Highstock, Highmaps) Distance between the plot area and
+         * the header (except the chevron) in a split tooltip, in pixels. The
+         * default value makes the header text align with the axis labels.
+         */
+        distance?: number;
+        /**
+         * (Highcharts, Highstock, Highmaps) The name of a symbol to use for the
+         * border around the tooltip header. Applies only when tooltip.split is
+         * enabled.
+         *
+         * Custom callbacks for symbol path generation can also be added to
+         * `Highcharts.SVGRenderer.prototype.symbols` the same way as for
+         * series.marker.symbol.
+         */
+        shape?: string;
+        /**
+         * (Highcharts, Highstock, Highmaps) CSS styles for the tooltip header.
+         * The default is `{ fontSize: '1em' }`, ensuring that the header text
+         * is the same size as the axis labels.
+         */
+        style?: object;
+    }
+    /**
      * (Highmaps) For map and mapline series types, the geometry of a point.
      *
      * To achieve a better separation between the structure and the data, it is

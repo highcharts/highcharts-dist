@@ -6,10 +6,52 @@
 import * as Highcharts from "../highcharts.src";
 declare module "../highcharts.src" {
     /**
-     * (Highcharts, Highmaps) Options for the cluster data labels.
+     * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable the initial
+     * animation when a series is displayed for the `dataLabels`. The animation
+     * can also be set as a configuration object. Please note that this option
+     * only applies to the initial animation.
+     *
+     * For other animations, see chart.animation and the animation parameter
+     * under the API methods. The following properties are supported:
+     *
+     * - `defer`: The animation delay time in milliseconds.
      */
-    interface PlotVennClusterDataLabelsOptions {
-        style?: any;
+    interface PlotVennClusterDataLabelsAnimationOptions {
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) The animation delay time in
+         * milliseconds. Set to `0` to render the data labels immediately. As
+         * `undefined` inherits defer time from the series.animation.defer.
+         */
+        defer?: number;
+    }
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Styles for the label. The
+     * default `color` setting is `"contrast"`, which is a pseudo color that
+     * Highcharts picks up and applies the maximum contrast to the underlying
+     * point item, for example the bar in a bar chart.
+     *
+     * The `textOutline` is a pseudo property that applies an outline of the
+     * given width with the given color, which by default is the maximum
+     * contrast to the text. So a bright text color will result in a black text
+     * outline for maximum readability on a mixed background. In some cases,
+     * especially with grayscale text, the text outline doesn't work well, in
+     * which cases it can be disabled by setting it to `"none"`. When `useHTML`
+     * is true, the `textOutline` will not be picked up. In this, case, the same
+     * effect can be achieved through the `text-shadow` CSS property. As a
+     * complementary or alternative to the `textOutline`, a
+     * `dataLabels.backgroundColor` can be used. It provides a more calm
+     * impression and ensures readable text label, at the cost of a risk of
+     * overshadowing the underlying chart elements.
+     *
+     * For some series types, where each point has an extent, like for example
+     * tree maps, the data label may overflow the point. There are two
+     * strategies for handling overflow. By default, the text will wrap to
+     * multiple lines. The other strategy is to set `style.textOverflow` to
+     * `ellipsis`, which will keep the text on one line plus it will break
+     * inside long words.
+     */
+    interface PlotVennClusterDataLabelsStyleOptions {
+        color?: string;
     }
     /**
      * (Highcharts, Highmaps) Options for layout algorithm. Inside there are
@@ -181,8 +223,15 @@ declare module "../highcharts.src" {
         animation?: (boolean|Highcharts.PlotVennDataLabelsAnimationOptions|Partial<Highcharts.AnimationOptionsObject>);
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) The background color or
-         * gradient for the data label. Setting it to `auto` will use the
-         * point's color.
+         * gradient for the data label. In addition to regular colors, there are
+         * two special setting for this option:
+         *
+         * - `auto` will set the background color the point's color.
+         *
+         * - `contrast` will set it to a contrast against the text color, with
+         * an opacity allowing to see the underlying content. The contrast is
+         * great enough to ensure readability for the text according to
+         * accessibility standards.
          */
         backgroundColor?: Highcharts.ColorType;
         /**
@@ -237,6 +286,13 @@ declare module "../highcharts.src" {
          * the defer time set in plotOptions.series.animation.
          */
         defer?: boolean;
+        /**
+         * (Highcharts, Highstock, Gantt) The distance of the data label from
+         * the data point. Note that the `padding` setting also affects the
+         * rendered distance, but is not visible unless the data label has a
+         * border or background.
+         */
+        distance?: number;
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable the data
          * labels.
@@ -311,8 +367,12 @@ declare module "../highcharts.src" {
          * (Highcharts, Highstock, Highmaps, Gantt) When either the
          * `borderWidth` or the `backgroundColor` is set, this is the padding
          * within the box.
+         *
+         * An array of numbers sets padding for the respective sides. An array
+         * of two numbers repeats the values for the horizontal and vertical
+         * sides.
          */
-        padding?: number;
+        padding?: object;
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) Aligns data labels relative
          * to points. If `center` alignment is not possible, it defaults to
@@ -352,7 +412,10 @@ declare module "../highcharts.src" {
          * well, in which cases it can be disabled by setting it to `"none"`.
          * When `useHTML` is true, the `textOutline` will not be picked up. In
          * this, case, the same effect can be achieved through the `text-shadow`
-         * CSS property.
+         * CSS property. As a complementary or alternative to the `textOutline`,
+         * a `dataLabels.backgroundColor` can be used. It provides a more calm
+         * impression and ensures readable text label, at the cost of a risk of
+         * overshadowing the underlying chart elements.
          *
          * For some series types, where each point has an extent, like for
          * example tree maps, the data label may overflow the point. There are
@@ -369,6 +432,10 @@ declare module "../highcharts.src" {
          *
          * **Note:** Only SVG-based renderer supports this option. Setting
          * `useHTML` to true will disable this option.
+         *
+         * Text path support is not bundled into `highcharts.js`, and requires
+         * the `modules/textpath.js` file. However, it is included in the script
+         * files of those series types that use it by default.
          */
         textPath?: Highcharts.DataLabelsTextPathOptionsObject;
         /**
@@ -393,6 +460,14 @@ declare module "../highcharts.src" {
          * label relative to the point in pixels.
          */
         y?: number;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) The z index of the data
+         * labels group. Does not apply below series level options.
+         *
+         * Use a `zIndex` of 6 to display it above the series, or use a `zIndex`
+         * of 2 to display it behind the series.
+         */
+        zIndex?: number;
     }
     /**
      * (Highcharts) Options for the _Series on point_ feature. Only `pie` and
@@ -609,6 +684,39 @@ declare module "../highcharts.src" {
          * (see example).
          */
         dataLabels?: (Highcharts.PlotVennDataLabelsOptions|Array<Highcharts.PlotVennDataLabelsOptions>);
+        /**
+         * (Highcharts) The mapping between the data table and the series data
+         * points. This is used in conjunction with the `dataTable` option (on
+         * chart or series level) to map columns from the data table to the
+         * properties of the data points. The keys of the `dataMapping` object
+         * correspond to the properties of the data points (e.g. `x`, `y`,
+         * `name`), and the values are objects that specify which column from
+         * which data table to use for that property.
+         *
+         * The keys can also be nested paths, for example `dataLabel.format`, to
+         * map to nested properties of the data points.
+         *
+         * The values can also be strings, in which case they are interpreted as
+         * column id's from the first data table.
+         *
+         * A typical use case is that multiple series share a common column,
+         * like `name` or `x`. In this case, to avoid repetition, the common
+         * column can be applied in `plotOptions.series.dataMapping` and the
+         * individual series can specify only the columns that are unique to
+         * them.
+         *
+         * The series name defaults to the column ID of the main data column in
+         * the mapping. The main data column is typically the `y` data for
+         * cartesian series, or `value` for map series. For example, if the
+         * mapping is `{ y: 'Cost' }`, the series name will be `Cost`. (see
+         * online documentation for example)
+         *
+         * If the columns of the DataTable have keys matching the series keys,
+         * the data mapping is not necessary. For example, this DataTable will
+         * connect directly to the series' `x` and `y` keys: (see online
+         * documentation for example)
+         */
+        dataMapping?: Highcharts.DataMappingOptionsObject;
         /**
          * (Highcharts) Deprecated. Use
          * plotOptions.series.accessibility.description instead.
@@ -841,6 +949,23 @@ declare module "../highcharts.src" {
      */
     interface PlotVennStatesInactiveAnimationOptions {
         duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock, Gantt) For series on datetime axes, the date
+     * format in the tooltip's header will by default be guessed based on the
+     * closest data points. This member gives the default string representations
+     * used for each unit. For an overview of the string or object
+     * configuration, see dateFormat.
+     */
+    interface PlotVennTooltipDateTimeLabelFormatsOptions {
+        day?: string;
+        hour?: string;
+        millisecond?: string;
+        minute?: string;
+        month?: string;
+        second?: string;
+        week?: string;
+        year?: string;
     }
     /**
      * (Highcharts, Highstock, Highmaps) Positioning options for fixed tooltip,

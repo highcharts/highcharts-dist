@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Stock/Indicators/APO/APOIndicator.js';
+import * as Highcharts from '../../../indicators/apo.src';
 export default Highcharts;

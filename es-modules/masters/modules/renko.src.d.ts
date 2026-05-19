@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Series/Renko/RenkoSeries.js';
+import * as Highcharts from '../../../modules/renko.src';
 export default Highcharts;

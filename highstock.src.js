@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Stock v13.0.0-beta.0 (2026-05-19)
+ * @license Highcharts Stock v13.0.0-beta.1 (2026-05-19)
  * @module highcharts/highstock
  *
  * (c) 2009-2026 Highsoft AS
@@ -78,7 +78,7 @@ var Globals;
      *  Constants
      *
      * */
-    Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '13.0.0-beta.0', Globals.win = (typeof window !== 'undefined' ?
+    Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '13.0.0-beta.1', Globals.win = (typeof window !== 'undefined' ?
         window :
         {}), // eslint-disable-line node/no-unsupported-features/es-builtins
     Globals.doc = Globals.win.document, Globals.svg = !!Globals.doc?.createElementNS?.(Globals.SVG_NS, 'svg')?.createSVGRect, Globals.pageLang = Globals.doc?.documentElement?.closest('[lang]')?.lang, Globals.userAgent = Globals.win.navigator?.userAgent || '', Globals.isChrome = Globals.win.chrome, Globals.isFirefox = Globals.userAgent.indexOf('Firefox') !== -1, Globals.isMS = /(edge|msie|trident)/i.test(Globals.userAgent) && !Globals.win.opera, Globals.isSafari = !Globals.isChrome && Globals.userAgent.indexOf('Safari') !== -1, Globals.isTouchDevice = /(Mobile|Android|Windows Phone)/.test(Globals.userAgent), Globals.isWebKit = Globals.userAgent.indexOf('AppleWebKit') !== -1, Globals.deg2rad = Math.PI * 2 / 360, Globals.marginNames = [
@@ -13842,7 +13842,7 @@ class SVGRenderer {
         this.url = this.getReferenceURL();
         // Add description
         const desc = this.createElement('desc').add();
-        desc.element.appendChild(SVGRenderer_doc.createTextNode('Created with Highcharts 13.0.0-beta.0'));
+        desc.element.appendChild(SVGRenderer_doc.createTextNode('Created with Highcharts 13.0.0-beta.1'));
         this.defs = this.createElement('defs').add();
         this.allowHTML = allowHTML;
         this.forExport = forExport;
@@ -48951,7 +48951,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
+ * @license Highcharts JS v13.0.0-beta.1 (2026-05-19)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -60202,7 +60202,7 @@ var BrokenAxis;
 ;// ./code/es-modules/masters/modules/broken-axis.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
+ * @license Highcharts JS v13.0.0-beta.1 (2026-05-19)
  * @module highcharts/modules/broken-axis
  * @requires highcharts
  *
@@ -61681,7 +61681,7 @@ const DataGroupingComposition = {
 ;// ./code/es-modules/masters/modules/datagrouping.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.0.0-beta.0 (2026-05-19)
+ * @license Highstock JS v13.0.0-beta.1 (2026-05-19)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *
@@ -62018,7 +62018,7 @@ const MouseWheelZoomComposition = {
 ;// ./code/es-modules/masters/modules/mouse-wheel-zoom.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
+ * @license Highcharts JS v13.0.0-beta.1 (2026-05-19)
  * @module highcharts/modules/mouse-wheel-zoom
  * @requires highcharts
  *
@@ -62041,7 +62041,7 @@ mouse_wheel_zoom_src_G.MouseWheelZoom.compose(mouse_wheel_zoom_src_G.Chart);
 ;// ./code/es-modules/masters/modules/stock.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.0.0-beta.0 (2026-05-19)
+ * @license Highstock JS v13.0.0-beta.1 (2026-05-19)
  * @module highcharts/modules/stock
  * @requires highcharts
  *

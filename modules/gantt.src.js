@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.0.0-beta.0 (2026-05-19)
+ * @license Highcharts Gantt JS v13.0.0-beta.1 (2026-05-19)
  * @module highcharts/modules/gantt
  * @requires highcharts
  *
@@ -10768,7 +10768,7 @@ Pathfinder.prototype.algorithms = PathfinderAlgorithms;
 ;// ./code/es-modules/masters/modules/pathfinder.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.0.0-beta.0 (2026-05-19)
+ * @license Highcharts Gantt JS v13.0.0-beta.1 (2026-05-19)
  * @module highcharts/modules/pathfinder
  * @requires highcharts
  *
@@ -10898,7 +10898,7 @@ function chartAdjustHeight() {
 ;// ./code/es-modules/masters/modules/static-scale.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.0.0-beta.0 (2026-05-19)
+ * @license Highcharts Gantt JS v13.0.0-beta.1 (2026-05-19)
  * @module highcharts/modules/static-scale
  * @requires highcharts
  *
@@ -11714,7 +11714,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 ;// ./code/es-modules/masters/modules/xrange.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
+ * @license Highcharts JS v13.0.0-beta.1 (2026-05-19)
  * @module highcharts/modules/xrange
  * @requires highcharts
  *

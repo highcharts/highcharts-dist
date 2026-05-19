@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Stock/Indicators/NATR/NATRIndicator.js';
+import * as Highcharts from '../../../indicators/natr.src';
 export default Highcharts;

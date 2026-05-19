@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Series/HollowCandlestick/HollowCandlestickSeries.js';
+import * as Highcharts from '../../../modules/hollowcandlestick.src';
 export default Highcharts;

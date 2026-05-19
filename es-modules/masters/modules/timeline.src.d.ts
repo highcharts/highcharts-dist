@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Series/Timeline/TimelineSeries.js';
+import * as Highcharts from '../../../modules/timeline.src';
 export default Highcharts;

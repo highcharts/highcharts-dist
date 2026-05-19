@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Series/Dumbbell/DumbbellSeries.js';
+import * as Highcharts from '../../../modules/dumbbell.src';
 export default Highcharts;

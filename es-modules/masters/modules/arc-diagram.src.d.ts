@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Series/ArcDiagram/ArcDiagramSeries.js';
+import * as Highcharts from '../../../modules/arc-diagram.src';
 export default Highcharts;

@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Series/SolidGauge/SolidGaugeSeries.js';
+import * as Highcharts from '../../../modules/solid-gauge.src';
 export default Highcharts;

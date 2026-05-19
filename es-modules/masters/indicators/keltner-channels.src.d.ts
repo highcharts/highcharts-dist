@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Stock/Indicators/KeltnerChannels/KeltnerChannelsIndicator.js';
+import * as Highcharts from '../../../indicators/keltner-channels.src';
 export default Highcharts;

@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Stock/Indicators/Klinger/KlingerIndicator.js';
+import * as Highcharts from '../../../indicators/klinger.src';
 export default Highcharts;

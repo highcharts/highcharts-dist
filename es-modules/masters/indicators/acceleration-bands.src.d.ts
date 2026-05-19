@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Stock/Indicators/ABands/ABandsIndicator.js';
+import * as Highcharts from '../../../indicators/acceleration-bands.src';
 export default Highcharts;

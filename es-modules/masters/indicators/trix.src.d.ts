@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Stock/Indicators/TRIX/TRIXIndicator.js';
+import * as Highcharts from '../../../indicators/trix.src';
 export default Highcharts;

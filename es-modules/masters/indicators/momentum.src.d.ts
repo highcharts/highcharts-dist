@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Stock/Indicators/Momentum/MomentumIndicator.js';
+import * as Highcharts from '../../../indicators/momentum.src';
 export default Highcharts;

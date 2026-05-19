@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Stock/Indicators/MACD/MACDIndicator.js';
+import * as Highcharts from '../../../indicators/macd.src';
 export default Highcharts;

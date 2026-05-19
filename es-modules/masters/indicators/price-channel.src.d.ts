@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Stock/Indicators/PC/PCIndicator.js';
+import * as Highcharts from '../../../indicators/price-channel.src';
 export default Highcharts;

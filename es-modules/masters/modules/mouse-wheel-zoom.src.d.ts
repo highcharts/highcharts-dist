@@ -1,15 +1,2 @@
-/**
- * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
- * @module highcharts/modules/mouse-wheel-zoom
- * @requires highcharts
- *
- * Mousewheel zoom module
- *
- * (c) 2023-2026 Highsoft AS
- * Author: Askel Eirik Johansson
- *
- * A commercial license may be required depending on use,
- * see www.highcharts.com/license
- */
-import Highcharts from '../../Core/Globals.js';
+import * as Highcharts from '../../../modules/mouse-wheel-zoom.src';
 export default Highcharts;

@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Stock/Indicators/ROC/ROCIndicator.js';
+import * as Highcharts from '../../../indicators/roc.src';
 export default Highcharts;

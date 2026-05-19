@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Stock/Indicators/IKH/IKHIndicator.js';
+import * as Highcharts from '../../../indicators/ichimoku-kinko-hyo.src';
 export default Highcharts;

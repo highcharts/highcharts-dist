@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Series/FlowMap/FlowMapSeries.js';
+import * as Highcharts from '../../../modules/flowmap.src';
 export default Highcharts;

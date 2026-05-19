@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Stock/Indicators/VBP/VBPIndicator.js';
+import * as Highcharts from '../../../indicators/volume-by-price.src';
 export default Highcharts;

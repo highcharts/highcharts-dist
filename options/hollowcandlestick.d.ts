@@ -25,7 +25,7 @@ declare module "../highcharts" {
         defer?: number;
     }
     /**
-     * (Highcharts, Highstock) Options for the series data sorting.
+     * (Highcharts, Highstock) Options for series data sorting.
      */
     interface PlotHollowcandlestickDataSortingOptions {
         /**
@@ -117,6 +117,48 @@ declare module "../highcharts" {
          * slowly back to normal.
          */
         duration?: number;
+    }
+    /**
+     * (Highstock) Options for the tooltip header when tooltip.split is enabled.
+     * The header is the box containing the X value in a split tooltip.
+     */
+    interface PlotHollowcandlestickTooltipHeaderOptions {
+        /**
+         * (Highstock) Background color for the tooltip header when
+         * tooltip.split is enabled.
+         */
+        backgroundColor?: Highcharts.ColorType;
+        /**
+         * (Highstock) Border color for the tooltip header when tooltip.split is
+         * enabled.
+         */
+        borderColor?: Highcharts.ColorType;
+        /**
+         * (Highstock) The width of the border for the tooltip header when
+         * tooltip.split is enabled.
+         */
+        borderWidth?: number;
+        /**
+         * (Highstock) Distance between the plot area and the header (except the
+         * chevron) in a split tooltip, in pixels. The default value makes the
+         * header text align with the axis labels.
+         */
+        distance?: number;
+        /**
+         * (Highstock) The name of a symbol to use for the border around the
+         * tooltip header. Applies only when tooltip.split is enabled.
+         *
+         * Custom callbacks for symbol path generation can also be added to
+         * `Highcharts.SVGRenderer.prototype.symbols` the same way as for
+         * series.marker.symbol.
+         */
+        shape?: string;
+        /**
+         * (Highstock) CSS styles for the tooltip header. The default is `{
+         * fontSize: '1em' }`, ensuring that the header text is the same size as
+         * the axis labels.
+         */
+        style?: object;
     }
     /**
      * (Highcharts, Highstock) Enable or disable the initial animation when a

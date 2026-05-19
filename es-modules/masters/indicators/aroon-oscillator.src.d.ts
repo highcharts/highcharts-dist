@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Stock/Indicators/AroonOscillator/AroonOscillatorIndicator.js';
+import * as Highcharts from '../../../indicators/aroon-oscillator.src';
 export default Highcharts;

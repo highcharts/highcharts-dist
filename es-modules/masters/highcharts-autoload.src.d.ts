@@ -1,2 +1,2 @@
-import Highcharts from './highcharts.src.js';
+import * as Highcharts from '../../highcharts-autoload.src';
 export default Highcharts;

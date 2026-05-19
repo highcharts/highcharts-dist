@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Stock/Indicators/RSI/RSIIndicator.js';
+import * as Highcharts from '../../../indicators/rsi.src';
 export default Highcharts;

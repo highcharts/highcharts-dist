@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Series/DotPlot/DotPlotSeries.js';
+import * as Highcharts from '../../../modules/dotplot.src';
 export default Highcharts;

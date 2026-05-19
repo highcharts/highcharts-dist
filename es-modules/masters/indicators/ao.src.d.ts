@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Stock/Indicators/AO/AOIndicator.js';
+import * as Highcharts from '../../../indicators/ao.src';
 export default Highcharts;

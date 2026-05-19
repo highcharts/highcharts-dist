@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Series/Wordcloud/WordcloudSeries.js';
+import * as Highcharts from '../../../modules/wordcloud.src';
 export default Highcharts;

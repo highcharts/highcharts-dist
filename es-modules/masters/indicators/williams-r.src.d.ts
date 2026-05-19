@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Stock/Indicators/WilliamsR/WilliamsRIndicator.js';
+import * as Highcharts from '../../../indicators/williams-r.src';
 export default Highcharts;

@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Stock/Indicators/WMA/WMAIndicator.js';
+import * as Highcharts from '../../../indicators/wma.src';
 export default Highcharts;

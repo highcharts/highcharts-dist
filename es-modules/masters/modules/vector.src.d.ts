@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Series/Vector/VectorSeries.js';
+import * as Highcharts from '../../../modules/vector.src';
 export default Highcharts;

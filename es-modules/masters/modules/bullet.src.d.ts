@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Series/Bullet/BulletSeries.js';
+import * as Highcharts from '../../../modules/bullet.src';
 export default Highcharts;

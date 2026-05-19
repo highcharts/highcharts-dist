@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Series/Lollipop/LollipopSeries.js';
+import * as Highcharts from '../../../modules/lollipop.src';
 export default Highcharts;

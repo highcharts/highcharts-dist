@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Stock/Indicators/VWAP/VWAPIndicator.js';
+import * as Highcharts from '../../../indicators/vwap.src';
 export default Highcharts;

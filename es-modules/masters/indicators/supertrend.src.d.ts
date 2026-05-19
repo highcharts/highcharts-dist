@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Stock/Indicators/Supertrend/SupertrendIndicator.js';
+import * as Highcharts from '../../../indicators/supertrend.src';
 export default Highcharts;

@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Stock/Indicators/PPO/PPOIndicator.js';
+import * as Highcharts from '../../../indicators/ppo.src';
 export default Highcharts;

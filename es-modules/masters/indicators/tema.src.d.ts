@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Stock/Indicators/TEMA/TEMAIndicator.js';
+import * as Highcharts from '../../../indicators/tema.src';
 export default Highcharts;

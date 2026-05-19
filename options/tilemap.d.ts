@@ -29,7 +29,8 @@ declare module "../highcharts" {
      * defaults to the series color, or a contrast color if `onArea`.
      */
     interface PlotTilemapLabelStyleOptions {
-        fontSize?: (number|string);
+        fontSize?: number;
+        fontWeight?: string;
     }
     /**
      * (Highcharts, Highmaps) Options for the _Series on point_ feature. Only
@@ -208,6 +209,39 @@ declare module "../highcharts" {
          * (see example).
          */
         dataLabels?: (Highcharts.PlotTilemapDataLabelsOptions|Array<Highcharts.PlotTilemapDataLabelsOptions>);
+        /**
+         * (Highcharts, Highmaps) The mapping between the data table and the
+         * series data points. This is used in conjunction with the `dataTable`
+         * option (on chart or series level) to map columns from the data table
+         * to the properties of the data points. The keys of the `dataMapping`
+         * object correspond to the properties of the data points (e.g. `x`,
+         * `y`, `name`), and the values are objects that specify which column
+         * from which data table to use for that property.
+         *
+         * The keys can also be nested paths, for example `dataLabel.format`, to
+         * map to nested properties of the data points.
+         *
+         * The values can also be strings, in which case they are interpreted as
+         * column id's from the first data table.
+         *
+         * A typical use case is that multiple series share a common column,
+         * like `name` or `x`. In this case, to avoid repetition, the common
+         * column can be applied in `plotOptions.series.dataMapping` and the
+         * individual series can specify only the columns that are unique to
+         * them.
+         *
+         * The series name defaults to the column ID of the main data column in
+         * the mapping. The main data column is typically the `y` data for
+         * cartesian series, or `value` for map series. For example, if the
+         * mapping is `{ y: 'Cost' }`, the series name will be `Cost`. (see
+         * online documentation for example)
+         *
+         * If the columns of the DataTable have keys matching the series keys,
+         * the data mapping is not necessary. For example, this DataTable will
+         * connect directly to the series' `x` and `y` keys: (see online
+         * documentation for example)
+         */
+        dataMapping?: Highcharts.DataMappingOptionsObject;
         /**
          * (Highcharts, Highmaps) Deprecated. Use
          * plotOptions.series.accessibility.description instead.
@@ -528,6 +562,50 @@ declare module "../highcharts" {
          * slowly back to normal.
          */
         duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock, Highmaps) Options for the tooltip header when
+     * tooltip.split is enabled. The header is the box containing the X value in
+     * a split tooltip.
+     */
+    interface PlotTilemapTooltipHeaderOptions {
+        /**
+         * (Highcharts, Highstock, Highmaps) Background color for the tooltip
+         * header when tooltip.split is enabled.
+         */
+        backgroundColor?: Highcharts.ColorType;
+        /**
+         * (Highcharts, Highstock, Highmaps) Border color for the tooltip header
+         * when tooltip.split is enabled.
+         */
+        borderColor?: Highcharts.ColorType;
+        /**
+         * (Highcharts, Highstock, Highmaps) The width of the border for the
+         * tooltip header when tooltip.split is enabled.
+         */
+        borderWidth?: number;
+        /**
+         * (Highcharts, Highstock, Highmaps) Distance between the plot area and
+         * the header (except the chevron) in a split tooltip, in pixels. The
+         * default value makes the header text align with the axis labels.
+         */
+        distance?: number;
+        /**
+         * (Highcharts, Highstock, Highmaps) The name of a symbol to use for the
+         * border around the tooltip header. Applies only when tooltip.split is
+         * enabled.
+         *
+         * Custom callbacks for symbol path generation can also be added to
+         * `Highcharts.SVGRenderer.prototype.symbols` the same way as for
+         * series.marker.symbol.
+         */
+        shape?: string;
+        /**
+         * (Highcharts, Highstock, Highmaps) CSS styles for the tooltip header.
+         * The default is `{ fontSize: '1em' }`, ensuring that the header text
+         * is the same size as the axis labels.
+         */
+        style?: object;
     }
     /**
      * (Highcharts, Highmaps) A `tilemap` series. If the type option is not

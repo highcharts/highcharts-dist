@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Stock/Indicators/CCI/CCIIndicator.js';
+import * as Highcharts from '../../../indicators/cci.src';
 export default Highcharts;

@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Stock/Indicators/AD/ADIndicator.js';
+import * as Highcharts from '../../../indicators/accumulation-distribution.src';
 export default Highcharts;

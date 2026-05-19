@@ -1,4 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Series/Treemap/TreemapSeries.js';
-import '../../Series/Sunburst/SunburstSeries.js';
+import * as Highcharts from '../../../modules/sunburst.src';
 export default Highcharts;

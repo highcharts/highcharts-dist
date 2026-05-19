@@ -102,7 +102,7 @@ declare module "../highcharts" {
         defer?: number;
     }
     /**
-     * (Highcharts, Highstock) Options for the series data sorting.
+     * (Highcharts, Highstock) Options for series data sorting.
      */
     interface PlotLinearregressionDataSortingOptions {
         /**
@@ -127,7 +127,8 @@ declare module "../highcharts" {
      * defaults to the series color, or a contrast color if `onArea`.
      */
     interface PlotLinearregressionLabelStyleOptions {
-        fontSize?: (number|string);
+        fontSize?: number;
+        fontWeight?: string;
     }
     /**
      * (Highstock) Options for the connector in the _Series on point_ feature.
@@ -242,6 +243,48 @@ declare module "../highcharts" {
          * slowly back to normal.
          */
         duration?: number;
+    }
+    /**
+     * (Highstock) Options for the tooltip header when tooltip.split is enabled.
+     * The header is the box containing the X value in a split tooltip.
+     */
+    interface PlotLinearregressionTooltipHeaderOptions {
+        /**
+         * (Highstock) Background color for the tooltip header when
+         * tooltip.split is enabled.
+         */
+        backgroundColor?: Highcharts.ColorType;
+        /**
+         * (Highstock) Border color for the tooltip header when tooltip.split is
+         * enabled.
+         */
+        borderColor?: Highcharts.ColorType;
+        /**
+         * (Highstock) The width of the border for the tooltip header when
+         * tooltip.split is enabled.
+         */
+        borderWidth?: number;
+        /**
+         * (Highstock) Distance between the plot area and the header (except the
+         * chevron) in a split tooltip, in pixels. The default value makes the
+         * header text align with the axis labels.
+         */
+        distance?: number;
+        /**
+         * (Highstock) The name of a symbol to use for the border around the
+         * tooltip header. Applies only when tooltip.split is enabled.
+         *
+         * Custom callbacks for symbol path generation can also be added to
+         * `Highcharts.SVGRenderer.prototype.symbols` the same way as for
+         * series.marker.symbol.
+         */
+        shape?: string;
+        /**
+         * (Highstock) CSS styles for the tooltip header. The default is `{
+         * fontSize: '1em' }`, ensuring that the header text is the same size as
+         * the axis labels.
+         */
+        style?: object;
     }
     /**
      * (Highstock) A linear regression series. If the type option is not

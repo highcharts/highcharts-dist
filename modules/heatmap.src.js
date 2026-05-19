@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v13.0.0-beta.0 (2026-05-19)
+ * @license Highmaps JS v13.0.0-beta.1 (2026-05-19)
  * @module highcharts/modules/heatmap
  * @requires highcharts
  *
@@ -3031,7 +3031,7 @@ Array.prototype.push.apply((highcharts_Axis_commonjs_highcharts_Axis_commonjs2_h
 ;// ./code/es-modules/masters/modules/coloraxis.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
+ * @license Highcharts JS v13.0.0-beta.1 (2026-05-19)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *

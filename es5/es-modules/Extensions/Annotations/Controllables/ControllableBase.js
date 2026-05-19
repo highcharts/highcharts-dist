@@ -1,6 +1,0 @@
-/* *
- *
- *  Declarations
- *
- * */
-export {};

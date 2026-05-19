@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Stock/Indicators/MFI/MFIIndicator.js';
+import * as Highcharts from '../../../indicators/mfi.src';
 export default Highcharts;

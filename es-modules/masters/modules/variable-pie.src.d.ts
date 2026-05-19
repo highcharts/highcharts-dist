@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Series/VariablePie/VariablePieSeries.js';
+import * as Highcharts from '../../../modules/variable-pie.src';
 export default Highcharts;

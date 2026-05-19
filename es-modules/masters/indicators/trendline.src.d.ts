@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Stock/Indicators/TrendLine/TrendLineIndicator.js';
+import * as Highcharts from '../../../indicators/trendline.src';
 export default Highcharts;

@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Series/Pictorial/PictorialSeries.js';
+import * as Highcharts from '../../../modules/pictorial.src';
 export default Highcharts;

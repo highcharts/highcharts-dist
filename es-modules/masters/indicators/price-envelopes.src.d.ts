@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Stock/Indicators/PriceEnvelopes/PriceEnvelopesIndicator.js';
+import * as Highcharts from '../../../indicators/price-envelopes.src';
 export default Highcharts;

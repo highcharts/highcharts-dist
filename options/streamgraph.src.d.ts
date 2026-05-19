@@ -133,8 +133,15 @@ declare module "../highcharts.src" {
         animation?: (boolean|Highcharts.PlotStreamgraphDataLabelsAnimationOptions|Partial<Highcharts.AnimationOptionsObject>);
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) The background color or
-         * gradient for the data label. Setting it to `auto` will use the
-         * point's color.
+         * gradient for the data label. In addition to regular colors, there are
+         * two special setting for this option:
+         *
+         * - `auto` will set the background color the point's color.
+         *
+         * - `contrast` will set it to a contrast against the text color, with
+         * an opacity allowing to see the underlying content. The contrast is
+         * great enough to ensure readability for the text according to
+         * accessibility standards.
          */
         backgroundColor?: Highcharts.ColorType;
         /**
@@ -189,6 +196,13 @@ declare module "../highcharts.src" {
          * the defer time set in plotOptions.series.animation.
          */
         defer?: boolean;
+        /**
+         * (Highcharts, Highstock, Gantt) The distance of the data label from
+         * the data point. Note that the `padding` setting also affects the
+         * rendered distance, but is not visible unless the data label has a
+         * border or background.
+         */
+        distance?: number;
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable the data
          * labels.
@@ -263,8 +277,12 @@ declare module "../highcharts.src" {
          * (Highcharts, Highstock, Highmaps, Gantt) When either the
          * `borderWidth` or the `backgroundColor` is set, this is the padding
          * within the box.
+         *
+         * An array of numbers sets padding for the respective sides. An array
+         * of two numbers repeats the values for the horizontal and vertical
+         * sides.
          */
-        padding?: number;
+        padding?: object;
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) Aligns data labels relative
          * to points. If `center` alignment is not possible, it defaults to
@@ -304,7 +322,10 @@ declare module "../highcharts.src" {
          * well, in which cases it can be disabled by setting it to `"none"`.
          * When `useHTML` is true, the `textOutline` will not be picked up. In
          * this, case, the same effect can be achieved through the `text-shadow`
-         * CSS property.
+         * CSS property. As a complementary or alternative to the `textOutline`,
+         * a `dataLabels.backgroundColor` can be used. It provides a more calm
+         * impression and ensures readable text label, at the cost of a risk of
+         * overshadowing the underlying chart elements.
          *
          * For some series types, where each point has an extent, like for
          * example tree maps, the data label may overflow the point. There are
@@ -321,6 +342,10 @@ declare module "../highcharts.src" {
          *
          * **Note:** Only SVG-based renderer supports this option. Setting
          * `useHTML` to true will disable this option.
+         *
+         * Text path support is not bundled into `highcharts.js`, and requires
+         * the `modules/textpath.js` file. However, it is included in the script
+         * files of those series types that use it by default.
          */
         textPath?: Highcharts.DataLabelsTextPathOptionsObject;
         /**
@@ -345,13 +370,22 @@ declare module "../highcharts.src" {
          * label relative to the point in pixels.
          */
         y?: number;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) The z index of the data
+         * labels group. Does not apply below series level options.
+         *
+         * Use a `zIndex` of 6 to display it above the series, or use a `zIndex`
+         * of 2 to display it behind the series.
+         */
+        zIndex?: number;
     }
     /**
      * (Highcharts, Highstock, Gantt) Styles for the series label. The color
      * defaults to the series color, or a contrast color if `onArea`.
      */
     interface PlotStreamgraphLabelStyleOptions {
-        fontSize?: (number|string);
+        fontSize?: number;
+        fontWeight?: string;
     }
     /**
      * (Highcharts, Highstock) Options for the connector in the _Series on
@@ -427,6 +461,50 @@ declare module "../highcharts.src" {
          * slowly back to normal.
          */
         duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock) Options for the tooltip header when tooltip.split
+     * is enabled. The header is the box containing the X value in a split
+     * tooltip.
+     */
+    interface PlotStreamgraphTooltipHeaderOptions {
+        /**
+         * (Highcharts, Highstock) Background color for the tooltip header when
+         * tooltip.split is enabled.
+         */
+        backgroundColor?: Highcharts.ColorType;
+        /**
+         * (Highcharts, Highstock) Border color for the tooltip header when
+         * tooltip.split is enabled.
+         */
+        borderColor?: Highcharts.ColorType;
+        /**
+         * (Highcharts, Highstock) The width of the border for the tooltip
+         * header when tooltip.split is enabled.
+         */
+        borderWidth?: number;
+        /**
+         * (Highcharts, Highstock) Distance between the plot area and the header
+         * (except the chevron) in a split tooltip, in pixels. The default value
+         * makes the header text align with the axis labels.
+         */
+        distance?: number;
+        /**
+         * (Highcharts, Highstock) The name of a symbol to use for the border
+         * around the tooltip header. Applies only when tooltip.split is
+         * enabled.
+         *
+         * Custom callbacks for symbol path generation can also be added to
+         * `Highcharts.SVGRenderer.prototype.symbols` the same way as for
+         * series.marker.symbol.
+         */
+        shape?: string;
+        /**
+         * (Highcharts, Highstock) CSS styles for the tooltip header. The
+         * default is `{ fontSize: '1em' }`, ensuring that the header text is
+         * the same size as the axis labels.
+         */
+        style?: object;
     }
     /**
      * (Highcharts, Highstock) Animation when hovering over the marker.

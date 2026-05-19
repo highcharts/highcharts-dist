@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Stock/Indicators/Stochastic/StochasticIndicator.js';
+import * as Highcharts from '../../../indicators/stochastic.src';
 export default Highcharts;

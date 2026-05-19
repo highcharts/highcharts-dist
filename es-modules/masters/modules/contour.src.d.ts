@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import './coloraxis.src.js';
+import * as Highcharts from '../../../modules/contour.src';
 export default Highcharts;

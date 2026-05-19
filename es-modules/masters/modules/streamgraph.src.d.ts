@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Series/Streamgraph/StreamgraphSeries.js';
+import * as Highcharts from '../../../modules/streamgraph.src';
 export default Highcharts;

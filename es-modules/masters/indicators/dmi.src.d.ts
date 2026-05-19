@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Stock/Indicators/DMI/DMIIndicator.js';
+import * as Highcharts from '../../../indicators/dmi.src';
 export default Highcharts;

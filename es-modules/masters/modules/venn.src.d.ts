@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Series/Venn/VennSeries.js';
+import * as Highcharts from '../../../modules/venn.src';
 export default Highcharts;

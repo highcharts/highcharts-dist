@@ -1,2 +1,2 @@
-import H from '../../Core/Globals.js';
-export default H;
+import * as Highcharts from '../../../themes/dark-unica.src';
+export default Highcharts;

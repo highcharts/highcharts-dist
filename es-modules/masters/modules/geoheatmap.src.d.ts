@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Series/GeoHeatmap/GeoHeatmapSeries.js';
+import * as Highcharts from '../../../modules/geoheatmap.src';
 export default Highcharts;

@@ -133,8 +133,15 @@ declare module "../highcharts" {
         animation?: (boolean|Highcharts.PlotCmoDataLabelsAnimationOptions|Partial<Highcharts.AnimationOptionsObject>);
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) The background color or
-         * gradient for the data label. Setting it to `auto` will use the
-         * point's color.
+         * gradient for the data label. In addition to regular colors, there are
+         * two special setting for this option:
+         *
+         * - `auto` will set the background color the point's color.
+         *
+         * - `contrast` will set it to a contrast against the text color, with
+         * an opacity allowing to see the underlying content. The contrast is
+         * great enough to ensure readability for the text according to
+         * accessibility standards.
          */
         backgroundColor?: Highcharts.ColorType;
         /**
@@ -189,6 +196,13 @@ declare module "../highcharts" {
          * the defer time set in plotOptions.series.animation.
          */
         defer?: boolean;
+        /**
+         * (Highcharts, Highstock, Gantt) The distance of the data label from
+         * the data point. Note that the `padding` setting also affects the
+         * rendered distance, but is not visible unless the data label has a
+         * border or background.
+         */
+        distance?: number;
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable the data
          * labels.
@@ -263,8 +277,12 @@ declare module "../highcharts" {
          * (Highcharts, Highstock, Highmaps, Gantt) When either the
          * `borderWidth` or the `backgroundColor` is set, this is the padding
          * within the box.
+         *
+         * An array of numbers sets padding for the respective sides. An array
+         * of two numbers repeats the values for the horizontal and vertical
+         * sides.
          */
-        padding?: number;
+        padding?: object;
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) Aligns data labels relative
          * to points. If `center` alignment is not possible, it defaults to
@@ -304,7 +322,10 @@ declare module "../highcharts" {
          * well, in which cases it can be disabled by setting it to `"none"`.
          * When `useHTML` is true, the `textOutline` will not be picked up. In
          * this, case, the same effect can be achieved through the `text-shadow`
-         * CSS property.
+         * CSS property. As a complementary or alternative to the `textOutline`,
+         * a `dataLabels.backgroundColor` can be used. It provides a more calm
+         * impression and ensures readable text label, at the cost of a risk of
+         * overshadowing the underlying chart elements.
          *
          * For some series types, where each point has an extent, like for
          * example tree maps, the data label may overflow the point. There are
@@ -321,6 +342,10 @@ declare module "../highcharts" {
          *
          * **Note:** Only SVG-based renderer supports this option. Setting
          * `useHTML` to true will disable this option.
+         *
+         * Text path support is not bundled into `highcharts.js`, and requires
+         * the `modules/textpath.js` file. However, it is included in the script
+         * files of those series types that use it by default.
          */
         textPath?: Highcharts.DataLabelsTextPathOptionsObject;
         /**
@@ -345,13 +370,22 @@ declare module "../highcharts" {
          * label relative to the point in pixels.
          */
         y?: number;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) The z index of the data
+         * labels group. Does not apply below series level options.
+         *
+         * Use a `zIndex` of 6 to display it above the series, or use a `zIndex`
+         * of 2 to display it behind the series.
+         */
+        zIndex?: number;
     }
     /**
      * (Highcharts, Highstock, Gantt) Styles for the series label. The color
      * defaults to the series color, or a contrast color if `onArea`.
      */
     interface PlotCmoLabelStyleOptions {
-        fontSize?: (number|string);
+        fontSize?: number;
+        fontWeight?: string;
     }
     /**
      * (Highstock) Options for the connector in the _Series on point_ feature.
@@ -424,6 +458,23 @@ declare module "../highcharts" {
      */
     interface PlotCmoStatesInactiveAnimationOptions {
         duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock, Gantt) For series on datetime axes, the date
+     * format in the tooltip's header will by default be guessed based on the
+     * closest data points. This member gives the default string representations
+     * used for each unit. For an overview of the string or object
+     * configuration, see dateFormat.
+     */
+    interface PlotCmoTooltipDateTimeLabelFormatsOptions {
+        day?: string;
+        hour?: string;
+        millisecond?: string;
+        minute?: string;
+        month?: string;
+        second?: string;
+        week?: string;
+        year?: string;
     }
     /**
      * (Highstock) Positioning options for fixed tooltip, taking effect only

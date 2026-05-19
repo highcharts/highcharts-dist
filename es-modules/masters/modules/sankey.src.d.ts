@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Series/Sankey/SankeySeries.js';
+import * as Highcharts from '../../../modules/sankey.src';
 export default Highcharts;

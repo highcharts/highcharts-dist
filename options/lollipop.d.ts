@@ -29,7 +29,8 @@ declare module "../highcharts" {
      * defaults to the series color, or a contrast color if `onArea`.
      */
     interface PlotLollipopLabelStyleOptions {
-        fontSize?: (number|string);
+        fontSize?: number;
+        fontWeight?: string;
     }
     /**
      * (Highcharts, Highstock) Animation when hovering over the marker.
@@ -337,9 +338,42 @@ declare module "../highcharts" {
          */
         dataLabels?: (Highcharts.SeriesAreaRangeDataLabelsOptionsObject|Array<Highcharts.SeriesAreaRangeDataLabelsOptionsObject>);
         /**
-         * (Highcharts, Highstock) Options for the series data sorting.
+         * (Highcharts, Highstock) The mapping between the data table and the
+         * series data points. This is used in conjunction with the `dataTable`
+         * option (on chart or series level) to map columns from the data table
+         * to the properties of the data points. The keys of the `dataMapping`
+         * object correspond to the properties of the data points (e.g. `x`,
+         * `y`, `name`), and the values are objects that specify which column
+         * from which data table to use for that property.
+         *
+         * The keys can also be nested paths, for example `dataLabel.format`, to
+         * map to nested properties of the data points.
+         *
+         * The values can also be strings, in which case they are interpreted as
+         * column id's from the first data table.
+         *
+         * A typical use case is that multiple series share a common column,
+         * like `name` or `x`. In this case, to avoid repetition, the common
+         * column can be applied in `plotOptions.series.dataMapping` and the
+         * individual series can specify only the columns that are unique to
+         * them.
+         *
+         * The series name defaults to the column ID of the main data column in
+         * the mapping. The main data column is typically the `y` data for
+         * cartesian series, or `value` for map series. For example, if the
+         * mapping is `{ y: 'Cost' }`, the series name will be `Cost`. (see
+         * online documentation for example)
+         *
+         * If the columns of the DataTable have keys matching the series keys,
+         * the data mapping is not necessary. For example, this DataTable will
+         * connect directly to the series' `x` and `y` keys: (see online
+         * documentation for example)
          */
-        dataSorting?: (Highcharts.DataSortingOptionsObject|Highcharts.PlotLollipopDataSortingOptions);
+        dataMapping?: Highcharts.DataMappingOptionsObject;
+        /**
+         * (Highcharts, Highstock) Options for series data sorting.
+         */
+        dataSorting?: Highcharts.PlotLollipopDataSortingOptions;
         /**
          * (Highcharts, Highstock) Deprecated. Use
          * plotOptions.series.accessibility.description instead.
@@ -822,6 +856,23 @@ declare module "../highcharts" {
      */
     interface PlotLollipopStatesInactiveAnimationOptions {
         duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock, Gantt) For series on datetime axes, the date
+     * format in the tooltip's header will by default be guessed based on the
+     * closest data points. This member gives the default string representations
+     * used for each unit. For an overview of the string or object
+     * configuration, see dateFormat.
+     */
+    interface PlotLollipopTooltipDateTimeLabelFormatsOptions {
+        day?: string;
+        hour?: string;
+        millisecond?: string;
+        minute?: string;
+        month?: string;
+        second?: string;
+        week?: string;
+        year?: string;
     }
     /**
      * (Highcharts, Highstock) Positioning options for fixed tooltip, taking

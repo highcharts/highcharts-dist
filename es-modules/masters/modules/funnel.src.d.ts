@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Series/Pyramid/PyramidSeries.js';
+import * as Highcharts from '../../../modules/funnel.src';
 export default Highcharts;

@@ -1,6 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Series/Candlestick/CandlestickSeries.js';
-import './broken-axis.src.js';
-import './datagrouping.src.js';
-import './mouse-wheel-zoom.src.js';
+import * as Highcharts from '../../../modules/stock.src';
 export default Highcharts;

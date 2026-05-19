@@ -8,7 +8,7 @@ import * as _Highcharts from "./highcharts.src";
 declare module "./highcharts.src" {
     interface BorderRadiusOptionsObject {
         radius: (number|string);
-        scope: ("point"|"stack");
+        scope: ("individual"|"point"|"stack");
         where: ("all"|"end");
     }
     interface Point {
@@ -20,46 +20,6 @@ declare module "./highcharts.src" {
          * Range series only. The low or minimum value for each data point.
          */
         low?: number;
-    }
-    interface SVGElement {
-        /**
-         * Attach a polygon to a bounding box if the element contains a
-         * textPath.
-         *
-         * @param event
-         *        An event containing a bounding box object
-         *
-         * @return Returns the bounding box object.
-         */
-        setPolygon(event: any): BBoxObject;
-        /**
-         * Draw text along a textPath for a dataLabel.
-         *
-         * @param event
-         *        An event containing label options
-         */
-        setTextPath(event: any): void;
-        /**
-         * Set a text path for a `text` or `label` element, allowing the text to
-         * flow along a path.
-         *
-         * In order to unset the path for an existing element, call
-         * `setTextPath` with `{ enabled: false }` as the second argument.
-         *
-         * Text path support is not bundled into `highcharts.js`, and requires
-         * the `modules/textpath.js` file. However, it is included in the script
-         * files of those series types that use it by default
-         *
-         * @param path
-         *        Path to follow. If undefined, it allows changing options for
-         *        the existing path.
-         *
-         * @param textPathOptions
-         *        Options.
-         *
-         * @return Returns the SVGElement for chaining.
-         */
-        setTextPath(path: (SVGElement|undefined), textPathOptions: DataLabelsTextPathOptionsObject): SVGElement;
     }
     /**
      * Add an event listener.
@@ -534,11 +494,6 @@ declare module "./highcharts.src" {
      */
     function wrap(obj: any, method: string, func: WrapProceedFunction): void;
     /**
-     * If ranges are not specified, determine ranges from rendered bubble series
-     * and render legend again.
-     */
-    function chartDrawChartBox(): void;
-    /**
      * Wrap the getOffset method to return zero offset for title or labels in a
      * radial axis.
      */
@@ -564,6 +519,10 @@ declare module "./highcharts.src" {
      */
     function onAxisAfterRender(): void;
     /**
+     * Gauge-specific tick length
+     */
+    function onAxisAfterTickSize(): void;
+    /**
      * Wrap auto label align to avoid setting axis-wide rotation on radial axes.
      * (#4920)
      */
@@ -584,18 +543,6 @@ declare module "./highcharts.src" {
      */
     function onGlobalSetOptions(): void;
     /**
-     * Start the bubble legend creation process.
-     */
-    function onLegendAfterGetAllItems(): void;
-    /**
-     * Retranslate the legend items after render
-     */
-    function onLegendAfterRender(): void;
-    /**
-     * Toggle bubble legend depending on the visible status of bubble series.
-     */
-    function onLegendItemClick(): void;
-    /**
      * Apply conditional rounding to polar bars
      */
     function onSeriesAfterColumnTranslate(): void;
@@ -607,5 +554,10 @@ declare module "./highcharts.src" {
      * Prevent setting Y axis dirty.
      */
     function renderHidden(): void;
+    /**
+     * Wrap the `getMinorTickInterval` method to return 'auto' for gauge axes by
+     * default, when `minorTicks` are not explicitly enabled or disabled.
+     */
+    function wrapAxisGetMinorTickInterval(): void;
 }
 export default _Highcharts;

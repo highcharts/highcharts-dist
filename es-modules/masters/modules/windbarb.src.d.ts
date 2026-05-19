@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Series/Windbarb/WindbarbSeries.js';
+import * as Highcharts from '../../../modules/windbarb.src';
 export default Highcharts;

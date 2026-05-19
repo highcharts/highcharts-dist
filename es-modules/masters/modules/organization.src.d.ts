@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Series/Organization/OrganizationSeries.js';
+import * as Highcharts from '../../../modules/organization.src';
 export default Highcharts;

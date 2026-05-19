@@ -1,4 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Stock/Indicators/SMA/SMAIndicator.js';
-import '../../Stock/Indicators/EMA/EMAIndicator.js';
+import * as Highcharts from '../../../indicators/indicators.src';
 export default Highcharts;

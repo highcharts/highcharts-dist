@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Series/ParetoSeries/ParetoSeries.js';
+import * as Highcharts from '../../../modules/pareto.src';
 export default Highcharts;

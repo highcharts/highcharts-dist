@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Stock/Indicators/ATR/ATRIndicator.js';
+import * as Highcharts from '../../../indicators/atr.src';
 export default Highcharts;

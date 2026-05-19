@@ -1,3 +1,2 @@
-import Highcharts from '../../Core/Globals.js';
-import '../../Stock/Indicators/Chaikin/ChaikinIndicator.js';
+import * as Highcharts from '../../../indicators/chaikin.src';
 export default Highcharts;
