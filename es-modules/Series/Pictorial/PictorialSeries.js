@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi, Magdalena Gut
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -15,8 +16,8 @@
  *
  * */
 import '../Column/ColumnSeries.js';
-import PatternFill from '../../Extensions/PatternFill.js';
-import A from '../../Core/Animation/AnimationUtilities.js';
+import { composePatternFill } from '../../Extensions/PatternFill.js';
+import { animObject } from '../../Core/Animation/AnimationUtilities.js';
 import Chart from '../../Core/Chart/Chart.js';
 import PictorialPoint from './PictorialPoint.js';
 import PictorialUtilities from './PictorialUtilities.js';
@@ -25,9 +26,18 @@ import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import StackItem from '../../Core/Axis/Stacking/StackItem.js';
 import SVGRenderer from '../../Core/Renderer/SVG/SVGRenderer.js';
 import { addEvent, defined, merge, objectEach, pick } from '../../Shared/Utilities.js';
+/* *
+ *
+ *  Composition
+ *
+ * */
+composePatternFill(Chart, Series, SVGRenderer);
+/* *
+ *
+ *  Constants
+ *
+ * */
 const ColumnSeries = SeriesRegistry.seriesTypes.column;
-PatternFill.compose(Chart, Series, SVGRenderer);
-const { animObject } = A;
 const { getStackMetrics, invertShadowGroup, rescalePatternFill } = PictorialUtilities;
 /* *
  *
@@ -238,7 +248,7 @@ function renderStackShadow(stack) {
                         path: {
                             d: shape.definition,
                             fill: shadowOptions.color ||
-                                '#dedede',
+                                'var(--highcharts-neutral-color-20)',
                             strokeWidth: strokeWidth,
                             stroke: shadowOptions.borderColor ||
                                 'transparent'
@@ -249,7 +259,7 @@ function renderStackShadow(stack) {
                         height: height,
                         patternContentUnits: 'objectBoundingBox',
                         backgroundColor: 'none',
-                        color: '#dedede'
+                        color: 'var(--highcharts-neutral-color-20)'
                     }
                 }
             })
@@ -412,6 +422,7 @@ export default PictorialSeries;
  *    }]
  *    ```
  *
+ * @basic
  * @type      {Array<Array<(number|string),number>|Array<(number|string),number,number>|*>}
  * @extends   series.column.data
  *
@@ -504,7 +515,7 @@ export default PictorialSeries;
  *
  * @declare   Highcharts.YAxisOptions
  * @type      {Highcharts.ColorType}
- * @default   #dedede
+ * @default   var(--highcharts-neutral-color-20)
  * @product   highcharts
  * @requires  modules/pictorial
  * @apioption yAxis.stackShadow.color
@@ -514,7 +525,7 @@ export default PictorialSeries;
  *
  * @declare   Highcharts.YAxisOptions
  * @type      {boolean}
- * @default   undefined
+ * @default   false
  * @product   highcharts
  * @requires  modules/pictorial
  * @apioption yAxis.stackShadow.enabled

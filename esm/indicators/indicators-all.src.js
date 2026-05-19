@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v12.6.0 (2026-04-13)
+ * @license Highstock JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/indicators/indicators-all
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -10,8 +10,8 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Paweł Fus
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 import * as __WEBPACK_EXTERNAL_MODULE__modules_datagrouping_src_js_b7a4250c__ from "../modules/datagrouping.src.js";
@@ -57,16 +57,147 @@ var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require_
 ;// external ["../highcharts.src.js","default","Chart"]
 const external_highcharts_src_js_default_Chart_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Chart;
 var external_highcharts_src_js_default_Chart_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Chart_namespaceObject);
-;// external ["../highcharts.src.js","default","SeriesRegistry"]
-const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
-var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
+;// ./code/es-modules/Data/ColumnUtils.js
+/* *
+ *
+ *  (c) 2020-2026 Highsoft AS
+ *
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
+ *
+ *
+ *  Authors:
+ *  - Dawid Draguła
+ *
+ * */
+/* *
+*
+* Functions
+*
+* */
+/**
+ * Sets the length of the column array.
+ *
+ * @param {DataTableColumn} column
+ * Column to be modified.
+ *
+ * @param {number} length
+ * New length of the column.
+ *
+ * @param {boolean} asSubarray
+ * If column is a typed array, return a subarray instead of a new array. It
+ * is faster `O(1)`, but the entire buffer will be kept in memory until all
+ * views of it are destroyed. Default is `false`.
+ *
+ * @return {DataTableColumn}
+ * Modified column.
+ *
+ * @private
+ */
+function setLength(column, length, asSubarray) {
+    if (Array.isArray(column)) {
+        column.length = length;
+        return column;
+    }
+    return column[asSubarray ? 'subarray' : 'slice'](0, length);
+}
+/**
+ * Splices a column array.
+ *
+ * @param {DataTableColumn} column
+ * Column to be modified.
+ *
+ * @param {number} start
+ * Index at which to start changing the array.
+ *
+ * @param {number} deleteCount
+ * An integer indicating the number of old array elements to remove.
+ *
+ * @param {boolean} removedAsSubarray
+ * If column is a typed array, return a subarray instead of a new array. It
+ * is faster `O(1)`, but the entire buffer will be kept in memory until all
+ * views to it are destroyed. Default is `true`.
+ *
+ * @param {Array<number>|TypedArray} items
+ * The elements to add to the array, beginning at the start index. If you
+ * don't specify any elements, `splice()` will only remove elements from the
+ * array.
+ *
+ * @return {SpliceResult}
+ * Object containing removed elements and the modified column.
+ *
+ * @private
+ */
+function splice(column, start, deleteCount, removedAsSubarray, items = []) {
+    if (Array.isArray(column)) {
+        if (!Array.isArray(items)) {
+            items = Array.from(items);
+        }
+        return {
+            removed: column.splice(start, deleteCount, ...items),
+            array: column
+        };
+    }
+    const Constructor = Object.getPrototypeOf(column)
+        .constructor;
+    const removed = column[removedAsSubarray ? 'subarray' : 'slice'](start, start + deleteCount);
+    const newLength = column.length - deleteCount + items.length;
+    const result = new Constructor(newLength);
+    result.set(column.subarray(0, start), 0);
+    result.set(items, start);
+    result.set(column.subarray(start + deleteCount), start + items.length);
+    return {
+        removed: removed,
+        array: result
+    };
+}
+/**
+ * Converts a cell value to a number.
+ *
+ * @param {DataTableCellType} value
+ * Cell value to convert to a number.
+ *
+ * @param {boolean} useNaN
+ * If `true`, returns `NaN` for non-numeric values; if `false`,
+ * returns `null` instead.
+ *
+ * @return {number | null}
+ * Number or `null` if the value is not a number.
+ *
+ * @private
+ */
+function convertToNumber(value, useNaN) {
+    switch (typeof value) {
+        case 'boolean':
+            return (value ? 1 : 0);
+        case 'number':
+            return (isNaN(value) && !useNaN ? null : value);
+        default:
+            value = parseFloat(`${value ?? ''}`);
+            return (isNaN(value) && !useNaN ? null : value);
+    }
+}
+/* *
+ *
+ *  Default Export
+ *
+ * */
+const ColumnUtils = {
+    convertToNumber,
+    setLength,
+    splice
+};
+/* harmony default export */ const Data_ColumnUtils = (ColumnUtils);
+
 ;// ./code/es-modules/Shared/Utilities.js
 /* *
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1422,14 +1553,388 @@ function wrap(obj, method, func) {
     };
 }
 
+;// ./code/es-modules/Data/DataTableCore.js
+/* *
+ *
+ *  (c) 2009-2026 Highsoft AS
+ *
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
+ *
+ *
+ *  Authors:
+ *  - Sophie Bremer
+ *  - Gøran Slettemark
+ *  - Torstein Hønsi
+ *
+ * */
+
+
+const { setLength: DataTableCore_setLength, splice: DataTableCore_splice } = Data_ColumnUtils;
+
+
+/* *
+ *
+ *  Class
+ *
+ * */
+/**
+ * Class to manage columns and rows in a table structure. It provides methods
+ * to add, remove, and manipulate columns and rows, as well as to retrieve data
+ * from specific cells.
+ *
+ * Highcharts allows passing a `DataTable` or a configuration object for a data
+ * table in the `dataTable` property, either chart-level
+ * [dataTable](https://api.highcharts.com/highcharts/dataTable) or as
+ * [series.dataTable](https://api.highcharts.com/highcharts/series.dataTable).
+ * The `DataTable` is then used as a source for the series data points, mapped
+ * by the `series.dataMapping` option.
+ *
+ * After chart instantiation, the data table can be accessed from the series as
+ * `series.dataTable`. CRUD operations on the data table will be reflected in
+ * the chart.
+ *
+ * @example
+ * const dataTable = new Highcharts.DataTable({
+ *   columns: {
+ *     year: [2020, 2021, 2022, 2023],
+ *     cost: [11, 13, 12, 14],
+ *     revenue: [12, 15, 14, 18]
+ *   }
+ * });
+ *
+ * @class
+ * @name Highcharts.DataTable
+ *
+ * @param {Highcharts.DataTableOptionsObject} [options]
+ * Options to initialize the new DataTable instance.
+ */
+class DataTableCore {
+    constructor(options = {}) {
+        this.isDataTable = true;
+        this.autoId = !options.id;
+        this.columns = {};
+        this.id = (options.id || (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)());
+        this.rowCount = 0;
+        this.versionTag = (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)();
+        let rowCount = 0;
+        objectEach(options.columns || {}, (column, columnId) => {
+            this.columns[columnId] = column.slice();
+            rowCount = Math.max(rowCount, column.length);
+        });
+        this.applyRowCount(rowCount);
+    }
+    /* *
+     *
+     *  Functions
+     *
+     * */
+    /**
+     * Applies a row count to the table by setting the `rowCount` property and
+     * adjusting the length of all columns.
+     *
+     * @private
+     * @param {number} rowCount The new row count.
+     */
+    applyRowCount(rowCount) {
+        this.rowCount = rowCount;
+        objectEach(this.columns, (column, columnId) => {
+            if (column.length !== rowCount) {
+                this.columns[columnId] = DataTableCore_setLength(column, rowCount);
+            }
+        });
+    }
+    /**
+     * Delete rows. Simplified version of the full
+     * `DataTable.deleteRows` method.
+     *
+     * @sample highcharts/datatable/live-chart/
+     *       Add and delete rows in a live chart
+     * @sample highcharts/datatable/shared-with-grid/
+     *       Chart with data table CRUD operations
+     *
+     * @function Highcharts.DataTable#deleteRows
+     *
+     * @param {number} rowIndex
+     * The start row index
+     *
+     * @param {number} [rowCount=1]
+     * The number of rows to delete
+     *
+     * @return {void}
+     *
+     * @emits #afterDeleteRows
+     */
+    deleteRows(rowIndex, rowCount = 1) {
+        if (rowCount > 0 && rowIndex < this.rowCount) {
+            let length = 0;
+            objectEach(this.columns, (column, columnId) => {
+                this.columns[columnId] =
+                    DataTableCore_splice(column, rowIndex, rowCount).array;
+                length = column.length;
+            });
+            this.rowCount = length;
+        }
+        fireEvent(this, 'afterDeleteRows', { rowIndex, rowCount });
+        this.versionTag = (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)();
+    }
+    /**
+     * Fetches the given column by the canonical column ID. Simplified version
+     * of the full `DataTable.getRow` method, always returning by reference.
+     *
+     * @function Highcharts.DataTable#setColumn
+     *
+     * @param {string} columnId
+     * ID of the column to get.
+     *
+     * @return {Highcharts.DataTableColumn|undefined}
+     * A copy of the column, or `undefined` if not found.
+     */
+    getColumn(columnId, 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    asReference) {
+        return this.columns[columnId];
+    }
+    /**
+     * Retrieves all or the given columns. Simplified version of the full
+     * `DataTable.getColumns` method, always returning by reference.
+     *
+     * @function Highcharts.DataTable#getColumns
+     *
+     * @param {Array<string>} [columnIds]
+     * Column ids to retrieve.
+     *
+     * @return {Highcharts.DataTableColumnCollection}
+     * Collection of columns. If a requested column was not found, it is
+     * `undefined`.
+     */
+    getColumns(columnIds, 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    asReference) {
+        return (columnIds || Object.keys(this.columns)).reduce((columns, columnId) => {
+            columns[columnId] = this.columns[columnId];
+            return columns;
+        }, {});
+    }
+    /**
+     * Retrieves the row at a given index.
+     *
+     * @function Highcharts.DataTable#getRowObject
+     *
+     * @param {number} rowIndex
+     * Row index to retrieve. First row has index 0.
+     *
+     * @param {Array<string>} [columnNames]
+     * Column names to retrieve.
+     *
+     * @return {Record<string, number|string|undefined>|undefined}
+     * Returns the row values, or `undefined` if not found.
+     */
+    getRowObject(rowIndex, columnNames) {
+        const row = {}, columns = this.columns;
+        columnNames ?? (columnNames = Object.keys(this.columns));
+        for (const columnName of columnNames) {
+            row[columnName] = columns[columnName]?.[rowIndex];
+        }
+        return row;
+    }
+    /**
+     * Sets cell values for a column. Will insert a new column, if not found.
+     *
+     * @function Highcharts.DataTable#setColumn
+     *
+     * @param {string} columnId
+     * Column name to set.
+     *
+     * @param {Highcharts.DataTableColumn} [column]
+     * Values to set in the column.
+     *
+     * @param {number} [rowIndex]
+     * Index of the first row to change. (Default: 0)
+     *
+     * @param {Record<string, (boolean|number|string|null|undefined)>} [eventDetail]
+     * Custom information for pending events.
+     *
+     * @emits #setColumns
+     * @emits #afterSetColumns
+     */
+    setColumn(columnId, column = [], rowIndex = 0, eventDetail) {
+        this.setColumns({ [columnId]: column }, rowIndex, eventDetail);
+    }
+    /**
+     * Sets cell values for multiple columns. Will insert new columns, if not
+     * found. Simplified version of the full `DataTable.setColumns`, limited
+     * to full replacement of the columns (undefined `rowIndex`).
+     *
+     * @sample highcharts/datatable/shared-with-grid/
+     *       Chart with data table CRUD operations
+     *
+     * @function Highcharts.DataTable#setColumns
+     *
+     * @param {Highcharts.DataTableColumnCollection} columns
+     * Columns as a collection, where the keys are the column names.
+     *
+     * @param {number} [rowIndex]
+     * Index of the first row to change. Ignored in the simplified `DataTable`,
+     * as it always replaces the full column.
+     *
+     * @param {Record<string, (boolean|number|string|null|undefined)>} [eventDetail]
+     * Custom information for pending events.
+     *
+     * @emits #setColumns
+     * @emits #afterSetColumns
+     */
+    setColumns(columns, rowIndex, eventDetail) {
+        let rowCount = this.rowCount;
+        objectEach(columns, (column, columnId) => {
+            this.columns[columnId] = column.slice();
+            rowCount = column.length;
+        });
+        this.applyRowCount(rowCount);
+        if (!eventDetail?.silent) {
+            fireEvent(this, 'afterSetColumns');
+            this.versionTag = (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)();
+        }
+    }
+    /**
+     * Sets cell values of a row. Will insert a new row if no index was
+     * provided, or if the index is higher than the total number of table rows.
+     * A simplified version of the full `DateTable.setRow`, limited to objects.
+     *
+     * @sample highcharts/datatable/live-chart/
+     *       Add and delete rows in a live chart
+     * @sample stock/datatable/live-candlestick/
+     *       Live candlestick
+     * @sample highcharts/datatable/shared-with-grid/
+     *       Chart with data table CRUD operations
+     *
+     * @function Highcharts.DataTable#setRow
+     *
+     * @param {Record<string, number|string|undefined>} row
+     * Cell values to set.
+     *
+     * @param {number} [rowIndex]
+     * Index of the row to set. Leave `undefined` to add as a new row.
+     *
+     * @param {boolean} [insert]
+     * Whether to insert the row at the given index, or to overwrite the row.
+     *
+     * @param {Record<string, (boolean|number|string|null|undefined)>} [eventDetail]
+     * Custom information for pending events.
+     *
+     * @emits #afterSetRows
+     */
+    setRow(row, rowIndex = this.rowCount, insert, eventDetail) {
+        var _a;
+        const { columns } = this, indexRowCount = insert ? this.rowCount + 1 : rowIndex + 1, rowKeys = Object.keys(row);
+        if (eventDetail?.addColumns !== false) {
+            for (let i = 0, iEnd = rowKeys.length; i < iEnd; i++) {
+                columns[_a = rowKeys[i]] || (columns[_a] = new Array(this.rowCount));
+            }
+        }
+        objectEach(columns, (column, columnId) => {
+            if (column) {
+                if (insert) {
+                    column = DataTableCore_splice(column, rowIndex, 0, true, [row[columnId]]).array;
+                }
+                else {
+                    column[rowIndex] =
+                        // Preserve explicit null and undefined but fall back
+                        // to existing value if the new row does not have the
+                        // key
+                        columnId in row ?
+                            row[columnId] :
+                            column[rowIndex];
+                }
+                columns[columnId] = column;
+            }
+        });
+        this.applyRowCount(Math.max(indexRowCount, this.rowCount));
+        if (!eventDetail?.silent) {
+            fireEvent(this, 'afterSetRows', { rowIndex });
+            this.versionTag = (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)();
+        }
+    }
+    /**
+     * Returns the modified (clone) or the original data table if the modified
+     * one does not exist.
+     *
+     * @return {Highcharts.DataTable}
+     * The modified (clone) or the original data table.
+     */
+    getModified() {
+        return this.modified || this;
+    }
+}
+/* *
+ *
+ *  Default Export
+ *
+ * */
+/* harmony default export */ const Data_DataTableCore = (DataTableCore);
+/* *
+ *
+ *  API Declarations
+ *
+ * */
+/**
+ * A collection of data table columns defined by a object where the key is the
+ * column ID and the value is an array of the column values. Typed arrays are
+ * supported.
+ *
+ * @type {Highcharts.DataTableColumnCollection|undefined}
+ * @apioption dataTable.columns
+ */
+/**
+ * Custom ID to identify the new DataTable instance.
+ *
+ * @type {string|undefined}
+ * @apioption dataTable.id
+ */
+/**
+ * A typed array.
+ * @typedef {Int8Array|Uint8Array|Uint8ClampedArray|Int16Array|Uint16Array|Int32Array|Uint32Array|Float32Array|Float64Array} Highcharts.TypedArray
+ */ /**
+* A column of values in a data table.
+* @typedef {Array<boolean|null|number|string|undefined>|Highcharts.TypedArray} Highcharts.DataTableColumn
+*/ /**
+* A collection of data table columns defined by a object where the key is the
+* column ID and the value is an array of the column values. Typed arrays are
+* supported.
+* @typedef {Record<string, Highcharts.DataTableColumn>} Highcharts.DataTableColumnCollection
+*/
+/**
+ * Options for the `DataTable` or `DataTableCore` classes.
+ * @interface Highcharts.DataTableOptionsObject
+ */ /**
+* The column options for the data table. The columns are defined by an object
+* where the key is the column ID and the value is an array of the column
+* values.
+*
+* @name Highcharts.DataTableOptionsObject.columns
+* @type {Highcharts.DataTableColumnCollection|undefined}
+*/ /**
+* Custom ID to identify the new DataTable instance.
+*
+* @name Highcharts.DataTableOptionsObject.id
+* @type {string|undefined}
+*/
+(''); // Keeps doclets above in JS file
+
+;// external ["../highcharts.src.js","default","SeriesRegistry"]
+const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
+var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
 ;// ./code/es-modules/Stock/Indicators/SMA/SMAIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
+
 
 
 
@@ -1440,7 +1945,7 @@ const { line: LineSeries } = (external_highcharts_src_js_default_SeriesRegistry_
  *
  * Return the parent series values in the legacy two-dimensional yData
  * format
- * @private
+ * @internal
  */
 const tableToMultiYData = (series, processed) => {
     const yData = [], pointArrayMap = series.pointArrayMap, table = processed && series.dataTable.getModified() || series.dataTable;
@@ -1462,7 +1967,7 @@ const tableToMultiYData = (series, processed) => {
 /**
  * The SMA series type.
  *
- * @private
+ * @internal
  */
 class SMAIndicator extends LineSeries {
     /* *
@@ -1470,18 +1975,14 @@ class SMAIndicator extends LineSeries {
      *  Functions
      *
      * */
-    /**
-     * @private
-     */
+    /** @internal */
     destroy() {
         this.dataEventsToUnbind.forEach(function (unbinder) {
             unbinder();
         });
         super.destroy.apply(this, arguments);
     }
-    /**
-     * @private
-     */
+    /** @internal */
     getName() {
         const params = [];
         let name = this.name;
@@ -1495,9 +1996,7 @@ class SMAIndicator extends LineSeries {
         }
         return name;
     }
-    /**
-     * @private
-     */
+    /** @internal */
     getValues(series, params) {
         const period = params.period, xVal = series.xData || [], yVal = series.yData, yValLen = yVal.length, SMA = [], xData = [], yData = [];
         let i, index = -1, range = 0, SMAPoint, sum = 0;
@@ -1530,9 +2029,7 @@ class SMAIndicator extends LineSeries {
             yData: yData
         };
     }
-    /**
-     * @private
-     */
+    /** @internal */
     init(chart, options) {
         const indicator = this;
         super.init.call(indicator, chart, options);
@@ -1591,16 +2088,14 @@ class SMAIndicator extends LineSeries {
         indicator.dataEventsToUnbind = [];
         indicator.eventsToUnbind.push(linkedSeriesUnbiner);
     }
-    /**
-     * @private
-     */
+    /** @internal */
     recalculateValues() {
-        const croppedDataValues = [], indicator = this, table = this.dataTable, oldData = indicator.points || [], oldDataLength = indicator.dataTable.rowCount, emptySet = {
+        const indicator = this, table = this.dataTable, oldDataLength = indicator.dataTable.rowCount, emptySet = {
             values: [],
             xData: [],
             yData: []
         };
-        let overwriteData = true, oldFirstPointIndex, oldLastPointIndex, min, max;
+        let overwriteData = true, min, max;
         // For the newer data table, temporarily set the parent series `yData`
         // to the legacy format that is documented for custom indicators, and
         // get the xData from the data table
@@ -1618,6 +2113,7 @@ class SMAIndicator extends LineSeries {
             // #18176, #18177 indicators should work with empty dataset
             indicator.linkedParent.dataTable.rowCount ?
             (indicator.getValues(indicator.linkedParent, indicator.options.params) || emptySet) : emptySet;
+        processedData.xData.length = processedData.values.length;
         // Reset
         delete indicator.linkedParent.xData;
         indicator.linkedParent.yData = yData;
@@ -1648,37 +2144,37 @@ class SMAIndicator extends LineSeries {
                     max = indicator.xAxis.max;
                 }
                 const croppedData = indicator.cropData(table, min, max);
-                const keys = ['x', ...(indicator.pointArrayMap || ['y'])];
-                for (let i = 0; i < (croppedData.modified?.rowCount || 0); i++) {
-                    const values = keys.map((key) => this.getColumn(key)[i] || 0);
-                    croppedDataValues.push(values);
-                }
-                const indicatorXData = indicator.getColumn('x');
-                oldFirstPointIndex = processedData.xData.indexOf(indicatorXData[0]);
-                oldLastPointIndex = processedData.xData.indexOf(indicatorXData[indicatorXData.length - 1]);
-                // Check if indicator points should be shifted (#8572)
-                if (oldFirstPointIndex === -1 &&
-                    oldLastPointIndex === processedData.xData.length - 2) {
-                    if (croppedDataValues[0][0] === oldData[0].x) {
-                        croppedDataValues.shift();
-                    }
-                }
-                indicator.updateData(croppedDataValues);
+                indicator.setData(croppedData.modified, false);
             }
             else if (indicator.updateAllPoints || // #18710
                 // Omit addPoint() and removePoint() cases
                 processedData.xData.length !== oldDataLength - 1 &&
                     processedData.xData.length !== oldDataLength + 1) {
                 overwriteData = false;
-                indicator.updateData(processedData.values);
+                this.setData(new Data_DataTableCore({
+                    columns: {
+                        x: processedData.xData,
+                        ...valueColumns
+                    }
+                }), false);
             }
         }
         if (overwriteData) {
-            table.setColumns({
-                ...valueColumns,
-                x: processedData.xData
-            });
-            indicator.options.data = processedData.values;
+            const columns = valueColumns;
+            columns.x = processedData.xData;
+            // Add the processedData.values to the data table
+            processedData.values.reduce((columns, val, i) => {
+                Object.keys(val).forEach((key) => {
+                    if (!columns[key]) {
+                        columns[key] = [];
+                    }
+                    columns[key][i] = val[key];
+                });
+                return columns;
+            }, columns);
+            table.setColumns(columns);
+            delete indicator.xColumn;
+            delete indicator.xColumnIsNumbers;
         }
         if (indicator.calculateOn.xAxis &&
             indicator.getColumn('x', true).length) {
@@ -1688,9 +2184,7 @@ class SMAIndicator extends LineSeries {
         indicator.isDirtyData = !!indicator.linkedSeries.length;
         fireEvent(indicator, 'updatedData'); // #18689
     }
-    /**
-     * @private
-     */
+    /** @internal */
     processData() {
         const series = this, compareToMain = series.options.compareToMain, linkedParent = series.linkedParent;
         super.processData.apply(series, arguments);
@@ -1711,21 +2205,10 @@ class SMAIndicator extends LineSeries {
  *
  * */
 /**
- * The parameter allows setting line series type and use OHLC indicators.
- * Data in OHLC format is required.
- *
- * @sample {highstock} stock/indicators/use-ohlc-data
- *         Use OHLC data format to plot line chart
- *
- * @type      {boolean}
- * @product   highstock
- * @apioption plotOptions.line.useOhlcData
- */
-/**
  * Simple moving average indicator (SMA). This series requires `linkedTo`
  * option to be set.
  *
- * @sample stock/indicators/sma
+ * @sample {highstock} stock/indicators/sma
  *         Simple moving average indicator
  *
  * @extends      plotOptions.line
@@ -1804,6 +2287,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const SMA_SMAIndicator = ((/* unused pure expression or super */ null && (SMAIndicator)));
 /* *
  *
@@ -1826,8 +2310,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ;// ./code/es-modules/Stock/Indicators/EMA/EMAIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1843,7 +2328,7 @@ const { sma: EMAIndicator_SMAIndicator } = (external_highcharts_src_js_default_S
 /**
  * The EMA series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.ema
  *
@@ -1911,7 +2396,7 @@ class EMAIndicator extends EMAIndicator_SMAIndicator {
  * Exponential moving average indicator (EMA). This series requires the
  * `linkedTo` option to be set.
  *
- * @sample stock/indicators/ema
+ * @sample {highstock} stock/indicators/ema
  * Exponential moving average indicator
  *
  * @extends      plotOptions.sma
@@ -1942,6 +2427,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const EMA_EMAIndicator = ((/* unused pure expression or super */ null && (EMAIndicator)));
 /* *
  *
@@ -1964,8 +2450,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ;// ./code/es-modules/Stock/Indicators/AD/ADIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  * */
 
@@ -1981,7 +2468,7 @@ const { sma: ADIndicator_SMAIndicator } = (external_highcharts_src_js_default_Se
 /**
  * The AD series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.ad
  *
@@ -2048,7 +2535,7 @@ class ADIndicator extends ADIndicator_SMAIndicator {
  * Accumulation Distribution (AD). This series requires `linkedTo` option to
  * be set.
  *
- * @sample stock/indicators/accumulation-distribution
+ * @sample {highstock} stock/indicators/accumulation-distribution
  *         Accumulation/Distribution indicator
  *
  * @extends      plotOptions.sma
@@ -2084,6 +2571,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const AD_ADIndicator = (ADIndicator);
 /* *
  *
@@ -2107,9 +2595,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ;// ./code/es-modules/Stock/Indicators/AO/AOIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
- *
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  * */
 
@@ -2126,7 +2614,7 @@ const { column: { prototype: columnProto }, sma: AOIndicator_SMAIndicator } = (e
 /**
  * The AO series type
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.ao
  *
@@ -2239,7 +2727,7 @@ AOIndicator.defaultOptions = merge(AOIndicator_SMAIndicator.defaultOptions, {
      * @type  {Highcharts.ColorType}
      * @since 7.0.0
      */
-    greaterBarColor: "#06b535" /* Palette.positiveColor */,
+    greaterBarColor: 'var(--highcharts-positive-color)',
     /**
      * Color of the Awesome oscillator series bar that is lower than the
      * previous one. Note that if a `color` is defined, the `color`
@@ -2251,7 +2739,7 @@ AOIndicator.defaultOptions = merge(AOIndicator_SMAIndicator.defaultOptions, {
      * @type  {Highcharts.ColorType}
      * @since 7.0.0
      */
-    lowerBarColor: "#f21313" /* Palette.negativeColor */,
+    lowerBarColor: 'var(--highcharts-negative-color)',
     threshold: 0,
     groupPadding: 0.2,
     pointPadding: 0.2,
@@ -2280,6 +2768,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const AO_AOIndicator = ((/* unused pure expression or super */ null && (AOIndicator)));
 /* *
  *
@@ -2303,14 +2792,14 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ''; // For including the above in the doclets
 
 ;// ./code/es-modules/Stock/Indicators/MultipleLinesComposition.js
-// SPDX-License-Identifier: LicenseRef-Highcharts
-/**
+/* *
  *
  *  (c) 2010-2026 Highsoft AS
  *  Author: Wojciech Chmiel
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2342,7 +2831,7 @@ var MultipleLinesComposition;
      * Notice that linesApiNames should have decreased amount of elements
      * relative to pointArrayMap (without pointValKey).
      *
-     * @private
+     * @internal
      * @type {Array<string>}
      */
     const linesApiNames = ['bottomLine'];
@@ -2353,7 +2842,7 @@ var MultipleLinesComposition;
      * Also it should be consistent with amount of lines calculated in
      * getValues method from your implementation.
      *
-     * @private
+     * @internal
      * @type {Array<string>}
      */
     const pointArrayMap = ['top', 'bottom'];
@@ -2363,14 +2852,14 @@ var MultipleLinesComposition;
      * be disabled for some indicators, leave this option as an empty array.
      * Names should be the same as the names in the pointArrayMap.
      *
-     * @private
+     * @internal
      * @type {Array<string>}
      */
     const areaLinesNames = ['top'];
     /**
      * Main line id.
      *
-     * @private
+     * @internal
      * @type {string}
      */
     const pointValKey = 'top';
@@ -2387,7 +2876,7 @@ var MultipleLinesComposition;
      * should be consistent with the amount of lines calculated in the
      * `getValues` method.
      *
-     * @private
+     * @internal
      */
     function compose(IndicatorClass) {
         const proto = IndicatorClass.prototype;
@@ -2409,7 +2898,8 @@ var MultipleLinesComposition;
     /**
      * Generate the API name of the line
      *
-     * @private
+     * @internal
+     * @param {string} propertyName name of the line
      */
     function getLineName(propertyName) {
         return ('plot' +
@@ -2419,7 +2909,12 @@ var MultipleLinesComposition;
     /**
      * Create translatedLines Collection based on pointArrayMap.
      *
-     * @private
+     * @internal
+     * @param {SMAIndicator} indicator
+     * @param {string} [excludedValue]
+     *        Main line id
+     * @return {Array<string>}
+     *         Returns translated lines names without excluded value.
      */
     function getTranslatedLinesNames(indicator, excludedValue) {
         const translatedLines = [];
@@ -2433,7 +2928,7 @@ var MultipleLinesComposition;
     /**
      * Draw main and additional lines.
      *
-     * @private
+     * @internal
      */
     function indicatorDrawGraph() {
         const indicator = this, pointValKey = indicator.pointValKey, linesApiNames = indicator.linesApiNames, areaLinesNames = indicator.areaLinesNames, mainLinePoints = indicator.points, mainLineOptions = indicator.options, mainLinePath = indicator.graph, gappedExtend = {
@@ -2510,7 +3005,8 @@ var MultipleLinesComposition;
      * Create the path based on points provided as argument.
      * If indicator.nextPoints option is defined, create the areaFill.
      *
-     * @private
+     * @internal
+     * @param {Array<LinePoint>} points Points on which the path should be created
      */
     function indicatorGetGraphPath(points) {
         let areaPath, path = [], higherAreaPath = [];
@@ -2534,7 +3030,7 @@ var MultipleLinesComposition;
         return path;
     }
     /**
-     * @private
+     * @internal
      * @param {Highcharts.Point} point
      *        Indicator point
      * @return {Array<number>}
@@ -2550,7 +3046,7 @@ var MultipleLinesComposition;
     /**
      * Add lines plot pixel values.
      *
-     * @private
+     * @internal
      */
     function indicatorTranslate() {
         const pointArrayMap = this.pointArrayMap;
@@ -2582,8 +3078,9 @@ var MultipleLinesComposition;
 ;// ./code/es-modules/Stock/Indicators/Aroon/AroonIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2599,9 +3096,7 @@ const { sma: AroonIndicator_SMAIndicator } = (external_highcharts_src_js_default
  * */
 // Utils
 // Index of element with extreme value from array (min or max)
-/**
- * @private
- */
+/** @internal */
 function getExtremeIndexInArray(arr, extreme) {
     let extremeValue = arr[0], valueIndex = 0, i;
     for (i = 1; i < arr.length; i++) {
@@ -2621,7 +3116,7 @@ function getExtremeIndexInArray(arr, extreme) {
 /**
  * The Aroon series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.aroon
  *
@@ -2742,6 +3237,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Aroon_AroonIndicator = ((/* unused pure expression or super */ null && (AroonIndicator)));
 /* *
  *
@@ -2767,8 +3263,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ;// ./code/es-modules/Stock/Indicators/AroonOscillator/AroonOscillatorIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2785,7 +3282,7 @@ const { aroon: AroonOscillatorIndicator_AroonIndicator } = (external_highcharts_
 /**
  * The Aroon Oscillator series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.aroonoscillator
  *
@@ -2860,6 +3357,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const AroonOscillator_AroonOscillatorIndicator = ((/* unused pure expression or super */ null && (AroonOscillatorIndicator)));
 /* *
  *
@@ -2887,8 +3385,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ;// ./code/es-modules/Stock/Indicators/ATR/ATRIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2902,23 +3401,17 @@ const { sma: ATRIndicator_SMAIndicator } = (external_highcharts_src_js_default_S
  *
  * */
 // Utils:
-/**
- * @private
- */
+/** @internal */
 function accumulateAverage(points, xVal, yVal, i) {
     const xValue = xVal[i], yValue = yVal[i];
     points.push([xValue, yValue]);
 }
-/**
- * @private
- */
+/** @internal */
 function getTR(currentPoint, prevPoint) {
     const pointY = currentPoint, prevY = prevPoint, HL = pointY[1] - pointY[2], HCp = typeof prevY === 'undefined' ? 0 : Math.abs(pointY[1] - prevY[3]), LCp = typeof prevY === 'undefined' ? 0 : Math.abs(pointY[2] - prevY[3]), TR = Math.max(HL, HCp, LCp);
     return TR;
 }
-/**
- * @private
- */
+/** @internal */
 function populateAverage(points, xVal, yVal, i, period, prevATR) {
     const x = xVal[i - 1], TR = getTR(yVal[i - 1], yVal[i - 2]), y = (((prevATR * (period - 1)) + TR) / period);
     return [x, y];
@@ -2931,7 +3424,7 @@ function populateAverage(points, xVal, yVal, i, period, prevATR) {
 /**
  * The ATR series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.atr
  *
@@ -2988,7 +3481,7 @@ class ATRIndicator extends ATRIndicator_SMAIndicator {
  * Average true range indicator (ATR). This series requires `linkedTo`
  * option to be set.
  *
- * @sample stock/indicators/atr
+ * @sample {highstock} stock/indicators/atr
  *         ATR indicator
  *
  * @extends      plotOptions.sma
@@ -3012,6 +3505,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const ATR_ATRIndicator = ((/* unused pure expression or super */ null && (ATRIndicator)));
 /* *
  *
@@ -3033,11 +3527,12 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ''; // To include the above in the js output
 
 ;// ./code/es-modules/Stock/Indicators/BB/BBIndicator.js
-// SPDX-License-Identifier: LicenseRef-Highcharts
-/**
+/* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3052,9 +3547,7 @@ const { sma: BBIndicator_SMAIndicator } = (external_highcharts_src_js_default_Se
  *
  * */
 // Utils:
-/**
- * @private
- */
+/** @internal */
 function getStandardDeviation(arr, index, isOHLC, mean) {
     const arrLen = arr.length;
     let i = 0, std = 0, value, variance = 0;
@@ -3074,7 +3567,7 @@ function getStandardDeviation(arr, index, isOHLC, mean) {
 /**
  * Bollinger Bands series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.bb
  *
@@ -3144,7 +3637,7 @@ class BBIndicator extends BBIndicator_SMAIndicator {
  * Bollinger bands (BB). This series requires the `linkedTo` option to be
  * set and should be loaded after the `stock/indicators/indicators.js` file.
  *
- * @sample stock/indicators/bollinger-bands
+ * @sample {highstock} stock/indicators/bollinger-bands
  *         Bollinger bands
  *
  * @extends      plotOptions.sma
@@ -3244,6 +3737,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const BB_BBIndicator = ((/* unused pure expression or super */ null && (BBIndicator)));
 /* *
  *
@@ -3267,8 +3761,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ;// ./code/es-modules/Stock/Indicators/CCI/CCIIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  * */
 
@@ -3281,17 +3776,13 @@ const { sma: CCIIndicator_SMAIndicator } = (external_highcharts_src_js_default_S
  *
  * */
 // Utils:
-/**
- * @private
- */
+/** @internal */
 function sumArray(array) {
     return array.reduce(function (prev, cur) {
         return prev + cur;
     }, 0);
 }
-/**
- * @private
- */
+/** @internal */
 function meanDeviation(arr, sma) {
     const len = arr.length;
     let sum = 0, i;
@@ -3308,7 +3799,7 @@ function meanDeviation(arr, sma) {
 /**
  * The CCI series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.cci
  *
@@ -3363,7 +3854,7 @@ class CCIIndicator extends CCIIndicator_SMAIndicator {
  * Commodity Channel Index (CCI). This series requires `linkedTo` option to
  * be set.
  *
- * @sample stock/indicators/cci
+ * @sample {highstock} stock/indicators/cci
  *         CCI indicator
  *
  * @extends      plotOptions.sma
@@ -3387,6 +3878,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const CCI_CCIIndicator = ((/* unused pure expression or super */ null && (CCIIndicator)));
 /* *
  *
@@ -3416,8 +3908,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *
  *  Chaikin Money Flow indicator for Highcharts Stock
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3433,7 +3926,7 @@ const { sma: CMFIndicator_SMAIndicator } = (external_highcharts_src_js_default_S
 /**
  * The CMF series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.cmf
  *
@@ -3457,7 +3950,7 @@ class CMFIndicator extends CMFIndicator_SMAIndicator {
     /**
      * Checks if the series and volumeSeries are accessible, number of
      * points.x is longer than period, is series has OHLC data
-     * @private
+     * @internal
      * @param {Highcharts.CMFIndicator} this indicator to use.
      * @return {boolean} True if series is valid and can be computed,
      * otherwise false.
@@ -3467,7 +3960,7 @@ class CMFIndicator extends CMFIndicator_SMAIndicator {
             (this.volumeSeries =
                 chart.get(options.params.volumeSeriesID))), isSeriesOHLC = (series?.pointArrayMap?.length === 4);
         /**
-         * @private
+         * @internal
          * @param {Highcharts.Series} serie to check length validity on.
          * @return {boolean|undefined} true if length is valid.
          */
@@ -3482,7 +3975,7 @@ class CMFIndicator extends CMFIndicator_SMAIndicator {
     }
     /**
      * Returns indicator's data.
-     * @private
+     * @internal
      * @param {Highcharts.CMFIndicator} this indicator to use.
      * @param {Highcharts.Series} series to calculate values from
      * @param {Highcharts.CMFIndicatorParamsOptions} params to pass
@@ -3496,7 +3989,7 @@ class CMFIndicator extends CMFIndicator_SMAIndicator {
         return this.getMoneyFlow(series.xData, series.yData, this.volumeSeries.getColumn('y'), params.period);
     }
     /**
-     * @private
+     * @internal
      *
      * @param {Array<number>} xData
      * x timestamp values
@@ -3520,7 +4013,7 @@ class CMFIndicator extends CMFIndicator_SMAIndicator {
          * Calculates money flow volume, changes i, nullIndex vars from
          * upper scope!
          *
-         * @private
+         * @internal
          *
          * @param {Array<number>} ohlc
          * OHLC point
@@ -3538,7 +4031,7 @@ class CMFIndicator extends CMFIndicator_SMAIndicator {
                 close !== null &&
                 high !== low;
             /**
-             * @private
+             * @internal
              * @param {number} h
              * High value
              * @param {number} l
@@ -3593,7 +4086,7 @@ class CMFIndicator extends CMFIndicator_SMAIndicator {
 /**
  * Chaikin Money Flow indicator (cmf).
  *
- * @sample stock/indicators/cmf/
+ * @sample {highstock} stock/indicators/cmf/
  *         Chaikin Money Flow indicator
  *
  * @extends      plotOptions.sma
@@ -3623,6 +4116,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const CMF_CMFIndicator = ((/* unused pure expression or super */ null && (CMFIndicator)));
 /* *
  *
@@ -3650,8 +4144,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *
  *  Directional Movement Index (DMI) indicator for Highcharts Stock
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3668,7 +4163,7 @@ const { sma: DMIIndicator_SMAIndicator } = (external_highcharts_src_js_default_S
 /**
  * The Directional Movement Index (DMI) series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.dmi
  *
@@ -3785,7 +4280,7 @@ class DMIIndicator extends DMIIndicator_SMAIndicator {
  * This series requires the `linkedTo` option to be set and should
  * be loaded after the `stock/indicators/indicators.js` file.
  *
- * @sample stock/indicators/dmi
+ * @sample {highstock} stock/indicators/dmi
  *         DMI indicator
  *
  * @extends      plotOptions.sma
@@ -3836,7 +4331,7 @@ DMIIndicator.defaultOptions = merge(DMIIndicator_SMAIndicator.defaultOptions, {
              *
              * @type {Highcharts.ColorString}
              */
-            lineColor: "#06b535" /* Palette.positiveColor */ // Green-ish
+            lineColor: 'var(--highcharts-positive-color)' // Green-ish
         }
     },
     /**
@@ -3856,7 +4351,7 @@ DMIIndicator.defaultOptions = merge(DMIIndicator_SMAIndicator.defaultOptions, {
              *
              * @type {Highcharts.ColorString}
              */
-            lineColor: "#f21313" /* Palette.negativeColor */ // Red-ish
+            lineColor: 'var(--highcharts-negative-color)' // Red-ish
         }
     },
     dataGrouping: {
@@ -3878,6 +4373,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const DMI_DMIIndicator = ((/* unused pure expression or super */ null && (DMIIndicator)));
 /* *
  *
@@ -3904,8 +4400,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ;// ./code/es-modules/Stock/Indicators/DPO/DPOIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3919,9 +4416,7 @@ const { sma: DPOIndicator_SMAIndicator } = (external_highcharts_src_js_default_S
  *
  * */
 // Utils:
-/**
- * @private
- */
+/** @internal */
 function accumulatePoints(sum, yVal, i, index, subtract) {
     const price = pick(yVal[i][index], yVal[i]);
     if (subtract) {
@@ -3937,7 +4432,7 @@ function accumulatePoints(sum, yVal, i, index, subtract) {
 /**
  * The DPO series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.dpo
  *
@@ -4028,6 +4523,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const DPO_DPOIndicator = ((/* unused pure expression or super */ null && (DPOIndicator)));
 /* *
  *
@@ -4053,8 +4549,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ;// ./code/es-modules/Stock/Indicators/Chaikin/ChaikinIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -4072,7 +4569,7 @@ const { ema: ChaikinIndicator_EMAIndicator } = (external_highcharts_src_js_defau
 /**
  * The Chaikin series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.chaikin
  *
@@ -4193,6 +4690,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Chaikin_ChaikinIndicator = ((/* unused pure expression or super */ null && (ChaikinIndicator)));
 /* *
  *
@@ -4218,8 +4716,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ;// ./code/es-modules/Stock/Indicators/CMO/CMOIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -4235,7 +4734,7 @@ const { sma: CMOIndicator_SMAIndicator } = (external_highcharts_src_js_default_S
 /**
  * The CMO series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.cmo
  *
@@ -4327,7 +4826,7 @@ class CMOIndicator extends CMOIndicator_SMAIndicator {
  * requires the `linkedTo` option to be set and should be loaded after
  * the `stock/indicators/indicators.js` file.
  *
- * @sample stock/indicators/cmo
+ * @sample {highstock} stock/indicators/cmo
  *         CMO indicator
  *
  * @extends      plotOptions.sma
@@ -4349,6 +4848,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const CMO_CMOIndicator = ((/* unused pure expression or super */ null && (CMOIndicator)));
 /* *
  *
@@ -4372,8 +4872,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ;// ./code/es-modules/Stock/Indicators/DEMA/DEMAIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -4389,7 +4890,7 @@ const { ema: DEMAIndicator_EMAIndicator } = (external_highcharts_src_js_default_
 /**
  * The DEMA series Type
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.dema
  *
@@ -4495,6 +4996,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const DEMA_DEMAIndicator = ((/* unused pure expression or super */ null && (DEMAIndicator)));
 /* *
  *
@@ -4520,8 +5022,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ;// ./code/es-modules/Stock/Indicators/TEMA/TEMAIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -4537,7 +5040,7 @@ const { ema: TEMAIndicator_EMAIndicator } = (external_highcharts_src_js_default_
 /**
  * The TEMA series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.tema
  *
@@ -4676,6 +5179,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const TEMA_TEMAIndicator = ((/* unused pure expression or super */ null && (TEMAIndicator)));
 /* *
  *
@@ -4701,8 +5205,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ;// ./code/es-modules/Stock/Indicators/TRIX/TRIXIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -4718,7 +5223,7 @@ const { tema: TRIXIndicator_TEMAIndicator } = (external_highcharts_src_js_defaul
 /**
  * The TRIX series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.trix
  *
@@ -4773,6 +5278,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const TRIX_TRIXIndicator = ((/* unused pure expression or super */ null && (TRIXIndicator)));
 /* *
  *
@@ -4791,6 +5297,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/tema
+ * @requires  stock/indicators/trix
  * @apioption series.trix
  */
 ''; // To include the above in the js output
@@ -4798,8 +5305,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ;// ./code/es-modules/Stock/Indicators/APO/APOIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -4816,7 +5324,7 @@ const { ema: APOIndicator_EMAIndicator } = (external_highcharts_src_js_default_S
 /**
  * The APO series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.apo
  *
@@ -4919,6 +5427,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const APO_APOIndicator = ((/* unused pure expression or super */ null && (APOIndicator)));
 /* *
  *
@@ -4950,8 +5459,9 @@ var external_highcharts_src_js_default_Color_default = /*#__PURE__*/__webpack_re
 ;// ./code/es-modules/Stock/Indicators/IKH/IKHIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -4967,25 +5477,19 @@ const { sma: IKHIndicator_SMAIndicator } = (external_highcharts_src_js_default_S
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function maxHigh(arr) {
     return arr.reduce(function (max, res) {
         return Math.max(max, res[1]);
     }, -Infinity);
 }
-/**
- * @private
- */
+/** @internal */
 function minLow(arr) {
     return arr.reduce(function (min, res) {
         return Math.min(min, res[2]);
     }, Infinity);
 }
-/**
- * @private
- */
+/** @internal */
 function highlowLevel(arr) {
     return {
         high: maxHigh(arr),
@@ -4995,7 +5499,7 @@ function highlowLevel(arr) {
 /**
  * Check two lines intersection (line a1-a2 and b1-b2)
  * Source: https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
- * @private
+ * @internal
  */
 function checkLineIntersection(a1, a2, b1, b2) {
     if (a1 && a2 && b1 && b2) {
@@ -5018,7 +5522,7 @@ function checkLineIntersection(a1, a2, b1, b2) {
 /**
  * Parameter opt (indicator options object) include indicator, points,
  * nextPoints, color, options, gappedExtend and graph properties
- * @private
+ * @internal
  */
 function drawSenkouSpan(opt) {
     const indicator = opt.indicator;
@@ -5034,7 +5538,7 @@ function drawSenkouSpan(opt) {
  * Data integrity in Ichimoku is different than default 'averages':
  * Point: [undefined, value, value, ...] is correct
  * Point: [undefined, undefined, undefined, ...] is incorrect
- * @private
+ * @internal
  */
 function ichimokuAverages() {
     const ret = [];
@@ -5055,7 +5559,7 @@ function ichimokuAverages() {
 /**
  * The IKH series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.ikh
  *
@@ -5427,7 +5931,7 @@ class IKHIndicator extends IKHIndicator_SMAIndicator {
  * Ichimoku Kinko Hyo (IKH). This series requires `linkedTo` option to be
  * set.
  *
- * @sample stock/indicators/ichimoku-kinko-hyo
+ * @sample {highstock} stock/indicators/ichimoku-kinko-hyo
  *         Ichimoku Kinko Hyo indicator
  *
  * @extends      plotOptions.sma
@@ -5565,7 +6069,7 @@ IKHIndicator.defaultOptions = merge(IKHIndicator_SMAIndicator.defaultOptions, {
          *
          * @see [senkouSpan.styles.fill](#series.ikh.senkouSpan.styles.fill)
          *
-         * @sample stock/indicators/ichimoku-kinko-hyo
+         * @sample {highstock} stock/indicators/ichimoku-kinko-hyo
          *         Ichimoku Kinko Hyo color
          *
          * @type      {Highcharts.ColorType}
@@ -5576,7 +6080,7 @@ IKHIndicator.defaultOptions = merge(IKHIndicator_SMAIndicator.defaultOptions, {
          * Color of the area between Senkou Span A and B,
          * when Senkou Span A is under Senkou Span B.
          *
-         * @sample stock/indicators/ikh-negative-color
+         * @sample {highstock} stock/indicators/ikh-negative-color
          *         Ichimoku Kinko Hyo negativeColor
          *
          * @type      {Highcharts.ColorType}
@@ -5620,6 +6124,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const IKH_IKHIndicator = ((/* unused pure expression or super */ null && (IKHIndicator)));
 /* *
  *
@@ -5643,8 +6148,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ;// ./code/es-modules/Stock/Indicators/KeltnerChannels/KeltnerChannelsIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -5661,7 +6167,7 @@ const { sma: KeltnerChannelsIndicator_SMAIndicator } = (external_highcharts_src_
 /**
  * The Keltner Channels series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.keltnerchannels
  *
@@ -5833,6 +6339,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const KeltnerChannels_KeltnerChannelsIndicator = ((/* unused pure expression or super */ null && (KeltnerChannelsIndicator)));
 /* *
  *
@@ -5859,8 +6366,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ;// ./code/es-modules/Stock/Indicators/Klinger/KlingerIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -5878,7 +6386,7 @@ const { ema: KlingerIndicator_EMAIndicator, sma: KlingerIndicator_SMAIndicator }
 /**
  * The Klinger oscillator series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.klinger
  *
@@ -6003,7 +6511,7 @@ class KlingerIndicator extends KlingerIndicator_SMAIndicator {
  * Klinger oscillator. This series requires the `linkedTo` option to be set
  * and should be loaded after the `stock/indicators/indicators.js` file.
  *
- * @sample stock/indicators/klinger
+ * @sample {highstock} stock/indicators/klinger
  *         Klinger oscillator
  *
  * @extends      plotOptions.sma
@@ -6087,6 +6595,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Klinger_KlingerIndicator = ((/* unused pure expression or super */ null && (KlingerIndicator)));
 /* *
  *
@@ -6109,8 +6618,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ;// ./code/es-modules/Stock/Indicators/MACD/MACDIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -6128,7 +6638,7 @@ const { sma: MACDIndicator_SMAIndicator } = (external_highcharts_src_js_default_
 /**
  * The MACD series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.macd
  *
@@ -6341,7 +6851,7 @@ class MACDIndicator extends MACDIndicator_SMAIndicator {
  * `linkedTo` option to be set and should be loaded after the
  * `stock/indicators/indicators.js`.
  *
- * @sample stock/indicators/macd
+ * @sample {highstock} stock/indicators/macd
  *         MACD indicator
  *
  * @extends      plotOptions.sma
@@ -6372,7 +6882,7 @@ MACDIndicator.defaultOptions = merge(MACDIndicator_SMAIndicator.defaultOptions, 
      */
     signalLine: {
         /**
-         * @sample stock/indicators/macd-zones
+         * @sample {highstock} stock/indicators/macd-zones
          *         Zones in MACD
          *
          * @extends plotOptions.macd.zones
@@ -6396,7 +6906,7 @@ MACDIndicator.defaultOptions = merge(MACDIndicator_SMAIndicator.defaultOptions, 
      */
     macdLine: {
         /**
-         * @sample stock/indicators/macd-zones
+         * @sample {highstock} stock/indicators/macd-zones
          *         Zones in MACD
          *
          * @extends plotOptions.macd.zones
@@ -6458,6 +6968,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const MACD_MACDIndicator = ((/* unused pure expression or super */ null && (MACDIndicator)));
 /* *
  *
@@ -6486,8 +6997,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  (c) 2010-2026 Highsoft AS
  *  Author: Grzegorz Blachliński
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -6502,29 +7014,21 @@ const { sma: MFIIndicator_SMAIndicator } = (external_highcharts_src_js_default_S
  *
  * */
 // Utils:
-/**
- *
- */
+/** @internal */
 function MFIIndicator_sumArray(array) {
     return array.reduce(function (prev, cur) {
         return prev + cur;
     });
 }
-/**
- *
- */
+/** @internal */
 function toFixed(a, n) {
     return parseFloat(a.toFixed(n));
 }
-/**
- *
- */
+/** @internal */
 function calculateTypicalPrice(point) {
     return (point[1] + point[2] + point[3]) / 3;
 }
-/**
- *
- */
+/** @internal */
 function calculateRawMoneyFlow(typicalPrice, volume) {
     return typicalPrice * volume;
 }
@@ -6536,7 +7040,7 @@ function calculateRawMoneyFlow(typicalPrice, volume) {
 /**
  * The MFI series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.mfi
  *
@@ -6621,7 +7125,7 @@ class MFIIndicator extends MFIIndicator_SMAIndicator {
  * Money Flow Index. This series requires `linkedTo` option to be set and
  * should be loaded after the `stock/indicators/indicators.js` file.
  *
- * @sample stock/indicators/mfi
+ * @sample {highstock} stock/indicators/mfi
  *         Money Flow Index Indicator
  *
  * @extends      plotOptions.sma
@@ -6658,6 +7162,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const MFI_MFIIndicator = ((/* unused pure expression or super */ null && (MFIIndicator)));
 /* *
  *
@@ -6681,8 +7186,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ;// ./code/es-modules/Stock/Indicators/Momentum/MomentumIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -6695,9 +7201,7 @@ const { sma: MomentumIndicator_SMAIndicator } = (external_highcharts_src_js_defa
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function MomentumIndicator_populateAverage(xVal, yVal, i, period, index) {
     const mmY = yVal[i - 1][index] - yVal[i - period - 1][index], mmX = xVal[i - 1];
     return [mmX, mmY];
@@ -6710,7 +7214,7 @@ function MomentumIndicator_populateAverage(xVal, yVal, i, period, index) {
 /**
  * The Momentum series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.momentum
  *
@@ -6758,7 +7262,7 @@ class MomentumIndicator extends MomentumIndicator_SMAIndicator {
 /**
  * Momentum. This series requires `linkedTo` option to be set.
  *
- * @sample stock/indicators/momentum
+ * @sample {highstock} stock/indicators/momentum
  *         Momentum indicator
  *
  * @extends      plotOptions.sma
@@ -6782,6 +7286,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Momentum_MomentumIndicator = ((/* unused pure expression or super */ null && (MomentumIndicator)));
 /* *
  *
@@ -6805,8 +7310,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ;// ./code/es-modules/Stock/Indicators/NATR/NATRIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -6822,7 +7328,7 @@ const { atr: NATRIndicator_ATRIndicator } = (external_highcharts_src_js_default_
 /**
  * The NATR series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.natr
  *
@@ -6865,6 +7371,7 @@ class NATRIndicator extends NATRIndicator_ATRIndicator {
  * @since        7.0.0
  * @product      highstock
  * @requires     stock/indicators/indicators
+ * @requires     stock/indicators/atr
  * @requires     stock/indicators/natr
  * @optionparent plotOptions.natr
  */
@@ -6879,6 +7386,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const NATR_NATRIndicator = ((/* unused pure expression or super */ null && (NATRIndicator)));
 /* *
  *
@@ -6898,13 +7406,14 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * @requires  stock/indicators/natr
  * @apioption series.natr
  */
-''; // To include the above in the js output'
+''; // To include the above in the js output
 
 ;// ./code/es-modules/Stock/Indicators/OBV/OBVIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -6921,7 +7430,7 @@ const { sma: OBVIndicator_SMAIndicator } = (external_highcharts_src_js_default_S
 /**
  * The OBV series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.obv
  *
@@ -6992,11 +7501,11 @@ class OBVIndicator extends OBVIndicator_SMAIndicator {
  * the `stock/indicators/indicators.js` file. Through the `volumeSeriesID`
  * there also should be linked the volume series.
  *
- * @sample stock/indicators/obv
+ * @sample {highstock} stock/indicators/obv
  *         OBV indicator
  *
  * @extends      plotOptions.sma
- * @since 9.1.0
+ * @since        9.1.0
  * @product      highstock
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/obv
@@ -7035,6 +7544,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const OBV_OBVIndicator = ((/* unused pure expression or super */ null && (OBVIndicator)));
 /* *
  *
@@ -7046,7 +7556,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.obv
- * @since 9.1.0
+ * @since     9.1.0
  * @product   highstock
  * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
@@ -7058,8 +7568,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ;// ./code/es-modules/Stock/Indicators/PivotPoints/PivotPointsPoint.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -7071,9 +7582,7 @@ const SMAPoint = (external_highcharts_src_js_default_SeriesRegistry_default()).s
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function destroyExtraLabels(point, functionName) {
     const props = point.series.pointArrayMap;
     let prop, i = props.length;
@@ -7092,6 +7601,7 @@ function destroyExtraLabels(point, functionName) {
  *  Class
  *
  * */
+/** @internal */
 class PivotPointsPoint extends SMAPoint {
     /* *
      *
@@ -7111,13 +7621,15 @@ class PivotPointsPoint extends SMAPoint {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const PivotPoints_PivotPointsPoint = (PivotPointsPoint);
 
 ;// ./code/es-modules/Stock/Indicators/PivotPoints/PivotPointsIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -7134,7 +7646,7 @@ const { sma: PivotPointsIndicator_SMAIndicator } = (external_highcharts_src_js_d
 /**
  * The Pivot Points series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.pivotpoints
  *
@@ -7336,7 +7848,7 @@ class PivotPointsIndicator extends PivotPointsIndicator_SMAIndicator {
  * Pivot points indicator. This series requires the `linkedTo` option to be
  * set and should be loaded after `stock/indicators/indicators.js` file.
  *
- * @sample stock/indicators/pivot-points
+ * @sample {highstock} stock/indicators/pivot-points
  *         Pivot points
  *
  * @extends      plotOptions.sma
@@ -7389,6 +7901,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const PivotPoints_PivotPointsIndicator = ((/* unused pure expression or super */ null && (PivotPointsIndicator)));
 /* *
  *
@@ -7412,8 +7925,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ;// ./code/es-modules/Stock/Indicators/PPO/PPOIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -7430,7 +7944,7 @@ const { ema: PPOIndicator_EMAIndicator } = (external_highcharts_src_js_default_S
 /**
  * The PPO series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.ppo
  *
@@ -7535,6 +8049,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const PPO_PPOIndicator = ((/* unused pure expression or super */ null && (PPOIndicator)));
 /* *
  *
@@ -7546,7 +8061,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * option is not specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.ppo
- * @since     7.0.0
+ * @since        7.0.0
  * @product   highstock
  * @excluding allAreas, colorAxis, dataParser, dataURL, joinBy, keys,
  *            navigatorOptions, pointInterval, pointIntervalUnit,
@@ -7558,15 +8073,14 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ''; // To include the above in the js output
 
 ;// ./code/es-modules/Stock/Indicators/ArrayUtilities.js
-// SPDX-License-Identifier: LicenseRef-Highcharts
-/**
+/* *
  *
  *  (c) 2010-2026 Highsoft AS
  *  Author: Paweł Fus & Daniel Studencki
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
- *
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  * */
 
@@ -7578,7 +8092,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 /**
  * Get extremes of array filled by OHLC data.
  *
- * @private
+ * @internal
  *
  * @param {Array<Array<number>>} arr
  * Array of OHLC points (arrays).
@@ -7603,46 +8117,22 @@ function getArrayExtremes(arr, minIndex, maxIndex) {
  *  Default Export
  *
  * */
+/** @internal */
 const ArrayUtilities = {
     getArrayExtremes
 };
-/* harmony default export */ const Indicators_ArrayUtilities = (ArrayUtilities);
-
-;// ./code/es-modules/Core/Color/Palettes.js
-/**
- * Series palettes for Highcharts. Series colors are defined in highcharts.css.
- * **Do not edit this file!** This file is generated using the 'gulp palette' task.
- * @internal
- */
-const SeriesPalettes = {
-    /**
-     * Colors for data series and points
-     */
-    colors: [
-        '#2caffe',
-        '#544fc5',
-        '#00e272',
-        '#fe6a35',
-        '#6b8abc',
-        '#d568fb',
-        '#2ee0ca',
-        '#fa4b42',
-        '#feb56a',
-        '#91e8e1'
-    ],
-};
 /** @internal */
-/* harmony default export */ const Palettes = (SeriesPalettes);
+/* harmony default export */ const Indicators_ArrayUtilities = (ArrayUtilities);
 
 ;// ./code/es-modules/Stock/Indicators/PC/PCIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
-
 
 
 
@@ -7657,7 +8147,7 @@ const { sma: PCIndicator_SMAIndicator } = (external_highcharts_src_js_default_Se
 /**
  * The Price Channel series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.pc
  *
@@ -7725,11 +8215,10 @@ PCIndicator.defaultOptions = merge(PCIndicator_SMAIndicator.defaultOptions, {
      * Option for fill color between lines in Price channel Indicator.
      *
      * @sample {highstock} stock/indicators/indicator-area-fill
-     *      background fill between lines
+     *      Background fill between lines.
      *
      * @type {Highcharts.Color}
      * @apioption plotOptions.pc.fillColor
-     *
      */
     /**
      * @excluding index
@@ -7747,7 +8236,7 @@ PCIndicator.defaultOptions = merge(PCIndicator_SMAIndicator.defaultOptions, {
              *
              * @type {Highcharts.ColorString}
              */
-            lineColor: Palettes.colors[2],
+            lineColor: 'var(--highcharts-color-2)',
             /**
              * Pixel width of the line.
              */
@@ -7762,7 +8251,7 @@ PCIndicator.defaultOptions = merge(PCIndicator_SMAIndicator.defaultOptions, {
              *
              * @type {Highcharts.ColorString}
              */
-            lineColor: Palettes.colors[8],
+            lineColor: 'var(--highcharts-color-8)',
             /**
              * Pixel width of the line.
              */
@@ -7788,6 +8277,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const PC_PCIndicator = ((/* unused pure expression or super */ null && (PCIndicator)));
 /* *
  *
@@ -7814,8 +8304,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ;// ./code/es-modules/Stock/Indicators/PriceEnvelopes/PriceEnvelopesIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -7832,7 +8323,7 @@ const { sma: PriceEnvelopesIndicator_SMAIndicator } = (external_highcharts_src_j
 /**
  * The Price Envelopes series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.priceenvelopes
  *
@@ -7905,7 +8396,7 @@ class PriceEnvelopesIndicator extends PriceEnvelopesIndicator_SMAIndicator {
  * This series requires the `linkedTo` option to be set and should be loaded
  * after the `stock/indicators/indicators.js` file.
  *
- * @sample stock/indicators/price-envelopes
+ * @sample {highstock} stock/indicators/price-envelopes
  *         Price envelopes
  *
  * @extends      plotOptions.sma
@@ -7995,6 +8486,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const PriceEnvelopes_PriceEnvelopesIndicator = ((/* unused pure expression or super */ null && (PriceEnvelopesIndicator)));
 /* *
  *
@@ -8023,8 +8515,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  (c) 2010-2026 Highsoft AS
  *  Author: Grzegorz Blachliński
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -8038,15 +8531,11 @@ const { sma: PSARIndicator_SMAIndicator } = (external_highcharts_src_js_default_
  *
  * */
 // Utils:
-/**
- *
- */
+/** @internal */
 function PSARIndicator_toFixed(a, n) {
     return parseFloat(a.toFixed(n));
 }
-/**
- *
- */
+/** @internal */
 function calculateDirection(previousDirection, low, high, PSAR) {
     if ((previousDirection === 1 && low > PSAR) ||
         (previousDirection === -1 && high > PSAR)) {
@@ -8064,9 +8553,7 @@ function calculateDirection(previousDirection, low, high, PSAR) {
  * maxAcc - maximum acceleration factor
  * initAcc - initial acceleration factor
  */
-/**
- *
- */
+/** @internal */
 function getAccelerationFactor(dir, pDir, eP, pEP, pAcc, inc, maxAcc, initAcc) {
     if (dir === pDir) {
         if (dir === 1 && (eP > pEP)) {
@@ -8079,24 +8566,18 @@ function getAccelerationFactor(dir, pDir, eP, pEP, pAcc, inc, maxAcc, initAcc) {
     }
     return initAcc;
 }
-/**
- *
- */
+/** @internal */
 function getExtremePoint(high, low, previousDirection, previousExtremePoint) {
     if (previousDirection === 1) {
         return (high > previousExtremePoint) ? high : previousExtremePoint;
     }
     return (low < previousExtremePoint) ? low : previousExtremePoint;
 }
-/**
- *
- */
+/** @internal */
 function getEPMinusPSAR(EP, PSAR) {
     return EP - PSAR;
 }
-/**
- *
- */
+/** @internal */
 function getAccelerationFactorMultiply(accelerationFactor, EPMinusSAR) {
     return accelerationFactor * EPMinusSAR;
 }
@@ -8112,9 +8593,7 @@ function getAccelerationFactorMultiply(accelerationFactor, EPMinusSAR) {
  * pHigh - previous high
  * pEP - previous extreme point
  */
-/**
- *
- */
+/** @internal */
 function getPSAR(pdir, sDir, PSAR, pACCMulti, sLow, pLow, pHigh, sHigh, pEP) {
     if (pdir === sDir) {
         if (pdir === 1) {
@@ -8136,7 +8615,7 @@ function getPSAR(pdir, sDir, PSAR, pACCMulti, sLow, pLow, pHigh, sHigh, pEP) {
 /**
  * The Parabolic SAR series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.psar
  *
@@ -8219,7 +8698,7 @@ class PSARIndicator extends PSARIndicator_SMAIndicator {
  * option to be set and should be loaded
  * after `stock/indicators/indicators.js` file.
  *
- * @sample stock/indicators/psar
+ * @sample {highstock} stock/indicators/psar
  *         Parabolic SAR Indicator
  *
  * @extends      plotOptions.sma
@@ -8286,6 +8765,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const PSAR_PSARIndicator = ((/* unused pure expression or super */ null && (PSARIndicator)));
 /* *
  *
@@ -8312,8 +8792,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  (c) 2010-2026 Highsoft AS
  *  Author: Kacper Madej
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -8327,9 +8808,7 @@ const { sma: ROCIndicator_SMAIndicator } = (external_highcharts_src_js_default_S
  *
  * */
 // Utils:
-/**
- *
- */
+/** @internal */
 function ROCIndicator_populateAverage(xVal, yVal, i, period, index) {
     /* Calculated as:
 
@@ -8362,7 +8841,7 @@ function ROCIndicator_populateAverage(xVal, yVal, i, period, index) {
 /**
  * The ROC series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.roc
  *
@@ -8418,7 +8897,7 @@ class ROCIndicator extends ROCIndicator_SMAIndicator {
  *
  * This series requires `linkedTo` option to be set.
  *
- * @sample stock/indicators/roc
+ * @sample {highstock} stock/indicators/roc
  *         Rate of change indicator
  *
  * @extends      plotOptions.sma
@@ -8443,6 +8922,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const ROC_ROCIndicator = ((/* unused pure expression or super */ null && (ROCIndicator)));
 /* *
  *
@@ -8450,7 +8930,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *
  * */
 /**
- * A `ROC` series. If the [type](#series.wma.type) option is not
+ * A `ROC` series. If the [type](#series.roc.type) option is not
  * specified, it is inherited from [chart.type](#chart.type).
  *
  * Rate of change indicator (ROC). The indicator value for each point
@@ -8477,8 +8957,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ;// ./code/es-modules/Stock/Indicators/RSI/RSIIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -8492,9 +8973,7 @@ const { sma: RSIIndicator_SMAIndicator } = (external_highcharts_src_js_default_S
  *
  * */
 // Utils:
-/**
- *
- */
+/** @internal */
 function RSIIndicator_toFixed(a, n) {
     return parseFloat(a.toFixed(n));
 }
@@ -8506,7 +8985,7 @@ function RSIIndicator_toFixed(a, n) {
 /**
  * The RSI series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.rsi
  *
@@ -8599,7 +9078,7 @@ class RSIIndicator extends RSIIndicator_SMAIndicator {
  * requires the `linkedTo` option to be set and should be loaded after
  * the `stock/indicators/indicators.js` file.
  *
- * @sample stock/indicators/rsi
+ * @sample {highstock} stock/indicators/rsi
  *         RSI indicator
  *
  * @extends      plotOptions.sma
@@ -8621,6 +9100,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const RSI_RSIIndicator = ((/* unused pure expression or super */ null && (RSIIndicator)));
 /* *
  *
@@ -8644,8 +9124,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ;// ./code/es-modules/Stock/Indicators/Stochastic/StochasticIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -8663,7 +9144,7 @@ const { sma: StochasticIndicator_SMAIndicator } = (external_highcharts_src_js_de
 /**
  * The Stochastic series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.stochastic
  *
@@ -8762,7 +9243,7 @@ class StochasticIndicator extends StochasticIndicator_SMAIndicator {
  * Stochastic oscillator. This series requires the `linkedTo` option to be
  * set and should be loaded after the `stock/indicators/indicators.js` file.
  *
- * @sample stock/indicators/stochastic
+ * @sample {highstock} stock/indicators/stochastic
  *         Stochastic oscillator
  *
  * @extends      plotOptions.sma
@@ -8839,6 +9320,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Stochastic_StochasticIndicator = ((/* unused pure expression or super */ null && (StochasticIndicator)));
 /* *
  *
@@ -8864,8 +9346,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ;// ./code/es-modules/Stock/Indicators/SlowStochastic/SlowStochasticIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -8881,7 +9364,7 @@ const { sma: SlowStochasticIndicator_SMAIndicator, stochastic: SlowStochasticInd
 /**
  * The Slow Stochastic series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.slowstochastic
  *
@@ -8940,7 +9423,7 @@ class SlowStochasticIndicator extends SlowStochasticIndicator_StochasticIndicato
  * to be set and should be loaded after `stock/indicators/indicators.js`
  * and `stock/indicators/stochastic.js` files.
  *
- * @sample stock/indicators/slow-stochastic
+ * @sample {highstock} stock/indicators/slow-stochastic
  *         Slow Stochastic oscillator
  *
  * @extends      plotOptions.stochastic
@@ -8971,6 +9454,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const SlowStochastic_SlowStochasticIndicator = ((/* unused pure expression or super */ null && (SlowStochasticIndicator)));
 /* *
  *
@@ -8994,8 +9478,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ;// ./code/es-modules/Stock/Indicators/Supertrend/SupertrendIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -9009,9 +9494,7 @@ const { atr: SupertrendIndicator_ATRIndicator, sma: SupertrendIndicator_SMAIndic
  *
  * */
 // Utils:
-/**
- * @private
- */
+/** @internal */
 function createPointObj(mainSeries, index) {
     return {
         index,
@@ -9027,7 +9510,7 @@ function createPointObj(mainSeries, index) {
 /**
  * The Supertrend series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.supertrend
  *
@@ -9044,15 +9527,15 @@ class SupertrendIndicator extends SupertrendIndicator_SMAIndicator {
         super.init.apply(indicator, arguments);
         // Only after series are linked add some additional logic/properties.
         const unbinder = addEvent(this.chart.constructor, 'afterLinkSeries', () => {
+            const { linkedParent, options } = indicator;
             // Protection for a case where the indicator is being updated,
             // for a brief moment the indicator is deleted.
-            if (indicator.options) {
-                const options = indicator.options, parentOptions = indicator.linkedParent.options;
+            if (options && linkedParent) {
                 // Indicator cropThreshold has to be equal linked series one
                 // reduced by period due to points comparison in drawGraph
                 // (#9787)
-                options.cropThreshold = (parentOptions.cropThreshold -
-                    (options.params.period - 1));
+                options.cropThreshold = ((linkedParent.options.cropThreshold ?? 0) -
+                    ((options.params?.period ?? 0) - 1));
             }
             unbinder();
         }, {
@@ -9389,7 +9872,7 @@ SupertrendIndicator.defaultOptions = merge(SupertrendIndicator_SMAIndicator.defa
      *
      * @type {Highcharts.ColorType}
      */
-    risingTrendColor: "#06b535" /* Palette.positiveColor */,
+    risingTrendColor: 'var(--highcharts-positive-color)',
     /**
      * Color of the Supertrend series line that is above the main series.
      *
@@ -9398,7 +9881,7 @@ SupertrendIndicator.defaultOptions = merge(SupertrendIndicator_SMAIndicator.defa
      *
      * @type {Highcharts.ColorType}
      */
-    fallingTrendColor: "#f21313" /* Palette.negativeColor */,
+    fallingTrendColor: 'var(--highcharts-negative-color)',
     /**
      * The styles for the Supertrend line that intersect main series.
      *
@@ -9416,7 +9899,7 @@ SupertrendIndicator.defaultOptions = merge(SupertrendIndicator_SMAIndicator.defa
              *
              * @type {Highcharts.ColorString}
              */
-            lineColor: "#333333" /* Palette.neutralColor80 */,
+            lineColor: 'var(--highcharts-neutral-color-80)',
             /**
              * The dash or dot style of the grid lines. For possible
              * values, see
@@ -9444,6 +9927,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Supertrend_SupertrendIndicator = ((/* unused pure expression or super */ null && (SupertrendIndicator)));
 /* *
  *
@@ -9470,8 +9954,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ;// ./code/es-modules/Stock/Indicators/VBP/VBPPoint.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -9488,6 +9973,7 @@ const { sma: { prototype: { pointClass: VBPPoint_SMAPoint } } } = (external_high
  *  Class
  *
  * */
+/** @internal */
 class VBPPoint extends VBPPoint_SMAPoint {
     // Required for destroying negative part of volume
     destroy() {
@@ -9503,6 +9989,7 @@ class VBPPoint extends VBPPoint_SMAPoint {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const VBP_VBPPoint = (VBPPoint);
 
 ;// ./code/es-modules/Stock/Indicators/VBP/VBPIndicator.js
@@ -9513,8 +10000,9 @@ class VBPPoint extends VBPPoint_SMAPoint {
  *
  *  Volume By Price (VBP) indicator for Highcharts Stock
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -9541,7 +10029,9 @@ const abs = Math.abs;
  * */
 // Utils
 /**
- * @private
+ * Calculate extremes for OHLC data.
+ *
+ * @internal
  */
 function arrayExtremesOHLC(data) {
     const dataLength = data.length;
@@ -9568,7 +10058,7 @@ function arrayExtremesOHLC(data) {
 /**
  * The Volume By Price (VBP) series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.vbp
  *
@@ -9591,8 +10081,12 @@ class VBPIndicator extends VBPIndicator_SMAIndicator {
             // Protection for a case where the indicator is being updated,
             // for a brief moment the indicator is deleted.
             if (indicator.options) {
-                const params = indicator.options.params, baseSeries = indicator.linkedParent, volumeSeries = chart.get(params.volumeSeriesID);
-                indicator.addCustomEvents(baseSeries, volumeSeries);
+                const params = indicator.options.params, baseSeries = indicator.linkedParent, volumeSeries = params?.volumeSeriesID ?
+                    chart.get(params?.volumeSeriesID) :
+                    void 0;
+                if (baseSeries && volumeSeries) {
+                    indicator.addCustomEvents(baseSeries, volumeSeries);
+                }
             }
             unbinder();
         }, {
@@ -9736,6 +10230,11 @@ class VBPIndicator extends VBPIndicator_SMAIndicator {
                 point.volumeNeg = priceZones[index].negativeVolumeData;
                 point.volumePos = priceZones[index].positiveVolumeData;
                 point.volumeAll = priceZones[index].wholeVolumeData;
+                // ColumnSeries.translate adds an origin if chart is already
+                // rendered. Remove it to avoid issues with fading in data
+                // labels from overlapping labels logic.
+                delete point.origin;
+                point.isInside = indicator.isPointInside(point);
             });
             if (zoneLinesOptions.enabled) {
                 indicator.drawZones(chart, yAxis, indicator.zoneStarts, zoneLinesOptions.styles);
@@ -9959,7 +10458,7 @@ class VBPIndicator extends VBPIndicator_SMAIndicator {
  *
  * This series requires `linkedTo` option to be set.
  *
- * @sample stock/indicators/volume-by-price
+ * @sample {highstock} stock/indicators/volume-by-price
  *         Volume By Price indicator
  *
  * @extends      plotOptions.sma
@@ -10046,11 +10545,11 @@ VBPIndicator.defaultOptions = merge(VBPIndicator_SMAIndicator.defaultOptions, {
     dataLabels: {
         align: 'left',
         allowOverlap: true,
+        distance: 0,
         enabled: true,
         format: 'P: {point.volumePos:.2f} | N: {point.volumeNeg:.2f}',
         padding: 0,
         style: {
-            /** @internal */
             fontSize: '0.5em'
         },
         verticalAlign: 'top'
@@ -10103,8 +10602,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *
  *  Volume Weighted Average Price (VWAP) indicator for Highcharts Stock
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -10121,7 +10621,7 @@ const { sma: VWAPIndicator_SMAIndicator } = (external_highcharts_src_js_default_
 /**
  * The Volume Weighted Average Price (VWAP) series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.vwap
  *
@@ -10153,7 +10653,7 @@ class VWAPIndicator extends VWAPIndicator_SMAIndicator {
      * Main algorithm used to calculate Volume Weighted Average Price (VWAP)
      * values
      *
-     * @private
+     * @internal
      *
      * @param {boolean} isOHLC
      * Says if data has OHLC format
@@ -10224,7 +10724,7 @@ class VWAPIndicator extends VWAPIndicator_SMAIndicator {
  *
  * This series requires `linkedTo` option to be set.
  *
- * @sample stock/indicators/vwap
+ * @sample {highstock} stock/indicators/vwap
  *         Volume Weighted Average Price indicator
  *
  * @extends      plotOptions.sma
@@ -10255,6 +10755,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const VWAP_VWAPIndicator = ((/* unused pure expression or super */ null && (VWAPIndicator)));
 /* *
  *
@@ -10279,8 +10780,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ;// ./code/es-modules/Stock/Indicators/WilliamsR/WilliamsRIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -10297,7 +10799,7 @@ const { sma: WilliamsRIndicator_SMAIndicator } = (external_highcharts_src_js_def
 /**
  * The Williams %R series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.williamsr
  *
@@ -10389,6 +10891,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const WilliamsR_WilliamsRIndicator = ((/* unused pure expression or super */ null && (WilliamsRIndicator)));
 /* *
  *
@@ -10417,8 +10920,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  (c) 2010-2026 Highsoft AS
  *  Author: Kacper Madej
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -10432,16 +10936,12 @@ const { sma: WMAIndicator_SMAIndicator } = (external_highcharts_src_js_default_S
  *
  * */
 // Utils:
-/**
- * @private
- */
+/** @internal */
 function WMAIndicator_accumulateAverage(points, xVal, yVal, i, index) {
     const xValue = xVal[i], yValue = index < 0 ? yVal[i] : yVal[i][index];
     points.push([xValue, yValue]);
 }
-/**
- * @private
- */
+/** @internal */
 function weightedSumArray(array, pLen) {
     // The denominator is the sum of the number of days as a triangular number.
     // If there are 5 days, the triangular numbers are 5, 4, 3, 2, and 1.
@@ -10452,9 +10952,7 @@ function weightedSumArray(array, pLen) {
         return [null, prev[1] + cur[1] * (i + 1)];
     })[1] / denominator;
 }
-/**
- * @private
- */
+/** @internal */
 function WMAIndicator_populateAverage(points, xVal, yVal, i) {
     const pLen = points.length, wmaY = weightedSumArray(points, pLen), wmaX = xVal[i - 1];
     points.shift(); // Remove point until range < period
@@ -10468,7 +10966,7 @@ function WMAIndicator_populateAverage(points, xVal, yVal, i) {
 /**
  * The SMA series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.wma
  *
@@ -10526,7 +11024,7 @@ class WMAIndicator extends WMAIndicator_SMAIndicator {
  * Weighted moving average indicator (WMA). This series requires `linkedTo`
  * option to be set.
  *
- * @sample stock/indicators/wma
+ * @sample {highstock} stock/indicators/wma
  *         Weighted moving average indicator
  *
  * @extends      plotOptions.sma
@@ -10548,6 +11046,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const WMA_WMAIndicator = ((/* unused pure expression or super */ null && (WMAIndicator)));
 /* *
  *
@@ -10574,8 +11073,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  (c) 2010-2026 Highsoft AS
  *  Author: Kacper Madej
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -10591,7 +11091,7 @@ const { sma: ZigzagIndicator_SMAIndicator } = (external_highcharts_src_js_defaul
 /**
  * The Zig Zag series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.zigzag
  *
@@ -10707,7 +11207,7 @@ class ZigzagIndicator extends ZigzagIndicator_SMAIndicator {
  *
  * This series requires `linkedTo` option to be set.
  *
- * @sample stock/indicators/zigzag
+ * @sample {highstock} stock/indicators/zigzag
  *         Zig Zag indicator
  *
  * @extends      plotOptions.sma
@@ -10761,6 +11261,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Zigzag_ZigzagIndicator = ((/* unused pure expression or super */ null && (ZigzagIndicator)));
 /* *
  *
@@ -10782,14 +11283,14 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ''; // Adds doclets above to transpiled file
 
 ;// ./code/es-modules/Stock/Indicators/LinearRegression/LinearRegressionIndicator.js
-// SPDX-License-Identifier: LicenseRef-Highcharts
-/**
+/* *
  *
  *  (c) 2010-2026 Highsoft AS
  *  Author: Kamil Kulig
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -10805,7 +11306,7 @@ const { sma: LinearRegressionIndicator_SMAIndicator } = (external_highcharts_src
 /**
  * Linear regression series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.linearregression
  *
@@ -10820,7 +11321,7 @@ class LinearRegressionIndicator extends LinearRegressionIndicator_SMAIndicator {
     /**
      * Return the slope and intercept of a straight line function.
      *
-     * @private
+     * @internal
      *
      * @param {Array<number>} xData
      * List of all x coordinates in a period.
@@ -10858,7 +11359,7 @@ class LinearRegressionIndicator extends LinearRegressionIndicator_SMAIndicator {
     /**
      * Return the y value on a straight line.
      *
-     * @private
+     * @internal
      *
      * @param {Highcharts.RegressionLineParametersObject} lineParameters
      * Object that contains the slope and the intercept of a straight line
@@ -10877,7 +11378,7 @@ class LinearRegressionIndicator extends LinearRegressionIndicator_SMAIndicator {
      * Transform the coordinate system so that x values start at 0 and
      * apply xAxisUnit.
      *
-     * @private
+     * @internal
      *
      * @param {Array<number>} xData
      * List of all x coordinates in a period
@@ -10896,7 +11397,7 @@ class LinearRegressionIndicator extends LinearRegressionIndicator_SMAIndicator {
     }
     /**
      * Find the closest distance between points in the base series.
-     * @private
+     * @internal
      * @param {Array<number>} xData list of all x coordinates in the base series
      * @return {number} - closest distance between points in the base series
      */
@@ -10999,8 +11500,8 @@ LinearRegressionIndicator.defaultOptions = merge(LinearRegressionIndicator_SMAIn
          * @sample {highstock} stock/plotoptions/linear-regression-xaxisunit
          *         xAxisUnit set to 1 minute
          *
-         * ```js
-         * // In Liniear Regression Slope Indicator series `xAxisUnit`is
+         * @example
+         * // In Linear Regression Slope Indicator series `xAxisUnit` is
          * // `86400000` (1 day) and period is `3`. There're 3 points in
          * // the base series:
          *
@@ -11015,7 +11516,7 @@ LinearRegressionIndicator.defaultOptions = merge(LinearRegressionIndicator_SMAIn
          * // we change the `xAxisUnit` to `1` (ms) the value of the
          * // indicator's point will be `2.3148148148148148e-8` which is
          * // harder to interpret for a human.
-         * ```
+
          *
          * @type    {null|number}
          * @product highstock
@@ -11037,6 +11538,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const LinearRegression_LinearRegressionIndicator = ((/* unused pure expression or super */ null && (LinearRegressionIndicator)));
 /* *
  *
@@ -11059,14 +11561,14 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ''; // To include the above in the js output
 
 ;// ./code/es-modules/Stock/Indicators/LinearRegressionSlopes/LinearRegressionSlopesIndicator.js
-// SPDX-License-Identifier: LicenseRef-Highcharts
-/**
+/* *
  *
  *  (c) 2010-2026 Highsoft AS
  *  Author: Kamil Kulig
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -11082,7 +11584,7 @@ const { linearregression: LinearRegressionSlopesIndicator_LinearRegressionIndica
 /**
  * The Linear Regression Slope series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.linearRegressionSlope
  *
@@ -11114,7 +11616,7 @@ class LinearRegressionSlopesIndicator extends LinearRegressionSlopesIndicator_Li
  * @since        7.0.0
  * @product      highstock
  * @requires     stock/indicators/indicators
- * @requires  stock/indicators/regressions
+ * @requires     stock/indicators/regressions
  * @optionparent plotOptions.linearregressionslope
  */
 LinearRegressionSlopesIndicator.defaultOptions = merge(LinearRegressionSlopesIndicator_LinearRegressionIndicator.defaultOptions);
@@ -11129,6 +11631,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const LinearRegressionSlopes_LinearRegressionSlopesIndicator = ((/* unused pure expression or super */ null && (LinearRegressionSlopesIndicator)));
 /* *
  *
@@ -11136,7 +11639,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *
  * */
 /**
- * A linear regression intercept series. If the
+ * A linear regression slope series. If the
  * [type](#series.linearregressionslope.type) option is not specified, it is
  * inherited from [chart.type](#chart.type).
  *
@@ -11151,14 +11654,14 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ''; // To include the above in the js output
 
 ;// ./code/es-modules/Stock/Indicators/LinearRegressionIntercept/LinearRegressionInterceptIndicator.js
-// SPDX-License-Identifier: LicenseRef-Highcharts
-/**
+/* *
  *
  *  (c) 2010-2026 Highsoft AS
  *  Author: Kamil Kulig
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -11174,7 +11677,7 @@ const { linearregression: LinearRegressionInterceptIndicator_LinearRegressionInd
 /**
  * The Linear Regression Intercept series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.linearRegressionIntercept
  *
@@ -11200,13 +11703,13 @@ class LinearRegressionInterceptIndicator extends LinearRegressionInterceptIndica
  * option to be set.
  *
  * @sample {highstock} stock/indicators/linear-regression-intercept
- *         Linear intercept slope indicator
+ *         Linear regression intercept indicator
  *
  * @extends      plotOptions.linearregression
  * @since        7.0.0
  * @product      highstock
  * @requires     stock/indicators/indicators
- * @requires  stock/indicators/regressions
+ * @requires     stock/indicators/regressions
  * @optionparent plotOptions.linearregressionintercept
  */
 LinearRegressionInterceptIndicator.defaultOptions = merge(LinearRegressionInterceptIndicator_LinearRegressionIndicator.defaultOptions);
@@ -11221,6 +11724,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const LinearRegressionIntercept_LinearRegressionInterceptIndicator = ((/* unused pure expression or super */ null && (LinearRegressionInterceptIndicator)));
 /* *
  *
@@ -11243,14 +11747,14 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ''; // To include the above in the js output
 
 ;// ./code/es-modules/Stock/Indicators/LinearRegressionAngle/LinearRegressionAngleIndicator.js
-// SPDX-License-Identifier: LicenseRef-Highcharts
-/**
+/* *
  *
  *  (c) 2010-2026 Highsoft AS
  *  Author: Kamil Kulig
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -11266,7 +11770,7 @@ const { linearregression: LinearRegressionAngleIndicator_LinearRegressionIndicat
 /**
  * The Linear Regression Angle series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.linearRegressionAngle
  *
@@ -11281,7 +11785,7 @@ class LinearRegressionAngleIndicator extends LinearRegressionAngleIndicator_Line
     /**
      * Convert a slope of a line to angle (in degrees) between
      * the line and x axis
-     * @private
+     * @internal
      * @param {number} slope of the straight line function
      * @return {number} angle in degrees
      */
@@ -11302,13 +11806,13 @@ class LinearRegressionAngleIndicator extends LinearRegressionAngleIndicator_Line
  * option to be set.
  *
  * @sample {highstock} stock/indicators/linear-regression-angle
- *         Linear intercept angle indicator
+ *         Linear regression angle indicator
  *
  * @extends      plotOptions.linearregression
  * @since        7.0.0
  * @product      highstock
  * @requires     stock/indicators/indicators
- * @requires  stock/indicators/regressions
+ * @requires     stock/indicators/regressions
  * @optionparent plotOptions.linearregressionangle
  */
 LinearRegressionAngleIndicator.defaultOptions = merge(LinearRegressionAngleIndicator_LinearRegressionIndicator.defaultOptions, {
@@ -11328,9 +11832,10 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const LinearRegressionAngle_LinearRegressionAngleIndicator = ((/* unused pure expression or super */ null && (LinearRegressionAngleIndicator)));
 /**
- * A linear regression intercept series. If the
+ * A linear regression angle series. If the
  * [type](#series.linearregressionangle.type) option is not specified, it is
  * inherited from [chart.type](#chart.type).
  *
@@ -11347,8 +11852,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ;// ./code/es-modules/Stock/Indicators/ABands/ABandsIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -11362,22 +11868,16 @@ const { sma: ABandsIndicator_SMAIndicator } = (external_highcharts_src_js_defaul
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function getBaseForBand(low, high, factor) {
     return (((correctFloat(high - low)) /
         ((correctFloat(high + low)) / 2)) * 1000) * factor;
 }
-/**
- * @private
- */
+/** @internal */
 function getPointUB(high, base) {
     return high * (correctFloat(1 + 2 * base));
 }
-/**
- * @private
- */
+/** @internal */
 function getPointLB(low, base) {
     return low * (correctFloat(1 - 2 * base));
 }
@@ -11389,7 +11889,7 @@ function getPointLB(low, base) {
 /**
  * The ABands series type
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.abands
  *
@@ -11546,6 +12046,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const ABands_ABandsIndicator = ((/* unused pure expression or super */ null && (ABandsIndicator)));
 /* *
  *
@@ -11572,8 +12073,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ;// ./code/es-modules/Stock/Indicators/TrendLine/TrendLineIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -11589,7 +12091,7 @@ const { sma: TrendLineIndicator_SMAIndicator } = (external_highcharts_src_js_def
 /**
  * The Trend line series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.trendline
  *
@@ -11653,7 +12155,7 @@ class TrendLineIndicator extends TrendLineIndicator_SMAIndicator {
  * using a method called the Sum Of Least Squares. This series requires the
  * `linkedTo` option to be set.
  *
- * @sample stock/indicators/trendline
+ * @sample {highstock} stock/indicators/trendline
  *         Trendline indicator
  *
  * @extends      plotOptions.sma
@@ -11689,6 +12191,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const TrendLine_TrendLineIndicator = ((/* unused pure expression or super */ null && (TrendLineIndicator)));
 /* *
  *
@@ -11716,8 +12219,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *
  *  Disparity Index technical indicator for Highcharts Stock
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -11733,7 +12237,7 @@ const { sma: DisparityIndexIndicator_SMAIndicator } = (external_highcharts_src_j
 /**
  * The Disparity Index series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.disparityindex
  *
@@ -11794,7 +12298,7 @@ class DisparityIndexIndicator extends DisparityIndexIndicator_SMAIndicator {
  * This series requires the `linkedTo` option to be set and should
  * be loaded after the `stock/indicators/indicators.js` file.
  *
- * @sample stock/indicators/disparity-index
+ * @sample {highstock} stock/indicators/disparity-index
  *         Disparity Index indicator
  *
  * @extends      plotOptions.sma
@@ -11838,6 +12342,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const DisparityIndex_DisparityIndexIndicator = ((/* unused pure expression or super */ null && (DisparityIndexIndicator)));
 /* *
  *

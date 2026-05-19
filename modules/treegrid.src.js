@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v12.6.0 (2026-04-13)
+ * @license Highcharts Gantt JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/treegrid
  * @requires highcharts
  *
@@ -9,8 +9,8 @@
  * (c) 2016-2026 Highsoft AS
  * Author: Jon Arild Nygård
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -129,8 +129,9 @@ var highcharts_StackItem_commonjs_highcharts_StackItem_commonjs2_highcharts_Stac
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1492,8 +1493,9 @@ function wrap(obj, method, func) {
  *  (c) 2009-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1986,11 +1988,14 @@ var BrokenAxis;
                     brokenAxis.unitLength = void 0;
                     if (brokenAxis.hasBreaks) {
                         const breaks = axis.options.breaks || [], breakArrayTemp = [], breakArray = [], pointRangePadding = axis.pointRangePadding ?? 0;
-                        let length = 0, inBrk, repeat, min = axis.userMin ?? axis.min, max = axis.userMax ?? axis.max, dataMin = axis.dataMin ?? min, dataMax = axis.dataMax ?? max, start, i;
-                        if (isNumber(axis.threshold)) {
-                            dataMin = Math.min(dataMin ?? axis.threshold, axis.threshold);
-                            dataMax = Math.max(dataMax ?? axis.threshold, axis.threshold);
-                        }
+                        let length = 0, inBrk, repeat, min = axis.userMin ?? axis.min, max = axis.userMax ?? axis.max, start, i;
+                        // Extend range to include visible breaks outside of
+                        // series data.
+                        const dataMin = isNumber(min) ?
+                            Math.min(axis.dataMin ?? min, min) :
+                            (axis.dataMin ?? min), dataMax = isNumber(max) ?
+                            Math.max(axis.dataMax ?? max, max) :
+                            (axis.dataMax ?? max);
                         // Min & max check (#4247) but not for gantt (#13898)
                         if (!axis.treeGrid?.tree) {
                             breaks.forEach(function (brk) {
@@ -2112,8 +2117,9 @@ var highcharts_Axis_commonjs_highcharts_Axis_commonjs2_highcharts_Axis_root_High
  *  (c) 2016-2026 Highsoft AS
  *  Authors: Lars A. V. Cabrera
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2780,7 +2786,7 @@ function onDestroy(e) {
 function onInit(e) {
     const axis = this;
     const userOptions = e.userOptions || {};
-    const gridOptions = userOptions.grid || {};
+    const gridOptions = merge({ borderColor: 'var(--highcharts-neutral-color-20)' }, userOptions.grid || {});
     if (gridOptions.enabled && defined(gridOptions.borderColor)) {
         userOptions.tickColor = userOptions.lineColor = (gridOptions.borderColor);
     }
@@ -2789,6 +2795,7 @@ function onInit(e) {
     }
     axis.hiddenLabels = [];
     axis.hiddenMarks = [];
+    axis.clippable = false;
 }
 /**
  * Center tick labels in cells.
@@ -2878,7 +2885,7 @@ function onTickLabelFormat(ctx) {
         const series = (axis.linkedParent || axis).series[0];
         const isFirst = value === tickPos[0];
         const isLast = value === tickPos[tickPos.length - 1];
-        const point = series && find(series.options.data, function (p) {
+        const point = series && find((series.options.data || []), function (p) {
             return p[axis.isXAxis ? 'x' : 'y'] === value;
         });
         let pointCopy;
@@ -3078,27 +3085,6 @@ const GridAxis = {
  *
  * */
 /**
- * @productdesc {gantt}
- * For grid axes (like in Gantt charts),
- * it is possible to declare as a list to provide different
- * formats depending on available space.
- *
- * Defaults to:
- * ```js
- * {
- *     hour: { list: ['%H:%M', '%H'] },
- *     day: { list: ['%A, %e. %B', '%a, %e. %b', '%E'] },
- *     week: { list: ['Week %W', 'W%W'] },
- *     month: { list: ['%B', '%b', '%o'] }
- * }
- * ```
- *
- * @sample {gantt} gantt/grid-axis/date-time-label-formats
- *         Gantt chart with custom axis date format.
- *
- * @apioption xAxis.dateTimeLabelFormats
- */
-/**
  * Set grid options for the axis labels. Requires Highcharts Gantt.
  *
  * @since     6.2.0
@@ -3133,7 +3119,7 @@ const GridAxis = {
  * Set border color for the label grid lines.
  *
  * @type      {Highcharts.ColorString}
- * @default   #e6e6e6
+ * @default   #cccccc
  * @apioption xAxis.grid.borderColor
  */
 /**
@@ -3162,8 +3148,9 @@ const GridAxis = {
  *
  *  Authors: Jon Arild Nygård
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3251,8 +3238,8 @@ function getNode(id, parent, level, data, mapOfIdToChildren, options) {
     });
     // Calculate start and end for point if it is not already explicitly set.
     if (data) {
-        data.start = pick(data.start, start);
-        data.end = pick(data.end, end);
+        data.start ?? (data.start = start);
+        data.end ?? (data.end = end);
     }
     extend(node, {
         children: children,
@@ -3288,8 +3275,9 @@ const Tree = {
  *  (c) 2016-2026 Highsoft AS
  *  Authors: Jon Arild Nygård
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3344,7 +3332,7 @@ function renderLabelIcon(tick, params) {
         icon
             .attr({
             cursor: 'pointer',
-            'fill': pick(params.color, "#666666" /* Palette.neutralColor60 */),
+            'fill': params.color || 'var(--highcharts-neutral-color-60)',
             'stroke-width': 1,
             stroke: options.lineColor,
             strokeWidth: options.lineWidth || 0
@@ -3601,8 +3589,9 @@ var highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_H
  *
  *  Authors: Jon Arild Nygård / Øystein Moseng
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3814,8 +3803,9 @@ const TreeUtilities = {
  *  (c) 2016-2026 Highsoft AS
  *  Authors: Jon Arild Nygård
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3839,6 +3829,13 @@ let TickConstructor;
  *  Functions
  *
  * */
+/**
+ * Returns the current data
+ */
+function getSeriesData(s) {
+    return new Array(s.dataTable.rowCount).fill(void 0)
+        .map((_, i) => s.dataTable.getRowObject(i));
+}
 /**
  * Creates a break object from a node.
  * @internal
@@ -3960,9 +3957,7 @@ function getTreeGridFromData(data, uniqueNames, numberOfSeries) {
                 const data = node.data;
                 if (isObject(data, true)) {
                     // Update point
-                    data.y = start + (data.seriesIndex || 0);
-                    // Remove the property once used
-                    delete data.seriesIndex;
+                    data.y = start + (data.yIndex || 0);
                 }
                 node.pos = pos;
             });
@@ -4016,7 +4011,7 @@ function onBeforeRender(e) {
             const seriesHasPrimitivePoints = [];
             // Concatenate data from all series assigned to this axis.
             data = axis.series.reduce(function (arr, s) {
-                const seriesData = (s.options.data || []), firstPoint = seriesData[0], 
+                const seriesData = getSeriesData(s), firstPoint = seriesData[0], 
                 // Check if the first point is a simple array of values.
                 // If so we assume that this is the case for all points.
                 foundPrimitivePoint = Array.isArray(firstPoint) &&
@@ -4036,7 +4031,8 @@ function onBeforeRender(e) {
                         if (isObject(pointOptions, true)) {
                             // Set series index on data. Removed again
                             // after use.
-                            pointOptions.seriesIndex = numberOfSeries;
+                            pointOptions.yIndex = numberOfSeries;
+                            pointOptions.seriesIndex = s.index;
                             arr.push(pointOptions);
                         }
                     });
@@ -4067,21 +4063,11 @@ function onBeforeRender(e) {
             axis.hasNames = true;
             axis.treeGrid.tree = treeGrid.tree;
             // Update yData now that we have calculated the y values
-            axis.series.forEach(function (series, index) {
-                const axisData = (series.options.data || []).map(function (d) {
-                    if (seriesHasPrimitivePoints[index] ||
-                        (isArray(d) && series.options.keys?.length)) {
-                        // Get the axisData from the data array used to
-                        // build the treeGrid where has been modified
-                        data.forEach(function (point) {
-                            const toArray = splat(d);
-                            if (toArray.indexOf(point.x || 0) >= 0 &&
-                                toArray.indexOf(point.x2 || 0) >= 0) {
-                                d = point;
-                            }
-                        });
-                    }
-                    return isObject(d, true) ? merge(d) : d;
+            axis.series.forEach((series) => {
+                const axisData = data.filter((point) => point.seriesIndex === series.index);
+                axisData.forEach((point) => {
+                    delete point.seriesIndex;
+                    delete point.yIndex;
                 });
                 // Avoid destroying points when series is not visible
                 if (series.visible) {
@@ -4141,6 +4127,7 @@ function wrapGenerateTick(proceed, pos) {
             tick.parameters.category = gridNode.name;
             tick.options = options;
             tick.addLabel();
+            axis.isDirty = true;
         }
     }
     else {
@@ -4245,8 +4232,6 @@ function wrapInit(proceed, chart, userOptions, coll) {
                  *
                  * @product      gantt
                  * @optionparent yAxis.labels.symbol
-                 *
-                 * @internal
                  */
                 symbol: {
                     /**
@@ -4254,14 +4239,12 @@ function wrapInit(proceed, chart, userOptions, coll) {
                      * the `Highcharts.Renderer.symbols` collection.
                      *
                      * @type {Highcharts.SymbolKeyValue}
-                     *
-                     * @internal
                      */
                     type: 'triangle',
                     x: -5,
-                    y: -5,
-                    height: 10,
-                    width: 10
+                    y: -3,
+                    height: 6,
+                    width: 8
                 }
             },
             uniqueNames: false
@@ -4398,10 +4381,11 @@ class TreeGridAxisAdditions {
     setCollapsedStatus(node) {
         const axis = this.axis, chart = axis.chart;
         axis.series.forEach(function (series) {
-            const data = series.options.data;
+            const data = getSeriesData(series);
             if (node.id && data) {
                 const point = chart.get(node.id), dataPoint = data[series.data.indexOf(point)];
-                if (point && dataPoint) {
+                series.dataTable.setRow({ collapsed: node.collapsed }, series.data.indexOf(point));
+                if (point && isObject(dataPoint, true)) {
                     point.collapsed = node.collapsed;
                     dataPoint.collapsed = node.collapsed;
                 }

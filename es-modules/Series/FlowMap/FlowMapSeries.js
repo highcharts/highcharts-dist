@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Askel Eirik Johansson, Piotr Madej
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -564,7 +565,7 @@ extend(FlowMapSeries.prototype, {
     pointClass: FlowMapPoint,
     pointArrayMap: ['from', 'to', 'weight'],
     drawPoints: ColumnSeries.prototype.drawPoints,
-    dataColumnKeys: ColumnSeries.prototype.dataColumnKeys,
+    getDataColumnKeys: ColumnSeries.prototype.getDataColumnKeys,
     // Make it work on zoom or pan.
     useMapGeometry: true
 });
@@ -589,6 +590,7 @@ export default FlowMapSeries;
  * boostThreshold, borderColor, borderWidth, dashStyle, dataLabels, dragDrop,
  * joinBy, mapData, negativeColor, onPoint, shadow, showCheckbox
  * @product   highmaps
+ * @requires     modules/flowmap
  * @apioption series.flowmap
  */
 /**
@@ -631,6 +633,7 @@ export default FlowMapSeries;
  *      }]
  *      ```
  *
+ * @basic
  * @type      {Array<number|null|*>}
  * @apioption series.flowmap.data
  */

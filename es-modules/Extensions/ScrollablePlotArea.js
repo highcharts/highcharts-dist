@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  *  Highcharts feature to make the Y axis stay fixed when scrolling the chart
@@ -15,7 +16,7 @@ import A from '../Core/Animation/AnimationUtilities.js';
 const { stop } = A;
 import H from '../Core/Globals.js';
 const { composed } = H;
-import RendererRegistry from '../Core/Renderer/RendererRegistry.js';
+import SVGRenderer from '../Core/Renderer/SVG/SVGRenderer.js';
 import { addEvent, createElement, css, defined, erase, merge, pushUnique } from '../Shared/Utilities.js';
 /* *
  *
@@ -24,12 +25,11 @@ import { addEvent, createElement, css, defined, erase, merge, pushUnique } from 
  * */
 /** @internal */
 function onChartRender() {
-    let scrollablePlotArea = this.scrollablePlotArea;
     if ((this.scrollablePixelsX || this.scrollablePixelsY) &&
-        !scrollablePlotArea) {
-        this.scrollablePlotArea = scrollablePlotArea = new ScrollablePlotArea(this);
+        !this.scrollablePlotArea) {
+        this.scrollablePlotArea = new ScrollablePlotArea(this);
     }
-    scrollablePlotArea?.applyFixed();
+    this.scrollablePlotArea?.applyFixed();
 }
 /** @internal */
 function markDirty() {
@@ -37,9 +37,10 @@ function markDirty() {
         this.chart.scrollablePlotArea.isDirty = true;
     }
 }
-class ScrollablePlotArea {
+/** @internal */
+export class ScrollablePlotArea {
     static compose(AxisClass, ChartClass, SeriesClass) {
-        if (pushUnique(composed, this.compose)) {
+        if (pushUnique(composed, 'ScrollablePlotArea')) {
             addEvent(AxisClass, 'afterInit', markDirty);
             addEvent(ChartClass, 'afterSetChartSize', (e) => this.afterSetSize(e.target, e));
             addEvent(ChartClass, 'render', onChartRender);
@@ -94,8 +95,13 @@ class ScrollablePlotArea {
             delete chart.scrollablePlotBox;
         }
     }
+    /* *
+     *
+     *  Constructors
+     *
+     * */
     constructor(chart) {
-        const chartOptions = chart.options.chart, Renderer = RendererRegistry.getRendererType(), scrollableOptions = chartOptions.scrollablePlotArea || {}, moveFixedElements = this.moveFixedElements.bind(this), styles = {
+        const chartOptions = chart.options.chart, scrollableOptions = chartOptions.scrollablePlotArea || {}, moveFixedElements = this.moveFixedElements.bind(this), styles = {
             WebkitOverflowScrolling: 'touch',
             overflowX: 'hidden',
             overflowY: 'hidden'
@@ -127,7 +133,7 @@ class ScrollablePlotArea {
             pointerEvents: 'none',
             zIndex: (chartOptions.style?.zIndex || 0) + 2,
             top: 0
-        }, void 0, true), fixedRenderer = this.fixedRenderer = new Renderer(fixedDiv, chart.chartWidth, chart.chartHeight, chartOptions.style);
+        }, void 0, true), fixedRenderer = this.fixedRenderer = new SVGRenderer(fixedDiv, chart.chartWidth, chart.chartHeight, chartOptions.style);
         // Mask
         this.mask = fixedRenderer
             .path()
@@ -159,6 +165,11 @@ class ScrollablePlotArea {
         // Now move the container inside
         innerContainer.appendChild(chart.container);
     }
+    /* *
+     *
+     *  Functions
+     *
+     * */
     applyFixed() {
         const { chart, fixedRenderer, isDirty, scrollingContainer } = this, { axisOffset, chartWidth, chartHeight, container, plotHeight, plotLeft, plotTop, plotWidth, scrollablePixelsX = 0, scrollablePixelsY = 0 } = chart, chartOptions = chart.options.chart, scrollableOptions = chartOptions.scrollablePlotArea || {}, { scrollPositionX = 0, scrollPositionY = 0 } = scrollableOptions, scrollableWidth = chartWidth + scrollablePixelsX, scrollableHeight = chartHeight + scrollablePixelsY;
         // Set the size of the fixed renderer to the visible width
@@ -233,7 +244,8 @@ class ScrollablePlotArea {
     }
     /**
      * These elements are moved over to the fixed renderer and stay fixed when
-     * the user scrolls the chart
+     * the user scrolls the chart.
+     *
      * @internal
      */
     moveFixedElements() {
@@ -285,7 +297,11 @@ class ScrollablePlotArea {
         }
     }
 }
-/** @internal */
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 ScrollablePlotArea.fixedSelectors = [
     '.highcharts-breadcrumbs-group',
     '.highcharts-contextbutton',
@@ -304,12 +320,6 @@ ScrollablePlotArea.fixedSelectors = [
     '.highcharts-subtitle',
     '.highcharts-title'
 ];
-/* *
- *
- *  Default Export
- *
- * */
-export default ScrollablePlotArea;
 /* *
  *
  *  API Declarations
@@ -354,6 +364,18 @@ export default ScrollablePlotArea;
  * @apioption chart.scrollablePlotArea.minWidth
  */
 /**
+ * The opacity of mask applied on one of the sides of the plot
+ * area.
+ *
+ * @sample {highcharts} highcharts/chart/scrollable-plotarea-opacity
+ *         Disabled opacity for the mask
+ *
+ * @type        {number}
+ * @default     0.85
+ * @since       7.1.1
+ * @apioption   chart.scrollablePlotArea.opacity
+ */
+/**
  * The initial scrolling position of the scrollable plot area. Ranges from 0 to
  * 1, where 0 aligns the plot area to the left and 1 aligns it to the right.
  * Typically we would use 1 if the chart has right aligned Y axes.
@@ -369,17 +391,5 @@ export default ScrollablePlotArea;
  * @type      {number}
  * @since     7.1.2
  * @apioption chart.scrollablePlotArea.scrollPositionY
- */
-/**
- * The opacity of mask applied on one of the sides of the plot
- * area.
- *
- * @sample {highcharts} highcharts/chart/scrollable-plotarea-opacity
- *         Disabled opacity for the mask
- *
- * @type        {number}
- * @default     0.85
- * @since       7.1.1
- * @apioption   chart.scrollablePlotArea.opacity
  */
 (''); // Keep doclets above in transpiled file

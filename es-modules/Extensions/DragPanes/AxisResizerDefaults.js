@@ -6,8 +6,9 @@
  *
  *  Author: Kacper Madej
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -121,7 +122,7 @@ const AxisResizerDefaults = {
          * @type     {Highcharts.ColorString}
          * @requires modules/drag-panes
          */
-        lineColor: "#cccccc" /* Palette.neutralColor20 */,
+        lineColor: 'var(--highcharts-neutral-color-20)',
         /**
          * Dash style of the control line.
          *

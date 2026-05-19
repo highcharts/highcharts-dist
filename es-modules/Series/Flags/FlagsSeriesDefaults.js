@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -51,6 +52,15 @@ const FlagsSeriesDefaults = {
      * @validvalue ["y", "open", "high", "low", "close"]
      * @apioption  plotOptions.flags.onKey
      */
+    /**
+   * What type of legend symbol to render for this series. For flags
+   * series, the default is `flag-icon`, a pole with a pennant.
+   *
+     * @default   flag-icon
+     * @product   highstock
+     * @apioption plotOptions.flags.legendSymbol
+     */
+    legendSymbol: 'flag-icon',
     /**
      * The id of the series that the flags should be drawn on. If no id
      * is given, the flags are drawn on the x axis.
@@ -175,7 +185,7 @@ const FlagsSeriesDefaults = {
      * @type    {Highcharts.ColorType}
      * @product highstock
      */
-    fillColor: "#ffffff" /* Palette.backgroundColor */,
+    fillColor: 'var(--highcharts-background-color)',
     /**
      * The color of the line/border of the flag.
      *
@@ -205,14 +215,14 @@ const FlagsSeriesDefaults = {
              * @type    {Highcharts.ColorType}
              * @product highstock
              */
-            lineColor: "#000000" /* Palette.neutralColor100 */,
+            lineColor: 'var(--highcharts-neutral-color-100)',
             /**
              * The fill or background color of the flag.
              *
              * @type    {Highcharts.ColorType}
              * @product highstock
              */
-            fillColor: "#ccd3ff" /* Palette.highlightColor20 */
+            fillColor: 'var(--highcharts-highlight-color-20)'
         }
     },
     /**
@@ -227,7 +237,7 @@ const FlagsSeriesDefaults = {
      */
     style: {
         /** @ignore-option */
-        color: "#000000" /* Palette.neutralColor100 */,
+        color: 'var(--highcharts-neutral-color-100)',
         /** @ignore-option */
         fontSize: '0.7em',
         /** @ignore-option */
@@ -267,6 +277,7 @@ const FlagsSeriesDefaults = {
  *    }]
  *    ```
  *
+ * @basic
  * @type      {Array<*>}
  * @extends   series.line.data
  * @excluding dataLabels, marker, name, y

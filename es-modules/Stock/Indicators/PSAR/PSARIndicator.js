@@ -5,8 +5,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Grzegorz Blachliński
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -20,15 +21,11 @@ const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
  *
  * */
 // Utils:
-/**
- *
- */
+/** @internal */
 function toFixed(a, n) {
     return parseFloat(a.toFixed(n));
 }
-/**
- *
- */
+/** @internal */
 function calculateDirection(previousDirection, low, high, PSAR) {
     if ((previousDirection === 1 && low > PSAR) ||
         (previousDirection === -1 && high > PSAR)) {
@@ -46,9 +43,7 @@ function calculateDirection(previousDirection, low, high, PSAR) {
  * maxAcc - maximum acceleration factor
  * initAcc - initial acceleration factor
  */
-/**
- *
- */
+/** @internal */
 function getAccelerationFactor(dir, pDir, eP, pEP, pAcc, inc, maxAcc, initAcc) {
     if (dir === pDir) {
         if (dir === 1 && (eP > pEP)) {
@@ -61,24 +56,18 @@ function getAccelerationFactor(dir, pDir, eP, pEP, pAcc, inc, maxAcc, initAcc) {
     }
     return initAcc;
 }
-/**
- *
- */
+/** @internal */
 function getExtremePoint(high, low, previousDirection, previousExtremePoint) {
     if (previousDirection === 1) {
         return (high > previousExtremePoint) ? high : previousExtremePoint;
     }
     return (low < previousExtremePoint) ? low : previousExtremePoint;
 }
-/**
- *
- */
+/** @internal */
 function getEPMinusPSAR(EP, PSAR) {
     return EP - PSAR;
 }
-/**
- *
- */
+/** @internal */
 function getAccelerationFactorMultiply(accelerationFactor, EPMinusSAR) {
     return accelerationFactor * EPMinusSAR;
 }
@@ -94,9 +83,7 @@ function getAccelerationFactorMultiply(accelerationFactor, EPMinusSAR) {
  * pHigh - previous high
  * pEP - previous extreme point
  */
-/**
- *
- */
+/** @internal */
 function getPSAR(pdir, sDir, PSAR, pACCMulti, sLow, pLow, pHigh, sHigh, pEP) {
     if (pdir === sDir) {
         if (pdir === 1) {
@@ -118,7 +105,7 @@ function getPSAR(pdir, sDir, PSAR, pACCMulti, sLow, pLow, pHigh, sHigh, pEP) {
 /**
  * The Parabolic SAR series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.psar
  *
@@ -201,7 +188,7 @@ class PSARIndicator extends SMAIndicator {
  * option to be set and should be loaded
  * after `stock/indicators/indicators.js` file.
  *
- * @sample stock/indicators/psar
+ * @sample {highstock} stock/indicators/psar
  *         Parabolic SAR Indicator
  *
  * @extends      plotOptions.sma
@@ -268,6 +255,7 @@ SeriesRegistry.registerSeriesType('psar', PSARIndicator);
  *  Default Export
  *
  * */
+/** @internal */
 export default PSARIndicator;
 /* *
  *

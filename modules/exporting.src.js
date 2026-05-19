@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.6.0 (2026-04-13)
+ * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/exporting
  * @requires highcharts
  *
@@ -9,8 +9,8 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Torstein Hønsi
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -126,8 +126,9 @@ var highcharts_Chart_commonjs_highcharts_Chart_commonjs2_highcharts_Chart_root_H
  *  (c) 2010-2026 Highsoft AS
  *  Author: Paweł Fus
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  * */
 
@@ -217,8 +218,9 @@ var ChartNavigationComposition;
  *  (c) 2015-2026 Highsoft AS
  *  Author: Øystein Moseng
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  *  Mixin for downloading content in the browser
@@ -419,8 +421,9 @@ const DownloadURL = {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -443,22 +446,14 @@ const { isTouchDevice } = (highcharts_commonjs_highcharts_commonjs2_highcharts_r
  */
 const exporting = {
     /**
-     * Experimental setting to allow HTML inside the chart (added through
-     * the `useHTML` options), directly in the exported image. This allows
-     * you to preserve complicated HTML structures like tables or bi-directional
-     * text in exported charts.
+     * Allow HTML inside the chart (added through the `useHTML` options),
+     * directly in the exported image. This allows you to preserve complicated
+     * HTML structures like tables or bi-directional text in exported charts.
      *
-     * Disclaimer: The HTML is rendered in a `foreignObject` tag in the
-     * generated SVG. The official export server is based on PhantomJS,
-     * which supports this, but other SVG clients, like Batik, does not
-     * support it. This also applies to downloaded SVG that you want to
-     * open in a desktop client.
-     *
-     * @type      {boolean}
-     * @default   false
      * @since     4.1.8
      * @apioption exporting.allowHTML
      */
+    allowHTML: true,
     /**
      * Allows the end user to sort the data table by clicking on column headers.
      *
@@ -519,6 +514,13 @@ const exporting = {
      * exception is thrown instead. Receives two parameters, the exporting
      * options, and the error from the module.
      *
+     * Since v13, PDF client-side export dependencies are opt-in. If `jsPDF` and
+     * `svg2pdf` are not present on `window` and `exporting.libURL` is not
+     * defined, a console warning is emitted on chart load. When fallback is
+     * disabled and no `exporting.error` handler is defined, the thrown error
+     * will use the underlying error message when available (for example,
+     * missing `jsPDF`/`svg2pdf`) instead of always throwing error `#28`.
+     *
      * @see [fallbackToExportServer](#exporting.fallbackToExportServer)
      *
      * @type      {Highcharts.ExportingErrorCallbackFunction}
@@ -537,6 +539,13 @@ const exporting = {
      * It is recommended to define the [exporting.error](#exporting.error)
      * handler if disabling fallback, in order to notify users in case export
      * fails.
+     *
+     * Since v13, PDF client-side export dependencies are not auto-loaded unless
+     * `exporting.libURL` is defined (or the scripts are already present on
+     * the page). If dependencies are missing and no `exporting.libURL` is
+     * configured, a console warning is emitted on chart load. Disabling
+     * fallback without defining `exporting.error` will throw the underlying
+     * error message when available.
      *
      * @type      {boolean}
      * @default   true
@@ -597,13 +606,14 @@ const exporting = {
      * external libraries (including [optional dependencies](https://www.highcharts.com/docs/getting-started/optional-dependencies))
      * loaded through `exporting.libURL`. These libraries are not licensed or
      * warrantied under the Highcharts license.
+     * Since v13, this option has no default and must be configured explicitly.
+     * To load dependencies from the Highcharts CDN, set it to
+     * `https://code.highcharts.com/{version}/lib/`.
      *
      * @type      {string}
-     * @default   https://code.highcharts.com/{version}/lib
      * @since     5.0.0
      * @apioption exporting.libURL
      */
-    libURL: 'https://code.highcharts.com/12.6.0/lib/',
     /**
      * Whether the chart should be exported using the browser's built-in
      * capabilities, allowing offline exports without requiring access to the
@@ -1170,7 +1180,7 @@ const navigation = {
          * @type  {Highcharts.ColorType}
          * @since 2.0
          */
-        symbolFill: "#666666" /* Palette.neutralColor60 */,
+        symbolFill: 'var(--highcharts-neutral-color-60)',
         /**
          * The color of the symbol's stroke or line.
          *
@@ -1180,7 +1190,7 @@ const navigation = {
          * @type  {Highcharts.ColorString}
          * @since 2.0
          */
-        symbolStroke: "#666666" /* Palette.neutralColor60 */,
+        symbolStroke: 'var(--highcharts-neutral-color-60)',
         /**
          * The pixel stroke width of the symbol on the button.
          *
@@ -1209,7 +1219,7 @@ const navigation = {
              *
              * @type {Highcharts.ColorType}
              */
-            fill: "#ffffff" /* Palette.backgroundColor */,
+            fill: 'var(--highcharts-background-color)',
             /**
              * Padding for the button.
              */
@@ -1246,7 +1256,7 @@ const navigation = {
         /** @ignore-option */
         borderRadius: '3px',
         /** @ignore-option */
-        background: "#ffffff" /* Palette.backgroundColor */,
+        background: 'var(--highcharts-background-color)',
         /** @ignore-option */
         padding: '0.5em'
     },
@@ -1272,7 +1282,7 @@ const navigation = {
         /** @ignore-option */
         borderRadius: '3px',
         /** @ignore-option */
-        color: "#333333" /* Palette.neutralColor80 */,
+        color: 'var(--highcharts-neutral-color-80)',
         /** @ignore-option */
         padding: '0.5em',
         /** @ignore-option */
@@ -1297,7 +1307,7 @@ const navigation = {
      */
     menuItemHoverStyle: {
         /** @ignore-option */
-        background: "#f2f2f2" /* Palette.neutralColor5 */
+        background: 'var(--highcharts-neutral-color-5)'
     }
 };
 /* *
@@ -1322,8 +1332,9 @@ const ExportingDefaults = {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1396,8 +1407,9 @@ var ExportingSymbols;
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2761,8 +2773,9 @@ function wrap(obj, method, func) {
  *
  *  Full screen for Highcharts
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3100,8 +3113,9 @@ class Fullscreen {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Christer Vasseng, Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3318,8 +3332,9 @@ HttpUtilities.post = post;
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3449,49 +3464,167 @@ class Exporting {
         }
     }
     /** @internal */
-    static async handleStyleSheet(sheet, resultArray) {
+    /**
+     * Extract an array of font family names from a `font-family` string.
+     * Handles trimming and removal of surrounding quotes.
+     *
+     * @param {string|undefined} fontFamily
+     * The font-family CSS value to extract font names from.
+     *
+     * @return {string[]}
+     * Array of font family names.
+     */
+    static extractFontFamilies(fontFamily) {
+        if (!fontFamily) {
+            return [];
+        }
+        return fontFamily
+            .split(',')
+            .map((font) => font.trim().replace(/^['"]|['"]$/g, ''))
+            .filter(Boolean);
+    }
+    /**
+     * Checks if a given CSS selector affects the SVG element or any of
+     * its descendants. Returns true if either the SVG element itself
+     * matches the selector, or if any element within the SVG matches it.
+     *
+     * @internal
+     *
+     * @param {string} selector
+     * The CSS selector to test against the SVG element and its descendants.
+     * @param {SVGSVGElement} svg
+     * The SVG element to check for matches with the selector.
+     *
+     * @return {boolean}
+     * True if the selector matches the SVG or any of its descendants,
+     * false otherwise.
+     */
+    static selectorAffectsSVG(selector, svg) {
+        try {
+            if (svg.matches(selector)) {
+                return true;
+            }
+            return !!svg.querySelector(selector);
+        }
+        catch {
+            // Ignore invalid/unsupported selectors for matching.
+            return false;
+        }
+    }
+    /** @internal */
+    /**
+     * Collects all unique font family names used inline
+     * within <text> and <tspan> elements of an SVG by inspecting
+     * their style attributes and font-family attributes.
+     *
+     * @param {SVGSVGElement} svg
+     * The SVG element in which to search for inline font families.
+     * @param {Set<string>} usedFontFamilies
+     * The set to store and accumulate unique font family names.
+     */
+    static collectSVGInlineFonts(svg, usedFontFamilies) {
+        const textNodes = svg.querySelectorAll('text, tspan');
+        for (const textNode of Array.from(textNodes)) {
+            const styleAttr = textNode.getAttribute('style') || '';
+            const inlineFontFamily = textNode.getAttribute('font-family') || '';
+            if (styleAttr.indexOf('font-family') > -1) {
+                const match = styleAttr.match(/font-family\s*:\s*([^;]+)/i);
+                const families = Exporting.extractFontFamilies(match?.[1]);
+                for (const family of families) {
+                    usedFontFamilies.add(family);
+                }
+            }
+            for (const family of Exporting.extractFontFamilies(inlineFontFamily)) {
+                usedFontFamilies.add(family);
+            }
+        }
+    }
+    /** @internal */
+    static async handleStyleSheet(sheet, fontFaceRules, usedFontFamilies, svg, visited = new Set()) {
+        const href = sheet.href;
+        if (href) {
+            if (visited.has(href)) {
+                return;
+            }
+            visited.add(href);
+            try {
+                const sheetOrigin = new URL(href, Exporting_doc.baseURI).origin;
+                if (sheetOrigin !== Exporting_win.location.origin) {
+                    // We skip all cross-origin stylesheets on purpose.
+                    // This prevents DOM SecurityErrors and unhandled network
+                    // rejections when the browser blocks cssRules access.
+                    return;
+                }
+            }
+            catch {
+                // URL parsing failed, proceed to try/catch
+            }
+        }
         try {
             for (const rule of Array.from(sheet.cssRules)) {
                 if (rule instanceof CSSImportRule) {
-                    const sheet = await Exporting.fetchCSS(rule.href);
-                    if (sheet) {
-                        await Exporting.handleStyleSheet(sheet, resultArray);
+                    try {
+                        const importedSheet = await Exporting.fetchCSS(rule.href);
+                        if (importedSheet) {
+                            await Exporting.handleStyleSheet(importedSheet, fontFaceRules, usedFontFamilies, svg, visited);
+                        }
+                    }
+                    catch {
+                        // Silently ignore CORS errors on imported stylesheets
+                    }
+                }
+                if (rule instanceof CSSStyleRule &&
+                    Exporting.selectorAffectsSVG(rule.selectorText, svg)) {
+                    for (const family of Exporting.extractFontFamilies(rule.style.fontFamily)) {
+                        usedFontFamilies.add(family);
                     }
                 }
                 if (rule instanceof CSSFontFaceRule) {
                     let cssText = rule.cssText;
-                    if (sheet.href) {
-                        const baseUrl = sheet.href, regexp = /url\(\s*(['"]?)(?![a-z]+:|\/\/)([^'")]+?)\1\s*\)/gi;
+                    if (href) {
+                        const baseUrl = href, regexp = /url\(\s*(['"]?)(?![a-z]+:|\/\/)([^'")]+?)\1\s*\)/gi;
                         // Replace relative URLs
                         cssText = cssText.replace(regexp, (_, quote, relPath) => {
                             const absolutePath = new URL(relPath, baseUrl).href;
                             return `url(${quote}${absolutePath}${quote})`;
                         });
                     }
-                    resultArray.push(cssText);
+                    fontFaceRules.push(cssText);
                 }
             }
         }
-        catch {
-            if (sheet.href) {
-                const newSheet = await Exporting.fetchCSS(sheet.href);
-                if (newSheet) {
-                    await Exporting.handleStyleSheet(newSheet, resultArray);
+        catch (e) {
+            if (e.name === 'SecurityError' && href) {
+                try {
+                    const newSheet = await Exporting.fetchCSS(href);
+                    if (newSheet) {
+                        await Exporting.handleStyleSheet(newSheet, fontFaceRules, usedFontFamilies, svg, visited);
+                    }
+                }
+                catch {
+                    // Silently ignore network failures on fallback
                 }
             }
         }
     }
     /** @internal */
-    static async fetchStyleSheets() {
-        const cssTexts = [];
+    static async fetchStyleSheets(svg) {
+        const fontFaceRules = [], usedFontFamilies = new Set();
+        Exporting.collectSVGInlineFonts(svg, usedFontFamilies);
         for (const sheet of Array.from(Exporting_doc.styleSheets)) {
-            await Exporting.handleStyleSheet(sheet, cssTexts);
+            await Exporting.handleStyleSheet(sheet, fontFaceRules, usedFontFamilies, svg);
         }
-        return cssTexts;
+        if (!usedFontFamilies.size) {
+            return fontFaceRules;
+        }
+        return fontFaceRules.filter((cssText) => {
+            const familyMatch = cssText.match(/font-family\s*:\s*([^;]+);?/i), families = Exporting.extractFontFamilies(familyMatch?.[1]);
+            return families.some((family) => usedFontFamilies.has(family));
+        });
     }
     /** @internal */
     static async inlineFonts(svg) {
-        const cssTexts = await Exporting.fetchStyleSheets(), urlRegex = /url\(([^)]+)\)/g, urls = [];
+        const cssTexts = await Exporting.fetchStyleSheets(svg), urlRegex = /url\(([^)]+)\)/g, urls = [];
         let cssText = cssTexts.join('\n'), match;
         while ((match = urlRegex.exec(cssText))) {
             const m = match[1].replace(/['"]/g, '');
@@ -3594,6 +3727,24 @@ class Exporting {
         };
     }
     /**
+     * Prepare the SVG DOM for exporting
+     *
+     * @private
+     */
+    static sanitizeDOM(svg) {
+        // Increase the size of foreignObjects to avoid clipping when the
+        // applied font size in the export is larger than the on-screen font
+        // size.
+        svg.querySelectorAll('foreignObject').forEach((fo) => {
+            ['width', 'height'].forEach((attr) => {
+                const value = fo.getAttribute(attr);
+                if (value) {
+                    fo.setAttribute(attr, Math.ceil(parseInt(value, 10) * 1.15));
+                }
+            });
+        });
+    }
+    /**
      * A collection of fixes on the produced SVG to account for expand
      * properties and browser bugs. Returns a cleaned SVG.
      *
@@ -3614,31 +3765,10 @@ class Exporting {
     static sanitizeSVG(svg, 
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     options) {
-        const split = svg.indexOf('</svg>') + 6, useForeignObject = svg.indexOf('<foreignObject') > -1;
-        let html = svg.substr(split);
-        // Remove any HTML added to the container after the SVG (#894, #9087)
-        svg = svg.substr(0, split);
-        if (useForeignObject) {
-            // Some tags needs to be closed in xhtml (#13726)
-            svg = svg
-                .replace(/(<(?:img|br).*?(?=\>))>/g, '$1 />')
-                .replace(/(<svg(?![^>]*xmlns=)[^>]*)>/g, '$1 xmlns="http://www.w3.org/2000/svg">');
-            // Move HTML into a foreignObject
-        }
-        else if (html && options?.exporting?.allowHTML) {
-            html = '<foreignObject x="0" y="0" ' +
-                'width="' + options.chart.width + '" ' +
-                'height="' + options.chart.height + '">' +
-                '<body xmlns="http://www.w3.org/1999/xhtml">' +
-                // Some tags needs to be closed in xhtml (#13726)
-                html
-                    .replace(/(<(?:img|br).*?(?=\>))>/g, '$1 />')
-                    .replace(/(<svg(?![^>]*xmlns=)[^>]*)>/g, '$1 xmlns="http://www.w3.org/2000/svg">') +
-                '</body>' +
-                '</foreignObject>';
-            svg = svg.replace('</svg>', html + '</svg>');
-        }
         svg = svg
+            // Some tags needs to be closed in xhtml (#13726)
+            .replace(/(<(?:img|br).*?(?=\>))>/g, '$1 />')
+            .replace(/(<svg(?![^>]*xmlns=)[^>]*)>/g, '$1 xmlns="http://www.w3.org/2000/svg">')
             .replace(/zIndex="[^"]+"/g, '')
             .replace(/symbolName="[^"]+"/g, '')
             .replace(/jQuery\d+="[^"]+"/g, '')
@@ -3881,7 +4011,7 @@ class Exporting {
      * @requires modules/exporting
      */
     contextMenu(className, items, x, y, width, height, button) {
-        const exporting = this, chart = exporting.chart, navOptions = chart.options.navigation, chartWidth = chart.chartWidth, chartHeight = chart.chartHeight, cacheName = 'cache-' + className, 
+        const exporting = this, chart = exporting.chart, navOptions = chart.options.navigation, { chartWidth, chartHeight } = chart, cacheName = 'cache-' + className, 
         // For mouse leave detection
         menuPadding = Math.max(width, height);
         let innerMenu, menu = chart[cacheName];
@@ -3953,7 +4083,21 @@ class Exporting {
                 if (isObject(item, true)) {
                     let element;
                     if (item.separator) {
-                        element = createElement('hr', void 0, void 0, innerMenu);
+                        element = createElement('li', {
+                            className: 'highcharts-menu-item highcharts-separator',
+                            role: 'separator'
+                        }, void 0, innerMenu);
+                        if (!chart.styledMode) {
+                            css(element, {
+                                border: 'none',
+                                backgroundColor: 'var(--highcharts-neutral-color-40)',
+                                height: '0.5px',
+                                margin: '10px 0',
+                                padding: 0,
+                                listStyle: 'none',
+                                'pointer-events': 'none'
+                            });
+                        }
                     }
                     else {
                         // When chart initialized with the table, wrong button
@@ -3983,9 +4127,7 @@ class Exporting {
                             element.onmouseout = function () {
                                 css(this, navOptions?.menuItemStyle || {});
                             };
-                            css(element, extend({
-                                cursor: 'pointer'
-                            }, navOptions?.menuItemStyle || {}));
+                            css(element, extend({ cursor: 'pointer' }, navOptions?.menuItemStyle || {}));
                         }
                     }
                     // Keep references to menu divs to be able to destroy them
@@ -4090,8 +4232,7 @@ class Exporting {
      * - **scale:** Scaling factor of downloaded image compared to source.
      * Default is `2`.
      * - **libURL:** URL pointing to location of dependency scripts to download
-     * on demand. Default is the exporting.libURL option of the global
-     * Highcharts options pointing to our server.
+     * on demand.
      *
      * @async
      * @function Highcharts.Exporting#downloadSVG
@@ -4180,6 +4321,10 @@ class Exporting {
                     // object URL yet since we are doing things
                     // asynchronously
                     if (!Exporting_win.canvg) {
+                        if (!libURL) {
+                            throw new Error('Image export requires canvg. Set ' +
+                                'exporting.libURL or preload canvg.');
+                        }
                         Exporting.objectURLRevoke = true;
                         await getScript(libURL + 'canvg.js');
                     }
@@ -4275,7 +4420,7 @@ class Exporting {
             }
             else {
                 // Fallback disabled
-                (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.error)(28, true);
+                (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.error)(err?.message || 28, true, this.chart);
             }
         }
         else if (exportingOptions.type === 'application/pdf') {
@@ -4307,6 +4452,7 @@ class Exporting {
             this.inlineStyles();
         }
         this.resolveCSSVariables();
+        Exporting.sanitizeDOM(chart.renderer.box);
         // Move canvas contents over to SVG image elements
         chart.container.querySelectorAll('canvas').forEach(function (canvas) {
             const imageDataURL = canvas.toDataURL('image/png'), foreignObject = canvas.parentNode, imageElem = chart.renderer.image(imageDataURL, 0, 0, canvas.width, canvas.height);

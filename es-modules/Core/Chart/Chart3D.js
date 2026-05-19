@@ -5,8 +5,9 @@
  *
  *  Extension for 3D charts
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -37,7 +38,6 @@ var Chart3D;
      * */
     /**
      * @optionparent
-     * @internal
      */
     Chart3D.defaultOptions = {
         chart: {
@@ -1119,10 +1119,7 @@ var Chart3D;
         const options = this.options;
         if (this.is3d()) {
             (options.series || []).forEach(function (s) {
-                const type = (s.type ||
-                    options.chart.type ||
-                    options.chart.defaultSeriesType);
-                if (type === 'scatter') {
+                if ((s.type || options.chart.type) === 'scatter') {
                     s.type = 'scatter3d';
                 }
             });

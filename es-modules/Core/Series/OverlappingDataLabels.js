@@ -6,8 +6,9 @@
  *  (c) 2009-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -47,10 +48,12 @@ function chartHideOverlappingLabels(labels) {
      */
     function getAbsoluteBox(label) {
         if (label && (!label.alignAttr || label.placed)) {
-            const padding = label.box ? 0 : (label.padding || 0), pos = label.alignAttr || {
-                x: label.attr('x'),
-                y: label.attr('y')
-            }, { height, polygon, width } = label.getBBox(), alignOffset = getAlignFactor(label.alignValue) * width;
+            const padding = label.box ? 0 : (label.padding || 0), pos = label.dataLabelPosition?.posAttribs || // #21725
+                label.alignAttr ||
+                {
+                    x: label.attr('x'),
+                    y: label.attr('y')
+                }, { height, polygon, width } = label.getBBox(), alignOffset = getAlignFactor(label.alignValue) * width;
             label.width = width;
             label.height = height;
             return {
@@ -169,7 +172,7 @@ function hideOrShow(label, chart) {
                 };
                 isLabelAffected = true;
                 // Animate or set the opacity
-                label[label.isOld ? 'animate' : 'attr']({ opacity: newOpacity }, void 0, complete);
+                label[label.isOld || label.placed ? 'animate' : 'attr']({ opacity: newOpacity }, void 0, complete);
                 fireEvent(chart, 'afterHideOverlappingLabel');
                 // Toggle other labels, tick labels
             }
@@ -239,7 +242,8 @@ function onChartRender() {
                             options.allowOverlap ??
                                 // Pie labels outside have a separate placement
                                 // logic, skip the overlap logic
-                                Number(options.distance) > 0) {
+                                (series.is('pie') &&
+                                    Number(options.distance) > 0)) {
                                 label.oldOpacity = label.opacity;
                                 label.newOpacity = 1;
                                 hideOrShow(label, chart);

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.6.0 (2026-04-13)
+ * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/pattern-fill
  * @requires highcharts
  *
@@ -9,8 +9,8 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Torstein Hønsi, Øystein Moseng
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -105,8 +105,9 @@ var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default 
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1470,14 +1471,14 @@ function wrap(obj, method, func) {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi, Øystein Moseng
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
 
 
-const { animObject } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 const { getOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
@@ -1486,6 +1487,7 @@ const { getOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root
  *  Constants
  *
  * */
+/** @internal */
 const patterns = createPatterns();
 /* *
  *
@@ -1493,7 +1495,7 @@ const patterns = createPatterns();
  *
  * */
 /** @internal */
-function compose(ChartClass, SeriesClass, SVGRendererClass) {
+function composePatternFill(ChartClass, SeriesClass, SVGRendererClass) {
     const PointClass = SeriesClass.prototype.pointClass, pointProto = PointClass.prototype;
     if (!pointProto.calculatePatternDimensions) {
         addEvent(ChartClass, 'endResize', onChartEndResize);
@@ -1701,7 +1703,7 @@ function onPointAfterInit() {
  */
 function onRendererComplexColor(args) {
     const color = args.args[0], prop = args.args[1], element = args.args[2], chartIndex = (this.chartIndex || 0);
-    let pattern = color.pattern, value = "#333333" /* Palette.neutralColor80 */;
+    let pattern = color.pattern, value = 'var(--highcharts-neutral-color-80)';
     // Handle patternIndex
     if (typeof color.patternIndex !== 'undefined' && patterns) {
         pattern = patterns[color.patternIndex];
@@ -1900,7 +1902,7 @@ function pointCalculatePatternDimensions(pattern) {
  * @internal
  * @function Highcharts.SVGRenderer#addPattern
  *
- * @param {Highcharts.PatternObject} options
+ * @param {Highcharts.PatternOptionsObject} options
  * The pattern options.
  *
  * @param {boolean|Partial<Highcharts.AnimationOptionsObject>} [animation]
@@ -1912,7 +1914,8 @@ function pointCalculatePatternDimensions(pattern) {
  * @requires modules/pattern-fill
  */
 function rendererAddPattern(options, animation) {
-    const animate = pick(animation, true), animationOptions = animObject(animate), color = options.color || "#333333" /* Palette.neutralColor80 */, defaultSize = 32, height = options.height ||
+    const animate = pick(animation, true), animationOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.animObject)(animate), color = options.color ||
+        'var(--highcharts-neutral-color-80)', defaultSize = 32, height = options.height ||
         (typeof options._height === 'number' ? options._height : 0) ||
         defaultSize, width = options.width ||
         (typeof options._width === 'number' ? options._width : 0) ||
@@ -2100,16 +2103,6 @@ function onPatternScaleCorrection() {
 }
 /* *
  *
- *  Export
- *
- * */
-const PatternFill = {
-    compose,
-    patterns
-};
-/* harmony default export */ const Extensions_PatternFill = (PatternFill);
-/* *
- *
  *  API Declarations
  *
  * */
@@ -2156,13 +2149,15 @@ const PatternFill = {
 * @name Highcharts.PatternOptionsObject#aspectRatio
 * @type {number|undefined}
 */ /**
-* Horizontal offset of the pattern. Defaults to 0.
+* Horizontal offset of the pattern.
 * @name Highcharts.PatternOptionsObject#x
 * @type {number|undefined}
+* @default 0
 */ /**
-* Vertical offset of the pattern. Defaults to 0.
+* Vertical offset of the pattern.
 * @name Highcharts.PatternOptionsObject#y
 * @type {number|undefined}
+* @default 0
 */ /**
 * Either an SVG path as string, or an object. As an object, supply the path
 * string in the `path.d` property. Other supported properties are standard SVG
@@ -2240,8 +2235,8 @@ const PatternFill = {
 
 
 const G = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
-G.patterns = Extensions_PatternFill.patterns;
-Extensions_PatternFill.compose(G.Chart, G.Series, G.SVGRenderer);
+G.patterns = patterns;
+composePatternFill(G.Chart, G.Series, G.SVGRenderer);
 /* harmony default export */ const pattern_fill_src = ((highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default()));
 
 __webpack_exports__ = __webpack_exports__["default"];

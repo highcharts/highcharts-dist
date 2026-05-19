@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v12.6.0 (2026-04-13)
+ * @license Highstock JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/indicators/mfi
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -10,8 +10,8 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Grzegorz Blachliński
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -116,8 +116,9 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1481,8 +1482,9 @@ function wrap(obj, method, func) {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Grzegorz Blachliński
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1497,29 +1499,21 @@ const { sma: SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_Ser
  *
  * */
 // Utils:
-/**
- *
- */
+/** @internal */
 function sumArray(array) {
     return array.reduce(function (prev, cur) {
         return prev + cur;
     });
 }
-/**
- *
- */
+/** @internal */
 function toFixed(a, n) {
     return parseFloat(a.toFixed(n));
 }
-/**
- *
- */
+/** @internal */
 function calculateTypicalPrice(point) {
     return (point[1] + point[2] + point[3]) / 3;
 }
-/**
- *
- */
+/** @internal */
 function calculateRawMoneyFlow(typicalPrice, volume) {
     return typicalPrice * volume;
 }
@@ -1531,7 +1525,7 @@ function calculateRawMoneyFlow(typicalPrice, volume) {
 /**
  * The MFI series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.mfi
  *
@@ -1616,7 +1610,7 @@ class MFIIndicator extends SMAIndicator {
  * Money Flow Index. This series requires `linkedTo` option to be set and
  * should be loaded after the `stock/indicators/indicators.js` file.
  *
- * @sample stock/indicators/mfi
+ * @sample {highstock} stock/indicators/mfi
  *         Money Flow Index Indicator
  *
  * @extends      plotOptions.sma
@@ -1653,6 +1647,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const MFI_MFIIndicator = ((/* unused pure expression or super */ null && (MFIIndicator)));
 /* *
  *

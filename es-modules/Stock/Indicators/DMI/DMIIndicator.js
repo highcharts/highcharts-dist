@@ -4,8 +4,9 @@
  *
  *  Directional Movement Index (DMI) indicator for Highcharts Stock
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -22,7 +23,7 @@ import { correctFloat, extend, isArray, merge } from '../../../Shared/Utilities.
 /**
  * The Directional Movement Index (DMI) series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.dmi
  *
@@ -139,7 +140,7 @@ class DMIIndicator extends SMAIndicator {
  * This series requires the `linkedTo` option to be set and should
  * be loaded after the `stock/indicators/indicators.js` file.
  *
- * @sample stock/indicators/dmi
+ * @sample {highstock} stock/indicators/dmi
  *         DMI indicator
  *
  * @extends      plotOptions.sma
@@ -190,7 +191,7 @@ DMIIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
              *
              * @type {Highcharts.ColorString}
              */
-            lineColor: "#06b535" /* Palette.positiveColor */ // Green-ish
+            lineColor: 'var(--highcharts-positive-color)' // Green-ish
         }
     },
     /**
@@ -210,7 +211,7 @@ DMIIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
              *
              * @type {Highcharts.ColorString}
              */
-            lineColor: "#f21313" /* Palette.negativeColor */ // Red-ish
+            lineColor: 'var(--highcharts-negative-color)' // Red-ish
         }
     },
     dataGrouping: {
@@ -232,6 +233,7 @@ SeriesRegistry.registerSeriesType('dmi', DMIIndicator);
  *  Default Export
  *
  * */
+/** @internal */
 export default DMIIndicator;
 /* *
  *

@@ -1,5 +1,5 @@
 !/**
- * Highstock JS v12.6.0 (2026-04-13)
+ * Highstock JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/indicators/rsi
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -9,6 +9,6 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Paweł Fus
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */function(t,e){"object"==typeof exports&&"object"==typeof module?module.exports=e(t._Highcharts,t._Highcharts.SeriesRegistry):"function"==typeof define&&define.amd?define("highcharts/indicators/rsi",["highcharts/highcharts"],function(t){return e(t,t.SeriesRegistry)}):"object"==typeof exports?exports["highcharts/indicators/rsi"]=e(t._Highcharts,t._Highcharts.SeriesRegistry):t.Highcharts=e(t.Highcharts,t.Highcharts.SeriesRegistry)}("u"<typeof window?this:window,(t,e)=>(()=>{"use strict";var r={512:t=>{t.exports=e},944:e=>{e.exports=t}},o={};function a(t){var e=o[t];if(void 0!==e)return e.exports;var n=o[t]={exports:{}};return r[t](n,n.exports,a),n.exports}a.n=t=>{var e=t&&t.__esModule?()=>t.default:()=>t;return a.d(e,{a:e}),e},a.d=(t,e)=>{for(var r in e)a.o(e,r)&&!a.o(t,r)&&Object.defineProperty(t,r,{enumerable:!0,get:e[r]})},a.o=(t,e)=>Object.prototype.hasOwnProperty.call(t,e);var n={};a.d(n,{default:()=>b});var i=a(944),s=a.n(i),c=a(512),p=a.n(c);let{doc:u,win:h}=s();function l(t){return f(t)&&"number"==typeof t.nodeType}function f(t,e){let r;return!!t&&"object"==typeof t&&(!e||"[object Array]"!==(r=Object.prototype.toString.call(t))&&"[object Array Iterator]"!==r)}Array.prototype.find;let{sma:d}=p().seriesTypes;function y(t,e){return parseFloat(t.toFixed(e))}class g extends d{getValues(t,e){let r=e.period,o=t.xData,a=t.yData,n=a?a.length:0,i=e.decimals,s=[],c=[],p=[],u=0,h=0,l=e.index,f=1,d,g,b,x,m,j;if(!(o.length<r)){var v;for("number"==typeof(v=a[0])&&!isNaN(v)&&v<1/0&&v>-1/0?j=a:(l=Math.min(l,a[0].length-1),j=a.map(t=>t[l]));f<r;)(g=y(j[f]-j[f-1],i))>0?u+=g:h+=Math.abs(g),f++;for(b=y(u/(r-1),i),x=y(h/(r-1),i),m=f;m<n;m++)(g=y(j[m]-j[m-1],i))>0?(u=g,h=0):(u=0,h=Math.abs(g)),b=y((b*(r-1)+u)/r,i),d=0===(x=y((x*(r-1)+h)/r,i))?100:0===b?0:y(100-100/(1+b/x),i),s.push([o[m],d]),c.push(o[m]),p.push(d);return{values:s,xData:c,yData:p}}}}g.defaultOptions=function(t,...e){let r,o=[t,...e],a={},n=function(t,e){return"object"!=typeof t&&(t={}),function(t,e,r){for(let r in t)Object.hasOwnProperty.call(t,r)&&e.call((0,t[r]),t[r],r,t)}(e,function(r,o){if("__proto__"!==o&&"constructor"!==o){let a;!f(r,!0)||(a=r?.constructor,f(r,!0)&&!l(r)&&a?.name&&"Object"!==a.name)||l(r)?t[o]=e[o]:t[o]=n(t[o]||{},r)}}),t};!0===t&&(a=o[1],o=Array.prototype.slice.call(o,2));let i=o.length;for(r=0;r<i;r++)a=n(a,o[r]);return a}(d.defaultOptions,{params:{decimals:4,index:3}}),p().registerSeriesType("rsi",g);let b=s();return n.default})());

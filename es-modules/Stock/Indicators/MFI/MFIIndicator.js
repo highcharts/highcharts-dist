@@ -5,8 +5,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Grzegorz Blachliński
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -21,29 +22,21 @@ import { error } from '../../../Core/Utilities.js';
  *
  * */
 // Utils:
-/**
- *
- */
+/** @internal */
 function sumArray(array) {
     return array.reduce(function (prev, cur) {
         return prev + cur;
     });
 }
-/**
- *
- */
+/** @internal */
 function toFixed(a, n) {
     return parseFloat(a.toFixed(n));
 }
-/**
- *
- */
+/** @internal */
 function calculateTypicalPrice(point) {
     return (point[1] + point[2] + point[3]) / 3;
 }
-/**
- *
- */
+/** @internal */
 function calculateRawMoneyFlow(typicalPrice, volume) {
     return typicalPrice * volume;
 }
@@ -55,7 +48,7 @@ function calculateRawMoneyFlow(typicalPrice, volume) {
 /**
  * The MFI series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.mfi
  *
@@ -140,7 +133,7 @@ class MFIIndicator extends SMAIndicator {
  * Money Flow Index. This series requires `linkedTo` option to be set and
  * should be loaded after the `stock/indicators/indicators.js` file.
  *
- * @sample stock/indicators/mfi
+ * @sample {highstock} stock/indicators/mfi
  *         Money Flow Index Indicator
  *
  * @extends      plotOptions.sma
@@ -177,6 +170,7 @@ SeriesRegistry.registerSeriesType('mfi', MFIIndicator);
  *  Default Export
  *
  * */
+/** @internal */
 export default MFIIndicator;
 /* *
  *

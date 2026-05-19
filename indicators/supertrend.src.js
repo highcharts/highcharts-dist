@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v12.6.0 (2026-04-13)
+ * @license Highstock JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/indicators/supertrend
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -10,8 +10,8 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Wojciech Chmiel
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -116,8 +116,9 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1476,8 +1477,9 @@ function wrap(obj, method, func) {
 ;// ./code/es-modules/Stock/Indicators/Supertrend/SupertrendIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1491,9 +1493,7 @@ const { atr: ATRIndicator, sma: SMAIndicator } = (highcharts_SeriesRegistry_comm
  *
  * */
 // Utils:
-/**
- * @private
- */
+/** @internal */
 function createPointObj(mainSeries, index) {
     return {
         index,
@@ -1509,7 +1509,7 @@ function createPointObj(mainSeries, index) {
 /**
  * The Supertrend series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.supertrend
  *
@@ -1526,15 +1526,15 @@ class SupertrendIndicator extends SMAIndicator {
         super.init.apply(indicator, arguments);
         // Only after series are linked add some additional logic/properties.
         const unbinder = addEvent(this.chart.constructor, 'afterLinkSeries', () => {
+            const { linkedParent, options } = indicator;
             // Protection for a case where the indicator is being updated,
             // for a brief moment the indicator is deleted.
-            if (indicator.options) {
-                const options = indicator.options, parentOptions = indicator.linkedParent.options;
+            if (options && linkedParent) {
                 // Indicator cropThreshold has to be equal linked series one
                 // reduced by period due to points comparison in drawGraph
                 // (#9787)
-                options.cropThreshold = (parentOptions.cropThreshold -
-                    (options.params.period - 1));
+                options.cropThreshold = ((linkedParent.options.cropThreshold ?? 0) -
+                    ((options.params?.period ?? 0) - 1));
             }
             unbinder();
         }, {
@@ -1871,7 +1871,7 @@ SupertrendIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
      *
      * @type {Highcharts.ColorType}
      */
-    risingTrendColor: "#06b535" /* Palette.positiveColor */,
+    risingTrendColor: 'var(--highcharts-positive-color)',
     /**
      * Color of the Supertrend series line that is above the main series.
      *
@@ -1880,7 +1880,7 @@ SupertrendIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
      *
      * @type {Highcharts.ColorType}
      */
-    fallingTrendColor: "#f21313" /* Palette.negativeColor */,
+    fallingTrendColor: 'var(--highcharts-negative-color)',
     /**
      * The styles for the Supertrend line that intersect main series.
      *
@@ -1898,7 +1898,7 @@ SupertrendIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
              *
              * @type {Highcharts.ColorString}
              */
-            lineColor: "#333333" /* Palette.neutralColor80 */,
+            lineColor: 'var(--highcharts-neutral-color-80)',
             /**
              * The dash or dot style of the grid lines. For possible
              * values, see
@@ -1926,6 +1926,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Supertrend_SupertrendIndicator = ((/* unused pure expression or super */ null && (SupertrendIndicator)));
 /* *
  *

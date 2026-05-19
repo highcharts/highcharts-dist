@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.6.0 (2026-04-13)
+ * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/variable-pie
  * @requires highcharts
  *
@@ -9,8 +9,8 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Grzegorz Blachliński
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -63,8 +63,9 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  *  (c) 2010-2026 Highsoft AS
  *  Author: Grzegorz Blachliński
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -211,6 +212,7 @@ const VariablePieSeriesDefaults = {
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
+ * @basic
  * @type      {Array<Array<(number|string),number>|*>}
  * @extends   series.pie.data
  * @excluding marker, x
@@ -239,8 +241,9 @@ const VariablePieSeriesDefaults = {
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1604,8 +1607,9 @@ function wrap(obj, method, func) {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Grzegorz Blachliński
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1640,7 +1644,7 @@ class VariablePieSeries extends PieSeries {
      * @private
      */
     calculateExtremes() {
-        const series = this, chart = series.chart, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, seriesOptions = series.options, slicingRoom = 2 * (seriesOptions.slicedOffset || 0), zData = series.getColumn('z'), smallestSize = Math.min(plotWidth, plotHeight) - slicingRoom, 
+        const series = this, chart = series.chart, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, seriesOptions = series.options, slicingRoom = 2 * (seriesOptions.slicedOffset || 0), zData = [...this.getColumn('z', false, true)], smallestSize = Math.min(plotWidth, plotHeight) - slicingRoom, 
         // Min and max size of pie slice:
         extremes = {}, 
         // In pie charts size of a pie is changed to make space for
@@ -1685,7 +1689,7 @@ class VariablePieSeries extends PieSeries {
      * Minimal pixel size possible for radius.
      */
     getRadii(zMin, zMax, minSize, maxSize) {
-        const zData = this.getColumn('z'), radii = [], options = this.options, sizeByArea = options.sizeBy !== 'radius', zRange = zMax - zMin;
+        const zData = [...this.getColumn('z', false, true)], radii = [], options = this.options, sizeByArea = options.sizeBy !== 'radius', zRange = zMax - zMin;
         let pos, value, radius;
         // Calculate radius for all pie slice's based on their Z values
         for (let i = 0; i < zData.length; i++) {

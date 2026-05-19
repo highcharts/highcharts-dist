@@ -1,5 +1,5 @@
 /**
- * Highstock JS v12.6.0 (2026-04-13)
+ * Highstock JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/indicators/psar
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -9,6 +9,6 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Grzegorz Blachliński
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */import*as t from"../highcharts.js";var e={};e.n=t=>{var r=t&&t.__esModule?()=>t.default:()=>t;return e.d(r,{a:r}),r},e.d=(t,r)=>{for(var a in r)e.o(r,a)&&!e.o(t,a)&&Object.defineProperty(t,a,{enumerable:!0,get:r[a]})},e.o=(t,e)=>Object.prototype.hasOwnProperty.call(t,e);let r=t.default;var a=e.n(r);let n=t.default.SeriesRegistry;var o=e.n(n);let{doc:l,win:i}=a();function c(t){return s(t)&&"number"==typeof t.nodeType}function s(t,e){let r;return!!t&&"object"==typeof t&&(!e||"[object Array]"!==(r=Object.prototype.toString.call(t))&&"[object Array Iterator]"!==r)}Array.prototype.find;let{sma:u}=o().seriesTypes;function p(t,e){return parseFloat(t.toFixed(e))}class f extends u{constructor(){super(...arguments),this.nameComponents=void 0}getValues(t,e){let r=t.xData,a=t.yData,n=e.maxAccelerationFactor,o=e.increment,l=e.initialAccelerationFactor,i=e.decimals,c=e.index,s=[],u=[],f=[],d=e.initialAccelerationFactor,h,m=a[0][1],y,b,x,j=1,v,A,g,O,F=a[0][2],M,_,D,P;if(!(c>=a.length)){for(P=0;P<c;P++)m=Math.max(a[P][1],m),F=Math.min(a[P][2],p(F,i));for(h=a[P][1]>F?1:-1,y=m-F,b=(d=e.initialAccelerationFactor)*y,s.push([r[c],F]),u.push(r[c]),f.push(p(F,i)),P=c+1;P<a.length;P++)if(v=a[P-1][2],A=a[P-2][2],g=a[P-1][1],O=a[P-2][1],_=a[P][1],D=a[P][2],null!==A&&null!==O&&null!==v&&null!==g&&null!==_&&null!==D){var S,T,w,W,k,C,I,R,V,q,z,B,E,G,H,J,K,L,N,Q,U;k=h,C=j,I=F,R=b,V=A,q=v,z=g,B=O,E=m,F=k===C?1===k?I+R<Math.min(V,q)?I+R:Math.min(V,q):I+R>Math.max(B,z)?I+R:Math.max(B,z):E,S=h,T=m,M=1===S?_>T?_:T:D<T?D:T,w=j,W=F,G=x=1===w&&D>W||-1===w&&_>W?1:-1,H=h,J=M,K=m,L=d,N=o,Q=n,U=l,b=(d=G===H?1===G&&J>K||-1===G&&J<K?L===Q?Q:p(L+N,2):L:U)*(y=M-F),s.push([r[P],p(F,i)]),u.push(r[P]),f.push(p(F,i)),j=h,h=x,m=M}return{values:s,xData:u,yData:f}}}}f.defaultOptions=function(t,...e){let r,a=[t,...e],n={},o=function(t,e){return"object"!=typeof t&&(t={}),function(t,e,r){for(let r in t)Object.hasOwnProperty.call(t,r)&&e.call((0,t[r]),t[r],r,t)}(e,function(r,a){if("__proto__"!==a&&"constructor"!==a){let n;!s(r,!0)||(n=r?.constructor,s(r,!0)&&!c(r)&&n?.name&&"Object"!==n.name)||c(r)?t[a]=e[a]:t[a]=o(t[a]||{},r)}}),t};!0===t&&(n=a[1],a=Array.prototype.slice.call(a,2));let l=a.length;for(r=0;r<l;r++)n=o(n,a[r]);return n}(u.defaultOptions,{lineWidth:0,marker:{enabled:!0},states:{hover:{lineWidthPlus:0}},params:{period:void 0,initialAccelerationFactor:.02,maxAccelerationFactor:.2,increment:.02,index:2,decimals:4}}),o().registerSeriesType("psar",f);let d=a();export{d as default};

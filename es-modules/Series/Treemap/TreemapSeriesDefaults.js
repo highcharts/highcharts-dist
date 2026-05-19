@@ -4,8 +4,9 @@
  *
  *  Authors: Jon Arild Nygård / Øystein Moseng
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -447,7 +448,7 @@ const TreemapSeriesDefaults = {
      *
      * @type {Highcharts.ColorString}
      */
-    borderColor: "#e6e6e6" /* Palette.neutralColor10 */,
+    borderColor: 'var(--highcharts-neutral-color-10)',
     /**
      * The width of the border surrounding each tree map item.
      */
@@ -477,7 +478,7 @@ const TreemapSeriesDefaults = {
             /**
              * The border color for the hovered state.
              */
-            borderColor: "#999999" /* Palette.neutralColor40 */,
+            borderColor: 'var(--highcharts-neutral-color-40)',
             /**
              * Brightness for the hovered point. Defaults to 0 if the
              * heatmap series is loaded first, otherwise 0.1.
@@ -664,6 +665,7 @@ const TreemapSeriesDefaults = {
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
+ * @basic
  * @type      {Array<number|null|*>}
  * @extends   series.heatmap.data
  * @excluding x, y, pointPadding

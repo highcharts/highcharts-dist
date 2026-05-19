@@ -1,2 +1,3 @@
-import * as Highcharts from '../../highcharts-gantt.src';
+import Highcharts from './highcharts.src.js';
+import './modules/gantt.src.js';
 export default Highcharts;

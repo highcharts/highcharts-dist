@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.6.0 (2026-04-13)
+ * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/arrow-symbols
  * @requires highcharts
  *
@@ -9,8 +9,8 @@
  * (c) 2017-2026 Highsoft AS
  * Author: Lars A. V. Cabrera
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -106,8 +106,9 @@ var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default 
  *  (c) 2017-2026 Highsoft AS
  *  Authors: Lars A. V. Cabrera
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -129,7 +130,6 @@ var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default 
  *                   o
  * ```
  *
- * @internal
  * @function
  *
  * @param {number} x
@@ -165,7 +165,6 @@ function arrow(x, y, w, h) {
  *       o
  * ```
  *
- * @internal
  * @function
  *
  * @param {number} x
@@ -191,7 +190,7 @@ function arrowHalf(x, y, w, h) {
  *
  * @internal
  */
-function compose(SVGRendererClass) {
+function composeArrowSymbols(SVGRendererClass) {
     const symbols = SVGRendererClass.prototype.symbols;
     symbols.arrow = arrow;
     symbols['arrow-filled'] = triangleLeft;
@@ -210,7 +209,6 @@ function compose(SVGRendererClass) {
  *             o
  * ```
  *
- * @internal
  * @function
  *
  * @param {number} x
@@ -246,7 +244,6 @@ function triangleLeft(x, y, w, h) {
  *       o
  * ```
  *
- * @internal
  * @function
  *
  * @param {number} x
@@ -267,15 +264,6 @@ function triangleLeft(x, y, w, h) {
 function triangleLeftHalf(x, y, w, h) {
     return triangleLeft(x, y, w / 2, h);
 }
-/* *
- *
- *  Default Export
- *
- * */
-const ArrowSymbols = {
-    compose
-};
-/* harmony default export */ const Extensions_ArrowSymbols = (ArrowSymbols);
 
 ;// ./code/es-modules/masters/modules/arrow-symbols.src.js
 
@@ -283,7 +271,7 @@ const ArrowSymbols = {
 
 
 const G = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
-Extensions_ArrowSymbols.compose(G.SVGRenderer);
+composeArrowSymbols(G.SVGRenderer);
 /* harmony default export */ const arrow_symbols_src = ((highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default()));
 
 __webpack_exports__ = __webpack_exports__["default"];

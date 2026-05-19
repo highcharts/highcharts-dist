@@ -1,7 +1,8 @@
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -17,7 +18,7 @@ import { extend, isArray, merge } from '../../../Shared/Utilities.js';
 /**
  * The Trend line series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.trendline
  *
@@ -81,7 +82,7 @@ class TrendLineIndicator extends SMAIndicator {
  * using a method called the Sum Of Least Squares. This series requires the
  * `linkedTo` option to be set.
  *
- * @sample stock/indicators/trendline
+ * @sample {highstock} stock/indicators/trendline
  *         Trendline indicator
  *
  * @extends      plotOptions.sma
@@ -117,6 +118,7 @@ SeriesRegistry.registerSeriesType('trendline', TrendLineIndicator);
  *  Default Export
  *
  * */
+/** @internal */
 export default TrendLineIndicator;
 /* *
  *

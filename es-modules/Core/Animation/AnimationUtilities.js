@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -48,7 +49,7 @@ function setAnimation(animation, chart) {
  * @return {Highcharts.AnimationOptionsObject}
  *         An object with at least a duration property.
  */
-function animObject(animation) {
+export function animObject(animation) {
     return isObject(animation) ?
         merge({ duration: 500, defer: 0 }, animation) :
         { duration: animation ? 500 : 0, defer: 0 };

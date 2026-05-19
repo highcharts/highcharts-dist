@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v12.6.0 (2026-04-13)
+ * @license Highstock JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/heikinashi
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -10,8 +10,8 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Karol Kołodziej
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -62,8 +62,9 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -92,8 +93,9 @@ class HeikinAshiPoint extends CandlestickPoint {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -177,6 +179,7 @@ const HeikinAshiDefaults = {
  *    }]
  *    ```
  *
+ * @basic
  * @type      {Array<Array<(number|string),number,number,number>|Array<(number|string),number,number,number,number>|*>}
  * @extends   series.candlestick.data
  * @excluding y
@@ -196,8 +199,9 @@ const HeikinAshiDefaults = {
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1559,8 +1563,9 @@ function wrap(obj, method, func) {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1667,10 +1672,10 @@ class HeikinAshiSeries extends CandlestickSeries {
         const series = this, table = series.allGroupedTable || series.dataTable, dataLength = table.rowCount, heikinashiData = series.heikinashiData;
         if (!heikinashiData.length && dataLength) {
             // Modify the first point.
-            this.modifyFirstPointValue(table.getRow(0, this.pointArrayMap));
+            this.modifyFirstPointValue(table.getRowObject(0, this.pointArrayMap));
             // Modify other points.
             for (let i = 1; i < dataLength; i++) {
-                this.modifyDataPoint(table.getRow(i, this.pointArrayMap), heikinashiData[i - 1]);
+                this.modifyDataPoint(table.getRowObject(i, this.pointArrayMap), heikinashiData[i - 1]);
             }
         }
         series.heikinashiData = heikinashiData;
@@ -1685,29 +1690,29 @@ class HeikinAshiSeries extends CandlestickSeries {
     /**
      * Calculate and modify the first data point value.
      * @private
-     * @param {Array<(number)>} dataPoint
+     * @param {Object} dataPoint
      *        Current data point.
      */
     modifyFirstPointValue(dataPoint) {
-        const open = (dataPoint[0] +
-            dataPoint[1] +
-            dataPoint[2] +
-            dataPoint[3]) / 4, close = (dataPoint[0] + dataPoint[3]) / 2;
-        this.heikinashiData.push([open, dataPoint[1], dataPoint[2], close]);
+        const avg = (dataPoint.open +
+            dataPoint.high +
+            dataPoint.low +
+            dataPoint.close) / 4, close = (dataPoint.open + dataPoint.close) / 2;
+        this.heikinashiData.push([avg, dataPoint.high, dataPoint.low, close]);
     }
     /**
      * Calculate and modify the data point's value.
      * @private
-     * @param {Array<(number)>} dataPoint
+     * @param {Object} dataPoint
      *        Current data point.
      * @param {Array<(number)>} previousDataPoint
      *        Previous data point.
      */
     modifyDataPoint(dataPoint, previousDataPoint) {
-        const newOpen = (previousDataPoint[0] + previousDataPoint[3]) / 2, newClose = (dataPoint[0] +
-            dataPoint[1] +
-            dataPoint[2] +
-            dataPoint[3]) / 4, newHigh = Math.max(dataPoint[1], newClose, newOpen), newLow = Math.min(dataPoint[2], newClose, newOpen);
+        const newOpen = (previousDataPoint[0] + previousDataPoint[3]) / 2, newClose = (dataPoint.open +
+            dataPoint.high +
+            dataPoint.low +
+            dataPoint.close) / 4, newHigh = Math.max(dataPoint.high, newClose, newOpen), newLow = Math.min(dataPoint.low, newClose, newOpen);
         // Add new points to the array in order to properly calculate extremes.
         this.heikinashiData.push([newOpen, newHigh, newLow, newClose]);
     }

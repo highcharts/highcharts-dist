@@ -3,8 +3,9 @@
  *  (c) 2017-2026 Highsoft AS
  *  Authors: Lars A. V. Cabrera
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -26,7 +27,6 @@
  *                   o
  * ```
  *
- * @internal
  * @function
  *
  * @param {number} x
@@ -62,7 +62,6 @@ function arrow(x, y, w, h) {
  *       o
  * ```
  *
- * @internal
  * @function
  *
  * @param {number} x
@@ -88,7 +87,7 @@ function arrowHalf(x, y, w, h) {
  *
  * @internal
  */
-function compose(SVGRendererClass) {
+export function composeArrowSymbols(SVGRendererClass) {
     const symbols = SVGRendererClass.prototype.symbols;
     symbols.arrow = arrow;
     symbols['arrow-filled'] = triangleLeft;
@@ -107,7 +106,6 @@ function compose(SVGRendererClass) {
  *             o
  * ```
  *
- * @internal
  * @function
  *
  * @param {number} x
@@ -143,7 +141,6 @@ function triangleLeft(x, y, w, h) {
  *       o
  * ```
  *
- * @internal
  * @function
  *
  * @param {number} x
@@ -164,12 +161,3 @@ function triangleLeft(x, y, w, h) {
 function triangleLeftHalf(x, y, w, h) {
     return triangleLeft(x, y, w / 2, h);
 }
-/* *
- *
- *  Default Export
- *
- * */
-const ArrowSymbols = {
-    compose
-};
-export default ArrowSymbols;

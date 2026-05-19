@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v12.6.0 (2026-04-13)
+ * @license Highstock JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/hollowcandlestick
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -10,8 +10,8 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Karol Kołodziej
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -62,8 +62,9 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -120,8 +121,9 @@ var external_highcharts_src_js_default_Axis_default = /*#__PURE__*/__webpack_req
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1483,8 +1485,9 @@ function wrap(obj, method, func) {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1539,14 +1542,14 @@ class HollowCandlestickSeries extends HollowCandlestickSeries_CandlestickSeries 
     getPriceMovement() {
         const series = this, table = series.allGroupedTable || series.dataTable, dataLength = table.rowCount, hollowCandlestickData = this.hollowCandlestickData;
         hollowCandlestickData.length = 0;
-        let previousDataArr;
+        let previousDataPoint;
         for (let i = 0; i < dataLength; i++) {
-            const dataArr = table.getRow(i, this.pointArrayMap);
-            hollowCandlestickData.push(series.isBullish(dataArr, 
+            const dataPoint = table.getRowObject(i, this.pointArrayMap);
+            hollowCandlestickData.push(series.isBullish(dataPoint, 
             // Determine the first point is bullish based on
             // its open and close values.(#21683)
-            i ? previousDataArr : dataArr));
-            previousDataArr = dataArr;
+            i ? previousDataPoint : dataPoint));
+            previousDataPoint = dataPoint;
         }
     }
     /**
@@ -1565,8 +1568,8 @@ class HollowCandlestickSeries extends HollowCandlestickSeries_CandlestickSeries 
         const series = this;
         // Return line color based on trend direction
         return trendDirection === 'up' ?
-            series.options.upColor || "#06b535" /* Palette.positiveColor */ :
-            series.options.color || "#f21313" /* Palette.negativeColor */;
+            series.options.upColor || 'var(--highcharts-positive-color)' :
+            series.options.color || 'var(--highcharts-negative-color)';
     }
     /**
      * Return fill color based on candle type.
@@ -1587,8 +1590,8 @@ class HollowCandlestickSeries extends HollowCandlestickSeries_CandlestickSeries 
             return 'transparent';
         }
         return hollowcandleInfo.trendDirection === 'up' ?
-            series.options.upColor || "#06b535" /* Palette.positiveColor */ :
-            series.options.color || "#f21313" /* Palette.negativeColor */;
+            series.options.upColor || 'var(--highcharts-positive-color)' :
+            series.options.color || 'var(--highcharts-negative-color)';
     }
     /**
      * @private
@@ -1604,18 +1607,18 @@ class HollowCandlestickSeries extends HollowCandlestickSeries_CandlestickSeries 
      *
      * @function Highcharts.seriesTypes.hollowcandlestick#isBullish
      *
-     * @param {Array<(number)>} dataPoint
+     * @param {Object} dataPoint
      * Current point which we calculate.
      *
-     * @param {Array<(number)>} previousDataPoint
+     * @param {Object} previousDataPoint
      * Previous point.
      */
     isBullish(dataPoint, previousDataPoint) {
         return {
             // Compare points' open and close value.
-            isBullish: (dataPoint[0] || 0) <= (dataPoint[3] || 0),
+            isBullish: (dataPoint.open || 0) <= (dataPoint.close || 0),
             // For bearish candles.
-            trendDirection: (dataPoint[3] || 0) < (previousDataPoint?.[3] || 0) ?
+            trendDirection: (dataPoint.close || 0) < (previousDataPoint?.close || 0) ?
                 'down' : 'up'
         };
     }
@@ -1635,7 +1638,7 @@ class HollowCandlestickSeries extends HollowCandlestickSeries_CandlestickSeries 
     pointAttribs(point, state) {
         const attribs = super.pointAttribs.call(this, point, state);
         let stateOptions;
-        const index = point.index, hollowcandleInfo = this.hollowCandlestickData[index];
+        const index = point?.index, hollowcandleInfo = this.hollowCandlestickData[index || 0] || {};
         attribs.fill = this.getPointFill(hollowcandleInfo) || attribs.fill;
         attribs.stroke = this.getLineColor(hollowcandleInfo.trendDirection) ||
             attribs.stroke;
@@ -1675,7 +1678,7 @@ HollowCandlestickSeries.defaultOptions = merge(HollowCandlestickSeries_Candlesti
      * @type    {ColorType}
      * @product highstock
      */
-    color: "#f21313" /* Palette.negativeColor */,
+    color: 'var(--highcharts-negative-color)',
     dataGrouping: {
         groupAll: true,
         groupPixelWidth: 10
@@ -1692,7 +1695,7 @@ HollowCandlestickSeries.defaultOptions = merge(HollowCandlestickSeries_Candlesti
      * @type    {ColorType}
      * @product highstock
      */
-    lineColor: "#f21313" /* Palette.negativeColor */,
+    lineColor: 'var(--highcharts-negative-color)',
     /**
      * The fill color of the candlestick when the current
      * close is higher than the previous one.
@@ -1705,7 +1708,7 @@ HollowCandlestickSeries.defaultOptions = merge(HollowCandlestickSeries_Candlesti
      * @type    {ColorType}
      * @product highstock
      */
-    upColor: "#06b535" /* Palette.positiveColor */,
+    upColor: 'var(--highcharts-positive-color)',
     /**
      * The color of the line/border of the hollow candlestick when
      * the current close is higher than the previous one.
@@ -1718,7 +1721,7 @@ HollowCandlestickSeries.defaultOptions = merge(HollowCandlestickSeries_Candlesti
      * @type    {ColorType}
      * @product highstock
      */
-    upLineColor: "#06b535" /* Palette.positiveColor */
+    upLineColor: 'var(--highcharts-positive-color)'
 });
 // Force to recalculate the hollowcandlestick data set after updating data.
 addEvent(HollowCandlestickSeries, 'updatedData', function () {
@@ -1764,6 +1767,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * @extends   series,plotOptions.hollowcandlestick
  * @excluding dataParser, dataURL, marker
  * @product   highstock
+ * @requires  modules/hollowcandlestick
  * @apioption series.hollowcandlestick
  */
 /**
@@ -1810,6 +1814,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *    }]
  *    ```
  *
+ * @basic
  * @type      {Array<Array<(number|string),number,number,number>|Array<(number|string),number,number,number,number>|*>}
  * @extends   series.candlestick.data
  * @excluding y

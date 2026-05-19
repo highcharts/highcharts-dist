@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.6.0 (2026-04-13)
+ * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/pictorial
  * @requires highcharts
  *
@@ -9,8 +9,8 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Torstein Hønsi, Magdalena Gut
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -149,8 +149,9 @@ var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commo
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1514,14 +1515,14 @@ function wrap(obj, method, func) {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi, Øystein Moseng
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
 
 
-const { animObject } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 const { getOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
@@ -1530,6 +1531,7 @@ const { getOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root
  *  Constants
  *
  * */
+/** @internal */
 const patterns = createPatterns();
 /* *
  *
@@ -1537,7 +1539,7 @@ const patterns = createPatterns();
  *
  * */
 /** @internal */
-function compose(ChartClass, SeriesClass, SVGRendererClass) {
+function composePatternFill(ChartClass, SeriesClass, SVGRendererClass) {
     const PointClass = SeriesClass.prototype.pointClass, pointProto = PointClass.prototype;
     if (!pointProto.calculatePatternDimensions) {
         addEvent(ChartClass, 'endResize', onChartEndResize);
@@ -1745,7 +1747,7 @@ function onPointAfterInit() {
  */
 function onRendererComplexColor(args) {
     const color = args.args[0], prop = args.args[1], element = args.args[2], chartIndex = (this.chartIndex || 0);
-    let pattern = color.pattern, value = "#333333" /* Palette.neutralColor80 */;
+    let pattern = color.pattern, value = 'var(--highcharts-neutral-color-80)';
     // Handle patternIndex
     if (typeof color.patternIndex !== 'undefined' && patterns) {
         pattern = patterns[color.patternIndex];
@@ -1944,7 +1946,7 @@ function pointCalculatePatternDimensions(pattern) {
  * @internal
  * @function Highcharts.SVGRenderer#addPattern
  *
- * @param {Highcharts.PatternObject} options
+ * @param {Highcharts.PatternOptionsObject} options
  * The pattern options.
  *
  * @param {boolean|Partial<Highcharts.AnimationOptionsObject>} [animation]
@@ -1956,7 +1958,8 @@ function pointCalculatePatternDimensions(pattern) {
  * @requires modules/pattern-fill
  */
 function rendererAddPattern(options, animation) {
-    const animate = pick(animation, true), animationOptions = animObject(animate), color = options.color || "#333333" /* Palette.neutralColor80 */, defaultSize = 32, height = options.height ||
+    const animate = pick(animation, true), animationOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.animObject)(animate), color = options.color ||
+        'var(--highcharts-neutral-color-80)', defaultSize = 32, height = options.height ||
         (typeof options._height === 'number' ? options._height : 0) ||
         defaultSize, width = options.width ||
         (typeof options._width === 'number' ? options._width : 0) ||
@@ -2144,16 +2147,6 @@ function onPatternScaleCorrection() {
 }
 /* *
  *
- *  Export
- *
- * */
-const PatternFill = {
-    compose,
-    patterns
-};
-/* harmony default export */ const Extensions_PatternFill = (PatternFill);
-/* *
- *
  *  API Declarations
  *
  * */
@@ -2200,13 +2193,15 @@ const PatternFill = {
 * @name Highcharts.PatternOptionsObject#aspectRatio
 * @type {number|undefined}
 */ /**
-* Horizontal offset of the pattern. Defaults to 0.
+* Horizontal offset of the pattern.
 * @name Highcharts.PatternOptionsObject#x
 * @type {number|undefined}
+* @default 0
 */ /**
-* Vertical offset of the pattern. Defaults to 0.
+* Vertical offset of the pattern.
 * @name Highcharts.PatternOptionsObject#y
 * @type {number|undefined}
+* @default 0
 */ /**
 * Either an SVG path as string, or an object. As an object, supply the path
 * string in the `path.d` property. Other supported properties are standard SVG
@@ -2290,8 +2285,9 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi, Magdalena Gut
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2360,8 +2356,9 @@ function invertShadowGroup(shadowGroup, yAxis) {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi, Magdalena Gut
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2413,8 +2410,9 @@ var highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi, Magdalena Gut
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2435,9 +2433,18 @@ var highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_
 
 
 
+/* *
+ *
+ *  Composition
+ *
+ * */
+composePatternFill((highcharts_Chart_commonjs_highcharts_Chart_commonjs2_highcharts_Chart_root_Highcharts_Chart_default()), (highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default()), (highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_SVGRenderer_root_Highcharts_SVGRenderer_default()));
+/* *
+ *
+ *  Constants
+ *
+ * */
 const ColumnSeries = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes.column;
-Extensions_PatternFill.compose((highcharts_Chart_commonjs_highcharts_Chart_commonjs2_highcharts_Chart_root_Highcharts_Chart_default()), (highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default()), (highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_SVGRenderer_root_Highcharts_SVGRenderer_default()));
-const { animObject: PictorialSeries_animObject } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 const { getStackMetrics: PictorialSeries_getStackMetrics, invertShadowGroup: PictorialSeries_invertShadowGroup, rescalePatternFill: PictorialSeries_rescalePatternFill } = PictorialUtilities;
 /* *
  *
@@ -2471,7 +2478,7 @@ class PictorialSeries extends ColumnSeries {
      * Initialize the animation.
      */
     animate(init) {
-        const { chart, group } = this, animation = PictorialSeries_animObject(this.options.animation), 
+        const { chart, group } = this, animation = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.animObject)(this.options.animation), 
         // The key for temporary animation clips
         animationClipKey = [
             this.getSharedClipKey(),
@@ -2648,7 +2655,7 @@ function renderStackShadow(stack) {
                         path: {
                             d: shape.definition,
                             fill: shadowOptions.color ||
-                                '#dedede',
+                                'var(--highcharts-neutral-color-20)',
                             strokeWidth: strokeWidth,
                             stroke: shadowOptions.borderColor ||
                                 'transparent'
@@ -2659,7 +2666,7 @@ function renderStackShadow(stack) {
                         height: height,
                         patternContentUnits: 'objectBoundingBox',
                         backgroundColor: 'none',
-                        color: '#dedede'
+                        color: 'var(--highcharts-neutral-color-20)'
                     }
                 }
             })
@@ -2822,6 +2829,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *    }]
  *    ```
  *
+ * @basic
  * @type      {Array<Array<(number|string),number>|Array<(number|string),number,number>|*>}
  * @extends   series.column.data
  *
@@ -2914,7 +2922,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *
  * @declare   Highcharts.YAxisOptions
  * @type      {Highcharts.ColorType}
- * @default   #dedede
+ * @default   var(--highcharts-neutral-color-20)
  * @product   highcharts
  * @requires  modules/pictorial
  * @apioption yAxis.stackShadow.color
@@ -2924,7 +2932,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *
  * @declare   Highcharts.YAxisOptions
  * @type      {boolean}
- * @default   undefined
+ * @default   false
  * @product   highcharts
  * @requires  modules/pictorial
  * @apioption yAxis.stackShadow.enabled

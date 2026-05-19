@@ -141,6 +141,7 @@ const BulletSeriesDefaults = {
  *    }]
  *    ```
  *
+ * @basic
  * @type      {Array<Array<(number|string),number>|Array<(number|string),number,number>|*>}
  * @extends   series.column.data
  * @since     6.0.0

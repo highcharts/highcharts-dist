@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Mateusz Bernacik
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -25,6 +26,7 @@ import { addEvent, fireEvent, merge, pick } from '../../Shared/Utilities.js';
  * creating a standalone navigator component that synchronizes the extremes
  * across multiple bound charts.
  *
+ * @internal
  * @class
  * @name Highcharts.StandaloneNavigator
  *
@@ -230,7 +232,7 @@ class StandaloneNavigator {
     /**
      * Adds a series to the standalone navigator.
      *
-     * @private
+     * @internal
      *
      * @param {SeriesOptions} seriesOptions
      *        Options for the series to be added to the navigator.
@@ -242,7 +244,7 @@ class StandaloneNavigator {
     /**
      * Initialize the standalone navigator.
      *
-     * @private
+     * @internal
      */
     initNavigator() {
         const nav = this.navigator;
@@ -311,7 +313,7 @@ class StandaloneNavigator {
     /**
      * Get the initial, options based extremes for the standalone navigator.
      *
-     * @private
+     * @internal
      *
      * @return {{ min: number, max: number }}
      *         The initial minimum and maximum extremes values.
@@ -324,6 +326,7 @@ class StandaloneNavigator {
         };
     }
 }
+/** @internal */
 export default StandaloneNavigator;
 /* *
  *

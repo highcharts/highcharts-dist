@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v12.6.0 (2026-04-13)
+ * @license Highstock JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/indicators/cmf
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -8,8 +8,8 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Sebastian Domas
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -114,8 +114,9 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1480,8 +1481,9 @@ function wrap(obj, method, func) {
  *
  *  Chaikin Money Flow indicator for Highcharts Stock
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1497,7 +1499,7 @@ const { sma: SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_Ser
 /**
  * The CMF series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.cmf
  *
@@ -1521,7 +1523,7 @@ class CMFIndicator extends SMAIndicator {
     /**
      * Checks if the series and volumeSeries are accessible, number of
      * points.x is longer than period, is series has OHLC data
-     * @private
+     * @internal
      * @param {Highcharts.CMFIndicator} this indicator to use.
      * @return {boolean} True if series is valid and can be computed,
      * otherwise false.
@@ -1531,7 +1533,7 @@ class CMFIndicator extends SMAIndicator {
             (this.volumeSeries =
                 chart.get(options.params.volumeSeriesID))), isSeriesOHLC = (series?.pointArrayMap?.length === 4);
         /**
-         * @private
+         * @internal
          * @param {Highcharts.Series} serie to check length validity on.
          * @return {boolean|undefined} true if length is valid.
          */
@@ -1546,7 +1548,7 @@ class CMFIndicator extends SMAIndicator {
     }
     /**
      * Returns indicator's data.
-     * @private
+     * @internal
      * @param {Highcharts.CMFIndicator} this indicator to use.
      * @param {Highcharts.Series} series to calculate values from
      * @param {Highcharts.CMFIndicatorParamsOptions} params to pass
@@ -1560,7 +1562,7 @@ class CMFIndicator extends SMAIndicator {
         return this.getMoneyFlow(series.xData, series.yData, this.volumeSeries.getColumn('y'), params.period);
     }
     /**
-     * @private
+     * @internal
      *
      * @param {Array<number>} xData
      * x timestamp values
@@ -1584,7 +1586,7 @@ class CMFIndicator extends SMAIndicator {
          * Calculates money flow volume, changes i, nullIndex vars from
          * upper scope!
          *
-         * @private
+         * @internal
          *
          * @param {Array<number>} ohlc
          * OHLC point
@@ -1602,7 +1604,7 @@ class CMFIndicator extends SMAIndicator {
                 close !== null &&
                 high !== low;
             /**
-             * @private
+             * @internal
              * @param {number} h
              * High value
              * @param {number} l
@@ -1657,7 +1659,7 @@ class CMFIndicator extends SMAIndicator {
 /**
  * Chaikin Money Flow indicator (cmf).
  *
- * @sample stock/indicators/cmf/
+ * @sample {highstock} stock/indicators/cmf/
  *         Chaikin Money Flow indicator
  *
  * @extends      plotOptions.sma
@@ -1687,6 +1689,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const CMF_CMFIndicator = ((/* unused pure expression or super */ null && (CMFIndicator)));
 /* *
  *

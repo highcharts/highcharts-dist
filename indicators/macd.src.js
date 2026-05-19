@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v12.6.0 (2026-04-13)
+ * @license Highstock JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/indicators/macd
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -10,8 +10,8 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Sebastian Bochan
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -116,8 +116,9 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1476,8 +1477,9 @@ function wrap(obj, method, func) {
 ;// ./code/es-modules/Stock/Indicators/MACD/MACDIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1495,7 +1497,7 @@ const { sma: SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_Ser
 /**
  * The MACD series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.macd
  *
@@ -1708,7 +1710,7 @@ class MACDIndicator extends SMAIndicator {
  * `linkedTo` option to be set and should be loaded after the
  * `stock/indicators/indicators.js`.
  *
- * @sample stock/indicators/macd
+ * @sample {highstock} stock/indicators/macd
  *         MACD indicator
  *
  * @extends      plotOptions.sma
@@ -1739,7 +1741,7 @@ MACDIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
      */
     signalLine: {
         /**
-         * @sample stock/indicators/macd-zones
+         * @sample {highstock} stock/indicators/macd-zones
          *         Zones in MACD
          *
          * @extends plotOptions.macd.zones
@@ -1763,7 +1765,7 @@ MACDIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
      */
     macdLine: {
         /**
-         * @sample stock/indicators/macd-zones
+         * @sample {highstock} stock/indicators/macd-zones
          *         Zones in MACD
          *
          * @extends plotOptions.macd.zones
@@ -1825,6 +1827,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const MACD_MACDIndicator = ((/* unused pure expression or super */ null && (MACDIndicator)));
 /* *
  *

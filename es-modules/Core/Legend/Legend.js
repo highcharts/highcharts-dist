@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -217,7 +218,7 @@ class Legend {
         }
         group?.[visible ? 'removeClass' : 'addClass']('highcharts-legend-item-hidden');
         if (!this.chart.styledMode) {
-            const { itemHiddenStyle = {} } = this, hiddenColor = itemHiddenStyle.color, { fillColor, fillOpacity, lineColor, marker } = item.options, colorizeHidden = (attr) => {
+            const { itemHiddenStyle = {} } = this, hiddenColor = itemHiddenStyle.color, { fillColor, lineColor } = item.options, colorizeHidden = (attr) => {
                 if (!visible) {
                     if (attr.fill) {
                         attr.fill = hiddenColor;
@@ -230,15 +231,17 @@ class Legend {
             };
             label?.css(merge(visible ? this.itemStyle : itemHiddenStyle));
             line?.attr(colorizeHidden({ stroke: lineColor || item.color }));
-            if (symbol) {
-                // Apply marker options
-                symbol.attr(colorizeHidden(marker && symbol.isMarker ? // #585
-                    item.pointAttribs() :
-                    { fill: item.color }));
-            }
+            // Apply legend symbol attributes
+            symbol?.attr(colorizeHidden(item.series ?
+                // When `legendType` is `point`, like pie series
+                item.series.pointAttribs?.(item) :
+                // When `legendType` is `series`, like line or column series
+                item.pointAttribs?.() || { fill: item.color }));
             area?.attr(colorizeHidden({
                 fill: fillColor || item.color,
-                'fill-opacity': fillColor ? 1 : (fillOpacity ?? 0.75)
+                'fill-opacity': fillColor ?
+                    1 :
+                    (item.options.fillOpacity ?? 0.75)
             }));
         }
         item.color = originalColor;
@@ -1266,6 +1269,10 @@ export default Legend;
  *
  * @param {Highcharts.LegendItemClickEventObject} event
  * The event that occurred.
+ *
+ * @param {Highcharts.Legend} [ctx]
+ * Since v12.6.0, the legend context passed as an extra argument for arrow
+ * functions.
  */
 /**
  * Information about the legend click event.
@@ -1309,6 +1316,10 @@ export default Legend;
  *
  * @param {Highcharts.PointLegendItemClickEventObject} event
  * The event that occurred.
+ *
+ * @param {Highcharts.Point} [ctx]
+ * Since v12.6.0, the point context passed as an extra argument for arrow
+ * functions.
  */
 /**
  * Information about the legend click event.
@@ -1361,6 +1372,10 @@ export default Legend;
  *
  * @param {Highcharts.SeriesLegendItemClickEventObject} event
  * The event that occurred.
+ *
+ * @param {Highcharts.Series} [ctx]
+ * Since v12.6.0, the series context passed as an extra argument for arrow
+ * functions.
  */
 /**
  * Information about the legend click event.

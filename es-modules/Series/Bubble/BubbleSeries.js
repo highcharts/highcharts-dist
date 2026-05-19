@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -98,6 +99,9 @@ function onAxisAfterRender() {
  *  Class
  *
  * */
+/**
+ * @internal
+ */
 class BubbleSeries extends ScatterSeries {
     /* *
      *
@@ -118,7 +122,7 @@ class BubbleSeries extends ScatterSeries {
      * */
     /**
      * Perform animation on the bubbles
-     * @private
+     * @internal
      */
     animate(init) {
         if (!init &&
@@ -145,10 +149,10 @@ class BubbleSeries extends ScatterSeries {
      * Get the radius for each point based on the minSize, maxSize and each
      * point's Z value. This must be done prior to Series.translate because
      * the axis needs to add padding in accordance with the point sizes.
-     * @private
+     * @internal
      */
     getRadii() {
-        const zData = this.getColumn('z'), yData = this.getColumn('y'), radii = [];
+        const zData = [...this.getColumn('z', false, true)], yData = this.getColumn('y'), radii = [];
         let len, i, value, zExtremes = this.chart.bubbleZExtremes;
         const { minPxSize, maxPxSize } = this.getPxExtremes();
         // Get the collective Z extremes of all bubblish series. The chart-level
@@ -188,7 +192,7 @@ class BubbleSeries extends ScatterSeries {
     }
     /**
      * Get the individual radius for one point.
-     * @private
+     * @internal
      */
     getRadius(zMin, zMax, minSize, maxSize, value, yValue) {
         const options = this.options, sizeByArea = options.sizeBy !== 'width', zThreshold = options.zThreshold;
@@ -223,13 +227,13 @@ class BubbleSeries extends ScatterSeries {
     /**
      * Define hasData function for non-cartesian series.
      * Returns true if the series has points at all.
-     * @private
+     * @internal
      */
     hasData() {
         return !!this.dataTable.rowCount;
     }
     /**
-     * @private
+     * @internal
      */
     markerAttribs(point, state) {
         const attr = super.markerAttribs(point, state), { height = 0, width = 0 } = attr;
@@ -242,7 +246,7 @@ class BubbleSeries extends ScatterSeries {
         }) : attr;
     }
     /**
-     * @private
+     * @internal
      */
     pointAttribs(point, state) {
         const markerOptions = this.options.marker, fillOpacity = markerOptions?.fillOpacity, attr = Series.prototype.pointAttribs.call(this, point, state);
@@ -251,7 +255,7 @@ class BubbleSeries extends ScatterSeries {
     }
     /**
      * Extend the base translate method to handle bubble size
-     * @private
+     * @internal
      */
     translate() {
         // Run the parent method
@@ -260,11 +264,11 @@ class BubbleSeries extends ScatterSeries {
         this.translateBubble();
     }
     translateBubble() {
-        const { data, options, radii } = this, { minPxSize } = this.getPxExtremes();
-        // Set the shape type and arguments to be picked up in drawPoints
-        let i = data.length;
-        while (i--) {
-            const point = data[i], radius = radii ? radii[i] : 0; // #1737
+        const { options, radii } = this, { minPxSize } = this.getPxExtremes();
+        this.data.concat(this.condemnedPoints).forEach((point, i) => {
+            const { plotX = 0, plotY = 0 } = point, radius = point.condemned ?
+                (point.marker?.radius || 0) :
+                (radii ? radii[i] : 0); // #1737
             // Negative points means negative z values (#9728)
             if (this.zoneAxis === 'z') {
                 point.negative = (point.z || 0) < (options.zThreshold || 0);
@@ -280,18 +284,18 @@ class BubbleSeries extends ScatterSeries {
             if (isNumber(radius) && radius >= minPxSize / 2) {
                 // Alignment box for the data label
                 point.dlBox = {
-                    x: point.plotX - radius,
-                    y: point.plotY - radius,
+                    x: plotX - radius,
+                    y: plotY - radius,
                     width: 2 * radius,
                     height: 2 * radius
                 };
             }
-            else { // Below zThreshold
-                // #1691
+            else {
+                // Below zThreshold, #1691
                 point.shapeArgs = point.plotY = point.dlBox = void 0;
                 point.isInside = false; // #17281
             }
-        }
+        });
     }
     getPxExtremes() {
         const smallestSize = Math.min(this.chart.plotWidth, this.chart.plotHeight);
@@ -322,7 +326,7 @@ class BubbleSeries extends ScatterSeries {
         }
     }
     /**
-     * @private
+     * @internal
      * @function Highcharts.Series#searchKDTree
      */
     searchKDTree(point, compareX, e, suppliedPointEvaluator = noop, suppliedBSideCheckEvaluator = noop) {
@@ -624,6 +628,7 @@ SeriesRegistry.registerSeriesType('bubble', BubbleSeries);
  *  Default Export
  *
  * */
+/** @internal */
 export default BubbleSeries;
 /* *
  *
@@ -698,6 +703,7 @@ export default BubbleSeries;
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
+ * @basic
  * @type      {Array<Array<(number|string),number>|Array<(number|string),number,number>|*>}
  * @extends   series.line.data
  * @product   highcharts

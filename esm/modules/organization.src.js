@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.6.0 (2026-04-13)
+ * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * Organization chart series type
  * @module highcharts/modules/organization
  * @requires highcharts
@@ -9,8 +9,8 @@
  * (c) 2019-2026 Highsoft AS
  * Author: Torstein Hønsi
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -60,8 +60,9 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1425,8 +1426,9 @@ function wrap(obj, method, func) {
  *  (c) 2018-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1542,8 +1544,9 @@ class OrganizationPoint extends SankeyPointClass {
  *  (c) 2018-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1571,6 +1574,7 @@ class OrganizationPoint extends SankeyPointClass {
  * @excluding    allowPointSelect, curveFactor, dataSorting
  * @since        7.1.0
  * @product      highcharts
+ * @requires     modules/sankey
  * @requires     modules/organization
  * @optionparent plotOptions.organization
  */
@@ -1580,7 +1584,7 @@ const OrganizationSeriesDefaults = {
      *
      * @type {Highcharts.ColorString}
      */
-    borderColor: "#666666" /* Palette.neutralColor60 */,
+    borderColor: 'var(--highcharts-neutral-color-60)',
     /**
      * The border radius of the node cards.
      *
@@ -1620,7 +1624,7 @@ const OrganizationSeriesDefaults = {
          *
          * @type {Highcharts.ColorString}
          */
-        color: "#666666" /* Palette.neutralColor60 */,
+        color: 'var(--highcharts-neutral-color-60)',
         /**
          * The line width of the links connecting nodes, in pixels.
          *
@@ -1742,17 +1746,22 @@ const OrganizationSeriesDefaults = {
             return html;
         },
         style: {
-            /** @internal */
             fontWeight: 'normal',
-            /** @internal */
             fontSize: '0.9em',
-            /** @internal */
             textAlign: 'left'
         },
         useHTML: true,
+        /**
+         * @extends plotOptions.series.dataLabels.textPath
+         */
         linkTextPath: {
+            /**
+             * @default { startOffset: '95%', textAnchor: 'end' }
+             */
             attributes: {
+                /** @ignore */
                 startOffset: '95%',
+                /** @ignore */
                 textAnchor: 'end'
             }
         }
@@ -1993,6 +2002,7 @@ const OrganizationSeriesDefaults = {
  *     }]
  *  ```
  *
+ * @basic
  * @type      {Array<*>}
  * @extends   series.sankey.data
  * @product   highcharts
@@ -2012,8 +2022,9 @@ const OrganizationSeriesDefaults = {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Paweł Lysy
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2159,8 +2170,9 @@ var external_highcharts_src_js_default_SVGElement_default = /*#__PURE__*/__webpa
  *  (c) 2009-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2168,7 +2180,12 @@ var external_highcharts_src_js_default_SVGElement_default = /*#__PURE__*/__webpa
 
 
 
-const { deg2rad } = (external_highcharts_src_js_default_default());
+const { composed, deg2rad } = (external_highcharts_src_js_default_default());
+/* *
+ *
+ *  Functions
+ *
+ * */
 /**
  * Set a text path for a `text` or `label` element, allowing the text to
  * flow along a path.
@@ -2178,10 +2195,11 @@ const { deg2rad } = (external_highcharts_src_js_default_default());
  *
  * Text path support is not bundled into `highcharts.js`, and requires the
  * `modules/textpath.js` file. However, it is included in the script files of
- * those series types that use it by default
+ * those series types that use it by default.
  *
  * @sample highcharts/members/renderer-textpath/ Text path demonstrated
  *
+ * @internal
  * @function Highcharts.SVGElement#setTextPath
  *
  * @param {Highcharts.SVGElement|undefined} path
@@ -2194,8 +2212,9 @@ const { deg2rad } = (external_highcharts_src_js_default_default());
  * @return {Highcharts.SVGElement} Returns the SVGElement for chaining.
  */
 function setTextPath(path, textPathOptions) {
+    const url = this.renderer.url, textWrapper = this.text || this, textPath = textWrapper.textPath, { attributes, enabled } = merge(
     // Defaults
-    textPathOptions = merge(true, {
+    {
         enabled: true,
         attributes: {
             dy: -5,
@@ -2203,12 +2222,9 @@ function setTextPath(path, textPathOptions) {
             textAnchor: 'middle'
         }
     }, textPathOptions);
-    const url = this.renderer.url, textWrapper = this.text || this, textPath = textWrapper.textPath, { attributes, enabled } = textPathOptions;
     path = path || (textPath && textPath.path);
     // Remove previously added event
-    if (textPath) {
-        textPath.undo();
-    }
+    textPath?.undo();
     if (path && enabled) {
         const undo = addEvent(textWrapper, 'afterModifyTree', (e) => {
             if (path && enabled) {
@@ -2268,6 +2284,7 @@ function setTextPath(path, textPathOptions) {
 /**
  * Attach a polygon to a bounding box if the element contains a textPath.
  *
+ * @internal
  * @function Highcharts.SVGElement#setPolygon
  *
  * @param {any} event
@@ -2349,7 +2366,8 @@ function setPolygon(event) {
 /**
  * Draw text along a textPath for a dataLabel.
  *
- * @function Highcharts.SVGElement#setTextPath
+ * @internal
+ * @function Highcharts.SVGElement#drawTextPath
  *
  * @param {any} event
  *        An event containing label options
@@ -2364,22 +2382,58 @@ function drawTextPath(event) {
         if (point.dataLabelPath &&
             !textPathOptions.enabled) {
             // Clean the DOM
-            point.dataLabelPath = (point.dataLabelPath.destroy());
+            point.dataLabelPath = point.dataLabelPath.destroy();
         }
     }
 }
-function compose(SVGElementClass) {
-    addEvent(SVGElementClass, 'afterGetBBox', setPolygon);
-    addEvent(SVGElementClass, 'beforeAddingDataLabel', drawTextPath);
-    const svgElementProto = SVGElementClass.prototype;
-    if (!svgElementProto.setTextPath) {
-        svgElementProto.setTextPath = setTextPath;
+/** @internal */
+function composeTextPath(SVGElementClass) {
+    if (pushUnique(composed, 'TextPath')) {
+        addEvent(SVGElementClass, 'afterGetBBox', setPolygon);
+        addEvent(SVGElementClass, 'beforeAddingDataLabel', drawTextPath);
+        SVGElementClass.prototype.setTextPath =
+            SVGElementClass.prototype.setTextPath ?? setTextPath;
     }
 }
-const TextPath = {
-    compose
-};
-/* harmony default export */ const Extensions_TextPath = (TextPath);
+/* *
+ *
+ *  API Declarations
+ *
+ * */
+/**
+ * Options for a label text which should follow marker's shape.
+ * Border and background are disabled for a label that follows a
+ * path.
+ *
+ * **Note:** Only SVG-based renderer supports this option. Setting
+ * `useHTML` to true will disable this option.
+ *
+ * Text path support is not bundled into `highcharts.js`, and requires the
+ * `modules/textpath.js` file. However, it is included in the script files of
+ * those series types that use it by default.
+ *
+ * @declare   Highcharts.DataLabelsTextPathOptionsObject
+ * @since     7.1.0
+ * @apioption plotOptions.series.dataLabels.textPath
+ */
+/**
+ * Presentation attributes for the text path.
+ *
+ * @type      {Highcharts.SVGAttributes}
+ * @since     7.1.0
+ * @default   { dy:-5, startOffset:'50%', textAnchor:'middle' }
+ * @apioption plotOptions.series.dataLabels.textPath.attributes
+ */
+/**
+ * Enable or disable `textPath` option for link's or marker's data
+ * labels.
+ *
+ * @type      {boolean}
+ * @since     7.1.0
+ * @default   true
+ * @apioption plotOptions.series.dataLabels.textPath.enabled
+ */
+(''); // Keep doclets above in transpiled file
 
 ;// ./code/es-modules/Series/Organization/OrganizationSeries.js
 /* *
@@ -2389,8 +2443,9 @@ const TextPath = {
  *  (c) 2018-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2403,7 +2458,7 @@ const { sankey: SankeySeries } = (external_highcharts_src_js_default_SeriesRegis
 
 
 
-Extensions_TextPath.compose((external_highcharts_src_js_default_SVGElement_default()));
+composeTextPath((external_highcharts_src_js_default_SVGElement_default()));
 /* *
  *
  *  Class
@@ -2426,15 +2481,14 @@ class OrganizationSeries extends SankeySeries {
         // Align the data label to the point graphic
         const shapeArgs = point.shapeArgs, text = dataLabel.text;
         if (options.useHTML && shapeArgs) {
-            const pAdjust = (this.options.borderWidth +
-                2 * this.options.dataLabels.padding);
+            const padding = splat(this.options.dataLabels.padding || 0), borderWidth = this.options.borderWidth || 0, padjustX = borderWidth + 2 * padding[3 % padding.length], padjustY = borderWidth + 2 * padding[0 % padding.length];
             let width = shapeArgs.width || 0, height = shapeArgs.height || 0;
             if (this.chart.inverted) {
                 width = height;
                 height = shapeArgs.width || 0;
             }
-            height -= pAdjust;
-            width -= pAdjust;
+            width -= padjustX;
+            height -= padjustY;
             text.foreignObject?.attr({
                 x: 0,
                 y: 0,

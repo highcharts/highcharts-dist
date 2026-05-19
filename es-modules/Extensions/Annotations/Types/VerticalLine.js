@@ -18,6 +18,7 @@ if (defaultOptions.annotations?.types) {
      * @extends      annotations.types.crookedLine
      * @excluding    labels, shapes, controlPointOptions
      * @product      highstock
+     * @requires     modules/annotations-advanced
      * @optionparent annotations.types.verticalLine
      */
     defaultOptions.annotations.types.verticalLine = {
@@ -57,7 +58,7 @@ if (defaultOptions.annotations?.types) {
         },
         labelOptions: {
             style: {
-                color: "#333333" /* Palette.neutralColor80 */,
+                color: 'var(--highcharts-neutral-color-80)',
                 fontSize: '0.7em'
             }
         }

@@ -5,8 +5,9 @@
  *
  *  Handling for Windows High Contrast Mode.
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -54,40 +55,47 @@ function setHighContrastTheme(chart) {
     // We might want to add additional functionality here in the future for
     // storing the old state so that we can reset the theme if HC mode is
     // disabled. For now, the user will have to reload the page.
-    chart.highContrastModeActive = true;
-    // Apply theme to chart
-    const theme = (chart.options.accessibility.highContrastTheme);
-    chart.update(theme, false);
-    const hasCustomColors = theme.colors?.length > 1;
-    // Force series colors (plotOptions is not enough)
-    chart.series.forEach(function (s) {
-        const plotOpts = theme.plotOptions[s.type] || {};
-        const fillColor = hasCustomColors && s.colorIndex !== void 0 ?
-            theme.colors[s.colorIndex] :
-            plotOpts.color || 'window';
-        const seriesOptions = {
-            color: plotOpts.color || 'windowText',
-            colors: hasCustomColors ?
-                theme.colors : [plotOpts.color || 'windowText'],
-            borderColor: plotOpts.borderColor || 'window',
-            fillColor
-        };
-        s.update(seriesOptions, false);
-        if (s.points) {
-            // Force point colors if existing
-            s.points.forEach(function (p) {
-                if (p.options && p.options.color) {
-                    p.update({
-                        color: plotOpts.color || 'windowText',
-                        borderColor: plotOpts.borderColor || 'window'
-                    }, false);
-                }
-            });
-        }
-    });
-    // The redraw for each series and after is required for 3D pie
-    // (workaround)
-    chart.redraw();
+    const highContrastState = chart.highContrastState || (chart.highContrastState = {});
+    highContrastState.active = true;
+    highContrastState.applying = true;
+    try {
+        // Apply theme to chart
+        const theme = (chart.options.accessibility.highContrastTheme);
+        chart.update(theme, false);
+        const hasCustomColors = theme.colors?.length > 1;
+        // Force series colors (plotOptions is not enough)
+        chart.series.forEach(function (s) {
+            const plotOpts = theme.plotOptions[s.type] || {};
+            const fillColor = hasCustomColors && s.colorIndex !== void 0 ?
+                theme.colors[s.colorIndex] :
+                plotOpts.color || 'window';
+            const seriesOptions = {
+                color: plotOpts.color || 'windowText',
+                colors: hasCustomColors ?
+                    theme.colors : [plotOpts.color || 'windowText'],
+                borderColor: plotOpts.borderColor || 'window',
+                fillColor
+            };
+            s.update(seriesOptions, false);
+            if (s.points) {
+                // Force point colors if existing
+                s.points.forEach(function (p) {
+                    if (p.options && p.options.color) {
+                        p.update({
+                            color: plotOpts.color || 'windowText',
+                            borderColor: plotOpts.borderColor || 'window'
+                        }, false);
+                    }
+                });
+            }
+        });
+        // The redraw for each series and after is required for 3D pie
+        // (workaround)
+        chart.redraw();
+    }
+    finally {
+        delete highContrastState.applying;
+    }
 }
 /* *
  *

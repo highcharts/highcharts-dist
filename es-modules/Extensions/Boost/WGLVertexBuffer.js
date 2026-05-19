@@ -161,7 +161,7 @@ class WGLVertexBuffer {
      */
     render(from, to, drawMode) {
         const length = this.preAllocated ?
-            this.preAllocated.length : this.data.length;
+            this.preAllocated.length : this.data?.length || 0;
         if (!this.buffer) {
             return false;
         }

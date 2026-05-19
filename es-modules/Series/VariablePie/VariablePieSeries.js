@@ -5,8 +5,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Grzegorz Blachliński
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -41,7 +42,7 @@ class VariablePieSeries extends PieSeries {
      * @private
      */
     calculateExtremes() {
-        const series = this, chart = series.chart, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, seriesOptions = series.options, slicingRoom = 2 * (seriesOptions.slicedOffset || 0), zData = series.getColumn('z'), smallestSize = Math.min(plotWidth, plotHeight) - slicingRoom, 
+        const series = this, chart = series.chart, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, seriesOptions = series.options, slicingRoom = 2 * (seriesOptions.slicedOffset || 0), zData = [...this.getColumn('z', false, true)], smallestSize = Math.min(plotWidth, plotHeight) - slicingRoom, 
         // Min and max size of pie slice:
         extremes = {}, 
         // In pie charts size of a pie is changed to make space for
@@ -86,7 +87,7 @@ class VariablePieSeries extends PieSeries {
      * Minimal pixel size possible for radius.
      */
     getRadii(zMin, zMax, minSize, maxSize) {
-        const zData = this.getColumn('z'), radii = [], options = this.options, sizeByArea = options.sizeBy !== 'radius', zRange = zMax - zMin;
+        const zData = [...this.getColumn('z', false, true)], radii = [], options = this.options, sizeByArea = options.sizeBy !== 'radius', zRange = zMax - zMin;
         let pos, value, radius;
         // Calculate radius for all pie slice's based on their Z values
         for (let i = 0; i < zData.length; i++) {

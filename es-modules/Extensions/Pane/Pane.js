@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -12,7 +13,7 @@
 import CU from '../../Series/CenteredUtilities.js';
 import PaneComposition from './PaneComposition.js';
 import PaneDefaults from './PaneDefaults.js';
-import { extend, merge, splat } from '../../Shared/Utilities.js';
+import { defined, extend, getAlignFactor, isNumber, merge, relativeLength, splat } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -61,14 +62,26 @@ class Pane {
         this.setOptions(options);
     }
     /**
+     * Check if the chart has a series of a specific type
      * @internal
-     * @function Highcharts.Pane#setOptions
+     */
+    hasSeriesType(type) {
+        return Boolean(this.chart.options?.chart?.type === type ||
+            this.chart.options?.series?.some((s) => s.type === type));
+    }
+    /**
+     * Set options override. Angular charts have a default background (#3318)
+     * and an inner size.
      *
-     * @param {Highcharts.PaneOptions} options
+     * @internal
      */
     setOptions(options) {
-        // Set options. Angular charts have a default background (#3318)
-        this.options = options = merge(PaneDefaults.pane, { background: this.chart.angular ? {} : void 0 }, options);
+        this.options = merge(PaneDefaults.pane, this.chart.angular ? {
+            // Add a single background element with default properties
+            background: {},
+            // An inner size for plot bands and axis layout
+            innerSize: '85%'
+        } : {}, options);
     }
     /**
      * Render the pane with its backgrounds.
@@ -93,7 +106,11 @@ class Pane {
                 // #6641 - if axis exists, chart is circular and apply
                 // background
                 if (backgroundOption[i] && this.axis) {
-                    this.renderBackground(merge(PaneDefaults.background, backgroundOption[i]), i);
+                    this.renderBackground(merge(PaneDefaults.background, 
+                    // Defaults inherited from the `pane` option
+                    {
+                        borderRadius: this.options.borderRadius
+                    }, backgroundOption[i]), i);
                 }
                 else if (this.background[i]) {
                     this.background[i] = this.background[i].destroy();
@@ -141,12 +158,91 @@ class Pane {
      *
      * @internal
      * @function Highcharts.Pane#updateCenter
-     * @param {Highcharts.Axis} [axis]
      */
-    updateCenter(axis) {
+    updateCenter() {
+        const { axis, chart, options } = this, { plotHeight, plotWidth } = chart, centerY = options.center?.[1], m = options.margin, labels = this.axis?.options.labels, thickness = options.thickness, marginLoose = Array.isArray(m) ?
+            m :
+            [m, m, m, m], margin = [];
+        let size = options.size, sizeFromAngle, appliedCenterMargin = 0, axisLabelMargin = 0;
+        // Get the required margin in order to display the data label in or
+        // below the center
+        const dataLabelMargin = Math.min(chart.series
+            .reduce((max, s) => {
+            if (!s.is('gauge') || s.yAxis?.pane !== this) {
+                return max;
+            }
+            const dl = splat(s.options.dataLabels)[0];
+            let dlMargin = 0;
+            if (dl && dl.enabled !== false) {
+                // 30 is an approximation of the default data label
+                // height. It is not yet rendered.
+                dlMargin = (1 - getAlignFactor(dl.verticalAlign)) * 30 +
+                    (dl.y || 0);
+            }
+            return Math.max(max, dlMargin);
+        }, 0), plotHeight * 0.3);
+        // Get the required margin to make room for the radial axis labels.
+        if (labels?.enabled) {
+            const fontSize = String(labels.style?.fontSize || ''), 
+            // Approximate the line height because we don't have the
+            // actual label to measure
+            lineHeightGuess = (/px$/.test(fontSize) ?
+                parseFloat(fontSize) :
+                /em$/.test(fontSize) ?
+                    parseFloat(fontSize) * 12 :
+                    12) * 1.2, // 1.2 is a line height approximation
+            m = Math.max(labels.distance || 0, 0) + lineHeightGuess / 2;
+            axisLabelMargin = m;
+        }
+        marginLoose.forEach((m, i) => {
+            margin[i] = m ?? Math.max(axisLabelMargin || 0);
+        });
+        // Handle auto-positioning when size and center are undefined
+        if (axis &&
+            (size === void 0 || centerY === void 0)) {
+            const { endAngleRad, startAngleRad } = axis, deg2rad = Math.PI * 2 / 360, crossingBottom = (startAngleRad < Math.PI / 2 && endAngleRad > Math.PI / 2) ||
+                // Circle background should fill out the plot area
+                splat(options.background).some((b) => b?.shape === 'circle'), maxAngle = crossingBottom ? Math.PI : Math.max(Math.abs(startAngleRad + Math.PI / 2), Math.abs(endAngleRad + Math.PI / 2)), sin = Math.sin(maxAngle - Math.PI / 2), 
+            // The size doesn't increase further to angles below this
+            // minimum. For linear gauges, this means that the pivot is kept
+            // visible.
+            minimumAngle = 90, sizeRatio = 0.5 + 0.5 * Math.max(sin, Math.sin(deg2rad * (minimumAngle - 90)));
+            sizeFromAngle = (plotHeight - margin[0] - margin[2]) /
+                sizeRatio;
+            if (size === void 0) {
+                size = Math.max(Math.min(sizeFromAngle, plotWidth - margin[1] - margin[3]), 1);
+                // Make sure there is space for the data label (centerMargin)
+                const overflow = size + margin[0] + margin[2] +
+                    2 * (dataLabelMargin - plotHeight);
+                if (overflow > 0) {
+                    appliedCenterMargin = overflow;
+                    size = Math.max(1, size - appliedCenterMargin);
+                }
+            }
+        }
+        // Run the standard centering
         this.center = (axis ||
-            this.axis ||
             {}).center = CU.getCenter.call(this);
+        // Apply the auto-positioning
+        if (isNumber(size) && size >= 0) {
+            this.center[2] = size;
+            if (isNumber(thickness)) {
+                this.center[3] = this.center[2] - thickness * 2;
+            }
+            else {
+                this.center[3] = Math.min(size, relativeLength(options.innerSize || 0, size));
+            }
+        }
+        if (!defined(centerY)) {
+            if (options.size) {
+                this.center[1] = plotHeight / 2;
+            }
+            else if (isNumber(sizeFromAngle)) {
+                this.center[1] = (sizeFromAngle +
+                    this.center[2] -
+                    appliedCenterMargin) / 4 + margin[0];
+            }
+        }
     }
     /**
      * Destroy the pane item

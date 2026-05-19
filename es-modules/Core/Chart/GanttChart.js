@@ -4,8 +4,9 @@
  *
  *  Author: Lars A. V. Cabrera
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -43,9 +44,10 @@ class GanttChart extends Chart {
      * @param {Highcharts.Options} userOptions
      *        Custom options.
      *
-     * @param {Function} [callback]
+     * @param {Function|true} [callback]
      *        Function to run when the chart has loaded and all external
-     *        images are loaded.
+     *        images are loaded. Set to `true` to return a promise that
+     *        resolves when the chart is ready.
      *
      *
      * @emits Highcharts.GanttChart#event:init
@@ -93,8 +95,6 @@ class GanttChart extends Chart {
             // Defaults
             {
                 grid: {
-                    borderColor: defaultOptions.xAxis?.grid?.borderColor ||
-                        "#cccccc" /* Palette.neutralColor20 */,
                     enabled: true
                 },
                 opposite: defaultOptions.xAxis?.opposite ??
@@ -114,8 +114,6 @@ class GanttChart extends Chart {
         // Defaults
         {
             grid: {
-                borderColor: defaultOptions.yAxis?.grid?.borderColor ||
-                    "#cccccc" /* Palette.neutralColor20 */,
                 enabled: true
             },
             staticScale: 50,
@@ -166,17 +164,19 @@ class GanttChart extends Chart {
      * @param {Highcharts.Options} options
      *        The chart options structure.
      *
-     * @param {Highcharts.ChartCallbackFunction} [callback]
+     * @param {Highcharts.ChartCallbackFunction|true} [callback]
      *        Function to run when the chart has loaded and all external
      *        images are loaded. Defining a
      *        [chart.events.load](https://api.highcharts.com/highcharts/chart.events.load)
-     *        handler is equivalent.
+     *        handler is equivalent. Set to `true` to return a promise that
+     *        resolves when the chart is ready.
      *
      * @return {Highcharts.GanttChart}
      *         Returns the Chart object.
      */
     function ganttChart(a, b, c) {
-        return new GanttChart(a, b, c);
+        const chart = new GanttChart(a, b, c);
+        return chart.promise || chart;
     }
     GanttChart.ganttChart = ganttChart;
     /* eslint-enable jsdoc/check-param-names */

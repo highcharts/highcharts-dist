@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v12.6.0 (2026-04-13)
+ * @license Highcharts Gantt JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/pathfinder
  * @requires highcharts
  *
@@ -9,8 +9,8 @@
  * (c) 2016-2026 Highsoft AS
  * Author: Øystein Moseng
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -57,8 +57,9 @@ var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require_
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1420,8 +1421,9 @@ function wrap(obj, method, func) {
  *  (c) 2016-2026 Highsoft AS
  *  Authors: Øystein Moseng, Lars A. V. Cabrera
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1773,8 +1775,9 @@ class Connection {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Paweł Lysy
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1915,8 +1918,9 @@ const PathUtilities = {
  *  (c) 2016-2026 Highsoft AS
  *  Author: Øystein Moseng
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2601,8 +2605,9 @@ const algorithms = {
  *  (c) 2016-2026 Highsoft AS
  *  Authors: Øystein Moseng, Lars A. V. Cabrera
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2887,8 +2892,9 @@ const connectorsDefaults = {
  *  (c) 2016-2026 Highsoft AS
  *  Authors: Øystein Moseng, Lars A. V. Cabrera
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3138,8 +3144,9 @@ var external_highcharts_src_js_default_Point_default = /*#__PURE__*/__webpack_re
  *  (c) 2016-2026 Highsoft AS
  *  Authors: Øystein Moseng, Lars A. V. Cabrera
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3582,8 +3589,9 @@ Pathfinder.prototype.algorithms = PathfinderAlgorithms;
  *  (c) 2017-2026 Highsoft AS
  *  Authors: Lars A. V. Cabrera
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3605,7 +3613,6 @@ Pathfinder.prototype.algorithms = PathfinderAlgorithms;
  *                   o
  * ```
  *
- * @internal
  * @function
  *
  * @param {number} x
@@ -3641,7 +3648,6 @@ function arrow(x, y, w, h) {
  *       o
  * ```
  *
- * @internal
  * @function
  *
  * @param {number} x
@@ -3667,7 +3673,7 @@ function arrowHalf(x, y, w, h) {
  *
  * @internal
  */
-function compose(SVGRendererClass) {
+function composeArrowSymbols(SVGRendererClass) {
     const symbols = SVGRendererClass.prototype.symbols;
     symbols.arrow = arrow;
     symbols['arrow-filled'] = triangleLeft;
@@ -3686,7 +3692,6 @@ function compose(SVGRendererClass) {
  *             o
  * ```
  *
- * @internal
  * @function
  *
  * @param {number} x
@@ -3722,7 +3727,6 @@ function triangleLeft(x, y, w, h) {
  *       o
  * ```
  *
- * @internal
  * @function
  *
  * @param {number} x
@@ -3743,15 +3747,6 @@ function triangleLeft(x, y, w, h) {
 function triangleLeftHalf(x, y, w, h) {
     return triangleLeft(x, y, w / 2, h);
 }
-/* *
- *
- *  Default Export
- *
- * */
-const ArrowSymbols = {
-    compose
-};
-/* harmony default export */ const Extensions_ArrowSymbols = (ArrowSymbols);
 
 ;// ./code/es-modules/masters/modules/pathfinder.src.js
 
@@ -3761,7 +3756,7 @@ const ArrowSymbols = {
 
 const G = (external_highcharts_src_js_default_default());
 G.Pathfinder = G.Pathfinder || Gantt_Pathfinder;
-Extensions_ArrowSymbols.compose(G.SVGRenderer);
+composeArrowSymbols(G.SVGRenderer);
 G.Pathfinder.compose(G.Chart, G.Point);
 /* harmony default export */ const pathfinder_src = ((external_highcharts_src_js_default_default()));
 

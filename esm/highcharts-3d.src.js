@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.6.0 (2026-04-13)
+ * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/highcharts-3d
  * @requires highcharts
  *
@@ -8,8 +8,8 @@
  *
  * (c) 2009-2026 Highsoft AS
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_c57973fa__ from "./highcharts.src.js";
 /******/ // The require scope
@@ -59,8 +59,9 @@ var external_highcharts_src_js_default_Color_default = /*#__PURE__*/__webpack_re
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1422,8 +1423,9 @@ function wrap(obj, method, func) {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1678,8 +1680,9 @@ const Math3D = {
  *
  *  Extension for 3D charts
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1710,7 +1713,6 @@ var Chart3D;
      * */
     /**
      * @optionparent
-     * @internal
      */
     Chart3D.defaultOptions = {
         chart: {
@@ -2792,10 +2794,7 @@ var Chart3D;
         const options = this.options;
         if (this.is3d()) {
             (options.series || []).forEach(function (s) {
-                const type = (s.type ||
-                    options.chart.type ||
-                    options.chart.defaultSeriesType);
-                if (type === 'scatter') {
+                if ((s.type || options.chart.type) === 'scatter') {
                     s.type = 'scatter3d';
                 }
             });
@@ -3353,8 +3352,9 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  *  (c) 2010-2026 Highsoft AS
  *  Author: Grzegorz Blachliński
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3455,8 +3455,9 @@ const Area3DSeries = {
  *
  *  Extension for 3d axes
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3588,8 +3589,9 @@ const Axis3DDefaults = {
  *
  *  Extension for 3d axes
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3652,8 +3654,9 @@ const Tick3DAdditions = {
  *
  *  Extension for 3d axes
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3676,6 +3679,7 @@ const { perspective: Axis3DComposition_perspective, perspective3D: Axis3DComposi
 function onAxisAfterSetOptions() {
     const axis = this, chart = axis.chart, options = axis.options;
     if (chart.is3d?.() && axis.coll !== 'colorAxis') {
+        this.clippable = false;
         options.tickWidth = pick(options.tickWidth, 0);
         options.gridLineWidth = pick(options.gridLineWidth, 1);
     }
@@ -4118,9 +4122,6 @@ class Axis3DAdditions {
 /** @internal */
 /* harmony default export */ const Axis3DComposition = (Axis3DAdditions);
 
-;// external ["./highcharts.src.js","default","RendererRegistry"]
-const external_highcharts_src_js_default_RendererRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_c57973fa__["default"].RendererRegistry;
-var external_highcharts_src_js_default_RendererRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_RendererRegistry_namespaceObject);
 ;// external ["./highcharts.src.js","default","Series"]
 const external_highcharts_src_js_default_Series_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_c57973fa__["default"].Series;
 var external_highcharts_src_js_default_Series_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_namespaceObject);
@@ -4132,8 +4133,9 @@ var external_highcharts_src_js_default_Series_default = /*#__PURE__*/__webpack_r
  *
  *  Extension to the Series object in 3D charts.
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -4235,6 +4237,12 @@ Series3D.defaultOptions = merge((external_highcharts_src_js_default_Series_defau
 ;// external ["./highcharts.src.js","default","StackItem"]
 const external_highcharts_src_js_default_StackItem_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_c57973fa__["default"].StackItem;
 var external_highcharts_src_js_default_StackItem_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_StackItem_namespaceObject);
+;// external ["./highcharts.src.js","default","SVGRenderer"]
+const external_highcharts_src_js_default_SVGRenderer_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_c57973fa__["default"].SVGRenderer;
+var external_highcharts_src_js_default_SVGRenderer_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SVGRenderer_namespaceObject);
+;// external ["./highcharts.src.js","default","SVGElement"]
+const external_highcharts_src_js_default_SVGElement_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_c57973fa__["default"].SVGElement;
+var external_highcharts_src_js_default_SVGElement_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SVGElement_namespaceObject);
 ;// ./code/es-modules/Core/Renderer/SVG/SVGElement3D.js
 /* *
  *
@@ -4243,8 +4251,9 @@ var external_highcharts_src_js_default_StackItem_default = /*#__PURE__*/__webpac
  *
  *  Extensions to the SVGRenderer class to enable 3D shapes
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -4252,7 +4261,6 @@ var external_highcharts_src_js_default_StackItem_default = /*#__PURE__*/__webpac
 
 const { parse: SVGElement3D_color } = (external_highcharts_src_js_default_Color_default());
 
-const { Element: SVGElement } = external_highcharts_src_js_default_RendererRegistry_default().getRendererType().prototype;
 
 /* *
  *
@@ -4260,7 +4268,7 @@ const { Element: SVGElement } = external_highcharts_src_js_default_RendererRegis
  *
  * */
 /** @internal */
-class SVGElement3D extends SVGElement {
+class SVGElement3D extends (external_highcharts_src_js_default_SVGElement_default()) {
     constructor() {
         /* *
          *
@@ -4438,8 +4446,9 @@ SVGElement3D.types = {
  *
  *  Extensions to the SVGRenderer class to enable 3D shapes
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -5271,8 +5280,9 @@ var external_highcharts_src_js_default_Axis_default = /*#__PURE__*/__webpack_req
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -5368,10 +5378,12 @@ class ZAxis extends (external_highcharts_src_js_default_Axis_default()) {
                 if (this.positiveValuesOnly && threshold <= 0) {
                     threshold = void 0;
                 }
-                const zData = series.getColumn('z');
+                const zData = [...series.getColumn('z', false, true)]
+                    // When z is not defined, render in the 0 plane
+                    .map((z) => z || 0);
                 if (zData.length) {
-                    this.dataMin = Math.min(pick(this.dataMin, zData[0]), Math.min.apply(null, zData));
-                    this.dataMax = Math.max(pick(this.dataMax, zData[0]), Math.max.apply(null, zData));
+                    this.dataMin = Math.min(this.dataMin ?? (zData[0] || 0), Math.min.apply(null, zData));
+                    this.dataMax = Math.max(this.dataMax ?? (zData[0] || 0), Math.max.apply(null, zData));
                 }
             }
         });
@@ -5397,8 +5409,9 @@ class ZAxis extends (external_highcharts_src_js_default_Axis_default()) {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -5714,13 +5727,12 @@ function wrapColumnSeriesSetVisible(proceed, vis) {
             point.visible = point.options.visible = vis =
                 typeof vis === 'undefined' ?
                     !pick(series.visible, point.visible) : vis;
-            series.options.data[series.data.indexOf(point)] =
-                point.options;
-            if (point.graphic) {
-                point.graphic.attr({
-                    visibility: vis ? 'visible' : 'hidden'
-                });
+            if (series.options.data) {
+                series.options.data[series.data.indexOf(point)] = point.options;
             }
+            point.graphic?.attr({
+                visibility: vis ? 'visible' : 'hidden'
+            });
         }
     }
     proceed.apply(this, Array.prototype.slice.call(arguments, 1));
@@ -5883,8 +5895,9 @@ const Column3DComposition = {
  *
  *  3D pie series
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -5925,8 +5938,9 @@ class Pie3DPoint extends PiePoint {
  *
  *  3D pie series
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -6140,8 +6154,9 @@ var external_highcharts_src_js_default_Series_types_scatter_default = /*#__PURE_
  *
  *  Scatter 3D series.
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -6183,8 +6198,9 @@ class Scatter3DPoint extends ScatterPoint {
  *
  *  Scatter 3D series.
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -6274,6 +6290,7 @@ const Scatter3DSeriesDefaults = {
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
+ * @basic
  * @type      {Array<Array<number>|*>}
  * @extends   series.scatter.data
  * @product   highcharts
@@ -6302,8 +6319,9 @@ const Scatter3DSeriesDefaults = {
  *
  *  Scatter 3D series.
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -6389,7 +6407,7 @@ Chart_Chart3D.compose(G.Chart, G.Fx);
 Column3D_Column3DComposition.compose(G.Series, (external_highcharts_src_js_default_StackItem_default()));
 Pie3D_Pie3DSeries.compose(G.Series);
 Series_Series3D.compose(G.Series);
-SVG_SVGRenderer3D.compose(external_highcharts_src_js_default_RendererRegistry_default().getRendererType());
+SVG_SVGRenderer3D.compose((external_highcharts_src_js_default_SVGRenderer_default()));
 Axis_ZAxis.compose(G.Chart);
 /* harmony default export */ const highcharts_3d_src = (G);
 

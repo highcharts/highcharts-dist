@@ -1,5 +1,5 @@
 !/**
- * Highstock JS v12.6.0 (2026-04-13)
+ * Highstock JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/indicators/williams-r
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -9,6 +9,6 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Wojciech Chmiel
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */function(e,t){"object"==typeof exports&&"object"==typeof module?module.exports=t(e._Highcharts,e._Highcharts.SeriesRegistry):"function"==typeof define&&define.amd?define("highcharts/indicators/williams-r",["highcharts/highcharts"],function(e){return t(e,e.SeriesRegistry)}):"object"==typeof exports?exports["highcharts/indicators/williams-r"]=t(e._Highcharts,e._Highcharts.SeriesRegistry):e.Highcharts=t(e.Highcharts,e.Highcharts.SeriesRegistry)}("u"<typeof window?this:window,(e,t)=>(()=>{"use strict";var r={512:e=>{e.exports=t},944:t=>{t.exports=e}},o={};function i(e){var t=o[e];if(void 0!==t)return t.exports;var n=o[e]={exports:{}};return r[e](n,n.exports,i),n.exports}i.n=e=>{var t=e&&e.__esModule?()=>e.default:()=>e;return i.d(t,{a:t}),t},i.d=(e,t)=>{for(var r in t)i.o(t,r)&&!i.o(e,r)&&Object.defineProperty(e,r,{enumerable:!0,get:t[r]})},i.o=(e,t)=>Object.prototype.hasOwnProperty.call(e,t);var n={};i.d(n,{default:()=>b});var a=i(944),s=i.n(a);let c=function(e,t,r){return e.reduce((e,o)=>[Math.min(e[0],o[t]),Math.max(e[1],o[r])],[Number.MAX_VALUE,-Number.MAX_VALUE])};var l=i(512),u=i.n(l);let{doc:p,win:f}=s();function h(e){return y(e)&&"number"==typeof e.nodeType}function d(e){let t=Object.prototype.toString.call(e);return"[object Array]"===t||"[object Array Iterator]"===t}function y(e,t){return!!e&&"object"==typeof e&&(!t||!d(e))}Array.prototype.find;let{sma:g}=u().seriesTypes;class m extends g{getValues(e,t){let r,o,i,n,a,s=t.period,l=e.xData,u=e.yData,p=u?u.length:0,f=[],h=[],y=[];if(!(l.length<s)&&d(u[0])&&4===u[0].length){for(a=s-1;a<p;a++)n=(r=c(u.slice(a-s+1,a+1),2,1))[0],o=-(((i=r[1])-u[a][3])/(i-n)*100),l[a]&&(f.push([l[a],o]),h.push(l[a]),y.push(o));return{values:f,xData:h,yData:y}}}}m.defaultOptions=function(e,...t){let r,o=[e,...t],i={},n=function(e,t){return"object"!=typeof e&&(e={}),function(e,t,r){for(let r in e)Object.hasOwnProperty.call(e,r)&&t.call((0,e[r]),e[r],r,e)}(t,function(r,o){if("__proto__"!==o&&"constructor"!==o){let i;!y(r,!0)||(i=r?.constructor,y(r,!0)&&!h(r)&&i?.name&&"Object"!==i.name)||h(r)?e[o]=t[o]:e[o]=n(e[o]||{},r)}}),e};!0===e&&(i=o[1],o=Array.prototype.slice.call(o,2));let a=o.length;for(r=0;r<a;r++)i=n(i,o[r]);return i}(g.defaultOptions,{params:{index:void 0,period:14}}),function(e,t){let r;for(r in e||(e={}),t)e[r]=t[r]}(m.prototype,{nameBase:"Williams %R"}),u().registerSeriesType("williamsr",m);let b=s();return n.default})());

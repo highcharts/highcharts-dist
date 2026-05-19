@@ -1,7 +1,8 @@
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -17,9 +18,7 @@ import { extend, merge, pick } from '../../../Shared/Utilities.js';
  * */
 // Utils
 // Index of element with extreme value from array (min or max)
-/**
- * @private
- */
+/** @internal */
 function getExtremeIndexInArray(arr, extreme) {
     let extremeValue = arr[0], valueIndex = 0, i;
     for (i = 1; i < arr.length; i++) {
@@ -39,7 +38,7 @@ function getExtremeIndexInArray(arr, extreme) {
 /**
  * The Aroon series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.aroon
  *
@@ -160,6 +159,7 @@ SeriesRegistry.registerSeriesType('aroon', AroonIndicator);
  *  Default Export
  *
  * */
+/** @internal */
 export default AroonIndicator;
 /* *
  *

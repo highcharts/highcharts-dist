@@ -5,8 +5,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -14,7 +15,7 @@
 import FunnelSeriesDefaults from './FunnelSeriesDefaults.js';
 import H from '../../Core/Globals.js';
 const { composed, noop } = H;
-import BorderRadius from '../../Extensions/BorderRadius.js';
+import { optionsToObject as borderRadiusOptionsToObject } from '../../Extensions/BorderRadius.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries, pie: PieSeries } = SeriesRegistry.seriesTypes;
 import { addEvent, correctFloat, extend, fireEvent, isArray, merge, pick, pushUnique, relativeLength, splat } from '../../Shared/Utilities.js';
@@ -67,7 +68,7 @@ class FunnelSeries extends PieSeries {
      * @private
      */
     alignDataLabel(point, dataLabel, options, alignTo, isNew) {
-        const series = point.series, reversed = series.options.reversed, dlBox = point.dlBox || point.shapeArgs, { align, padding = 0, verticalAlign } = options, inside = ((series.options || {}).dataLabels || {}).inside, centerY = series.center[1], plotY = point.plotY || 0, pointPlotY = (reversed ?
+        const series = point.series, reversed = series.options.reversed, dlBox = point.dlBox || point.shapeArgs, { align, verticalAlign } = options, padding = splat(options.padding || 0), inside = ((series.options || {}).dataLabels || {}).inside, centerY = series.center[1], plotY = point.plotY || 0, pointPlotY = (reversed ?
             2 * centerY - plotY :
             plotY), 
         // #16176: Only SVGLabel has height set
@@ -80,16 +81,17 @@ class FunnelSeries extends PieSeries {
             y = dlBox.y - dlBox.height / 2 + dataLabelHeight / 2;
         }
         else if (verticalAlign === 'top') {
-            y = dlBox.y - dlBox.height + dataLabelHeight + padding;
+            y = dlBox.y - dlBox.height + dataLabelHeight +
+                padding[0];
         }
         if (verticalAlign === 'top' && !reversed ||
             verticalAlign === 'bottom' && reversed ||
             verticalAlign === 'middle') {
             if (align === 'right') {
-                x = dlBox.x - padding + offset;
+                x = dlBox.x - padding[1 % padding.length] + offset;
             }
             else if (align === 'left') {
-                x = dlBox.x + padding - offset;
+                x = dlBox.x + padding[3 % padding.length] - offset;
             }
         }
         alignTo = {
@@ -133,7 +135,7 @@ class FunnelSeries extends PieSeries {
     }
     /** @private */
     getDataLabelPosition(point, distance) {
-        const y = point.plotY || 0, sign = point.half ? 1 : -1, x = this.getX(y, !!point.half, point);
+        const y = point.plotY || 0, sign = point.half ? 1 : -1, x = this.getXPos(y, !!point.half, point);
         return {
             distance,
             // Initial position of the data label - it's utilized for finding
@@ -166,7 +168,7 @@ class FunnelSeries extends PieSeries {
      * @private
      */
     translate() {
-        const series = this, chart = series.chart, options = series.options, reversed = options.reversed, ignoreHiddenPoint = options.ignoreHiddenPoint, borderRadiusObject = BorderRadius.optionsToObject(options.borderRadius), plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, center = options.center, centerX = getLength(center[0], plotWidth), centerY = getLength(center[1], plotHeight), width = getLength(options.width, plotWidth), height = getLength(options.height, plotHeight), neckWidth = getLength(options.neckWidth, plotWidth), neckHeight = getLength(options.neckHeight, plotHeight), neckY = (centerY - height / 2) + height - neckHeight, points = series.points, borderRadius = relativeLength(borderRadiusObject.radius, width), radiusScope = borderRadiusObject.scope, half = (options.dataLabels.position === 'left' ?
+        const series = this, chart = series.chart, options = series.options, reversed = options.reversed, ignoreHiddenPoint = options.ignoreHiddenPoint, borderRadiusObject = borderRadiusOptionsToObject(options.borderRadius), plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, center = options.center, centerX = getLength(center[0], plotWidth), centerY = getLength(center[1], plotHeight), width = getLength(options.width, plotWidth), height = getLength(options.height, plotHeight), neckWidth = getLength(options.neckWidth, plotWidth), neckHeight = getLength(options.neckHeight, plotHeight), neckY = (centerY - height / 2) + height - neckHeight, points = series.points, borderRadius = relativeLength(borderRadiusObject.radius, width), radiusScope = borderRadiusObject.scope, half = (options.dataLabels.position === 'left' ?
             1 :
             0), roundingFactors = (angle) => {
             const tan = Math.tan(angle / 2), cosA = Math.cos(alpha), sinA = Math.sin(alpha);
@@ -192,7 +194,7 @@ class FunnelSeries extends PieSeries {
                 neckWidth + (width - neckWidth) *
                     (1 - (y - top) / (height - neckHeight));
         };
-        series.getX = function (y, half, point) {
+        series.getXPos = function (y, half, point) {
             return centerX + (half ? -1 : 1) *
                 ((series.getWidthAt(reversed ? 2 * centerY - y : y) / 2) +
                     (point.dataLabel?.dataLabelPosition?.distance ??

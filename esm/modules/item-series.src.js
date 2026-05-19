@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.6.0 (2026-04-13)
+ * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/item-series
  * @requires highcharts
  *
@@ -9,8 +9,8 @@
  * (c) 2019-2026 Highsoft AS
  * Author: Torstein Hønsi
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -60,8 +60,9 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1425,8 +1426,9 @@ function wrap(obj, method, func) {
  *
  *  Item series type for Highcharts
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1457,8 +1459,9 @@ extend(ItemPoint.prototype, {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1613,6 +1616,7 @@ const seriesDefaults = {
      * @sample {highcharts} highcharts/css/point-series-classname
      *         Series and point class name
      *
+     * @basic
      * @type      {string}
      * @since     5.0.0
      * @apioption plotOptions.series.className
@@ -1662,6 +1666,7 @@ const seriesDefaults = {
      * @sample {highmaps} maps/demo/category-map/
      *         Category map by multiple series
      *
+     * @basic
      * @type      {Highcharts.ColorType}
      * @apioption plotOptions.series.color
      */
@@ -1771,51 +1776,71 @@ const seriesDefaults = {
      * @apioption plotOptions.series.description
      */
     /**
-     * Options for the series data sorting.
+     * The mapping between the data table and the series data points. This is
+     * used in conjunction with the `dataTable` option (on [chart](#dataTable)
+     * or [series](#plotOptions.series.dataTable) level) to map columns from the
+     * data table to the properties of the data points. The keys of the
+     * `dataMapping` object correspond to the properties of the data points
+     * (e.g. `x`, `y`, `name`), and the values are objects that specify which
+     * column from which data table to use for that property.
      *
-     * @type      {Highcharts.DataSortingOptionsObject}
-     * @since     8.0.0
-     * @product   highcharts highstock
-     * @apioption plotOptions.series.dataSorting
-     */
-    /**
-     * Enable or disable data sorting for the series. Use [xAxis.reversed](
-     * #xAxis.reversed) to change the sorting order.
+     * The keys can also be nested paths, for example `dataLabel.format`, to map
+     * to nested properties of the data points.
      *
-     * @sample {highcharts} highcharts/datasorting/animation/
-     *         Data sorting in scatter-3d
-     * @sample {highcharts} highcharts/datasorting/labels-animation/
-     *         Axis labels animation
-     * @sample {highcharts} highcharts/datasorting/dependent-sorting/
-     *         Dependent series sorting
-     * @sample {highcharts} highcharts/datasorting/independent-sorting/
-     *         Independent series sorting
+     * The values can also be strings, in which case they are interpreted as
+     * column id's from the first data table.
      *
-     * @type      {boolean}
-     * @since     8.0.0
-     * @apioption plotOptions.series.dataSorting.enabled
-     */
-    /**
-     * Whether to allow matching points by name in an update. If this option
-     * is disabled, points will be matched by order.
+     * A typical use case is that multiple series share a common column, like
+     * `name` or `x`. In this case, to avoid repetition, the common column can
+     * be applied in `plotOptions.series.dataMapping` and the individual series
+     * can specify only the columns that are unique to them.
      *
-     * @sample {highcharts} highcharts/datasorting/match-by-name/
-     *         Enabled match by name
+     * The series name defaults to the column ID of the main data column in the
+     * mapping. The main data column is typically the `y` data for cartesian
+     * series, or `value` for map series. For example, if the mapping is
+     * `{ y: 'Cost' }`, the series name will be `Cost`.
      *
-     * @type      {boolean}
-     * @since     8.0.0
-     * @apioption plotOptions.series.dataSorting.matchByName
-     */
-    /**
-     * Determines what data value should be used to sort by.
+     * ```js
+     * // Shorthand mapping with string
+     * dataMapping: {
+     *     y: 'Cost'
+     * }
      *
-     * @sample {highcharts} highcharts/datasorting/sort-key/
-     *         Sort key as `z` value
+     * // Full mapping with object
+     * dataMapping: {
+     *    y: {
+     *       // Optional, defaults to the first data table. Can be either a data
+     *       // table index or id.
+     *       dataTable: 'dataTable1',
+     *       // Can be either a column index or id.
+     *       column: 'Cost'
+     *    }
+     * }
+     * ```
      *
-     * @type      {string}
-     * @since     8.0.0
-     * @default   y
-     * @apioption plotOptions.series.dataSorting.sortKey
+     * If the columns of the DataTable have keys matching the series keys, the
+     * data mapping is not necessary. For example, this DataTable will connect
+     * directly to the series' `x` and `y` keys:
+     *
+     * ```js
+     * const dataTable = new Highcharts.DataTable({
+     *     columns: {
+     *         x: ['2026-05-04', '2026-05-05', '2026-05-06'],
+     *         y: [1, 4, 2]
+     *     }
+     *  });
+     * ```
+     *
+     * @type    {Highcharts.DataMappingOptionsObject}
+     * @sample {highcharts} highcharts/datatable/series-datatable-multiple
+     *         Series with two data tables
+     * @sample {highcharts} highcharts/datatable/nested-keys
+     *         Nested keys
+     * @sample {highcharts} highcharts/datatable/chart-datatable-multiple
+     *         Chart with two data tables
+     *
+     * @since     next
+     * @apioption plotOptions.series.dataMapping
      */
     /**
      * Enable or disable the mouse tracking for a specific series. This
@@ -2333,6 +2358,7 @@ const seriesDefaults = {
      * also be attached to the series at run time using the
      * `Highcharts.addEvent` function.
      *
+     * @basic
      * @declare Highcharts.SeriesEventsOptionsObject
      */
     events: {},
@@ -2528,7 +2554,7 @@ const seriesDefaults = {
          *
          * @type {Highcharts.ColorType}
          */
-        lineColor: "#ffffff" /* Palette.backgroundColor */,
+        lineColor: 'var(--highcharts-background-color)',
         /**
          * The width of the point marker's outline.
          *
@@ -2729,7 +2755,7 @@ const seriesDefaults = {
                  *
                  * @type {Highcharts.ColorType}
                  */
-                fillColor: "#cccccc" /* Palette.neutralColor20 */,
+                fillColor: 'var(--highcharts-neutral-color-20)',
                 /**
                  * The color of the point marker's outline. When
                  * `undefined`, the series' or point's color is used.
@@ -2739,7 +2765,7 @@ const seriesDefaults = {
                  *
                  * @type {Highcharts.ColorType}
                  */
-                lineColor: "#000000" /* Palette.neutralColor100 */,
+                lineColor: 'var(--highcharts-neutral-color-100)',
                 /**
                  * The width of the point marker's outline.
                  *
@@ -2872,8 +2898,7 @@ const seriesDefaults = {
         events: {}
     },
     /**
-     * Options for the series data labels, appearing next to each data
-     * point.
+     * Options for the series data labels, appearing next to each data point.
      *
      * Since v6.2.0, multiple data labels can be applied to each single
      * point by defining them as an array of configs.
@@ -2974,11 +2999,20 @@ const seriesDefaults = {
          * @apioption plotOptions.series.dataLabels.allowOverlap
          */
         /**
-         * The background color or gradient for the data label. Setting it to
-         * `auto` will use the point's color.
+         * The background color or gradient for the data label. In addition to
+         * regular colors, there are two special setting for this option:
+         * - `auto` will set the background color the point's color.
+         * - `contrast` will set it to a contrast against the text color, with
+         *   an opacity allowing to see the underlying content. The contrast is
+         *   great enough to ensure readability for the text according to
+         *   accessibility standards.
          *
          * @sample {highcharts} highcharts/plotoptions/series-datalabels-box/
          *         Data labels box options
+         * @sample {highcharts} highcharts/plotoptions/series-datalabels-background-contrast/
+         *         Contrast background color in stacked column
+         * @sample {highcharts} highcharts/series-pie/datalabels-background-contrast/
+         *         Contrast background color in pie
          * @sample {highmaps} maps/plotoptions/series-datalabels-box/
          *         Data labels box options
          * @sample {highmaps} maps/demo/mappoint-datalabels-mapmarker
@@ -3008,7 +3042,7 @@ const seriesDefaults = {
          *         Data labels box options
          *
          * @type      {number}
-         * @default   0
+         * @default   3
          * @since     2.2.1
          * @apioption plotOptions.series.dataLabels.borderRadius
          */
@@ -3086,6 +3120,15 @@ const seriesDefaults = {
          * @product   highcharts highstock gantt
          */
         defer: true,
+        /**
+         * The distance of the data label from the data point. Note that the
+         * `padding` setting also affects the rendered distance, but is not
+         * visible unless the data label has a border or background.
+         *
+         * @type      {number}
+         * @product   highcharts highstock gantt
+         */
+        distance: 4,
         /**
          * Enable or disable the data labels.
          *
@@ -3249,6 +3292,10 @@ const seriesDefaults = {
          * When either the `borderWidth` or the `backgroundColor` is set,
          * this is the padding within the box.
          *
+         * An array of numbers sets padding for the respective sides. An array
+         * of two numbers repeats the values for the horizontal and vertical
+         * sides.
+         *
          * @sample {highcharts} highcharts/plotoptions/series-datalabels-box/
          *         Data labels box options
          * @sample {highmaps} maps/plotoptions/series-datalabels-box/
@@ -3256,7 +3303,7 @@ const seriesDefaults = {
          *
          * @since 2.2.1
          */
-        padding: 5,
+        padding: [1, 3],
         /**
          * Aligns data labels relative to points. If `center` alignment is
          * not possible, it defaults to `right`.
@@ -3317,7 +3364,11 @@ const seriesDefaults = {
          * text outline doesn't work well, in which cases it can be disabled
          * by setting it to `"none"`. When `useHTML` is true, the
          * `textOutline` will not be picked up. In this, case, the same
-         * effect can be achieved through the `text-shadow` CSS property.
+         * effect can be achieved through the `text-shadow` CSS property. As a
+         * complementary or alternative to the `textOutline`, a
+         * `dataLabels.backgroundColor` can be used. It provides a more calm
+         * impression and ensures readable text label, at the cost of a risk of
+         * overshadowing the underlying chart elements.
          *
          * For some series types, where each point has an extent, like for
          * example tree maps, the data label may overflow the point. There
@@ -3332,6 +3383,8 @@ const seriesDefaults = {
          *         Long labels truncated with an ellipsis in a pie
          * @sample {highcharts} highcharts/plotoptions/pie-datalabels-overflow-wrap/
          *         Long labels are wrapped in a pie
+         * @sample {highcharts} highcharts/plotoptions/series-datalabels-background-contrast/
+         *         Default text outline and contrast background color
          * @sample {highmaps} maps/demo/color-axis/
          *         Bold labels
          *
@@ -3351,33 +3404,6 @@ const seriesDefaults = {
             textOutline: '1px contrast'
         },
         /**
-         * Options for a label text which should follow marker's shape.
-         * Border and background are disabled for a label that follows a
-         * path.
-         *
-         * **Note:** Only SVG-based renderer supports this option. Setting
-         * `useHTML` to true will disable this option.
-         *
-         * @declare   Highcharts.DataLabelsTextPathOptionsObject
-         * @since     7.1.0
-         * @apioption plotOptions.series.dataLabels.textPath
-         */
-        /**
-         * Presentation attributes for the text path.
-         *
-         * @type      {Highcharts.SVGAttributes}
-         * @since     7.1.0
-         * @apioption plotOptions.series.dataLabels.textPath.attributes
-         */
-        /**
-         * Enable or disable `textPath` option for link's or marker's data
-         * labels.
-         *
-         * @type      {boolean}
-         * @since     7.1.0
-         * @apioption plotOptions.series.dataLabels.textPath.enabled
-         */
-        /**
          * Whether to
          * [use HTML](https://www.highcharts.com/docs/chart-concepts/labels-and-string-formatting#html)
          * to render the labels.
@@ -3396,6 +3422,19 @@ const seriesDefaults = {
          * @since 2.3.3
          */
         verticalAlign: 'bottom',
+        // Loose JSDoc doclet placed last are ignored, so placed unsorted here.
+        /**
+         * The z index of the data labels group. Does not apply below series
+         * level options.
+         *
+         * Use a `zIndex` of 6 to display it above the series,
+         * or use a `zIndex` of 2 to display it behind the series.
+         *
+         * @type      {number}
+         * @default   6
+         * @since     2.3.5
+         * @apioption plotOptions.series.dataLabels.zIndex
+         */
         /**
          * The x position offset of the label relative to the point in
          * pixels.
@@ -3414,18 +3453,6 @@ const seriesDefaults = {
          *         Vertical and positioned
          */
         y: 0
-        /**
-         * The z index of the data labels group. Does not apply below series
-         * level options.
-         *
-         * Use a `zIndex` of 6 to display it above the series,
-         * or use a `zIndex` of 2 to display it behind the series.
-         *
-         * @type      {number}
-         * @default   6
-         * @since     2.3.5
-         * @apioption plotOptions.series.dataLabels.zIndex
-         */
     },
     /**
      * When the series contains less points than the crop threshold, all
@@ -3917,8 +3944,9 @@ const seriesDefaults = {
  *
  *  Item series type for Highcharts
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -4067,6 +4095,7 @@ const ItemSeriesDefaults = {
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
+ * @basic
  * @type      {Array<number|Array<string,(number|null)>|null|*>}
  * @extends   series.pie.data
  * @exclude   sliced
@@ -4100,8 +4129,9 @@ const ItemSeriesDefaults = {
  *
  *  Item series type for Highcharts
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */

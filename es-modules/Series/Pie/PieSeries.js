@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -98,7 +99,8 @@ class PieSeries extends Series {
                 this.graph.attr({
                     'stroke-width': options.borderWidth,
                     fill: options.fillColor || 'none',
-                    stroke: options.color || "#cccccc" /* Palette.neutralColor20 */
+                    stroke: options.color ||
+                        'var(--highcharts-neutral-color-20)'
                 });
             }
         }
@@ -140,7 +142,7 @@ class PieSeries extends Series {
      * logic in data labels.
      * @internal
      */
-    getX(y, left, point, dataLabel) {
+    getXPos(y, left, point, dataLabel) {
         const center = this.center, 
         // Variable pie has individual radius
         radius = this.radii ?
@@ -151,7 +153,10 @@ class PieSeries extends Series {
             (left ? -1 : 1) *
                 (Math.cos(angle) * (radius + distance)) +
             (distance > 0 ?
-                (left ? -1 : 1) * (dataLabel.padding || 0) :
+                // 5 is the horizontal part pointing out of the label. It
+                // used to be the `padding` setting, but that doesn't make
+                // sense
+                (left ? -5 : 5) :
                 0);
         return x;
     }

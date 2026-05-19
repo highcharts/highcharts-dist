@@ -1,5 +1,5 @@
 !/**
-* Highcharts JS v12.6.0 (2026-04-13)
+* Highcharts JS v13.0.0-beta.0 (2026-05-19)
 * @module highcharts/i18n/nb-NO
 * @requires highcharts
 *

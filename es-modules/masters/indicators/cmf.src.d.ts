@@ -1,2 +1,3 @@
-import * as Highcharts from '../../../indicators/cmf.src';
+import Highcharts from '../../Core/Globals.js';
+import '../../Stock/Indicators/CMF/CMFIndicator.js';
 export default Highcharts;

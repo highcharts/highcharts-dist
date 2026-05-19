@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.6.0 (2026-04-13)
+ * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/solid-gauge
  * @requires highcharts
  * @requires highcharts/highcharts-more
@@ -10,8 +10,8 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Torstein Hønsi
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -120,8 +120,9 @@ var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default 
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -151,7 +152,7 @@ const { doc, win } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_H
  * @return {Function}
  *         A callback function to remove the added event.
  */
-function addEvent(el, type, fn, options = {}) {
+function Utilities_addEvent(el, type, fn, options = {}) {
     // Add hcEvents to either the prototype (in case we're running addEvent on a
     // class) or the instance. If hasOwnProperty('hcEvents') is false, it is
     // inherited down the prototype chain, in which case we need to set the
@@ -163,8 +164,8 @@ function addEvent(el, type, fn, options = {}) {
     const events = owner.hcEvents;
     // Allow click events added to points, otherwise they will be prevented by
     // the TouchPointer.pinch function after a pinch zoom operation (#7091).
-    if ((highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default()).Point && // Without H a dependency loop occurs
-        el instanceof (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default()).Point &&
+    if (H.Point && // Without H a dependency loop occurs
+        el instanceof H.Point &&
         el.series &&
         el.series.chart) {
         el.series.chart.runTrackerClick = true;
@@ -174,7 +175,7 @@ function addEvent(el, type, fn, options = {}) {
     // on touch events (#11353).
     const addEventListener = el.addEventListener;
     if (addEventListener) {
-        addEventListener.call(el, type, fn, (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default()).supportsPassiveEvents ? {
+        addEventListener.call(el, type, fn, H.supportsPassiveEvents ? {
             passive: options.passive === void 0 ?
                 type.indexOf('touch') !== -1 : options.passive,
             capture: false
@@ -349,7 +350,7 @@ function correctFloat(num, prec) {
 function createElement(tag, attribs, styles, parent, nopad) {
     const el = doc.createElement(tag);
     if (attribs) {
-        extend(el, attribs);
+        Utilities_extend(el, attribs);
     }
     if (nopad) {
         css(el, { padding: '0', border: 'none', margin: '0' });
@@ -393,7 +394,7 @@ function crisp(value, lineWidth = 0, inverted) {
  * @return {void}
  */
 function css(el, styles) {
-    extend(el.style, styles);
+    Utilities_extend(el.style, styles);
 }
 /**
  * Check if an object is null or undefined.
@@ -487,7 +488,7 @@ function diffObjects(newer, older, keepOlder, collectionsWithUpdate) {
                     }
                 }
             }
-            else if (isObject(newerVal, true) &&
+            else if (Utilities_isObject(newerVal, true) &&
                 !newerVal.nodeType // #10044
             ) {
                 ret[key] = isArray(newerVal) ? [] : {};
@@ -549,7 +550,7 @@ function erase(arr, item) {
  * @return {T}
  *         Object a, the original object.
  */
-function extend(a, b) {
+function Utilities_extend(a, b) {
     let n;
     if (!a) {
         a = {};
@@ -579,7 +580,7 @@ function extend(a, b) {
 function extendClass(parent, members) {
     const obj = (function () { });
     obj.prototype = new parent(); // eslint-disable-line new-cap
-    extend(obj.prototype, members);
+    Utilities_extend(obj.prototype, members);
     return obj;
 }
 /**
@@ -613,7 +614,7 @@ function fireEvent(el, type, eventArguments, defaultFunction) {
                 el !== H))) {
         const e = doc.createEvent('Events');
         e.initEvent(type, true, true);
-        eventArguments = extend(e, eventArguments);
+        eventArguments = Utilities_extend(e, eventArguments);
         if (el.dispatchEvent) {
             el.dispatchEvent(eventArguments);
         }
@@ -624,7 +625,7 @@ function fireEvent(el, type, eventArguments, defaultFunction) {
     else if (el.hcEvents) {
         if (!eventArguments.target) {
             // We're running a custom event
-            extend(eventArguments, {
+            Utilities_extend(eventArguments, {
                 // Attach a simple preventDefault function to skip
                 // default handler if called. The built-in
                 // defaultPrevented property is not overwritable (#5112)
@@ -758,7 +759,7 @@ function getNestedProperty(path, parent) {
         }
         if (pathElement === 'this') {
             let thisProp;
-            if (isObject(parent)) {
+            if (Utilities_isObject(parent)) {
                 thisProp = parent['@this'];
             }
             return thisProp ?? parent;
@@ -890,7 +891,7 @@ function internalClearTimeout(id) {
  *         True if the argument is a HTML Element.
  */
 function isDOMElement(obj) {
-    return isObject(obj) && typeof obj.nodeType === 'number';
+    return Utilities_isObject(obj) && typeof obj.nodeType === 'number';
 }
 /**
  * Utility function to check if an Object is a class.
@@ -905,7 +906,7 @@ function isDOMElement(obj) {
  */
 function isClass(obj) {
     const c = obj?.constructor;
-    return !!(isObject(obj, true) &&
+    return !!(Utilities_isObject(obj, true) &&
         !isDOMElement(obj) &&
         (c?.name && c.name !== 'Object'));
 }
@@ -981,7 +982,7 @@ function isFunction(obj) {
  * @return {boolean}
  *         True if the argument is an object.
  */
-function isObject(obj, strict) {
+function Utilities_isObject(obj, strict) {
     return (!!obj &&
         typeof obj === 'object' &&
         (!strict || !isArray(obj))); // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -1018,7 +1019,7 @@ function merge(extendOrSource, ...sources) {
                 return;
             }
             // Copy the contents of objects, but not arrays or DOM nodes
-            if (isObject(value, true) &&
+            if (Utilities_isObject(value, true) &&
                 !isClass(value) &&
                 !isDOMElement(value)) {
                 copy[key] = doCopy(copy[key] || {}, value);
@@ -1266,7 +1267,7 @@ function pushUnique(array, item) {
  * @return {number}
  *         The computed length.
  */
-function relativeLength(value, base, offset) {
+function Utilities_relativeLength(value, base, offset) {
     return (/%$/).test(value) ?
         (base * parseFloat(value) / 100) + (offset || 0) :
         parseFloat(value);
@@ -1484,8 +1485,9 @@ function wrap(obj, method, func) {
  *
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1510,8 +1512,8 @@ const defaultBorderRadiusOptions = {
  *  Variables
  *
  * */
-let oldArc = noop;
-let oldRoundedRect = noop;
+let oldArc = (/* unused pure expression or super */ null && (noop));
+let oldRoundedRect = (/* unused pure expression or super */ null && (noop));
 /* *
  *
  *  Functions
@@ -1688,7 +1690,7 @@ function seriesOnAfterColumnTranslate() {
     }
 }
 /** @internal */
-function compose(SeriesClass, SVGElementClass, SVGRendererClass) {
+function composeBorderRadius(SeriesClass, SVGElementClass, SVGRendererClass) {
     const PieSeriesClass = SeriesClass.types.pie;
     if (!SVGElementClass.symbolCustomAttribs.includes('borderRadius')) {
         const symbols = SVGRendererClass.prototype.symbols;
@@ -1706,7 +1708,7 @@ function compose(SeriesClass, SVGElementClass, SVGRendererClass) {
 }
 /** @internal */
 function optionsToObject(options, seriesBROptions) {
-    if (!isObject(options)) {
+    if (!Utilities_isObject(options)) {
         options = { radius: options || 0 };
     }
     return merge(defaultBorderRadiusOptions, seriesBROptions, options);
@@ -1809,16 +1811,6 @@ function roundedRect(x, y, width, height, options = {}) {
 }
 /* *
  *
- *  Default Export
- *
- * */
-const BorderRadius = {
-    compose,
-    optionsToObject
-};
-/* harmony default export */ const Extensions_BorderRadius = (BorderRadius);
-/* *
- *
  *  API Declarations
  *
  * */
@@ -1844,16 +1836,20 @@ const BorderRadius = {
 * @name Highcharts.BorderRadiusOptionsObject#radius
 * @type {string|number}
 */ /**
-* The scope of the rounding for column charts. In a stacked column chart, the
-* value `point` means each single point will get rounded corners. The value
-* `stack` means the rounding will apply to the full stack, so that only points
-* close to the top or bottom will receive rounding.
+* The scope of the rounding for column charts or plot bands. In a stacked
+* column chart, the value `point` means each single point will get rounded
+* corners. The value `stack` means the rounding will apply to the full
+* stack, so that only points close to the top or bottom will receive
+* rounding.
+*
+* Similarly, for plot bands, the `individual` value means each plot band
+* will get rounded corners.
 *
 * @sample  {highcharts} highcharts/plotoptions/column-borderradius/
 *          Rounded columns
 *
 * @name Highcharts.BorderRadiusOptionsObject#scope
-* @validvalue ["point", "stack"]
+* @validvalue ["individual", "point", "stack"]
 * @type {string}
 */ /**
 * For column charts, where in the point or stack to apply rounding. The `end`
@@ -1883,8 +1879,9 @@ var highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_H
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2030,8 +2027,9 @@ var ColorAxisBase;
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2045,7 +2043,7 @@ var ColorAxisBase;
  * */
 /** @internal */
 function init(axis) {
-    extend(axis, Color_ColorAxisBase);
+    Utilities_extend(axis, Color_ColorAxisBase);
 }
 /* *
  *
@@ -2067,8 +2065,9 @@ const SolidGaugeAxis = {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2088,6 +2087,7 @@ const SolidGaugeAxis = {
  * @extends      plotOptions.gauge
  * @excluding    dial, pivot, wrap
  * @product      highcharts
+ * @requires     highcharts-more
  * @requires     modules/solid-gauge
  * @optionparent plotOptions.solidgauge
  */
@@ -2106,14 +2106,14 @@ const SolidGaugeSeriesDefaults = {
      * @apioption plotOptions.solidgauge.borderRadius
      */
     /**
-     * The inner radius for points in a solid gauge. Can be given only in
-     * percentage, either as a number or a string like `"50%"`.
+     * The inner radius for points in a solid gauge. Can be given either as a
+     * pixel value (number), or as a percentage string, like `"50%"`. Defaults
+     * to match the `pane.innerSize`.
      *
      * @sample {highcharts} highcharts/plotoptions/solidgauge-radius/
      *         Individual radius and innerRadius
      *
      * @type      {string}
-     * @default   "60%"
      * @since     4.1.6
      * @product   highcharts
      * @apioption plotOptions.solidgauge.innerRadius
@@ -2144,8 +2144,9 @@ const SolidGaugeSeriesDefaults = {
      * @apioption plotOptions.solidgauge.overshoot
      */
     /**
-     * The outer radius for points in a solid gauge. Can be given only in
-     * percentage, either as a number or a string like `"100%"`.
+     * The outer radius for points in a solid gauge. Can be given either as a
+     * pixel value (number), or as a percentage string, like `"100%"`. Defaults
+     * to match the `pane.size`.
      *
      * @sample {highcharts} highcharts/plotoptions/solidgauge-radius/
      *         Individual radius and innerRadius
@@ -2188,6 +2189,7 @@ const SolidGaugeSeriesDefaults = {
      */
     colorByPoint: true,
     dataLabels: {
+        verticalAlign: 'middle',
         y: 0
     }
 };
@@ -2204,6 +2206,7 @@ const SolidGaugeSeriesDefaults = {
  *            states, step, threshold, turboThreshold, wrap, zoneAxis, zones,
  *            dataSorting, boostBlending
  * @product   highcharts
+ * @requires  highcharts-more
  * @requires  modules/solid-gauge
  * @apioption series.solidgauge
  */
@@ -2241,14 +2244,16 @@ const SolidGaugeSeriesDefaults = {
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
+ * @basic
  * @type      {Array<number|null|*>}
  * @extends   series.gauge.data
  * @product   highcharts
  * @apioption series.solidgauge.data
  */
 /**
- * The inner radius of an individual point in a solid gauge. Can be given only
- * in percentage, either as a number or a string like `"50%"`.
+ * The inner radius of an individual point in a solid gauge. Can be given either
+ * as a pixel value (number), or as a percentage string, like `"50%"`. Defaults
+ * to match the `pane.innerSize` or the series-level `innerRadius` if set.
  *
  * @sample {highcharts} highcharts/plotoptions/solidgauge-radius/
  *         Individual radius and innerRadius
@@ -2259,8 +2264,9 @@ const SolidGaugeSeriesDefaults = {
  * @apioption series.solidgauge.data.innerRadius
  */
 /**
- * The outer radius of an individual point in a solid gauge. Can be
- * given only in percentage, either as a number or a string like `"100%"`.
+ * The outer radius of an individual point in a solid gauge. Can be given either
+ * as a pixel value (number), or as a percentage string, like `"100%"`. Defaults
+ * to match the `pane.size` or the series-level `radius` if set.
  *
  * @sample {highcharts} highcharts/plotoptions/solidgauge-radius/
  *         Individual radius and innerRadius
@@ -2286,8 +2292,9 @@ const SolidGaugeSeriesDefaults = {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2333,7 +2340,8 @@ class SolidGaugeSeries extends GaugeSeries {
     }
     // Draw the points where each point is one needle.
     drawPoints() {
-        const series = this, yAxis = series.yAxis, center = yAxis.center, options = series.options, renderer = series.chart.renderer, overshoot = options.overshoot, rounded = options.rounded && options.borderRadius === void 0, overshootVal = isNumber(overshoot) ?
+        const series = this, yAxis = series.yAxis, center = yAxis.center, options = series.options, renderer = series.chart.renderer, overshoot = options.overshoot, rounded = options.rounded, borderRadius = optionsToObject(rounded ? '50%' : (options.borderRadius ??
+            yAxis.pane.options.borderRadius)).radius, overshootVal = isNumber(overshoot) ?
             overshoot / 180 * Math.PI :
             0;
         let thresholdAngleRad;
@@ -2345,9 +2353,14 @@ class SolidGaugeSeries extends GaugeSeries {
         for (const point of series.points) {
             // #10630 null point should not be draw
             if (!point.isNull) { // Condition like in pie chart
-                const radius = ((pInt(pick(point.options.radius, options.radius, 100 // %
-                )) * center[2]) / 200), innerRadius = ((pInt(pick(point.options.innerRadius, options.innerRadius, 60 // %
-                )) * center[2]) / 200), axisMinAngle = Math.min(yAxis.startAngleRad, yAxis.endAngleRad), axisMaxAngle = Math.max(yAxis.startAngleRad, yAxis.endAngleRad);
+                const paneInnerSize = yAxis.pane.options.innerSize, radius = ((Utilities_relativeLength(point.options.radius ??
+                    options.radius ??
+                    '100%', center[2] / 2))), innerRadius = Math.min((Utilities_relativeLength(point.options.innerRadius ??
+                    options.innerRadius ??
+                    (isNumber(paneInnerSize) ?
+                        paneInnerSize / 2 :
+                        paneInnerSize) ??
+                    0, center[2] / 2)), radius), axisMinAngle = Math.min(yAxis.startAngleRad, yAxis.endAngleRad), axisMaxAngle = Math.max(yAxis.startAngleRad, yAxis.endAngleRad), attribs = {};
                 let graphic = point.graphic, rotation = (yAxis.startAngleRad +
                     yAxis.translate(point.y, void 0, void 0, void 0, true)), shapeArgs, d, toColor = yAxis.toColor(point.y, point), className = point.getClassName();
                 if (toColor === 'none') { // #3708
@@ -2371,10 +2384,6 @@ class SolidGaugeSeries extends GaugeSeries {
                 if (end - start > 2 * Math.PI) {
                     end = start + 2 * Math.PI;
                 }
-                let borderRadius = rounded ? '50%' : 0;
-                if (options.borderRadius) {
-                    borderRadius = Extensions_BorderRadius.optionsToObject(options.borderRadius).radius;
-                }
                 point.shapeArgs = shapeArgs = {
                     x: center[0],
                     y: center[1],
@@ -2385,22 +2394,23 @@ class SolidGaugeSeries extends GaugeSeries {
                     borderRadius
                 };
                 point.startR = radius; // For PieSeries.animate
+                if (toColor !== 'none') {
+                    attribs.fill = toColor;
+                }
                 if (graphic) {
                     d = shapeArgs.d;
-                    graphic.animate(extend({ fill: toColor }, shapeArgs));
+                    graphic.animate(Utilities_extend(attribs, shapeArgs));
                     if (d) {
                         shapeArgs.d = d; // Animate alters it
                     }
                 }
                 else {
+                    attribs['sweep-flag'] = 0;
                     point.graphic = graphic = renderer.arc(shapeArgs)
-                        .attr({
-                        fill: toColor,
-                        'sweep-flag': 0
-                    })
+                        .attr(attribs)
                         .add(series.group);
                 }
-                if (!series.chart.styledMode) {
+                if (!renderer.styledMode) {
                     if (options.linecap !== 'square') {
                         graphic.attr({
                             'stroke-linecap': 'round',
@@ -2420,6 +2430,12 @@ class SolidGaugeSeries extends GaugeSeries {
                 if (graphic) {
                     graphic.addClass(className);
                 }
+                // Positions for the tooltip
+                const midRadius = innerRadius + (radius - innerRadius) * 0.5;
+                point.tooltipPos = [
+                    center[0] + Math.cos(rotation) * midRadius,
+                    center[1] + Math.sin(rotation) * midRadius
+                ];
             }
         }
     }

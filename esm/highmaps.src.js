@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Maps v12.6.0 (2026-04-13)
+ * @license Highcharts Maps v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/highmaps
  *
  * (c) 2011-2026 Highsoft AS
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 import { default as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_c57973fa_default__ } from "./highcharts.src.js";
 import "./modules/map.src.js";

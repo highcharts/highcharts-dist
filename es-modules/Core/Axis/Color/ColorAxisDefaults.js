@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -64,6 +65,7 @@
  *               offset, opposite, pane, plotBands, plotLines,
  *               reversedStacks, scrollbar, showEmpty, top, zoomEnabled
  * @product      highcharts highstock highmaps
+ * @requires     modules/coloraxis
  * @type         {*|Array<*>}
  * @optionparent colorAxis
  */
@@ -221,7 +223,7 @@ const colorAxisDefaults = {
      * @type      {Highcharts.ColorType}
      * @product   highcharts highstock highmaps
      */
-    gridLineColor: "#ffffff" /* Palette.backgroundColor */,
+    gridLineColor: 'var(--highcharts-background-color)',
     /**
      * The width of the grid lines extending from the axis across the
      * gradient of a scalar color axis.
@@ -278,17 +280,21 @@ const colorAxisDefaults = {
      */
     marker: {
         /**
-         * Animation for the marker as it moves between values. Set to
-         * `false` to disable animation. Defaults to `{ duration: 50 }`.
+         * Animation for the marker as it moves between values. Set to `false`
+         * to disable animation.
          *
          * @type    {boolean|Partial<Highcharts.AnimationOptionsObject>}
          * @product highcharts highstock highmaps
+         * @default { duration: 50 }
          */
         animation: {
             /** @internal */
             duration: 50
         },
-        /** @internal */
+        /**
+         * Maps to stroke-width because marker options are passed as crosshair.
+         * @internal
+         */
         width: 0.01,
         /**
          * The color of the marker.
@@ -296,7 +302,7 @@ const colorAxisDefaults = {
          * @type    {Highcharts.ColorType}
          * @product highcharts highstock highmaps
          */
-        color: "#999999" /* Palette.neutralColor40 */
+        color: 'var(--highcharts-neutral-color-40)'
     },
     /**
      * The axis labels show the number for each tick.
@@ -339,7 +345,7 @@ const colorAxisDefaults = {
      * @type    {Highcharts.ColorType}
      * @product highcharts highstock highmaps
      */
-    minColor: "#e6e9ff" /* Palette.highlightColor10 */,
+    minColor: 'var(--highcharts-highlight-color-10)',
     /**
      * The color to represent the maximum of the color axis. Unless
      * [dataClasses](#colorAxis.dataClasses) or
@@ -358,7 +364,7 @@ const colorAxisDefaults = {
      * @type    {Highcharts.ColorType}
      * @product highcharts highstock highmaps
      */
-    maxColor: "#0022ff" /* Palette.highlightColor100 */,
+    maxColor: 'var(--highcharts-highlight-color-100)',
     /**
      * Color stops for the gradient of a scalar color axis. Use this in
      * cases where a linear gradient between a `minColor` and `maxColor`

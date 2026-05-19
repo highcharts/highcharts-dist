@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -17,7 +18,9 @@ import { defined, isNumber, isString, merge, pInt } from '../../Shared/Utilities
  *  Helpers
  *
  * */
-const colorMix = (color1, color2, weight) => `color-mix(in srgb,${color1},${color2} ${weight * 100}%)`;
+const colorMix = (color1, color2, weight) => (weight === 0 ? color1 :
+    weight === 1 ? color2 :
+        `color-mix(in srgb,${color1},${color2} ${weight * 100}%)`);
 const isStringColor = (color) => isString(color) && !!color && color !== 'none';
 /* *
  *
@@ -186,7 +189,12 @@ class Color {
      *         Color with modifications.
      */
     setOpacity(alpha) {
-        this.rgba[3] = alpha;
+        if (isNumber(this.rgba[0])) {
+            this.rgba[3] = alpha;
+        }
+        else if (Color.useColorMix && isStringColor(this.input)) {
+            this.output = colorMix(this.input, '#0000', 1 - alpha);
+        }
         return this;
     }
     /**

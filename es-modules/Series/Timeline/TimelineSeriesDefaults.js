@@ -6,8 +6,9 @@
  *
  *  Author: Daniel Studencki
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -77,11 +78,11 @@ const TimelineSeriesDefaults = {
          *         Alternate disabled
          */
         alternate: true,
-        backgroundColor: "#ffffff" /* Palette.backgroundColor */,
+        backgroundColor: 'var(--highcharts-background-color)',
         borderWidth: 1,
-        borderColor: "#999999" /* Palette.neutralColor40 */,
+        borderColor: 'var(--highcharts-neutral-color-40)',
         borderRadius: 3,
-        color: "#333333" /* Palette.neutralColor80 */,
+        color: 'var(--highcharts-neutral-color-80)',
         /**
          * The color of the line connecting the data label to the point.
          * The default color is the same as the point's color.
@@ -144,14 +145,11 @@ const TimelineSeriesDefaults = {
                 (this.label || '');
             return format;
         },
+        padding: 5,
         style: {
-            /** @internal */
             textOutline: 'none',
-            /** @internal */
             fontWeight: 'normal',
-            /** @internal */
             fontSize: '0.8em',
-            /** @internal */
             textAlign: 'left'
         },
         /**
@@ -218,6 +216,7 @@ const TimelineSeriesDefaults = {
  * @sample {highcharts} highcharts/series-timeline/datetime-axis
  *         Real time intervals
  *
+ * @basic
  * @type      {Array<*>}
  * @extends   series.line.data
  * @excluding marker, y

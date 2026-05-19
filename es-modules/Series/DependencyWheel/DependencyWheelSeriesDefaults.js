@@ -5,8 +5,9 @@
  *  (c) 2018-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -27,6 +28,7 @@
  * @exclude      dataSorting, nodeAlignment, nodeDistance
  * @since        7.1.0
  * @product      highcharts
+ * @requires     modules/sankey
  * @requires     modules/dependency-wheel
  * @optionparent plotOptions.dependencywheel
  */
@@ -101,26 +103,14 @@ const DependencyWheelSeriesDefaults = {
      */
     startAngle: 0,
     dataLabels: {
+        allowOverlap: true,
         textPath: {
-            /**
-             * Enable or disable `textPath` option for link's or marker's data
-             * labels.
-             *
-             * @type      {boolean}
-             * @default   false
-             * @since     7.1.0
-             * @apioption plotOptions.series.dataLabels.textPath.enabled
-             */
             enabled: false,
+            /**
+             * @default { dy: 5 }
+            */
             attributes: {
-                /**
-                * Text path shift along its y-axis.
-                *
-                * @type      {Highcharts.SVGAttributes}
-                * @default   5
-                * @since     7.1.0
-                * @apioption plotOptions.dependencywheel.dataLabels.textPath.attributes.dy
-                */
+                /** @ignore */
                 dy: 5
             }
         }
@@ -169,6 +159,7 @@ const DependencyWheelSeriesDefaults = {
  *     }]
  *  ```
  *
+ * @basic
  * @type      {Array<Array<string,string,number>|*>}
  * @extends   series.sankey.data
  * @product   highcharts

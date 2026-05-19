@@ -1,2 +1,2 @@
-import * as Highcharts from '../../../modules/pattern-fill.src';
+import Highcharts from '../../Core/Globals.js';
 export default Highcharts;

@@ -1,5 +1,5 @@
 !/**
- * Highstock JS v12.6.0 (2026-04-13)
+ * Highstock JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/indicators/accumulation-distribution
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -9,6 +9,6 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Sebastian Bochan
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */function(e,t){"object"==typeof exports&&"object"==typeof module?module.exports=t(e._Highcharts,e._Highcharts.SeriesRegistry):"function"==typeof define&&define.amd?define("highcharts/indicators/accumulation-distribution",["highcharts/highcharts"],function(e){return t(e,e.SeriesRegistry)}):"object"==typeof exports?exports["highcharts/indicators/accumulation-distribution"]=t(e._Highcharts,e._Highcharts.SeriesRegistry):e.Highcharts=t(e.Highcharts,e.Highcharts.SeriesRegistry)}("u"<typeof window?this:window,(e,t)=>(()=>{"use strict";var r={512:e=>{e.exports=t},944:t=>{t.exports=e}},o={};function n(e){var t=o[e];if(void 0!==t)return t.exports;var i=o[e]={exports:{}};return r[e](i,i.exports,n),i.exports}n.n=e=>{var t=e&&e.__esModule?()=>e.default:()=>e;return n.d(t,{a:t}),t},n.d=(e,t)=>{for(var r in t)n.o(t,r)&&!n.o(e,r)&&Object.defineProperty(e,r,{enumerable:!0,get:t[r]})},n.o=(e,t)=>Object.prototype.hasOwnProperty.call(e,t);var i={};n.d(i,{default:()=>g});var a=n(944),s=n.n(a),u=n(512),c=n.n(u);let{doc:l,win:p}=s();function h(e){return f(e)&&"number"==typeof e.nodeType}function f(e,t){let r;return!!e&&"object"==typeof e&&(!t||"[object Array]"!==(r=Object.prototype.toString.call(e))&&"[object Array Iterator]"!==r)}Array.prototype.find;let{sma:d}=c().seriesTypes;class y extends d{static populateAverage(e,t,r,o,n){let i=t[o][1],a=t[o][2],s=t[o][3],u=r[o],c=s===i&&s===a||i===a?0:(2*s-a-i)/(i-a)*u;return[e[o],c]}getValues(e,t){let r,o,n,i=t.period,s=e.xData,u=e.yData,c=t.volumeSeriesID,l=e.chart.get(c),p=l?.getColumn("y"),h=u?u.length:0,f=[],d=[],g=[];if(!(s.length<=i)||!h||4===u[0].length){if(!l)return void(0,a.error)("Series "+c+" not found! Check `volumeSeriesID`.",!0,e.chart);for(o=i;o<h;o++)r=f.length,n=y.populateAverage(s,u,p,o,i),r>0&&(n[1]+=f[r-1][1]),f.push(n),d.push(n[0]),g.push(n[1]);return{values:f,xData:d,yData:g}}}}y.defaultOptions=function(e,...t){let r,o=[e,...t],n={},i=function(e,t){return"object"!=typeof e&&(e={}),function(e,t,r){for(let r in e)Object.hasOwnProperty.call(e,r)&&t.call((0,e[r]),e[r],r,e)}(t,function(r,o){if("__proto__"!==o&&"constructor"!==o){let n;!f(r,!0)||(n=r?.constructor,f(r,!0)&&!h(r)&&n?.name&&"Object"!==n.name)||h(r)?e[o]=t[o]:e[o]=i(e[o]||{},r)}}),e};!0===e&&(n=o[1],o=Array.prototype.slice.call(o,2));let a=o.length;for(r=0;r<a;r++)n=i(n,o[r]);return n}(d.defaultOptions,{params:{index:void 0,volumeSeriesID:"volume"}}),function(e,t){let r;for(r in e||(e={}),t)e[r]=t[r]}(y.prototype,{nameComponents:!1,nameBase:"Accumulation/Distribution"}),c().registerSeriesType("ad",y);let g=s();return i.default})());

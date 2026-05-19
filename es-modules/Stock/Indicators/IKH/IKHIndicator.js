@@ -1,7 +1,8 @@
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -17,25 +18,19 @@ import { defined, extend, getClosestDistance, isArray, isNumber, merge, objectEa
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function maxHigh(arr) {
     return arr.reduce(function (max, res) {
         return Math.max(max, res[1]);
     }, -Infinity);
 }
-/**
- * @private
- */
+/** @internal */
 function minLow(arr) {
     return arr.reduce(function (min, res) {
         return Math.min(min, res[2]);
     }, Infinity);
 }
-/**
- * @private
- */
+/** @internal */
 function highlowLevel(arr) {
     return {
         high: maxHigh(arr),
@@ -45,7 +40,7 @@ function highlowLevel(arr) {
 /**
  * Check two lines intersection (line a1-a2 and b1-b2)
  * Source: https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
- * @private
+ * @internal
  */
 function checkLineIntersection(a1, a2, b1, b2) {
     if (a1 && a2 && b1 && b2) {
@@ -68,7 +63,7 @@ function checkLineIntersection(a1, a2, b1, b2) {
 /**
  * Parameter opt (indicator options object) include indicator, points,
  * nextPoints, color, options, gappedExtend and graph properties
- * @private
+ * @internal
  */
 function drawSenkouSpan(opt) {
     const indicator = opt.indicator;
@@ -84,7 +79,7 @@ function drawSenkouSpan(opt) {
  * Data integrity in Ichimoku is different than default 'averages':
  * Point: [undefined, value, value, ...] is correct
  * Point: [undefined, undefined, undefined, ...] is incorrect
- * @private
+ * @internal
  */
 function ichimokuAverages() {
     const ret = [];
@@ -105,7 +100,7 @@ function ichimokuAverages() {
 /**
  * The IKH series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.ikh
  *
@@ -477,7 +472,7 @@ class IKHIndicator extends SMAIndicator {
  * Ichimoku Kinko Hyo (IKH). This series requires `linkedTo` option to be
  * set.
  *
- * @sample stock/indicators/ichimoku-kinko-hyo
+ * @sample {highstock} stock/indicators/ichimoku-kinko-hyo
  *         Ichimoku Kinko Hyo indicator
  *
  * @extends      plotOptions.sma
@@ -615,7 +610,7 @@ IKHIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
          *
          * @see [senkouSpan.styles.fill](#series.ikh.senkouSpan.styles.fill)
          *
-         * @sample stock/indicators/ichimoku-kinko-hyo
+         * @sample {highstock} stock/indicators/ichimoku-kinko-hyo
          *         Ichimoku Kinko Hyo color
          *
          * @type      {Highcharts.ColorType}
@@ -626,7 +621,7 @@ IKHIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
          * Color of the area between Senkou Span A and B,
          * when Senkou Span A is under Senkou Span B.
          *
-         * @sample stock/indicators/ikh-negative-color
+         * @sample {highstock} stock/indicators/ikh-negative-color
          *         Ichimoku Kinko Hyo negativeColor
          *
          * @type      {Highcharts.ColorType}
@@ -670,6 +665,7 @@ SeriesRegistry.registerSeriesType('ikh', IKHIndicator);
  *  Default Export
  *
  * */
+/** @internal */
 export default IKHIndicator;
 /* *
  *

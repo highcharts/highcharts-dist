@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.6.0 (2026-04-13)
+ * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/themes/grid-light
  * @requires highcharts
  *
  * (c) 2009-2026 Highsoft AS
  * Author: Torstein Hønsi
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -55,8 +55,9 @@ var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require_
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1418,8 +1419,9 @@ function wrap(obj, method, func) {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *  Grid-light theme for Highcharts JS
  *
@@ -1442,12 +1444,18 @@ var GridLightTheme;
      *
      * */
     GridLightTheme.options = {
-        colors: [
-            '#7cb5ec', '#f7a35c', '#90ee7e', '#7798BF', '#aaeeee', '#ff0066',
-            '#eeaaee', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee'
-        ],
+        palette: {
+            colorScheme: 'light',
+            light: {
+                neutralColor: '#111100',
+                colors: [
+                    '#7cb5ec', '#f7a35c', '#90ee7e', '#7798BF',
+                    '#aaeeee', '#ff0066', '#eeaaee', '#55BF3B',
+                    '#DF5353', '#7798BF', '#aaeeee'
+                ]
+            }
+        },
         chart: {
-            backgroundColor: null,
             style: {
                 fontFamily: 'Dosis, sans-serif'
             }
@@ -1461,11 +1469,15 @@ var GridLightTheme;
         },
         tooltip: {
             borderWidth: 0,
-            backgroundColor: 'rgba(219,219,216,0.8)',
-            shadow: false
+            shadow: false,
+            // Inverted colors
+            backgroundColor: 'var(--highcharts-neutral-color-80)',
+            style: {
+                color: 'var(--highcharts-background-color)'
+            }
         },
         legend: {
-            backgroundColor: '#F0F0EA',
+            backgroundColor: 'var(--highcharts-neutral-color-5)',
             itemStyle: {
                 fontWeight: 'bold',
                 fontSize: '13px'
@@ -1490,11 +1502,6 @@ var GridLightTheme;
                 style: {
                     fontSize: '12px'
                 }
-            }
-        },
-        plotOptions: {
-            candlestick: {
-                lineColor: '#404048'
             }
         }
     };

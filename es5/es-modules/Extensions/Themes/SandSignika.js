@@ -1,0 +1,152 @@
+/* *
+ *
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Hønsi
+ *
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
+ *
+ *  Sand-Signika theme for Highcharts JS
+ *
+ *
+ * */
+'use strict';
+import D from '../../Core/Defaults.js';
+var setOptions = D.setOptions;
+import H from '../../Core/Globals.js';
+import { addEvent, createElement } from '../../Shared/Utilities.js';
+/* *
+ *
+ *  Theme
+ *
+ * */
+var SandSignikaTheme;
+(function (SandSignikaTheme) {
+    /* *
+     *
+     *  Constants
+     *
+     * */
+    SandSignikaTheme.options = {
+        palette: {
+            light: {
+                backgroundColor: '#f7f7f7',
+                colors: [
+                    '#f45b5b', '#8085e9', '#8d4654', '#7798BF',
+                    '#aaeeee', '#ff0066', '#eeaaee', '#55BF3B',
+                    '#DF5353', '#7798BF', '#aaeeee'
+                ]
+            }
+        },
+        chart: {
+            backgroundColor: 'light-dark(transparent, #141414)',
+            style: {
+                fontFamily: 'Signika, serif'
+            }
+        },
+        title: {
+            style: {
+                color: 'var(--highcharts-neutral-color-100)',
+                fontSize: '16px',
+                fontWeight: 'bold'
+            }
+        },
+        subtitle: {
+            style: {
+                color: 'var(--highcharts-neutral-color-100)'
+            }
+        },
+        tooltip: {
+            borderWidth: 0,
+            // Inverted tooltip colors
+            backgroundColor: 'var(--highcharts-neutral-color-80)',
+            style: {
+                color: 'var(--highcharts-background-color)'
+            }
+        },
+        legend: {
+            backgroundColor: 'var(--highcharts-neutral-color-10)',
+            itemStyle: {
+                fontWeight: 'bold',
+                fontSize: '13px'
+            }
+        },
+        xAxis: {
+            labels: {
+                style: {
+                    color: 'var(--highcharts-neutral-color-60)'
+                }
+            }
+        },
+        yAxis: {
+            labels: {
+                style: {
+                    color: 'var(--highcharts-neutral-color-60)'
+                }
+            }
+        },
+        plotOptions: {
+            series: {
+                shadow: true,
+                dataLabels: {
+                    color: 'light-dark(#000, #fff)',
+                    style: {
+                        textOutline: 'none'
+                    }
+                }
+            },
+            map: {
+                shadow: false
+            }
+        },
+        // Highcharts Stock specific
+        global: {
+            buttonTheme: {
+                fill: 'light-dark(#fff, #000)',
+                stroke: 'var(--highcharts-neutral-color-20)',
+                states: {
+                    select: {
+                        fill: 'var(--highcharts-neutral-color-10)'
+                    }
+                }
+            }
+        },
+        rangeSelector: {
+            buttonTheme: {
+                'stroke-width': 1
+            }
+        }
+    };
+    /* *
+     *
+     *  Functions
+     *
+     * */
+    /**
+     * Apply the theme.
+     */
+    function apply() {
+        // Load the fonts
+        createElement('link', {
+            href: 'https://fonts.googleapis.com/css?family=Signika:400,700',
+            rel: 'stylesheet',
+            type: 'text/css'
+        }, null, document.getElementsByTagName('head')[0]);
+        // Add the background image to the container
+        addEvent(H.Chart, 'afterGetContainer', function () {
+            // eslint-disable-next-line no-invalid-this
+            this.container.style.background =
+                'url(https://www.highcharts.com/samples/graphics/sand.png)';
+        });
+        // Apply the theme
+        setOptions(SandSignikaTheme.options);
+    }
+    SandSignikaTheme.apply = apply;
+})(SandSignikaTheme || (SandSignikaTheme = {}));
+/* *
+ *
+ *  Default Export
+ *
+ * */
+export default SandSignikaTheme;

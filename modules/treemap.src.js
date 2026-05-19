@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.6.0 (2026-04-13)
+ * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/treemap
  * @requires highcharts
  *
  * (c) 2014-2026 Highsoft AS
  * Authors: Jon Arild Nygård / Øystein Moseng
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -140,8 +140,9 @@ var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default 
  *
  *  Authors: Grzegorz Blachliński, Karol Kołodziej
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -215,7 +216,7 @@ const options = {
             }
         },
         style: {
-            color: "#334eff" /* Palette.highlightColor80 */
+            color: 'var(--highcharts-highlight-color-80)'
         }
     },
     /**
@@ -351,7 +352,7 @@ const options = {
          *  @since 10.0.0
          */
         style: {
-            color: "#666666" /* Palette.neutralColor60 */,
+            color: 'var(--highcharts-neutral-color-60)',
             fontSize: '0.8em'
         }
     },
@@ -412,8 +413,9 @@ var highcharts_Templating_commonjs_highcharts_Templating_commonjs2_highcharts_Te
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1776,8 +1778,9 @@ function wrap(obj, method, func) {
  *
  *  Authors: Grzegorz Blachliński, Karol Kołodziej
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2394,8 +2397,9 @@ var highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_highcharts_SV
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2526,8 +2530,9 @@ var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_roo
  *
  *  Authors: Jon Arild Nygård / Øystein Moseng
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2618,8 +2623,9 @@ class TreemapAlgorithmGroup {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Paweł Lysy
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2751,8 +2757,9 @@ const DrawPointUtilities = {
  *
  *  Authors: Jon Arild Nygård / Øystein Moseng
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2846,8 +2853,9 @@ extend(TreemapPoint.prototype, {
  *
  *  Authors: Jon Arild Nygård / Øystein Moseng
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3289,7 +3297,7 @@ const TreemapSeriesDefaults = {
      *
      * @type {Highcharts.ColorString}
      */
-    borderColor: "#e6e6e6" /* Palette.neutralColor10 */,
+    borderColor: 'var(--highcharts-neutral-color-10)',
     /**
      * The width of the border surrounding each tree map item.
      */
@@ -3319,7 +3327,7 @@ const TreemapSeriesDefaults = {
             /**
              * The border color for the hovered state.
              */
-            borderColor: "#999999" /* Palette.neutralColor40 */,
+            borderColor: 'var(--highcharts-neutral-color-40)',
             /**
              * Brightness for the hovered point. Defaults to 0 if the
              * heatmap series is loaded first, otherwise 0.1.
@@ -3506,6 +3514,7 @@ const TreemapSeriesDefaults = {
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
+ * @basic
  * @type      {Array<number|null|*>}
  * @extends   series.heatmap.data
  * @excluding x, y, pointPadding
@@ -3561,8 +3570,9 @@ const TreemapSeriesDefaults = {
  *
  *  Authors: Jon Arild Nygård / Øystein Moseng
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3610,8 +3620,9 @@ var TreemapUtilities;
  *
  *  Authors: Jon Arild Nygård / Øystein Moseng
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3824,8 +3835,9 @@ const TreeUtilities = {
  *
  *  Authors: Jon Arild Nygård / Øystein Moseng
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -4379,7 +4391,7 @@ class TreemapSeries extends ScatterSeries {
                 const { height = 0, width = 0 } = point.shapeArgs;
                 if (width > 32 && height > 16 && point.shouldDraw()) {
                     const dataLabelWidth = width -
-                        2 * (options.padding || padding || 0);
+                        2 * (splat(options.padding)[0] || splat(padding)[0] || 0);
                     style.width = `${dataLabelWidth}px`;
                     style.lineClamp ?? (style.lineClamp = Math.floor(height / 16));
                     // Only set this in traversal mode, with zooming data labels
@@ -4403,6 +4415,8 @@ class TreemapSeries extends ScatterSeries {
             point.dlOptions = merge(options, point.options.dataLabels, {
                 zIndex: void 0
             });
+            // Delete so it doesn't override anything on merge.
+            delete point.dlOptions.zIndex;
         }
         super.drawDataLabels(points);
     }
@@ -4694,7 +4708,7 @@ class TreemapSeries extends ScatterSeries {
     pointAttribs(point, state) {
         const series = this, mapOptionsToLevel = (isObject(series.mapOptionsToLevel) ?
             series.mapOptionsToLevel :
-            {}), level = point && mapOptionsToLevel[point.node.level] || {}, options = this.options, stateOptions = state && options.states && options.states[state] || {}, className = point?.getClassName() || '', 
+            {}), level = point?.node && mapOptionsToLevel[point.node.level] || {}, options = this.options, stateOptions = state && options.states && options.states[state] || {}, className = point?.node && point.getClassName() || '', 
         // Set attributes by precedence. Point trumps level trumps series.
         // Stroke width uses pick because it can be 0.
         attr = {

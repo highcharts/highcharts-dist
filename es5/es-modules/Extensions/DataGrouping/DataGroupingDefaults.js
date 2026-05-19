@@ -1,0 +1,147 @@
+/* *
+ *
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Hønsi
+ *
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
+ *
+ *
+ * */
+'use strict';
+/* *
+ *
+ *  Constants
+ *
+ * */
+/**
+ * Common options
+ * @internal
+ */
+var common = {
+    /// enabled: null, // (true for stock charts, false for basic),
+    // forced: undefined,
+    groupPixelWidth: 2,
+    // The first one is the point or start value, the second is the start
+    // value if we're dealing with range, the third one is the end value if
+    // dealing with a range
+    dateTimeLabelFormats: {
+        millisecond: [
+            '%[AebHMSL]',
+            '%[AebHMSL]',
+            '-%[HMSL]'
+        ],
+        second: [
+            '%[AebHMS]',
+            '%[AebHMS]',
+            '-%[HMS]'
+        ],
+        minute: [
+            '%[AebHM]',
+            '%[AebHM]',
+            '-%[HM]'
+        ],
+        hour: [
+            '%[AebHM]',
+            '%[AebHM]',
+            '-%[HM]'
+        ],
+        day: [
+            '%[AebY]',
+            '%[Aeb]',
+            '-%[AebY]'
+        ],
+        week: [
+            '%v %[AebY]',
+            '%[Aeb]',
+            '-%[AebY]'
+        ],
+        month: [
+            '%[BY]',
+            '%[B]',
+            '-%[BY]'
+        ],
+        year: [
+            '%Y',
+            '%Y',
+            '-%Y'
+        ]
+    }
+    /// smoothed = false, // enable this for navigator series only
+};
+/**
+ * Extends common options
+ * @internal
+ */
+var seriesSpecific = {
+    line: {},
+    spline: {},
+    area: {},
+    areaspline: {},
+    arearange: {},
+    column: {
+        groupPixelWidth: 10
+    },
+    columnrange: {
+        groupPixelWidth: 10
+    },
+    candlestick: {
+        groupPixelWidth: 10
+    },
+    ohlc: {
+        groupPixelWidth: 5
+    },
+    hlc: {
+        groupPixelWidth: 5
+        // Move to HeikinAshiSeries.ts after refactoring data grouping.
+    },
+    heikinashi: {
+        groupPixelWidth: 10
+    }
+};
+/**
+ * Units are defined in a separate array to allow complete overriding in
+ * case of a user option.
+ * @internal
+ */
+var units = [
+    [
+        'millisecond', // Unit name
+        [1, 2, 5, 10, 20, 25, 50, 100, 200, 500] // Allowed multiples
+    ], [
+        'second',
+        [1, 2, 5, 10, 15, 30]
+    ], [
+        'minute',
+        [1, 2, 5, 10, 15, 30]
+    ], [
+        'hour',
+        [1, 2, 3, 4, 6, 8, 12]
+    ], [
+        'day',
+        [1]
+    ], [
+        'week',
+        [1]
+    ], [
+        'month',
+        [1, 3, 6]
+    ], [
+        'year',
+        null
+    ]
+];
+/* *
+ *
+ *  Default Export
+ *
+ * */
+/** @internal */
+var DataGroupingDefaults = {
+    common: common,
+    seriesSpecific: seriesSpecific,
+    units: units
+};
+/** @internal */
+export default DataGroupingDefaults;

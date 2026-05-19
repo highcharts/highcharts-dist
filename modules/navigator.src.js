@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.6.0 (2026-04-13)
+ * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/navigator
  * @requires highcharts
  *
@@ -9,19 +9,19 @@
  * (c) 2009-2026 Highsoft AS
  * Author: Mateusz Bernacik
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Chart"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["RendererRegistry"]);
+		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Chart"], root["_Highcharts"]["Axis"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["SVGRenderer"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/navigator", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Chart"],amd1["Axis"],amd1["Color"],amd1["SeriesRegistry"],amd1["RendererRegistry"]);});
+		define("highcharts/modules/navigator", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Chart"],amd1["Axis"],amd1["SeriesRegistry"],amd1["SVGRenderer"]);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/navigator"] = factory(root["_Highcharts"], root["_Highcharts"]["Chart"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["RendererRegistry"]);
+		exports["highcharts/modules/navigator"] = factory(root["_Highcharts"], root["_Highcharts"]["Chart"], root["_Highcharts"]["Axis"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["SVGRenderer"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Chart"], root["Highcharts"]["Axis"], root["Highcharts"]["Color"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["RendererRegistry"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__532__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__608__) => {
+		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Chart"], root["Highcharts"]["Axis"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["SVGRenderer"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__532__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__540__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -40,17 +40,10 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__532__;
 
 /***/ }),
 
-/***/ 608:
+/***/ 540:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE__608__;
-
-/***/ }),
-
-/***/ 620:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__620__;
+module.exports = __WEBPACK_EXTERNAL_MODULE__540__;
 
 /***/ }),
 
@@ -146,8 +139,9 @@ var highcharts_Axis_commonjs_highcharts_Axis_commonjs2_highcharts_Axis_root_High
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1509,8 +1503,9 @@ function wrap(obj, method, func) {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1535,9 +1530,7 @@ let NavigatorConstructor;
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function compose(ChartClass, NavigatorClass) {
     if (pushUnique(composedMembers, ChartClass)) {
         const chartProto = ChartClass.prototype;
@@ -1553,7 +1546,7 @@ function compose(ChartClass, NavigatorClass) {
 }
 /**
  * Handle adding new series.
- * @private
+ * @internal
  */
 function onChartAfterAddSeries() {
     if (this.navigator) {
@@ -1566,7 +1559,7 @@ function onChartAfterAddSeries() {
  * final top position of the navigator once the height of the chart, including
  * the legend, is determined. #367. We can't use Chart.getMargins, because
  * labels offsets are not calculated yet.
- * @private
+ * @internal
  */
 function onChartAfterSetChartSize() {
     const legend = this.legend, navigator = this.navigator;
@@ -1619,7 +1612,7 @@ function onChartAfterSetChartSize() {
 }
 /**
  * Initialize navigator, if no scrolling exists yet.
- * @private
+ * @internal
  */
 function onChartAfterUpdate(event) {
     if (!this.navigator && !this.scroller &&
@@ -1633,7 +1626,7 @@ function onChartAfterUpdate(event) {
 }
 /**
  * Initialize navigator for stock charts
- * @private
+ * @internal
  */
 function onChartBeforeRender() {
     const options = this.options;
@@ -1646,7 +1639,7 @@ function onChartBeforeRender() {
  * For Stock charts. For x only zooming, do not to create the zoom button
  * because X axis zooming is already allowed by the Navigator and Range
  * selector. (#9285)
- * @private
+ * @internal
  */
 function onChartBeforeShowResetZoom() {
     const chartOptions = this.options, navigator = chartOptions.navigator, rangeSelector = chartOptions.rangeSelector;
@@ -1658,9 +1651,7 @@ function onChartBeforeShowResetZoom() {
         return false;
     }
 }
-/**
- * @private
- */
+/** @internal */
 function onChartCallback(chart) {
     const navigator = chart.navigator;
     // Initialize the navigator
@@ -1671,7 +1662,7 @@ function onChartCallback(chart) {
 }
 /**
  * Merge options, if no scrolling exists yet
- * @private
+ * @internal
  */
 function onChartUpdate(e) {
     const navigatorOptions = (e.options.navigator || {}), scrollbarOptions = (e.options.scrollbar || {});
@@ -1688,9 +1679,11 @@ function onChartUpdate(e) {
  *  Default Export
  *
  * */
+/** @internal */
 const ChartNavigatorComposition = {
     compose
 };
+/** @internal */
 /* harmony default export */ const Navigator_ChartNavigatorComposition = (ChartNavigatorComposition);
 
 ;// ./code/es-modules/Core/Axis/NavigatorAxisComposition.js
@@ -1699,8 +1692,9 @@ const ChartNavigatorComposition = {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1828,9 +1822,6 @@ class NavigatorAxisAdditions {
 /** @internal */
 /* harmony default export */ const NavigatorAxisComposition = (NavigatorAxisAdditions);
 
-// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Color"],"commonjs":["highcharts","Color"],"commonjs2":["highcharts","Color"],"root":["Highcharts","Color"]}
-var highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_ = __webpack_require__(620);
-var highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_default = /*#__PURE__*/__webpack_require__.n(highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_);
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
@@ -1840,14 +1831,13 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
 
-
-const { parse: color } = (highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_default());
 
 const { seriesTypes } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
 /* *
@@ -2010,15 +2000,15 @@ const NavigatorDefaults = {
         /**
          * The fill for the handle.
          *
-         * @type    {Highcharts.ColorType}
+         * @type {Highcharts.ColorType}
          */
-        backgroundColor: "#f2f2f2" /* Palette.neutralColor5 */,
+        backgroundColor: 'var(--highcharts-neutral-color-5)',
         /**
          * The stroke for the handle border and the stripes inside.
          *
-         * @type    {Highcharts.ColorType}
+         * @type {Highcharts.ColorType}
          */
-        borderColor: "#999999" /* Palette.neutralColor40 */
+        borderColor: 'var(--highcharts-neutral-color-40)'
     },
     /**
      * The color of the mask covering the areas of the navigator series
@@ -2033,9 +2023,8 @@ const NavigatorDefaults = {
      *         Blue, semi transparent mask
      *
      * @type    {Highcharts.ColorType}
-     * @default rgba(102,133,194,0.3)
      */
-    maskFill: color("#667aff" /* Palette.highlightColor60 */).setOpacity(0.3).get(),
+    maskFill: 'color-mix(var(--highcharts-highlight-color-60) 30%, transparent)',
     /**
      * The color of the line marking the currently zoomed area in the
      * navigator.
@@ -2043,10 +2032,9 @@ const NavigatorDefaults = {
      * @sample {highstock} stock/navigator/outline/
      *         2px blue outline
      *
-     * @type    {Highcharts.ColorType}
-     * @default #cccccc
+     * @type {Highcharts.ColorType}
      */
-    outlineColor: "#999999" /* Palette.neutralColor40 */,
+    outlineColor: 'var(--highcharts-neutral-color-40)',
     /**
      * The width of the line marking the currently zoomed area in the
      * navigator.
@@ -2270,7 +2258,7 @@ const NavigatorDefaults = {
         className: 'highcharts-navigator-xaxis',
         tickLength: 0,
         lineWidth: 0,
-        gridLineColor: "#e6e6e6" /* Palette.neutralColor10 */,
+        gridLineColor: 'var(--highcharts-neutral-color-10)',
         id: 'navigator-x-axis',
         gridLineWidth: 1,
         tickPixelInterval: 200,
@@ -2281,7 +2269,7 @@ const NavigatorDefaults = {
              */
             style: {
                 /** @ignore */
-                color: "#000000" /* Palette.neutralColor100 */,
+                color: 'var(--highcharts-neutral-color-100)',
                 /** @ignore */
                 fontSize: '0.7em',
                 /** @ignore */
@@ -2343,6 +2331,7 @@ const NavigatorDefaults = {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Navigator_NavigatorDefaults = (NavigatorDefaults);
 /* *
  *
@@ -2369,8 +2358,9 @@ const NavigatorDefaults = {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2905,8 +2895,9 @@ const Symbols = {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2920,7 +2911,7 @@ const Symbols = {
  * */
 /**
  * Draw one of the handles on the side of the zoomed range in the navigator.
- * @private
+ * @internal
  */
 function navigatorHandle(_x, _y, width, height, options = {}) {
     const halfWidth = options.width ? options.width / 2 : width, markerPosition = 1.5, r = relativeLength(options.borderRadius || 0, Math.min(halfWidth * 2, height));
@@ -2938,22 +2929,25 @@ function navigatorHandle(_x, _y, width, height, options = {}) {
  *  Default Export
  *
  * */
+/** @internal */
 const NavigatorSymbols = {
     'navigator-handle': navigatorHandle
 };
+/** @internal */
 /* harmony default export */ const Navigator_NavigatorSymbols = (NavigatorSymbols);
 
-// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","RendererRegistry"],"commonjs":["highcharts","RendererRegistry"],"commonjs2":["highcharts","RendererRegistry"],"root":["Highcharts","RendererRegistry"]}
-var highcharts_RendererRegistry_commonjs_highcharts_RendererRegistry_commonjs2_highcharts_RendererRegistry_root_Highcharts_RendererRegistry_ = __webpack_require__(608);
-var highcharts_RendererRegistry_commonjs_highcharts_RendererRegistry_commonjs2_highcharts_RendererRegistry_root_Highcharts_RendererRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_RendererRegistry_commonjs_highcharts_RendererRegistry_commonjs2_highcharts_RendererRegistry_root_Highcharts_RendererRegistry_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SVGRenderer"],"commonjs":["highcharts","SVGRenderer"],"commonjs2":["highcharts","SVGRenderer"],"root":["Highcharts","SVGRenderer"]}
+var highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_SVGRenderer_root_Highcharts_SVGRenderer_ = __webpack_require__(540);
+var highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_SVGRenderer_root_Highcharts_SVGRenderer_default = /*#__PURE__*/__webpack_require__.n(highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_SVGRenderer_root_Highcharts_SVGRenderer_);
 ;// ./code/es-modules/Stock/Utilities/StockUtilities.js
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2968,7 +2962,7 @@ var highcharts_RendererRegistry_commonjs_highcharts_RendererRegistry_commonjs2_h
  * Sets the chart.fixedRange to the specified value. If the value is larger
  * than actual range, sets it to the maximum possible range. (#20327)
  *
- * @private
+ * @internal
  * @function Highcharts.StockChart#setFixedRange
  * @param {number|undefined} range
  *        Range to set in axis units.
@@ -2984,9 +2978,11 @@ function setFixedRange(range) {
         this.fixedRange = range;
     }
 }
+/** @internal */
 const StockUtilities = {
     setFixedRange
 };
+/** @internal */
 /* harmony default export */ const Utilities_StockUtilities = (StockUtilities);
 
 ;// ./code/es-modules/Stock/Navigator/NavigatorComposition.js
@@ -2995,8 +2991,9 @@ const StockUtilities = {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3009,7 +3006,6 @@ const { composed } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_H
 
 
 
-const { getRendererType } = (highcharts_RendererRegistry_commonjs_highcharts_RendererRegistry_commonjs2_highcharts_RendererRegistry_root_Highcharts_RendererRegistry_default());
 
 const { setFixedRange: NavigatorComposition_setFixedRange } = Utilities_StockUtilities;
 
@@ -3023,21 +3019,19 @@ const { setFixedRange: NavigatorComposition_setFixedRange } = Utilities_StockUti
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function NavigatorComposition_compose(ChartClass, AxisClass, SeriesClass) {
     NavigatorAxisComposition.compose(AxisClass);
     if (pushUnique(composed, 'Navigator')) {
         ChartClass.prototype.setFixedRange = NavigatorComposition_setFixedRange;
-        extend(getRendererType().prototype.symbols, Navigator_NavigatorSymbols);
+        extend((highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_SVGRenderer_root_Highcharts_SVGRenderer_default()).prototype.symbols, Navigator_NavigatorSymbols);
         extend(defaultOptions, { navigator: Navigator_NavigatorDefaults });
         addEvent(SeriesClass, 'afterUpdate', onSeriesAfterUpdate);
     }
 }
 /**
  * Handle updating series
- * @private
+ * @internal
  */
 function onSeriesAfterUpdate() {
     if (this.chart.navigator && !this.options.isInternal) {
@@ -3049,9 +3043,11 @@ function onSeriesAfterUpdate() {
  *  Default Export
  *
  * */
+/** @internal */
 const NavigatorComposition = {
     compose: NavigatorComposition_compose
 };
+/** @internal */
 /* harmony default export */ const Navigator_NavigatorComposition = (NavigatorComposition);
 
 ;// ./code/es-modules/Core/Axis/ScrollbarAxis.js
@@ -3060,8 +3056,9 @@ const NavigatorComposition = {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3280,8 +3277,9 @@ var ScrollbarAxis;
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3310,8 +3308,6 @@ var ScrollbarAxis;
  *
  * @product highstock gantt
  * @optionparent scrollbar
- *
- * @private
  */
 const ScrollbarDefaults = {
     /**
@@ -3405,7 +3401,7 @@ const ScrollbarDefaults = {
      *
      * @type {Highcharts.ColorType}
      */
-    barBackgroundColor: "#cccccc" /* Palette.neutralColor20 */,
+    barBackgroundColor: 'var(--highcharts-neutral-color-20)',
     /**
      * The width of the bar's border.
      *
@@ -3418,7 +3414,7 @@ const ScrollbarDefaults = {
      *
      * @type {Highcharts.ColorType}
      */
-    barBorderColor: "#cccccc" /* Palette.neutralColor20 */,
+    barBorderColor: 'var(--highcharts-neutral-color-20)',
     /**
      * The color of the small arrow inside the scrollbar buttons.
      *
@@ -3427,7 +3423,7 @@ const ScrollbarDefaults = {
      *
      * @type {Highcharts.ColorType}
      */
-    buttonArrowColor: "#333333" /* Palette.neutralColor80 */,
+    buttonArrowColor: 'var(--highcharts-neutral-color-80)',
     /**
      * The color of scrollbar buttons.
      *
@@ -3436,7 +3432,7 @@ const ScrollbarDefaults = {
      *
      * @type {Highcharts.ColorType}
      */
-    buttonBackgroundColor: "#e6e6e6" /* Palette.neutralColor10 */,
+    buttonBackgroundColor: 'var(--highcharts-neutral-color-10)',
     /**
      * The color of the border of the scrollbar buttons.
      *
@@ -3445,7 +3441,7 @@ const ScrollbarDefaults = {
      *
      * @type {Highcharts.ColorType}
      */
-    buttonBorderColor: "#cccccc" /* Palette.neutralColor20 */,
+    buttonBorderColor: 'var(--highcharts-neutral-color-20)',
     /**
      * The border width of the scrollbar buttons.
      *
@@ -3476,7 +3472,7 @@ const ScrollbarDefaults = {
      *
      * @type {Highcharts.ColorType}
      */
-    trackBorderColor: "#cccccc" /* Palette.neutralColor20 */,
+    trackBorderColor: 'var(--highcharts-neutral-color-20)',
     /**
      * The corner radius of the border of the scrollbar track.
      *
@@ -3497,6 +3493,7 @@ const ScrollbarDefaults = {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Scrollbar_ScrollbarDefaults = (ScrollbarDefaults);
 
 ;// ./code/es-modules/Stock/Scrollbar/Scrollbar.js
@@ -3505,8 +3502,9 @@ const ScrollbarDefaults = {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3528,7 +3526,7 @@ const { composed: Scrollbar_composed } = (highcharts_commonjs_highcharts_commonj
  * A reusable scrollbar, internally used in Highcharts Stock's
  * navigator and optionally on individual axes.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.Scrollbar
  * @param {Highcharts.SVGRenderer} renderer
@@ -3614,7 +3612,7 @@ class Scrollbar {
     /**
      * Set up the mouse and touch events for the Scrollbar
      *
-     * @private
+     * @internal
      * @function Highcharts.Scrollbar#addEvents
      */
     addEvents() {
@@ -3673,7 +3671,7 @@ class Scrollbar {
     /**
      * Get normalized (0-1) cursor position over the scrollbar
      *
-     * @private
+     * @internal
      * @function Highcharts.Scrollbar#cursorToScrollbarPosition
      *
      * @param  {*} normalizedEvent
@@ -3698,7 +3696,7 @@ class Scrollbar {
     /**
      * Destroys allocated elements.
      *
-     * @private
+     * @internal
      * @function Highcharts.Scrollbar#destroy
      */
     destroy() {
@@ -3727,7 +3725,7 @@ class Scrollbar {
     /**
      * Draw the scrollbar buttons with arrows
      *
-     * @private
+     * @internal
      * @function Highcharts.Scrollbar#drawScrollbarButton
      * @param {number} index
      *        0 is left, 1 is right
@@ -3781,7 +3779,7 @@ class Scrollbar {
         }
     }
     /**
-     * @private
+     * @internal
      * @function Highcharts.Scrollbar#init
      * @param {Highcharts.SVGRenderer} renderer
      * @param {Highcharts.ScrollbarOptions} options
@@ -3812,7 +3810,7 @@ class Scrollbar {
     }
     /**
      * Event handler for the mouse move event.
-     * @private
+     * @internal
      */
     mouseMoveHandler(e) {
         const scroller = this, normalizedEvent = scroller.chart.pointer?.normalize(e) || e, options = scroller.options, direction = options.vertical ?
@@ -3842,7 +3840,7 @@ class Scrollbar {
     }
     /**
      * Event handler for the mouse up event.
-     * @private
+     * @internal
      */
     mouseUpHandler(e) {
         const scroller = this;
@@ -3864,7 +3862,7 @@ class Scrollbar {
      * Position the scrollbar, method called from a parent with defined
      * dimensions.
      *
-     * @private
+     * @internal
      * @function Highcharts.Scrollbar#position
      * @param {number} x
      *        x-position on the chart
@@ -3921,7 +3919,7 @@ class Scrollbar {
     /**
      * Removes the event handlers attached previously with addEvents.
      *
-     * @private
+     * @internal
      * @function Highcharts.Scrollbar#removeEvents
      */
     removeEvents() {
@@ -3933,7 +3931,7 @@ class Scrollbar {
     /**
      * Render scrollbar with all required items.
      *
-     * @private
+     * @internal
      * @function Highcharts.Scrollbar#render
      */
     render() {
@@ -4006,7 +4004,7 @@ class Scrollbar {
     /**
      * Set scrollbar size, with a given scale.
      *
-     * @private
+     * @internal
      * @function Highcharts.Scrollbar#setRange
      * @param {number} from
      *        scale (0-1) where bar should start
@@ -4082,7 +4080,7 @@ class Scrollbar {
      * Checks if the extremes should be updated in response to a scrollbar
      * change event.
      *
-     * @private
+     * @internal
      * @function Highcharts.Scrollbar#shouldUpdateExtremes
      */
     shouldUpdateExtremes(eventType) {
@@ -4117,7 +4115,7 @@ class Scrollbar {
     /**
      * Update the scrollbar with new options
      *
-     * @private
+     * @internal
      * @function Highcharts.Scrollbar#update
      * @param  {Highcharts.ScrollbarOptions} options
      */
@@ -4128,7 +4126,7 @@ class Scrollbar {
     /**
      * Update position option in the Scrollbar, with normalized 0-1 scale
      *
-     * @private
+     * @internal
      * @function Highcharts.Scrollbar#updatePosition
      * @param  {number} from
      * @param  {number} to
@@ -4157,6 +4155,7 @@ Scrollbar.defaultOptions = Scrollbar_ScrollbarDefaults;
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Scrollbar_Scrollbar = (Scrollbar);
 
 ;// ./code/es-modules/Stock/Navigator/Navigator.js
@@ -4165,9 +4164,9 @@ Scrollbar.defaultOptions = Scrollbar_ScrollbarDefaults;
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
- *
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  * */
 
@@ -4190,7 +4189,7 @@ const { isTouchDevice: Navigator_isTouchDevice } = (highcharts_commonjs_highchar
  * Finding the min or max of a set of variables where we don't know if they are
  * defined, is a pattern that is repeated several places in Highcharts. Consider
  * making this a global utility method.
- * @private
+ * @internal
  */
 function numExt(extreme, ...args) {
     const numbers = [].filter.call(args, isNumber);
@@ -4206,7 +4205,7 @@ function numExt(extreme, ...args) {
 /**
  * The Navigator class
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.Navigator
  *
@@ -4241,7 +4240,7 @@ class Navigator {
     /**
      * Draw one of the handles on the side of the zoomed range in the navigator.
      *
-     * @private
+     * @internal
      * @function Highcharts.Navigator#drawHandle
      *
      * @param {number} x
@@ -4270,7 +4269,7 @@ class Navigator {
     /**
      * Render outline around the zoomed range
      *
-     * @private
+     * @internal
      * @function Highcharts.Navigator#drawOutline
      *
      * @param {number} zoomedMin
@@ -4358,7 +4357,7 @@ class Navigator {
     /**
      * Render outline around the zoomed range
      *
-     * @private
+     * @internal
      * @function Highcharts.Navigator#drawMasks
      *
      * @param {number} zoomedMin
@@ -4418,7 +4417,7 @@ class Navigator {
      *
      * - handles
      *
-     * @private
+     * @internal
      * @function Highcharts.Navigator#renderElements
      */
     renderElements() {
@@ -4520,7 +4519,7 @@ class Navigator {
     /**
      * Update navigator
      *
-     * @private
+     * @internal
      * @function Highcharts.Navigator#update
      *
      * @param {Highcharts.NavigatorOptions} options
@@ -4577,7 +4576,7 @@ class Navigator {
     /**
      * Render the navigator
      *
-     * @private
+     * @internal
      * @function Highcharts.Navigator#render
      * @param {number} min
      *        X axis value minimum
@@ -4707,7 +4706,7 @@ class Navigator {
      * events are added inside the `renderElements` method by calling the
      * `getPartsEvents` method.
      *
-     * @private
+     * @internal
      * @function Highcharts.Navigator#addMouseEvents
      */
     addMouseEvents() {
@@ -4742,7 +4741,7 @@ class Navigator {
     /**
      * Generate events for handles and masks
      *
-     * @private
+     * @internal
      * @function Highcharts.Navigator#getPartsEvents
      *
      * @param {string} eventName
@@ -4770,7 +4769,7 @@ class Navigator {
      *
      * - will directly shift to a new range
      *
-     * @private
+     * @internal
      * @function Highcharts.Navigator#shadesMousedown
      *
      * @param {Highcharts.PointerEventObject} e
@@ -4832,7 +4831,7 @@ class Navigator {
      * Mousedown on a handle mask.
      * Will store necessary information for drag&drop.
      *
-     * @private
+     * @internal
      * @function Highcharts.Navigator#handlesMousedown
      * @param {Highcharts.PointerEventObject} e
      *        Mouse event
@@ -4862,7 +4861,7 @@ class Navigator {
     /**
      * Mouse move event based on x/y mouse position.
      *
-     * @private
+     * @internal
      * @function Highcharts.Navigator#onMouseMove
      *
      * @param {Highcharts.PointerEventObject} e
@@ -4921,7 +4920,7 @@ class Navigator {
     /**
      * Mouse up event based on x/y mouse position.
      *
-     * @private
+     * @internal
      * @function Highcharts.Navigator#onMouseUp
      * @param {Highcharts.PointerEventObject} e
      *        Mouse event
@@ -5001,7 +5000,7 @@ class Navigator {
     /**
      * Removes the event handlers attached previously with addEvents.
      *
-     * @private
+     * @internal
      * @function Highcharts.Navigator#removeEvents
      */
     removeEvents() {
@@ -5014,7 +5013,7 @@ class Navigator {
     /**
      * Remove data events.
      *
-     * @private
+     * @internal
      * @function Highcharts.Navigator#removeBaseSeriesEvents
      */
     removeBaseSeriesEvents() {
@@ -5034,7 +5033,7 @@ class Navigator {
     /**
      * Calculate the navigator xAxis offsets
      *
-     * @private
+     * @internal
      */
     getXAxisOffsets() {
         return (this.chart.inverted ?
@@ -5044,7 +5043,7 @@ class Navigator {
     /**
      * Initialize the Navigator object
      *
-     * @private
+     * @internal
      * @function Highcharts.Navigator#init
      */
     init(chart) {
@@ -5107,8 +5106,12 @@ class Navigator {
             } : {
                 height: height
             }), 'yAxis');
+            navigator.xAxis.clippable = false;
+            navigator.yAxis.clippable = false;
             // If we have a base series, initialize the navigator series
-            if (baseSeries || navigatorOptions.series?.data) {
+            if (baseSeries ||
+                navigatorOptions.series?.data ||
+                navigatorOptions.series?.dataTable) {
                 navigator.updateNavigatorSeries(false);
                 // If not, set up an event to listen for added series
             }
@@ -5178,7 +5181,7 @@ class Navigator {
     /**
      * Set the opposite property on navigator
      *
-     * @private
+     * @internal
      */
     setOpposite() {
         const navigatorOptions = this.navigatorOptions, navigatorEnabled = this.navigatorEnabled, chart = this.chart;
@@ -5188,7 +5191,7 @@ class Navigator {
      * Get the union data extremes of the chart - the outer data extremes of the
      * base X axis and the navigator axis.
      *
-     * @private
+     * @internal
      * @function Highcharts.Navigator#getUnionExtremes
      */
     getUnionExtremes(returnFalseOnNoBaseSeries) {
@@ -5208,7 +5211,7 @@ class Navigator {
      * of modification we should be able to make this an API method to be called
      * from the outside
      *
-     * @private
+     * @internal
      * @function Highcharts.Navigator#setBaseSeries
      * @param {Highcharts.SeriesOptionsType} [baseSeriesOptions]
      *        Additional series options for a navigator
@@ -5245,7 +5248,7 @@ class Navigator {
      * Update series in the navigator from baseSeries, adding new if does not
      * exist.
      *
-     * @private
+     * @internal
      * @function Highcharts.Navigator.updateNavigatorSeries
      */
     updateNavigatorSeries(addEvents, redraw) {
@@ -5320,19 +5323,26 @@ class Navigator {
                 Navigator_defaultOptions.plotOptions[mergedNavSeriesOptions.type || 'line']?.pointRange);
                 // Merge data separately. Do a slice to avoid mutating the
                 // navigator options from base series (#4923).
-                const navigatorSeriesData = baseNavigatorOptions.data || userNavOptions.data;
+                const navigatorSeriesData = baseNavigatorOptions.data || userNavOptions.data, navigatorSeriesDataTable = baseNavigatorOptions.dataTable ||
+                    userNavOptions.dataTable;
                 navigator.hasNavigatorData =
-                    navigator.hasNavigatorData || !!navigatorSeriesData;
-                mergedNavSeriesOptions.data = (navigatorSeriesData ||
-                    baseOptions.data?.slice(0));
+                    navigator.hasNavigatorData ||
+                        !!navigatorSeriesData ||
+                        !!navigatorSeriesDataTable;
+                mergedNavSeriesOptions.data =
+                    navigatorSeriesData ||
+                        baseOptions.data?.slice(0);
+                mergedNavSeriesOptions.dataTable =
+                    navigatorSeriesDataTable ||
+                        baseOptions.dataTable;
                 // Update or add the series
                 if (linkedNavSeries && linkedNavSeries.options) {
                     linkedNavSeries.update(mergedNavSeriesOptions, redraw);
                 }
                 else {
                     base.navigatorSeries = chart.initSeries(mergedNavSeriesOptions);
-                    // Set data on initial run with dataSorting enabled (#20318)
-                    chart.setSortedData();
+                    // Trigger setSortedData with dataSorting enabled (#20318)
+                    fireEvent(base.navigatorSeries, 'afterUpdate');
                     base.navigatorSeries.baseSeries = base; // Store ref
                     navigatorSeries.push(base.navigatorSeries);
                 }
@@ -5341,9 +5351,11 @@ class Navigator {
         // If user has defined data (and no base series) or explicitly defined
         // navigator.series as an array, we create these series on top of any
         // base series.
-        if (chartNavigatorSeriesOptions?.data &&
+        if ((chartNavigatorSeriesOptions?.data ||
+            chartNavigatorSeriesOptions?.dataTable) &&
             !(baseSeries && baseSeries.length) ||
             isArray(chartNavigatorSeriesOptions)) {
+            const colors = chart.options.colors || [];
             navigator.hasNavigatorData = false;
             // Allow navigator.series to be an array
             chartNavigatorSeriesOptions =
@@ -5358,14 +5370,16 @@ class Navigator {
                     // an explicit color as otherwise updates will increment
                     // color counter and we'll get a new color for each
                     // update of the nav series.
-                    color: chart.series[i] &&
+                    color: (chart.series[i] &&
                         !chart.series[i].options.isInternal &&
-                        chart.series[i].color ||
-                        chart.options.colors?.[i] ||
-                        chart.options.colors?.[0]
+                        chart.series[i].color) ||
+                        colors[i] ||
+                        colors[0]
                 }, navSeriesMixin, userSeriesOptions);
                 mergedNavSeriesOptions.data = userSeriesOptions.data;
-                if (mergedNavSeriesOptions.data) {
+                mergedNavSeriesOptions.dataTable = userSeriesOptions.dataTable;
+                if (mergedNavSeriesOptions.data ||
+                    mergedNavSeriesOptions.dataTable) {
                     navigator.hasNavigatorData = true;
                     navigatorSeries.push(chart.initSeries(mergedNavSeriesOptions));
                 }
@@ -5379,7 +5393,7 @@ class Navigator {
      * Add data events.
      * For example when main series is updated we need to recalculate extremes
      *
-     * @private
+     * @internal
      * @function Highcharts.Navigator#addBaseSeriesEvent
      */
     addBaseSeriesEvents() {
@@ -5427,7 +5441,7 @@ class Navigator {
     }
     /**
      * Get minimum from all base series connected to the navigator
-     * @private
+     * @internal
      * @param {number} currentSeriesMin
      *        Minium from the current series
      * @return {number}
@@ -5444,7 +5458,7 @@ class Navigator {
      * extremes should always be the extremes of the union of all series in the
      * chart as well as the navigator series.
      *
-     * @private
+     * @internal
      * @function Highcharts.Navigator#modifyNavigatorAxisExtremes
      */
     modifyNavigatorAxisExtremes() {
@@ -5462,7 +5476,7 @@ class Navigator {
     /**
      * Hook to modify the base axis extremes with information from the Navigator
      *
-     * @private
+     * @internal
      * @function Highcharts.Navigator#modifyBaseAxisExtremes
      */
     modifyBaseAxisExtremes() {
@@ -5509,7 +5523,7 @@ class Navigator {
      * navigator series must reflect it. This is called from the Chart.redraw
      * function before axis and series extremes are computed.
      *
-     * @private
+     * @internal
      * @function Highcharts.Navigator#updateDataHandler
      */
     updatedDataHandler() {
@@ -5524,13 +5538,13 @@ class Navigator {
         // Set the navigator series data to the new data of the base series
         if (navigatorSeries && !navigator.hasNavigatorData) {
             navigatorSeries.options.pointStart = baseSeries.getColumn('x')[0];
-            navigatorSeries.setData(baseSeries.options.data, false, void 0, false); // #5414
+            navigatorSeries.setData(baseSeries.options.data || baseSeries.options.dataTable, false, void 0, false); // #5414
         }
     }
     /**
      * Detect if the zoomed area should stick to the minimum, #14742.
      *
-     * @private
+     * @internal
      * @function Highcharts.Navigator#shouldStickToMin
      */
     shouldStickToMin(baseSeries, navigator) {
@@ -5556,7 +5570,7 @@ class Navigator {
     /**
      * Add chart events, like redrawing navigator, when chart requires that.
      *
-     * @private
+     * @internal
      * @function Highcharts.Navigator#addChartEvents
      */
     addChartEvents() {
@@ -5595,7 +5609,7 @@ class Navigator {
     /**
      * Destroys allocated elements.
      *
-     * @private
+     * @internal
      * @function Highcharts.Navigator#destroy
      */
     destroy() {
@@ -5642,6 +5656,7 @@ class Navigator {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Navigator_Navigator = (Navigator);
 
 ;// ./code/es-modules/Stock/Navigator/StandaloneNavigatorDefaults.js
@@ -5650,8 +5665,9 @@ class Navigator {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Mateusz Bernacik
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -5661,6 +5677,7 @@ class Navigator {
  *  Constants
  *
  * */
+/** @internal */
 const standaloneNavigatorDefaults = {
     chart: {
         height: 70,
@@ -5709,6 +5726,7 @@ const standaloneNavigatorDefaults = {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const StandaloneNavigatorDefaults = (standaloneNavigatorDefaults);
 
 ;// ./code/es-modules/Stock/Navigator/StandaloneNavigator.js
@@ -5717,8 +5735,9 @@ const standaloneNavigatorDefaults = {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Mateusz Bernacik
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -5739,6 +5758,7 @@ const standaloneNavigatorDefaults = {
  * creating a standalone navigator component that synchronizes the extremes
  * across multiple bound charts.
  *
+ * @internal
  * @class
  * @name Highcharts.StandaloneNavigator
  *
@@ -5944,7 +5964,7 @@ class StandaloneNavigator {
     /**
      * Adds a series to the standalone navigator.
      *
-     * @private
+     * @internal
      *
      * @param {SeriesOptions} seriesOptions
      *        Options for the series to be added to the navigator.
@@ -5956,7 +5976,7 @@ class StandaloneNavigator {
     /**
      * Initialize the standalone navigator.
      *
-     * @private
+     * @internal
      */
     initNavigator() {
         const nav = this.navigator;
@@ -6025,7 +6045,7 @@ class StandaloneNavigator {
     /**
      * Get the initial, options based extremes for the standalone navigator.
      *
-     * @private
+     * @internal
      *
      * @return {{ min: number, max: number }}
      *         The initial minimum and maximum extremes values.
@@ -6038,6 +6058,7 @@ class StandaloneNavigator {
         };
     }
 }
+/** @internal */
 /* harmony default export */ const Navigator_StandaloneNavigator = (StandaloneNavigator);
 /* *
  *

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.6.0 (2026-04-13)
+ * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/series-on-point
  * @requires highcharts
  *
@@ -9,8 +9,8 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Rafał Sebestjański and Piotr Madej
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -57,8 +57,9 @@ var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require_
  *
  *  (c) 2020-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  *  Authors:
@@ -189,8 +190,9 @@ const ColumnUtils = {
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1551,8 +1553,9 @@ function wrap(obj, method, func) {
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  *  Authors:
@@ -1576,44 +1579,37 @@ const { setLength: DataTableCore_setLength, splice: DataTableCore_splice } = Dat
  * to add, remove, and manipulate columns and rows, as well as to retrieve data
  * from specific cells.
  *
+ * Highcharts allows passing a `DataTable` or a configuration object for a data
+ * table in the `dataTable` property, either chart-level
+ * [dataTable](https://api.highcharts.com/highcharts/dataTable) or as
+ * [series.dataTable](https://api.highcharts.com/highcharts/series.dataTable).
+ * The `DataTable` is then used as a source for the series data points, mapped
+ * by the `series.dataMapping` option.
+ *
+ * After chart instantiation, the data table can be accessed from the series as
+ * `series.dataTable`. CRUD operations on the data table will be reflected in
+ * the chart.
+ *
+ * @example
+ * const dataTable = new Highcharts.DataTable({
+ *   columns: {
+ *     year: [2020, 2021, 2022, 2023],
+ *     cost: [11, 13, 12, 14],
+ *     revenue: [12, 15, 14, 18]
+ *   }
+ * });
+ *
  * @class
  * @name Highcharts.DataTable
  *
- * @param {Highcharts.DataTableOptions} [options]
+ * @param {Highcharts.DataTableOptionsObject} [options]
  * Options to initialize the new DataTable instance.
  */
 class DataTableCore {
-    /**
-     * Constructs an instance of the DataTable class.
-     *
-     * @example
-     * const dataTable = new Highcharts.DataTableCore({
-     *   columns: {
-     *     year: [2020, 2021, 2022, 2023],
-     *     cost: [11, 13, 12, 14],
-     *     revenue: [12, 15, 14, 18]
-     *   }
-     * });
-
-     *
-     * @param {Highcharts.DataTableOptions} [options]
-     * Options to initialize the new DataTable instance.
-     */
     constructor(options = {}) {
-        /**
-         * Whether the ID was automatic generated or given in the constructor.
-         *
-         * @name Highcharts.DataTable#autoId
-         * @type {boolean}
-         */
+        this.isDataTable = true;
         this.autoId = !options.id;
         this.columns = {};
-        /**
-         * ID of the table for identification purposes.
-         *
-         * @name Highcharts.DataTable#id
-         * @type {string}
-         */
         this.id = (options.id || (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)());
         this.rowCount = 0;
         this.versionTag = (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)();
@@ -1648,6 +1644,13 @@ class DataTableCore {
      * Delete rows. Simplified version of the full
      * `DataTable.deleteRows` method.
      *
+     * @sample highcharts/datatable/live-chart/
+     *       Add and delete rows in a live chart
+     * @sample highcharts/datatable/shared-with-grid/
+     *       Chart with data table CRUD operations
+     *
+     * @function Highcharts.DataTable#deleteRows
+     *
      * @param {number} rowIndex
      * The start row index
      *
@@ -1672,11 +1675,13 @@ class DataTableCore {
         this.versionTag = (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)();
     }
     /**
-     * Fetches the given column by the canonical column name. Simplified version
+     * Fetches the given column by the canonical column ID. Simplified version
      * of the full `DataTable.getRow` method, always returning by reference.
      *
+     * @function Highcharts.DataTable#setColumn
+     *
      * @param {string} columnId
-     * Name of the column to get.
+     * ID of the column to get.
      *
      * @return {Highcharts.DataTableColumn|undefined}
      * A copy of the column, or `undefined` if not found.
@@ -1689,6 +1694,8 @@ class DataTableCore {
     /**
      * Retrieves all or the given columns. Simplified version of the full
      * `DataTable.getColumns` method, always returning by reference.
+     *
+     * @function Highcharts.DataTable#getColumns
      *
      * @param {Array<string>} [columnIds]
      * Column ids to retrieve.
@@ -1708,20 +1715,29 @@ class DataTableCore {
     /**
      * Retrieves the row at a given index.
      *
+     * @function Highcharts.DataTable#getRowObject
+     *
      * @param {number} rowIndex
      * Row index to retrieve. First row has index 0.
      *
-     * @param {Array<string>} [columnIds]
+     * @param {Array<string>} [columnNames]
      * Column names to retrieve.
      *
      * @return {Record<string, number|string|undefined>|undefined}
      * Returns the row values, or `undefined` if not found.
      */
-    getRow(rowIndex, columnIds) {
-        return (columnIds || Object.keys(this.columns)).map((key) => this.columns[key]?.[rowIndex]);
+    getRowObject(rowIndex, columnNames) {
+        const row = {}, columns = this.columns;
+        columnNames ?? (columnNames = Object.keys(this.columns));
+        for (const columnName of columnNames) {
+            row[columnName] = columns[columnName]?.[rowIndex];
+        }
+        return row;
     }
     /**
      * Sets cell values for a column. Will insert a new column, if not found.
+     *
+     * @function Highcharts.DataTable#setColumn
      *
      * @param {string} columnId
      * Column name to set.
@@ -1743,15 +1759,20 @@ class DataTableCore {
     }
     /**
      * Sets cell values for multiple columns. Will insert new columns, if not
-     * found. Simplified version of the full `DataTableCore.setColumns`, limited
+     * found. Simplified version of the full `DataTable.setColumns`, limited
      * to full replacement of the columns (undefined `rowIndex`).
+     *
+     * @sample highcharts/datatable/shared-with-grid/
+     *       Chart with data table CRUD operations
+     *
+     * @function Highcharts.DataTable#setColumns
      *
      * @param {Highcharts.DataTableColumnCollection} columns
      * Columns as a collection, where the keys are the column names.
      *
      * @param {number} [rowIndex]
-     * Index of the first row to change. Ignored in the `DataTableCore`, as it
-     * always replaces the full column.
+     * Index of the first row to change. Ignored in the simplified `DataTable`,
+     * as it always replaces the full column.
      *
      * @param {Record<string, (boolean|number|string|null|undefined)>} [eventDetail]
      * Custom information for pending events.
@@ -1776,6 +1797,15 @@ class DataTableCore {
      * provided, or if the index is higher than the total number of table rows.
      * A simplified version of the full `DateTable.setRow`, limited to objects.
      *
+     * @sample highcharts/datatable/live-chart/
+     *       Add and delete rows in a live chart
+     * @sample stock/datatable/live-candlestick/
+     *       Live candlestick
+     * @sample highcharts/datatable/shared-with-grid/
+     *       Chart with data table CRUD operations
+     *
+     * @function Highcharts.DataTable#setRow
+     *
      * @param {Record<string, number|string|undefined>} row
      * Cell values to set.
      *
@@ -1791,34 +1821,33 @@ class DataTableCore {
      * @emits #afterSetRows
      */
     setRow(row, rowIndex = this.rowCount, insert, eventDetail) {
+        var _a;
         const { columns } = this, indexRowCount = insert ? this.rowCount + 1 : rowIndex + 1, rowKeys = Object.keys(row);
         if (eventDetail?.addColumns !== false) {
             for (let i = 0, iEnd = rowKeys.length; i < iEnd; i++) {
-                const key = rowKeys[i];
-                if (!columns[key]) {
-                    columns[key] = [];
-                }
+                columns[_a = rowKeys[i]] || (columns[_a] = new Array(this.rowCount));
             }
         }
         objectEach(columns, (column, columnId) => {
-            if (!column && eventDetail?.addColumns !== false) {
-                column = new Array(indexRowCount);
-            }
             if (column) {
                 if (insert) {
-                    column = DataTableCore_splice(column, rowIndex, 0, true, [row[columnId] ?? null]).array;
+                    column = DataTableCore_splice(column, rowIndex, 0, true, [row[columnId]]).array;
                 }
                 else {
-                    column[rowIndex] = row[columnId] ?? null;
+                    column[rowIndex] =
+                        // Preserve explicit null and undefined but fall back
+                        // to existing value if the new row does not have the
+                        // key
+                        columnId in row ?
+                            row[columnId] :
+                            column[rowIndex];
                 }
                 columns[columnId] = column;
             }
         });
-        if (indexRowCount > this.rowCount) {
-            this.applyRowCount(indexRowCount);
-        }
+        this.applyRowCount(Math.max(indexRowCount, this.rowCount));
         if (!eventDetail?.silent) {
-            fireEvent(this, 'afterSetRows');
+            fireEvent(this, 'afterSetRows', { rowIndex });
             this.versionTag = (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)();
         }
     }
@@ -1826,7 +1855,7 @@ class DataTableCore {
      * Returns the modified (clone) or the original data table if the modified
      * one does not exist.
      *
-     * @return {Highcharts.DataTableCore}
+     * @return {Highcharts.DataTable}
      * The modified (clone) or the original data table.
      */
     getModified() {
@@ -1845,30 +1874,45 @@ class DataTableCore {
  *
  * */
 /**
+ * A collection of data table columns defined by a object where the key is the
+ * column ID and the value is an array of the column values. Typed arrays are
+ * supported.
+ *
+ * @type {Highcharts.DataTableColumnCollection|undefined}
+ * @apioption dataTable.columns
+ */
+/**
+ * Custom ID to identify the new DataTable instance.
+ *
+ * @type {string|undefined}
+ * @apioption dataTable.id
+ */
+/**
  * A typed array.
  * @typedef {Int8Array|Uint8Array|Uint8ClampedArray|Int16Array|Uint16Array|Int32Array|Uint32Array|Float32Array|Float64Array} Highcharts.TypedArray
- * //**
- * A column of values in a data table.
- * @typedef {Array<boolean|null|number|string|undefined>|Highcharts.TypedArray} Highcharts.DataTableColumn
  */ /**
+* A column of values in a data table.
+* @typedef {Array<boolean|null|number|string|undefined>|Highcharts.TypedArray} Highcharts.DataTableColumn
+*/ /**
 * A collection of data table columns defined by a object where the key is the
-* column name and the value is an array of the column values.
+* column ID and the value is an array of the column values. Typed arrays are
+* supported.
 * @typedef {Record<string, Highcharts.DataTableColumn>} Highcharts.DataTableColumnCollection
 */
 /**
  * Options for the `DataTable` or `DataTableCore` classes.
- * @interface Highcharts.DataTableOptions
+ * @interface Highcharts.DataTableOptionsObject
  */ /**
 * The column options for the data table. The columns are defined by an object
 * where the key is the column ID and the value is an array of the column
 * values.
 *
-* @name Highcharts.DataTableOptions.columns
+* @name Highcharts.DataTableOptionsObject.columns
 * @type {Highcharts.DataTableColumnCollection|undefined}
 */ /**
 * Custom ID to identify the new DataTable instance.
 *
-* @name Highcharts.DataTableOptions.id
+* @name Highcharts.DataTableOptionsObject.id
 * @type {string|undefined}
 */
 (''); // Keeps doclets above in JS file
@@ -1888,8 +1932,9 @@ var external_highcharts_src_js_default_SVGRenderer_default = /*#__PURE__*/__webp
  *  (c) 2010-2026 Highsoft AS
  *  Author: Rafał Sebestjański, Piotr Madej
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2175,6 +2220,7 @@ var SeriesOnPointComposition;
  *              Series on point
  * @sample      {highmaps} maps/demo/map-pies
  *              Pies on a map
+ * @requires    highcharts-more
  * @requires    modules/series-on-point
  * @since 10.2.0
  * @type        {object}
@@ -2186,7 +2232,6 @@ var SeriesOnPointComposition;
  * In styled mode, the connector can be styled with the
  * `.highcharts-connector-seriesonpoint` class name.
  *
- * @requires    modules/series-on-point
  * @since 10.2.0
  * @type        {Highcharts.SVGAttributes}
  * @apioption   plotOptions.series.onPoint.connectorOptions
@@ -2194,7 +2239,6 @@ var SeriesOnPointComposition;
 /**
  * Color of the connector line. By default it's the series' color.
  *
- * @requires    modules/series-on-point
  * @since 10.2.0
  * @type        {string}
  * @apioption   plotOptions.series.onPoint.connectorOptions.stroke
@@ -2202,7 +2246,6 @@ var SeriesOnPointComposition;
 /**
  * A name for the dash style to use for the connector.
  *
- * @requires    modules/series-on-point
  * @since 10.2.0
  * @type        {string}
  * @apioption   plotOptions.series.onPoint.connectorOptions.dashstyle
@@ -2211,7 +2254,6 @@ var SeriesOnPointComposition;
  * Pixel width of the connector line.
  *
  * @default     1
- * @requires    modules/series-on-point
  * @type        {number}
  * @since 10.2.0
  * @apioption   plotOptions.series.onPoint.connectorOptions.width
@@ -2220,7 +2262,6 @@ var SeriesOnPointComposition;
  * The `id` of the point that we connect the series to. Only points with a given
  * `plotX` and `plotY` values and map points are valid.
  *
- * @requires   modules/series-on-point
  * @since 10.2.0
  * @type       {string}
  * @apioption  plotOptions.series.onPoint.id
@@ -2229,7 +2270,6 @@ var SeriesOnPointComposition;
  * Options allowing to set a position and an offset of the series in the
  * _Series on point_ feature.
  *
- * @requires    modules/series-on-point
  * @since 10.2.0
  * @type        {object}
  * @apioption   plotOptions.series.onPoint.position
@@ -2238,7 +2278,6 @@ var SeriesOnPointComposition;
  * Series center offset from the original x position. If defined, the connector
  * line is drawn connecting original position with new position.
  *
- * @requires   modules/series-on-point
  * @since 10.2.0
  * @type       {number}
  * @apioption  plotOptions.series.onPoint.position.offsetX
@@ -2247,7 +2286,6 @@ var SeriesOnPointComposition;
  * Series center offset from the original y position. If defined, the connector
  * line is drawn from original position to a new position.
  *
- * @requires   modules/series-on-point
  * @since 10.2.0
  * @type       {number}
  * @apioption  plotOptions.series.onPoint.position.offsetY
@@ -2256,7 +2294,6 @@ var SeriesOnPointComposition;
  * X position of the series center. By default, the series is displayed on the
  * point that it is connected to.
  *
- * @requires   modules/series-on-point
  * @since 10.2.0
  * @type       {number}
  * @apioption  plotOptions.series.onPoint.position.x
@@ -2265,7 +2302,6 @@ var SeriesOnPointComposition;
  * Y position of the series center. By default, the series is displayed on the
  * point that it is connected to.
  *
- * @requires   modules/series-on-point
  * @since 10.2.0
  * @type       {number}
  * @apioption  plotOptions.series.onPoint.position.y

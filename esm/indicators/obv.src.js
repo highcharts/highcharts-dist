@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v12.6.0 (2026-04-13)
+ * @license Highstock JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/indicators/obv
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -10,8 +10,8 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Karol Kołodziej
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -61,8 +61,9 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1421,8 +1422,9 @@ function wrap(obj, method, func) {
 ;// ./code/es-modules/Stock/Indicators/OBV/OBVIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1439,7 +1441,7 @@ const { sma: SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry
 /**
  * The OBV series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.obv
  *
@@ -1510,11 +1512,11 @@ class OBVIndicator extends SMAIndicator {
  * the `stock/indicators/indicators.js` file. Through the `volumeSeriesID`
  * there also should be linked the volume series.
  *
- * @sample stock/indicators/obv
+ * @sample {highstock} stock/indicators/obv
  *         OBV indicator
  *
  * @extends      plotOptions.sma
- * @since 9.1.0
+ * @since        9.1.0
  * @product      highstock
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/obv
@@ -1553,6 +1555,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const OBV_OBVIndicator = ((/* unused pure expression or super */ null && (OBVIndicator)));
 /* *
  *
@@ -1564,7 +1567,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.obv
- * @since 9.1.0
+ * @since     9.1.0
  * @product   highstock
  * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators

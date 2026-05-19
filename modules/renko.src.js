@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v12.6.0 (2026-04-13)
+ * @license Highstock JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/renko
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -10,8 +10,8 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Paweł Lysy
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -124,8 +124,9 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  *  (c) 2010-2026 Highsoft AS
  *  Author: Paweł Lysy
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -156,8 +157,9 @@ class RenkoPoint extends ColumnPoint {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Paweł Lysy
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -266,6 +268,7 @@ const RenkoDefaults = {
  *    }]
  *    ```
  *
+ * @basic
  * @type      {Array<Array<number,number>|*>}
  * @extends series.column.data
  * @product highstock
@@ -287,8 +290,9 @@ var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commo
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1650,8 +1654,9 @@ function wrap(obj, method, func) {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Paweł Lysy
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1707,6 +1712,8 @@ class RenkoSeries extends (highcharts_Series_types_column_commonjs_highcharts_Se
         const processedXData = [];
         const processedYData = [];
         const processedLowData = [];
+        const processedColorData = [];
+        const processedUpTrendData = [];
         const xData = this.getColumn('x', true);
         const yData = this.getColumn('y', true);
         if (!this.renkoData || this.renkoData.length > 0) {
@@ -1764,11 +1771,15 @@ class RenkoSeries extends (highcharts_Series_types_column_commonjs_highcharts_Se
             processedXData.push(point.x);
             processedYData.push(point.y);
             processedLowData.push(point.low);
+            processedColorData.push(point.color);
+            processedUpTrendData.push(point.upTrend);
         }
-        this.processedData = renkoData;
+        this.hasProcessedDataTable = true;
         modified.setColumn('x', processedXData);
         modified.setColumn('y', processedYData);
         modified.setColumn('low', processedLowData);
+        modified.setColumn('color', processedColorData);
+        modified.setColumn('upTrend', processedUpTrendData);
         return {
             modified,
             cropped: false,

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v12.6.0 (2026-04-13)
+ * @license Highstock JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/indicators/momentum
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -10,8 +10,8 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Sebastian Bochan
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -61,8 +61,9 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1421,8 +1422,9 @@ function wrap(obj, method, func) {
 ;// ./code/es-modules/Stock/Indicators/Momentum/MomentumIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1435,9 +1437,7 @@ const { sma: SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function populateAverage(xVal, yVal, i, period, index) {
     const mmY = yVal[i - 1][index] - yVal[i - period - 1][index], mmX = xVal[i - 1];
     return [mmX, mmY];
@@ -1450,7 +1450,7 @@ function populateAverage(xVal, yVal, i, period, index) {
 /**
  * The Momentum series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.momentum
  *
@@ -1498,7 +1498,7 @@ class MomentumIndicator extends SMAIndicator {
 /**
  * Momentum. This series requires `linkedTo` option to be set.
  *
- * @sample stock/indicators/momentum
+ * @sample {highstock} stock/indicators/momentum
  *         Momentum indicator
  *
  * @extends      plotOptions.sma
@@ -1522,6 +1522,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Momentum_MomentumIndicator = ((/* unused pure expression or super */ null && (MomentumIndicator)));
 /* *
  *

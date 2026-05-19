@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Kamil Musiałowski
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -13,6 +14,7 @@
  *  Imports
  *
  * */
+import DataTableCore from '../../Data/DataTableCore.js';
 import PointAndFigurePoint from './PointAndFigurePoint.js';
 import PointAndFigureSeriesDefaults from './PointAndFigureSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
@@ -83,8 +85,10 @@ class PointAndFigureSeries extends ScatterSeries {
                 closestPointRange: 1
             };
         }
-        const series = this, modified = this.dataTable.getModified(), options = series.options, xData = series.getColumn('x', true), yData = series.getColumn('y', true), boxSize = options.boxSize, calculatedBoxSize = isNumber(boxSize) ?
-            boxSize : relativeLength(boxSize, yData[0]), pnfDataGroups = series.pnfDataGroups, reversal = calculatedBoxSize * options.reversalAmount;
+        const series = this, options = series.options, xData = series.getColumn('x', true), yData = series.getColumn('y', true), boxSize = options.boxSize, calculatedBoxSize = isNumber(boxSize) ?
+            boxSize : relativeLength(boxSize, yData[0]), pnfDataGroups = series.pnfDataGroups, reversal = calculatedBoxSize * options.reversalAmount, dataTable = this.dataTable.getModified(), modified = dataTable === this.dataTable ?
+            dataTable :
+            new DataTableCore();
         series.calculatedBoxSize = calculatedBoxSize;
         let upTrend;
         /**
@@ -154,11 +158,13 @@ class PointAndFigureSeries extends ScatterSeries {
         const finalData = [];
         const processedXData = [];
         const processedYData = [];
+        const processedUpTrendData = [];
         pnfDataGroups.forEach((point) => {
             const x = point.x, upTrend = point.upTrend;
             point.y.forEach((y) => {
                 processedXData.push(x);
                 processedYData.push(y);
+                processedUpTrendData.push(upTrend);
                 finalData.push({
                     x,
                     y,
@@ -168,8 +174,9 @@ class PointAndFigureSeries extends ScatterSeries {
         });
         modified.setColumn('x', processedXData);
         modified.setColumn('y', processedYData);
+        modified.setColumn('upTrend', processedUpTrendData);
         series.pnfDataGroups = pnfDataGroups;
-        series.processedData = finalData;
+        series.hasProcessedDataTable = true;
         return {
             modified,
             cropped: false,

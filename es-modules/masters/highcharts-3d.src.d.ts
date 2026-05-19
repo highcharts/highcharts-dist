@@ -1,2 +1,3 @@
-import * as Highcharts from '../../highcharts-3d.src';
-export default Highcharts;
+import '../Series/Scatter3D/Scatter3DSeries.js';
+declare const G: AnyRecord;
+export default G;

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.6.0 (2026-04-13)
+ * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/highcharts-3d
  * @requires highcharts
  *
@@ -8,22 +8,29 @@
  *
  * (c) 2009-2026 Highsoft AS
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["RendererRegistry"], root["_Highcharts"]["Series"], root["_Highcharts"]["StackItem"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Series"]["types"]["scatter"]);
+		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["Series"], root["_Highcharts"]["StackItem"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Series"]["types"]["scatter"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/highcharts-3d", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Color"],amd1["SeriesRegistry"],amd1["RendererRegistry"],amd1["Series"],amd1["StackItem"],amd1["Axis"],amd1["Series"],["types"],["scatter"]);});
+		define("highcharts/highcharts-3d", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Color"],amd1["SeriesRegistry"],amd1["Series"],amd1["StackItem"],amd1["SVGRenderer"],amd1["SVGElement"],amd1["Axis"],amd1["Series"],["types"],["scatter"]);});
 	else if(typeof exports === 'object')
-		exports["highcharts/highcharts-3d"] = factory(root["_Highcharts"], root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["RendererRegistry"], root["_Highcharts"]["Series"], root["_Highcharts"]["StackItem"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Series"]["types"]["scatter"]);
+		exports["highcharts/highcharts-3d"] = factory(root["_Highcharts"], root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["Series"], root["_Highcharts"]["StackItem"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Series"]["types"]["scatter"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Color"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["RendererRegistry"], root["Highcharts"]["Series"], root["Highcharts"]["StackItem"], root["Highcharts"]["Axis"], root["Highcharts"]["Series"]["types"]["scatter"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__608__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__184__, __WEBPACK_EXTERNAL_MODULE__532__, __WEBPACK_EXTERNAL_MODULE__632__) => {
+		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Color"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["Series"], root["Highcharts"]["StackItem"], root["Highcharts"]["SVGRenderer"], root["Highcharts"]["SVGElement"], root["Highcharts"]["Axis"], root["Highcharts"]["Series"]["types"]["scatter"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__184__, __WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__532__, __WEBPACK_EXTERNAL_MODULE__632__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
+
+/***/ 28:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__28__;
+
+/***/ }),
 
 /***/ 184:
 /***/ ((module) => {
@@ -46,10 +53,10 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__532__;
 
 /***/ }),
 
-/***/ 608:
+/***/ 540:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE__608__;
+module.exports = __WEBPACK_EXTERNAL_MODULE__540__;
 
 /***/ }),
 
@@ -156,8 +163,9 @@ var highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_H
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1519,8 +1527,9 @@ function wrap(obj, method, func) {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1775,8 +1784,9 @@ const Math3D = {
  *
  *  Extension for 3D charts
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1807,7 +1817,6 @@ var Chart3D;
      * */
     /**
      * @optionparent
-     * @internal
      */
     Chart3D.defaultOptions = {
         chart: {
@@ -2889,10 +2898,7 @@ var Chart3D;
         const options = this.options;
         if (this.is3d()) {
             (options.series || []).forEach(function (s) {
-                const type = (s.type ||
-                    options.chart.type ||
-                    options.chart.defaultSeriesType);
-                if (type === 'scatter') {
+                if ((s.type || options.chart.type) === 'scatter') {
                     s.type = 'scatter3d';
                 }
             });
@@ -3450,8 +3456,9 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  *  (c) 2010-2026 Highsoft AS
  *  Author: Grzegorz Blachliński
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3552,8 +3559,9 @@ const Area3DSeries = {
  *
  *  Extension for 3d axes
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3685,8 +3693,9 @@ const Axis3DDefaults = {
  *
  *  Extension for 3d axes
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3749,8 +3758,9 @@ const Tick3DAdditions = {
  *
  *  Extension for 3d axes
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3773,6 +3783,7 @@ const { perspective: Axis3DComposition_perspective, perspective3D: Axis3DComposi
 function onAxisAfterSetOptions() {
     const axis = this, chart = axis.chart, options = axis.options;
     if (chart.is3d?.() && axis.coll !== 'colorAxis') {
+        this.clippable = false;
         options.tickWidth = pick(options.tickWidth, 0);
         options.gridLineWidth = pick(options.gridLineWidth, 1);
     }
@@ -4215,9 +4226,6 @@ class Axis3DAdditions {
 /** @internal */
 /* harmony default export */ const Axis3DComposition = (Axis3DAdditions);
 
-// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","RendererRegistry"],"commonjs":["highcharts","RendererRegistry"],"commonjs2":["highcharts","RendererRegistry"],"root":["Highcharts","RendererRegistry"]}
-var highcharts_RendererRegistry_commonjs_highcharts_RendererRegistry_commonjs2_highcharts_RendererRegistry_root_Highcharts_RendererRegistry_ = __webpack_require__(608);
-var highcharts_RendererRegistry_commonjs_highcharts_RendererRegistry_commonjs2_highcharts_RendererRegistry_root_Highcharts_RendererRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_RendererRegistry_commonjs_highcharts_RendererRegistry_commonjs2_highcharts_RendererRegistry_root_Highcharts_RendererRegistry_);
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series"],"commonjs":["highcharts","Series"],"commonjs2":["highcharts","Series"],"root":["Highcharts","Series"]}
 var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_ = __webpack_require__(820);
 var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_);
@@ -4229,8 +4237,9 @@ var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_roo
  *
  *  Extension to the Series object in 3D charts.
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -4332,6 +4341,12 @@ Series3D.defaultOptions = merge((highcharts_Series_commonjs_highcharts_Series_co
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","StackItem"],"commonjs":["highcharts","StackItem"],"commonjs2":["highcharts","StackItem"],"root":["Highcharts","StackItem"]}
 var highcharts_StackItem_commonjs_highcharts_StackItem_commonjs2_highcharts_StackItem_root_Highcharts_StackItem_ = __webpack_require__(184);
 var highcharts_StackItem_commonjs_highcharts_StackItem_commonjs2_highcharts_StackItem_root_Highcharts_StackItem_default = /*#__PURE__*/__webpack_require__.n(highcharts_StackItem_commonjs_highcharts_StackItem_commonjs2_highcharts_StackItem_root_Highcharts_StackItem_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SVGRenderer"],"commonjs":["highcharts","SVGRenderer"],"commonjs2":["highcharts","SVGRenderer"],"root":["Highcharts","SVGRenderer"]}
+var highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_SVGRenderer_root_Highcharts_SVGRenderer_ = __webpack_require__(540);
+var highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_SVGRenderer_root_Highcharts_SVGRenderer_default = /*#__PURE__*/__webpack_require__.n(highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_SVGRenderer_root_Highcharts_SVGRenderer_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SVGElement"],"commonjs":["highcharts","SVGElement"],"commonjs2":["highcharts","SVGElement"],"root":["Highcharts","SVGElement"]}
+var highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_highcharts_SVGElement_root_Highcharts_SVGElement_ = __webpack_require__(28);
+var highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_highcharts_SVGElement_root_Highcharts_SVGElement_default = /*#__PURE__*/__webpack_require__.n(highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_highcharts_SVGElement_root_Highcharts_SVGElement_);
 ;// ./code/es-modules/Core/Renderer/SVG/SVGElement3D.js
 /* *
  *
@@ -4340,8 +4355,9 @@ var highcharts_StackItem_commonjs_highcharts_StackItem_commonjs2_highcharts_Stac
  *
  *  Extensions to the SVGRenderer class to enable 3D shapes
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -4349,7 +4365,6 @@ var highcharts_StackItem_commonjs_highcharts_StackItem_commonjs2_highcharts_Stac
 
 const { parse: SVGElement3D_color } = (highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_default());
 
-const { Element: SVGElement } = highcharts_RendererRegistry_commonjs_highcharts_RendererRegistry_commonjs2_highcharts_RendererRegistry_root_Highcharts_RendererRegistry_default().getRendererType().prototype;
 
 /* *
  *
@@ -4357,7 +4372,7 @@ const { Element: SVGElement } = highcharts_RendererRegistry_commonjs_highcharts_
  *
  * */
 /** @internal */
-class SVGElement3D extends SVGElement {
+class SVGElement3D extends (highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_highcharts_SVGElement_root_Highcharts_SVGElement_default()) {
     constructor() {
         /* *
          *
@@ -4535,8 +4550,9 @@ SVGElement3D.types = {
  *
  *  Extensions to the SVGRenderer class to enable 3D shapes
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -5368,8 +5384,9 @@ var highcharts_Axis_commonjs_highcharts_Axis_commonjs2_highcharts_Axis_root_High
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -5465,10 +5482,12 @@ class ZAxis extends (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_highchar
                 if (this.positiveValuesOnly && threshold <= 0) {
                     threshold = void 0;
                 }
-                const zData = series.getColumn('z');
+                const zData = [...series.getColumn('z', false, true)]
+                    // When z is not defined, render in the 0 plane
+                    .map((z) => z || 0);
                 if (zData.length) {
-                    this.dataMin = Math.min(pick(this.dataMin, zData[0]), Math.min.apply(null, zData));
-                    this.dataMax = Math.max(pick(this.dataMax, zData[0]), Math.max.apply(null, zData));
+                    this.dataMin = Math.min(this.dataMin ?? (zData[0] || 0), Math.min.apply(null, zData));
+                    this.dataMax = Math.max(this.dataMax ?? (zData[0] || 0), Math.max.apply(null, zData));
                 }
             }
         });
@@ -5494,8 +5513,9 @@ class ZAxis extends (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_highchar
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -5811,13 +5831,12 @@ function wrapColumnSeriesSetVisible(proceed, vis) {
             point.visible = point.options.visible = vis =
                 typeof vis === 'undefined' ?
                     !pick(series.visible, point.visible) : vis;
-            series.options.data[series.data.indexOf(point)] =
-                point.options;
-            if (point.graphic) {
-                point.graphic.attr({
-                    visibility: vis ? 'visible' : 'hidden'
-                });
+            if (series.options.data) {
+                series.options.data[series.data.indexOf(point)] = point.options;
             }
+            point.graphic?.attr({
+                visibility: vis ? 'visible' : 'hidden'
+            });
         }
     }
     proceed.apply(this, Array.prototype.slice.call(arguments, 1));
@@ -5980,8 +5999,9 @@ const Column3DComposition = {
  *
  *  3D pie series
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -6022,8 +6042,9 @@ class Pie3DPoint extends PiePoint {
  *
  *  3D pie series
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -6237,8 +6258,9 @@ var highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_com
  *
  *  Scatter 3D series.
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -6280,8 +6302,9 @@ class Scatter3DPoint extends ScatterPoint {
  *
  *  Scatter 3D series.
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -6371,6 +6394,7 @@ const Scatter3DSeriesDefaults = {
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
+ * @basic
  * @type      {Array<Array<number>|*>}
  * @extends   series.scatter.data
  * @product   highcharts
@@ -6399,8 +6423,9 @@ const Scatter3DSeriesDefaults = {
  *
  *  Scatter 3D series.
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -6486,7 +6511,7 @@ Chart_Chart3D.compose(G.Chart, G.Fx);
 Column3D_Column3DComposition.compose(G.Series, (highcharts_StackItem_commonjs_highcharts_StackItem_commonjs2_highcharts_StackItem_root_Highcharts_StackItem_default()));
 Pie3D_Pie3DSeries.compose(G.Series);
 Series_Series3D.compose(G.Series);
-SVG_SVGRenderer3D.compose(highcharts_RendererRegistry_commonjs_highcharts_RendererRegistry_commonjs2_highcharts_RendererRegistry_root_Highcharts_RendererRegistry_default().getRendererType());
+SVG_SVGRenderer3D.compose((highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_SVGRenderer_root_Highcharts_SVGRenderer_default()));
 Axis_ZAxis.compose(G.Chart);
 /* harmony default export */ const highcharts_3d_src = (G);
 

@@ -1,0 +1,117 @@
+/* *
+ *
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Hønsi
+ *
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
+ *
+ *  Grid-light theme for Highcharts JS
+ *
+ *
+ * */
+'use strict';
+import D from '../../Core/Defaults.js';
+import { createElement } from '../../Shared/Utilities.js';
+var setOptions = D.setOptions;
+/* *
+ *
+ *  Theme
+ *
+ * */
+var GridLightTheme;
+(function (GridLightTheme) {
+    /* *
+     *
+     *  Constants
+     *
+     * */
+    GridLightTheme.options = {
+        palette: {
+            colorScheme: 'light',
+            light: {
+                neutralColor: '#111100',
+                colors: [
+                    '#7cb5ec', '#f7a35c', '#90ee7e', '#7798BF',
+                    '#aaeeee', '#ff0066', '#eeaaee', '#55BF3B',
+                    '#DF5353', '#7798BF', '#aaeeee'
+                ]
+            }
+        },
+        chart: {
+            style: {
+                fontFamily: 'Dosis, sans-serif'
+            }
+        },
+        title: {
+            style: {
+                fontSize: '16px',
+                fontWeight: 'bold',
+                textTransform: 'uppercase'
+            }
+        },
+        tooltip: {
+            borderWidth: 0,
+            shadow: false,
+            // Inverted colors
+            backgroundColor: 'var(--highcharts-neutral-color-80)',
+            style: {
+                color: 'var(--highcharts-background-color)'
+            }
+        },
+        legend: {
+            backgroundColor: 'var(--highcharts-neutral-color-5)',
+            itemStyle: {
+                fontWeight: 'bold',
+                fontSize: '13px'
+            }
+        },
+        xAxis: {
+            gridLineWidth: 1,
+            labels: {
+                style: {
+                    fontSize: '12px'
+                }
+            }
+        },
+        yAxis: {
+            minorTickInterval: 'auto',
+            title: {
+                style: {
+                    textTransform: 'uppercase'
+                }
+            },
+            labels: {
+                style: {
+                    fontSize: '12px'
+                }
+            }
+        }
+    };
+    /* *
+     *
+     *  Functions
+     *
+     * */
+    /**
+     * Apply the theme.
+     */
+    function apply() {
+        // Load the fonts
+        createElement('link', {
+            href: 'https://fonts.googleapis.com/css?family=Dosis:400,600',
+            rel: 'stylesheet',
+            type: 'text/css'
+        }, null, document.getElementsByTagName('head')[0]);
+        // Apply the theme
+        setOptions(GridLightTheme.options);
+    }
+    GridLightTheme.apply = apply;
+})(GridLightTheme || (GridLightTheme = {}));
+/* *
+ *
+ *  Default Export
+ *
+ * */
+export default GridLightTheme;

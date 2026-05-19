@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.6.0 (2026-04-13)
+ * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/series-label
  * @requires highcharts
  *
  * (c) 2009-2026 Highsoft AS
  * Author: Torstein Hønsi
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -114,8 +114,9 @@ var highcharts_Templating_commonjs_highcharts_Templating_commonjs2_highcharts_Te
  *  (c) 2009-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -225,11 +226,7 @@ const SeriesLabelDefaults = {
      * @type {Highcharts.CSSObject}
      */
     style: {
-        /**
-         * @type {number|string}
-         */
         fontSize: '0.8em',
-        /** @internal */
         fontWeight: 'bold'
     },
     /**
@@ -258,8 +255,9 @@ const SeriesLabelDefaults = {
  *  (c) 2009-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -327,8 +325,9 @@ const SeriesLabelUtilities = {
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1690,8 +1689,9 @@ function wrap(obj, method, func) {
  *  (c) 2009-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1929,7 +1929,7 @@ function drawSeriesLabels(chart) {
                     colorClass);
                 if (!chart.renderer.styledMode) {
                     const color = typeof series.color === 'string' ?
-                        series.color : "#666666" /* Palette.neutralColor60 */;
+                        series.color : 'var(--highcharts-neutral-color-60)';
                     label.css(extend({
                         color: onArea ?
                             chart.renderer.getContrast(color) :

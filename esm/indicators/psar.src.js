@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v12.6.0 (2026-04-13)
+ * @license Highstock JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/indicators/psar
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -10,8 +10,8 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Grzegorz Blachliński
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -61,8 +61,9 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1426,8 +1427,9 @@ function wrap(obj, method, func) {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Grzegorz Blachliński
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1441,15 +1443,11 @@ const { sma: SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry
  *
  * */
 // Utils:
-/**
- *
- */
+/** @internal */
 function toFixed(a, n) {
     return parseFloat(a.toFixed(n));
 }
-/**
- *
- */
+/** @internal */
 function calculateDirection(previousDirection, low, high, PSAR) {
     if ((previousDirection === 1 && low > PSAR) ||
         (previousDirection === -1 && high > PSAR)) {
@@ -1467,9 +1465,7 @@ function calculateDirection(previousDirection, low, high, PSAR) {
  * maxAcc - maximum acceleration factor
  * initAcc - initial acceleration factor
  */
-/**
- *
- */
+/** @internal */
 function getAccelerationFactor(dir, pDir, eP, pEP, pAcc, inc, maxAcc, initAcc) {
     if (dir === pDir) {
         if (dir === 1 && (eP > pEP)) {
@@ -1482,24 +1478,18 @@ function getAccelerationFactor(dir, pDir, eP, pEP, pAcc, inc, maxAcc, initAcc) {
     }
     return initAcc;
 }
-/**
- *
- */
+/** @internal */
 function getExtremePoint(high, low, previousDirection, previousExtremePoint) {
     if (previousDirection === 1) {
         return (high > previousExtremePoint) ? high : previousExtremePoint;
     }
     return (low < previousExtremePoint) ? low : previousExtremePoint;
 }
-/**
- *
- */
+/** @internal */
 function getEPMinusPSAR(EP, PSAR) {
     return EP - PSAR;
 }
-/**
- *
- */
+/** @internal */
 function getAccelerationFactorMultiply(accelerationFactor, EPMinusSAR) {
     return accelerationFactor * EPMinusSAR;
 }
@@ -1515,9 +1505,7 @@ function getAccelerationFactorMultiply(accelerationFactor, EPMinusSAR) {
  * pHigh - previous high
  * pEP - previous extreme point
  */
-/**
- *
- */
+/** @internal */
 function getPSAR(pdir, sDir, PSAR, pACCMulti, sLow, pLow, pHigh, sHigh, pEP) {
     if (pdir === sDir) {
         if (pdir === 1) {
@@ -1539,7 +1527,7 @@ function getPSAR(pdir, sDir, PSAR, pACCMulti, sLow, pLow, pHigh, sHigh, pEP) {
 /**
  * The Parabolic SAR series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.psar
  *
@@ -1622,7 +1610,7 @@ class PSARIndicator extends SMAIndicator {
  * option to be set and should be loaded
  * after `stock/indicators/indicators.js` file.
  *
- * @sample stock/indicators/psar
+ * @sample {highstock} stock/indicators/psar
  *         Parabolic SAR Indicator
  *
  * @extends      plotOptions.sma
@@ -1689,6 +1677,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const PSAR_PSARIndicator = ((/* unused pure expression or super */ null && (PSARIndicator)));
 /* *
  *

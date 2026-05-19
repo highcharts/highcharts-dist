@@ -1,7 +1,8 @@
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -18,6 +19,7 @@ const { sma: { prototype: { pointClass: SMAPoint } } } = SeriesRegistry.seriesTy
  *  Class
  *
  * */
+/** @internal */
 class VBPPoint extends SMAPoint {
     // Required for destroying negative part of volume
     destroy() {
@@ -33,4 +35,5 @@ class VBPPoint extends SMAPoint {
  *  Default Export
  *
  * */
+/** @internal */
 export default VBPPoint;

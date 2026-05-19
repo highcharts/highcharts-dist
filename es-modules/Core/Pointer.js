@@ -3,14 +3,13 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
 'use strict';
-import Color from './Color/Color.js';
-const { parse: color } = Color;
 import H from './Globals.js';
 const { charts, composed, isTouchDevice } = H;
 import { addEvent, attr, css, defined, extend, find, fireEvent, isNumber, isObject, objectEach, offset, pick, pushUnique, splat } from '../Shared/Utilities.js';
@@ -171,7 +170,7 @@ class Pointer {
      * @function Highcharts.Pointer#drag
      */
     drag(e) {
-        const { chart } = this, { mouseDownX = 0, mouseDownY = 0 } = chart, { panning, panKey, selectionMarkerFill } = chart.options.chart, plotLeft = chart.plotLeft, plotTop = chart.plotTop, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, panningEnabled = isObject(panning) ?
+        const { chart } = this, { mouseDownX = 0, mouseDownY = 0 } = chart, chartOptions = chart.options, { panning, panKey, selectionMarkerFill } = chartOptions.chart, plotLeft = chart.plotLeft, plotTop = chart.plotTop, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, panningEnabled = isObject(panning) ?
             panning.enabled :
             panning, panKeyPressed = panKey && e[`${panKey}Key`];
         let chartX = e.chartX, chartY = e.chartY, clickedInside, selectionMarker = this.selectionMarker;
@@ -218,9 +217,7 @@ class Pointer {
                         .add();
                     if (!chart.styledMode) {
                         selectionMarker.attr({
-                            fill: selectionMarkerFill ||
-                                color("#334eff" /* Palette.highlightColor80 */)
-                                    .setOpacity(0.25).get()
+                            fill: selectionMarkerFill
                         });
                     }
                 }

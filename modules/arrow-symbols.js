@@ -1,5 +1,5 @@
 !/**
- * Highcharts JS v12.6.0 (2026-04-13)
+ * Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/arrow-symbols
  * @requires highcharts
  *
@@ -8,6 +8,6 @@
  * (c) 2017-2026 Highsoft AS
  * Author: Lars A. V. Cabrera
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
- */function(e,r){"object"==typeof exports&&"object"==typeof module?module.exports=r(e._Highcharts):"function"==typeof define&&define.amd?define("highcharts/modules/arrow-symbols",["highcharts/highcharts"],function(e){return r(e)}):"object"==typeof exports?exports["highcharts/modules/arrow-symbols"]=r(e._Highcharts):e.Highcharts=r(e.Highcharts)}("u"<typeof window?this:window,e=>(()=>{"use strict";var r={944:r=>{r.exports=e}},t={};function o(e){var n=t[e];if(void 0!==n)return n.exports;var a=t[e]={exports:{}};return r[e](a,a.exports,o),a.exports}o.n=e=>{var r=e&&e.__esModule?()=>e.default:()=>e;return o.d(r,{a:r}),r},o.d=(e,r)=>{for(var t in r)o.o(r,t)&&!o.o(e,t)&&Object.defineProperty(e,t,{enumerable:!0,get:r[t]})},o.o=(e,r)=>Object.prototype.hasOwnProperty.call(e,r);var n={};o.d(n,{default:()=>c});var a=o(944),i=o.n(a);function s(e,r,t,o){return[["M",e,r+o/2],["L",e+t,r],["L",e,r+o/2],["L",e+t,r+o]]}function f(e,r,t,o){return s(e,r,t/2,o)}function u(e,r,t,o){return[["M",e+t,r],["L",e,r+o/2],["L",e+t,r+o],["Z"]]}function l(e,r,t,o){return u(e,r,t/2,o)}({compose:function(e){let r=e.prototype.symbols;r.arrow=s,r["arrow-filled"]=u,r["arrow-filled-half"]=l,r["arrow-half"]=f,r["triangle-left"]=u,r["triangle-left-half"]=l}}).compose(i().SVGRenderer);let c=i();return n.default})());
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
+ */function(r,e){"object"==typeof exports&&"object"==typeof module?module.exports=e(r._Highcharts):"function"==typeof define&&define.amd?define("highcharts/modules/arrow-symbols",["highcharts/highcharts"],function(r){return e(r)}):"object"==typeof exports?exports["highcharts/modules/arrow-symbols"]=e(r._Highcharts):r.Highcharts=e(r.Highcharts)}("u"<typeof window?this:window,r=>(()=>{"use strict";let e;var t={944:e=>{e.exports=r}},o={};function n(r){var e=o[r];if(void 0!==e)return e.exports;var a=o[r]={exports:{}};return t[r](a,a.exports,n),a.exports}n.n=r=>{var e=r&&r.__esModule?()=>r.default:()=>r;return n.d(e,{a:e}),e},n.d=(r,e)=>{for(var t in e)n.o(e,t)&&!n.o(r,t)&&Object.defineProperty(r,t,{enumerable:!0,get:e[t]})},n.o=(r,e)=>Object.prototype.hasOwnProperty.call(r,e);var a={};n.d(a,{default:()=>h});var i=n(944),s=n.n(i);function f(r,e,t,o){return[["M",r,e+o/2],["L",r+t,e],["L",r,e+o/2],["L",r+t,e+o]]}function u(r,e,t,o){return[["M",r+t,e],["L",r,e+o/2],["L",r+t,e+o],["Z"]]}function l(r,e,t,o){return u(r,e,t/2,o)}(e=s().SVGRenderer.prototype.symbols).arrow=f,e["arrow-filled"]=u,e["arrow-filled-half"]=l,e["arrow-half"]=function(r,e,t,o){return f(r,e,t/2,o)},e["triangle-left"]=u,e["triangle-left-half"]=l;let h=s();return a.default})());

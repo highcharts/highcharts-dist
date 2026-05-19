@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -320,13 +321,12 @@ function wrapColumnSeriesSetVisible(proceed, vis) {
             point.visible = point.options.visible = vis =
                 typeof vis === 'undefined' ?
                     !pick(series.visible, point.visible) : vis;
-            series.options.data[series.data.indexOf(point)] =
-                point.options;
-            if (point.graphic) {
-                point.graphic.attr({
-                    visibility: vis ? 'visible' : 'hidden'
-                });
+            if (series.options.data) {
+                series.options.data[series.data.indexOf(point)] = point.options;
             }
+            point.graphic?.attr({
+                visibility: vis ? 'visible' : 'hidden'
+            });
         }
     }
     proceed.apply(this, Array.prototype.slice.call(arguments, 1));

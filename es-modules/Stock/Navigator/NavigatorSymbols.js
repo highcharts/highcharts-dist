@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -18,7 +19,7 @@ import { relativeLength } from '../../Shared/Utilities.js';
  * */
 /**
  * Draw one of the handles on the side of the zoomed range in the navigator.
- * @private
+ * @internal
  */
 function navigatorHandle(_x, _y, width, height, options = {}) {
     const halfWidth = options.width ? options.width / 2 : width, markerPosition = 1.5, r = relativeLength(options.borderRadius || 0, Math.min(halfWidth * 2, height));
@@ -36,7 +37,9 @@ function navigatorHandle(_x, _y, width, height, options = {}) {
  *  Default Export
  *
  * */
+/** @internal */
 const NavigatorSymbols = {
     'navigator-handle': navigatorHandle
 };
+/** @internal */
 export default NavigatorSymbols;

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.6.0 (2026-04-13)
+ * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/funnel3d
  * @requires highcharts
  * @requires highcharts/highcharts-3d
@@ -11,22 +11,29 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Kacper Madej
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Color"], root["_Highcharts"]["RendererRegistry"], root["_Highcharts"]["SeriesRegistry"]);
+		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Color"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["SeriesRegistry"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/funnel3d", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Color"],amd1["RendererRegistry"],amd1["SeriesRegistry"]);});
+		define("highcharts/modules/funnel3d", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["SVGRenderer"],amd1["Color"],amd1["SVGElement"],amd1["SeriesRegistry"]);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/funnel3d"] = factory(root["_Highcharts"], root["_Highcharts"]["Color"], root["_Highcharts"]["RendererRegistry"], root["_Highcharts"]["SeriesRegistry"]);
+		exports["highcharts/modules/funnel3d"] = factory(root["_Highcharts"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Color"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["SeriesRegistry"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Color"], root["Highcharts"]["RendererRegistry"], root["Highcharts"]["SeriesRegistry"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__608__, __WEBPACK_EXTERNAL_MODULE__512__) => {
+		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["SVGRenderer"], root["Highcharts"]["Color"], root["Highcharts"]["SVGElement"], root["Highcharts"]["SeriesRegistry"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__512__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
+
+/***/ 28:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__28__;
+
+/***/ }),
 
 /***/ 512:
 /***/ ((module) => {
@@ -35,10 +42,10 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
 
 /***/ }),
 
-/***/ 608:
+/***/ 540:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE__608__;
+module.exports = __WEBPACK_EXTERNAL_MODULE__540__;
 
 /***/ }),
 
@@ -123,19 +130,23 @@ __webpack_require__.d(__webpack_exports__, {
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts"],"commonjs":["highcharts"],"commonjs2":["highcharts"],"root":["Highcharts"]}
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_ = __webpack_require__(944);
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default = /*#__PURE__*/__webpack_require__.n(highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SVGRenderer"],"commonjs":["highcharts","SVGRenderer"],"commonjs2":["highcharts","SVGRenderer"],"root":["Highcharts","SVGRenderer"]}
+var highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_SVGRenderer_root_Highcharts_SVGRenderer_ = __webpack_require__(540);
+var highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_SVGRenderer_root_Highcharts_SVGRenderer_default = /*#__PURE__*/__webpack_require__.n(highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_SVGRenderer_root_Highcharts_SVGRenderer_);
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Color"],"commonjs":["highcharts","Color"],"commonjs2":["highcharts","Color"],"root":["Highcharts","Color"]}
 var highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_ = __webpack_require__(620);
 var highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_default = /*#__PURE__*/__webpack_require__.n(highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_);
-// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","RendererRegistry"],"commonjs":["highcharts","RendererRegistry"],"commonjs2":["highcharts","RendererRegistry"],"root":["Highcharts","RendererRegistry"]}
-var highcharts_RendererRegistry_commonjs_highcharts_RendererRegistry_commonjs2_highcharts_RendererRegistry_root_Highcharts_RendererRegistry_ = __webpack_require__(608);
-var highcharts_RendererRegistry_commonjs_highcharts_RendererRegistry_commonjs2_highcharts_RendererRegistry_root_Highcharts_RendererRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_RendererRegistry_commonjs_highcharts_RendererRegistry_commonjs2_highcharts_RendererRegistry_root_Highcharts_RendererRegistry_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SVGElement"],"commonjs":["highcharts","SVGElement"],"commonjs2":["highcharts","SVGElement"],"root":["Highcharts","SVGElement"]}
+var highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_highcharts_SVGElement_root_Highcharts_SVGElement_ = __webpack_require__(28);
+var highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_highcharts_SVGElement_root_Highcharts_SVGElement_default = /*#__PURE__*/__webpack_require__.n(highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_highcharts_SVGElement_root_Highcharts_SVGElement_);
 ;// ./code/es-modules/Shared/Utilities.js
 /* *
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1491,6 +1502,201 @@ function wrap(obj, method, func) {
     };
 }
 
+;// ./code/es-modules/Core/Renderer/SVG/SVGElement3D.js
+/* *
+ *
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Hønsi
+ *
+ *  Extensions to the SVGRenderer class to enable 3D shapes
+ *
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
+ *
+ *
+ * */
+
+
+const { parse: color } = (highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_default());
+
+
+/* *
+ *
+ *  Class
+ *
+ * */
+/** @internal */
+class SVGElement3D extends (highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_highcharts_SVGElement_root_Highcharts_SVGElement_default()) {
+    constructor() {
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
+        super(...arguments);
+        /* *
+         *
+         *  Properties
+         *
+         * */
+        this.parts = ['front', 'top', 'side'];
+        this.pathType = 'cuboid';
+    }
+    /* *
+     *
+     *  Functions
+     *
+     * */
+    /**
+     * The init is used by base - renderer.Element
+     * @internal
+     */
+    initArgs(args) {
+        const elem3d = this, renderer = elem3d.renderer, paths = renderer[elem3d.pathType + 'Path'](args), zIndexes = paths.zIndexes;
+        // Build parts
+        for (const part of elem3d.parts) {
+            const attribs = {
+                'class': 'highcharts-3d-' + part,
+                zIndex: zIndexes[part] || 0
+            };
+            if (renderer.styledMode) {
+                if (part === 'top') {
+                    attribs.filter = 'url(#highcharts-brighter)';
+                }
+                else if (part === 'side') {
+                    attribs.filter = 'url(#highcharts-darker)';
+                }
+            }
+            elem3d[part] = renderer.path(paths[part])
+                .attr(attribs)
+                .add(elem3d);
+        }
+        elem3d.attr({
+            'stroke-linejoin': 'round',
+            zIndex: zIndexes.group
+        });
+        // Store information if any side of element was rendered by force.
+        elem3d.forcedSides = paths.forcedSides;
+    }
+    /**
+     * Single property setter that applies options to each part
+     * @internal
+     */
+    singleSetterForParts(prop, val, values, verb, duration, complete) {
+        const elem3d = this, newAttr = {}, optionsToApply = [null, null, (verb || 'attr'), duration, complete], hasZIndexes = values?.zIndexes;
+        if (!values) {
+            newAttr[prop] = val;
+            optionsToApply[0] = newAttr;
+        }
+        else {
+            // It is needed to deal with the whole group zIndexing
+            // in case of graph rotation
+            if (hasZIndexes?.group) {
+                elem3d.attr({
+                    zIndex: hasZIndexes.group
+                });
+            }
+            for (const part of Object.keys(values)) {
+                newAttr[part] = {};
+                newAttr[part][prop] = values[part];
+                // Include zIndexes if provided
+                if (hasZIndexes) {
+                    newAttr[part].zIndex = values.zIndexes[part] || 0;
+                }
+            }
+            optionsToApply[1] = newAttr;
+        }
+        return this.processParts.apply(elem3d, optionsToApply);
+    }
+    /**
+     * Calls function for each part. Used for attr, animate and destroy.
+     * @internal
+     */
+    processParts(props, partsProps, verb, duration, complete) {
+        const elem3d = this;
+        for (const part of elem3d.parts) {
+            // If different props for different parts
+            if (partsProps) {
+                props = pick(partsProps[part], false);
+            }
+            // Only if something to set, but allow undefined
+            if (props !== false) {
+                elem3d[part][verb](props, duration, complete);
+            }
+        }
+        return elem3d;
+    }
+    /**
+     * Destroy all parts
+     * @internal
+     */
+    destroy() {
+        this.processParts(null, null, 'destroy');
+        return super.destroy();
+    }
+    // Following functions are SVGElement3DCuboid (= base)
+    /** @internal */
+    attr(args, val, complete, continueAnimation) {
+        // Resolve setting attributes by string name
+        if (typeof args === 'string' && typeof val !== 'undefined') {
+            const key = args;
+            args = {};
+            args[key] = val;
+        }
+        if (args.shapeArgs || defined(args.x)) {
+            return this.singleSetterForParts('d', null, this.renderer[this.pathType + 'Path'](args.shapeArgs || args));
+        }
+        return super.attr(args, void 0, complete, continueAnimation);
+    }
+    /** @internal */
+    animate(args, duration, complete) {
+        if (defined(args.x) && defined(args.y)) {
+            const paths = this.renderer[this.pathType + 'Path'](args), forcedSides = paths.forcedSides;
+            this.singleSetterForParts('d', null, paths, 'animate', duration, complete);
+            this.attr({
+                zIndex: paths.zIndexes.group
+            });
+            // If sides that are forced to render changed, recalculate colors.
+            if (forcedSides !== this.forcedSides) {
+                this.forcedSides = forcedSides;
+                if (!this.renderer.styledMode) {
+                    this.fillSetter(this.fill);
+                }
+            }
+        }
+        else {
+            super.animate(args, duration, complete);
+        }
+        return this;
+    }
+    /** @internal */
+    fillSetter(fill) {
+        const elem3d = this;
+        elem3d.forcedSides = elem3d.forcedSides || [];
+        elem3d.singleSetterForParts('fill', null, {
+            front: fill,
+            // Do not change color if side was forced to render.
+            top: color(fill).brighten(elem3d.forcedSides.indexOf('top') >= 0 ? 0 : 0.1).get(),
+            side: color(fill).brighten(elem3d.forcedSides.indexOf('side') >= 0 ? 0 : -0.1).get()
+        });
+        // Fill for animation getter (#6776)
+        elem3d.color = elem3d.fill = fill;
+        return elem3d;
+    }
+}
+SVGElement3D.types = {
+    base: SVGElement3D,
+    cuboid: SVGElement3D
+};
+/* *
+ *
+ *  Default Export
+ *
+ * */
+/** @internal */
+/* harmony default export */ const SVG_SVGElement3D = (SVGElement3D);
+
 ;// ./code/es-modules/Series/Funnel3D/SVGElement3DFunnel.js
 /* *
  *
@@ -1500,25 +1706,25 @@ function wrap(obj, method, func) {
  *
  *  Author: Kacper Madej
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
 
 
-const { parse: color } = (highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_default());
+const { parse: SVGElement3DFunnel_color } = (highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_default());
 
 const { charts } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 
-const { Element3D: SVGElement3D } = highcharts_RendererRegistry_commonjs_highcharts_RendererRegistry_commonjs2_highcharts_RendererRegistry_root_Highcharts_RendererRegistry_default().getRendererType().prototype;
 /* *
  *
  *  Class
  *
  * */
-class SVGElement3DFunnel extends SVGElement3D {
+class SVGElement3DFunnel extends SVG_SVGElement3D {
     constructor() {
         /* *
          *
@@ -1592,12 +1798,12 @@ class SVGElement3DFunnel extends SVGElement3D {
         return funnel3d;
     }
     fillSetter(fill) {
-        let fillColor = color(fill);
+        let fillColor = SVGElement3DFunnel_color(fill);
         // Extract alpha channel to use the opacitySetter
         const funnel3d = this, alpha = fillColor.rgba[3], partsWithColor = {
             // Standard color for top and bottom
-            top: color(fill).brighten(0.1).get(),
-            bottom: color(fill).brighten(-0.2).get()
+            top: SVGElement3DFunnel_color(fill).brighten(0.1).get(),
+            bottom: SVGElement3DFunnel_color(fill).brighten(-0.2).get()
         };
         if (alpha < 1) {
             fillColor.rgba[3] = 1;
@@ -1618,9 +1824,9 @@ class SVGElement3DFunnel extends SVGElement3D {
             fillColor = {
                 linearGradient: { x1: 0, x2: 1, y1: 1, y2: 1 },
                 stops: [
-                    [0, color(fill).brighten(-0.2).get()],
+                    [0, SVGElement3DFunnel_color(fill).brighten(-0.2).get()],
                     [0.5, fill],
-                    [1, color(fill).brighten(-0.2).get()]
+                    [1, SVGElement3DFunnel_color(fill).brighten(-0.2).get()]
                 ]
             };
         }
@@ -1743,8 +1949,9 @@ class SVGElement3DFunnel extends SVGElement3D {
  *
  *  Author: Kacper Madej
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2061,6 +2268,7 @@ const Funnel3DSeriesDefaults = {
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
+ * @basic
  * @type      {Array<number|Array<number>|*>}
  * @extends   series.column.data
  * @product   highcharts
@@ -2094,8 +2302,9 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  *
  *  Author: Kacper Madej
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2126,8 +2335,9 @@ extend(Funnel3DPoint.prototype, {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2383,8 +2593,9 @@ const Math3D = {
  *
  *  Author: Kacper Madej
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2637,7 +2848,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 
 
-Funnel3D_Funnel3DSeries.compose(highcharts_RendererRegistry_commonjs_highcharts_RendererRegistry_commonjs2_highcharts_RendererRegistry_root_Highcharts_RendererRegistry_default().getRendererType());
+Funnel3D_Funnel3DSeries.compose((highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_SVGRenderer_root_Highcharts_SVGRenderer_default()));
 /* harmony default export */ const funnel3d_src = ((highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default()));
 
 __webpack_exports__ = __webpack_exports__["default"];

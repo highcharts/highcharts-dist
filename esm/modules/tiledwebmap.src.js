@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.6.0 (2026-04-13)
+ * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/tiledwebmap
  * @requires highcharts
  *
  * (c) 2009-2026
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -484,8 +484,9 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  *  (c) 2010-2026 Highsoft AS
  *  Author: Hubert Kozik, Kamil Musiałowski
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -514,6 +515,7 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  * pointDescriptionFormatter, selected, shadow, showCheckbox,
  * sonification, stickyTracking, tooltip, type
  * @product      highmaps
+ * @requires     modules/tiledwebmap
  * @optionparent plotOptions.tiledwebmap
  */
 const TiledWebMapSeriesDefaults = {
@@ -546,6 +548,7 @@ const TiledWebMapSeriesDefaults = {
  * nullInteraction, onPoint, point, pointDescriptionFormatter, selected, shadow,
  * showCheckbox, stickyTracking, tooltip, type
  * @product   highmaps
+ * @requires  modules/tiledwebmap
  * @apioption series.tiledwebmap
  */
 /**
@@ -630,8 +633,9 @@ const TiledWebMapSeriesDefaults = {
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1993,8 +1997,9 @@ function wrap(obj, method, func) {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Hubert Kozik, Kamil Musiałowski
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */

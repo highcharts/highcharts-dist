@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v12.6.0 (2026-04-13)
+ * @license Highstock JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/indicators/trix
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -10,8 +10,8 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Rafał Sebestjański
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -61,8 +61,9 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1421,8 +1422,9 @@ function wrap(obj, method, func) {
 ;// ./code/es-modules/Stock/Indicators/TRIX/TRIXIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1438,7 +1440,7 @@ const { tema: TEMAIndicator } = (external_highcharts_src_js_default_SeriesRegist
 /**
  * The TRIX series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.trix
  *
@@ -1493,6 +1495,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const TRIX_TRIXIndicator = ((/* unused pure expression or super */ null && (TRIXIndicator)));
 /* *
  *
@@ -1511,6 +1514,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/tema
+ * @requires  stock/indicators/trix
  * @apioption series.trix
  */
 ''; // To include the above in the js output

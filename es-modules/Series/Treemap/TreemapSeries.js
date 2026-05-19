@@ -4,8 +4,9 @@
  *
  *  Authors: Jon Arild Nygård / Øystein Moseng
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -559,7 +560,7 @@ class TreemapSeries extends ScatterSeries {
                 const { height = 0, width = 0 } = point.shapeArgs;
                 if (width > 32 && height > 16 && point.shouldDraw()) {
                     const dataLabelWidth = width -
-                        2 * (options.padding || padding || 0);
+                        2 * (splat(options.padding)[0] || splat(padding)[0] || 0);
                     style.width = `${dataLabelWidth}px`;
                     style.lineClamp ?? (style.lineClamp = Math.floor(height / 16));
                     // Only set this in traversal mode, with zooming data labels
@@ -583,6 +584,8 @@ class TreemapSeries extends ScatterSeries {
             point.dlOptions = merge(options, point.options.dataLabels, {
                 zIndex: void 0
             });
+            // Delete so it doesn't override anything on merge.
+            delete point.dlOptions.zIndex;
         }
         super.drawDataLabels(points);
     }
@@ -874,7 +877,7 @@ class TreemapSeries extends ScatterSeries {
     pointAttribs(point, state) {
         const series = this, mapOptionsToLevel = (isObject(series.mapOptionsToLevel) ?
             series.mapOptionsToLevel :
-            {}), level = point && mapOptionsToLevel[point.node.level] || {}, options = this.options, stateOptions = state && options.states && options.states[state] || {}, className = point?.getClassName() || '', 
+            {}), level = point?.node && mapOptionsToLevel[point.node.level] || {}, options = this.options, stateOptions = state && options.states && options.states[state] || {}, className = point?.node && point.getClassName() || '', 
         // Set attributes by precedence. Point trumps level trumps series.
         // Stroke width uses pick because it can be 0.
         attr = {

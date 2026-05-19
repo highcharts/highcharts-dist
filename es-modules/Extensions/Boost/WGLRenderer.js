@@ -43,6 +43,34 @@ const contexts = [
     'moz-webgl',
     'webkit-3d'
 ];
+let colorCache = {};
+/*
+ * Resolve CSS color expressions like color-mix
+ * @internal
+ */
+const resolveColorExpression = (cssVars, input) => {
+    if (colorCache[input]) {
+        return colorCache[input];
+    }
+    // Color variable from the palette
+    const paletteMatch = input.indexOf('var(') === 0 &&
+        cssVars[input.slice(4, -1).trim()];
+    if (paletteMatch) {
+        colorCache[input] = paletteMatch;
+        return paletteMatch;
+    }
+    // Color mix expression
+    if (input.indexOf('color-mix(') === 0) {
+        /* eslint-disable-next-line max-len */
+        const colorMixRegex = /^color-mix\(in srgb,([a-z0-9\(\)\-\#]+),([a-z0-9\(\)\-\#]+) ([0-9\.%]+)/, result = colorMixRegex.exec(input);
+        if (result) {
+            const weight = parseFloat(result[3]) / 100, color1 = resolveColorExpression(cssVars, result[1]), color2 = resolveColorExpression(cssVars, result[2]), color = new Color(color1).tweenTo(new Color(color2), weight);
+            colorCache[input] = color;
+            return color;
+        }
+    }
+    return input;
+};
 /* *
  *
  *  Class
@@ -216,20 +244,7 @@ class WGLRenderer {
         const data = this.data, settings = this.settings, vbuffer = this.vbuffer, isRange = (series.pointArrayMap &&
             series.pointArrayMap.join(',') === 'low,high'), { chart, options, sorted, xAxis, yAxis } = series, isStacked = !!options.stacking, rawData = options.data, xExtremes = series.xAxis.getExtremes(), 
         // Taking into account the offset of the min point #19497
-        xMin = xExtremes.min - (series.xAxis.minPointOffset || 0), xMax = xExtremes.max + (series.xAxis.minPointOffset || 0), yExtremes = series.yAxis.getExtremes(), yMin = yExtremes.min - (series.yAxis.minPointOffset || 0), yMax = yExtremes.max + (series.yAxis.minPointOffset || 0), xData = (series.getColumn('x').length ? series.getColumn('x') : void 0) || options.xData || series.getColumn('x', true), yData = (series.getColumn('y').length ? series.getColumn('y') : void 0) || options.yData || series.getColumn('y', true), zData = (series.getColumn('z').length ? series.getColumn('z') : void 0) || options.zData || series.getColumn('z', true), useRaw = !xData || xData.length === 0, 
-        /// threshold = options.threshold,
-        // yBottom = chart.yAxis[0].getThreshold(threshold),
-        // hasThreshold = isNumber(threshold),
-        colorByPoint = series.options.colorByPoint, 
-        // This is required for color by point, so make sure this is
-        // uncommented if enabling that
-        // Required for color axis support
-        // caxis,
-        connectNulls = options.connectNulls, 
-        // For some reason eslint/TypeScript don't pick up that this is
-        // actually used: --- bre1470: it is never read, just set
-        // maxVal: (number|undefined), // eslint-disable-line no-unused-vars
-        points = series.points || false, sdata = isStacked ? series.data : (xData || rawData), closestLeft = { x: Number.MAX_VALUE, y: 0 }, closestRight = { x: -Number.MAX_VALUE, y: 0 }, cullXThreshold = 1, cullYThreshold = 1, chartDestroyed = typeof chart.index === 'undefined', drawAsBar = asBar[series.type], zoneAxis = options.zoneAxis || 'y', zones = options.zones || false, threshold = options.threshold, pixelRatio = this.getPixelRatio();
+        xMin = xExtremes.min - (series.xAxis.minPointOffset || 0), xMax = xExtremes.max + (series.xAxis.minPointOffset || 0), yExtremes = series.yAxis.getExtremes(), yMin = yExtremes.min - (series.yAxis.minPointOffset || 0), yMax = yExtremes.max + (series.yAxis.minPointOffset || 0), xData = (series.getColumn('x').length ? series.getColumn('x') : void 0) || options.xData || series.getColumn('x', true), yData = (series.getColumn('y').length ? series.getColumn('y') : void 0) || options.yData || series.getColumn('y', true), zData = (series.getColumn('z').length ? series.getColumn('z') : void 0) || options.zData || series.getColumn('z', true), useRaw = !xData || xData.length === 0, { colorByPoint, connectNulls, threshold, zoneAxis = 'y', zones } = options, points = series.points || false, sdata = isStacked ? series.data : (xData || rawData), closestLeft = { x: Number.MAX_VALUE, y: 0 }, closestRight = { x: -Number.MAX_VALUE, y: 0 }, cullXThreshold = 1, cullYThreshold = 1, chartDestroyed = typeof chart.index === 'undefined', drawAsBar = asBar[series.type], pixelRatio = this.getPixelRatio(), colors = chart.options.colors || [];
         let plotWidth = series.chart.plotWidth, lastX = false, lastY = false, minVal, scolor, 
         //
         skipped = 0, hadPoints = false, 
@@ -243,11 +258,21 @@ class WGLRenderer {
                 options.gapSize * series.closestPointRange :
                 options.gapSize;
         }
-        if (zones && zones.length) { // #23571
+        // Detect the current color scheme
+        if (chart.boost) {
+            const probe = chart.renderer.circle(0, 0, 1)
+                .attr({ fill: 'var(--highcharts-background-color)' })
+                .add(), actualFill = new Color(getComputedStyle(probe.element).getPropertyValue('fill')).get(), darkFill = new Color(chart.palette?.cssVars.dark['--highcharts-background-color'] || '').get();
+            probe.destroy();
+            chart.boost.cssVars = chart.palette?.cssVars[actualFill === darkFill ? 'dark' : 'light'];
+        }
+        const cssVars = chart.boost?.cssVars || {};
+        // Handle zones
+        if (zones?.length) { // #23571
             zoneColors = [];
             zones.forEach((zone, i) => {
-                if (zone.color) {
-                    const zoneColor = color(zone.color).rgba;
+                if (typeof zone.color === 'string') {
+                    const zoneColor = color(resolveColorExpression(cssVars, zone.color)).rgba;
                     zoneColor[0] /= 255.0;
                     zoneColor[1] /= 255.0;
                     zoneColor[2] /= 255.0;
@@ -260,7 +285,8 @@ class WGLRenderer {
             if (!zoneDefColor) {
                 const seriesColor = ((series.pointAttribs && series.pointAttribs().fill) ||
                     series.color);
-                zoneDefColor = color(seriesColor).rgba;
+                zoneDefColor = color(typeof seriesColor === 'string' ?
+                    resolveColorExpression(cssVars, seriesColor) : '').rgba;
                 zoneDefColor[0] /= 255.0;
                 zoneDefColor[1] /= 255.0;
                 zoneDefColor[2] /= 255.0;
@@ -386,6 +412,9 @@ class WGLRenderer {
                             .colorAttribs(point) :
                         pointAttr = point.series.pointAttribs(point);
                     swidth = pointAttr['stroke-width'] || 0;
+                    if (typeof pointAttr.fill === 'string') {
+                        pointAttr.fill = resolveColorExpression(cssVars, pointAttr.fill);
+                    }
                     // Handle point colors
                     pcolor = color(pointAttr.fill).rgba;
                     pcolor[0] /= 255.0;
@@ -400,6 +429,9 @@ class WGLRenderer {
                     // If there's stroking, we do an additional rect
                     if (series.is('treemap')) {
                         swidth = swidth || 1;
+                        if (typeof pointAttr.stroke === 'string') {
+                            pointAttr.stroke = resolveColorExpression(cssVars, pointAttr.stroke);
+                        }
                         scolor = color(pointAttr.stroke).rgba;
                         scolor[0] /= 255.0;
                         scolor[1] /= 255.0;
@@ -458,10 +490,9 @@ class WGLRenderer {
                     typeof pointOptions[colorKeyIndex] === 'string') {
                     rgba = color(pointOptions[colorKeyIndex]).rgba;
                 }
-                else if (colorByPoint && chart.options.colors) {
-                    colorIndex = colorIndex %
-                        chart.options.colors.length;
-                    rgba = color(chart.options.colors[colorIndex]).rgba;
+                else if (colorByPoint) {
+                    colorIndex = colorIndex % colors.length;
+                    rgba = color(resolveColorExpression(cssVars, colors[colorIndex])).rgba;
                 }
                 if (rgba) {
                     pcolor = rgba;
@@ -576,7 +607,7 @@ class WGLRenderer {
                 beginSegment();
             }
             // Note: Boost requires that zones are sorted!
-            if (zones && zones.length) { // #23571
+            if (zones?.length) { // #23571
                 let zoneColor;
                 const pointValue = zoneAxis === 'x' ? x : y;
                 // Match getZone() logic: find zone where value > point value
@@ -663,7 +694,7 @@ class WGLRenderer {
                 if ((!isRange && !isStacked) ||
                     yAxis.logarithmic // #16850
                 ) {
-                    minVal = Math.max(threshold === null ? yMin : threshold, // #5268
+                    minVal = Math.max(threshold ?? yMin, // #5268
                     yMin); // #8731
                 }
                 if (!settings.useGPUTranslations) {
@@ -855,6 +886,7 @@ class WGLRenderer {
      */
     renderChart(chart) {
         const gl = this.gl, settings = this.settings, shader = this.shader, vbuffer = this.vbuffer;
+        colorCache = {};
         const pixelRatio = this.getPixelRatio();
         if (chart) {
             this.width = chart.chartWidth * pixelRatio;
@@ -863,7 +895,7 @@ class WGLRenderer {
         else {
             return false;
         }
-        const height = this.height, width = this.width;
+        const height = this.height, width = this.width, colors = chart.options.colors || [];
         if (!gl || !shader || !width || !height) {
             return false;
         }
@@ -920,12 +952,17 @@ class WGLRenderer {
                         s.series.pointAttribs &&
                         s.series.pointAttribs().fill) ||
                         s.series.color;
-                if (options.colorByPoint) {
-                    fillColor = s.series.chart.options.colors[si];
+                if (options.colorByPoint && typeof colors[si] === 'string') {
+                    fillColor = colors[si];
                 }
             }
-            if (s.series.fillOpacity && options.fillOpacity) {
+            if (s.series.fillOpacity &&
+                options.fillOpacity &&
+                fillColor) {
                 fillColor = new Color(fillColor).setOpacity(pick(options.fillOpacity, 1.0)).get();
+            }
+            if (typeof fillColor === 'string') {
+                fillColor = resolveColorExpression(chart.boost?.cssVars || {}, fillColor);
             }
             scolor = color(fillColor).rgba;
             if (!settings.useAlpha) {

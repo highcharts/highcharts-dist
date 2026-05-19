@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.6.0 (2026-04-13)
+ * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/sunburst
  * @requires highcharts
  *
  * (c) 2016-2026 Highsoft AS
  * Authors: Jon Arild Nygård
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -57,8 +57,9 @@ var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require_
  *
  *  Authors: Grzegorz Blachliński, Karol Kołodziej
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -132,7 +133,7 @@ const options = {
             }
         },
         style: {
-            color: "#334eff" /* Palette.highlightColor80 */
+            color: 'var(--highcharts-highlight-color-80)'
         }
     },
     /**
@@ -268,7 +269,7 @@ const options = {
          *  @since 10.0.0
          */
         style: {
-            color: "#666666" /* Palette.neutralColor60 */,
+            color: 'var(--highcharts-neutral-color-60)',
             fontSize: '0.8em'
         }
     },
@@ -329,8 +330,9 @@ var external_highcharts_src_js_default_Templating_default = /*#__PURE__*/__webpa
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1693,8 +1695,9 @@ function wrap(obj, method, func) {
  *
  *  Authors: Grzegorz Blachliński, Karol Kołodziej
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2311,8 +2314,9 @@ var external_highcharts_src_js_default_SVGElement_default = /*#__PURE__*/__webpa
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2443,8 +2447,9 @@ var external_highcharts_src_js_default_Series_default = /*#__PURE__*/__webpack_r
  *
  *  Authors: Jon Arild Nygård / Øystein Moseng
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2535,8 +2540,9 @@ class TreemapAlgorithmGroup {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Paweł Lysy
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2668,8 +2674,9 @@ const DrawPointUtilities = {
  *
  *  Authors: Jon Arild Nygård / Øystein Moseng
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2763,8 +2770,9 @@ extend(TreemapPoint.prototype, {
  *
  *  Authors: Jon Arild Nygård / Øystein Moseng
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3206,7 +3214,7 @@ const TreemapSeriesDefaults = {
      *
      * @type {Highcharts.ColorString}
      */
-    borderColor: "#e6e6e6" /* Palette.neutralColor10 */,
+    borderColor: 'var(--highcharts-neutral-color-10)',
     /**
      * The width of the border surrounding each tree map item.
      */
@@ -3236,7 +3244,7 @@ const TreemapSeriesDefaults = {
             /**
              * The border color for the hovered state.
              */
-            borderColor: "#999999" /* Palette.neutralColor40 */,
+            borderColor: 'var(--highcharts-neutral-color-40)',
             /**
              * Brightness for the hovered point. Defaults to 0 if the
              * heatmap series is loaded first, otherwise 0.1.
@@ -3423,6 +3431,7 @@ const TreemapSeriesDefaults = {
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
+ * @basic
  * @type      {Array<number|null|*>}
  * @extends   series.heatmap.data
  * @excluding x, y, pointPadding
@@ -3478,8 +3487,9 @@ const TreemapSeriesDefaults = {
  *
  *  Authors: Jon Arild Nygård / Øystein Moseng
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3527,8 +3537,9 @@ var TreemapUtilities;
  *
  *  Authors: Jon Arild Nygård / Øystein Moseng
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3741,8 +3752,9 @@ const TreeUtilities = {
  *
  *  Authors: Jon Arild Nygård / Øystein Moseng
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -4296,7 +4308,7 @@ class TreemapSeries extends ScatterSeries {
                 const { height = 0, width = 0 } = point.shapeArgs;
                 if (width > 32 && height > 16 && point.shouldDraw()) {
                     const dataLabelWidth = width -
-                        2 * (options.padding || padding || 0);
+                        2 * (splat(options.padding)[0] || splat(padding)[0] || 0);
                     style.width = `${dataLabelWidth}px`;
                     style.lineClamp ?? (style.lineClamp = Math.floor(height / 16));
                     // Only set this in traversal mode, with zooming data labels
@@ -4320,6 +4332,8 @@ class TreemapSeries extends ScatterSeries {
             point.dlOptions = merge(options, point.options.dataLabels, {
                 zIndex: void 0
             });
+            // Delete so it doesn't override anything on merge.
+            delete point.dlOptions.zIndex;
         }
         super.drawDataLabels(points);
     }
@@ -4611,7 +4625,7 @@ class TreemapSeries extends ScatterSeries {
     pointAttribs(point, state) {
         const series = this, mapOptionsToLevel = (isObject(series.mapOptionsToLevel) ?
             series.mapOptionsToLevel :
-            {}), level = point && mapOptionsToLevel[point.node.level] || {}, options = this.options, stateOptions = state && options.states && options.states[state] || {}, className = point?.getClassName() || '', 
+            {}), level = point?.node && mapOptionsToLevel[point.node.level] || {}, options = this.options, stateOptions = state && options.states && options.states[state] || {}, className = point?.node && point.getClassName() || '', 
         // Set attributes by precedence. Point trumps level trumps series.
         // Stroke width uses pick because it can be 0.
         attr = {
@@ -4982,15 +4996,15 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
 
 
 const { deg2rad } = (external_highcharts_src_js_default_default());
-
 
 /**
  * @private
@@ -5030,11 +5044,6 @@ var CenteredUtilities;
             pick(size && size < 0 ? void 0 : options.size, '100%'),
             pick(innerSize && innerSize < 0 ? void 0 : options.innerSize || 0, '0%')
         ];
-        // No need for inner size in angular (gauges) series but still required
-        // for pie series
-        if (chart.angular && !(this instanceof (external_highcharts_src_js_default_Series_default()))) {
-            positions[3] = 0;
-        }
         for (i = 0; i < 4; ++i) {
             value = positions[i];
             handleSlicingRoom = i < 2 || (i === 2 && /%$/.test(value));
@@ -5120,8 +5129,9 @@ var CenteredUtilities;
  *
  *  Authors: Jon Arild Nygård
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -5210,8 +5220,9 @@ extend(SunburstPoint.prototype, {
  *
  *  Authors: Jon Arild Nygård
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -5331,8 +5342,9 @@ const SunburstUtilities = {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Paweł Lysy
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -5361,8 +5373,9 @@ class SunburstNode extends Treemap_TreemapNode {
  *
  *  Authors: Jon Arild Nygård
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -5564,7 +5577,6 @@ const SunburstSeriesDefaults = {
          */
         rotationMode: 'circular',
         style: {
-            /** @internal */
             textOverflow: 'ellipsis'
         }
     },
@@ -5658,6 +5670,7 @@ const SunburstSeriesDefaults = {
  * @apioption series.sunburst
  */
 /**
+ * @basic
  * @type      {Array<number|null|*>}
  * @extends   series.treemap.data
  * @excluding x, y
@@ -5717,8 +5730,9 @@ const SunburstSeriesDefaults = {
  *  (c) 2009-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -5726,7 +5740,12 @@ const SunburstSeriesDefaults = {
 
 
 
-const { deg2rad: TextPath_deg2rad } = (external_highcharts_src_js_default_default());
+const { composed: TextPath_composed, deg2rad: TextPath_deg2rad } = (external_highcharts_src_js_default_default());
+/* *
+ *
+ *  Functions
+ *
+ * */
 /**
  * Set a text path for a `text` or `label` element, allowing the text to
  * flow along a path.
@@ -5736,10 +5755,11 @@ const { deg2rad: TextPath_deg2rad } = (external_highcharts_src_js_default_defaul
  *
  * Text path support is not bundled into `highcharts.js`, and requires the
  * `modules/textpath.js` file. However, it is included in the script files of
- * those series types that use it by default
+ * those series types that use it by default.
  *
  * @sample highcharts/members/renderer-textpath/ Text path demonstrated
  *
+ * @internal
  * @function Highcharts.SVGElement#setTextPath
  *
  * @param {Highcharts.SVGElement|undefined} path
@@ -5752,8 +5772,9 @@ const { deg2rad: TextPath_deg2rad } = (external_highcharts_src_js_default_defaul
  * @return {Highcharts.SVGElement} Returns the SVGElement for chaining.
  */
 function setTextPath(path, textPathOptions) {
+    const url = this.renderer.url, textWrapper = this.text || this, textPath = textWrapper.textPath, { attributes, enabled } = merge(
     // Defaults
-    textPathOptions = merge(true, {
+    {
         enabled: true,
         attributes: {
             dy: -5,
@@ -5761,12 +5782,9 @@ function setTextPath(path, textPathOptions) {
             textAnchor: 'middle'
         }
     }, textPathOptions);
-    const url = this.renderer.url, textWrapper = this.text || this, textPath = textWrapper.textPath, { attributes, enabled } = textPathOptions;
     path = path || (textPath && textPath.path);
     // Remove previously added event
-    if (textPath) {
-        textPath.undo();
-    }
+    textPath?.undo();
     if (path && enabled) {
         const undo = addEvent(textWrapper, 'afterModifyTree', (e) => {
             if (path && enabled) {
@@ -5826,6 +5844,7 @@ function setTextPath(path, textPathOptions) {
 /**
  * Attach a polygon to a bounding box if the element contains a textPath.
  *
+ * @internal
  * @function Highcharts.SVGElement#setPolygon
  *
  * @param {any} event
@@ -5907,7 +5926,8 @@ function setPolygon(event) {
 /**
  * Draw text along a textPath for a dataLabel.
  *
- * @function Highcharts.SVGElement#setTextPath
+ * @internal
+ * @function Highcharts.SVGElement#drawTextPath
  *
  * @param {any} event
  *        An event containing label options
@@ -5922,22 +5942,58 @@ function drawTextPath(event) {
         if (point.dataLabelPath &&
             !textPathOptions.enabled) {
             // Clean the DOM
-            point.dataLabelPath = (point.dataLabelPath.destroy());
+            point.dataLabelPath = point.dataLabelPath.destroy();
         }
     }
 }
-function compose(SVGElementClass) {
-    addEvent(SVGElementClass, 'afterGetBBox', setPolygon);
-    addEvent(SVGElementClass, 'beforeAddingDataLabel', drawTextPath);
-    const svgElementProto = SVGElementClass.prototype;
-    if (!svgElementProto.setTextPath) {
-        svgElementProto.setTextPath = setTextPath;
+/** @internal */
+function composeTextPath(SVGElementClass) {
+    if (pushUnique(TextPath_composed, 'TextPath')) {
+        addEvent(SVGElementClass, 'afterGetBBox', setPolygon);
+        addEvent(SVGElementClass, 'beforeAddingDataLabel', drawTextPath);
+        SVGElementClass.prototype.setTextPath =
+            SVGElementClass.prototype.setTextPath ?? setTextPath;
     }
 }
-const TextPath = {
-    compose
-};
-/* harmony default export */ const Extensions_TextPath = (TextPath);
+/* *
+ *
+ *  API Declarations
+ *
+ * */
+/**
+ * Options for a label text which should follow marker's shape.
+ * Border and background are disabled for a label that follows a
+ * path.
+ *
+ * **Note:** Only SVG-based renderer supports this option. Setting
+ * `useHTML` to true will disable this option.
+ *
+ * Text path support is not bundled into `highcharts.js`, and requires the
+ * `modules/textpath.js` file. However, it is included in the script files of
+ * those series types that use it by default.
+ *
+ * @declare   Highcharts.DataLabelsTextPathOptionsObject
+ * @since     7.1.0
+ * @apioption plotOptions.series.dataLabels.textPath
+ */
+/**
+ * Presentation attributes for the text path.
+ *
+ * @type      {Highcharts.SVGAttributes}
+ * @since     7.1.0
+ * @default   { dy:-5, startOffset:'50%', textAnchor:'middle' }
+ * @apioption plotOptions.series.dataLabels.textPath.attributes
+ */
+/**
+ * Enable or disable `textPath` option for link's or marker's data
+ * labels.
+ *
+ * @type      {boolean}
+ * @since     7.1.0
+ * @default   true
+ * @apioption plotOptions.series.dataLabels.textPath.enabled
+ */
+(''); // Keep doclets above in transpiled file
 
 ;// ./code/es-modules/Series/Sunburst/SunburstSeries.js
 /* *
@@ -5948,8 +6004,9 @@ const TextPath = {
  *
  *  Authors: Jon Arild Nygård
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -5970,7 +6027,7 @@ const { getColor: SunburstSeries_getColor, getLevelOptions: SunburstSeries_getLe
 
 
 
-Extensions_TextPath.compose((external_highcharts_src_js_default_SVGElement_default()));
+composeTextPath((external_highcharts_src_js_default_SVGElement_default()));
 /* *
  *
  *  Constants
@@ -6024,7 +6081,7 @@ function getDlOptions(params) {
     // options doesn't work as an array
     optionsLevel = splat(isObject(params.level) ?
         params.level.dataLabels :
-        {})[0], options = merge(optionsLevel, optionsPoint), style = options.style = options.style || {}, { innerArcLength = 0, outerArcLength = 0 } = point;
+        {})[0], options = merge(optionsLevel, optionsPoint), style = options.style = options.style || {}, padding = splat(options.padding || 0), paddingLeft = padding[3 % padding.length], paddingRight = padding[1 % padding.length], { innerArcLength = 0, outerArcLength = 0 } = point;
     let rotationRad, rotation, rotationMode = options.rotationMode, width = defined(style.width) ?
         parseInt(style.width || '0', 10) : void 0;
     if (!isNumber(options.rotation)) {
@@ -6111,7 +6168,7 @@ function getDlOptions(params) {
             }
         }
         // Apply padding (#8515)
-        width = Math.max((width || 0) - 2 * (options.padding || 0), 1);
+        width = Math.max((width || 0) - paddingLeft - paddingRight, 1);
         rotation = ((rotationRad || 0) * rad2deg) % 180;
         if (rotationMode === 'parallel') {
             rotation -= 90;
@@ -6133,8 +6190,7 @@ function getDlOptions(params) {
             // Center dataLabel - disable textPath
             options.textPath.enabled = false;
             // Setting width and padding
-            width = Math.max((point.shapeExisting.r * 2) -
-                2 * (options.padding || 0), 1);
+            width = Math.max((point.shapeExisting.r * 2) - paddingLeft - paddingRight, 1);
         }
         else if (point.dlOptions?.textPath &&
             !point.dlOptions.textPath.enabled &&
@@ -6147,7 +6203,7 @@ function getDlOptions(params) {
             options.rotation = 0;
             // Setting width and padding
             width = Math.max((outerArcLength + innerArcLength) / 2 -
-                2 * (options.padding || 0), 1);
+                paddingLeft - paddingRight, 1);
             style.whiteSpace = 'nowrap';
         }
     }
@@ -6382,6 +6438,8 @@ class SunburstSeries extends SunburstSeries_TreemapSeries {
                 }),
                 zIndex: void 0
             };
+            // Delete so it doesn't override anything on merge.
+            delete point.dlOptions.zIndex;
             if (!addedHack && visible) {
                 addedHack = true;
                 onComplete = animateLabels;

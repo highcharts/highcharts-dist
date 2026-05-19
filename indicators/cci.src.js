@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v12.6.0 (2026-04-13)
+ * @license Highstock JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/indicators/cci
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -10,8 +10,8 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Sebastian Bochan
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -116,8 +116,9 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1476,8 +1477,9 @@ function wrap(obj, method, func) {
 ;// ./code/es-modules/Stock/Indicators/CCI/CCIIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  * */
 
@@ -1490,17 +1492,13 @@ const { sma: SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_Ser
  *
  * */
 // Utils:
-/**
- * @private
- */
+/** @internal */
 function sumArray(array) {
     return array.reduce(function (prev, cur) {
         return prev + cur;
     }, 0);
 }
-/**
- * @private
- */
+/** @internal */
 function meanDeviation(arr, sma) {
     const len = arr.length;
     let sum = 0, i;
@@ -1517,7 +1515,7 @@ function meanDeviation(arr, sma) {
 /**
  * The CCI series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.cci
  *
@@ -1572,7 +1570,7 @@ class CCIIndicator extends SMAIndicator {
  * Commodity Channel Index (CCI). This series requires `linkedTo` option to
  * be set.
  *
- * @sample stock/indicators/cci
+ * @sample {highstock} stock/indicators/cci
  *         CCI indicator
  *
  * @extends      plotOptions.sma
@@ -1596,6 +1594,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const CCI_CCIIndicator = ((/* unused pure expression or super */ null && (CCIIndicator)));
 /* *
  *

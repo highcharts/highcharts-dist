@@ -4,8 +4,9 @@
  *
  *  Author: Sebastian Domas
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -23,7 +24,7 @@ import { correctFloat, isNumber, merge } from '../../Shared/Utilities.js';
 /**
  * Bell curve class
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.bellcurve
  *
@@ -35,14 +36,14 @@ class BellcurveSeries extends AreaSplineSeries {
      *  Static Functions
      *
      * */
-    /** @private */
+    /** @internal */
     static mean(data) {
         const length = data.length, sum = data.reduce(function (sum, value) {
             return (sum += value);
         }, 0);
         return length > 0 && sum / length;
     }
-    /** @private */
+    /** @internal */
     static standardDeviation(data, average) {
         const len = data.length;
         average = isNumber(average) ?
@@ -53,7 +54,7 @@ class BellcurveSeries extends AreaSplineSeries {
         }, 0);
         return len > 1 && Math.sqrt(sum / (len - 1));
     }
-    /** @private */
+    /** @internal */
     static normalDensity(x, mean, standardDeviation) {
         const translation = x - mean;
         return Math.exp(-(translation * translation) /
@@ -116,4 +117,5 @@ SeriesRegistry.registerSeriesType('bellcurve', BellcurveSeries);
  *  Default Export
  *
  * */
+/** @internal */
 export default BellcurveSeries;
