@@ -1,5 +1,5 @@
-/**
- * Highcharts JS v12.6.0 (2026-04-13)
+let r;/**
+ * Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/arrow-symbols
  * @requires highcharts
  *
@@ -8,6 +8,6 @@
  * (c) 2017-2026 Highsoft AS
  * Author: Lars A. V. Cabrera
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
- */import*as r from"../highcharts.js";var e={};e.n=r=>{var t=r&&r.__esModule?()=>r.default:()=>r;return e.d(t,{a:t}),t},e.d=(r,t)=>{for(var o in t)e.o(t,o)&&!e.o(r,o)&&Object.defineProperty(r,o,{enumerable:!0,get:t[o]})},e.o=(r,e)=>Object.prototype.hasOwnProperty.call(r,e);let t=r.default;var o=e.n(t);function a(r,e,t,o){return[["M",r,e+o/2],["L",r+t,e],["L",r,e+o/2],["L",r+t,e+o]]}function n(r,e,t,o){return a(r,e,t/2,o)}function l(r,e,t,o){return[["M",r+t,e],["L",r,e+o/2],["L",r+t,e+o],["Z"]]}function f(r,e,t,o){return l(r,e,t/2,o)}({compose:function(r){let e=r.prototype.symbols;e.arrow=a,e["arrow-filled"]=l,e["arrow-filled-half"]=f,e["arrow-half"]=n,e["triangle-left"]=l,e["triangle-left-half"]=f}}).compose(o().SVGRenderer);let u=o();export{u as default};
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
+ */import*as e from"../highcharts.js";var t={};t.n=r=>{var e=r&&r.__esModule?()=>r.default:()=>r;return t.d(e,{a:e}),e},t.d=(r,e)=>{for(var o in e)t.o(e,o)&&!t.o(r,o)&&Object.defineProperty(r,o,{enumerable:!0,get:e[o]})},t.o=(r,e)=>Object.prototype.hasOwnProperty.call(r,e);let o=e.default;var a=t.n(o);function l(r,e,t,o){return[["M",r,e+o/2],["L",r+t,e],["L",r,e+o/2],["L",r+t,e+o]]}function n(r,e,t,o){return[["M",r+t,e],["L",r,e+o/2],["L",r+t,e+o],["Z"]]}function f(r,e,t,o){return n(r,e,t/2,o)}(r=a().SVGRenderer.prototype.symbols).arrow=l,r["arrow-filled"]=n,r["arrow-filled-half"]=f,r["arrow-half"]=function(r,e,t,o){return l(r,e,t/2,o)},r["triangle-left"]=n,r["triangle-left-half"]=f;let u=a();export{u as default};

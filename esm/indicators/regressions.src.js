@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v12.6.0 (2026-04-13)
+ * @license Highstock JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/indicators/regressions
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -10,8 +10,8 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Kamil Kulig
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -61,8 +61,9 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1419,14 +1420,14 @@ function wrap(obj, method, func) {
 }
 
 ;// ./code/es-modules/Stock/Indicators/LinearRegression/LinearRegressionIndicator.js
-// SPDX-License-Identifier: LicenseRef-Highcharts
-/**
+/* *
  *
  *  (c) 2010-2026 Highsoft AS
  *  Author: Kamil Kulig
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1442,7 +1443,7 @@ const { sma: SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry
 /**
  * Linear regression series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.linearregression
  *
@@ -1457,7 +1458,7 @@ class LinearRegressionIndicator extends SMAIndicator {
     /**
      * Return the slope and intercept of a straight line function.
      *
-     * @private
+     * @internal
      *
      * @param {Array<number>} xData
      * List of all x coordinates in a period.
@@ -1495,7 +1496,7 @@ class LinearRegressionIndicator extends SMAIndicator {
     /**
      * Return the y value on a straight line.
      *
-     * @private
+     * @internal
      *
      * @param {Highcharts.RegressionLineParametersObject} lineParameters
      * Object that contains the slope and the intercept of a straight line
@@ -1514,7 +1515,7 @@ class LinearRegressionIndicator extends SMAIndicator {
      * Transform the coordinate system so that x values start at 0 and
      * apply xAxisUnit.
      *
-     * @private
+     * @internal
      *
      * @param {Array<number>} xData
      * List of all x coordinates in a period
@@ -1533,7 +1534,7 @@ class LinearRegressionIndicator extends SMAIndicator {
     }
     /**
      * Find the closest distance between points in the base series.
-     * @private
+     * @internal
      * @param {Array<number>} xData list of all x coordinates in the base series
      * @return {number} - closest distance between points in the base series
      */
@@ -1636,8 +1637,8 @@ LinearRegressionIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
          * @sample {highstock} stock/plotoptions/linear-regression-xaxisunit
          *         xAxisUnit set to 1 minute
          *
-         * ```js
-         * // In Liniear Regression Slope Indicator series `xAxisUnit`is
+         * @example
+         * // In Linear Regression Slope Indicator series `xAxisUnit` is
          * // `86400000` (1 day) and period is `3`. There're 3 points in
          * // the base series:
          *
@@ -1652,7 +1653,7 @@ LinearRegressionIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
          * // we change the `xAxisUnit` to `1` (ms) the value of the
          * // indicator's point will be `2.3148148148148148e-8` which is
          * // harder to interpret for a human.
-         * ```
+
          *
          * @type    {null|number}
          * @product highstock
@@ -1674,6 +1675,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const LinearRegression_LinearRegressionIndicator = ((/* unused pure expression or super */ null && (LinearRegressionIndicator)));
 /* *
  *
@@ -1696,14 +1698,14 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ''; // To include the above in the js output
 
 ;// ./code/es-modules/Stock/Indicators/LinearRegressionSlopes/LinearRegressionSlopesIndicator.js
-// SPDX-License-Identifier: LicenseRef-Highcharts
-/**
+/* *
  *
  *  (c) 2010-2026 Highsoft AS
  *  Author: Kamil Kulig
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1719,7 +1721,7 @@ const { linearregression: LinearRegressionSlopesIndicator_LinearRegressionIndica
 /**
  * The Linear Regression Slope series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.linearRegressionSlope
  *
@@ -1751,7 +1753,7 @@ class LinearRegressionSlopesIndicator extends LinearRegressionSlopesIndicator_Li
  * @since        7.0.0
  * @product      highstock
  * @requires     stock/indicators/indicators
- * @requires  stock/indicators/regressions
+ * @requires     stock/indicators/regressions
  * @optionparent plotOptions.linearregressionslope
  */
 LinearRegressionSlopesIndicator.defaultOptions = merge(LinearRegressionSlopesIndicator_LinearRegressionIndicator.defaultOptions);
@@ -1766,6 +1768,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const LinearRegressionSlopes_LinearRegressionSlopesIndicator = ((/* unused pure expression or super */ null && (LinearRegressionSlopesIndicator)));
 /* *
  *
@@ -1773,7 +1776,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *
  * */
 /**
- * A linear regression intercept series. If the
+ * A linear regression slope series. If the
  * [type](#series.linearregressionslope.type) option is not specified, it is
  * inherited from [chart.type](#chart.type).
  *
@@ -1788,14 +1791,14 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ''; // To include the above in the js output
 
 ;// ./code/es-modules/Stock/Indicators/LinearRegressionIntercept/LinearRegressionInterceptIndicator.js
-// SPDX-License-Identifier: LicenseRef-Highcharts
-/**
+/* *
  *
  *  (c) 2010-2026 Highsoft AS
  *  Author: Kamil Kulig
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1811,7 +1814,7 @@ const { linearregression: LinearRegressionInterceptIndicator_LinearRegressionInd
 /**
  * The Linear Regression Intercept series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.linearRegressionIntercept
  *
@@ -1837,13 +1840,13 @@ class LinearRegressionInterceptIndicator extends LinearRegressionInterceptIndica
  * option to be set.
  *
  * @sample {highstock} stock/indicators/linear-regression-intercept
- *         Linear intercept slope indicator
+ *         Linear regression intercept indicator
  *
  * @extends      plotOptions.linearregression
  * @since        7.0.0
  * @product      highstock
  * @requires     stock/indicators/indicators
- * @requires  stock/indicators/regressions
+ * @requires     stock/indicators/regressions
  * @optionparent plotOptions.linearregressionintercept
  */
 LinearRegressionInterceptIndicator.defaultOptions = merge(LinearRegressionInterceptIndicator_LinearRegressionIndicator.defaultOptions);
@@ -1858,6 +1861,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const LinearRegressionIntercept_LinearRegressionInterceptIndicator = ((/* unused pure expression or super */ null && (LinearRegressionInterceptIndicator)));
 /* *
  *
@@ -1880,14 +1884,14 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ''; // To include the above in the js output
 
 ;// ./code/es-modules/Stock/Indicators/LinearRegressionAngle/LinearRegressionAngleIndicator.js
-// SPDX-License-Identifier: LicenseRef-Highcharts
-/**
+/* *
  *
  *  (c) 2010-2026 Highsoft AS
  *  Author: Kamil Kulig
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1903,7 +1907,7 @@ const { linearregression: LinearRegressionAngleIndicator_LinearRegressionIndicat
 /**
  * The Linear Regression Angle series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.linearRegressionAngle
  *
@@ -1918,7 +1922,7 @@ class LinearRegressionAngleIndicator extends LinearRegressionAngleIndicator_Line
     /**
      * Convert a slope of a line to angle (in degrees) between
      * the line and x axis
-     * @private
+     * @internal
      * @param {number} slope of the straight line function
      * @return {number} angle in degrees
      */
@@ -1939,13 +1943,13 @@ class LinearRegressionAngleIndicator extends LinearRegressionAngleIndicator_Line
  * option to be set.
  *
  * @sample {highstock} stock/indicators/linear-regression-angle
- *         Linear intercept angle indicator
+ *         Linear regression angle indicator
  *
  * @extends      plotOptions.linearregression
  * @since        7.0.0
  * @product      highstock
  * @requires     stock/indicators/indicators
- * @requires  stock/indicators/regressions
+ * @requires     stock/indicators/regressions
  * @optionparent plotOptions.linearregressionangle
  */
 LinearRegressionAngleIndicator.defaultOptions = merge(LinearRegressionAngleIndicator_LinearRegressionIndicator.defaultOptions, {
@@ -1965,9 +1969,10 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const LinearRegressionAngle_LinearRegressionAngleIndicator = ((/* unused pure expression or super */ null && (LinearRegressionAngleIndicator)));
 /**
- * A linear regression intercept series. If the
+ * A linear regression angle series. If the
  * [type](#series.linearregressionangle.type) option is not specified, it is
  * inherited from [chart.type](#chart.type).
  *

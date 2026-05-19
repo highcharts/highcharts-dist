@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -45,6 +46,7 @@ const MapSeriesDefaults = {
     animation: false, // Makes the complex shapes slow
     dataLabels: {
         crop: false,
+        distance: 0,
         formatter: function () {
             const { numberFormatter } = this.series.chart;
             const { value } = this.point;
@@ -54,7 +56,7 @@ const MapSeriesDefaults = {
         },
         inside: true, // For the color
         overflow: false,
-        padding: 0,
+        padding: [0, 2],
         verticalAlign: 'middle'
     },
     /**
@@ -88,7 +90,7 @@ const MapSeriesDefaults = {
      *
      * @private
      */
-    nullColor: "#f7f7f7" /* Palette.neutralColor3 */,
+    nullColor: 'var(--highcharts-neutral-color-3)',
     /**
      * Whether to allow pointer interaction like tooltips and mouse events
      * on null points.
@@ -135,13 +137,12 @@ const MapSeriesDefaults = {
      *         Borders demo
      *
      * @type      {Highcharts.ColorType}
-     * @default   #cccccc
      * @product   highmaps
      * @apioption plotOptions.series.borderColor
      *
      * @private
      */
-    borderColor: "#e6e6e6" /* Palette.neutralColor10 */,
+    borderColor: 'var(--highcharts-neutral-color-20)',
     /**
      * The border width of each map area.
      *
@@ -231,7 +232,7 @@ const MapSeriesDefaults = {
              * @product   highmaps
              * @apioption plotOptions.series.states.hover.borderColor
              */
-            borderColor: "#666666" /* Palette.neutralColor60 */,
+            borderColor: 'var(--highcharts-neutral-color-60)',
             /**
              * The border width of the point in this state
              *
@@ -273,11 +274,11 @@ const MapSeriesDefaults = {
         select: {
             /**
              * @type      {Highcharts.ColorType}
-             * @default   ${palette.neutralColor20}
+             * @default   var(--highcharts-neutral-color-20)
              * @product   highmaps
              * @apioption plotOptions.series.states.select.color
              */
-            color: "#cccccc" /* Palette.neutralColor20 */
+            color: 'var(--highcharts-neutral-color-20)'
         }
     },
     legendSymbol: 'rectangle'
@@ -344,6 +345,7 @@ const MapSeriesDefaults = {
  *        }]
  *    ```
  *
+ * @basic
  * @type      {Array<number|Array<string,(number|null)>|null|*>}
  * @product   highmaps
  * @apioption series.map.data

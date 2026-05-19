@@ -1,2 +1,10 @@
-import * as Highcharts from '../../highcharts.src';
-export default Highcharts;
+import '../Series/Line/LineSeries.js';
+import '../Series/Area/AreaSeries.js';
+import '../Series/Spline/SplineSeries.js';
+import '../Series/AreaSpline/AreaSplineSeries.js';
+import '../Series/Column/ColumnSeries.js';
+import '../Series/Bar/BarSeries.js';
+import '../Series/Scatter/ScatterSeries.js';
+import '../Series/Pie/PieSeries.js';
+declare const G: AnyRecord;
+export default G;

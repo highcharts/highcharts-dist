@@ -1,0 +1,31 @@
+import type { SMAOptions, SMAParamsOptions } from '../SMA/SMAOptions';
+/**
+ * Volume Weighted Average Price indicator.
+ *
+ * This series requires `linkedTo` option to be set.
+ *
+ * @sample {highstock} stock/indicators/vwap
+ *         Volume Weighted Average Price indicator
+ *
+ * @extends      plotOptions.sma
+ * @since        6.0.0
+ * @product      highstock
+ * @requires     stock/indicators/indicators
+ * @requires     stock/indicators/vwap
+ * @interface Highcharts.VWAPOptions
+ */
+export interface VWAPOptions extends SMAOptions {
+    params?: VWAPParamsOptions;
+}
+export interface VWAPParamsOptions extends SMAParamsOptions {
+    /**
+     * The id of volume series which is mandatory. For example using
+     * OHLC data, volumeSeriesID='volume' means the indicator will be
+     * calculated using OHLC and volume values.
+     *
+     * @default volume
+     */
+    volumeSeriesID?: string;
+    index?: undefined;
+}
+export default VWAPOptions;

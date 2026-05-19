@@ -3,8 +3,9 @@
  *  (c) 2009-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -242,7 +243,7 @@ function drawSeriesLabels(chart) {
                     colorClass);
                 if (!chart.renderer.styledMode) {
                     const color = typeof series.color === 'string' ?
-                        series.color : "#666666" /* Palette.neutralColor60 */;
+                        series.color : 'var(--highcharts-neutral-color-60)';
                     label.css(extend({
                         color: onArea ?
                             chart.renderer.getContrast(color) :

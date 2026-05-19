@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.6.0 (2026-04-13)
+ * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/themes/sand-signika
  * @requires highcharts
  *
  * (c) 2009-2026 Highsoft AS
  * Author: Torstein Hønsi
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -55,8 +55,9 @@ var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require_
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1418,8 +1419,9 @@ function wrap(obj, method, func) {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *  Sand-Signika theme for Highcharts JS
  *
@@ -1443,33 +1445,44 @@ var SandSignikaTheme;
      *
      * */
     SandSignikaTheme.options = {
-        colors: [
-            '#f45b5b', '#8085e9', '#8d4654', '#7798BF', '#aaeeee',
-            '#ff0066', '#eeaaee', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee'
-        ],
+        palette: {
+            light: {
+                backgroundColor: '#f7f7f7',
+                colors: [
+                    '#f45b5b', '#8085e9', '#8d4654', '#7798BF',
+                    '#aaeeee', '#ff0066', '#eeaaee', '#55BF3B',
+                    '#DF5353', '#7798BF', '#aaeeee'
+                ]
+            }
+        },
         chart: {
-            backgroundColor: null,
+            backgroundColor: 'light-dark(transparent, #141414)',
             style: {
                 fontFamily: 'Signika, serif'
             }
         },
         title: {
             style: {
-                color: 'black',
+                color: 'var(--highcharts-neutral-color-100)',
                 fontSize: '16px',
                 fontWeight: 'bold'
             }
         },
         subtitle: {
             style: {
-                color: 'black'
+                color: 'var(--highcharts-neutral-color-100)'
             }
         },
         tooltip: {
-            borderWidth: 0
+            borderWidth: 0,
+            // Inverted tooltip colors
+            backgroundColor: 'var(--highcharts-neutral-color-80)',
+            style: {
+                color: 'var(--highcharts-background-color)'
+            }
         },
         legend: {
-            backgroundColor: '#E0E0E8',
+            backgroundColor: 'var(--highcharts-neutral-color-10)',
             itemStyle: {
                 fontWeight: 'bold',
                 fontSize: '13px'
@@ -1478,48 +1491,47 @@ var SandSignikaTheme;
         xAxis: {
             labels: {
                 style: {
-                    color: '#6e6e70'
+                    color: 'var(--highcharts-neutral-color-60)'
                 }
             }
         },
         yAxis: {
             labels: {
                 style: {
-                    color: '#6e6e70'
+                    color: 'var(--highcharts-neutral-color-60)'
                 }
             }
         },
         plotOptions: {
             series: {
-                shadow: true
-            },
-            candlestick: {
-                lineColor: '#404048'
+                shadow: true,
+                dataLabels: {
+                    color: 'light-dark(#000, #fff)',
+                    style: {
+                        textOutline: 'none'
+                    }
+                }
             },
             map: {
                 shadow: false
             }
         },
         // Highcharts Stock specific
-        navigator: {
-            xAxis: {
-                gridLineColor: '#D0D0D8'
-            }
-        },
-        rangeSelector: {
+        global: {
             buttonTheme: {
-                fill: 'white',
-                stroke: '#C0C0C8',
-                'stroke-width': 1,
+                fill: 'light-dark(#fff, #000)',
+                stroke: 'var(--highcharts-neutral-color-20)',
                 states: {
                     select: {
-                        fill: '#D0D0D8'
+                        fill: 'var(--highcharts-neutral-color-10)'
                     }
                 }
             }
         },
-        scrollbar: {
-            trackBorderColor: '#C0C0C8'
+        rangeSelector: {
+            buttonTheme: {
+                'stroke-width': 1
+            }
         }
     };
     /* *

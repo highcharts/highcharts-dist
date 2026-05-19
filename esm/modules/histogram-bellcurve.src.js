@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.6.0 (2026-04-13)
+ * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/histogram-bellcurve
  * @requires highcharts
  *
  * (c) 2010-2026 Highsoft AS
  * Author: Sebastian Domas
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -58,8 +58,9 @@ var external_highcharts_src_js_default_Series_default = /*#__PURE__*/__webpack_r
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1551,8 +1552,9 @@ var DerivedComposition;
  *  (c) 2010-2026 Highsoft AS
  *  Author: Sebastian Domas
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1645,8 +1647,9 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  *  (c) 2010-2026 Highsoft AS
  *  Author: Sebastian Domas
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1807,8 +1810,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *
  *  Author: Sebastian Domas
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1934,8 +1938,9 @@ const BellcurveSeriesDefaults = {
  *
  *  Author: Sebastian Domas
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1953,7 +1958,7 @@ const { areaspline: AreaSplineSeries } = (external_highcharts_src_js_default_Ser
 /**
  * Bell curve class
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.bellcurve
  *
@@ -1965,14 +1970,14 @@ class BellcurveSeries extends AreaSplineSeries {
      *  Static Functions
      *
      * */
-    /** @private */
+    /** @internal */
     static mean(data) {
         const length = data.length, sum = data.reduce(function (sum, value) {
             return (sum += value);
         }, 0);
         return length > 0 && sum / length;
     }
-    /** @private */
+    /** @internal */
     static standardDeviation(data, average) {
         const len = data.length;
         average = isNumber(average) ?
@@ -1983,7 +1988,7 @@ class BellcurveSeries extends AreaSplineSeries {
         }, 0);
         return len > 1 && Math.sqrt(sum / (len - 1));
     }
-    /** @private */
+    /** @internal */
     static normalDensity(x, mean, standardDeviation) {
         const translation = x - mean;
         return Math.exp(-(translation * translation) /
@@ -2046,6 +2051,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Bellcurve_BellcurveSeries = ((/* unused pure expression or super */ null && (BellcurveSeries)));
 
 ;// ./code/es-modules/masters/modules/histogram-bellcurve.src.js

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.6.0 (2026-04-13)
+ * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/boost-canvas
  * @requires highcharts
  *
@@ -9,8 +9,8 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Torstein Hønsi
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -193,8 +193,9 @@ Boost_Boostables.forEach((item) => {
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1666,7 +1667,7 @@ function isChartSeriesBoosting(chart) {
     }
     // If there are more than five series currently boosting,
     // we should boost the whole chart to avoid running out of webgl contexts.
-    let canBoostCount = 0, needBoostCount = 0, seriesOptions;
+    let canBoostCount = 0, eligibleCount = 0, needBoostCount = 0, seriesOptions;
     for (const series of allSeries) {
         seriesOptions = series.options;
         // Don't count series with boostThreshold set to 0
@@ -1683,10 +1684,11 @@ function isChartSeriesBoosting(chart) {
         if (series.type === 'heatmap') {
             continue;
         }
+        ++eligibleCount;
         if (Boost_BoostableMap[series.type]) {
             ++canBoostCount;
         }
-        if (patientMax(series.getColumn('x', true), seriesOptions.data, 
+        if (patientMax(series.getColumn('x', true), seriesOptions.data || [], 
         /// series.xData,
         series.points) >= (seriesOptions.boostThreshold || Number.MAX_VALUE)) {
             ++needBoostCount;
@@ -1698,6 +1700,13 @@ function isChartSeriesBoosting(chart) {
     // See #18815
     canBoostCount === allSeries.length &&
         needBoostCount === canBoostCount) ||
+        // Preserve chart-level boost when it was already active (markerGroup
+        // exists) and all remaining visible eligible series still need boost,
+        // so that hiding a series does not drop out of chart-boost mode
+        // and break the shared halo (#23338).
+        (!!boost.markerGroup &&
+            canBoostCount === eligibleCount &&
+            needBoostCount === canBoostCount) ||
         needBoostCount > 5);
     return boost.forceChartBoost;
 }
@@ -2504,7 +2513,7 @@ class WGLVertexBuffer {
      */
     render(from, to, drawMode) {
         const length = this.preAllocated ?
-            this.preAllocated.length : this.data.length;
+            this.preAllocated.length : this.data?.length || 0;
         if (!this.buffer) {
             return false;
         }
@@ -2579,6 +2588,34 @@ const contexts = [
     'moz-webgl',
     'webkit-3d'
 ];
+let colorCache = {};
+/*
+ * Resolve CSS color expressions like color-mix
+ * @internal
+ */
+const resolveColorExpression = (cssVars, input) => {
+    if (colorCache[input]) {
+        return colorCache[input];
+    }
+    // Color variable from the palette
+    const paletteMatch = input.indexOf('var(') === 0 &&
+        cssVars[input.slice(4, -1).trim()];
+    if (paletteMatch) {
+        colorCache[input] = paletteMatch;
+        return paletteMatch;
+    }
+    // Color mix expression
+    if (input.indexOf('color-mix(') === 0) {
+        /* eslint-disable-next-line max-len */
+        const colorMixRegex = /^color-mix\(in srgb,([a-z0-9\(\)\-\#]+),([a-z0-9\(\)\-\#]+) ([0-9\.%]+)/, result = colorMixRegex.exec(input);
+        if (result) {
+            const weight = parseFloat(result[3]) / 100, color1 = resolveColorExpression(cssVars, result[1]), color2 = resolveColorExpression(cssVars, result[2]), color = new (highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_default())(color1).tweenTo(new (highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_default())(color2), weight);
+            colorCache[input] = color;
+            return color;
+        }
+    }
+    return input;
+};
 /* *
  *
  *  Class
@@ -2752,20 +2789,7 @@ class WGLRenderer {
         const data = this.data, settings = this.settings, vbuffer = this.vbuffer, isRange = (series.pointArrayMap &&
             series.pointArrayMap.join(',') === 'low,high'), { chart, options, sorted, xAxis, yAxis } = series, isStacked = !!options.stacking, rawData = options.data, xExtremes = series.xAxis.getExtremes(), 
         // Taking into account the offset of the min point #19497
-        xMin = xExtremes.min - (series.xAxis.minPointOffset || 0), xMax = xExtremes.max + (series.xAxis.minPointOffset || 0), yExtremes = series.yAxis.getExtremes(), yMin = yExtremes.min - (series.yAxis.minPointOffset || 0), yMax = yExtremes.max + (series.yAxis.minPointOffset || 0), xData = (series.getColumn('x').length ? series.getColumn('x') : void 0) || options.xData || series.getColumn('x', true), yData = (series.getColumn('y').length ? series.getColumn('y') : void 0) || options.yData || series.getColumn('y', true), zData = (series.getColumn('z').length ? series.getColumn('z') : void 0) || options.zData || series.getColumn('z', true), useRaw = !xData || xData.length === 0, 
-        /// threshold = options.threshold,
-        // yBottom = chart.yAxis[0].getThreshold(threshold),
-        // hasThreshold = isNumber(threshold),
-        colorByPoint = series.options.colorByPoint, 
-        // This is required for color by point, so make sure this is
-        // uncommented if enabling that
-        // Required for color axis support
-        // caxis,
-        connectNulls = options.connectNulls, 
-        // For some reason eslint/TypeScript don't pick up that this is
-        // actually used: --- bre1470: it is never read, just set
-        // maxVal: (number|undefined), // eslint-disable-line no-unused-vars
-        points = series.points || false, sdata = isStacked ? series.data : (xData || rawData), closestLeft = { x: Number.MAX_VALUE, y: 0 }, closestRight = { x: -Number.MAX_VALUE, y: 0 }, cullXThreshold = 1, cullYThreshold = 1, chartDestroyed = typeof chart.index === 'undefined', drawAsBar = asBar[series.type], zoneAxis = options.zoneAxis || 'y', zones = options.zones || false, threshold = options.threshold, pixelRatio = this.getPixelRatio();
+        xMin = xExtremes.min - (series.xAxis.minPointOffset || 0), xMax = xExtremes.max + (series.xAxis.minPointOffset || 0), yExtremes = series.yAxis.getExtremes(), yMin = yExtremes.min - (series.yAxis.minPointOffset || 0), yMax = yExtremes.max + (series.yAxis.minPointOffset || 0), xData = (series.getColumn('x').length ? series.getColumn('x') : void 0) || options.xData || series.getColumn('x', true), yData = (series.getColumn('y').length ? series.getColumn('y') : void 0) || options.yData || series.getColumn('y', true), zData = (series.getColumn('z').length ? series.getColumn('z') : void 0) || options.zData || series.getColumn('z', true), useRaw = !xData || xData.length === 0, { colorByPoint, connectNulls, threshold, zoneAxis = 'y', zones } = options, points = series.points || false, sdata = isStacked ? series.data : (xData || rawData), closestLeft = { x: Number.MAX_VALUE, y: 0 }, closestRight = { x: -Number.MAX_VALUE, y: 0 }, cullXThreshold = 1, cullYThreshold = 1, chartDestroyed = typeof chart.index === 'undefined', drawAsBar = asBar[series.type], pixelRatio = this.getPixelRatio(), colors = chart.options.colors || [];
         let plotWidth = series.chart.plotWidth, lastX = false, lastY = false, minVal, scolor, 
         //
         skipped = 0, hadPoints = false, 
@@ -2779,11 +2803,21 @@ class WGLRenderer {
                 options.gapSize * series.closestPointRange :
                 options.gapSize;
         }
-        if (zones && zones.length) { // #23571
+        // Detect the current color scheme
+        if (chart.boost) {
+            const probe = chart.renderer.circle(0, 0, 1)
+                .attr({ fill: 'var(--highcharts-background-color)' })
+                .add(), actualFill = new (highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_default())(getComputedStyle(probe.element).getPropertyValue('fill')).get(), darkFill = new (highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_default())(chart.palette?.cssVars.dark['--highcharts-background-color'] || '').get();
+            probe.destroy();
+            chart.boost.cssVars = chart.palette?.cssVars[actualFill === darkFill ? 'dark' : 'light'];
+        }
+        const cssVars = chart.boost?.cssVars || {};
+        // Handle zones
+        if (zones?.length) { // #23571
             zoneColors = [];
             zones.forEach((zone, i) => {
-                if (zone.color) {
-                    const zoneColor = color(zone.color).rgba;
+                if (typeof zone.color === 'string') {
+                    const zoneColor = color(resolveColorExpression(cssVars, zone.color)).rgba;
                     zoneColor[0] /= 255.0;
                     zoneColor[1] /= 255.0;
                     zoneColor[2] /= 255.0;
@@ -2796,7 +2830,8 @@ class WGLRenderer {
             if (!zoneDefColor) {
                 const seriesColor = ((series.pointAttribs && series.pointAttribs().fill) ||
                     series.color);
-                zoneDefColor = color(seriesColor).rgba;
+                zoneDefColor = color(typeof seriesColor === 'string' ?
+                    resolveColorExpression(cssVars, seriesColor) : '').rgba;
                 zoneDefColor[0] /= 255.0;
                 zoneDefColor[1] /= 255.0;
                 zoneDefColor[2] /= 255.0;
@@ -2922,6 +2957,9 @@ class WGLRenderer {
                             .colorAttribs(point) :
                         pointAttr = point.series.pointAttribs(point);
                     swidth = pointAttr['stroke-width'] || 0;
+                    if (typeof pointAttr.fill === 'string') {
+                        pointAttr.fill = resolveColorExpression(cssVars, pointAttr.fill);
+                    }
                     // Handle point colors
                     pcolor = color(pointAttr.fill).rgba;
                     pcolor[0] /= 255.0;
@@ -2936,6 +2974,9 @@ class WGLRenderer {
                     // If there's stroking, we do an additional rect
                     if (series.is('treemap')) {
                         swidth = swidth || 1;
+                        if (typeof pointAttr.stroke === 'string') {
+                            pointAttr.stroke = resolveColorExpression(cssVars, pointAttr.stroke);
+                        }
                         scolor = color(pointAttr.stroke).rgba;
                         scolor[0] /= 255.0;
                         scolor[1] /= 255.0;
@@ -2994,10 +3035,9 @@ class WGLRenderer {
                     typeof pointOptions[colorKeyIndex] === 'string') {
                     rgba = color(pointOptions[colorKeyIndex]).rgba;
                 }
-                else if (colorByPoint && chart.options.colors) {
-                    colorIndex = colorIndex %
-                        chart.options.colors.length;
-                    rgba = color(chart.options.colors[colorIndex]).rgba;
+                else if (colorByPoint) {
+                    colorIndex = colorIndex % colors.length;
+                    rgba = color(resolveColorExpression(cssVars, colors[colorIndex])).rgba;
                 }
                 if (rgba) {
                     pcolor = rgba;
@@ -3112,7 +3152,7 @@ class WGLRenderer {
                 beginSegment();
             }
             // Note: Boost requires that zones are sorted!
-            if (zones && zones.length) { // #23571
+            if (zones?.length) { // #23571
                 let zoneColor;
                 const pointValue = zoneAxis === 'x' ? x : y;
                 // Match getZone() logic: find zone where value > point value
@@ -3199,7 +3239,7 @@ class WGLRenderer {
                 if ((!isRange && !isStacked) ||
                     yAxis.logarithmic // #16850
                 ) {
-                    minVal = Math.max(threshold === null ? yMin : threshold, // #5268
+                    minVal = Math.max(threshold ?? yMin, // #5268
                     yMin); // #8731
                 }
                 if (!settings.useGPUTranslations) {
@@ -3391,6 +3431,7 @@ class WGLRenderer {
      */
     renderChart(chart) {
         const gl = this.gl, settings = this.settings, shader = this.shader, vbuffer = this.vbuffer;
+        colorCache = {};
         const pixelRatio = this.getPixelRatio();
         if (chart) {
             this.width = chart.chartWidth * pixelRatio;
@@ -3399,7 +3440,7 @@ class WGLRenderer {
         else {
             return false;
         }
-        const height = this.height, width = this.width;
+        const height = this.height, width = this.width, colors = chart.options.colors || [];
         if (!gl || !shader || !width || !height) {
             return false;
         }
@@ -3456,12 +3497,17 @@ class WGLRenderer {
                         s.series.pointAttribs &&
                         s.series.pointAttribs().fill) ||
                         s.series.color;
-                if (options.colorByPoint) {
-                    fillColor = s.series.chart.options.colors[si];
+                if (options.colorByPoint && typeof colors[si] === 'string') {
+                    fillColor = colors[si];
                 }
             }
-            if (s.series.fillOpacity && options.fillOpacity) {
+            if (s.series.fillOpacity &&
+                options.fillOpacity &&
+                fillColor) {
                 fillColor = new (highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_default())(fillColor).setOpacity(pick(options.fillOpacity, 1.0)).get();
+            }
+            if (typeof fillColor === 'string') {
+                fillColor = resolveColorExpression(chart.boost?.cssVars || {}, fillColor);
             }
             scolor = color(fillColor).rgba;
             if (!settings.useAlpha) {
@@ -3741,8 +3787,9 @@ class WGLRenderer {
  *
  *  (c) 2020-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  *  Authors:
@@ -3873,8 +3920,9 @@ const ColumnUtils = {
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  *  Authors:
@@ -3898,44 +3946,37 @@ const { setLength: DataTableCore_setLength, splice: DataTableCore_splice } = Dat
  * to add, remove, and manipulate columns and rows, as well as to retrieve data
  * from specific cells.
  *
+ * Highcharts allows passing a `DataTable` or a configuration object for a data
+ * table in the `dataTable` property, either chart-level
+ * [dataTable](https://api.highcharts.com/highcharts/dataTable) or as
+ * [series.dataTable](https://api.highcharts.com/highcharts/series.dataTable).
+ * The `DataTable` is then used as a source for the series data points, mapped
+ * by the `series.dataMapping` option.
+ *
+ * After chart instantiation, the data table can be accessed from the series as
+ * `series.dataTable`. CRUD operations on the data table will be reflected in
+ * the chart.
+ *
+ * @example
+ * const dataTable = new Highcharts.DataTable({
+ *   columns: {
+ *     year: [2020, 2021, 2022, 2023],
+ *     cost: [11, 13, 12, 14],
+ *     revenue: [12, 15, 14, 18]
+ *   }
+ * });
+ *
  * @class
  * @name Highcharts.DataTable
  *
- * @param {Highcharts.DataTableOptions} [options]
+ * @param {Highcharts.DataTableOptionsObject} [options]
  * Options to initialize the new DataTable instance.
  */
 class DataTableCore {
-    /**
-     * Constructs an instance of the DataTable class.
-     *
-     * @example
-     * const dataTable = new Highcharts.DataTableCore({
-     *   columns: {
-     *     year: [2020, 2021, 2022, 2023],
-     *     cost: [11, 13, 12, 14],
-     *     revenue: [12, 15, 14, 18]
-     *   }
-     * });
-
-     *
-     * @param {Highcharts.DataTableOptions} [options]
-     * Options to initialize the new DataTable instance.
-     */
     constructor(options = {}) {
-        /**
-         * Whether the ID was automatic generated or given in the constructor.
-         *
-         * @name Highcharts.DataTable#autoId
-         * @type {boolean}
-         */
+        this.isDataTable = true;
         this.autoId = !options.id;
         this.columns = {};
-        /**
-         * ID of the table for identification purposes.
-         *
-         * @name Highcharts.DataTable#id
-         * @type {string}
-         */
         this.id = (options.id || (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.uniqueKey)());
         this.rowCount = 0;
         this.versionTag = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.uniqueKey)();
@@ -3970,6 +4011,13 @@ class DataTableCore {
      * Delete rows. Simplified version of the full
      * `DataTable.deleteRows` method.
      *
+     * @sample highcharts/datatable/live-chart/
+     *       Add and delete rows in a live chart
+     * @sample highcharts/datatable/shared-with-grid/
+     *       Chart with data table CRUD operations
+     *
+     * @function Highcharts.DataTable#deleteRows
+     *
      * @param {number} rowIndex
      * The start row index
      *
@@ -3994,11 +4042,13 @@ class DataTableCore {
         this.versionTag = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.uniqueKey)();
     }
     /**
-     * Fetches the given column by the canonical column name. Simplified version
+     * Fetches the given column by the canonical column ID. Simplified version
      * of the full `DataTable.getRow` method, always returning by reference.
      *
+     * @function Highcharts.DataTable#setColumn
+     *
      * @param {string} columnId
-     * Name of the column to get.
+     * ID of the column to get.
      *
      * @return {Highcharts.DataTableColumn|undefined}
      * A copy of the column, or `undefined` if not found.
@@ -4011,6 +4061,8 @@ class DataTableCore {
     /**
      * Retrieves all or the given columns. Simplified version of the full
      * `DataTable.getColumns` method, always returning by reference.
+     *
+     * @function Highcharts.DataTable#getColumns
      *
      * @param {Array<string>} [columnIds]
      * Column ids to retrieve.
@@ -4030,20 +4082,29 @@ class DataTableCore {
     /**
      * Retrieves the row at a given index.
      *
+     * @function Highcharts.DataTable#getRowObject
+     *
      * @param {number} rowIndex
      * Row index to retrieve. First row has index 0.
      *
-     * @param {Array<string>} [columnIds]
+     * @param {Array<string>} [columnNames]
      * Column names to retrieve.
      *
      * @return {Record<string, number|string|undefined>|undefined}
      * Returns the row values, or `undefined` if not found.
      */
-    getRow(rowIndex, columnIds) {
-        return (columnIds || Object.keys(this.columns)).map((key) => this.columns[key]?.[rowIndex]);
+    getRowObject(rowIndex, columnNames) {
+        const row = {}, columns = this.columns;
+        columnNames ?? (columnNames = Object.keys(this.columns));
+        for (const columnName of columnNames) {
+            row[columnName] = columns[columnName]?.[rowIndex];
+        }
+        return row;
     }
     /**
      * Sets cell values for a column. Will insert a new column, if not found.
+     *
+     * @function Highcharts.DataTable#setColumn
      *
      * @param {string} columnId
      * Column name to set.
@@ -4065,15 +4126,20 @@ class DataTableCore {
     }
     /**
      * Sets cell values for multiple columns. Will insert new columns, if not
-     * found. Simplified version of the full `DataTableCore.setColumns`, limited
+     * found. Simplified version of the full `DataTable.setColumns`, limited
      * to full replacement of the columns (undefined `rowIndex`).
+     *
+     * @sample highcharts/datatable/shared-with-grid/
+     *       Chart with data table CRUD operations
+     *
+     * @function Highcharts.DataTable#setColumns
      *
      * @param {Highcharts.DataTableColumnCollection} columns
      * Columns as a collection, where the keys are the column names.
      *
      * @param {number} [rowIndex]
-     * Index of the first row to change. Ignored in the `DataTableCore`, as it
-     * always replaces the full column.
+     * Index of the first row to change. Ignored in the simplified `DataTable`,
+     * as it always replaces the full column.
      *
      * @param {Record<string, (boolean|number|string|null|undefined)>} [eventDetail]
      * Custom information for pending events.
@@ -4098,6 +4164,15 @@ class DataTableCore {
      * provided, or if the index is higher than the total number of table rows.
      * A simplified version of the full `DateTable.setRow`, limited to objects.
      *
+     * @sample highcharts/datatable/live-chart/
+     *       Add and delete rows in a live chart
+     * @sample stock/datatable/live-candlestick/
+     *       Live candlestick
+     * @sample highcharts/datatable/shared-with-grid/
+     *       Chart with data table CRUD operations
+     *
+     * @function Highcharts.DataTable#setRow
+     *
      * @param {Record<string, number|string|undefined>} row
      * Cell values to set.
      *
@@ -4113,34 +4188,33 @@ class DataTableCore {
      * @emits #afterSetRows
      */
     setRow(row, rowIndex = this.rowCount, insert, eventDetail) {
+        var _a;
         const { columns } = this, indexRowCount = insert ? this.rowCount + 1 : rowIndex + 1, rowKeys = Object.keys(row);
         if (eventDetail?.addColumns !== false) {
             for (let i = 0, iEnd = rowKeys.length; i < iEnd; i++) {
-                const key = rowKeys[i];
-                if (!columns[key]) {
-                    columns[key] = [];
-                }
+                columns[_a = rowKeys[i]] || (columns[_a] = new Array(this.rowCount));
             }
         }
         objectEach(columns, (column, columnId) => {
-            if (!column && eventDetail?.addColumns !== false) {
-                column = new Array(indexRowCount);
-            }
             if (column) {
                 if (insert) {
-                    column = DataTableCore_splice(column, rowIndex, 0, true, [row[columnId] ?? null]).array;
+                    column = DataTableCore_splice(column, rowIndex, 0, true, [row[columnId]]).array;
                 }
                 else {
-                    column[rowIndex] = row[columnId] ?? null;
+                    column[rowIndex] =
+                        // Preserve explicit null and undefined but fall back
+                        // to existing value if the new row does not have the
+                        // key
+                        columnId in row ?
+                            row[columnId] :
+                            column[rowIndex];
                 }
                 columns[columnId] = column;
             }
         });
-        if (indexRowCount > this.rowCount) {
-            this.applyRowCount(indexRowCount);
-        }
+        this.applyRowCount(Math.max(indexRowCount, this.rowCount));
         if (!eventDetail?.silent) {
-            fireEvent(this, 'afterSetRows');
+            fireEvent(this, 'afterSetRows', { rowIndex });
             this.versionTag = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.uniqueKey)();
         }
     }
@@ -4148,7 +4222,7 @@ class DataTableCore {
      * Returns the modified (clone) or the original data table if the modified
      * one does not exist.
      *
-     * @return {Highcharts.DataTableCore}
+     * @return {Highcharts.DataTable}
      * The modified (clone) or the original data table.
      */
     getModified() {
@@ -4167,30 +4241,45 @@ class DataTableCore {
  *
  * */
 /**
+ * A collection of data table columns defined by a object where the key is the
+ * column ID and the value is an array of the column values. Typed arrays are
+ * supported.
+ *
+ * @type {Highcharts.DataTableColumnCollection|undefined}
+ * @apioption dataTable.columns
+ */
+/**
+ * Custom ID to identify the new DataTable instance.
+ *
+ * @type {string|undefined}
+ * @apioption dataTable.id
+ */
+/**
  * A typed array.
  * @typedef {Int8Array|Uint8Array|Uint8ClampedArray|Int16Array|Uint16Array|Int32Array|Uint32Array|Float32Array|Float64Array} Highcharts.TypedArray
- * //**
- * A column of values in a data table.
- * @typedef {Array<boolean|null|number|string|undefined>|Highcharts.TypedArray} Highcharts.DataTableColumn
  */ /**
+* A column of values in a data table.
+* @typedef {Array<boolean|null|number|string|undefined>|Highcharts.TypedArray} Highcharts.DataTableColumn
+*/ /**
 * A collection of data table columns defined by a object where the key is the
-* column name and the value is an array of the column values.
+* column ID and the value is an array of the column values. Typed arrays are
+* supported.
 * @typedef {Record<string, Highcharts.DataTableColumn>} Highcharts.DataTableColumnCollection
 */
 /**
  * Options for the `DataTable` or `DataTableCore` classes.
- * @interface Highcharts.DataTableOptions
+ * @interface Highcharts.DataTableOptionsObject
  */ /**
 * The column options for the data table. The columns are defined by an object
 * where the key is the column ID and the value is an array of the column
 * values.
 *
-* @name Highcharts.DataTableOptions.columns
+* @name Highcharts.DataTableOptionsObject.columns
 * @type {Highcharts.DataTableColumnCollection|undefined}
 */ /**
 * Custom ID to identify the new DataTable instance.
 *
-* @name Highcharts.DataTableOptions.id
+* @name Highcharts.DataTableOptionsObject.id
 * @type {string|undefined}
 */
 (''); // Keeps doclets above in JS file
@@ -4628,7 +4717,6 @@ function enterBoost(series) {
         }
         series.data.length = 0;
         series.points.length = 0;
-        delete series.processedData;
     }
 }
 /**
@@ -4723,7 +4811,7 @@ function onSeriesDestroy() {
 }
 /** @internal */
 function onSeriesHide() {
-    const boost = this.boost;
+    const boost = this.boost, chartBoost = this.chart.boost, sharedMarkerGroup = chartBoost?.markerGroup;
     if (boost && boost.canvas && boost.target) {
         if (boost.wgl) {
             boost.wgl.clear();
@@ -4731,6 +4819,12 @@ function onSeriesHide() {
         if (boost.clear) {
             boost.clear();
         }
+    }
+    if (sharedMarkerGroup &&
+        this.markerGroup === sharedMarkerGroup &&
+        this.chart.series.some((series) => series.visible &&
+            series.markerGroup === sharedMarkerGroup)) {
+        sharedMarkerGroup.show();
     }
 }
 /**
@@ -4847,14 +4941,13 @@ function scatterProcessData(force) {
         return true;
     }
     // Filter unsorted scatter data for ranges
-    const processedData = [], processedXData = [], processedYData = [], xRangeNeeded = !(isNumber(xExtremes.max) || isNumber(xExtremes.min)), yRangeNeeded = !(isNumber(yExtremes.max) || isNumber(yExtremes.min));
+    const processedXData = [], processedYData = [], xRangeNeeded = !(isNumber(xExtremes.max) || isNumber(xExtremes.min)), yRangeNeeded = !(isNumber(yExtremes.max) || isNumber(yExtremes.min));
     let cropped = false, x, xDataMax = xData[0], xDataMin = xData[0], y, yDataMax = yData?.[0], yDataMin = yData?.[0];
     for (let i = 0, iEnd = xData.length; i < iEnd; ++i) {
         x = xData[i];
         y = yData?.[i];
         if (x >= xMin && x <= xMax &&
             y >= yMin && y <= yMax) {
-            processedData.push({ x, y });
             processedXData.push(x);
             processedYData.push(y);
             if (xRangeNeeded) {
@@ -4891,9 +4984,6 @@ function scatterProcessData(force) {
         x: processedXData,
         y: processedYData
     });
-    if (!getSeriesBoosting(series, processedXData)) {
-        series.processedData = processedData; // For un-boosted points rendering
-    }
     return true;
 }
 /**
@@ -4901,7 +4991,7 @@ function scatterProcessData(force) {
  * @function Highcharts.Series#renderCanvas
  */
 function seriesRenderCanvas() {
-    const options = this.options || {}, chart = this.chart, chartBoost = chart.boost, seriesBoost = this.boost, xAxis = this.xAxis, yAxis = this.yAxis, xData = options.xData || this.getColumn('x', true), yData = options.yData || this.getColumn('y', true), lowData = this.getColumn('low', true), highData = this.getColumn('high', true), rawData = this.processedData || options.data, xExtremes = xAxis.getExtremes(), 
+    const options = this.options || {}, chart = this.chart, chartBoost = chart.boost, seriesBoost = this.boost, xAxis = this.xAxis, yAxis = this.yAxis, xData = options.xData || this.getColumn('x', true), yData = options.yData || this.getColumn('y', true), lowData = this.getColumn('low', true), highData = this.getColumn('high', true), rawData = options.data, xExtremes = xAxis.getExtremes(), 
     // Taking into account the offset of the min point #19497
     xMin = xExtremes.min - (xAxis.minPointOffset || 0), xMax = xExtremes.max + (xAxis.minPointOffset || 0), yExtremes = yAxis.getExtremes(), yMin = yExtremes.min - (yAxis.minPointOffset || 0), yMax = yExtremes.max + (yAxis.minPointOffset || 0), pointTaken = {}, sampling = !!this.sampling, enableMouseTracking = options.enableMouseTracking, threshold = options.threshold, isRange = this.pointArrayMap &&
         this.pointArrayMap.join(',') === 'low,high', isStacked = !!options.stacking, cropStart = this.cropStart || 0, requireSorting = this.requireSorting, useRaw = !xData, compareX = options.findNearestPointBy === 'x', xDataFull = ((this.getColumn('x').length ?
@@ -5325,8 +5415,9 @@ const BoostSeries = {
 ;// ./code/es-modules/Extensions/BoostCanvas.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *  Author: Torstein Hønsi, Christer Vasseng
  *
  *  This module serves as a fallback for the Boost module in IE9 and IE10. Newer
@@ -5352,6 +5443,7 @@ const { doc: BoostCanvas_doc, noop: BoostCanvas_noop } = (highcharts_commonjs_hi
  *  Namespace
  *
  * */
+/** @internal */
 var BoostCanvas;
 (function (BoostCanvas) {
     /* *
@@ -5563,7 +5655,7 @@ var BoostCanvas;
             timeRendering: activeBoostSettings.timeRendering || false,
             timeSeriesProcessing: activeBoostSettings.timeSeriesProcessing || false,
             timeSetup: activeBoostSettings.timeSetup || false
-        }, xData = series.getColumn('x', true), yData = series.getColumn('y', true), rawData = options.data, xExtremes = xAxis.getExtremes(), xMin = xExtremes.min, xMax = xExtremes.max, yExtremes = yAxis.getExtremes(), yMin = yExtremes.min, yMax = yExtremes.max, pointTaken = {}, sampling = !!series.sampling, r = options.marker && options.marker.radius, strokeBatch = series.cvsStrokeBatch || 1000, enableMouseTracking = options.enableMouseTracking, threshold = options.threshold, hasThreshold = isNumber(threshold), translatedThreshold = yAxis.getThreshold(threshold), doFill = series.fill, isRange = (series.pointArrayMap &&
+        }, xData = series.getColumn('x', true), yData = series.getColumn('y', true), rawData = options.data || [], xExtremes = xAxis.getExtremes(), xMin = xExtremes.min, xMax = xExtremes.max, yExtremes = yAxis.getExtremes(), yMin = yExtremes.min, yMax = yExtremes.max, pointTaken = {}, sampling = !!series.sampling, r = options.marker && options.marker.radius, strokeBatch = series.cvsStrokeBatch || 1000, enableMouseTracking = options.enableMouseTracking, threshold = options.threshold, hasThreshold = isNumber(threshold), translatedThreshold = yAxis.getThreshold(threshold), doFill = series.fill, isRange = (series.pointArrayMap &&
             series.pointArrayMap.join(',') === 'low,high'), isStacked = !!options.stacking, cropStart = series.cropStart || 0, loadingOptions = chart.options.loading, requireSorting = series.requireSorting, connectNulls = options.connectNulls, useRaw = !xData, sdata = (isStacked ?
             series.data :
             (xData || rawData)), fillColor = (series.fillOpacity ?
@@ -5605,7 +5697,8 @@ var BoostCanvas;
         if (rawData.length > 99999) {
             chart.options.loading = merge(loadingOptions, {
                 labelStyle: {
-                    backgroundColor: BoostCanvas_color("#ffffff" /* Palette.backgroundColor */).setOpacity(0.75).get(),
+                    backgroundColor: BoostCanvas_color('var(--highcharts-background-color)')
+                        .setOpacity(0.75).get(),
                     padding: '1em',
                     borderRadius: '0.5em'
                 },
@@ -5908,6 +6001,7 @@ var BoostCanvas;
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Extensions_BoostCanvas = (BoostCanvas);
 
 ;// ./code/es-modules/masters/modules/boost-canvas.src.js

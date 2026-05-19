@@ -1,0 +1,11 @@
+!/**
+ * Highcharts JS v13.0.0-beta.0 (2026-05-19)
+ * @module highcharts/themes/grid-light
+ * @requires highcharts
+ *
+ * (c) 2009-2026 Highsoft AS
+ * Author: Torstein Hønsi
+ *
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
+ */function(e,t){"object"==typeof exports&&"object"==typeof module?module.exports=t(e._Highcharts):"function"==typeof define&&define.amd?define("highcharts/themes/grid-light",["highcharts/highcharts"],function(e){return t(e)}):"object"==typeof exports?exports["highcharts/themes/grid-light"]=t(e._Highcharts):e.Highcharts=t(e.Highcharts)}("u"<typeof window?this:window,function(e){return function(){"use strict";var t,o,r={944:function(t){t.exports=e}},n={};function i(e){var t=n[e];if(void 0!==t)return t.exports;var o=n[e]={exports:{}};return r[e](o,o.exports,i),o.exports}i.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return i.d(t,{a:t}),t},i.d=function(e,t){for(var o in t)i.o(t,o)&&!i.o(e,o)&&Object.defineProperty(e,o,{enumerable:!0,get:t[o]})},i.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)};var a={};i.d(a,{default:function(){return p}});var s=i(944),c=i.n(s),l=c().doc;c().win;function h(e,t){var o;for(o in e||(e={}),t)e[o]=t[o];return e}Array.prototype.find;var f=c().setOptions;(t=o||(o={})).options={palette:{colorScheme:"light",light:{neutralColor:"#111100",colors:["#7cb5ec","#f7a35c","#90ee7e","#7798BF","#aaeeee","#ff0066","#eeaaee","#55BF3B","#DF5353","#7798BF","#aaeeee"]}},chart:{style:{fontFamily:"Dosis, sans-serif"}},title:{style:{fontSize:"16px",fontWeight:"bold",textTransform:"uppercase"}},tooltip:{borderWidth:0,shadow:!1,backgroundColor:"var(--highcharts-neutral-color-80)",style:{color:"var(--highcharts-background-color)"}},legend:{backgroundColor:"var(--highcharts-neutral-color-5)",itemStyle:{fontWeight:"bold",fontSize:"13px"}},xAxis:{gridLineWidth:1,labels:{style:{fontSize:"12px"}}},yAxis:{minorTickInterval:"auto",title:{style:{textTransform:"uppercase"}},labels:{style:{fontSize:"12px"}}}},t.apply=function(){var e,o,r;e={href:"https://fonts.googleapis.com/css?family=Dosis:400,600",rel:"stylesheet",type:"text/css"},o=document.getElementsByTagName("head")[0],r=l.createElement("link"),e&&h(r,e),o&&o.appendChild(r),f(t.options)};var u=o;c().theme=u.options,u.apply();var p=c();return a.default}()});

@@ -5,8 +5,9 @@
  *  (c) 2018-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -21,9 +22,9 @@ import SankeyColumnComposition from '../Sankey/SankeyColumnComposition.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { pie: PieSeries, sankey: SankeySeries } = SeriesRegistry.seriesTypes;
 import SVGElement from '../../Core/Renderer/SVG/SVGElement.js';
-import TextPath from '../../Extensions/TextPath.js';
+import { composeTextPath } from '../../Extensions/TextPath.js';
 import { extend, merge, relativeLength } from '../../Shared/Utilities.js';
-TextPath.compose(SVGElement);
+composeTextPath(SVGElement);
 /* *
  *
  *  Class
@@ -135,7 +136,7 @@ class DependencyWheelSeries extends SankeySeries {
      */
     translate() {
         const series = this, options = series.options, factor = 2 * Math.PI /
-            (series.chart.plotHeight + series.getNodePadding()), center = series.getCenter(), startAngle = (options.startAngle - 90) * deg2rad, brOption = options.borderRadius, borderRadius = typeof brOption === 'object' ?
+            (series.chart.plotHeight + series.getNodePadding()), center = series.getCenter(), startAngle = ((options.startAngle || 0) - 90) * deg2rad, brOption = options.borderRadius, borderRadius = typeof brOption === 'object' ?
             brOption.radius : brOption;
         super.translate();
         for (const node of this.nodeColumns[0]) {

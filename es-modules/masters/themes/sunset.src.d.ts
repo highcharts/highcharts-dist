@@ -1,2 +1,2 @@
-import * as Highcharts from '../../../themes/sunset.src';
-export default Highcharts;
+import H from '../../Core/Globals.js';
+export default H;

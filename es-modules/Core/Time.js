@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -18,6 +19,70 @@ import { timeUnits } from './Utilities.js';
  *
  * */
 class Time extends TimeBase {
+    getBoundaryTicks(tickPositions, unitRange, visibleMin, visibleMax) {
+        const boundaryTicks = {};
+        // No boundary ticks for year range.
+        if (unitRange === timeUnits.year) {
+            return boundaryTicks;
+        }
+        const hasVisibleRange = defined(visibleMin) && defined(visibleMax), needsHourBoundary = unitRange < timeUnits.hour, needsDayBoundary = unitRange < timeUnits.day, needsMonthBoundary = unitRange < timeUnits.month, tickAlignment = (unitRange >= timeUnits.hour ?
+            900000 : unitRange >= timeUnits.minute ?
+            60000 : unitRange >= timeUnits.second ?
+            1000 : false);
+        // Handle boundary ticks. Use a reasonable dropout threshold
+        // to prevent looping over dense data grouping (#6156).
+        if (tickPositions.length < 10000) {
+            let isFirstVisibleTick = true;
+            for (let i = 0; i < tickPositions.length; i++) {
+                const t = tickPositions[i];
+                // Loop only over visible ticks.
+                if (hasVisibleRange) {
+                    if (t < visibleMin) {
+                        continue;
+                    }
+                    if (t > visibleMax) {
+                        break;
+                    }
+                }
+                // Mark first visible tick as boundary, if timeUnit is month or
+                // hour.
+                if (isFirstVisibleTick) {
+                    if (unitRange === timeUnits.month) {
+                        boundaryTicks[t] = 'year';
+                        isFirstVisibleTick = false;
+                        continue;
+                    }
+                    if (unitRange === timeUnits.hour) {
+                        boundaryTicks[t] = 'day';
+                        isFirstVisibleTick = false;
+                        continue;
+                    }
+                }
+                // Skip misaligned ticks to save performance.
+                if (tickAlignment && t % tickAlignment !== 0) {
+                    isFirstVisibleTick = false;
+                    continue;
+                }
+                const [, // Unused 'year' var
+                month, day, hours, minutes, seconds, milliseconds] = this.toParts(t);
+                const isMidnight = !hours && !minutes && !seconds && !milliseconds;
+                if (needsHourBoundary && minutes === 0) {
+                    boundaryTicks[t] = 'hour';
+                }
+                if (needsDayBoundary && isMidnight) {
+                    boundaryTicks[t] = 'day';
+                }
+                if (needsMonthBoundary && day === 1 && isMidnight) {
+                    boundaryTicks[t] = 'month';
+                }
+                if (month === 0 && day === 1 && isMidnight) {
+                    boundaryTicks[t] = 'year';
+                }
+                isFirstVisibleTick = false;
+            }
+        }
+        return boundaryTicks;
+    }
     /**
      * Return an array with time positions distributed on round time values
      * right and right after min and max. Used in datetime axes as well as for
@@ -40,7 +105,7 @@ class Time extends TimeBase {
      * Time positions
      */
     getTimeTicks(normalizedInterval, min, max, startOfWeek) {
-        const time = this, tickPositions = [], higherRanks = {}, { count = 1, unitRange } = normalizedInterval;
+        const time = this, tickPositions = [], { count = 1, unitRange } = normalizedInterval, visibleMin = min, visibleMax = max;
         let [year, month, dayOfMonth, hours, minutes, seconds] = time.toParts(min), milliseconds = (min || 0) % 1000, variableDayLength;
         startOfWeek ?? (startOfWeek = 1);
         if (defined(min)) { // #1300
@@ -129,7 +194,7 @@ class Time extends TimeBase {
                 else if (variableDayLength &&
                     unitRange === timeUnits.hour &&
                     count > 1) {
-                    // Make sure higher ranks are preserved across DST (#6797,
+                    // Make sure boundary ticks are preserved across DST (#6797,
                     // #7621)
                     t = time.makeTime(year, month, dayOfMonth, hours + i * count);
                     // Else, the interval is fixed and we use simple addition
@@ -141,25 +206,9 @@ class Time extends TimeBase {
             }
             // Push the last time
             tickPositions.push(t);
-            // Handle higher ranks. Mark new days if the time is on midnight
-            // (#950, #1649, #1760, #3349). Use a reasonable dropout threshold
-            // to prevent looping over dense data grouping (#6156).
-            if (unitRange <= timeUnits.hour && tickPositions.length < 10000) {
-                tickPositions.forEach((t) => {
-                    if (
-                    // Speed optimization, no need to run dateFormat unless
-                    // we're on a full or half hour
-                    t % 1800000 === 0 &&
-                        // Check for local or global midnight
-                        time.dateFormat('%H%M%S%L', t) === '000000000') {
-                        higherRanks[t] = 'day';
-                    }
-                });
-            }
         }
-        // Record information on the chosen unit - for dynamic label formatter
         tickPositions.info = extend(normalizedInterval, {
-            higherRanks,
+            boundaryTicks: this.getBoundaryTicks(tickPositions, unitRange, visibleMin, visibleMax),
             totalRange: unitRange * count
         });
         return tickPositions;

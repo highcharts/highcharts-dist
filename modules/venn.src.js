@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.6.0 (2026-04-13)
+ * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/venn
  * @requires highcharts
  *
  * (c) 2017-2026 Highsoft AS
  * Authors: Jon Arild Nygård
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -120,8 +120,9 @@ var highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_H
  *
  *  (c) 2010-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -229,8 +230,9 @@ var GeometryUtilities;
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1591,8 +1593,9 @@ function wrap(obj, method, func) {
  *
  *  (c) 2010-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2074,8 +2077,9 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  *  Layout algorithm by Ben Frederickson:
  *  https://www.benfrederickson.com/better-venn-diagrams/
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2121,8 +2125,9 @@ class VennPoint extends ScatterPoint {
  *  Layout algorithm by Ben Frederickson:
  *  https://www.benfrederickson.com/better-venn-diagrams/
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2159,7 +2164,7 @@ class VennPoint extends ScatterPoint {
  * @optionparent plotOptions.venn
  */
 const VennSeriesDefaults = {
-    borderColor: "#cccccc" /* Palette.neutralColor20 */,
+    borderColor: 'var(--highcharts-neutral-color-20)',
     borderDashStyle: 'solid',
     borderWidth: 1,
     brighten: 0,
@@ -2197,14 +2202,20 @@ const VennSeriesDefaults = {
          */
         hover: {
             opacity: 1,
-            borderColor: "#333333" /* Palette.neutralColor80 */
+            borderColor: 'var(--highcharts-neutral-color-80)'
         },
         /**
          * @excluding halo
          */
         select: {
-            color: "#cccccc" /* Palette.neutralColor20 */,
-            borderColor: "#000000" /* Palette.neutralColor100 */,
+            /**
+             * @type {Highcharts.ColorType}
+             */
+            color: 'var(--highcharts-neutral-color-20)',
+            /**
+             * @type {Highcharts.ColorType}
+             */
+            borderColor: 'var(--highcharts-neutral-color-100)',
             animation: false
         },
         inactive: {
@@ -2232,6 +2243,7 @@ const VennSeriesDefaults = {
  * @apioption series.venn
  */
 /**
+ * @basic
  * @type      {Array<*>}
  * @extends   series.scatter.data
  * @excluding marker, x, y
@@ -2310,8 +2322,9 @@ const VennSeriesDefaults = {
  *  Layout algorithm by Ben Frederickson:
  *  https://www.benfrederickson.com/better-venn-diagrams/
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2849,12 +2862,17 @@ function nelderMead(fn, initial) {
  * the data or has (value < 1). Adds missing relations between sets in the
  * data as value = 0.
  * @private
- * @param {Array<object>} data The raw input data.
+ * @param {DataTableCore} dataTable The raw input data.
  * @return {Array<object>} Returns an array of valid venn data.
  */
-function processVennData(data, splitter) {
-    const d = isArray(data) ? data : [];
-    const validSets = d
+function processVennData(dataTable, splitter) {
+    const rows = dataTable?.columns ?
+        new Array(dataTable.rowCount)
+            .fill(void 0)
+            .map((_, i) => dataTable
+            .getRowObject(i)) :
+        [];
+    const validSets = rows
         .reduce(function (arr, x) {
         // Check if x is a valid set, and that it is not an duplicate.
         if (x.sets && isValidSet(x) && arr.indexOf(x.sets[0]) === -1) {
@@ -2863,7 +2881,7 @@ function processVennData(data, splitter) {
         return arr;
     }, [])
         .sort();
-    const mapOfIdToRelation = d.reduce(function (mapOfIdToRelation, relation) {
+    const mapOfIdToRelation = rows.reduce(function (mapOfIdToRelation, relation) {
         if (relation.sets &&
             isValidRelation(relation) &&
             !relation.sets.some(function (set) {
@@ -2949,8 +2967,9 @@ const VennUtils = {
  *  Layout algorithm by Ben Frederickson:
  *  https://www.benfrederickson.com/better-venn-diagrams/
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3270,10 +3289,10 @@ class VennSeries extends ScatterSeries {
      * Returns the calculated attributes.
      */
     pointAttribs(point, state) {
-        const series = this, seriesOptions = series.options || {}, pointOptions = point?.options || {}, stateOptions = (state && seriesOptions.states[state]) || {}, options = merge(seriesOptions, { color: point?.color }, pointOptions, stateOptions);
+        const series = this, seriesOptions = series.options || {}, pointOptions = point?.options || {}, stateOptions = (state && seriesOptions.states[state]) || {}, options = merge(seriesOptions, pointOptions, stateOptions);
         // Return resulting values for the attributes.
         return {
-            'fill': color(options.color)
+            'fill': color(options.color || point.color)
                 .brighten(options.brightness)
                 .get(),
             // Set opacity directly to the SVG element, not to pattern #14372.
@@ -3288,7 +3307,7 @@ class VennSeries extends ScatterSeries {
         this.dataTable.modified = this.dataTable;
         this.generatePoints();
         // Process the data before passing it into the layout function.
-        const relations = Venn_VennUtils.processVennData(this.options.data, VennSeries.splitter);
+        const relations = Venn_VennUtils.processVennData(this.dataTable, VennSeries.splitter);
         // Calculate the positions of each circle.
         const { mapOfIdToShape, mapOfIdToLabelValues } = VennSeries.layout(relations);
         // Calculate the scale, and center of the plot area.
@@ -3351,11 +3370,9 @@ class VennSeries extends ScatterSeries {
             }
             // Add width for the data label
             if (dataLabelWidth && shapeArgs) {
-                point.dlOptions = merge(true, {
-                    style: {
-                        width: dataLabelWidth
-                    }
-                }, isObject(dlOptions, true) ? dlOptions : void 0, { zIndex: void 0 });
+                point.dlOptions = merge({ style: { width: dataLabelWidth } }, isObject(dlOptions, true) ? dlOptions : void 0, { zIndex: void 0 });
+                // Delete so it doesn't override anything on merge.
+                delete point.dlOptions.zIndex;
             }
             // Set name for usage in tooltip and in data label.
             point.name = point.options.name || sets.join('∩');

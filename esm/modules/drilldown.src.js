@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.6.0 (2026-04-13)
+ * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/drilldown
  * @requires highcharts
  *
@@ -9,8 +9,8 @@
  * (c) 2009-2026 Highsoft AS
  *
  * Author: Torstein Hønsi
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  *
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
@@ -60,8 +60,9 @@ var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require_
  *
  *  Authors: Grzegorz Blachliński, Karol Kołodziej
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -135,7 +136,7 @@ const options = {
             }
         },
         style: {
-            color: "#334eff" /* Palette.highlightColor80 */
+            color: 'var(--highcharts-highlight-color-80)'
         }
     },
     /**
@@ -271,7 +272,7 @@ const options = {
          *  @since 10.0.0
          */
         style: {
-            color: "#666666" /* Palette.neutralColor60 */,
+            color: 'var(--highcharts-neutral-color-60)',
             fontSize: '0.8em'
         }
     },
@@ -332,8 +333,9 @@ var external_highcharts_src_js_default_Templating_default = /*#__PURE__*/__webpa
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1696,8 +1698,9 @@ function wrap(obj, method, func) {
  *
  *  Authors: Grzegorz Blachliński, Karol Kołodziej
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2306,8 +2309,9 @@ Breadcrumbs.defaultOptions = Breadcrumbs_BreadcrumbsDefaults.options;
  *
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2384,7 +2388,7 @@ const DrilldownDefaults = {
         /** @ignore-option */
         cursor: 'pointer',
         /** @ignore-option */
-        color: "#0022ff" /* Palette.highlightColor100 */,
+        color: 'var(--highcharts-highlight-color-100)',
         /** @ignore-option */
         fontWeight: 'bold',
         /** @ignore-option */
@@ -2408,7 +2412,7 @@ const DrilldownDefaults = {
      */
     activeDataLabelStyle: {
         cursor: 'pointer',
-        color: "#0022ff" /* Palette.highlightColor100 */,
+        color: 'var(--highcharts-highlight-color-100)',
         fontWeight: 'bold',
         textDecoration: 'underline'
     },
@@ -2638,8 +2642,9 @@ const DrilldownDefaults = {
  *
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3102,14 +3107,15 @@ const DrilldownSeries = {
  *
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
 
 
-const { animObject: Drilldown_animObject } = (external_highcharts_src_js_default_default());
+const { animObject: Drilldown_animObject, stop } = (external_highcharts_src_js_default_default());
 
 
 const { noop } = (external_highcharts_src_js_default_default());
@@ -3321,12 +3327,13 @@ class ChartAdditions {
         const chart = (this.chart ||
             this), oldSeries = point.series, xAxis = oldSeries.xAxis, yAxis = oldSeries.yAxis, horizAxis = xAxis && chart.inverted ? yAxis : xAxis, vertAxis = xAxis && chart.inverted ? xAxis : yAxis, colorProp = chart.styledMode ?
             { colorIndex: point.colorIndex ?? oldSeries.colorIndex } :
-            { color: point.color || oldSeries.color }, levelNumber = oldSeries.options._levelNumber || 0;
+            { color: point.color || oldSeries.color }, levelNumber = oldSeries.options._levelNumber ?? 0;
         if (!chart.drilldownLevels) {
             chart.drilldownLevels = [];
         }
         ddOptions = extend(extend({
-            _ddSeriesId: ddSeriesId++
+            _ddSeriesId: ddSeriesId++,
+            _levelNumber: levelNumber + 1
         }, colorProp), ddOptions);
         let levelSeries = [], levelSeriesOptions = [], last;
         // See if we can reuse the registered series from last run
@@ -3336,12 +3343,12 @@ class ChartAdditions {
         }
         // Record options for all current series
         oldSeries.chart.series.forEach((series) => {
+            var _a,
+                _b;
             if (series.xAxis === xAxis) {
-                series.options._ddSeriesId =
-                    series.options._ddSeriesId || ddSeriesId++;
+                (_a = series.options)._ddSeriesId || (_a._ddSeriesId = ddSeriesId++);
                 series.options.colorIndex = series.colorIndex;
-                series.options._levelNumber =
-                    series.options._levelNumber || levelNumber; // #3182
+                (_b = series.options)._levelNumber ?? (_b._levelNumber = levelNumber); // #3182
                 if (last) {
                     levelSeries = last.levelSeries;
                     levelSeriesOptions = last.levelSeriesOptions;
@@ -3354,6 +3361,8 @@ class ChartAdditions {
                         _levelNumber: series.options._levelNumber,
                         selected: series.options.selected
                     }, series.userOptions);
+                    const columns = series.dataTable.getColumns();
+                    series.purgedOptions.dataTable = { columns };
                     levelSeriesOptions.push(series.purgedOptions);
                 }
             }
@@ -3424,27 +3433,56 @@ class ChartAdditions {
                 }
                 if (level.levelNumber === levelToRemove) {
                     level.levelSeries.forEach((series) => {
+                        const levelNumber = series.options?._levelNumber;
                         // Not removed, not added as part of a multi-series
                         // drilldown
                         if (!chart.mapView) {
                             if (series.options &&
-                                series.options._levelNumber === levelToRemove) {
+                                levelNumber === levelToRemove) {
                                 series.remove(false);
                             }
                             // Deal with asynchronous removing of map series
                             // after zooming into
                         }
                         else if (series.options &&
-                            series.options._levelNumber === levelToRemove &&
-                            series.group) {
+                            levelNumber === levelToRemove) {
                             let animOptions = {};
                             if (drilldownOptions) {
                                 animOptions = drilldownOptions.animation;
                             }
-                            series.group.animate({
-                                opacity: 0
-                            }, animOptions, () => {
-                                series.remove(false);
+                            const drillAnimOptions = Drilldown_animObject(animOptions);
+                            const hideDataLabels = () => {
+                                const hideGroup = (group) => {
+                                    const element = group?.element;
+                                    if (group && element) {
+                                        stop(group);
+                                        element.setAttribute('opacity', '0');
+                                        element.setAttribute('visibility', 'hidden');
+                                    }
+                                };
+                                hideGroup(series.dataLabelsGroup);
+                                series.dataLabelsGroups?.forEach(hideGroup);
+                            };
+                            let seriesRemoved = false;
+                            const removeSeries = () => {
+                                if (seriesRemoved) {
+                                    return;
+                                }
+                                seriesRemoved = true;
+                                if (series.chart) {
+                                    if (series.group) {
+                                        stop(series.group);
+                                    }
+                                    if (series.dataLabelsGroup) {
+                                        stop(series.dataLabelsGroup);
+                                    }
+                                    series.dataLabelsGroups?.forEach((group) => {
+                                        if (group) {
+                                            stop(group);
+                                        }
+                                    });
+                                    series.remove(false);
+                                }
                                 // If it is the last series
                                 if (!(level.levelSeries.filter((el) => Object.keys(el).length)).length) {
                                     // We have a reset zoom button. Hide it and
@@ -3468,7 +3506,22 @@ class ChartAdditions {
                                     }
                                     fireEvent(chart, 'afterApplyDrilldown');
                                 }
-                            });
+                            };
+                            if (series.group?.element) {
+                                // Hide labels immediately to avoid stale
+                                // labels flashing during map transform.
+                                hideDataLabels();
+                                series.group.animate({
+                                    opacity: 0
+                                }, animOptions, removeSeries);
+                                // If another redraw interrupts the animation,
+                                // ensure the old series is still removed.
+                                syncTimeout(removeSeries, drillAnimOptions.defer +
+                                    drillAnimOptions.duration);
+                            }
+                            else {
+                                removeSeries();
+                            }
                         }
                     });
                 }
@@ -3772,6 +3825,7 @@ var Drilldown;
             addEvent(DrilldownChart, 'drillupall', onChartDrillupall);
             addEvent(DrilldownChart, 'render', onChartRender);
             addEvent(DrilldownChart, 'update', onChartUpdate);
+            addEvent(SeriesClass, 'update', onSeriesUpdate);
             highchartsDefaultOptions.drilldown = Drilldown_DrilldownDefaults;
             elementProto.fadeIn = svgElementFadeIn;
             tickProto.drillable = tickDrillable;
@@ -3832,12 +3886,12 @@ var Drilldown;
             const ddPoints = {};
             axis.ddPoints = ddPoints;
             axis.series.forEach((series) => {
-                const xData = series.getColumn('x'), points = series.points, data = series.options.data || [];
+                const xData = series.getColumn('x'), points = series.points;
                 for (let i = 0, iEnd = xData.length, p; i < iEnd; i++) {
-                    p = data[i];
+                    p = series.dataTable.getRowObject(i);
                     // The `drilldown` property can only be set on an array or an
                     // object
-                    if (typeof p !== 'number') {
+                    if (defined(p) && typeof p !== 'number') {
                         // Convert array to object (#8008)
                         p = series.pointClass.prototype.optionsToObject
                             .call({ series }, p);
@@ -3863,6 +3917,15 @@ var Drilldown;
         const breadcrumbs = this.breadcrumbs, breadcrumbOptions = e.options.drilldown && e.options.drilldown.breadcrumbs;
         if (breadcrumbs && breadcrumbOptions) {
             breadcrumbs.update(breadcrumbOptions);
+        }
+    }
+    /** @internal */
+    function onSeriesUpdate(e) {
+        const updateOptions = e.options;
+        if (updateOptions &&
+            updateOptions._levelNumber === void 0 &&
+            this.options._levelNumber !== void 0) {
+            updateOptions._levelNumber = this.options._levelNumber;
         }
     }
     /**

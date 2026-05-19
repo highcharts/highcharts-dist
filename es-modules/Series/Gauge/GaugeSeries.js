@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -14,7 +15,7 @@ import H from '../../Core/Globals.js';
 const { noop } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: Series, seriesTypes: { column: ColumnSeries } } = SeriesRegistry;
-import { clamp, defined, extend, isNumber, merge, pick, pInt } from '../../Shared/Utilities.js';
+import { clamp, defined, extend, isNumber, merge, pick, relativeLength } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -44,23 +45,50 @@ class GaugeSeries extends Series {
         const series = this, yAxis = series.yAxis, options = series.options, center = yAxis.center;
         series.generatePoints();
         series.points.forEach((point) => {
-            const dialOptions = merge(options.dial, point.dial), radius = (pInt(dialOptions.radius) * center[2]) / 200, baseLength = (pInt(dialOptions.baseLength) * radius) / 100, rearLength = (pInt(dialOptions.rearLength) * radius) / 100, baseWidth = dialOptions.baseWidth, topWidth = dialOptions.topWidth;
+            if (!isNumber(point.y)) {
+                return;
+            }
+            const dialOptions = merge(options.dial, point.dial), radius = relativeLength(dialOptions.radius, center[2] / 2), baseLength = relativeLength(dialOptions.baseLength, radius), rearLength = Math.min(relativeLength(dialOptions.rearLength, radius), radius), baseWidth = Math.min(relativeLength(dialOptions.baseWidth, radius), radius), topWidth = relativeLength(dialOptions.topWidth, radius), borderRadius = relativeLength(dialOptions.borderRadius, radius), 
+            // Border radius at the base
+            bRBase = Math.min(borderRadius, baseWidth / 2), 
+            // Border radius at the top
+            bRTop = Math.min(borderRadius, topWidth / 2), wrap = options.wrap ?? (yAxis.endAngleRad - yAxis.startAngleRad > 2 * Math.PI - 0.01);
             let overshoot = options.overshoot, rotation = yAxis.startAngleRad + yAxis.translate(point.y, void 0, void 0, void 0, true);
             // Handle the wrap and overshoot options
-            if (isNumber(overshoot) || options.wrap === false) {
+            if (isNumber(overshoot) || !wrap) {
                 overshoot = isNumber(overshoot) ?
                     (overshoot / 180 * Math.PI) : 0;
                 rotation = clamp(rotation, yAxis.startAngleRad - overshoot, yAxis.endAngleRad + overshoot);
             }
+            // Positions for the tooltip
+            point.tooltipPos = [
+                center[0] + Math.cos(rotation) * radius,
+                center[1] + Math.sin(rotation) * radius
+            ];
             rotation = rotation * 180 / Math.PI;
             point.shapeType = 'path';
             const d = dialOptions.path || [
-                ['M', -rearLength, -baseWidth / 2],
+                ['M', bRBase - rearLength, -baseWidth / 2],
                 ['L', baseLength, -baseWidth / 2],
-                ['L', radius, -topWidth / 2],
-                ['L', radius, topWidth / 2],
+                ['L', radius - bRTop, -topWidth / 2],
+                // Top-right arc
+                ['A', bRTop, bRTop, 0, 0, 1, radius, -topWidth / 2 + bRTop],
+                ['L', radius, topWidth / 2 - bRTop],
+                // Bottom-right arc
+                ['A', bRTop, bRTop, 0, 0, 1, radius - bRTop, topWidth / 2],
                 ['L', baseLength, baseWidth / 2],
-                ['L', -rearLength, baseWidth / 2],
+                ['L', bRBase - rearLength, baseWidth / 2],
+                // Bottom-left arc
+                [
+                    'A', bRBase, bRBase, 0, 0, 1,
+                    -rearLength, baseWidth / 2 - bRBase
+                ],
+                ['L', -rearLength, bRBase - baseWidth / 2],
+                // Top-left arc
+                [
+                    'A', bRBase, bRBase, 0, 0, 1,
+                    bRBase - rearLength, -baseWidth / 2
+                ],
                 ['Z']
             ];
             point.shapeArgs = {
@@ -83,38 +111,42 @@ class GaugeSeries extends Series {
      * @private
      */
     drawPoints() {
-        const series = this, chart = series.chart, center = series.yAxis.center, pivot = series.pivot, options = series.options, pivotOptions = options.pivot, renderer = chart.renderer;
+        const series = this, chart = series.chart, center = series.yAxis.center, pivot = series.pivot, options = series.options, pivotOptions = options.pivot, renderer = chart.renderer, pivotRadius = relativeLength(pivotOptions?.radius || 0, center[2] / 2);
         series.points.forEach((point) => {
-            const graphic = point.graphic, shapeArgs = point.shapeArgs, d = shapeArgs.d, dialOptions = merge(options.dial, point.dial); // #1233
-            if (graphic) {
-                graphic.animate(shapeArgs);
-                shapeArgs.d = d; // Animate alters it
-            }
-            else {
-                point.graphic =
-                    renderer[point.shapeType](shapeArgs)
-                        .addClass('highcharts-dial')
-                        .add(series.group);
-            }
-            // Presentational attributes
-            if (!chart.styledMode) {
-                point.graphic[graphic ? 'animate' : 'attr']({
-                    stroke: dialOptions.borderColor,
-                    'stroke-width': dialOptions.borderWidth,
-                    fill: dialOptions.backgroundColor
-                });
+            if (isNumber(point.y)) {
+                const graphic = point.graphic, shapeArgs = point.shapeArgs, d = shapeArgs.d, dialOptions = merge(options.dial, point.dial); // #1233
+                if (graphic) {
+                    graphic.animate(shapeArgs);
+                    shapeArgs.d = d; // Animate alters it
+                }
+                else {
+                    point.graphic =
+                        renderer[point.shapeType](shapeArgs)
+                            .addClass('highcharts-dial')
+                            .add(series.group);
+                }
+                // Presentational attributes
+                if (!chart.styledMode && point.graphic) {
+                    point.graphic[graphic ? 'animate' : 'attr']({
+                        stroke: dialOptions.borderColor,
+                        'stroke-width': dialOptions.borderWidth,
+                        fill: dialOptions.backgroundColor
+                    });
+                }
             }
         });
         // Add or move the pivot
         if (pivot) {
             pivot.animate({
                 translateX: center[0],
-                translateY: center[1]
+                translateY: center[1],
+                r: pivotRadius
             });
         }
         else if (pivotOptions) {
             series.pivot =
-                renderer.circle(0, 0, pivotOptions.radius)
+                renderer
+                    .circle(0, 0, pivotRadius)
                     .attr({
                     zIndex: 2
                 })
@@ -152,14 +184,6 @@ class GaugeSeries extends Series {
                 }
             });
         }
-    }
-    /**
-     * @private
-     */
-    render() {
-        this.group = this.plotGroup('group', 'series', this.visible ? 'inherit' : 'hidden', this.options.zIndex, this.chart.seriesGroup);
-        Series.prototype.render.call(this);
-        this.group.clip(this.chart.clipRect);
     }
     /**
      * Extend the basic setData method by running processData and generatePoints
@@ -207,36 +231,43 @@ class GaugeSeries extends Series {
  * @optionparent plotOptions.gauge
  */
 GaugeSeries.defaultOptions = merge(Series.defaultOptions, {
+    clip: false,
+    color: 'var(--highcharts-neutral-color-20)',
     /**
      * When this option is `true`, the dial will wrap around the axes.
      * For instance, in a full-range gauge going from 0 to 360, a value
-     * of 400 will point to 40\. When `wrap` is `false`, the dial stops
+     * of 400 will point to 40. When `wrap` is `false`, the dial stops
      * at 360.
+     *
+     * Defaults to `undefined`, which is equivalent to `true` when
+     * the axis ranges over 360 degrees, and `false` when less.
      *
      * @see [overshoot](#plotOptions.gauge.overshoot)
      *
      * @type      {boolean}
-     * @default   true
+     * @default   undefined
      * @since     3.0
      * @product   highcharts
      * @apioption plotOptions.gauge.wrap
      */
     /**
      * Data labels for the gauge. For gauges, the data labels are
-     * enabled by default and shown in a bordered box below the point.
+     * enabled by default and shown in the center.
      *
      * @since   2.3.0
      * @product highcharts
      */
     dataLabels: {
-        borderColor: "#cccccc" /* Palette.neutralColor20 */,
-        borderRadius: 3,
-        borderWidth: 1,
         crop: false,
         defer: false,
+        distance: 0,
         enabled: true,
+        padding: 5,
         verticalAlign: 'top',
-        y: 15,
+        style: {
+            fontSize: '1.4em'
+        },
+        y: 25,
         zIndex: 2
     },
     /**
@@ -265,35 +296,40 @@ GaugeSeries.defaultOptions = merge(Series.defaultOptions, {
          * @product   highcharts
          * @apioption plotOptions.gauge.dial.backgroundColor
          */
-        backgroundColor: "#000000" /* Palette.neutralColor100 */,
+        backgroundColor: 'var(--highcharts-neutral-color-100)',
         /**
          * The length of the dial's base part, relative to the total
-         * radius or length of the dial.
+         * radius or length of the dial. Accepts a pixel value if given
+         * as a number, or a percentage value if given as a percentage
+         * string. If the base length is greater than 0, the dial's base
+         * will have an even width, before it narrows in to the top.
          *
          * @sample {highcharts} highcharts/plotoptions/gauge-dial/
          *         Dial options demonstrated
          *
-         * @type      {string}
-         * @default   70%
+         * @type      {number|string}
+         * @default   0
          * @since     2.3.0
          * @product   highcharts
          * @apioption plotOptions.gauge.dial.baseLength
          */
-        baseLength: '70%',
+        baseLength: 0,
         /**
-         * The pixel width of the base of the gauge dial. The base is
-         * the part closest to the pivot, defined by baseLength.
+         * The width of the base of the gauge dial. The base is the part
+         * closest to the pivot, defined by baseLength. Accepts a pixel
+         * value if given as a number, or a percentage value if given as
+         * a percentage string.
          *
          * @sample {highcharts} highcharts/plotoptions/gauge-dial/
          *         Dial options demonstrated
          *
-         * @type      {number}
-         * @default   3
+         * @type      {number|string}
+         * @default   18%
          * @since     2.3.0
          * @product   highcharts
          * @apioption plotOptions.gauge.dial.baseWidth
          */
-        baseWidth: 3,
+        baseWidth: '18%',
         /**
          * The border color or stroke of the gauge's dial. By default,
          * the borderWidth is 0, so this must be set in addition to a
@@ -308,7 +344,17 @@ GaugeSeries.defaultOptions = merge(Series.defaultOptions, {
          * @product   highcharts
          * @apioption plotOptions.gauge.dial.borderColor
          */
-        borderColor: "#cccccc" /* Palette.neutralColor20 */,
+        borderColor: 'var(--highcharts-neutral-color-20)',
+        /**
+         * The border radius of the gauge dial
+         *
+         * @type      {number|string}
+         * @default   9%
+         * @since     next
+         * @product   highcharts
+         * @apioption plotOptions.gauge.dial.borderRadius
+         */
+        borderRadius: '9%',
         /**
          * The width of the gauge dial border in pixels.
          *
@@ -334,48 +380,52 @@ GaugeSeries.defaultOptions = merge(Series.defaultOptions, {
          * @apioption plotOptions.gauge.dial.path
          */
         /**
-         * The radius or length of the dial, in percentages relative to
-         * the radius of the gauge itself.
+         * The radius or length of the dial, relative to the radius of
+         * the gauge itself. Accepts a pixel value if given as a number,
+         * or a percentage value if given as a percentage string.
          *
          * @sample {highcharts} highcharts/plotoptions/gauge-dial/
          *         Dial options demonstrated
          *
          * @type      {string}
-         * @default   80%
+         * @default   70%
          * @since     2.3.0
          * @product   highcharts
          * @apioption plotOptions.gauge.dial.radius
          */
-        radius: '80%',
+        radius: '70%',
         /**
          * The length of the dial's rear end, the part that extends out
-         * on the other side of the pivot. Relative to the dial's
-         * length.
+         * on the other side of the pivot. Accepts a pixel value if
+         * given as a number, or a percentage value of the dial's length
+         * if given as a percentage string.
          *
          * @sample {highcharts} highcharts/plotoptions/gauge-dial/
          *         Dial options demonstrated
          *
-         * @type      {string}
-         * @default   10%
+         * @type      {number|string}
+         * @default   9%
          * @since     2.3.0
          * @product   highcharts
          * @apioption plotOptions.gauge.dial.rearLength
          */
-        rearLength: '10%',
+        rearLength: '9%',
         /**
          * The width of the top of the dial, closest to the perimeter.
-         * The pivot narrows in from the base to the top.
+         * The pivot narrows in from the base to the top. Accepts a
+         * pixel value if given as a number, or a percentage of the dial
+         * radius if given as a percentage string.
          *
          * @sample {highcharts} highcharts/plotoptions/gauge-dial/
          *         Dial options demonstrated
          *
-         * @type      {number}
-         * @default   1
+         * @type      {number|string}
+         * @default   4%
          * @since     2.3.0
          * @product   highcharts
          * @apioption plotOptions.gauge.dial.topWidth
          */
-        topWidth: 1
+        topWidth: '4%'
     },
     /**
      * Allow the dial to overshoot the end of the perimeter axis by
@@ -408,18 +458,20 @@ GaugeSeries.defaultOptions = merge(Series.defaultOptions, {
      */
     pivot: {
         /**
-         * The pixel radius of the pivot.
+         * The radius of the pivot, the center point of the gauge.
+         * Accepts a pixel value if given as a number, or a percentage
+         * of the full gauge radius if given as a percentage string.
          *
          * @sample {highcharts} highcharts/plotoptions/gauge-pivot/
          *         Pivot options demonstrated
          *
-         * @type      {number}
-         * @default   5
+         * @type      {number|string}
+         * @default   4%
          * @since     2.3.0
          * @product   highcharts
          * @apioption plotOptions.gauge.pivot.radius
          */
-        radius: 5,
+        radius: '4%',
         /**
          * The border or stroke width of the pivot.
          *
@@ -432,22 +484,20 @@ GaugeSeries.defaultOptions = merge(Series.defaultOptions, {
          * @product   highcharts
          * @apioption plotOptions.gauge.pivot.borderWidth
          */
-        borderWidth: 0,
+        borderWidth: 2,
         /**
-         * The border or stroke color of the pivot. In able to change
-         * this, the borderWidth must also be set to something other
-         * than the default 0.
+         * The border or stroke color of the pivot.
          *
          * @sample {highcharts} highcharts/plotoptions/gauge-pivot/
          *         Pivot options demonstrated
          *
          * @type      {Highcharts.ColorType}
-         * @default   #cccccc
+         * @default   var(--highcharts-neutral-color-100)
          * @since     2.3.0
          * @product   highcharts
          * @apioption plotOptions.gauge.pivot.borderColor
          */
-        borderColor: "#cccccc" /* Palette.neutralColor20 */,
+        borderColor: 'var(--highcharts-neutral-color-100)',
         /**
          * The background color or fill of the pivot.
          *
@@ -455,13 +505,14 @@ GaugeSeries.defaultOptions = merge(Series.defaultOptions, {
          *         Pivot options demonstrated
          *
          * @type      {Highcharts.ColorType}
-         * @default   #000000
+         * @default   var(--highcharts-background-color)
          * @since     2.3.0
          * @product   highcharts
          * @apioption plotOptions.gauge.pivot.backgroundColor
          */
-        backgroundColor: "#000000" /* Palette.neutralColor100 */
+        backgroundColor: 'var(--highcharts-background-color)'
     },
+    threshold: 0,
     tooltip: {
         headerFormat: ''
     },
@@ -548,6 +599,7 @@ export default GaugeSeries;
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
+ * @basic
  * @type      {Array<number|null|*>}
  * @extends   series.line.data
  * @excluding drilldown, marker, x

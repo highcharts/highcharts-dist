@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v12.6.0 (2026-04-13)
+ * @license Highstock JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/indicators/atr
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -10,8 +10,8 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Sebastian Bochan
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -116,8 +116,9 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1476,8 +1477,9 @@ function wrap(obj, method, func) {
 ;// ./code/es-modules/Stock/Indicators/ATR/ATRIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1491,23 +1493,17 @@ const { sma: SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_Ser
  *
  * */
 // Utils:
-/**
- * @private
- */
+/** @internal */
 function accumulateAverage(points, xVal, yVal, i) {
     const xValue = xVal[i], yValue = yVal[i];
     points.push([xValue, yValue]);
 }
-/**
- * @private
- */
+/** @internal */
 function getTR(currentPoint, prevPoint) {
     const pointY = currentPoint, prevY = prevPoint, HL = pointY[1] - pointY[2], HCp = typeof prevY === 'undefined' ? 0 : Math.abs(pointY[1] - prevY[3]), LCp = typeof prevY === 'undefined' ? 0 : Math.abs(pointY[2] - prevY[3]), TR = Math.max(HL, HCp, LCp);
     return TR;
 }
-/**
- * @private
- */
+/** @internal */
 function populateAverage(points, xVal, yVal, i, period, prevATR) {
     const x = xVal[i - 1], TR = getTR(yVal[i - 1], yVal[i - 2]), y = (((prevATR * (period - 1)) + TR) / period);
     return [x, y];
@@ -1520,7 +1516,7 @@ function populateAverage(points, xVal, yVal, i, period, prevATR) {
 /**
  * The ATR series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.atr
  *
@@ -1577,7 +1573,7 @@ class ATRIndicator extends SMAIndicator {
  * Average true range indicator (ATR). This series requires `linkedTo`
  * option to be set.
  *
- * @sample stock/indicators/atr
+ * @sample {highstock} stock/indicators/atr
  *         ATR indicator
  *
  * @extends      plotOptions.sma
@@ -1601,6 +1597,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const ATR_ATRIndicator = ((/* unused pure expression or super */ null && (ATRIndicator)));
 /* *
  *

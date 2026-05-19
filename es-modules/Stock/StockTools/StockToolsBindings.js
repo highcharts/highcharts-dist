@@ -1,13 +1,13 @@
-// SPDX-License-Identifier: LicenseRef-Highcharts
-/**
+/* *
  *
  *  Events generator for Stock tools
  *
  *  (c) 2009-2026 Highsoft AS
  *  Author: Paweł Fus
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -15,6 +15,8 @@
 import H from '../../Core/Globals.js';
 import STU from './StockToolsUtilities.js';
 const { addFlagFromForm, attractToPoint, isNotNavigatorYAxis, isPriceIndicatorEnabled, manageIndicators, updateHeight, updateNthPoint, updateRectSize } = STU;
+import getIcon from '../../Shared/BaseFormUtils';
+import StockToolsIcons from './StockToolsIcons';
 import { fireEvent, merge } from '../../Shared/Utilities.js';
 /* *
  *
@@ -22,6 +24,7 @@ import { fireEvent, merge } from '../../Shared/Utilities.js';
  *
  * */
 /**
+ * @internal
  * @sample {highstock} stock/stocktools/custom-stock-tools-bindings
  *         Custom stock tools bindings
  *
@@ -542,6 +545,11 @@ const StockToolsBindings = {
                         { x, y },
                         { x, y }
                     ]
+                },
+                labelOptions: {
+                    style: {
+                        color: 'var(--highcharts-neutral-color-60)'
+                    }
                 }
             }, navigation.annotationsOptions, navigation.bindings?.elliott3.annotationsOptions);
             return this.chart.addAnnotation(options);
@@ -895,7 +903,7 @@ const StockToolsBindings = {
                             y: coordsY.value,
                             controlPoint: {
                                 style: {
-                                    fill: "#f21313" /* Palette.negativeColor */
+                                    fill: 'var(--highcharts-negative-color)'
                                 }
                             }
                         },
@@ -1041,8 +1049,8 @@ const StockToolsBindings = {
     /**
      * A vertical arrow annotation bindings. Includes `start` event. On click,
      * finds the closest point and marks it with an arrow.
-     * `${palette.positiveColor}` is the color of the arrow when
-     * pointing from above and `${palette.negativeColor}`
+     * `var(--highcharts-positive-color)` is the color of the arrow when
+     * pointing from above and `var(--highcharts-negative-color)`
      * when pointing from below the point.
      *
      * @type    {Highcharts.NavigationBindingsOptionsObject}
@@ -1083,8 +1091,8 @@ const StockToolsBindings = {
                     connector: {
                         fill: 'none',
                         stroke: closestPoint.below ?
-                            "#f21313" /* Palette.negativeColor */ :
-                            "#06b535" /* Palette.positiveColor */
+                            'var(--highcharts-negative-color)' :
+                            'var(--highcharts-positive-color)'
                     }
                 }
             }, navigation.annotationsOptions, navigation.bindings?.verticalArrow.annotationsOptions), annotation = this.chart.addAnnotation(options);
@@ -1490,7 +1498,7 @@ const StockToolsBindings = {
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         init: function (button) {
-            const chart = this.chart, gui = chart.stockTools, iconsURL = gui.getIconsURL();
+            const chart = this.chart, gui = chart.stockTools;
             this.toggledAnnotations = !this.toggledAnnotations;
             (chart.annotations || []).forEach(function (annotation) {
                 annotation.setVisibility(!this.toggledAnnotations);
@@ -1498,13 +1506,11 @@ const StockToolsBindings = {
             if (gui && gui.guiEnabled) {
                 if (this.toggledAnnotations) {
                     button.firstChild.style['background-image'] =
-                        'url("' + iconsURL +
-                            'annotations-hidden.svg")';
+                        getIcon('annotations-hidden.svg', gui.iconsURL, StockToolsIcons);
                 }
                 else {
                     button.firstChild.style['background-image'] =
-                        'url("' + iconsURL +
-                            'annotations-visible.svg")';
+                        getIcon('annotations-visible.svg', gui.iconsURL, StockToolsIcons);
                 }
             }
             fireEvent(this, 'deselectButton', { button: button });
@@ -1560,4 +1566,5 @@ const StockToolsBindings = {
  *  Default Export
  *
  * */
+/** @internal */
 export default StockToolsBindings;

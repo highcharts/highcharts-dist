@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.6.0 (2026-04-13)
+ * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/pattern-fill
  * @requires highcharts
  *
@@ -9,13 +9,13 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Torstein Hønsi, Øystein Moseng
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 'use strict';
 import Highcharts from '../../Core/Globals.js';
-import PatternFill from '../../Extensions/PatternFill.js';
+import { composePatternFill, patterns } from '../../Extensions/PatternFill.js';
 const G = Highcharts;
-G.patterns = PatternFill.patterns;
-PatternFill.compose(G.Chart, G.Series, G.SVGRenderer);
+G.patterns = patterns;
+composePatternFill(G.Chart, G.Series, G.SVGRenderer);
 export default Highcharts;

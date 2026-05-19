@@ -1,0 +1,68 @@
+/* *
+ *
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Mateusz Bernacik
+ *
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
+ *
+ *
+ * */
+'use strict';
+/* *
+ *
+ *  Constants
+ *
+ * */
+/** @internal */
+var standaloneNavigatorDefaults = {
+    chart: {
+        height: 70,
+        margin: [0, 5, 0, 5]
+    },
+    exporting: {
+        enabled: false
+    },
+    legend: {
+        enabled: false
+    },
+    navigator: {
+        enabled: false
+    },
+    plotOptions: {
+        series: {
+            states: {
+                hover: {
+                    enabled: false
+                }
+            },
+            marker: {
+                enabled: false
+            }
+        }
+    },
+    scrollbar: {
+        enabled: false
+    },
+    title: {
+        text: ''
+    },
+    tooltip: {
+        enabled: false
+    },
+    xAxis: {
+        visible: false
+    },
+    yAxis: {
+        height: 0,
+        visible: false
+    }
+};
+/* *
+ *
+ *  Default Export
+ *
+ * */
+/** @internal */
+export default standaloneNavigatorDefaults;

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.6.0 (2026-04-13)
+ * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/bullet
  * @requires highcharts
  *
@@ -9,8 +9,8 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Kacper Madej
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -61,8 +61,9 @@ var external_highcharts_src_js_default_Series_types_column_default = /*#__PURE__
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -73,6 +74,7 @@ var external_highcharts_src_js_default_Series_types_column_default = /*#__PURE__
  *  Class
  *
  * */
+/** @internal */
 class BulletPoint extends (external_highcharts_src_js_default_Series_types_column_default()).prototype.pointClass {
     /* *
      *
@@ -81,7 +83,7 @@ class BulletPoint extends (external_highcharts_src_js_default_Series_types_colum
      * */
     /**
      * Destroys target graphic.
-     * @private
+     * @internal
      */
     destroy() {
         const series = this;
@@ -97,6 +99,7 @@ class BulletPoint extends (external_highcharts_src_js_default_Series_types_colum
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Bullet_BulletPoint = (BulletPoint);
 
 ;// ./code/es-modules/Series/Bullet/BulletSeriesDefaults.js
@@ -243,6 +246,7 @@ const BulletSeriesDefaults = {
  *    }]
  *    ```
  *
+ * @basic
  * @type      {Array<Array<(number|string),number>|Array<(number|string),number,number>|*>}
  * @extends   series.column.data
  * @since     6.0.0
@@ -290,8 +294,9 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1653,8 +1658,9 @@ function wrap(obj, method, func) {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Kacper Madej
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1672,7 +1678,7 @@ function wrap(obj, method, func) {
 /**
  * The bullet series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.bullet
  *
@@ -1805,6 +1811,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Bullet_BulletSeries = ((/* unused pure expression or super */ null && (BulletSeries)));
 
 ;// ./code/es-modules/masters/modules/bullet.src.js

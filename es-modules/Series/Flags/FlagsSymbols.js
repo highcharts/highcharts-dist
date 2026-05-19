@@ -3,7 +3,9 @@
  *  Imports
  *
  * */
-import RendererRegistry from '../../Core/Renderer/RendererRegistry.js';
+import H from '../../Core/Globals.js';
+import { pushUnique } from '../../Shared/Utilities.js';
+const { composed } = H;
 /* *
  *
  *  Composition
@@ -13,12 +15,6 @@ var FlagsSymbols;
 (function (FlagsSymbols) {
     /* *
      *
-     *  Constants
-     *
-     * */
-    const modifiedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
@@ -26,18 +22,17 @@ var FlagsSymbols;
      * @private
      */
     function compose(SVGRendererClass) {
-        if (modifiedMembers.indexOf(SVGRendererClass) === -1) {
-            modifiedMembers.push(SVGRendererClass);
+        if (pushUnique(composed, 'Series.Flags')) {
             const symbols = SVGRendererClass.prototype.symbols;
             symbols.flag = flag;
             createPinSymbol(symbols, 'circle');
             createPinSymbol(symbols, 'square');
-        }
-        const RendererClass = RendererRegistry.getRendererType();
-        // The symbol callbacks are generated on the SVGRenderer object in all
-        // browsers.
-        if (modifiedMembers.indexOf(RendererClass)) {
-            modifiedMembers.push(RendererClass);
+            symbols['flag-icon'] = function (x, y, w, h) {
+                return flag.call(this, x, y, w, Math.round(h * 0.6), {
+                    anchorX: Math.round(x),
+                    anchorY: Math.round(y + h)
+                });
+            };
         }
     }
     FlagsSymbols.compose = compose;

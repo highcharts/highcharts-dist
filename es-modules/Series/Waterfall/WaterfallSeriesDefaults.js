@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -70,7 +71,7 @@ const WaterfallSeriesDefaults = {
      * @since   3.0
      * @product highcharts
      */
-    lineColor: "#333333" /* Palette.neutralColor80 */,
+    lineColor: 'var(--highcharts-neutral-color-80)',
     /**
      * A name for the dash style to use for the line connecting the columns
      * of the waterfall series. Possible values: Dash, DashDot, Dot,
@@ -95,7 +96,7 @@ const WaterfallSeriesDefaults = {
      * @since   3.0
      * @product highcharts
      */
-    borderColor: "#333333" /* Palette.neutralColor80 */,
+    borderColor: 'var(--highcharts-neutral-color-80)',
     states: {
         hover: {
             lineWidthPlus: 0 // #3126
@@ -166,6 +167,7 @@ const WaterfallSeriesDefaults = {
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
+ * @basic
  * @type      {Array<number|Array<(number|string),(number|null)>|null|*>}
  * @extends   series.line.data
  * @excluding marker

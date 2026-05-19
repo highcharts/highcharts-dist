@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -69,12 +70,12 @@ var OrdinalAxis;
      * tick position logic.
      * @internal
      */
-    function getTimeTicks(normalizedInterval, min, max, startOfWeek, positions = [], closestDistance = 0, findHigherRanks) {
-        const higherRanks = {}, tickPixelIntervalOption = this.options.tickPixelInterval, time = this.chart.time, 
+    function getTimeTicks(normalizedInterval, min, max, startOfWeek, positions = [], closestDistance = 0, findBoundaryTicks) {
+        const boundaryTicks = {}, tickPixelIntervalOption = this.options.tickPixelInterval, time = this.chart.time, 
         // Record all the start positions of a segment, to use when
         // deciding what's a gap in the data.
         segmentStarts = [];
-        let end, segmentPositions, hasCrossedHigherRank, info, outsideMax, start = 0, groupPositions = [], lastGroupPosition = -Number.MAX_VALUE;
+        let end, segmentPositions, hasCrossedBoundary, info, outsideMax, start = 0, groupPositions = [], lastGroupPosition = -Number.MAX_VALUE;
         // The positions are not always defined, for example for ordinal
         // positions when data has regular interval (#1557, #2090)
         if ((!this.options.ordinal && !this.options.breaks) ||
@@ -125,24 +126,24 @@ var OrdinalAxis;
         // the same for all segments.
         if (segmentPositions) {
             info = segmentPositions.info;
-            // Optionally identify ticks with higher rank, for example
+            // Optionally identify ticks with boundary, for example
             // when the ticks have crossed midnight.
-            if (findHigherRanks && info.unitRange <= timeUnits.hour) {
+            if (findBoundaryTicks && info.unitRange <= timeUnits.hour) {
                 end = groupPositions.length - 1;
                 // Compare points two by two
                 for (start = 1; start < end; start++) {
                     if (time.dateFormat('%d', groupPositions[start]) !==
                         time.dateFormat('%d', groupPositions[start - 1])) {
-                        higherRanks[groupPositions[start]] = 'day';
-                        hasCrossedHigherRank = true;
+                        boundaryTicks[groupPositions[start]] = 'day';
+                        hasCrossedBoundary = true;
                     }
                 }
                 // If the complete array has crossed midnight, we want
-                // to mark the first positions also as higher rank
-                if (hasCrossedHigherRank) {
-                    higherRanks[groupPositions[0]] = 'day';
+                // to mark the first positions also as boundary
+                if (hasCrossedBoundary) {
+                    boundaryTicks[groupPositions[0]] = 'day';
                 }
-                info.higherRanks = higherRanks;
+                info.boundaryTicks = boundaryTicks;
             }
             // Save the info
             info.segmentStarts = segmentStarts;
@@ -154,7 +155,7 @@ var OrdinalAxis;
         // Don't show ticks within a gap in the ordinal axis, where the
         // space between two points is greater than a portion of the tick
         // pixel interval
-        if (findHigherRanks && defined(tickPixelIntervalOption)) {
+        if (findBoundaryTicks && defined(tickPixelIntervalOption)) {
             const length = groupPositions.length, translatedArr = [], distances = [];
             let itemToRemove, translated, lastTranslated, medianDistance, distance, i = length;
             // Find median pixel distance in order to keep a reasonably even
@@ -186,10 +187,10 @@ var OrdinalAxis;
                 if (lastTranslated &&
                     distance < tickPixelIntervalOption * 0.8 &&
                     (medianDistance === null || distance < medianDistance * 0.8)) {
-                    // Is this a higher ranked position with a normal
+                    // Is this a boundary position with a normal
                     // position to the right?
-                    if (higherRanks[groupPositions[i]] &&
-                        !higherRanks[groupPositions[i + 1]]) {
+                    if (boundaryTicks[groupPositions[i]] &&
+                        !boundaryTicks[groupPositions[i + 1]]) {
                         // Yes: remove the lower ranked neighbor to the right
                         itemToRemove = i + 1;
                         lastTranslated = translated; // #709
@@ -798,12 +799,17 @@ var OrdinalAxis;
                         groupPixelWidth: series.groupPixelWidth,
                         destroyGroupedData: H.noop,
                         getColumn: series.getColumn,
+                        getX: H.noop,
                         applyGrouping: series.applyGrouping,
                         getProcessedData: series.getProcessedData,
                         reserveSpace: series.reserveSpace,
                         visible: series.visible
                     };
-                    const xData = series.getColumn('x').concat(withOverscroll ?
+                    const xColumn = series.getColumn('x'), xData = (
+                    // No concat on TypedArrays, use Array.from
+                    Array.isArray(xColumn) ?
+                        xColumn :
+                        Array.from(xColumn)).concat(withOverscroll ?
                         ordinal.getOverscrollPositions() :
                         []);
                     fakeSeries.dataTable = new DataTableCore({

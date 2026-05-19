@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v12.6.0 (2026-04-13)
+ * @license Highstock JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/indicators/pivot-points
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -10,8 +10,8 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Paweł Fus
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -59,8 +59,9 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
 ;// ./code/es-modules/Stock/Indicators/PivotPoints/PivotPointsPoint.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -72,9 +73,7 @@ const SMAPoint = (external_highcharts_src_js_default_SeriesRegistry_default()).s
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function destroyExtraLabels(point, functionName) {
     const props = point.series.pointArrayMap;
     let prop, i = props.length;
@@ -93,6 +92,7 @@ function destroyExtraLabels(point, functionName) {
  *  Class
  *
  * */
+/** @internal */
 class PivotPointsPoint extends SMAPoint {
     /* *
      *
@@ -112,6 +112,7 @@ class PivotPointsPoint extends SMAPoint {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const PivotPoints_PivotPointsPoint = (PivotPointsPoint);
 
 ;// ./code/es-modules/Shared/Utilities.js
@@ -119,8 +120,9 @@ class PivotPointsPoint extends SMAPoint {
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1479,8 +1481,9 @@ function wrap(obj, method, func) {
 ;// ./code/es-modules/Stock/Indicators/PivotPoints/PivotPointsIndicator.js
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1497,7 +1500,7 @@ const { sma: SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry
 /**
  * The Pivot Points series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.pivotpoints
  *
@@ -1699,7 +1702,7 @@ class PivotPointsIndicator extends SMAIndicator {
  * Pivot points indicator. This series requires the `linkedTo` option to be
  * set and should be loaded after `stock/indicators/indicators.js` file.
  *
- * @sample stock/indicators/pivot-points
+ * @sample {highstock} stock/indicators/pivot-points
  *         Pivot points
  *
  * @extends      plotOptions.sma
@@ -1752,6 +1755,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const PivotPoints_PivotPointsIndicator = ((/* unused pure expression or super */ null && (PivotPointsIndicator)));
 /* *
  *

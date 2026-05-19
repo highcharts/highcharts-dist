@@ -1,5 +1,5 @@
 !/**
- * Highstock JS v12.6.0 (2026-04-13)
+ * Highstock JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/indicators/dema
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -9,6 +9,6 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Rafał Sebestjański
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */function(e,t){"object"==typeof exports&&"object"==typeof module?module.exports=t(e._Highcharts,e._Highcharts.SeriesRegistry):"function"==typeof define&&define.amd?define("highcharts/indicators/dema",["highcharts/highcharts"],function(e){return t(e,e.SeriesRegistry)}):"object"==typeof exports?exports["highcharts/indicators/dema"]=t(e._Highcharts,e._Highcharts.SeriesRegistry):e.Highcharts=t(e.Highcharts,e.Highcharts.SeriesRegistry)}("u"<typeof window?this:window,(e,t)=>(()=>{"use strict";var r={512:e=>{e.exports=t},944:t=>{t.exports=e}},o={};function i(e){var t=o[e];if(void 0!==t)return t.exports;var n=o[e]={exports:{}};return r[e](n,n.exports,i),n.exports}i.n=e=>{var t=e&&e.__esModule?()=>e.default:()=>e;return i.d(t,{a:t}),t},i.d=(e,t)=>{for(var r in t)i.o(t,r)&&!i.o(e,r)&&Object.defineProperty(e,r,{enumerable:!0,get:t[r]})},i.o=(e,t)=>Object.prototype.hasOwnProperty.call(e,t);var n={};i.d(n,{default:()=>x});var s=i(944),a=i.n(s),c=i(512),u=i.n(c);let{doc:p,win:h}=a();function l(e){return d(e)&&"number"==typeof e.nodeType}function f(e){let t=Object.prototype.toString.call(e);return"[object Array]"===t||"[object Array Iterator]"===t}function d(e,t){return!!e&&"object"==typeof e&&(!t||!f(e))}Array.prototype.find;let{ema:y}=u().seriesTypes;class g extends y{getEMA(e,t,r,o,i,n){return super.calculateEma(n||[],e,void 0===i?1:i,this.EMApercent,t,void 0===o?-1:o,r)}getValues(e,t){let r=t.period,o=[],i=2*r,n=e.xData,s=e.yData,a=s?s.length:0,c=[],u=[],p=[],h=0,l=0,d,y,g,x,b=-1,m,j=0;if(this.EMApercent=2/(r+1),!(a<2*r-1)){for(f(s[0])&&(b=t.index?t.index:0),j=(h=super.accumulatePeriodPoints(r,b,s))/r,h=0,x=r;x<a+2;x++)if(x<a+1&&(l=this.getEMA(s,y,j,b,x)[1],o.push(l)),y=l,x<i)h+=l;else{var v;x===i&&(j=h/r),l=o[x-r-1],d=this.getEMA([l],g,j)[1],m=[n[x-2],(v=2*l-d)>1e14?v:parseFloat(v.toPrecision(14))],c.push(m),u.push(m[0]),p.push(m[1]),g=d}return{values:c,xData:u,yData:p}}}}g.defaultOptions=function(e,...t){let r,o=[e,...t],i={},n=function(e,t){return"object"!=typeof e&&(e={}),function(e,t,r){for(let r in e)Object.hasOwnProperty.call(e,r)&&t.call((0,e[r]),e[r],r,e)}(t,function(r,o){if("__proto__"!==o&&"constructor"!==o){let i;!d(r,!0)||(i=r?.constructor,d(r,!0)&&!l(r)&&i?.name&&"Object"!==i.name)||l(r)?e[o]=t[o]:e[o]=n(e[o]||{},r)}}),e};!0===e&&(i=o[1],o=Array.prototype.slice.call(o,2));let s=o.length;for(r=0;r<s;r++)i=n(i,o[r]);return i}(y.defaultOptions),u().registerSeriesType("dema",g);let x=a();return n.default})());

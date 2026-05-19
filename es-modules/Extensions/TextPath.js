@@ -5,16 +5,22 @@
  *  (c) 2009-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
 'use strict';
 import H from '../Core/Globals.js';
-import { addEvent, defined, extend, merge } from '../Shared/Utilities.js';
+import { addEvent, defined, extend, merge, pushUnique } from '../Shared/Utilities.js';
 import { uniqueKey } from '../Core/Utilities.js';
-const { deg2rad } = H;
+const { composed, deg2rad } = H;
+/* *
+ *
+ *  Functions
+ *
+ * */
 /**
  * Set a text path for a `text` or `label` element, allowing the text to
  * flow along a path.
@@ -24,10 +30,11 @@ const { deg2rad } = H;
  *
  * Text path support is not bundled into `highcharts.js`, and requires the
  * `modules/textpath.js` file. However, it is included in the script files of
- * those series types that use it by default
+ * those series types that use it by default.
  *
  * @sample highcharts/members/renderer-textpath/ Text path demonstrated
  *
+ * @internal
  * @function Highcharts.SVGElement#setTextPath
  *
  * @param {Highcharts.SVGElement|undefined} path
@@ -40,8 +47,9 @@ const { deg2rad } = H;
  * @return {Highcharts.SVGElement} Returns the SVGElement for chaining.
  */
 function setTextPath(path, textPathOptions) {
+    const url = this.renderer.url, textWrapper = this.text || this, textPath = textWrapper.textPath, { attributes, enabled } = merge(
     // Defaults
-    textPathOptions = merge(true, {
+    {
         enabled: true,
         attributes: {
             dy: -5,
@@ -49,12 +57,9 @@ function setTextPath(path, textPathOptions) {
             textAnchor: 'middle'
         }
     }, textPathOptions);
-    const url = this.renderer.url, textWrapper = this.text || this, textPath = textWrapper.textPath, { attributes, enabled } = textPathOptions;
     path = path || (textPath && textPath.path);
     // Remove previously added event
-    if (textPath) {
-        textPath.undo();
-    }
+    textPath?.undo();
     if (path && enabled) {
         const undo = addEvent(textWrapper, 'afterModifyTree', (e) => {
             if (path && enabled) {
@@ -114,6 +119,7 @@ function setTextPath(path, textPathOptions) {
 /**
  * Attach a polygon to a bounding box if the element contains a textPath.
  *
+ * @internal
  * @function Highcharts.SVGElement#setPolygon
  *
  * @param {any} event
@@ -195,7 +201,8 @@ function setPolygon(event) {
 /**
  * Draw text along a textPath for a dataLabel.
  *
- * @function Highcharts.SVGElement#setTextPath
+ * @internal
+ * @function Highcharts.SVGElement#drawTextPath
  *
  * @param {any} event
  *        An event containing label options
@@ -210,19 +217,55 @@ function drawTextPath(event) {
         if (point.dataLabelPath &&
             !textPathOptions.enabled) {
             // Clean the DOM
-            point.dataLabelPath = (point.dataLabelPath.destroy());
+            point.dataLabelPath = point.dataLabelPath.destroy();
         }
     }
 }
-function compose(SVGElementClass) {
-    addEvent(SVGElementClass, 'afterGetBBox', setPolygon);
-    addEvent(SVGElementClass, 'beforeAddingDataLabel', drawTextPath);
-    const svgElementProto = SVGElementClass.prototype;
-    if (!svgElementProto.setTextPath) {
-        svgElementProto.setTextPath = setTextPath;
+/** @internal */
+export function composeTextPath(SVGElementClass) {
+    if (pushUnique(composed, 'TextPath')) {
+        addEvent(SVGElementClass, 'afterGetBBox', setPolygon);
+        addEvent(SVGElementClass, 'beforeAddingDataLabel', drawTextPath);
+        SVGElementClass.prototype.setTextPath =
+            SVGElementClass.prototype.setTextPath ?? setTextPath;
     }
 }
-const TextPath = {
-    compose
-};
-export default TextPath;
+/* *
+ *
+ *  API Declarations
+ *
+ * */
+/**
+ * Options for a label text which should follow marker's shape.
+ * Border and background are disabled for a label that follows a
+ * path.
+ *
+ * **Note:** Only SVG-based renderer supports this option. Setting
+ * `useHTML` to true will disable this option.
+ *
+ * Text path support is not bundled into `highcharts.js`, and requires the
+ * `modules/textpath.js` file. However, it is included in the script files of
+ * those series types that use it by default.
+ *
+ * @declare   Highcharts.DataLabelsTextPathOptionsObject
+ * @since     7.1.0
+ * @apioption plotOptions.series.dataLabels.textPath
+ */
+/**
+ * Presentation attributes for the text path.
+ *
+ * @type      {Highcharts.SVGAttributes}
+ * @since     7.1.0
+ * @default   { dy:-5, startOffset:'50%', textAnchor:'middle' }
+ * @apioption plotOptions.series.dataLabels.textPath.attributes
+ */
+/**
+ * Enable or disable `textPath` option for link's or marker's data
+ * labels.
+ *
+ * @type      {boolean}
+ * @since     7.1.0
+ * @default   true
+ * @apioption plotOptions.series.dataLabels.textPath.enabled
+ */
+(''); // Keep doclets above in transpiled file

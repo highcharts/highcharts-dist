@@ -5,8 +5,9 @@
  *  (c) 2009-2026 Highsoft AS
  *  Author: Sebastian Bochan
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -531,6 +532,8 @@ const lang = {
  * @sample stock/demo/stock-tools-custom-gui Stock Tools customized GUI
  *
  * @since        7.0.0
+ *
+ * @requires stock/modules/stock-tools
  * @optionparent stockTools
  */
 const stockTools = {
@@ -1191,8 +1194,10 @@ const stockTools = {
  *  Default Exports
  *
  * */
+/** @internal */
 const StockToolsDefaults = {
     lang,
     stockTools
 };
+/** @internal */
 export default StockToolsDefaults;

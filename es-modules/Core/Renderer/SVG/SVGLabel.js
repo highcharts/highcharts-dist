@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -135,6 +136,9 @@ class SVGLabel extends SVGElement {
             else if ('textOverflow' in textStyles) {
                 this.updateBoxSize();
             }
+            if ('color' in textStyles) {
+                this.updateBackground();
+            }
         }
         return SVGElement.prototype.css.call(this, styles);
     }
@@ -217,6 +221,7 @@ class SVGLabel extends SVGElement {
             this.updateBoxSize();
             this.doUpdate = false;
         }
+        this.updateBackground();
     }
     /**
      * After the text element is added, get the desired size of the border
@@ -282,6 +287,14 @@ class SVGLabel extends SVGElement {
         }
         this.updateTextPadding();
         this.reAlign();
+    }
+    updateBackground() {
+        if (this.fill === 'contrast') {
+            this.box?.attr({
+                fill: this.renderer.getContrast(this.text.styles.color || '#000'),
+                'fill-opacity': 0.65
+            });
+        }
     }
     /**
      * This function runs after the label is added to the DOM (when the bounding

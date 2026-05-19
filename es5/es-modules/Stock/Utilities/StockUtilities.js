@@ -1,0 +1,44 @@
+/* *
+ *
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Hønsi
+ *
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
+ *
+ *
+ * */
+'use strict';
+import { defined } from '../../Shared/Utilities.js';
+/* *
+ *
+ *  Functions
+ *
+ * */
+/**
+ * Sets the chart.fixedRange to the specified value. If the value is larger
+ * than actual range, sets it to the maximum possible range. (#20327)
+ *
+ * @internal
+ * @function Highcharts.StockChart#setFixedRange
+ * @param {number|undefined} range
+ *        Range to set in axis units.
+ */
+function setFixedRange(range) {
+    var xAxis = this.xAxis[0];
+    if (defined(xAxis.dataMax) &&
+        defined(xAxis.dataMin) &&
+        range) {
+        this.fixedRange = Math.min(range, xAxis.dataMax - xAxis.dataMin);
+    }
+    else {
+        this.fixedRange = range;
+    }
+}
+/** @internal */
+var StockUtilities = {
+    setFixedRange: setFixedRange
+};
+/** @internal */
+export default StockUtilities;

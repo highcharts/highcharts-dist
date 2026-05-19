@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.6.0 (2026-04-13)
+ * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/data
  * @requires highcharts
  *
@@ -9,19 +9,19 @@
  * (c) 2012-2026 Highsoft AS
  * Author: Torstein Hønsi
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Chart"], root["_Highcharts"]["Point"], root["_Highcharts"]["SeriesRegistry"]);
+		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Chart"], root["_Highcharts"]["Point"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["Time"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/data", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Axis"],amd1["Chart"],amd1["Point"],amd1["SeriesRegistry"]);});
+		define("highcharts/modules/data", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Axis"],amd1["Chart"],amd1["Point"],amd1["SeriesRegistry"],amd1["Time"]);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/data"] = factory(root["_Highcharts"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Chart"], root["_Highcharts"]["Point"], root["_Highcharts"]["SeriesRegistry"]);
+		exports["highcharts/modules/data"] = factory(root["_Highcharts"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Chart"], root["_Highcharts"]["Point"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["Time"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Axis"], root["Highcharts"]["Chart"], root["Highcharts"]["Point"], root["Highcharts"]["SeriesRegistry"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__532__, __WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__512__) => {
+		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Axis"], root["Highcharts"]["Chart"], root["Highcharts"]["Point"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["Time"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__532__, __WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__792__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -44,6 +44,13 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__532__;
+
+/***/ }),
+
+/***/ 792:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__792__;
 
 /***/ }),
 
@@ -133,8 +140,9 @@ var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default 
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1496,8 +1504,9 @@ function wrap(obj, method, func) {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Christer Vasseng, Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1712,12 +1721,517 @@ var highcharts_Axis_commonjs_highcharts_Axis_commonjs2_highcharts_Axis_root_High
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Chart"],"commonjs":["highcharts","Chart"],"commonjs2":["highcharts","Chart"],"root":["Highcharts","Chart"]}
 var highcharts_Chart_commonjs_highcharts_Chart_commonjs2_highcharts_Chart_root_Highcharts_Chart_ = __webpack_require__(960);
 var highcharts_Chart_commonjs_highcharts_Chart_commonjs2_highcharts_Chart_root_Highcharts_Chart_default = /*#__PURE__*/__webpack_require__.n(highcharts_Chart_commonjs_highcharts_Chart_commonjs2_highcharts_Chart_root_Highcharts_Chart_);
+;// ./code/es-modules/Data/ColumnUtils.js
+/* *
+ *
+ *  (c) 2020-2026 Highsoft AS
+ *
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
+ *
+ *
+ *  Authors:
+ *  - Dawid Draguła
+ *
+ * */
+/* *
+*
+* Functions
+*
+* */
+/**
+ * Sets the length of the column array.
+ *
+ * @param {DataTableColumn} column
+ * Column to be modified.
+ *
+ * @param {number} length
+ * New length of the column.
+ *
+ * @param {boolean} asSubarray
+ * If column is a typed array, return a subarray instead of a new array. It
+ * is faster `O(1)`, but the entire buffer will be kept in memory until all
+ * views of it are destroyed. Default is `false`.
+ *
+ * @return {DataTableColumn}
+ * Modified column.
+ *
+ * @private
+ */
+function setLength(column, length, asSubarray) {
+    if (Array.isArray(column)) {
+        column.length = length;
+        return column;
+    }
+    return column[asSubarray ? 'subarray' : 'slice'](0, length);
+}
+/**
+ * Splices a column array.
+ *
+ * @param {DataTableColumn} column
+ * Column to be modified.
+ *
+ * @param {number} start
+ * Index at which to start changing the array.
+ *
+ * @param {number} deleteCount
+ * An integer indicating the number of old array elements to remove.
+ *
+ * @param {boolean} removedAsSubarray
+ * If column is a typed array, return a subarray instead of a new array. It
+ * is faster `O(1)`, but the entire buffer will be kept in memory until all
+ * views to it are destroyed. Default is `true`.
+ *
+ * @param {Array<number>|TypedArray} items
+ * The elements to add to the array, beginning at the start index. If you
+ * don't specify any elements, `splice()` will only remove elements from the
+ * array.
+ *
+ * @return {SpliceResult}
+ * Object containing removed elements and the modified column.
+ *
+ * @private
+ */
+function splice(column, start, deleteCount, removedAsSubarray, items = []) {
+    if (Array.isArray(column)) {
+        if (!Array.isArray(items)) {
+            items = Array.from(items);
+        }
+        return {
+            removed: column.splice(start, deleteCount, ...items),
+            array: column
+        };
+    }
+    const Constructor = Object.getPrototypeOf(column)
+        .constructor;
+    const removed = column[removedAsSubarray ? 'subarray' : 'slice'](start, start + deleteCount);
+    const newLength = column.length - deleteCount + items.length;
+    const result = new Constructor(newLength);
+    result.set(column.subarray(0, start), 0);
+    result.set(items, start);
+    result.set(column.subarray(start + deleteCount), start + items.length);
+    return {
+        removed: removed,
+        array: result
+    };
+}
+/**
+ * Converts a cell value to a number.
+ *
+ * @param {DataTableCellType} value
+ * Cell value to convert to a number.
+ *
+ * @param {boolean} useNaN
+ * If `true`, returns `NaN` for non-numeric values; if `false`,
+ * returns `null` instead.
+ *
+ * @return {number | null}
+ * Number or `null` if the value is not a number.
+ *
+ * @private
+ */
+function convertToNumber(value, useNaN) {
+    switch (typeof value) {
+        case 'boolean':
+            return (value ? 1 : 0);
+        case 'number':
+            return (isNaN(value) && !useNaN ? null : value);
+        default:
+            value = parseFloat(`${value ?? ''}`);
+            return (isNaN(value) && !useNaN ? null : value);
+    }
+}
+/* *
+ *
+ *  Default Export
+ *
+ * */
+const ColumnUtils = {
+    convertToNumber,
+    setLength,
+    splice
+};
+/* harmony default export */ const Data_ColumnUtils = (ColumnUtils);
+
+;// ./code/es-modules/Data/DataTableCore.js
+/* *
+ *
+ *  (c) 2009-2026 Highsoft AS
+ *
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
+ *
+ *
+ *  Authors:
+ *  - Sophie Bremer
+ *  - Gøran Slettemark
+ *  - Torstein Hønsi
+ *
+ * */
+
+
+const { setLength: DataTableCore_setLength, splice: DataTableCore_splice } = Data_ColumnUtils;
+
+
+/* *
+ *
+ *  Class
+ *
+ * */
+/**
+ * Class to manage columns and rows in a table structure. It provides methods
+ * to add, remove, and manipulate columns and rows, as well as to retrieve data
+ * from specific cells.
+ *
+ * Highcharts allows passing a `DataTable` or a configuration object for a data
+ * table in the `dataTable` property, either chart-level
+ * [dataTable](https://api.highcharts.com/highcharts/dataTable) or as
+ * [series.dataTable](https://api.highcharts.com/highcharts/series.dataTable).
+ * The `DataTable` is then used as a source for the series data points, mapped
+ * by the `series.dataMapping` option.
+ *
+ * After chart instantiation, the data table can be accessed from the series as
+ * `series.dataTable`. CRUD operations on the data table will be reflected in
+ * the chart.
+ *
+ * @example
+ * const dataTable = new Highcharts.DataTable({
+ *   columns: {
+ *     year: [2020, 2021, 2022, 2023],
+ *     cost: [11, 13, 12, 14],
+ *     revenue: [12, 15, 14, 18]
+ *   }
+ * });
+ *
+ * @class
+ * @name Highcharts.DataTable
+ *
+ * @param {Highcharts.DataTableOptionsObject} [options]
+ * Options to initialize the new DataTable instance.
+ */
+class DataTableCore {
+    constructor(options = {}) {
+        this.isDataTable = true;
+        this.autoId = !options.id;
+        this.columns = {};
+        this.id = (options.id || (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.uniqueKey)());
+        this.rowCount = 0;
+        this.versionTag = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.uniqueKey)();
+        let rowCount = 0;
+        objectEach(options.columns || {}, (column, columnId) => {
+            this.columns[columnId] = column.slice();
+            rowCount = Math.max(rowCount, column.length);
+        });
+        this.applyRowCount(rowCount);
+    }
+    /* *
+     *
+     *  Functions
+     *
+     * */
+    /**
+     * Applies a row count to the table by setting the `rowCount` property and
+     * adjusting the length of all columns.
+     *
+     * @private
+     * @param {number} rowCount The new row count.
+     */
+    applyRowCount(rowCount) {
+        this.rowCount = rowCount;
+        objectEach(this.columns, (column, columnId) => {
+            if (column.length !== rowCount) {
+                this.columns[columnId] = DataTableCore_setLength(column, rowCount);
+            }
+        });
+    }
+    /**
+     * Delete rows. Simplified version of the full
+     * `DataTable.deleteRows` method.
+     *
+     * @sample highcharts/datatable/live-chart/
+     *       Add and delete rows in a live chart
+     * @sample highcharts/datatable/shared-with-grid/
+     *       Chart with data table CRUD operations
+     *
+     * @function Highcharts.DataTable#deleteRows
+     *
+     * @param {number} rowIndex
+     * The start row index
+     *
+     * @param {number} [rowCount=1]
+     * The number of rows to delete
+     *
+     * @return {void}
+     *
+     * @emits #afterDeleteRows
+     */
+    deleteRows(rowIndex, rowCount = 1) {
+        if (rowCount > 0 && rowIndex < this.rowCount) {
+            let length = 0;
+            objectEach(this.columns, (column, columnId) => {
+                this.columns[columnId] =
+                    DataTableCore_splice(column, rowIndex, rowCount).array;
+                length = column.length;
+            });
+            this.rowCount = length;
+        }
+        fireEvent(this, 'afterDeleteRows', { rowIndex, rowCount });
+        this.versionTag = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.uniqueKey)();
+    }
+    /**
+     * Fetches the given column by the canonical column ID. Simplified version
+     * of the full `DataTable.getRow` method, always returning by reference.
+     *
+     * @function Highcharts.DataTable#setColumn
+     *
+     * @param {string} columnId
+     * ID of the column to get.
+     *
+     * @return {Highcharts.DataTableColumn|undefined}
+     * A copy of the column, or `undefined` if not found.
+     */
+    getColumn(columnId, 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    asReference) {
+        return this.columns[columnId];
+    }
+    /**
+     * Retrieves all or the given columns. Simplified version of the full
+     * `DataTable.getColumns` method, always returning by reference.
+     *
+     * @function Highcharts.DataTable#getColumns
+     *
+     * @param {Array<string>} [columnIds]
+     * Column ids to retrieve.
+     *
+     * @return {Highcharts.DataTableColumnCollection}
+     * Collection of columns. If a requested column was not found, it is
+     * `undefined`.
+     */
+    getColumns(columnIds, 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    asReference) {
+        return (columnIds || Object.keys(this.columns)).reduce((columns, columnId) => {
+            columns[columnId] = this.columns[columnId];
+            return columns;
+        }, {});
+    }
+    /**
+     * Retrieves the row at a given index.
+     *
+     * @function Highcharts.DataTable#getRowObject
+     *
+     * @param {number} rowIndex
+     * Row index to retrieve. First row has index 0.
+     *
+     * @param {Array<string>} [columnNames]
+     * Column names to retrieve.
+     *
+     * @return {Record<string, number|string|undefined>|undefined}
+     * Returns the row values, or `undefined` if not found.
+     */
+    getRowObject(rowIndex, columnNames) {
+        const row = {}, columns = this.columns;
+        columnNames ?? (columnNames = Object.keys(this.columns));
+        for (const columnName of columnNames) {
+            row[columnName] = columns[columnName]?.[rowIndex];
+        }
+        return row;
+    }
+    /**
+     * Sets cell values for a column. Will insert a new column, if not found.
+     *
+     * @function Highcharts.DataTable#setColumn
+     *
+     * @param {string} columnId
+     * Column name to set.
+     *
+     * @param {Highcharts.DataTableColumn} [column]
+     * Values to set in the column.
+     *
+     * @param {number} [rowIndex]
+     * Index of the first row to change. (Default: 0)
+     *
+     * @param {Record<string, (boolean|number|string|null|undefined)>} [eventDetail]
+     * Custom information for pending events.
+     *
+     * @emits #setColumns
+     * @emits #afterSetColumns
+     */
+    setColumn(columnId, column = [], rowIndex = 0, eventDetail) {
+        this.setColumns({ [columnId]: column }, rowIndex, eventDetail);
+    }
+    /**
+     * Sets cell values for multiple columns. Will insert new columns, if not
+     * found. Simplified version of the full `DataTable.setColumns`, limited
+     * to full replacement of the columns (undefined `rowIndex`).
+     *
+     * @sample highcharts/datatable/shared-with-grid/
+     *       Chart with data table CRUD operations
+     *
+     * @function Highcharts.DataTable#setColumns
+     *
+     * @param {Highcharts.DataTableColumnCollection} columns
+     * Columns as a collection, where the keys are the column names.
+     *
+     * @param {number} [rowIndex]
+     * Index of the first row to change. Ignored in the simplified `DataTable`,
+     * as it always replaces the full column.
+     *
+     * @param {Record<string, (boolean|number|string|null|undefined)>} [eventDetail]
+     * Custom information for pending events.
+     *
+     * @emits #setColumns
+     * @emits #afterSetColumns
+     */
+    setColumns(columns, rowIndex, eventDetail) {
+        let rowCount = this.rowCount;
+        objectEach(columns, (column, columnId) => {
+            this.columns[columnId] = column.slice();
+            rowCount = column.length;
+        });
+        this.applyRowCount(rowCount);
+        if (!eventDetail?.silent) {
+            fireEvent(this, 'afterSetColumns');
+            this.versionTag = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.uniqueKey)();
+        }
+    }
+    /**
+     * Sets cell values of a row. Will insert a new row if no index was
+     * provided, or if the index is higher than the total number of table rows.
+     * A simplified version of the full `DateTable.setRow`, limited to objects.
+     *
+     * @sample highcharts/datatable/live-chart/
+     *       Add and delete rows in a live chart
+     * @sample stock/datatable/live-candlestick/
+     *       Live candlestick
+     * @sample highcharts/datatable/shared-with-grid/
+     *       Chart with data table CRUD operations
+     *
+     * @function Highcharts.DataTable#setRow
+     *
+     * @param {Record<string, number|string|undefined>} row
+     * Cell values to set.
+     *
+     * @param {number} [rowIndex]
+     * Index of the row to set. Leave `undefined` to add as a new row.
+     *
+     * @param {boolean} [insert]
+     * Whether to insert the row at the given index, or to overwrite the row.
+     *
+     * @param {Record<string, (boolean|number|string|null|undefined)>} [eventDetail]
+     * Custom information for pending events.
+     *
+     * @emits #afterSetRows
+     */
+    setRow(row, rowIndex = this.rowCount, insert, eventDetail) {
+        var _a;
+        const { columns } = this, indexRowCount = insert ? this.rowCount + 1 : rowIndex + 1, rowKeys = Object.keys(row);
+        if (eventDetail?.addColumns !== false) {
+            for (let i = 0, iEnd = rowKeys.length; i < iEnd; i++) {
+                columns[_a = rowKeys[i]] || (columns[_a] = new Array(this.rowCount));
+            }
+        }
+        objectEach(columns, (column, columnId) => {
+            if (column) {
+                if (insert) {
+                    column = DataTableCore_splice(column, rowIndex, 0, true, [row[columnId]]).array;
+                }
+                else {
+                    column[rowIndex] =
+                        // Preserve explicit null and undefined but fall back
+                        // to existing value if the new row does not have the
+                        // key
+                        columnId in row ?
+                            row[columnId] :
+                            column[rowIndex];
+                }
+                columns[columnId] = column;
+            }
+        });
+        this.applyRowCount(Math.max(indexRowCount, this.rowCount));
+        if (!eventDetail?.silent) {
+            fireEvent(this, 'afterSetRows', { rowIndex });
+            this.versionTag = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.uniqueKey)();
+        }
+    }
+    /**
+     * Returns the modified (clone) or the original data table if the modified
+     * one does not exist.
+     *
+     * @return {Highcharts.DataTable}
+     * The modified (clone) or the original data table.
+     */
+    getModified() {
+        return this.modified || this;
+    }
+}
+/* *
+ *
+ *  Default Export
+ *
+ * */
+/* harmony default export */ const Data_DataTableCore = (DataTableCore);
+/* *
+ *
+ *  API Declarations
+ *
+ * */
+/**
+ * A collection of data table columns defined by a object where the key is the
+ * column ID and the value is an array of the column values. Typed arrays are
+ * supported.
+ *
+ * @type {Highcharts.DataTableColumnCollection|undefined}
+ * @apioption dataTable.columns
+ */
+/**
+ * Custom ID to identify the new DataTable instance.
+ *
+ * @type {string|undefined}
+ * @apioption dataTable.id
+ */
+/**
+ * A typed array.
+ * @typedef {Int8Array|Uint8Array|Uint8ClampedArray|Int16Array|Uint16Array|Int32Array|Uint32Array|Float32Array|Float64Array} Highcharts.TypedArray
+ */ /**
+* A column of values in a data table.
+* @typedef {Array<boolean|null|number|string|undefined>|Highcharts.TypedArray} Highcharts.DataTableColumn
+*/ /**
+* A collection of data table columns defined by a object where the key is the
+* column ID and the value is an array of the column values. Typed arrays are
+* supported.
+* @typedef {Record<string, Highcharts.DataTableColumn>} Highcharts.DataTableColumnCollection
+*/
+/**
+ * Options for the `DataTable` or `DataTableCore` classes.
+ * @interface Highcharts.DataTableOptionsObject
+ */ /**
+* The column options for the data table. The columns are defined by an object
+* where the key is the column ID and the value is an array of the column
+* values.
+*
+* @name Highcharts.DataTableOptionsObject.columns
+* @type {Highcharts.DataTableColumnCollection|undefined}
+*/ /**
+* Custom ID to identify the new DataTable instance.
+*
+* @name Highcharts.DataTableOptionsObject.id
+* @type {string|undefined}
+*/
+(''); // Keeps doclets above in JS file
+
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Point"],"commonjs":["highcharts","Point"],"commonjs2":["highcharts","Point"],"root":["Highcharts","Point"]}
 var highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_ = __webpack_require__(260);
 var highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_default = /*#__PURE__*/__webpack_require__.n(highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_);
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Time"],"commonjs":["highcharts","Time"],"commonjs2":["highcharts","Time"],"root":["Highcharts","Time"]}
+var highcharts_Time_commonjs_highcharts_Time_commonjs2_highcharts_Time_root_Highcharts_Time_ = __webpack_require__(792);
+var highcharts_Time_commonjs_highcharts_Time_commonjs2_highcharts_Time_root_Highcharts_Time_default = /*#__PURE__*/__webpack_require__.n(highcharts_Time_commonjs_highcharts_Time_commonjs2_highcharts_Time_root_Highcharts_Time_);
 ;// ./code/es-modules/Extensions/Data.js
 /* *
  *
@@ -1726,8 +2240,9 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  *  (c) 2012-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1735,49 +2250,65 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
 
 
 
-const { getOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+
 
 const { doc: Data_doc } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { ajax: Data_ajax } = Core_HttpUtilities;
 
 
 const { seriesTypes } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
+
+
 
 /* *
  *
  *  Functions
  *
  * */
-/** @internal */
+/**
+ * Get the free column indexes.
+ *
+ * @param {number} numberOfColumns
+ * The number of columns.
+ *
+ * @param {Array<SeriesBuilder>} seriesBuilders
+ * The seriesBuilders.
+ *
+ * @return {Array<number>}
+ * The free indexes.
+ *
+ * @internal
+ */
 function getFreeIndexes(numberOfColumns, seriesBuilders) {
-    const freeIndexes = [], freeIndexValues = [];
-    let s, i, referencedIndexes;
     // Add all columns as free
-    for (i = 0; i < numberOfColumns; i = i + 1) {
-        freeIndexes.push(true);
-    }
+    const freeIndexes = new Array(numberOfColumns).fill(true), freeIndexValues = [];
     // Loop all defined builders and remove their referenced columns
-    for (s = 0; s < seriesBuilders.length; s = s + 1) {
-        referencedIndexes = seriesBuilders[s].getReferencedColumnIndexes();
-        for (i = 0; i < referencedIndexes.length; i = i + 1) {
-            freeIndexes[referencedIndexes[i]] = false;
-        }
-    }
+    seriesBuilders.forEach((seriesBuilder) => {
+        seriesBuilder.getReferencedColumnIndexes().forEach((index) => {
+            freeIndexes[index] = false;
+        });
+    });
     // Collect the values for the free indexes
-    for (i = 0; i < freeIndexes.length; i = i + 1) {
-        if (freeIndexes[i]) {
+    freeIndexes.forEach((isFree, i) => {
+        if (isFree) {
             freeIndexValues.push(i);
         }
-    }
+    });
     return freeIndexValues;
 }
 /**
+ * Checks if the data options has URL options.
  *
+ * @internal
+ *
+ * @param {Highcharts.DataOptions} options
+ * The data options to check.
+ *
+ * @return {boolean}
+ * Returns true if any of the URL options is set.
  */
 function hasURLOption(options) {
-    return Boolean(options &&
-        (options.rowsURL || options.csvURL || options.columnsURL));
+    return !!(options.rowsURL || options.csvURL || options.columnsURL);
 }
 /* *
  *
@@ -1937,7 +2468,8 @@ class Data {
         this.columns = (dataOptions.columns ||
             this.rowsToColumns(dataOptions.rows) ||
             []);
-        this.firstRowAsNames = pick(dataOptions.firstRowAsNames, this.firstRowAsNames, true);
+        this.firstRowAsNames = dataOptions.firstRowAsNames ??
+            this.firstRowAsNames ?? true;
         this.decimalRegex = (decimalPoint &&
             new RegExp('^(-?[0-9]+)' + decimalPoint + '([0-9]+)$'));
         // Always stop old polling when we have new options
@@ -1981,6 +2513,7 @@ class Data {
      * values respectively, and an OHLC series takes four columns.
      *
      * @function Highcharts.Data#getColumnDistribution
+     * @internal
      */
     getColumnDistribution() {
         const chartOptions = this.chartOptions, options = this.options, xColumns = [], getValueCount = function (type = 'line') {
@@ -2134,6 +2667,8 @@ class Data {
         function parseRow(columnStr, rowNumber, noAdd, callbacks) {
             let i = 0, c = '', cl = '', cn = '', token = '', actualColumn = 0, column = 0;
             /**
+             * Read a single character from the column string.
+             *
              * @internal
              */
             function read(j) {
@@ -2142,6 +2677,8 @@ class Data {
                 cn = columnStr[j + 1];
             }
             /**
+             * Push a type to the dataTypes array.
+             *
              * @internal
              */
             function pushType(type) {
@@ -2153,6 +2690,8 @@ class Data {
                 }
             }
             /**
+             * Push a token to the columns array.
+             *
              * @internal
              */
             function push() {
@@ -2405,7 +2944,7 @@ class Data {
                 calculatedFormat = guessedFormat.join('/');
                 // If the calculated format is not valid, we need to present an
                 // error.
-                if (!(options.dateFormats || self.dateFormats)[calculatedFormat]) {
+                if (!self.dateFormats[calculatedFormat]) {
                     // This should emit an event instead
                     fireEvent(self, 'deduceDateFailed');
                     return format;
@@ -2532,13 +3071,20 @@ class Data {
             return false;
         }
         // Do not allow polling more than once a second
-        if (updateIntervalMs < 1000) {
-            updateIntervalMs = 1000;
-        }
+        updateIntervalMs = Math.max(updateIntervalMs, 1000);
         delete options.csvURL;
         delete options.rowsURL;
         delete options.columnsURL;
         /**
+         * Performs a data fetch with optional polling support. Attempts to load
+         * data from configured sources in the following order: `csvURL`,
+         * `rowsURL`, then `columnsURL`. On success, updates the chart with the
+         * received data.
+         *
+         * @param {boolean} initialFetch
+         * Whether this is the initial fetch. When `true`, clears any existing
+         * polling timeout and sets the active `liveDataURL` on the chart.
+         *
          * @internal
          */
         function performFetch(initialFetch) {
@@ -2549,8 +3095,8 @@ class Data {
             function request(url, done, tp) {
                 if (!url ||
                     !/^(http|\/|\.\/|\.\.\/)/.test(url)) {
-                    if (url && options.error) {
-                        options.error('Invalid URL');
+                    if (url) {
+                        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.error)(`Invalid URL: ${url}`, false, chart);
                     }
                     return false;
                 }
@@ -2559,6 +3105,8 @@ class Data {
                     chart.liveDataURL = url;
                 }
                 /**
+                 * Schedules the next fetch if polling is enabled and the URL
+                 * has not changed since the request was initiated.
                  * @internal
                  */
                 function poll() {
@@ -2569,7 +3117,7 @@ class Data {
                             setTimeout(performFetch, updateIntervalMs);
                     }
                 }
-                Data_ajax({
+                ajax({
                     url: url,
                     dataType: tp || 'json',
                     success: function (res) {
@@ -2578,21 +3126,23 @@ class Data {
                         }
                         poll();
                     },
-                    error: function (xhr, text) {
+                    error: function (xhr, e) {
                         if (++currentRetries < maxRetries) {
                             poll();
                         }
-                        return options.error?.(text, xhr);
+                        if (!chart.options) {
+                            // If the chart is destroyed, ignore the error as
+                            // a cancelled request.
+                            return;
+                        }
+                        return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.error)(`Request failed - ${xhr.status} \n` +
+                            (typeof e === 'string' ? e : e.message), false, chart);
                     }
                 });
                 return true;
             }
             if (!request(originalOptions.csvURL, function (res) {
-                chart.update({
-                    data: {
-                        csv: res
-                    }
-                });
+                chart.update({ data: { csv: res } });
             }, 'text')) {
                 if (!request(originalOptions.rowsURL, function (res) {
                     chart.update({
@@ -2635,7 +3185,7 @@ class Data {
             const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
             const start = (alphabet.charAt(options.startColumn || 0) || 'A') +
                 ((options.startRow || 0) + 1);
-            let end = alphabet.charAt(pick(options.endColumn, -1)) || 'ZZ';
+            let end = alphabet.charAt(options.endColumn ?? -1) || 'ZZ';
             if (defined(options.endRow)) {
                 end += options.endRow + 1;
             }
@@ -2657,7 +3207,7 @@ class Data {
                     'dateTimeRenderOption=FORMATTED_STRING&' +
                     'key=' + options.googleAPIKey
             ].join('/');
-            Data_ajax({
+            ajax({
                 url,
                 dataType: 'json',
                 success: function (json) {
@@ -2669,7 +3219,13 @@ class Data {
                     }
                 },
                 error: function (xhr, text) {
-                    return options.error?.(text, xhr);
+                    if (!chart.options) {
+                        // If the chart is destroyed, ignore the error as
+                        // a cancelled request.
+                        return;
+                    }
+                    return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.error)(`Request failed - ${xhr.status} \n` +
+                        (typeof text === 'string' ? text : text.message), false, chart);
                 }
             });
         }
@@ -2812,17 +3368,12 @@ class Data {
                     if (typeof column[row + 1] !== 'undefined') {
                         diff = dateVal > column[row + 1];
                         if (diff !== descending &&
-                            typeof descending !== 'undefined') {
-                            if (this.alternativeFormat) {
-                                this.dateFormat = this.alternativeFormat;
-                                row = column.length;
-                                this.alternativeFormat =
-                                    this.dateFormats[this.dateFormat]
-                                        .alternative;
-                            }
-                            else {
-                                column.unsorted = true;
-                            }
+                            typeof descending !== 'undefined' &&
+                            this.alternativeFormat) {
+                            this.dateFormat = this.alternativeFormat;
+                            row = column.length;
+                            this.alternativeFormat =
+                                this.dateFormats[this.dateFormat].alternative;
                         }
                         descending = diff;
                     }
@@ -2845,19 +3396,6 @@ class Data {
         if (isXColumn && column.mixed) {
             columns[col] = rawColumns[col];
         }
-        // If the 0 column is date or number and descending, reverse all
-        // columns.
-        if (isXColumn && descending && this.options.sort) {
-            for (col = 0; col < columns.length; col++) {
-                columns[col].reverse();
-                if (firstRowAsNames) {
-                    const poppedColumn = columns[col].pop();
-                    if (poppedColumn) {
-                        columns[col].unshift(poppedColumn);
-                    }
-                }
-            }
-        }
     }
     /**
      * Parse a date and return it as a number. Overridable through
@@ -2870,6 +3408,9 @@ class Data {
         let ret, key, format, dateFormat = this.options.dateFormat || this.dateFormat, match;
         if (parseDate) {
             ret = parseDate(val);
+        }
+        else if (parseDate === false) {
+            ret = val;
         }
         else if (typeof val === 'string') {
             // Auto-detect the date format the first time
@@ -2899,26 +3440,7 @@ class Data {
             }
             // Fall back to Date.parse
             if (!match) {
-                if (val.match(/:.+(GMT|UTC|[Z+\-])/)) {
-                    val = val
-                        .replace(/\s*(?:GMT|UTC)?([+\-])(\d\d)(\d\d)$/, '$1$2:$3')
-                        .replace(/(?:\s+|GMT|UTC)([+\-])/, '$1')
-                        .replace(/(\d)\s*(?:GMT|UTC|Z)$/, '$1+00:00');
-                }
-                match = Date.parse(val);
-                // External tools like Date.js and MooTools extend Date object
-                // and return a date.
-                if (typeof match === 'object' &&
-                    match !== null &&
-                    match.getTime) {
-                    ret = (match.getTime() -
-                        match.getTimezoneOffset() *
-                            60000);
-                    // Timestamp
-                }
-                else if (isNumber(match)) {
-                    ret = match - (new Date(match)).getTimezoneOffset() * 60000;
-                }
+                ret = new (highcharts_Time_commonjs_highcharts_Time_commonjs2_highcharts_Time_root_Highcharts_Time_default())().parse(val);
             }
         }
         return ret;
@@ -2943,6 +3465,36 @@ class Data {
         }
     }
     /**
+     * Return a DataTable with the parsed data
+     *
+     * @example
+     * const csv = await fetch(
+     *   'https://www.example.com/sample-data.csv'
+     * ).then(result => result.text());
+     * const dataTable = new Highcharts.Data({ csv }).getDataTable();
+     *
+     * @sample highcharts/data/getdatatable
+     *
+     * @function Highcharts.Data#getDataTable
+     *
+     * @since next
+     * @return {Highcharts.DataTable} DataTable with the parsed data
+     */
+    getDataTable() {
+        return new Data_DataTableCore({
+            columns: Object.values(this.columns || [])
+                .reduce((dtColumns, dtColumn) => {
+                // To avoid shifting the original column, create a copy
+                const column = dtColumn.slice(), columnId = column.shift();
+                if (typeof columnId === 'string' ||
+                    typeof columnId === 'number') {
+                    dtColumns[columnId] = column;
+                }
+                return dtColumns;
+            }, {})
+        });
+    }
+    /**
      * A hook for working directly on the parsed columns
      *
      * @function Highcharts.Data#parsed
@@ -2959,6 +3511,7 @@ class Data {
      * The function requires that the context has the `valueCount` property set.
      *
      * @function Highcharts.Data#complete
+     * @internal
      */
     complete() {
         const columns = this.columns = this.columns || [], xColumns = [], options = this.options, allSeriesBuilders = [];
@@ -2970,7 +3523,7 @@ class Data {
                 for (i = 0; i < columns.length; i++) {
                     const curCol = columns[i];
                     if (!defined(curCol.name)) {
-                        curCol.name = pick(curCol.shift(), '').toString();
+                        curCol.name = (curCol.shift() ?? '').toString();
                     }
                 }
             }
@@ -3115,8 +3668,8 @@ class Data {
         const chart = this.chart, chartOptions = chart.options;
         if (options) {
             // Set the complete handler
-            options.afterComplete = function (dataInstance, dataOptions) {
-                if (!dataOptions) {
+            options.afterComplete = function (dataInstance, dataChartOptions) {
+                if (!dataChartOptions) {
                     return;
                 }
                 // Avoid setting axis options unless they change. Running
@@ -3133,11 +3686,11 @@ class Data {
                 }
                 else {
                     // Prefer smooth points update when no axis update
-                    (dataOptions?.series || []).forEach(function (seriesOptions) {
+                    (dataChartOptions?.series || []).forEach(function (seriesOptions) {
                         delete seriesOptions.pointStart;
                     });
                 }
-                chart.update(dataOptions, redraw, true);
+                chart.update(dataChartOptions, redraw, true);
             };
             // Apply it
             merge(true, chartOptions.data, options);
@@ -3161,7 +3714,7 @@ addEvent((highcharts_Axis_commonjs_highcharts_Axis_commonjs2_highcharts_Axis_roo
 // Extend Chart.init so that the Chart constructor accepts a new configuration
 // option group, data.
 addEvent((highcharts_Chart_commonjs_highcharts_Chart_commonjs2_highcharts_Chart_root_Highcharts_Chart_default()), 'init', function (e) {
-    const chart = this, callback = e.args[1], defaultDataOptions = getOptions().data;
+    const chart = this, callback = e.args[1], defaultDataOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.getOptions)().data;
     let userOptions = (e.args[0] || {});
     if ((defaultDataOptions || userOptions && userOptions.data) &&
         !chart.hasDataDef) {
@@ -3169,6 +3722,7 @@ addEvent((highcharts_Chart_commonjs_highcharts_Chart_commonjs2_highcharts_Chart_
         /**
          * The data parser for this chart.
          *
+         * @requires modules/data
          * @name Highcharts.Chart#data
          * @type {Highcharts.Data|undefined}
          */
@@ -3294,7 +3848,7 @@ class SeriesBuilder {
                 });
             }
             // Now use the lowest index as name column
-            this.name = columns[pick(columnIndexes.shift(), 0)].name;
+            this.name = columns[columnIndexes.shift() ?? 0].name;
         }
         return point;
     }
@@ -3368,6 +3922,9 @@ class SeriesBuilder {
  * @param {string} csv
  *        The CSV to modify.
  *
+ * @param {Highcharts.Data} ctx
+ *        The Data instance.
+ *
  * @return {string}
  *         The CSV to parse.
  */
@@ -3425,8 +3982,10 @@ class SeriesBuilder {
  *
  * @callback Highcharts.DataParsedCallbackFunction
  *
- * @param {Array<Array<*>>} columns
+ * @param {Array<Array<Highcharts.DataValueType>>} columns
  *        The parsed columns by the data module.
+ * @param {Highcharts.Data} ctx
+ *        The Data object instance.
  *
  * @return {boolean|undefined}
  *         Return `false` to stop completion, or call `this.complete()` to
@@ -3459,7 +4018,7 @@ class SeriesBuilder {
  * @apioption data
  */
 /**
- * A callback function to modify the CSV before parsing it. Return the modified
+ * A callback function to modify the CSV before parsing it. Returns the modified
  * string.
  *
  * @sample {highcharts} highcharts/demo/line-csv/
@@ -3706,12 +4265,15 @@ class SeriesBuilder {
  * @apioption data.parsed
  */
 /**
- * A callback function to parse string representations of dates into
- * JavaScript timestamps. Should return an integer timestamp on success.
+ * A callback function to parse string representations of dates into JavaScript
+ * timestamps. Should return an integer timestamp on success.
+ *
+ * Set `false` to disable date parsing. Highcharts supports internal date
+ * parsing as of v12.
  *
  * @see [dateFormat](#data.dateFormat)
  *
- * @type      {Highcharts.DataParseDateCallbackFunction}
+ * @type      {Highcharts.DataParseDateCallbackFunction|false}
  * @since     4.0
  * @apioption data.parseDate
  */

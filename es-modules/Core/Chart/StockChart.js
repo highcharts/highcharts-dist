@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -109,10 +110,10 @@ class StockChart extends Chart {
      * @param {Highcharts.Options} userOptions
      *        Custom options.
      *
-     * @param {Function} [callback]
+     * @param {Function|true} [callback]
      *        Function to run when the chart has loaded and all external
-     *        images are loaded.
-     *
+     *        images are loaded. Set to `true` to return a promise that
+     *        resolves when the chart is ready.
      *
      * @emits Highcharts.StockChart#event:init
      * @emits Highcharts.StockChart#event:afterInit
@@ -297,12 +298,12 @@ addEvent(Chart, 'update', function (e) {
                     .attr({
                     fill: options.backgroundColor ||
                         point?.series?.color || // #14888
-                        "#666666" /* Palette.neutralColor60 */,
+                        'var(--highcharts-neutral-color-60)',
                     stroke: options.borderColor || '',
                     'stroke-width': options.borderWidth || 0
                 })
                     .css(extend({
-                    color: "#ffffff" /* Palette.backgroundColor */,
+                    color: 'var(--highcharts-background-color)',
                     fontWeight: 'normal',
                     fontSize: '0.7em',
                     textAlign: 'center'
@@ -449,17 +450,18 @@ addEvent(Chart, 'update', function (e) {
      * @internal
      */
     function onAxisGetPlotLinePath(e) {
-        const axis = this, series = (axis.isLinked && !axis.series && axis.linkedParent ?
+        const axis = this, axisOptions = axis.options, series = (axis.isLinked && !axis.series && axis.linkedParent ?
             axis.linkedParent.series :
-            axis.series), { chart, horiz } = axis, renderer = chart.renderer, result = [], { acrossPanes = true, force, translatedValue, value } = e, allPerpendicularAxes = (axis.isXAxis ? chart.yAxis : chart.xAxis) || [], 
+            axis.series), { chart, horiz } = axis, renderer = chart.renderer, result = [], { acrossPanes = true, force, translatedValue, value } = e, allPerpendicularAxes = (axis.isXAxis ? chart.yAxis : chart.xAxis) || [], crossingPosName = horiz ? 'top' : 'left', crossingLenName = horiz ? 'height' : 'width', hasCrossingBounds = defined(axisOptions[crossingPosName]) ||
+            defined(axisOptions[crossingLenName]), 
         /**
          * Return the other axis based on either the axis option or on
          * related series.
          * @internal
          */
         getAxis = (coll) => {
-            const otherColl = coll === 'xAxis' ? 'yAxis' : 'xAxis', opt = axis.options[otherColl];
-            if (acrossPanes && !axis.options.isInternal) {
+            const otherColl = coll === 'xAxis' ? 'yAxis' : 'xAxis', opt = axisOptions[otherColl];
+            if (acrossPanes && !axisOptions.isInternal) {
                 return allPerpendicularAxes.filter((a) => !a.options.isInternal);
             }
             // Other axis indexed by number
@@ -481,7 +483,7 @@ addEvent(Chart, 'update', function (e) {
         }
         let axes = [], // #3416 need a default array
         uniqueAxes, transVal;
-        if (chart.options.isStock &&
+        if ((chart.options.isStock || hasCrossingBounds) &&
             // Ignore in case of colorAxis or zAxis. #3360, #3524, #6720
             (axis.coll === 'xAxis' || axis.coll === 'yAxis')) {
             e.preventDefault();
@@ -527,14 +529,16 @@ addEvent(Chart, 'update', function (e) {
                     }
                 }
                 if (!skip) {
-                    const crossingPosName = horiz ? 'top' : 'left', crossingLenName = horiz ? 'height' : 'width';
-                    if (!acrossPanes &&
-                        // If the perpendicular position is set explicitly on
-                        // the axis, use it. For example, if `top` and `height`
-                        // options are set on a horizontal x-axis, the grid
-                        // lines should conform to that position.
-                        (axis.options[crossingPosName] ||
-                            axis.options[crossingLenName])) {
+                    if (
+                    // If the perpendicular position is set explicitly on
+                    // the axis, use it. For example, if `top` and `height`
+                    // options are set on a horizontal x-axis, the grid
+                    // lines should conform to that position.
+                    hasCrossingBounds &&
+                        // In parallel coordinates, the axis height/width is 0,
+                        // so we need to skip that, #24442.
+                        axis[crossingLenName] > 0 &&
+                        !acrossPanes) {
                         pushSegment(pos, axis[crossingPosName], axis[crossingPosName] + axis[crossingLenName]);
                     }
                     else {
@@ -625,7 +629,8 @@ addEvent(Chart, 'update', function (e) {
      *         The chart object.
      */
     function stockChart(a, b, c) {
-        return new StockChart(a, b, c);
+        const chart = new StockChart(a, b, c);
+        return chart.promise || chart;
     }
     StockChart.stockChart = stockChart;
     /* eslint-enable jsdoc/check-param-names */

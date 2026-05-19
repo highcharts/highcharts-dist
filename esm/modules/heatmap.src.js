@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v12.6.0 (2026-04-13)
+ * @license Highmaps JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/heatmap
  * @requires highcharts
  *
  * (c) 2009-2026 Highsoft AS
  * Author: Torstein Hønsi
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 import "./coloraxis.src.js";
@@ -67,8 +67,9 @@ var external_highcharts_src_js_default_SVGElement_default = /*#__PURE__*/__webpa
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1430,8 +1431,9 @@ function wrap(obj, method, func) {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1558,8 +1560,9 @@ var ColorMapComposition;
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1671,8 +1674,9 @@ extend(HeatmapPoint.prototype, {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1688,7 +1692,6 @@ extend(HeatmapPoint.prototype, {
  * values contained in a matrix are represented as colors.
  *
  * @productdesc {highcharts}
- * Requires `modules/heatmap`.
  *
  * @sample highcharts/demo/heatmap/
  *         Simple heatmap
@@ -1702,6 +1705,7 @@ extend(HeatmapPoint.prototype, {
  *               lineWidth, pointInterval, pointIntervalUnit, pointRange,
  *               pointStart, shadow, softThreshold, stacking, step, threshold
  * @product      highcharts highmaps
+ * @requires     modules/heatmap
  * @optionparent plotOptions.heatmap
  */
 const HeatmapSeriesDefaults = {
@@ -1789,7 +1793,7 @@ const HeatmapSeriesDefaults = {
      *
      * @type {Highcharts.ColorType}
      */
-    nullColor: "#f7f7f7" /* Palette.neutralColor3 */,
+    nullColor: 'var(--highcharts-neutral-color-3)',
     dataLabels: {
         formatter: function () {
             const { numberFormatter } = this.series.chart;
@@ -1829,8 +1833,9 @@ const HeatmapSeriesDefaults = {
          *         Predefined, graphic and custom markers
          * @sample {highstock} highcharts/plotoptions/series-marker-symbol/
          *         Predefined, graphic and custom markers
+         * @default rect
+         * @apioption plotOptions.heatmap.marker.symbol
          */
-        symbol: 'rect',
         /** @ignore-option */
         radius: 0,
         lineColor: void 0,
@@ -1975,11 +1980,11 @@ const HeatmapSeriesDefaults = {
  * not specified, it is inherited from [chart.type](#chart.type).
  *
  * @productdesc {highcharts}
- * Requires `modules/heatmap`.
  *
  * @extends   series,plotOptions.heatmap
  * @excluding cropThreshold, dataParser, dataURL, dragDrop ,pointRange, stack,
  * @product   highcharts highmaps
+ * @requires  modules/heatmap
  * @apioption series.heatmap
  */
 /**
@@ -2034,6 +2039,7 @@ const HeatmapSeriesDefaults = {
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
+ * @basic
  * @type      {Array<Array<number>|*>}
  * @extends   series.line.data
  * @product   highcharts highmaps
@@ -2314,8 +2320,9 @@ var external_highcharts_src_js_default_SVGRenderer_default = /*#__PURE__*/__webp
  *  (c) 2010-2026 Highsoft AS
  *  Author: Hubert Kozik
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2389,8 +2396,9 @@ const InterpolationUtilities = {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2492,6 +2500,13 @@ class HeatmapSeries extends ScatterSeries {
                 }
             });
         }
+    }
+    /**
+     * Override to use rectangle by default
+     * @private
+     */
+    getSymbol() {
+        this.symbol = this.options.marker?.symbol || 'rect';
     }
     /**
      * @private
@@ -2675,8 +2690,7 @@ extend(HeatmapSeries.prototype, {
      * @private
      */
     alignDataLabel: ColumnSeries.prototype.alignDataLabel,
-    colorAttribs: Series_ColorMapComposition.seriesMembers.colorAttribs,
-    getSymbol: Series.prototype.getSymbol
+    colorAttribs: Series_ColorMapComposition.seriesMembers.colorAttribs
 });
 Series_ColorMapComposition.compose(HeatmapSeries);
 external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('heatmap', HeatmapSeries);

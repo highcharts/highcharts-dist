@@ -5,8 +5,9 @@
  *  (c) 2009-2026 Highsoft AS
  *  Author: Sebastian Bochan
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -15,6 +16,8 @@ import D from '../../Core/Defaults.js';
 const { setOptions } = D;
 import StockToolsDefaults from './StockToolsDefaults.js';
 import Toolbar from './StockToolbar.js';
+import getIcon from '../../Shared/BaseFormUtils';
+import StockToolsIcons from './StockToolsIcons';
 import { addEvent, getStyle, merge, pick } from '../../Shared/Utilities.js';
 /* *
  *
@@ -23,7 +26,7 @@ import { addEvent, getStyle, merge, pick } from '../../Shared/Utilities.js';
  * */
 /**
  * Verify if Toolbar should be added.
- * @private
+ * @internal
  */
 function chartSetStockTools(options) {
     const chartOptions = this.options, lang = chartOptions.lang, guiOptions = merge(chartOptions.stockTools && chartOptions.stockTools.gui, options && options.gui), langOptions = lang && lang.stockTools && lang.stockTools.gui;
@@ -32,9 +35,7 @@ function chartSetStockTools(options) {
         this.isDirtyBox = true;
     }
 }
-/**
- * @private
- */
+/** @internal */
 function compose(ChartClass, NavigationBindingsClass) {
     const chartProto = ChartClass.prototype;
     if (!chartProto.setStockTools) {
@@ -52,14 +53,14 @@ function compose(ChartClass, NavigationBindingsClass) {
 }
 /**
  * Run HTML generator
- * @private
+ * @internal
  */
 function onChartAfterGetContainer() {
     this.setStockTools();
 }
 /**
  * Handle beforeRedraw and beforeRender
- * @private
+ * @internal
  */
 function onChartBeforeRedraw() {
     if (this.stockTools) {
@@ -69,7 +70,7 @@ function onChartBeforeRedraw() {
 }
 /**
  * Function to calculate and set the offset width for stock tools.
- * @private
+ * @internal
  */
 function setOffset(chart) {
     if (chart.stockTools?.guiEnabled) {
@@ -98,17 +99,13 @@ function setOffset(chart) {
         }
     }
 }
-/**
- * @private
- */
+/** @internal */
 function onChartDestroy() {
     if (this.stockTools) {
         this.stockTools.destroy();
     }
 }
-/**
- * @private
- */
+/** @internal */
 function onChartGetMargins() {
     const offsetWidth = this.stockTools?.visible && this.stockTools.guiEnabled ?
         this.stockTools.width : 0;
@@ -119,7 +116,7 @@ function onChartGetMargins() {
 }
 /**
  * Check if the correct price indicator button is displayed, #15029.
- * @private
+ * @internal
  */
 function onChartRender() {
     const stockTools = this.stockTools, button = stockTools &&
@@ -130,20 +127,19 @@ function onChartRender() {
         this.navigationBindings &&
         this.options.series &&
         button) {
+        const { iconsURL } = stockTools;
         if (this.navigationBindings.utils
             ?.isPriceIndicatorEnabled?.(this.series)) {
             button.firstChild.style['background-image'] =
-                'url("' + stockTools.getIconsURL() + 'current-price-hide.svg")';
+                getIcon('current-price-hide.svg', iconsURL, StockToolsIcons);
         }
         else {
             button.firstChild.style['background-image'] =
-                'url("' + stockTools.getIconsURL() + 'current-price-show.svg")';
+                getIcon('current-price-show.svg', iconsURL, StockToolsIcons);
         }
     }
 }
-/**
- * @private
- */
+/** @internal */
 function onNavigationBindingsDeselectButton(event) {
     const className = 'highcharts-submenu-wrapper', gui = this.chart.stockTools;
     if (gui && gui.guiEnabled) {
@@ -157,7 +153,7 @@ function onNavigationBindingsDeselectButton(event) {
 }
 /**
  * Communication with bindings
- * @private
+ * @internal
  */
 function onNavigationBindingsSelectButton(event) {
     const className = 'highcharts-submenu-wrapper', gui = this.chart.stockTools;
@@ -178,7 +174,9 @@ function onNavigationBindingsSelectButton(event) {
  *  Default Export
  *
  * */
+/** @internal */
 const StockToolsGui = {
     compose
 };
+/** @internal */
 export default StockToolsGui;

@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Hubert Kozik, Kamil Musiałowski
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -33,6 +34,7 @@
  * pointDescriptionFormatter, selected, shadow, showCheckbox,
  * sonification, stickyTracking, tooltip, type
  * @product      highmaps
+ * @requires     modules/tiledwebmap
  * @optionparent plotOptions.tiledwebmap
  */
 const TiledWebMapSeriesDefaults = {
@@ -65,6 +67,7 @@ const TiledWebMapSeriesDefaults = {
  * nullInteraction, onPoint, point, pointDescriptionFormatter, selected, shadow,
  * showCheckbox, stickyTracking, tooltip, type
  * @product   highmaps
+ * @requires  modules/tiledwebmap
  * @apioption series.tiledwebmap
  */
 /**

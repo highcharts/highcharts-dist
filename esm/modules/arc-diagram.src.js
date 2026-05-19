@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.6.0 (2026-04-13)
+ * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * @module modules/arc-diagram
  * @requires highcharts/modules/sankey
  *
@@ -9,8 +9,8 @@
  * (c) 2021-2026 Highsoft AS
  * Author: Piotr Madej
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -60,8 +60,9 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1453,9 +1454,21 @@ var NodesComposition;
         pointProto.update = updateNode;
         seriesProto.destroy = destroy;
         seriesProto.setData = setData;
+        addEvent(SeriesClass, 'afterUpdate', afterUpdate);
         return SeriesClass;
     }
     NodesComposition.compose = compose;
+    /**
+     * Destroy data labels on nodes.
+     * @private
+     */
+    function afterUpdate() {
+        if (!this.hasDataLabels?.() && this.nodes) { // #23385
+            for (const node of this.nodes) {
+                node.destroyElements({ dataLabel: 1 });
+            }
+        }
+    }
     /**
      * Create a single node that holds information on incoming and outgoing
      * links.
@@ -1689,8 +1702,9 @@ var NodesComposition;
  *  (c) 2018-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1735,8 +1749,9 @@ extend(ArcDiagramPoint.prototype, {
  *  (c) 2021-2026 Highsoft AS
  *  Author: Piotr Madej, Grzegorz Blachliński
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1759,6 +1774,7 @@ extend(ArcDiagramPoint.prototype, {
  * @extends      plotOptions.sankey
  * @since 10.0.0
  * @product      highcharts
+ * @requires     modules/sankey
  * @requires     modules/arc-diagram
  * @exclude      curveFactor, connectEnds, connectNulls, colorAxis, colorKey,
  *               dataSorting, dragDrop, getExtremesFromAll, legendSymbolColor,
@@ -1814,7 +1830,7 @@ const ArcDiagramSeriesDefaults = {
         linkTextPath: {
             /**
              * @type    {Highcharts.SVGAttributes}
-             * @default {"startOffset":"25%"}
+             * @default { startOffset: '25%' }
              */
             attributes: {
                 /**
@@ -1955,6 +1971,7 @@ const ArcDiagramSeriesDefaults = {
  *     }]
  *  ```
  *
+ * @basic
  * @type      {Array<*>}
  * @extends   series.sankey.data
  * @product   highcharts
@@ -1994,8 +2011,9 @@ const ArcDiagramSeriesDefaults = {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2223,8 +2241,9 @@ var external_highcharts_src_js_default_SVGElement_default = /*#__PURE__*/__webpa
  *  (c) 2009-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2232,7 +2251,12 @@ var external_highcharts_src_js_default_SVGElement_default = /*#__PURE__*/__webpa
 
 
 
-const { deg2rad } = (external_highcharts_src_js_default_default());
+const { composed, deg2rad } = (external_highcharts_src_js_default_default());
+/* *
+ *
+ *  Functions
+ *
+ * */
 /**
  * Set a text path for a `text` or `label` element, allowing the text to
  * flow along a path.
@@ -2242,10 +2266,11 @@ const { deg2rad } = (external_highcharts_src_js_default_default());
  *
  * Text path support is not bundled into `highcharts.js`, and requires the
  * `modules/textpath.js` file. However, it is included in the script files of
- * those series types that use it by default
+ * those series types that use it by default.
  *
  * @sample highcharts/members/renderer-textpath/ Text path demonstrated
  *
+ * @internal
  * @function Highcharts.SVGElement#setTextPath
  *
  * @param {Highcharts.SVGElement|undefined} path
@@ -2258,8 +2283,9 @@ const { deg2rad } = (external_highcharts_src_js_default_default());
  * @return {Highcharts.SVGElement} Returns the SVGElement for chaining.
  */
 function setTextPath(path, textPathOptions) {
+    const url = this.renderer.url, textWrapper = this.text || this, textPath = textWrapper.textPath, { attributes, enabled } = merge(
     // Defaults
-    textPathOptions = merge(true, {
+    {
         enabled: true,
         attributes: {
             dy: -5,
@@ -2267,12 +2293,9 @@ function setTextPath(path, textPathOptions) {
             textAnchor: 'middle'
         }
     }, textPathOptions);
-    const url = this.renderer.url, textWrapper = this.text || this, textPath = textWrapper.textPath, { attributes, enabled } = textPathOptions;
     path = path || (textPath && textPath.path);
     // Remove previously added event
-    if (textPath) {
-        textPath.undo();
-    }
+    textPath?.undo();
     if (path && enabled) {
         const undo = addEvent(textWrapper, 'afterModifyTree', (e) => {
             if (path && enabled) {
@@ -2332,6 +2355,7 @@ function setTextPath(path, textPathOptions) {
 /**
  * Attach a polygon to a bounding box if the element contains a textPath.
  *
+ * @internal
  * @function Highcharts.SVGElement#setPolygon
  *
  * @param {any} event
@@ -2413,7 +2437,8 @@ function setPolygon(event) {
 /**
  * Draw text along a textPath for a dataLabel.
  *
- * @function Highcharts.SVGElement#setTextPath
+ * @internal
+ * @function Highcharts.SVGElement#drawTextPath
  *
  * @param {any} event
  *        An event containing label options
@@ -2428,22 +2453,58 @@ function drawTextPath(event) {
         if (point.dataLabelPath &&
             !textPathOptions.enabled) {
             // Clean the DOM
-            point.dataLabelPath = (point.dataLabelPath.destroy());
+            point.dataLabelPath = point.dataLabelPath.destroy();
         }
     }
 }
-function compose(SVGElementClass) {
-    addEvent(SVGElementClass, 'afterGetBBox', setPolygon);
-    addEvent(SVGElementClass, 'beforeAddingDataLabel', drawTextPath);
-    const svgElementProto = SVGElementClass.prototype;
-    if (!svgElementProto.setTextPath) {
-        svgElementProto.setTextPath = setTextPath;
+/** @internal */
+function composeTextPath(SVGElementClass) {
+    if (pushUnique(composed, 'TextPath')) {
+        addEvent(SVGElementClass, 'afterGetBBox', setPolygon);
+        addEvent(SVGElementClass, 'beforeAddingDataLabel', drawTextPath);
+        SVGElementClass.prototype.setTextPath =
+            SVGElementClass.prototype.setTextPath ?? setTextPath;
     }
 }
-const TextPath = {
-    compose
-};
-/* harmony default export */ const Extensions_TextPath = (TextPath);
+/* *
+ *
+ *  API Declarations
+ *
+ * */
+/**
+ * Options for a label text which should follow marker's shape.
+ * Border and background are disabled for a label that follows a
+ * path.
+ *
+ * **Note:** Only SVG-based renderer supports this option. Setting
+ * `useHTML` to true will disable this option.
+ *
+ * Text path support is not bundled into `highcharts.js`, and requires the
+ * `modules/textpath.js` file. However, it is included in the script files of
+ * those series types that use it by default.
+ *
+ * @declare   Highcharts.DataLabelsTextPathOptionsObject
+ * @since     7.1.0
+ * @apioption plotOptions.series.dataLabels.textPath
+ */
+/**
+ * Presentation attributes for the text path.
+ *
+ * @type      {Highcharts.SVGAttributes}
+ * @since     7.1.0
+ * @default   { dy:-5, startOffset:'50%', textAnchor:'middle' }
+ * @apioption plotOptions.series.dataLabels.textPath.attributes
+ */
+/**
+ * Enable or disable `textPath` option for link's or marker's data
+ * labels.
+ *
+ * @type      {boolean}
+ * @since     7.1.0
+ * @default   true
+ * @apioption plotOptions.series.dataLabels.textPath.enabled
+ */
+(''); // Keep doclets above in transpiled file
 
 ;// ./code/es-modules/Series/ArcDiagram/ArcDiagramSeries.js
 /* *
@@ -2453,8 +2514,9 @@ const TextPath = {
  *  (c) 2021-2026 Highsoft AS
  *  Author: Piotr Madej, Grzegorz Blachliński
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2468,7 +2530,7 @@ const TextPath = {
 
 
 
-Extensions_TextPath.compose((external_highcharts_src_js_default_SVGElement_default()));
+composeTextPath((external_highcharts_src_js_default_SVGElement_default()));
 const { prototype: { symbols } } = (external_highcharts_src_js_default_SVGRenderer_default());
 const { seriesTypes: { column: ColumnSeries, sankey: SankeySeries } } = (external_highcharts_src_js_default_SeriesRegistry_default());
 /* *
@@ -2702,6 +2764,8 @@ class ArcDiagramSeries extends SankeySeries {
                     }),
                     zIndex: void 0
                 };
+                // Delete so it doesn't override anything on merge.
+                delete node.dlOptions.zIndex;
             }
             // Pass test in drawPoints
             node.plotX = 1;

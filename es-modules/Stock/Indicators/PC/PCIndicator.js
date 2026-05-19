@@ -1,14 +1,14 @@
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
 'use strict';
 import AU from '../ArrayUtilities.js';
 import MultipleLinesComposition from '../MultipleLinesComposition.js';
-import Palettes from '../../../Core/Color/Palettes.js';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
 import { extend, merge } from '../../../Shared/Utilities.js';
@@ -20,7 +20,7 @@ import { extend, merge } from '../../../Shared/Utilities.js';
 /**
  * The Price Channel series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.pc
  *
@@ -88,11 +88,10 @@ PCIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
      * Option for fill color between lines in Price channel Indicator.
      *
      * @sample {highstock} stock/indicators/indicator-area-fill
-     *      background fill between lines
+     *      Background fill between lines.
      *
      * @type {Highcharts.Color}
      * @apioption plotOptions.pc.fillColor
-     *
      */
     /**
      * @excluding index
@@ -110,7 +109,7 @@ PCIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
              *
              * @type {Highcharts.ColorString}
              */
-            lineColor: Palettes.colors[2],
+            lineColor: 'var(--highcharts-color-2)',
             /**
              * Pixel width of the line.
              */
@@ -125,7 +124,7 @@ PCIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
              *
              * @type {Highcharts.ColorString}
              */
-            lineColor: Palettes.colors[8],
+            lineColor: 'var(--highcharts-color-8)',
             /**
              * Pixel width of the line.
              */
@@ -151,6 +150,7 @@ SeriesRegistry.registerSeriesType('pc', PCIndicator);
  *  Default Export
  *
  * */
+/** @internal */
 export default PCIndicator;
 /* *
  *

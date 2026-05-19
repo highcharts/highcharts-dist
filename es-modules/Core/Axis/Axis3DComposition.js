@@ -5,8 +5,9 @@
  *
  *  Extension for 3d axes
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -29,6 +30,7 @@ import { addEvent, merge, pick, wrap } from '../../Shared/Utilities.js';
 function onAxisAfterSetOptions() {
     const axis = this, chart = axis.chart, options = axis.options;
     if (chart.is3d?.() && axis.coll !== 'colorAxis') {
+        this.clippable = false;
         options.tickWidth = pick(options.tickWidth, 0);
         options.gridLineWidth = pick(options.gridLineWidth, 1);
     }

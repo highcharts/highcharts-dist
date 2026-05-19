@@ -1,5 +1,5 @@
 !/**
- * Highstock JS v12.6.0 (2026-04-13)
+ * Highstock JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/indicators/momentum
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -9,6 +9,6 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Sebastian Bochan
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */function(t,e){"object"==typeof exports&&"object"==typeof module?module.exports=e(t._Highcharts,t._Highcharts.SeriesRegistry):"function"==typeof define&&define.amd?define("highcharts/indicators/momentum",["highcharts/highcharts"],function(t){return e(t,t.SeriesRegistry)}):"object"==typeof exports?exports["highcharts/indicators/momentum"]=e(t._Highcharts,t._Highcharts.SeriesRegistry):t.Highcharts=e(t.Highcharts,t.Highcharts.SeriesRegistry)}("u"<typeof window?this:window,(t,e)=>(()=>{"use strict";var r={512:t=>{t.exports=e},944:e=>{e.exports=t}},o={};function n(t){var e=o[t];if(void 0!==e)return e.exports;var i=o[t]={exports:{}};return r[t](i,i.exports,n),i.exports}n.n=t=>{var e=t&&t.__esModule?()=>t.default:()=>t;return n.d(e,{a:e}),e},n.d=(t,e)=>{for(var r in e)n.o(e,r)&&!n.o(t,r)&&Object.defineProperty(t,r,{enumerable:!0,get:e[r]})},n.o=(t,e)=>Object.prototype.hasOwnProperty.call(t,e);var i={};n.d(i,{default:()=>x});var s=n(944),a=n.n(s),u=n(512),c=n.n(u);let{doc:p,win:f}=a();function h(t){return y(t)&&"number"==typeof t.nodeType}function l(t){let e=Object.prototype.toString.call(t);return"[object Array]"===e||"[object Array Iterator]"===e}function y(t,e){return!!t&&"object"==typeof t&&(!e||!l(t))}Array.prototype.find;let{sma:d}=c().seriesTypes;function g(t,e,r,o,n){let i=e[r-1][n]-e[r-o-1][n];return[t[r-1],i]}class m extends d{getValues(t,e){let r,o,n=e.period,i=e.index,s=t.xData,a=t.yData,u=a?a.length:0,c=[],p=[],f=[];if(!(s.length<=n)&&l(a[0])){for(r=n+1;r<u;r++)o=g(s,a,r,n,i),c.push(o),p.push(o[0]),f.push(o[1]);return o=g(s,a,r,n,i),c.push(o),p.push(o[0]),f.push(o[1]),{values:c,xData:p,yData:f}}}}m.defaultOptions=function(t,...e){let r,o=[t,...e],n={},i=function(t,e){return"object"!=typeof t&&(t={}),function(t,e,r){for(let r in t)Object.hasOwnProperty.call(t,r)&&e.call((0,t[r]),t[r],r,t)}(e,function(r,o){if("__proto__"!==o&&"constructor"!==o){let n;!y(r,!0)||(n=r?.constructor,y(r,!0)&&!h(r)&&n?.name&&"Object"!==n.name)||h(r)?t[o]=e[o]:t[o]=i(t[o]||{},r)}}),t};!0===t&&(n=o[1],o=Array.prototype.slice.call(o,2));let s=o.length;for(r=0;r<s;r++)n=i(n,o[r]);return n}(d.defaultOptions,{params:{index:3}}),function(t,e){let r;for(r in t||(t={}),e)t[r]=e[r]}(m.prototype,{nameBase:"Momentum"}),c().registerSeriesType("momentum",m);let x=a();return i.default})());

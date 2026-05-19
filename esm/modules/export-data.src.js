@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.6.0 (2026-04-13)
+ * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/export-data
  * @requires highcharts
  * @requires highcharts/modules/exporting
@@ -10,8 +10,8 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Torstein Hønsi
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -59,8 +59,9 @@ var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require_
  *  (c) 2015-2026 Highsoft AS
  *  Author: Øystein Moseng
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  *  Mixin for downloading content in the browser
@@ -269,8 +270,9 @@ var external_highcharts_src_js_default_Chart_default = /*#__PURE__*/__webpack_re
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -294,6 +296,7 @@ const exporting = {
      *
      * @type      {boolean | string}
      * @since     6.0.4
+     * @requires  modules/exporting
      * @requires  modules/export-data
      * @apioption exporting.tableCaption
      */
@@ -316,6 +319,7 @@ const exporting = {
      *          Using a third party XLSX converter
      *
      * @since    6.0.0
+     * @requires  modules/exporting
      * @requires modules/export-data
      */
     csv: {
@@ -323,6 +327,7 @@ const exporting = {
          * Options for annotations in the export-data table.
          *
          * @since    8.2.0
+         * @requires modules/exporting
          * @requires modules/export-data
          * @requires modules/annotations
          */
@@ -332,6 +337,8 @@ const exporting = {
              * combined in one export-data table cell.
              *
              * @since    8.2.0
+             * @requires modules/exporting
+             * @requires modules/export-data
              * @requires modules/annotations
              */
             itemDelimiter: '; ',
@@ -343,6 +350,8 @@ const exporting = {
              *         Concatenate point annotations with itemDelimiter set.
              *
              * @since    8.2.0
+             * @requires modules/exporting
+             * @requires modules/export-data
              * @requires modules/annotations
              */
             join: false
@@ -466,6 +475,7 @@ const exporting = {
      *         allow exporting it.
      *
      * @since    6.0.0
+     * @requires modules/exporting
      * @requires modules/export-data
      */
     showTable: false,
@@ -478,6 +488,7 @@ const exporting = {
      *         Multiple table headers
      *
      * @since    6.0.4
+     * @requires modules/exporting
      * @requires modules/export-data
      */
     useMultiLevelHeaders: true,
@@ -489,11 +500,11 @@ const exporting = {
      *         Multiple table headers
      *
      * @since    6.0.4
+     * @requires modules/exporting
      * @requires modules/export-data
      */
     useRowspanHeaders: true
 };
-// TODO: no need to be a partial when Options are fully optional.
 /**
  * @optionparent lang
  * @internal
@@ -503,6 +514,7 @@ const lang = {
      * The text for the menu item.
      *
      * @since    6.0.0
+     * @requires modules/exporting
      * @requires modules/export-data
      */
     downloadCSV: 'Download CSV',
@@ -510,6 +522,7 @@ const lang = {
      * The text for the menu item.
      *
      * @since    6.0.0
+     * @requires modules/exporting
      * @requires modules/export-data
      */
     downloadXLS: 'Download XLS',
@@ -517,6 +530,7 @@ const lang = {
      * The text for exported table.
      *
      * @since    8.1.0
+     * @requires modules/exporting
      * @requires modules/export-data
      */
     exportData: {
@@ -537,6 +551,7 @@ const lang = {
      * The text for the menu item.
      *
      * @since    6.0.0
+     * @requires modules/exporting
      * @requires modules/export-data
      */
     viewData: 'View data table',
@@ -544,6 +559,7 @@ const lang = {
      * The text for the menu item.
      *
      * @since    8.2.0
+     * @requires modules/exporting
      * @requires modules/export-data
      */
     hideData: 'Hide data table',
@@ -551,6 +567,7 @@ const lang = {
      * Text to show when export is in progress.
      *
      * @since    11.3.0
+     * @requires modules/exporting
      * @requires modules/export-data
      */
     exportInProgress: 'Exporting...'
@@ -592,6 +609,7 @@ const ExportDataDefaults = {
  *
  * @type      {boolean}
  * @since     7.1.0
+ * @requires modules/exporting
  * @requires  modules/export-data
  * @apioption plotOptions.series.includeInDataExport
  */
@@ -602,8 +620,9 @@ const ExportDataDefaults = {
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1967,8 +1986,9 @@ function wrap(obj, method, func) {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2339,9 +2359,11 @@ var ExportData;
                     // Allows correct date formatting for string date, #23654.
                     xAxis: series.xAxis
                 };
-                // Export directly from options.data because we need the
-                // uncropped data (#7913), and we need to support Boost (#7026).
-                series.options.data?.forEach(function eachData(options, pIdx) {
+                // Export raw data because we need the uncropped data (#7913),
+                // and we need to support Boost (#7026).
+                const data = new Array(series.dataTable.rowCount)
+                    .fill(void 0).map((_, i) => series.dataTable.getRowObject(i)), xColumn = series.getColumn('x');
+                (data || []).forEach(function eachData(options, pIdx) {
                     const mockPoint = { series: mockSeries };
                     let key, prop, val;
                     // In parallel coordinates chart, each data point is
@@ -2349,7 +2371,7 @@ var ExportData;
                     if (hasParallelCoords) {
                         categoryAndDatetimeMap = getCategoryAndDateTimeMap(series, pointArrayMap, pIdx);
                     }
-                    series.pointClass.prototype.applyOptions.apply(mockPoint, [options]);
+                    series.pointClass.prototype.applyOptions.call(mockPoint, options, xColumn[pIdx]);
                     const name = series.data[pIdx] && series.data[pIdx].name;
                     key = (mockPoint.x ?? '') + ',' + name;
                     j = 0;
@@ -2557,6 +2579,7 @@ var ExportData;
         }, 
         // Get table cell HTML from value
         getCellHTMLFromValue = function (tagName, classes, attributes, value) {
+            const children = [];
             let textContent = pick(value, ''), className = 'highcharts-text' + (classes ? ' ' + classes : '');
             // Convert to string if number
             if (typeof textContent === 'number') {
@@ -2566,12 +2589,33 @@ var ExportData;
             else if (!value) {
                 className = 'highcharts-empty';
             }
+            if (tagName === 'th' && attributes.scope === 'col') {
+                children.push({
+                    tagName: 'button',
+                    textContent,
+                    style: {
+                        color: 'inherit',
+                        borderWidth: 0,
+                        backgroundColor: 'transparent',
+                        cursor: 'pointer',
+                        padding: 0,
+                        fontSize: 'inherit',
+                        fontWeight: 'inherit'
+                    }
+                });
+            }
             attributes = extend({ 'class': className }, attributes);
-            return {
+            const result = {
                 tagName,
-                attributes,
-                textContent
+                attributes
             };
+            if (children.length > 0) {
+                result.children = children;
+            }
+            else {
+                result.textContent = textContent;
+            }
+            return result;
         }, 
         // Get table header markup from row data
         getTableHeaderHTML = function (topheaders, subheaders, rowLength) {
@@ -2637,7 +2681,9 @@ var ExportData;
                 const trChildren = [];
                 for (i = 0, len = subheaders.length; i < len; ++i) {
                     if (typeof subheaders[i] !== 'undefined') {
-                        trChildren.push(getCellHTMLFromValue('th', null, { scope: 'col' }, subheaders[i]));
+                        trChildren.push(getCellHTMLFromValue('th', null, {
+                            scope: 'col'
+                        }, subheaders[i]));
                     }
                 }
                 theadChildren.push({
@@ -2819,11 +2865,22 @@ var ExportData;
      * @requires modules/export-data
      */
     function onChartAfterViewData() {
-        const exporting = this.exporting, dataTableDiv = exporting?.dataTableDiv, getCellValue = (tr, index) => tr.children[index].textContent, comparer = (index, ascending) => (a, b) => {
-            const sort = (v1, v2) => (v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ?
-                v1 - v2 :
-                v1.toString().localeCompare(v2));
-            return sort(getCellValue(ascending ? a : b, index), getCellValue(ascending ? b : a, index));
+        const exporting = this.exporting, dataTableDiv = exporting?.dataTableDiv, langOptions = this.options.lang, decimalPoint = langOptions?.decimalPoint || '.', thousandsSep = langOptions?.thousandsSep || ',', getCellValue = (tr, index) => tr.children[index].textContent || '', parseNumber = (value) => {
+            if (!value) {
+                return null;
+            }
+            let normalized = value;
+            if (thousandsSep) {
+                normalized = normalized.split(thousandsSep).join('');
+            }
+            normalized = normalized.replace(decimalPoint, '.');
+            const number = Number(normalized);
+            return isNumber(number) ? number : null;
+        }, comparer = (index, ascending) => (a, b) => {
+            const valA = getCellValue(ascending ? a : b, index), valB = getCellValue(ascending ? b : a, index), numA = parseNumber(valA), numB = parseNumber(valB);
+            return numA !== null && numB !== null ?
+                numA - numB :
+                valA.localeCompare(valB);
         };
         if (dataTableDiv && exporting.options.allowTableSorting) {
             const row = dataTableDiv.querySelector('thead tr');
@@ -2837,19 +2894,25 @@ var ExportData;
                                 !exporting.ascendingOrderInTable)).forEach((tr) => {
                                 tableBody?.appendChild(tr);
                             });
-                            headers.forEach((th) => {
+                            headers.forEach((header) => {
                                 [
                                     'highcharts-sort-ascending',
                                     'highcharts-sort-descending'
                                 ].forEach((className) => {
-                                    if (th.classList.contains(className)) {
-                                        th.classList.remove(className);
+                                    if (header.classList.contains(className)) {
+                                        header.classList.remove(className);
                                     }
                                 });
+                                if (header !== th) {
+                                    header.removeAttribute('aria-sort');
+                                }
                             });
                             th.classList.add(exporting.ascendingOrderInTable ?
                                 'highcharts-sort-ascending' :
                                 'highcharts-sort-descending');
+                            th.setAttribute('aria-sort', exporting.ascendingOrderInTable ?
+                                'ascending' :
+                                'descending');
                         }
                     });
                 });

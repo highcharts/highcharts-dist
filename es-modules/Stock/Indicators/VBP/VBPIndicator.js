@@ -5,8 +5,9 @@
  *
  *  Volume By Price (VBP) indicator for Highcharts Stock
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -33,7 +34,9 @@ const abs = Math.abs;
  * */
 // Utils
 /**
- * @private
+ * Calculate extremes for OHLC data.
+ *
+ * @internal
  */
 function arrayExtremesOHLC(data) {
     const dataLength = data.length;
@@ -60,7 +63,7 @@ function arrayExtremesOHLC(data) {
 /**
  * The Volume By Price (VBP) series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.vbp
  *
@@ -83,8 +86,12 @@ class VBPIndicator extends SMAIndicator {
             // Protection for a case where the indicator is being updated,
             // for a brief moment the indicator is deleted.
             if (indicator.options) {
-                const params = indicator.options.params, baseSeries = indicator.linkedParent, volumeSeries = chart.get(params.volumeSeriesID);
-                indicator.addCustomEvents(baseSeries, volumeSeries);
+                const params = indicator.options.params, baseSeries = indicator.linkedParent, volumeSeries = params?.volumeSeriesID ?
+                    chart.get(params?.volumeSeriesID) :
+                    void 0;
+                if (baseSeries && volumeSeries) {
+                    indicator.addCustomEvents(baseSeries, volumeSeries);
+                }
             }
             unbinder();
         }, {
@@ -228,6 +235,11 @@ class VBPIndicator extends SMAIndicator {
                 point.volumeNeg = priceZones[index].negativeVolumeData;
                 point.volumePos = priceZones[index].positiveVolumeData;
                 point.volumeAll = priceZones[index].wholeVolumeData;
+                // ColumnSeries.translate adds an origin if chart is already
+                // rendered. Remove it to avoid issues with fading in data
+                // labels from overlapping labels logic.
+                delete point.origin;
+                point.isInside = indicator.isPointInside(point);
             });
             if (zoneLinesOptions.enabled) {
                 indicator.drawZones(chart, yAxis, indicator.zoneStarts, zoneLinesOptions.styles);
@@ -451,7 +463,7 @@ class VBPIndicator extends SMAIndicator {
  *
  * This series requires `linkedTo` option to be set.
  *
- * @sample stock/indicators/volume-by-price
+ * @sample {highstock} stock/indicators/volume-by-price
  *         Volume By Price indicator
  *
  * @extends      plotOptions.sma
@@ -538,11 +550,11 @@ VBPIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     dataLabels: {
         align: 'left',
         allowOverlap: true,
+        distance: 0,
         enabled: true,
         format: 'P: {point.volumePos:.2f} | N: {point.volumeNeg:.2f}',
         padding: 0,
         style: {
-            /** @internal */
             fontSize: '0.5em'
         },
         verticalAlign: 'top'

@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Grzegorz Blachliński, Sebastian Bochan
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -23,9 +24,9 @@ const { series: { prototype: seriesProto }, seriesTypes: { bubble: BubbleSeries 
 import D from '../SimulationSeriesUtilities.js';
 const { initDataLabels, initDataLabelsDefer } = D;
 import SVGElement from '../../Core/Renderer/SVG/SVGElement.js';
-import TextPath from '../../Extensions/TextPath.js';
+import { composeTextPath } from '../../Extensions/TextPath.js';
 import { addEvent, clamp, defined, extend, fireEvent, isArray, isNumber, merge, pick } from '../../Shared/Utilities.js';
-TextPath.compose(SVGElement);
+composeTextPath(SVGElement);
 /* *
  *
  *  Class

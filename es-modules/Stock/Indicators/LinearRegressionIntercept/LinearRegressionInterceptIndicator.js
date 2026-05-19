@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: LicenseRef-Highcharts
-/**
+/* *
  *
  *  (c) 2010-2026 Highsoft AS
  *  Author: Kamil Kulig
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -21,7 +21,7 @@ import { extend, merge } from '../../../Shared/Utilities.js';
 /**
  * The Linear Regression Intercept series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.linearRegressionIntercept
  *
@@ -47,13 +47,13 @@ class LinearRegressionInterceptIndicator extends LinearRegressionIndicator {
  * option to be set.
  *
  * @sample {highstock} stock/indicators/linear-regression-intercept
- *         Linear intercept slope indicator
+ *         Linear regression intercept indicator
  *
  * @extends      plotOptions.linearregression
  * @since        7.0.0
  * @product      highstock
  * @requires     stock/indicators/indicators
- * @requires  stock/indicators/regressions
+ * @requires     stock/indicators/regressions
  * @optionparent plotOptions.linearregressionintercept
  */
 LinearRegressionInterceptIndicator.defaultOptions = merge(LinearRegressionIndicator.defaultOptions);
@@ -68,6 +68,7 @@ SeriesRegistry.registerSeriesType('linearRegressionIntercept', LinearRegressionI
  *  Default Export
  *
  * */
+/** @internal */
 export default LinearRegressionInterceptIndicator;
 /* *
  *

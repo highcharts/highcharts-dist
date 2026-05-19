@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -270,7 +271,7 @@ const ColumnSeriesDefaults = {
              *
              * @product highcharts highstock gantt
              */
-            brightness: 0.1
+            brightness: 0.2
         },
         /**
          * Options for the selected point. These settings override the
@@ -288,7 +289,7 @@ const ColumnSeriesDefaults = {
              * @default #cccccc
              * @product highcharts highstock gantt
              */
-            color: "#cccccc" /* Palette.neutralColor20 */,
+            color: 'var(--highcharts-neutral-color-20)',
             /**
              * A specific border color for the selected point.
              *
@@ -296,7 +297,7 @@ const ColumnSeriesDefaults = {
              * @default #000000
              * @product highcharts highstock gantt
              */
-            borderColor: "#000000" /* Palette.neutralColor100 */
+            borderColor: 'var(--highcharts-neutral-color-100)'
         }
     },
     dataLabels: {
@@ -356,7 +357,7 @@ const ColumnSeriesDefaults = {
      * @default   #ffffff
      * @product   highcharts highstock gantt
      */
-    borderColor: "#ffffff" /* Palette.backgroundColor */
+    borderColor: 'var(--highcharts-background-color)'
 };
 /**
  * A `column` series. If the [type](#series.column.type) option is
@@ -422,6 +423,7 @@ const ColumnSeriesDefaults = {
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
+ * @basic
  * @type      {Array<number|Array<(number|string),(number|null)>|null|*>}
  * @extends   series.line.data
  * @excluding marker

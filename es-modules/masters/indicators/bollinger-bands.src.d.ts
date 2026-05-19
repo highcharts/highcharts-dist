@@ -1,2 +1,3 @@
-import * as Highcharts from '../../../indicators/bollinger-bands.src';
+import Highcharts from '../../Core/Globals.js';
+import '../../Stock/Indicators/BB/BBIndicator.js';
 export default Highcharts;

@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.6.0 (2026-04-13)
+ * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * Treegraph chart series type
  * @module highcharts/modules/treegraph
  * @requires highcharts
  * @requires highcharts/modules/treemap
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Paweł Lysy Grzegorz Blachliński
+ *  Authors: Paweł Lysy, Grzegorz Blachliński
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -58,8 +58,9 @@ var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require_
  *  (c) 2010-2026 Highsoft AS
  *  Author: Paweł Lysy
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -204,10 +205,11 @@ var external_highcharts_src_js_default_SVGRenderer_default = /*#__PURE__*/__webp
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Paweł Lysy Grzegorz Blachliński
+ *  Authors: Paweł Lysy, Grzegorz Blachliński
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -398,8 +400,9 @@ var external_highcharts_src_js_default_Point_default = /*#__PURE__*/__webpack_re
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1759,10 +1762,11 @@ function wrap(obj, method, func) {
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Paweł Lysy Grzegorz Blachliński
+ *  Authors: Paweł Lysy, Grzegorz Blachliński
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1823,7 +1827,7 @@ class TreegraphPoint extends TreemapPoint {
             }
             const { x, y } = this.getCollapseBtnPosition(btnOptions), fill = (btnOptions.fillColor ||
                 point.color ||
-                "#cccccc" /* Palette.neutralColor20 */);
+                'var(--highcharts-neutral-color-20)');
             point.collapseButton = chart.renderer
                 .label(point.collapsed ? '+' : '-', x, y, shape)
                 .attr({
@@ -1834,7 +1838,8 @@ class TreegraphPoint extends TreemapPoint {
                 rotation: chart.inverted ? 90 : 0,
                 rotationOriginX: width / 2,
                 rotationOriginY: height / 2,
-                stroke: btnOptions.lineColor || "#ffffff" /* Palette.backgroundColor */,
+                stroke: btnOptions.lineColor ||
+                    'var(--highcharts-background-color)',
                 'stroke-width': btnOptions.lineWidth,
                 'text-align': 'center',
                 align: 'center',
@@ -1848,7 +1853,7 @@ class TreegraphPoint extends TreemapPoint {
                 .css(merge({
                 color: typeof fill === 'string' ?
                     chart.renderer.getContrast(fill) :
-                    "#333333" /* Palette.neutralColor80 */
+                    'var(--highcharts-neutral-color-80)'
             }, style))
                 .add(parentGroup);
             point.collapseButton.element.point = point;
@@ -1938,8 +1943,9 @@ var external_highcharts_src_js_default_Color_default = /*#__PURE__*/__webpack_re
  *
  *  Authors: Jon Arild Nygård / Øystein Moseng
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2149,10 +2155,11 @@ const TreeUtilities = {
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Paweł Lysy Grzegorz Blachliński
+ *  Authors: Paweł Lysy, Grzegorz Blachliński
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2226,10 +2233,11 @@ class LinkPoint extends ColumnPoint {
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Paweł Lysy Grzegorz Blachliński
+ *  Authors: Paweł Lysy, Grzegorz Blachliński
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2560,10 +2568,11 @@ class TreegraphLayout {
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Paweł Lysy Grzegorz Blachliński
+ *  Authors: Paweł Lysy, Grzegorz Blachliński
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2579,7 +2588,6 @@ class TreegraphLayout {
  * The best examples of the dataStructures, which best reflect this chart
  * are e.g. genealogy tree or directory structure.
  *
- * TODO change back the demo path
  * @sample highcharts/demo/treegraph-chart
  *         Treegraph Chart
  *
@@ -2595,7 +2603,7 @@ class TreegraphLayout {
  *               zones, cluster
  *
  * @product      highcharts
- * @since 10.3.0
+ * @since        10.3.0
  * @requires     modules/treemap
  * @requires     modules/treegraph
  * @optionparent plotOptions.treegraph
@@ -2627,24 +2635,13 @@ const TreegraphSeriesDefaults = {
     },
     link: {
         /**
-         * Modifier of the shape of the curved link. Works best for
-         * values between 0 and 1, where 0 is a straight line, and 1 is
-         * a shape close to the default one.
-         *
-         * @type      {number}
-         * @default   0.5
-         * @product   highcharts
-         * @since 10.3.0
-         * @apioption plotOptions.treegraph.link.curveFactor
-         */
-        /**
          * For the orthogonal link type, this defines how far down the link
          * bends. A number defines the pixel offset from the start of the link,
          * and a percentage defines the relative position on the link. For
          * example, a `bendAt` of `50%` means that the link bends in the middle.
          *
          * @type      {number|string}
-         * @since 12.5.0
+         * @since     12.5.0
          * @product   highcharts
          * @default   50%
          * @apioption plotOptions.treegraph.link.bendAt
@@ -2653,24 +2650,29 @@ const TreegraphSeriesDefaults = {
          * The color of the links between nodes.
          *
          * @type {Highcharts.ColorString}
-         * @private
          */
-        color: "#666666" /* Palette.neutralColor60 */,
+        color: 'var(--highcharts-neutral-color-60)',
+        cursor: 'default',
+        /**
+         * Modifier of the shape of the curved link. Works best for
+         * values between 0 and 1, where 0 is a straight line, and 1 is
+         * a shape close to the default one.
+         *
+         * @type      {number}
+         * @default   0.5
+         * @product   highcharts
+         * @since     10.3.0
+         * @apioption plotOptions.treegraph.link.curveFactor
+         */
         /**
          * The line width of the links connecting nodes, in pixels.
-         * @type {number}
-         *
-         * @private
          */
         lineWidth: 1,
         /**
          * Radius for the rounded corners of the links between nodes.
          * Works for the `orthogonal` link type.
-         *
-         * @private
          */
         radius: 10,
-        cursor: 'default',
         /**
          * Type of the link shape.
          *
@@ -2679,7 +2681,6 @@ const TreegraphSeriesDefaults = {
          *
          * @type {'orthogonal' | 'curved' | 'straight'}
          * @product highcharts
-         *
          */
         type: 'curved'
     },
@@ -2810,7 +2811,11 @@ const TreegraphSeriesDefaults = {
          * @since 10.3.0
          */
         linkTextPath: {
+            /**
+             * @default { startOffset: '50%' }
+             */
             attributes: {
+                /** @ignore */
                 startOffset: '50%'
             }
         },
@@ -2894,8 +2899,9 @@ var external_highcharts_src_js_default_SVGElement_default = /*#__PURE__*/__webpa
  *  (c) 2009-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2903,7 +2909,12 @@ var external_highcharts_src_js_default_SVGElement_default = /*#__PURE__*/__webpa
 
 
 
-const { deg2rad } = (external_highcharts_src_js_default_default());
+const { composed, deg2rad } = (external_highcharts_src_js_default_default());
+/* *
+ *
+ *  Functions
+ *
+ * */
 /**
  * Set a text path for a `text` or `label` element, allowing the text to
  * flow along a path.
@@ -2913,10 +2924,11 @@ const { deg2rad } = (external_highcharts_src_js_default_default());
  *
  * Text path support is not bundled into `highcharts.js`, and requires the
  * `modules/textpath.js` file. However, it is included in the script files of
- * those series types that use it by default
+ * those series types that use it by default.
  *
  * @sample highcharts/members/renderer-textpath/ Text path demonstrated
  *
+ * @internal
  * @function Highcharts.SVGElement#setTextPath
  *
  * @param {Highcharts.SVGElement|undefined} path
@@ -2929,8 +2941,9 @@ const { deg2rad } = (external_highcharts_src_js_default_default());
  * @return {Highcharts.SVGElement} Returns the SVGElement for chaining.
  */
 function setTextPath(path, textPathOptions) {
+    const url = this.renderer.url, textWrapper = this.text || this, textPath = textWrapper.textPath, { attributes, enabled } = merge(
     // Defaults
-    textPathOptions = merge(true, {
+    {
         enabled: true,
         attributes: {
             dy: -5,
@@ -2938,12 +2951,9 @@ function setTextPath(path, textPathOptions) {
             textAnchor: 'middle'
         }
     }, textPathOptions);
-    const url = this.renderer.url, textWrapper = this.text || this, textPath = textWrapper.textPath, { attributes, enabled } = textPathOptions;
     path = path || (textPath && textPath.path);
     // Remove previously added event
-    if (textPath) {
-        textPath.undo();
-    }
+    textPath?.undo();
     if (path && enabled) {
         const undo = addEvent(textWrapper, 'afterModifyTree', (e) => {
             if (path && enabled) {
@@ -3003,6 +3013,7 @@ function setTextPath(path, textPathOptions) {
 /**
  * Attach a polygon to a bounding box if the element contains a textPath.
  *
+ * @internal
  * @function Highcharts.SVGElement#setPolygon
  *
  * @param {any} event
@@ -3084,7 +3095,8 @@ function setPolygon(event) {
 /**
  * Draw text along a textPath for a dataLabel.
  *
- * @function Highcharts.SVGElement#setTextPath
+ * @internal
+ * @function Highcharts.SVGElement#drawTextPath
  *
  * @param {any} event
  *        An event containing label options
@@ -3099,31 +3111,68 @@ function drawTextPath(event) {
         if (point.dataLabelPath &&
             !textPathOptions.enabled) {
             // Clean the DOM
-            point.dataLabelPath = (point.dataLabelPath.destroy());
+            point.dataLabelPath = point.dataLabelPath.destroy();
         }
     }
 }
-function compose(SVGElementClass) {
-    addEvent(SVGElementClass, 'afterGetBBox', setPolygon);
-    addEvent(SVGElementClass, 'beforeAddingDataLabel', drawTextPath);
-    const svgElementProto = SVGElementClass.prototype;
-    if (!svgElementProto.setTextPath) {
-        svgElementProto.setTextPath = setTextPath;
+/** @internal */
+function composeTextPath(SVGElementClass) {
+    if (pushUnique(composed, 'TextPath')) {
+        addEvent(SVGElementClass, 'afterGetBBox', setPolygon);
+        addEvent(SVGElementClass, 'beforeAddingDataLabel', drawTextPath);
+        SVGElementClass.prototype.setTextPath =
+            SVGElementClass.prototype.setTextPath ?? setTextPath;
     }
 }
-const TextPath = {
-    compose
-};
-/* harmony default export */ const Extensions_TextPath = (TextPath);
+/* *
+ *
+ *  API Declarations
+ *
+ * */
+/**
+ * Options for a label text which should follow marker's shape.
+ * Border and background are disabled for a label that follows a
+ * path.
+ *
+ * **Note:** Only SVG-based renderer supports this option. Setting
+ * `useHTML` to true will disable this option.
+ *
+ * Text path support is not bundled into `highcharts.js`, and requires the
+ * `modules/textpath.js` file. However, it is included in the script files of
+ * those series types that use it by default.
+ *
+ * @declare   Highcharts.DataLabelsTextPathOptionsObject
+ * @since     7.1.0
+ * @apioption plotOptions.series.dataLabels.textPath
+ */
+/**
+ * Presentation attributes for the text path.
+ *
+ * @type      {Highcharts.SVGAttributes}
+ * @since     7.1.0
+ * @default   { dy:-5, startOffset:'50%', textAnchor:'middle' }
+ * @apioption plotOptions.series.dataLabels.textPath.attributes
+ */
+/**
+ * Enable or disable `textPath` option for link's or marker's data
+ * labels.
+ *
+ * @type      {boolean}
+ * @since     7.1.0
+ * @default   true
+ * @apioption plotOptions.series.dataLabels.textPath.enabled
+ */
+(''); // Keep doclets above in transpiled file
 
 ;// ./code/es-modules/Series/Treegraph/TreegraphSeries.js
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Paweł Lysy Grzegorz Blachliński
+ *  Authors: Paweł Lysy, Grzegorz Blachliński
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3144,7 +3193,7 @@ const { getLevelOptions: TreegraphSeries_getLevelOptions, getNodeWidth: Treegrap
 
 
 
-Extensions_TextPath.compose((external_highcharts_src_js_default_SVGElement_default()));
+composeTextPath((external_highcharts_src_js_default_SVGElement_default()));
 /* *
  *
  *  Class
@@ -3253,7 +3302,7 @@ class TreegraphSeries extends TreemapSeries {
             const levelOptions = series.mapOptionsToLevel[point.node.level ?? 0] || {};
             if (point.node.parent) {
                 const pointOptions = merge(levelOptions, point.options);
-                if (!point.linkToParent || point.linkToParent.destroyed) {
+                if (!point.linkToParent || point.linkToParent.condemned) {
                     const link = new series.LinkClass(series, pointOptions, void 0, point);
                     point.linkToParent = link;
                 }
@@ -3656,6 +3705,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *     }]
  *  ```
  *
+ * @basic
  * @type      {Array<*>}
  * @extends   series.treemap.data
  * @product   highcharts

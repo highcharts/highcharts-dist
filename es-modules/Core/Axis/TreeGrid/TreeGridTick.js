@@ -3,8 +3,9 @@
  *  (c) 2016-2026 Highsoft AS
  *  Authors: Jon Arild Nygård
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -59,7 +60,7 @@ function renderLabelIcon(tick, params) {
         icon
             .attr({
             cursor: 'pointer',
-            'fill': pick(params.color, "#666666" /* Palette.neutralColor60 */),
+            'fill': params.color || 'var(--highcharts-neutral-color-60)',
             'stroke-width': 1,
             stroke: options.lineColor,
             strokeWidth: options.lineWidth || 0

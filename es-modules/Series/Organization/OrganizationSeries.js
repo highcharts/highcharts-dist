@@ -5,8 +5,9 @@
  *  (c) 2018-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -17,9 +18,9 @@ import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import PathUtilities from '../PathUtilities.js';
 const { sankey: SankeySeries } = SeriesRegistry.seriesTypes;
 import SVGElement from '../../Core/Renderer/SVG/SVGElement.js';
-import { crisp, css, extend, isNumber, merge, pick } from '../../Shared/Utilities.js';
-import TextPath from '../../Extensions/TextPath.js';
-TextPath.compose(SVGElement);
+import { crisp, css, extend, isNumber, merge, pick, splat } from '../../Shared/Utilities.js';
+import { composeTextPath } from '../../Extensions/TextPath.js';
+composeTextPath(SVGElement);
 /* *
  *
  *  Class
@@ -42,15 +43,14 @@ class OrganizationSeries extends SankeySeries {
         // Align the data label to the point graphic
         const shapeArgs = point.shapeArgs, text = dataLabel.text;
         if (options.useHTML && shapeArgs) {
-            const pAdjust = (this.options.borderWidth +
-                2 * this.options.dataLabels.padding);
+            const padding = splat(this.options.dataLabels.padding || 0), borderWidth = this.options.borderWidth || 0, padjustX = borderWidth + 2 * padding[3 % padding.length], padjustY = borderWidth + 2 * padding[0 % padding.length];
             let width = shapeArgs.width || 0, height = shapeArgs.height || 0;
             if (this.chart.inverted) {
                 width = height;
                 height = shapeArgs.width || 0;
             }
-            height -= pAdjust;
-            width -= pAdjust;
+            width -= padjustX;
+            height -= padjustY;
             text.foreignObject?.attr({
                 x: 0,
                 y: 0,

@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -585,10 +586,10 @@ class SVGElement {
      */
     complexColor(colorOptions, prop, elem) {
         const renderer = this.renderer;
-        let colorObject, gradName, gradAttr, radAttr, gradients, stops, stopColor, stopOpacity, radialReference, id, key = [], value;
+        let colorObject, gradName, gradAttr, radAttr, gradients, stops, stopOpacity, radialReference, id, key = [], value;
         fireEvent(this.renderer, 'complexColor', {
             args: arguments
-        }, function () {
+        }, () => {
             // Apply linear or radial gradients
             if (colorOptions.radialGradient) {
                 gradName = 'radialGradient';
@@ -646,18 +647,17 @@ class SVGElement {
                     // The gradient needs to keep a list of stops to be able to
                     // destroy them
                     gradientObject.stops = [];
-                    stops.forEach(function (stop) {
-                        if (stop[1].indexOf('rgba') === 0) {
-                            colorObject = Color.parse(stop[1]);
+                    stops.forEach(([offset, stopColor]) => {
+                        if (stopColor.indexOf('rgba') === 0) {
+                            colorObject = Color.parse(stopColor);
                             stopColor = colorObject.get('rgb');
                             stopOpacity = colorObject.get('a');
                         }
                         else {
-                            stopColor = stop[1];
                             stopOpacity = 1;
                         }
                         const stopObject = renderer.createElement('stop').attr({
-                            offset: stop[0],
+                            offset,
                             'stop-color': stopColor,
                             'stop-opacity': stopOpacity
                         }).add(gradientObject);
@@ -695,7 +695,7 @@ class SVGElement {
      * Return the SVG element for chaining.
      */
     css(styles) {
-        const oldStyles = this.styles, newStyles = {}, elem = this.element;
+        const oldStyles = this.styles, newStyles = {}, elem = this.element, renderer = this.renderer;
         let textWidth, hasNew = !oldStyles;
         // Filter out existing styles to increase performance (#2640)
         if (oldStyles) {
@@ -723,7 +723,7 @@ class SVGElement {
             }
             // Store object
             extend(this.styles, styles);
-            if (textWidth && (!svg && this.renderer.forExport)) {
+            if (textWidth && (!svg && renderer.forExport)) {
                 delete styles.width;
             }
             const fontSize = isFirefox && styles.fontSize || null;
@@ -752,7 +752,7 @@ class SVGElement {
             // Rebuild text after added. Cache mechanisms in the buildText will
             // prevent building if there are no significant changes.
             if (this.element.nodeName === 'text') {
-                this.renderer.buildText(this);
+                renderer.buildText(this);
             }
             // Apply text outline after added
             if (styles.textOutline) {
@@ -801,9 +801,6 @@ class SVGElement {
      */
     destroy() {
         const wrapper = this, { element = {}, renderer, stops } = wrapper, ownerSVGElement = element.ownerSVGElement;
-        let parentToClean = (element.nodeName === 'SPAN' &&
-            wrapper.parentGroup ||
-            void 0), grandParent;
         // Remove events
         element.onclick = element.onmouseout = element.onmouseover =
             element.onmousemove = element.point = null;
@@ -829,15 +826,6 @@ class SVGElement {
         }
         // Remove element
         wrapper.safeRemoveChild(element);
-        // In case of useHTML, clean up empty containers emulating SVG groups
-        // (#1960, #2393, #2697).
-        while (parentToClean?.div &&
-            parentToClean.div.childNodes.length === 0) {
-            grandParent = parentToClean.parentGroup;
-            wrapper.safeRemoveChild(parentToClean.div);
-            delete parentToClean.div;
-            parentToClean = grandParent;
-        }
         // Remove from alignObjects
         if (wrapper.alignOptions) {
             erase(renderer.alignedObjects, wrapper);
@@ -1209,7 +1197,7 @@ class SVGElement {
          * @name Highcharts.SVGElement#element
          * @type {Highcharts.SVGDOMElement|Highcharts.HTMLDOMElement}
          */
-        this.element = nodeName === 'span' || nodeName === 'body' ?
+        this.element = nodeName === 'div' || nodeName === 'body' ?
             createElement(nodeName) :
             doc.createElementNS(this.SVG_NS, nodeName);
         /**
@@ -1553,7 +1541,7 @@ class SVGElement {
      * @function Highcharts.SVGElement#updateTransform
      */
     updateTransform(attrib = 'transform') {
-        const { element, foreignObject, matrix, padding, rotation = 0, rotationOriginX, rotationOriginY, scaleX, scaleY, text, translateX = 0, translateY = 0 } = this;
+        const { element, foreignObject, matrix, rotation = 0, rotationOriginX, rotationOriginY, scaleX, scaleY, text, translateX = 0, translateY = 0 } = this;
         // Apply translate. Nearly all transformed elements have translation,
         // so instead of checking for translate = 0, do it always (#1767,
         // #1846).
@@ -1569,15 +1557,6 @@ class SVGElement {
                 ' ' +
                 (rotationOriginY ?? element.getAttribute('y') ?? this.y ?? 0) +
                 ')');
-            // HTML labels rotation (#20685)
-            if (text?.element.tagName === 'SPAN' &&
-                !text?.foreignObject) {
-                text.attr({
-                    rotation,
-                    rotationOriginX: (rotationOriginX || 0) - padding,
-                    rotationOriginY: (rotationOriginY || 0) - padding
-                });
-            }
         }
         // Apply scale
         if (defined(scaleX) || defined(scaleY)) {

@@ -1,7 +1,8 @@
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -15,22 +16,16 @@ import { correctFloat, extend, merge } from '../../../Shared/Utilities.js';
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function getBaseForBand(low, high, factor) {
     return (((correctFloat(high - low)) /
         ((correctFloat(high + low)) / 2)) * 1000) * factor;
 }
-/**
- * @private
- */
+/** @internal */
 function getPointUB(high, base) {
     return high * (correctFloat(1 + 2 * base));
 }
-/**
- * @private
- */
+/** @internal */
 function getPointLB(low, base) {
     return low * (correctFloat(1 - 2 * base));
 }
@@ -42,7 +37,7 @@ function getPointLB(low, base) {
 /**
  * The ABands series type
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.abands
  *
@@ -199,6 +194,7 @@ SeriesRegistry.registerSeriesType('abands', ABandsIndicator);
  *  Default Export
  *
  * */
+/** @internal */
 export default ABandsIndicator;
 /* *
  *

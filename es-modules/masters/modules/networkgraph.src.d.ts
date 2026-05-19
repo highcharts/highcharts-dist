@@ -1,2 +1,2 @@
-import * as Highcharts from '../../../modules/networkgraph.src';
+import Highcharts from '../../Core/Globals.js';
 export default Highcharts;

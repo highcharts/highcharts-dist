@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v12.6.0 (2026-04-13)
+ * @license Highmaps JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/contour
  * @requires highcharts
  *
@@ -127,8 +127,9 @@ var highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_H
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1490,8 +1491,9 @@ function wrap(obj, method, func) {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1637,8 +1639,9 @@ var ColorAxisBase;
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1897,8 +1900,9 @@ var ColorAxisComposition;
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1958,6 +1962,7 @@ var ColorAxisComposition;
  *               offset, opposite, pane, plotBands, plotLines,
  *               reversedStacks, scrollbar, showEmpty, top, zoomEnabled
  * @product      highcharts highstock highmaps
+ * @requires     modules/coloraxis
  * @type         {*|Array<*>}
  * @optionparent colorAxis
  */
@@ -2115,7 +2120,7 @@ const colorAxisDefaults = {
      * @type      {Highcharts.ColorType}
      * @product   highcharts highstock highmaps
      */
-    gridLineColor: "#ffffff" /* Palette.backgroundColor */,
+    gridLineColor: 'var(--highcharts-background-color)',
     /**
      * The width of the grid lines extending from the axis across the
      * gradient of a scalar color axis.
@@ -2172,17 +2177,21 @@ const colorAxisDefaults = {
      */
     marker: {
         /**
-         * Animation for the marker as it moves between values. Set to
-         * `false` to disable animation. Defaults to `{ duration: 50 }`.
+         * Animation for the marker as it moves between values. Set to `false`
+         * to disable animation.
          *
          * @type    {boolean|Partial<Highcharts.AnimationOptionsObject>}
          * @product highcharts highstock highmaps
+         * @default { duration: 50 }
          */
         animation: {
             /** @internal */
             duration: 50
         },
-        /** @internal */
+        /**
+         * Maps to stroke-width because marker options are passed as crosshair.
+         * @internal
+         */
         width: 0.01,
         /**
          * The color of the marker.
@@ -2190,7 +2199,7 @@ const colorAxisDefaults = {
          * @type    {Highcharts.ColorType}
          * @product highcharts highstock highmaps
          */
-        color: "#999999" /* Palette.neutralColor40 */
+        color: 'var(--highcharts-neutral-color-40)'
     },
     /**
      * The axis labels show the number for each tick.
@@ -2233,7 +2242,7 @@ const colorAxisDefaults = {
      * @type    {Highcharts.ColorType}
      * @product highcharts highstock highmaps
      */
-    minColor: "#e6e9ff" /* Palette.highlightColor10 */,
+    minColor: 'var(--highcharts-highlight-color-10)',
     /**
      * The color to represent the maximum of the color axis. Unless
      * [dataClasses](#colorAxis.dataClasses) or
@@ -2252,7 +2261,7 @@ const colorAxisDefaults = {
      * @type    {Highcharts.ColorType}
      * @product highcharts highstock highmaps
      */
-    maxColor: "#0022ff" /* Palette.highlightColor100 */,
+    maxColor: 'var(--highcharts-highlight-color-100)',
     /**
      * Color stops for the gradient of a scalar color axis. Use this in
      * cases where a linear gradient between a `minColor` and `maxColor`
@@ -2386,8 +2395,9 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2438,6 +2448,8 @@ class ColorAxis extends (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_high
     /** @internal */
     constructor(chart, userOptions) {
         super(chart, userOptions);
+        /** @internal */
+        this.clippable = false;
         /** @internal */
         this.coll = 'colorAxis';
         /** @internal */
@@ -2552,16 +2564,12 @@ class ColorAxis extends (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_high
      * @internal
      */
     getOffset() {
-        const axis = this;
-        const group = axis.legendItem?.group;
-        const sideOffset = axis.chart.axisOffset[axis.side];
+        const axis = this, chart = axis.chart, group = axis.legendItem?.group, sideOffset = chart.axisOffset[axis.side], { clipOffset, legend } = chart;
         if (group) {
-            // Hook for the getOffset method to add groups to this parent
-            // group
+            // Hook for the getOffset method to add groups to this parent group
             axis.axisParent = group;
             // Call the base
             super.getOffset();
-            const legend = this.chart.legend;
             // Adds `maxLabelLength` needed for label padding corrections done
             // by `render()` and `getMargins()` (#15551).
             legend.allItems.forEach(function (item) {
@@ -2570,7 +2578,7 @@ class ColorAxis extends (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_high
                 }
             });
             legend.render();
-            this.chart.getMargins(true);
+            chart.getMargins(true);
             // First time only
             if (!axis.added) {
                 axis.added = true;
@@ -2578,7 +2586,8 @@ class ColorAxis extends (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_high
             axis.labelLeft = 0;
             axis.labelRight = axis.width;
             // Reset it to avoid color axis reserving space
-            axis.chart.axisOffset[axis.side] = sideOffset;
+            chart.axisOffset[axis.side] = sideOffset;
+            chart.clipOffset = clipOffset;
         }
     }
     /**
@@ -3005,7 +3014,7 @@ Array.prototype.push.apply((highcharts_Axis_commonjs_highcharts_Axis_commonjs2_h
 ;// ./code/es-modules/masters/modules/coloraxis.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.6.0 (2026-04-13)
+ * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -3014,8 +3023,8 @@ Array.prototype.push.apply((highcharts_Axis_commonjs_highcharts_Axis_commonjs2_h
  * (c) 2012-2026 Highsoft AS
  * Author: Paweł Potaczek
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 
 
@@ -3031,8 +3040,9 @@ G.ColorAxis.compose(G.Chart, G.Fx, G.Legend, G.Series);
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3064,8 +3074,9 @@ class ContourPoint extends ScatterPoint {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3214,8 +3225,9 @@ fn fragmentMain(input: FragmentInput) -> @location(0) vec4f {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3412,6 +3424,7 @@ const ContourSeriesDefaults = {
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
+ * @basic
  * @type      {Array<Array<number>|*>}
  * @extends   series.line.data
  * @product   highcharts highmaps
@@ -3453,8 +3466,9 @@ const ContourSeriesDefaults = {
  *  This keeps `cross` out of Core SVG symbols while allowing modules
  *  like PointAndFigure and Contour to compose it when needed.
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3511,8 +3525,9 @@ var CrossSymbol;
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  *  Authors:
@@ -3826,8 +3841,9 @@ class Delaunay {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */

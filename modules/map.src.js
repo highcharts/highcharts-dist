@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v12.6.0 (2026-04-13)
+ * @license Highmaps JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/map
  * @requires highcharts
  *
@@ -9,19 +9,19 @@
  * (c) 2011-2026 Highsoft AS
  * Author: Torstein Hønsi
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Series"], root["_Highcharts"]["Chart"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Templating"], root["_Highcharts"]["Series"]["types"]["scatter"], root["_Highcharts"]["Point"]);
+		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Chart"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Templating"], root["_Highcharts"]["Series"]["types"]["scatter"], root["_Highcharts"]["Point"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/map", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Axis"],amd1["Color"],amd1["SeriesRegistry"],amd1["SVGElement"],amd1["Series"],amd1["Chart"],amd1["SVGRenderer"],amd1["Templating"],amd1["Series"],["types"],["scatter"],amd1["Point"]);});
+		define("highcharts/modules/map", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Axis"],amd1["Color"],amd1["SeriesRegistry"],amd1["SVGElement"],amd1["Chart"],amd1["SVGRenderer"],amd1["Templating"],amd1["Series"],["types"],["scatter"],amd1["Point"]);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/map"] = factory(root["_Highcharts"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Series"], root["_Highcharts"]["Chart"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Templating"], root["_Highcharts"]["Series"]["types"]["scatter"], root["_Highcharts"]["Point"]);
+		exports["highcharts/modules/map"] = factory(root["_Highcharts"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Chart"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Templating"], root["_Highcharts"]["Series"]["types"]["scatter"], root["_Highcharts"]["Point"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Axis"], root["Highcharts"]["Color"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["SVGElement"], root["Highcharts"]["Series"], root["Highcharts"]["Chart"], root["Highcharts"]["SVGRenderer"], root["Highcharts"]["Templating"], root["Highcharts"]["Series"]["types"]["scatter"], root["Highcharts"]["Point"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__532__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__984__, __WEBPACK_EXTERNAL_MODULE__632__, __WEBPACK_EXTERNAL_MODULE__260__) => {
+		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Axis"], root["Highcharts"]["Color"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["SVGElement"], root["Highcharts"]["Chart"], root["Highcharts"]["SVGRenderer"], root["Highcharts"]["Templating"], root["Highcharts"]["Series"]["types"]["scatter"], root["Highcharts"]["Point"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__532__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__984__, __WEBPACK_EXTERNAL_MODULE__632__, __WEBPACK_EXTERNAL_MODULE__260__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -72,13 +72,6 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__620__;
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__632__;
-
-/***/ }),
-
-/***/ 820:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__820__;
 
 /***/ }),
 
@@ -181,8 +174,9 @@ var highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_H
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1544,8 +1538,9 @@ function wrap(obj, method, func) {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1691,8 +1686,9 @@ var ColorAxisBase;
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1951,8 +1947,9 @@ var ColorAxisComposition;
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2012,6 +2009,7 @@ var ColorAxisComposition;
  *               offset, opposite, pane, plotBands, plotLines,
  *               reversedStacks, scrollbar, showEmpty, top, zoomEnabled
  * @product      highcharts highstock highmaps
+ * @requires     modules/coloraxis
  * @type         {*|Array<*>}
  * @optionparent colorAxis
  */
@@ -2169,7 +2167,7 @@ const colorAxisDefaults = {
      * @type      {Highcharts.ColorType}
      * @product   highcharts highstock highmaps
      */
-    gridLineColor: "#ffffff" /* Palette.backgroundColor */,
+    gridLineColor: 'var(--highcharts-background-color)',
     /**
      * The width of the grid lines extending from the axis across the
      * gradient of a scalar color axis.
@@ -2226,17 +2224,21 @@ const colorAxisDefaults = {
      */
     marker: {
         /**
-         * Animation for the marker as it moves between values. Set to
-         * `false` to disable animation. Defaults to `{ duration: 50 }`.
+         * Animation for the marker as it moves between values. Set to `false`
+         * to disable animation.
          *
          * @type    {boolean|Partial<Highcharts.AnimationOptionsObject>}
          * @product highcharts highstock highmaps
+         * @default { duration: 50 }
          */
         animation: {
             /** @internal */
             duration: 50
         },
-        /** @internal */
+        /**
+         * Maps to stroke-width because marker options are passed as crosshair.
+         * @internal
+         */
         width: 0.01,
         /**
          * The color of the marker.
@@ -2244,7 +2246,7 @@ const colorAxisDefaults = {
          * @type    {Highcharts.ColorType}
          * @product highcharts highstock highmaps
          */
-        color: "#999999" /* Palette.neutralColor40 */
+        color: 'var(--highcharts-neutral-color-40)'
     },
     /**
      * The axis labels show the number for each tick.
@@ -2287,7 +2289,7 @@ const colorAxisDefaults = {
      * @type    {Highcharts.ColorType}
      * @product highcharts highstock highmaps
      */
-    minColor: "#e6e9ff" /* Palette.highlightColor10 */,
+    minColor: 'var(--highcharts-highlight-color-10)',
     /**
      * The color to represent the maximum of the color axis. Unless
      * [dataClasses](#colorAxis.dataClasses) or
@@ -2306,7 +2308,7 @@ const colorAxisDefaults = {
      * @type    {Highcharts.ColorType}
      * @product highcharts highstock highmaps
      */
-    maxColor: "#0022ff" /* Palette.highlightColor100 */,
+    maxColor: 'var(--highcharts-highlight-color-100)',
     /**
      * Color stops for the gradient of a scalar color axis. Use this in
      * cases where a linear gradient between a `minColor` and `maxColor`
@@ -2440,8 +2442,9 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -2492,6 +2495,8 @@ class ColorAxis extends (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_high
     /** @internal */
     constructor(chart, userOptions) {
         super(chart, userOptions);
+        /** @internal */
+        this.clippable = false;
         /** @internal */
         this.coll = 'colorAxis';
         /** @internal */
@@ -2606,16 +2611,12 @@ class ColorAxis extends (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_high
      * @internal
      */
     getOffset() {
-        const axis = this;
-        const group = axis.legendItem?.group;
-        const sideOffset = axis.chart.axisOffset[axis.side];
+        const axis = this, chart = axis.chart, group = axis.legendItem?.group, sideOffset = chart.axisOffset[axis.side], { clipOffset, legend } = chart;
         if (group) {
-            // Hook for the getOffset method to add groups to this parent
-            // group
+            // Hook for the getOffset method to add groups to this parent group
             axis.axisParent = group;
             // Call the base
             super.getOffset();
-            const legend = this.chart.legend;
             // Adds `maxLabelLength` needed for label padding corrections done
             // by `render()` and `getMargins()` (#15551).
             legend.allItems.forEach(function (item) {
@@ -2624,7 +2625,7 @@ class ColorAxis extends (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_high
                 }
             });
             legend.render();
-            this.chart.getMargins(true);
+            chart.getMargins(true);
             // First time only
             if (!axis.added) {
                 axis.added = true;
@@ -2632,7 +2633,8 @@ class ColorAxis extends (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_high
             axis.labelLeft = 0;
             axis.labelRight = axis.width;
             // Reset it to avoid color axis reserving space
-            axis.chart.axisOffset[axis.side] = sideOffset;
+            chart.axisOffset[axis.side] = sideOffset;
+            chart.clipOffset = clipOffset;
         }
     }
     /**
@@ -3059,7 +3061,7 @@ Array.prototype.push.apply((highcharts_Axis_commonjs_highcharts_Axis_commonjs2_h
 ;// ./code/es-modules/masters/modules/coloraxis.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.6.0 (2026-04-13)
+ * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -3068,8 +3070,8 @@ Array.prototype.push.apply((highcharts_Axis_commonjs_highcharts_Axis_commonjs2_h
  * (c) 2012-2026 Highsoft AS
  * Author: Paweł Potaczek
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 
 
@@ -3085,8 +3087,9 @@ G.ColorAxis.compose(G.Chart, G.Fx, G.Legend, G.Series);
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3163,7 +3166,7 @@ const mapNavigation = {
          */
         style: {
             /** @ignore */
-            color: "#666666" /* Palette.neutralColor60 */,
+            color: 'var(--highcharts-neutral-color-60)',
             /** @ignore */
             fontSize: '1em',
             /** @ignore */
@@ -3183,9 +3186,9 @@ const mapNavigation = {
          */
         theme: {
             /** @ignore */
-            fill: "#ffffff" /* Palette.backgroundColor */,
+            fill: 'var(--highcharts-background-color)',
             /** @ignore */
-            stroke: "#e6e6e6" /* Palette.neutralColor10 */,
+            stroke: 'var(--highcharts-neutral-color-10)',
             /** @ignore */
             'stroke-width': 1,
             /** @ignore */
@@ -3350,8 +3353,9 @@ const mapNavigationDefaults = {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3490,8 +3494,9 @@ var MapPointer;
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3548,8 +3553,9 @@ const MapSymbols = {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3832,8 +3838,9 @@ var highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_highcharts_SV
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -3954,24 +3961,21 @@ var ColorMapComposition;
  * */
 /* harmony default export */ const Series_ColorMapComposition = (ColorMapComposition);
 
-// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series"],"commonjs":["highcharts","Series"],"commonjs2":["highcharts","Series"],"root":["Highcharts","Series"]}
-var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_ = __webpack_require__(820);
-var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_);
 ;// ./code/es-modules/Series/CenteredUtilities.js
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
 
 
 const { deg2rad } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
-
 
 /**
  * @private
@@ -4011,11 +4015,6 @@ var CenteredUtilities;
             pick(size && size < 0 ? void 0 : options.size, '100%'),
             pick(innerSize && innerSize < 0 ? void 0 : options.innerSize || 0, '0%')
         ];
-        // No need for inner size in angular (gauges) series but still required
-        // for pie series
-        if (chart.angular && !(this instanceof (highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default()))) {
-            positions[3] = 0;
-        }
         for (i = 0; i < 4; ++i) {
             value = positions[i];
             handleSlicingRoom = i < 2 || (i === 2 && /%$/.test(value));
@@ -4092,6 +4091,508 @@ var CenteredUtilities;
 */
 ''; // Keeps doclets above in JS file
 
+;// ./code/es-modules/Data/ColumnUtils.js
+/* *
+ *
+ *  (c) 2020-2026 Highsoft AS
+ *
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
+ *
+ *
+ *  Authors:
+ *  - Dawid Draguła
+ *
+ * */
+/* *
+*
+* Functions
+*
+* */
+/**
+ * Sets the length of the column array.
+ *
+ * @param {DataTableColumn} column
+ * Column to be modified.
+ *
+ * @param {number} length
+ * New length of the column.
+ *
+ * @param {boolean} asSubarray
+ * If column is a typed array, return a subarray instead of a new array. It
+ * is faster `O(1)`, but the entire buffer will be kept in memory until all
+ * views of it are destroyed. Default is `false`.
+ *
+ * @return {DataTableColumn}
+ * Modified column.
+ *
+ * @private
+ */
+function setLength(column, length, asSubarray) {
+    if (Array.isArray(column)) {
+        column.length = length;
+        return column;
+    }
+    return column[asSubarray ? 'subarray' : 'slice'](0, length);
+}
+/**
+ * Splices a column array.
+ *
+ * @param {DataTableColumn} column
+ * Column to be modified.
+ *
+ * @param {number} start
+ * Index at which to start changing the array.
+ *
+ * @param {number} deleteCount
+ * An integer indicating the number of old array elements to remove.
+ *
+ * @param {boolean} removedAsSubarray
+ * If column is a typed array, return a subarray instead of a new array. It
+ * is faster `O(1)`, but the entire buffer will be kept in memory until all
+ * views to it are destroyed. Default is `true`.
+ *
+ * @param {Array<number>|TypedArray} items
+ * The elements to add to the array, beginning at the start index. If you
+ * don't specify any elements, `splice()` will only remove elements from the
+ * array.
+ *
+ * @return {SpliceResult}
+ * Object containing removed elements and the modified column.
+ *
+ * @private
+ */
+function splice(column, start, deleteCount, removedAsSubarray, items = []) {
+    if (Array.isArray(column)) {
+        if (!Array.isArray(items)) {
+            items = Array.from(items);
+        }
+        return {
+            removed: column.splice(start, deleteCount, ...items),
+            array: column
+        };
+    }
+    const Constructor = Object.getPrototypeOf(column)
+        .constructor;
+    const removed = column[removedAsSubarray ? 'subarray' : 'slice'](start, start + deleteCount);
+    const newLength = column.length - deleteCount + items.length;
+    const result = new Constructor(newLength);
+    result.set(column.subarray(0, start), 0);
+    result.set(items, start);
+    result.set(column.subarray(start + deleteCount), start + items.length);
+    return {
+        removed: removed,
+        array: result
+    };
+}
+/**
+ * Converts a cell value to a number.
+ *
+ * @param {DataTableCellType} value
+ * Cell value to convert to a number.
+ *
+ * @param {boolean} useNaN
+ * If `true`, returns `NaN` for non-numeric values; if `false`,
+ * returns `null` instead.
+ *
+ * @return {number | null}
+ * Number or `null` if the value is not a number.
+ *
+ * @private
+ */
+function convertToNumber(value, useNaN) {
+    switch (typeof value) {
+        case 'boolean':
+            return (value ? 1 : 0);
+        case 'number':
+            return (isNaN(value) && !useNaN ? null : value);
+        default:
+            value = parseFloat(`${value ?? ''}`);
+            return (isNaN(value) && !useNaN ? null : value);
+    }
+}
+/* *
+ *
+ *  Default Export
+ *
+ * */
+const ColumnUtils = {
+    convertToNumber,
+    setLength,
+    splice
+};
+/* harmony default export */ const Data_ColumnUtils = (ColumnUtils);
+
+;// ./code/es-modules/Data/DataTableCore.js
+/* *
+ *
+ *  (c) 2009-2026 Highsoft AS
+ *
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
+ *
+ *
+ *  Authors:
+ *  - Sophie Bremer
+ *  - Gøran Slettemark
+ *  - Torstein Hønsi
+ *
+ * */
+
+
+const { setLength: DataTableCore_setLength, splice: DataTableCore_splice } = Data_ColumnUtils;
+
+
+/* *
+ *
+ *  Class
+ *
+ * */
+/**
+ * Class to manage columns and rows in a table structure. It provides methods
+ * to add, remove, and manipulate columns and rows, as well as to retrieve data
+ * from specific cells.
+ *
+ * Highcharts allows passing a `DataTable` or a configuration object for a data
+ * table in the `dataTable` property, either chart-level
+ * [dataTable](https://api.highcharts.com/highcharts/dataTable) or as
+ * [series.dataTable](https://api.highcharts.com/highcharts/series.dataTable).
+ * The `DataTable` is then used as a source for the series data points, mapped
+ * by the `series.dataMapping` option.
+ *
+ * After chart instantiation, the data table can be accessed from the series as
+ * `series.dataTable`. CRUD operations on the data table will be reflected in
+ * the chart.
+ *
+ * @example
+ * const dataTable = new Highcharts.DataTable({
+ *   columns: {
+ *     year: [2020, 2021, 2022, 2023],
+ *     cost: [11, 13, 12, 14],
+ *     revenue: [12, 15, 14, 18]
+ *   }
+ * });
+ *
+ * @class
+ * @name Highcharts.DataTable
+ *
+ * @param {Highcharts.DataTableOptionsObject} [options]
+ * Options to initialize the new DataTable instance.
+ */
+class DataTableCore {
+    constructor(options = {}) {
+        this.isDataTable = true;
+        this.autoId = !options.id;
+        this.columns = {};
+        this.id = (options.id || (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.uniqueKey)());
+        this.rowCount = 0;
+        this.versionTag = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.uniqueKey)();
+        let rowCount = 0;
+        objectEach(options.columns || {}, (column, columnId) => {
+            this.columns[columnId] = column.slice();
+            rowCount = Math.max(rowCount, column.length);
+        });
+        this.applyRowCount(rowCount);
+    }
+    /* *
+     *
+     *  Functions
+     *
+     * */
+    /**
+     * Applies a row count to the table by setting the `rowCount` property and
+     * adjusting the length of all columns.
+     *
+     * @private
+     * @param {number} rowCount The new row count.
+     */
+    applyRowCount(rowCount) {
+        this.rowCount = rowCount;
+        objectEach(this.columns, (column, columnId) => {
+            if (column.length !== rowCount) {
+                this.columns[columnId] = DataTableCore_setLength(column, rowCount);
+            }
+        });
+    }
+    /**
+     * Delete rows. Simplified version of the full
+     * `DataTable.deleteRows` method.
+     *
+     * @sample highcharts/datatable/live-chart/
+     *       Add and delete rows in a live chart
+     * @sample highcharts/datatable/shared-with-grid/
+     *       Chart with data table CRUD operations
+     *
+     * @function Highcharts.DataTable#deleteRows
+     *
+     * @param {number} rowIndex
+     * The start row index
+     *
+     * @param {number} [rowCount=1]
+     * The number of rows to delete
+     *
+     * @return {void}
+     *
+     * @emits #afterDeleteRows
+     */
+    deleteRows(rowIndex, rowCount = 1) {
+        if (rowCount > 0 && rowIndex < this.rowCount) {
+            let length = 0;
+            objectEach(this.columns, (column, columnId) => {
+                this.columns[columnId] =
+                    DataTableCore_splice(column, rowIndex, rowCount).array;
+                length = column.length;
+            });
+            this.rowCount = length;
+        }
+        fireEvent(this, 'afterDeleteRows', { rowIndex, rowCount });
+        this.versionTag = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.uniqueKey)();
+    }
+    /**
+     * Fetches the given column by the canonical column ID. Simplified version
+     * of the full `DataTable.getRow` method, always returning by reference.
+     *
+     * @function Highcharts.DataTable#setColumn
+     *
+     * @param {string} columnId
+     * ID of the column to get.
+     *
+     * @return {Highcharts.DataTableColumn|undefined}
+     * A copy of the column, or `undefined` if not found.
+     */
+    getColumn(columnId, 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    asReference) {
+        return this.columns[columnId];
+    }
+    /**
+     * Retrieves all or the given columns. Simplified version of the full
+     * `DataTable.getColumns` method, always returning by reference.
+     *
+     * @function Highcharts.DataTable#getColumns
+     *
+     * @param {Array<string>} [columnIds]
+     * Column ids to retrieve.
+     *
+     * @return {Highcharts.DataTableColumnCollection}
+     * Collection of columns. If a requested column was not found, it is
+     * `undefined`.
+     */
+    getColumns(columnIds, 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    asReference) {
+        return (columnIds || Object.keys(this.columns)).reduce((columns, columnId) => {
+            columns[columnId] = this.columns[columnId];
+            return columns;
+        }, {});
+    }
+    /**
+     * Retrieves the row at a given index.
+     *
+     * @function Highcharts.DataTable#getRowObject
+     *
+     * @param {number} rowIndex
+     * Row index to retrieve. First row has index 0.
+     *
+     * @param {Array<string>} [columnNames]
+     * Column names to retrieve.
+     *
+     * @return {Record<string, number|string|undefined>|undefined}
+     * Returns the row values, or `undefined` if not found.
+     */
+    getRowObject(rowIndex, columnNames) {
+        const row = {}, columns = this.columns;
+        columnNames ?? (columnNames = Object.keys(this.columns));
+        for (const columnName of columnNames) {
+            row[columnName] = columns[columnName]?.[rowIndex];
+        }
+        return row;
+    }
+    /**
+     * Sets cell values for a column. Will insert a new column, if not found.
+     *
+     * @function Highcharts.DataTable#setColumn
+     *
+     * @param {string} columnId
+     * Column name to set.
+     *
+     * @param {Highcharts.DataTableColumn} [column]
+     * Values to set in the column.
+     *
+     * @param {number} [rowIndex]
+     * Index of the first row to change. (Default: 0)
+     *
+     * @param {Record<string, (boolean|number|string|null|undefined)>} [eventDetail]
+     * Custom information for pending events.
+     *
+     * @emits #setColumns
+     * @emits #afterSetColumns
+     */
+    setColumn(columnId, column = [], rowIndex = 0, eventDetail) {
+        this.setColumns({ [columnId]: column }, rowIndex, eventDetail);
+    }
+    /**
+     * Sets cell values for multiple columns. Will insert new columns, if not
+     * found. Simplified version of the full `DataTable.setColumns`, limited
+     * to full replacement of the columns (undefined `rowIndex`).
+     *
+     * @sample highcharts/datatable/shared-with-grid/
+     *       Chart with data table CRUD operations
+     *
+     * @function Highcharts.DataTable#setColumns
+     *
+     * @param {Highcharts.DataTableColumnCollection} columns
+     * Columns as a collection, where the keys are the column names.
+     *
+     * @param {number} [rowIndex]
+     * Index of the first row to change. Ignored in the simplified `DataTable`,
+     * as it always replaces the full column.
+     *
+     * @param {Record<string, (boolean|number|string|null|undefined)>} [eventDetail]
+     * Custom information for pending events.
+     *
+     * @emits #setColumns
+     * @emits #afterSetColumns
+     */
+    setColumns(columns, rowIndex, eventDetail) {
+        let rowCount = this.rowCount;
+        objectEach(columns, (column, columnId) => {
+            this.columns[columnId] = column.slice();
+            rowCount = column.length;
+        });
+        this.applyRowCount(rowCount);
+        if (!eventDetail?.silent) {
+            fireEvent(this, 'afterSetColumns');
+            this.versionTag = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.uniqueKey)();
+        }
+    }
+    /**
+     * Sets cell values of a row. Will insert a new row if no index was
+     * provided, or if the index is higher than the total number of table rows.
+     * A simplified version of the full `DateTable.setRow`, limited to objects.
+     *
+     * @sample highcharts/datatable/live-chart/
+     *       Add and delete rows in a live chart
+     * @sample stock/datatable/live-candlestick/
+     *       Live candlestick
+     * @sample highcharts/datatable/shared-with-grid/
+     *       Chart with data table CRUD operations
+     *
+     * @function Highcharts.DataTable#setRow
+     *
+     * @param {Record<string, number|string|undefined>} row
+     * Cell values to set.
+     *
+     * @param {number} [rowIndex]
+     * Index of the row to set. Leave `undefined` to add as a new row.
+     *
+     * @param {boolean} [insert]
+     * Whether to insert the row at the given index, or to overwrite the row.
+     *
+     * @param {Record<string, (boolean|number|string|null|undefined)>} [eventDetail]
+     * Custom information for pending events.
+     *
+     * @emits #afterSetRows
+     */
+    setRow(row, rowIndex = this.rowCount, insert, eventDetail) {
+        var _a;
+        const { columns } = this, indexRowCount = insert ? this.rowCount + 1 : rowIndex + 1, rowKeys = Object.keys(row);
+        if (eventDetail?.addColumns !== false) {
+            for (let i = 0, iEnd = rowKeys.length; i < iEnd; i++) {
+                columns[_a = rowKeys[i]] || (columns[_a] = new Array(this.rowCount));
+            }
+        }
+        objectEach(columns, (column, columnId) => {
+            if (column) {
+                if (insert) {
+                    column = DataTableCore_splice(column, rowIndex, 0, true, [row[columnId]]).array;
+                }
+                else {
+                    column[rowIndex] =
+                        // Preserve explicit null and undefined but fall back
+                        // to existing value if the new row does not have the
+                        // key
+                        columnId in row ?
+                            row[columnId] :
+                            column[rowIndex];
+                }
+                columns[columnId] = column;
+            }
+        });
+        this.applyRowCount(Math.max(indexRowCount, this.rowCount));
+        if (!eventDetail?.silent) {
+            fireEvent(this, 'afterSetRows', { rowIndex });
+            this.versionTag = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.uniqueKey)();
+        }
+    }
+    /**
+     * Returns the modified (clone) or the original data table if the modified
+     * one does not exist.
+     *
+     * @return {Highcharts.DataTable}
+     * The modified (clone) or the original data table.
+     */
+    getModified() {
+        return this.modified || this;
+    }
+}
+/* *
+ *
+ *  Default Export
+ *
+ * */
+/* harmony default export */ const Data_DataTableCore = (DataTableCore);
+/* *
+ *
+ *  API Declarations
+ *
+ * */
+/**
+ * A collection of data table columns defined by a object where the key is the
+ * column ID and the value is an array of the column values. Typed arrays are
+ * supported.
+ *
+ * @type {Highcharts.DataTableColumnCollection|undefined}
+ * @apioption dataTable.columns
+ */
+/**
+ * Custom ID to identify the new DataTable instance.
+ *
+ * @type {string|undefined}
+ * @apioption dataTable.id
+ */
+/**
+ * A typed array.
+ * @typedef {Int8Array|Uint8Array|Uint8ClampedArray|Int16Array|Uint16Array|Int32Array|Uint32Array|Float32Array|Float64Array} Highcharts.TypedArray
+ */ /**
+* A column of values in a data table.
+* @typedef {Array<boolean|null|number|string|undefined>|Highcharts.TypedArray} Highcharts.DataTableColumn
+*/ /**
+* A collection of data table columns defined by a object where the key is the
+* column ID and the value is an array of the column values. Typed arrays are
+* supported.
+* @typedef {Record<string, Highcharts.DataTableColumn>} Highcharts.DataTableColumnCollection
+*/
+/**
+ * Options for the `DataTable` or `DataTableCore` classes.
+ * @interface Highcharts.DataTableOptionsObject
+ */ /**
+* The column options for the data table. The columns are defined by an object
+* where the key is the column ID and the value is an array of the column
+* values.
+*
+* @name Highcharts.DataTableOptionsObject.columns
+* @type {Highcharts.DataTableColumnCollection|undefined}
+*/ /**
+* Custom ID to identify the new DataTable instance.
+*
+* @name Highcharts.DataTableOptionsObject.id
+* @type {string|undefined}
+*/
+(''); // Keeps doclets above in JS file
+
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Chart"],"commonjs":["highcharts","Chart"],"commonjs2":["highcharts","Chart"],"root":["Highcharts","Chart"]}
 var highcharts_Chart_commonjs_highcharts_Chart_commonjs2_highcharts_Chart_root_Highcharts_Chart_ = __webpack_require__(960);
 var highcharts_Chart_commonjs_highcharts_Chart_commonjs2_highcharts_Chart_root_Highcharts_Chart_default = /*#__PURE__*/__webpack_require__.n(highcharts_Chart_commonjs_highcharts_Chart_commonjs2_highcharts_Chart_root_Highcharts_Chart_);
@@ -4104,8 +4605,9 @@ var highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -4145,9 +4647,10 @@ class MapChart extends (highcharts_Chart_commonjs_highcharts_Chart_commonjs2_hig
      * @param {Highcharts.Options} userOptions
      *        Custom options.
      *
-     * @param {Function} [callback]
+     * @param {Function|true} [callback]
      *        Function to run when the chart has loaded and all external
-     *        images are loaded.
+     *        images are loaded. Set to `true` to return a promise that
+     *        resolves when the chart is ready.
      *
      *
      * @emits Highcharts.MapChart#event:init
@@ -4293,7 +4796,8 @@ class MapChart extends (highcharts_Chart_commonjs_highcharts_Chart_commonjs2_hig
      * The chart object.
      */
     function mapChart(a, b, c) {
-        return new MapChart(a, b, c);
+        const chart = new MapChart(a, b, c);
+        return chart.promise || chart;
     }
     MapChart.mapChart = mapChart;
     /* eslint-enable jsdoc/check-param-names */
@@ -4349,8 +4853,9 @@ class MapChart extends (highcharts_Chart_commonjs_highcharts_Chart_commonjs2_hig
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -4395,8 +4900,9 @@ const MapUtilities = {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -4446,8 +4952,8 @@ class MapPoint extends ScatterPoint {
      * Extend the Point object to split paths.
      * @private
      */
-    applyOptions(options, x) {
-        const series = this.series, point = super.applyOptions(options, x), joinBy = series.joinBy;
+    applyOptions(options, x, isMock) {
+        const series = this.series, point = super.applyOptions(options, x, isMock), joinBy = series.joinBy;
         if (series.mapData && series.mapMap) {
             const joinKey = joinBy[1], mapKey = super.getNestedProperty(joinKey), mapPoint = typeof mapKey !== 'undefined' &&
                 series.mapMap[mapKey];
@@ -4589,8 +5095,9 @@ extend(MapPoint.prototype, {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -4631,6 +5138,7 @@ const MapSeriesDefaults = {
     animation: false, // Makes the complex shapes slow
     dataLabels: {
         crop: false,
+        distance: 0,
         formatter: function () {
             const { numberFormatter } = this.series.chart;
             const { value } = this.point;
@@ -4640,7 +5148,7 @@ const MapSeriesDefaults = {
         },
         inside: true, // For the color
         overflow: false,
-        padding: 0,
+        padding: [0, 2],
         verticalAlign: 'middle'
     },
     /**
@@ -4674,7 +5182,7 @@ const MapSeriesDefaults = {
      *
      * @private
      */
-    nullColor: "#f7f7f7" /* Palette.neutralColor3 */,
+    nullColor: 'var(--highcharts-neutral-color-3)',
     /**
      * Whether to allow pointer interaction like tooltips and mouse events
      * on null points.
@@ -4721,13 +5229,12 @@ const MapSeriesDefaults = {
      *         Borders demo
      *
      * @type      {Highcharts.ColorType}
-     * @default   #cccccc
      * @product   highmaps
      * @apioption plotOptions.series.borderColor
      *
      * @private
      */
-    borderColor: "#e6e6e6" /* Palette.neutralColor10 */,
+    borderColor: 'var(--highcharts-neutral-color-20)',
     /**
      * The border width of each map area.
      *
@@ -4817,7 +5324,7 @@ const MapSeriesDefaults = {
              * @product   highmaps
              * @apioption plotOptions.series.states.hover.borderColor
              */
-            borderColor: "#666666" /* Palette.neutralColor60 */,
+            borderColor: 'var(--highcharts-neutral-color-60)',
             /**
              * The border width of the point in this state
              *
@@ -4859,11 +5366,11 @@ const MapSeriesDefaults = {
         select: {
             /**
              * @type      {Highcharts.ColorType}
-             * @default   ${palette.neutralColor20}
+             * @default   var(--highcharts-neutral-color-20)
              * @product   highmaps
              * @apioption plotOptions.series.states.select.color
              */
-            color: "#cccccc" /* Palette.neutralColor20 */
+            color: 'var(--highcharts-neutral-color-20)'
         }
     },
     legendSymbol: 'rectangle'
@@ -4930,6 +5437,7 @@ const MapSeriesDefaults = {
  *        }]
  *    ```
  *
+ * @basic
  * @type      {Array<number|Array<string,(number|null)>|null|*>}
  * @product   highmaps
  * @apioption series.map.data
@@ -5152,8 +5660,9 @@ const MapSeriesDefaults = {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -5329,7 +5838,7 @@ const MapViewDefaults = {
          *
          * @type {Highcharts.ColorType}
          */
-        borderColor: "#cccccc" /* Palette.neutralColor20 */,
+        borderColor: 'var(--highcharts-neutral-color-20)',
         /**
          * The pixel border width of the insets.
          *
@@ -5464,8 +5973,9 @@ var highcharts_Templating_commonjs_highcharts_Templating_commonjs2_highcharts_Te
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -6016,8 +6526,9 @@ var GeoJSONComposition;
  *
  *  (c) 2010-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -6125,8 +6636,9 @@ var GeometryUtilities;
  *
  *  (c) 2010-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -6227,8 +6739,9 @@ const PolygonClip = {
  *
  *  (c) 2021-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *  Authors:
  *  - Torstein Hønsi
@@ -6346,8 +6859,9 @@ class LambertConformalConic {
  *
  *  (c) 2020-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *  Authors:
  *  - Torstein Hønsi
@@ -6446,8 +6960,9 @@ class EqualEarth {
  *
  *  (c) 2021-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *  Authors:
  *  - Torstein Hønsi
@@ -6525,8 +7040,9 @@ class Miller {
  *
  *  (c) 2021-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *  Authors:
  *  - Torstein Hønsi
@@ -6611,8 +7127,9 @@ class Orthographic {
  *
  *  (c) 2021-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *  Authors:
  *  - Torstein Hønsi
@@ -6702,8 +7219,9 @@ class WebMercator {
  *
  *  (c) 2021-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *  Authors:
  *  - Torstein Hønsi
@@ -6745,8 +7263,9 @@ const projectionRegistry = {
  *  (c) 2021-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -7319,8 +7838,9 @@ Projection.registry = ProjectionRegistry;
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -8463,14 +8983,16 @@ class MapViewInset extends MapView {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
 
 
 const { animObject, stop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+
 
 
 
@@ -8505,7 +9027,7 @@ class MapSeries extends ScatterSeries {
          *
          * */
         super(...arguments);
-        this.processedData = [];
+        this.tupleKey = 'hc-key';
     }
     /* *
      *
@@ -8821,7 +9343,7 @@ class MapSeries extends ScatterSeries {
      * @private
      */
     hasData() {
-        return !!this.dataTable.rowCount;
+        return !!this.dataTable.getModified().rowCount;
     }
     /**
      * Get presentational attributes. In the maps series this runs in both
@@ -8830,19 +9352,19 @@ class MapSeries extends ScatterSeries {
      * @private
      */
     pointAttribs(point, state) {
-        const { mapView, styledMode } = point.series.chart;
-        const attr = styledMode ?
+        const { mapView, styledMode } = (point?.series || this).chart;
+        const attr = styledMode && point ?
             this.colorAttribs(point) :
             ColumnSeries.prototype.pointAttribs.call(this, point, state);
         // Individual stroke width
-        let pointStrokeWidth = this.getStrokeWidth(point.options);
+        let pointStrokeWidth = this.getStrokeWidth(point?.options || {});
         // Handle state specific border or line width
         if (state) {
-            const stateOptions = merge(this.options.states?.[state], point.options.states?.[state] || {}), stateStrokeWidth = this.getStrokeWidth(stateOptions);
+            const stateOptions = merge(this.options.states?.[state], point?.options.states?.[state] || {}), stateStrokeWidth = this.getStrokeWidth(stateOptions);
             if (defined(stateStrokeWidth)) {
                 pointStrokeWidth = stateStrokeWidth;
             }
-            attr.stroke = stateOptions.borderColor ?? point.color;
+            attr.stroke = stateOptions.borderColor ?? point?.color;
         }
         if (pointStrokeWidth && mapView) {
             pointStrokeWidth /= mapView.getScale();
@@ -8859,12 +9381,12 @@ class MapSeries extends ScatterSeries {
         // map, but not the map area shape itself. Instead it is rendered like a
         // null point. To fully remove a map area, it should be removed from the
         // mapData.
-        if (!point.visible) {
+        if (point?.visible === false) {
             attr.fill = this.options.nullColor;
         }
         // Set opacity: if point is null and nullInteraction is true, force
         // opacity 1. Otherwise use point/series opacity or default 1 (#23019)
-        if (point.isNull && this.options.nullInteraction) {
+        if (point?.isNull && this.options.nullInteraction) {
             attr.opacity = 1;
         }
         if (defined(pointStrokeWidth)) {
@@ -8876,12 +9398,10 @@ class MapSeries extends ScatterSeries {
         attr['stroke-linecap'] = attr['stroke-linejoin'] = this.options.linecap;
         return attr;
     }
-    updateData() {
+    matchPoints() {
         // #16782
-        if (this.processedData) {
-            return false;
-        }
-        return super.updateData.apply(this, arguments);
+        return !this.hasProcessedDataTable &&
+            super.matchPoints.apply(this, arguments);
     }
     /**
      * Extend setData to call processData and generatePoints immediately.
@@ -8896,19 +9416,19 @@ class MapSeries extends ScatterSeries {
             this.chart.redraw(animation);
         }
     }
-    dataColumnKeys() {
+    getDataColumnKeys() {
         // No x data for maps
         return this.pointArrayMap;
     }
     /**
      * Extend processData to join in mapData. If the allAreas option is true,
      * all areas from the mapData are used, and those that don't correspond to a
-     * data value are given null values. The results are stored in
-     * `processedData` in order to avoid mutating `data`.
+     * data value are given null values. The results are stored in a modified
+     * data table in order to avoid mutating `data`.
      * @private
      */
     processData() {
-        const options = this.options, data = options.data, chart = this.chart, chartOptions = chart.options.chart, joinBy = this.joinBy, pointArrayMap = options.keys || this.pointArrayMap, dataUsed = [], mapMap = {}, mapView = this.chart.mapView, mapDataObject = mapView && (
+        const options = this.options, dataTable = this.dataTable, chart = this.chart, chartOptions = chart.options.chart, joinBy = this.joinBy, dataUsed = [], mapMap = {}, mapView = this.chart.mapView, mapDataObject = mapView && (
         // Get map either from series or global
         isObject(options.mapData, true) ?
             mapView.getGeoMap(options.mapData) : mapView.geoMap), 
@@ -8916,7 +9436,8 @@ class MapSeries extends ScatterSeries {
         mapTransforms = chart.mapTransforms =
             chartOptions.mapTransforms ||
                 mapDataObject?.['hc-transform'] ||
-                chart.mapTransforms;
+                chart.mapTransforms, modified = new Data_DataTableCore();
+        this.hasProcessedDataTable = true;
         let mapPoint, props;
         // Cache cos/sin of transform rotation angle
         if (mapTransforms) {
@@ -8931,57 +9452,15 @@ class MapSeries extends ScatterSeries {
         if (isArray(options.mapData)) {
             mapData = options.mapData;
         }
-        else if (mapDataObject && mapDataObject.type === 'FeatureCollection') {
+        else if (mapDataObject?.type === 'FeatureCollection') {
             this.mapTitle = mapDataObject.title;
             mapData = highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default().geojson(mapDataObject, this.type, this);
         }
-        // Reset processedData
-        this.processedData = [];
-        const processedData = this.processedData;
-        // Pick up numeric values, add index. Convert Array point definitions to
-        // objects using pointArrayMap.
-        if (data) {
-            let val;
-            for (let i = 0, iEnd = data.length; i < iEnd; ++i) {
-                val = data[i];
-                if (isNumber(val)) {
-                    processedData[i] = {
-                        value: val
-                    };
-                }
-                else if (isArray(val)) {
-                    let ix = 0;
-                    processedData[i] = {};
-                    // Automatically copy first item to hc-key if there is
-                    // an extra leading string
-                    if (!options.keys &&
-                        val.length > pointArrayMap.length &&
-                        typeof val[0] === 'string') {
-                        processedData[i]['hc-key'] = val[0];
-                        ++ix;
-                    }
-                    // Run through pointArrayMap and what's left of the
-                    // point data array in parallel, copying over the values
-                    for (let j = 0; j < pointArrayMap.length; ++j, ++ix) {
-                        if (pointArrayMap[j] &&
-                            typeof val[ix] !== 'undefined') {
-                            if (pointArrayMap[j].indexOf('.') > 0) {
-                                Map_MapPoint.prototype.setNestedProperty(processedData[i], val[ix], pointArrayMap[j]);
-                            }
-                            else {
-                                processedData[i][pointArrayMap[j]] = val[ix];
-                            }
-                        }
-                    }
-                }
-                else {
-                    processedData[i] = data[i];
-                }
-                if (joinBy &&
-                    joinBy[0] === '_i') {
-                    processedData[i]._i = i;
-                }
-            }
+        Object.entries(dataTable.columns).forEach(([key, column]) => {
+            modified.setColumn(key, column);
+        });
+        if (joinBy[0] === '_i') {
+            modified.setColumn('_i', Array.from({ length: modified.rowCount }, (x, i) => i));
         }
         if (mapData) {
             this.mapData = mapData;
@@ -9000,21 +9479,16 @@ class MapSeries extends ScatterSeries {
             // Registered the point codes that actually hold data
             if (joinBy[1]) {
                 const joinKey = joinBy[1];
-                processedData.forEach((pointOptions) => {
-                    const mapKey = getNestedProperty(joinKey, pointOptions);
+                for (let i = 0; i < modified.rowCount; i++) {
+                    const mapKey = joinKey === '_i' ?
+                        i :
+                        getNestedProperty(joinKey, modified.getRowObject(i));
                     if (mapMap[mapKey]) {
                         dataUsed.push(mapMap[mapKey]);
                     }
-                });
+                }
             }
             if (options.allAreas) {
-                // Register the point codes that actually hold data
-                if (joinBy[1]) {
-                    const joinKey = joinBy[1];
-                    processedData.forEach((pointOptions) => {
-                        dataUsed.push(getNestedProperty(joinKey, pointOptions));
-                    });
-                }
                 // Add those map points that don't correspond to data, which
                 // will be drawn as null points. Searching a string is faster
                 // than Array.indexOf
@@ -9030,14 +9504,12 @@ class MapSeries extends ScatterSeries {
                         dataUsedString.indexOf('|' +
                             mapPoint[joinBy[0]] +
                             '|') === -1) {
-                        processedData.push(merge(mapPoint, { value: null }));
+                        modified.setRow(merge(mapPoint, { value: null }));
                     }
                 });
             }
         }
-        // The processedXData array is used by general chart logic for checking
-        // data length in various scenarios.
-        this.dataTable.rowCount = processedData.length;
+        this.dataTable.modified = modified;
         return void 0;
     }
     /**
@@ -9181,8 +9653,9 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -9283,6 +9756,7 @@ const MapLineSeriesDefaults = {
  *     }]
  *  ```
  *
+ * @basic
  * @type      {Array<number|Array<string,(number|null)>|null|*>}
  * @extends   series.map.data
  * @excluding drilldown
@@ -9320,8 +9794,9 @@ const MapLineSeriesDefaults = {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -9389,8 +9864,9 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -9428,8 +9904,9 @@ class MapPointPoint extends MapPointPoint_ScatterSeries.prototype.pointClass {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -9464,8 +9941,7 @@ const MapPointSeriesDefaults = {
         },
         overflow: false,
         style: {
-            /** @internal */
-            color: "#000000" /* Palette.neutralColor100 */
+            color: 'var(--highcharts-neutral-color-100)'
         }
     },
     legendSymbol: 'lineMarker',
@@ -9539,6 +10015,7 @@ const MapPointSeriesDefaults = {
  *        }]
  *    ```
  *
+ * @basic
  * @type      {Array<number|Array<number,(number|null)>|null|*>}
  * @extends   series.map.data
  * @excluding labelrank, middleX, middleY, path, value
@@ -9641,8 +10118,9 @@ var highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_com
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -9839,8 +10317,9 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *
  *  Author: Paweł Potaczek
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -10000,7 +10479,7 @@ const BubbleLegendDefaults = {
             /** @ignore-option */
             fontSize: '0.9em',
             /** @ignore-option */
-            color: "#000000" /* Palette.neutralColor100 */
+            color: 'var(--highcharts-neutral-color-100)'
         },
         /**
          * The x position offset of the label relative to the
@@ -10107,8 +10586,9 @@ const BubbleLegendDefaults = {
  *
  *  Author: Paweł Potaczek
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -10125,7 +10605,7 @@ const { noop: BubbleLegendItem_noop } = (highcharts_commonjs_highcharts_commonjs
 /**
  * BubbleLegend class.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.BubbleLegend
  * @param {Highcharts.LegendBubbleLegendOptions} options
@@ -10151,7 +10631,7 @@ class BubbleLegendItem {
      * */
     /**
      * Create basic bubbleLegend properties similar to item in legend.
-     * @private
+     * @internal
      */
     init(options, legend) {
         this.options = options;
@@ -10162,7 +10642,7 @@ class BubbleLegendItem {
     /**
      * Depending on the position option, add bubbleLegend to legend items.
      *
-     * @private
+     * @internal
      *
      * @param {Array<(Highcharts.Point|Highcharts.Series)>} items
      *        All legend items
@@ -10175,7 +10655,7 @@ class BubbleLegendItem {
      * Calculate ranges, sizes and call the next steps of bubbleLegend
      * creation.
      *
-     * @private
+     * @internal
      *
      * @param {Highcharts.Legend} legend
      *        Legend instance
@@ -10210,7 +10690,7 @@ class BubbleLegendItem {
     }
     /**
      * Set style options for each bubbleLegend range.
-     * @private
+     * @internal
      */
     setOptions() {
         const ranges = this.ranges, options = this.options, series = this.chart.series[options.seriesIndex], baseline = this.legend.baseline, bubbleAttribs = {
@@ -10254,7 +10734,7 @@ class BubbleLegendItem {
      * Calculate radius for each bubble range,
      * used code from BubbleSeries.js 'getRadius' method.
      *
-     * @private
+     * @internal
      *
      * @param {number} value
      *        Range value
@@ -10268,7 +10748,7 @@ class BubbleLegendItem {
     }
     /**
      * Render the legendItem group.
-     * @private
+     * @internal
      */
     render() {
         const legendItem = this.legendItem || {}, renderer = this.chart.renderer, zThreshold = this.options.zThreshold;
@@ -10299,7 +10779,7 @@ class BubbleLegendItem {
     /**
      * Render one range, consisting of bubble symbol, connector and label.
      *
-     * @private
+     * @internal
      *
      * @param {Highcharts.LegendBubbleLegendRangesOptions} range
      *        Range options
@@ -10359,7 +10839,7 @@ class BubbleLegendItem {
     }
     /**
      * Get the label which takes up the most space.
-     * @private
+     * @internal
      */
     getMaxLabelSize() {
         const labels = this.symbols.labels;
@@ -10379,7 +10859,7 @@ class BubbleLegendItem {
     /**
      * Get formatted label for range.
      *
-     * @private
+     * @internal
      *
      * @param {Highcharts.LegendBubbleLegendRangesOptions} range
      *        Range options
@@ -10397,7 +10877,7 @@ class BubbleLegendItem {
     /**
      * By using default chart 'hideOverlappingLabels' method, hide or show
      * labels and connectors.
-     * @private
+     * @internal
      */
     hideOverlappingLabels() {
         const chart = this.chart, allowOverlap = this.options.labels.allowOverlap, symbols = this.symbols;
@@ -10417,7 +10897,7 @@ class BubbleLegendItem {
     /**
      * Calculate ranges from created series.
      *
-     * @private
+     * @internal
      *
      * @return {Array<Highcharts.LegendBubbleLegendRangesOptions>}
      *         Array of range objects
@@ -10464,7 +10944,7 @@ class BubbleLegendItem {
     /**
      * Calculate bubble legend sizes from rendered series.
      *
-     * @private
+     * @internal
      *
      * @return {Array<number,number>}
      *         Calculated min and max bubble sizes
@@ -10492,7 +10972,7 @@ class BubbleLegendItem {
     }
     /**
      * Correct ranges with calculated sizes.
-     * @private
+     * @internal
      */
     updateRanges(min, max) {
         const bubbleLegendOptions = this.legend.options.bubbleLegend;
@@ -10504,7 +10984,7 @@ class BubbleLegendItem {
      * Because of the possibility of creating another legend line, predicted
      * bubble legend sizes may differ by a few pixels, so it is necessary to
      * correct them.
-     * @private
+     * @internal
      */
     correctSizes() {
         const legend = this.legend, chart = this.chart, bubbleSeries = chart.series[this.options.seriesIndex], pxSizes = bubbleSeries.getPxExtremes(), bubbleSeriesSize = pxSizes.maxPxSize, bubbleLegendSize = this.options.maxSize;
@@ -10550,8 +11030,9 @@ class BubbleLegendItem {
  *
  *  Author: Paweł Potaczek
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -10571,6 +11052,8 @@ const { composed: BubbleLegendComposition_composed } = (highcharts_commonjs_high
 /**
  * If ranges are not specified, determine ranges from rendered bubble series
  * and render legend again.
+ *
+ * @internal
  */
 function chartDrawChartBox(proceed, options, callback) {
     const chart = this, legend = chart.legend, bubbleSeries = getVisibleBubbleSeriesIndex(chart) >= 0;
@@ -10622,8 +11105,8 @@ function chartDrawChartBox(proceed, options, callback) {
 }
 /**
  * Compose classes for use with Bubble series.
- * @private
  *
+ * @internal
  * @param {Highcharts.Chart} ChartClass
  * Core chart class to use with Bubble series.
  *
@@ -10647,7 +11130,7 @@ function BubbleLegendComposition_compose(ChartClass, LegendClass) {
 /**
  * Check if there is at least one visible bubble series.
  *
- * @private
+ * @internal
  * @function getVisibleBubbleSeriesIndex
  * @param {Highcharts.Chart} chart
  * Chart to check.
@@ -10671,7 +11154,7 @@ function getVisibleBubbleSeriesIndex(chart) {
 /**
  * Calculate height for each row in legend.
  *
- * @private
+ * @internal
  * @function getLinesHeights
  *
  * @param {Highcharts.Legend} legend
@@ -10708,6 +11191,8 @@ function getLinesHeights(legend) {
 }
 /**
  * Start the bubble legend creation process.
+ *
+ * @internal
  */
 function onLegendAfterGetAllItems(e) {
     const legend = this, bubbleLegend = legend.bubbleLegend, legendOptions = legend.options, options = legendOptions.bubbleLegend, bubbleSeriesIndex = getVisibleBubbleSeriesIndex(legend.chart);
@@ -10732,6 +11217,8 @@ function onLegendAfterGetAllItems(e) {
 }
 /**
  * Retranslate the legend items after render
+ *
+ * @internal
  */
 function onLegendAfterRender() {
     if (this.bubbleLegend) {
@@ -10763,6 +11250,8 @@ function onLegendAfterRender() {
 }
 /**
  * Toggle bubble legend depending on the visible status of bubble series.
+ *
+ * @internal
  */
 function onLegendItemClick(e) {
     // #14080 don't fire this code if click function is prevented
@@ -10794,9 +11283,11 @@ function onLegendItemClick(e) {
  *  Default Export
  *
  * */
+/** @internal */
 const BubbleLegendComposition = {
     compose: BubbleLegendComposition_compose
 };
+/** @internal */
 /* harmony default export */ const Bubble_BubbleLegendComposition = (BubbleLegendComposition);
 
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Point"],"commonjs":["highcharts","Point"],"commonjs2":["highcharts","Point"],"root":["Highcharts","Point"]}
@@ -10808,8 +11299,9 @@ var highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_H
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -10823,6 +11315,9 @@ const { seriesTypes: { scatter: { prototype: { pointClass: BubblePoint_ScatterPo
  *  Class
  *
  * */
+/**
+ * @internal
+ */
 class BubblePoint extends BubblePoint_ScatterPoint {
     /* *
      *
@@ -10830,7 +11325,7 @@ class BubblePoint extends BubblePoint_ScatterPoint {
      *
      * */
     /**
-     * @private
+     * @internal
      */
     haloPath(size) {
         const computedSize = (size && this.marker ?
@@ -10859,6 +11354,9 @@ extend(BubblePoint.prototype, {
  *  Default Export
  *
  * */
+/**
+ * @internal
+ */
 /* harmony default export */ const Bubble_BubblePoint = (BubblePoint);
 
 ;// ./code/es-modules/Series/Bubble/BubbleSeries.js
@@ -10867,8 +11365,9 @@ extend(BubblePoint.prototype, {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -10962,6 +11461,9 @@ function onAxisAfterRender() {
  *  Class
  *
  * */
+/**
+ * @internal
+ */
 class BubbleSeries extends BubbleSeries_ScatterSeries {
     /* *
      *
@@ -10982,7 +11484,7 @@ class BubbleSeries extends BubbleSeries_ScatterSeries {
      * */
     /**
      * Perform animation on the bubbles
-     * @private
+     * @internal
      */
     animate(init) {
         if (!init &&
@@ -11009,10 +11511,10 @@ class BubbleSeries extends BubbleSeries_ScatterSeries {
      * Get the radius for each point based on the minSize, maxSize and each
      * point's Z value. This must be done prior to Series.translate because
      * the axis needs to add padding in accordance with the point sizes.
-     * @private
+     * @internal
      */
     getRadii() {
-        const zData = this.getColumn('z'), yData = this.getColumn('y'), radii = [];
+        const zData = [...this.getColumn('z', false, true)], yData = this.getColumn('y'), radii = [];
         let len, i, value, zExtremes = this.chart.bubbleZExtremes;
         const { minPxSize, maxPxSize } = this.getPxExtremes();
         // Get the collective Z extremes of all bubblish series. The chart-level
@@ -11052,7 +11554,7 @@ class BubbleSeries extends BubbleSeries_ScatterSeries {
     }
     /**
      * Get the individual radius for one point.
-     * @private
+     * @internal
      */
     getRadius(zMin, zMax, minSize, maxSize, value, yValue) {
         const options = this.options, sizeByArea = options.sizeBy !== 'width', zThreshold = options.zThreshold;
@@ -11087,13 +11589,13 @@ class BubbleSeries extends BubbleSeries_ScatterSeries {
     /**
      * Define hasData function for non-cartesian series.
      * Returns true if the series has points at all.
-     * @private
+     * @internal
      */
     hasData() {
         return !!this.dataTable.rowCount;
     }
     /**
-     * @private
+     * @internal
      */
     markerAttribs(point, state) {
         const attr = super.markerAttribs(point, state), { height = 0, width = 0 } = attr;
@@ -11106,7 +11608,7 @@ class BubbleSeries extends BubbleSeries_ScatterSeries {
         }) : attr;
     }
     /**
-     * @private
+     * @internal
      */
     pointAttribs(point, state) {
         const markerOptions = this.options.marker, fillOpacity = markerOptions?.fillOpacity, attr = BubbleSeries_Series.prototype.pointAttribs.call(this, point, state);
@@ -11115,7 +11617,7 @@ class BubbleSeries extends BubbleSeries_ScatterSeries {
     }
     /**
      * Extend the base translate method to handle bubble size
-     * @private
+     * @internal
      */
     translate() {
         // Run the parent method
@@ -11124,11 +11626,11 @@ class BubbleSeries extends BubbleSeries_ScatterSeries {
         this.translateBubble();
     }
     translateBubble() {
-        const { data, options, radii } = this, { minPxSize } = this.getPxExtremes();
-        // Set the shape type and arguments to be picked up in drawPoints
-        let i = data.length;
-        while (i--) {
-            const point = data[i], radius = radii ? radii[i] : 0; // #1737
+        const { options, radii } = this, { minPxSize } = this.getPxExtremes();
+        this.data.concat(this.condemnedPoints).forEach((point, i) => {
+            const { plotX = 0, plotY = 0 } = point, radius = point.condemned ?
+                (point.marker?.radius || 0) :
+                (radii ? radii[i] : 0); // #1737
             // Negative points means negative z values (#9728)
             if (this.zoneAxis === 'z') {
                 point.negative = (point.z || 0) < (options.zThreshold || 0);
@@ -11144,18 +11646,18 @@ class BubbleSeries extends BubbleSeries_ScatterSeries {
             if (isNumber(radius) && radius >= minPxSize / 2) {
                 // Alignment box for the data label
                 point.dlBox = {
-                    x: point.plotX - radius,
-                    y: point.plotY - radius,
+                    x: plotX - radius,
+                    y: plotY - radius,
                     width: 2 * radius,
                     height: 2 * radius
                 };
             }
-            else { // Below zThreshold
-                // #1691
+            else {
+                // Below zThreshold, #1691
                 point.shapeArgs = point.plotY = point.dlBox = void 0;
                 point.isInside = false; // #17281
             }
-        }
+        });
     }
     getPxExtremes() {
         const smallestSize = Math.min(this.chart.plotWidth, this.chart.plotHeight);
@@ -11186,7 +11688,7 @@ class BubbleSeries extends BubbleSeries_ScatterSeries {
         }
     }
     /**
-     * @private
+     * @internal
      * @function Highcharts.Series#searchKDTree
      */
     searchKDTree(point, compareX, e, suppliedPointEvaluator = BubbleSeries_noop, suppliedBSideCheckEvaluator = BubbleSeries_noop) {
@@ -11488,6 +11990,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Bubble_BubbleSeries = (BubbleSeries);
 /* *
  *
@@ -11562,6 +12065,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
+ * @basic
  * @type      {Array<Array<(number|string),number>|Array<(number|string),number,number>|*>}
  * @extends   series.line.data
  * @product   highcharts
@@ -11594,8 +12098,9 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -11641,8 +12146,9 @@ extend(MapBubblePoint.prototype, {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -11881,7 +12387,6 @@ extend(MapBubbleSeries.prototype, {
     kdAxisArray: ['plotX', 'plotY'],
     setData: mapProto.setData,
     setOptions: mapProto.setOptions,
-    updateData: mapProto.updateData,
     useMapGeometry: true,
     xyFromShape: true
 });
@@ -11935,6 +12440,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *        }]
  *    ```
  *
+ * @basic
  * @type      {Array<number|null|*>}
  * @extends   series.mappoint.data
  * @excluding labelrank, middleX, middleY, path, value, x, y, lat, lon
@@ -11967,8 +12473,9 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -12080,8 +12587,9 @@ extend(HeatmapPoint.prototype, {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -12097,7 +12605,6 @@ extend(HeatmapPoint.prototype, {
  * values contained in a matrix are represented as colors.
  *
  * @productdesc {highcharts}
- * Requires `modules/heatmap`.
  *
  * @sample highcharts/demo/heatmap/
  *         Simple heatmap
@@ -12111,6 +12618,7 @@ extend(HeatmapPoint.prototype, {
  *               lineWidth, pointInterval, pointIntervalUnit, pointRange,
  *               pointStart, shadow, softThreshold, stacking, step, threshold
  * @product      highcharts highmaps
+ * @requires     modules/heatmap
  * @optionparent plotOptions.heatmap
  */
 const HeatmapSeriesDefaults = {
@@ -12198,7 +12706,7 @@ const HeatmapSeriesDefaults = {
      *
      * @type {Highcharts.ColorType}
      */
-    nullColor: "#f7f7f7" /* Palette.neutralColor3 */,
+    nullColor: 'var(--highcharts-neutral-color-3)',
     dataLabels: {
         formatter: function () {
             const { numberFormatter } = this.series.chart;
@@ -12238,8 +12746,9 @@ const HeatmapSeriesDefaults = {
          *         Predefined, graphic and custom markers
          * @sample {highstock} highcharts/plotoptions/series-marker-symbol/
          *         Predefined, graphic and custom markers
+         * @default rect
+         * @apioption plotOptions.heatmap.marker.symbol
          */
-        symbol: 'rect',
         /** @ignore-option */
         radius: 0,
         lineColor: void 0,
@@ -12384,11 +12893,11 @@ const HeatmapSeriesDefaults = {
  * not specified, it is inherited from [chart.type](#chart.type).
  *
  * @productdesc {highcharts}
- * Requires `modules/heatmap`.
  *
  * @extends   series,plotOptions.heatmap
  * @excluding cropThreshold, dataParser, dataURL, dragDrop ,pointRange, stack,
  * @product   highcharts highmaps
+ * @requires  modules/heatmap
  * @apioption series.heatmap
  */
 /**
@@ -12443,6 +12952,7 @@ const HeatmapSeriesDefaults = {
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
+ * @basic
  * @type      {Array<Array<number>|*>}
  * @extends   series.line.data
  * @product   highcharts highmaps
@@ -12720,8 +13230,9 @@ const HeatmapSeriesDefaults = {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Hubert Kozik
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -12795,8 +13306,9 @@ const InterpolationUtilities = {
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -12898,6 +13410,13 @@ class HeatmapSeries extends HeatmapSeries_ScatterSeries {
                 }
             });
         }
+    }
+    /**
+     * Override to use rectangle by default
+     * @private
+     */
+    getSymbol() {
+        this.symbol = this.options.marker?.symbol || 'rect';
     }
     /**
      * @private
@@ -13081,8 +13600,7 @@ extend(HeatmapSeries.prototype, {
      * @private
      */
     alignDataLabel: HeatmapSeries_ColumnSeries.prototype.alignDataLabel,
-    colorAttribs: Series_ColorMapComposition.seriesMembers.colorAttribs,
-    getSymbol: HeatmapSeries_Series.prototype.getSymbol
+    colorAttribs: Series_ColorMapComposition.seriesMembers.colorAttribs
 });
 Series_ColorMapComposition.compose(HeatmapSeries);
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('heatmap', HeatmapSeries);

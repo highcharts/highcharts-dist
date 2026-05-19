@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -318,13 +319,16 @@ function getDGApproximation() {
  *         Mapped groups.
  */
 function groupData(table, groupPositions, approximation) {
-    const xData = table.getColumn('x', true) || [], yData = table.getColumn('y', true), series = this, data = series.data, dataOptions = series.options && series.options.data, groupedXData = [], modified = new DataTableCore(), groupMap = [], dataLength = table.rowCount, 
+    const xData = (table === this.dataTable) ?
+        // If the table is the series dataTable, get the cached x data
+        // to avoid undefined x values from the data table.
+        this.getColumn('x') :
+        table.getColumn('x', true), yData = table.getColumn('y', true), series = this, topTable = series.dataTable, cropStart = series.cropStart || 0, data = series.data, dataOptions = series.options?.data, groupedXData = [], modified = new DataTableCore(), groupMap = [], dataLength = table.rowCount, 
     // When grouping the fake extended axis for panning, we don't need to
     // consider y
     handleYData = !!yData, values = [], pointArrayMap = series.pointArrayMap, pointArrayMapLength = pointArrayMap && pointArrayMap.length, extendedPointArrayMap = ['x'].concat(pointArrayMap || ['y']), 
     // Data columns to be applied to the modified data table at the end
-    valueColumns = (pointArrayMap || ['y']).map(() => []), groupAll = (this.options.dataGrouping &&
-        this.options.dataGrouping.groupAll);
+    valueColumns = (pointArrayMap || ['y']).map(() => []), groupAll = this.options.dataGrouping?.groupAll;
     let pointX, pointY, groupedY, pos = 0, start = 0;
     const approximationFn = (typeof approximation === 'function' ?
         approximation :
@@ -366,10 +370,12 @@ function groupData(table, groupPositions, approximation) {
             // `name` and `color` or custom properties. Implementers can
             // override this from the approximation function, where they can
             // write custom options to `this.dataGroupInfo.options`.
-            if (series.pointClass && !defined(series.dataGroupInfo.options)) {
+            if (series.pointClass &&
+                !defined(series.dataGroupInfo.options) &&
+                dataOptions) {
                 // Convert numbers and arrays into objects
                 series.dataGroupInfo.options = merge(series.pointClass.prototype
-                    .optionsToObject.call({ series: series }, series.options.data[series.cropStart + start]));
+                    .optionsToObject.call({ series }, topTable.getRowObject(cropStart + start)));
                 // Make sure the raw data (x, y, open, high etc) is not copied
                 // over and overwriting approximated data.
                 extendedPointArrayMap.forEach(function (key) {
@@ -409,7 +415,9 @@ function groupData(table, groupPositions, approximation) {
             const index = groupAll ? i : series.cropStart + i, point = (data && data[index]) ||
                 series.pointClass.prototype.applyOptions.apply({
                     series: series
-                }, [dataOptions[index]]);
+                }, [
+                    topTable.getRowObject(index)
+                ]);
             let val;
             for (let j = 0; j < pointArrayMapLength; j++) {
                 val = point[pointArrayMap[j]];

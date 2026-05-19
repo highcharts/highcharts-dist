@@ -6,8 +6,9 @@
  *
  *  Author: Daniel Studencki
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -100,6 +101,8 @@ class TimelineSeries extends LineSeries {
                 point.options.dataLabels = merge(defaults, point.userDLOptions, 
                 // Forced. Point level limitations.
                 { zIndex: void 0 });
+                // Delete so it doesn't override anything on merge.
+                delete point.options.dataLabels.zIndex;
                 visibilityIndex++;
             }
         }
@@ -108,8 +111,7 @@ class TimelineSeries extends LineSeries {
         super.generatePoints();
         const series = this, points = series.points, pointsLen = points.length, xData = series.getColumn('x');
         for (let i = 0, iEnd = pointsLen; i < iEnd; ++i) {
-            const x = xData[i];
-            points[i].applyOptions({ x: x }, x);
+            points[i].x = xData[i];
         }
     }
     getVisibilityMap() {
@@ -234,7 +236,7 @@ class TimelineSeries extends LineSeries {
 TimelineSeries.defaultOptions = merge(LineSeries.defaultOptions, TimelineSeriesDefaults);
 // Add series-specific properties after data is already processed, #17890
 addEvent(TimelineSeries, 'afterProcessData', function () {
-    const series = this, xData = series.getColumn('x');
+    const series = this, yData = series.getColumn('y');
     let visiblePoints = 0;
     series.visibilityMap = series.getVisibilityMap();
     // Calculate currently visible points.
@@ -244,7 +246,11 @@ addEvent(TimelineSeries, 'afterProcessData', function () {
         }
     }
     series.visiblePointsCount = visiblePoints;
-    this.dataTable.setColumn('y', new Array(xData.length).fill(1));
+    yData.length = series.dataTable.rowCount;
+    for (let i = 0; i < yData.length; ++i) {
+        yData[i] = yData[i] === null ? null : 1;
+    }
+    this.dataTable.setColumn('y', yData);
 });
 extend(TimelineSeries.prototype, {
     // Use a group of trackers from TrackerMixin

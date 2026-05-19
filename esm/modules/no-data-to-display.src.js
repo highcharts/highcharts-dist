@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.6.0 (2026-04-13)
+ * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/no-data-to-display
  * @requires highcharts
  *
@@ -9,8 +9,8 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Øystein Moseng
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -64,8 +64,9 @@ var external_highcharts_src_js_default_AST_default = /*#__PURE__*/__webpack_requ
  *
  *  Author: Øystein Moseng
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -124,6 +125,8 @@ const noData = {
      * Whether to insert the label as HTML, or as pseudo-HTML rendered with
      * SVG.
      *
+     * @type      {boolean}
+     * @default   false
      * @since     4.1.10
      * @product   highcharts highstock gantt
      * @requires  modules/no-data-to-display
@@ -178,7 +181,7 @@ const noData = {
         /** @ignore */
         fontSize: '0.8em',
         /** @ignore */
-        color: "#666666" /* Palette.neutralColor60 */
+        color: 'var(--highcharts-neutral-color-60)'
     }
 };
 /* *
@@ -199,8 +202,9 @@ const NoDataDefaults = {
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1565,8 +1569,9 @@ function wrap(obj, method, func) {
  *
  *  Author: Øystein Moseng
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */

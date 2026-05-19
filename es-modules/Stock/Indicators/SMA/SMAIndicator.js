@@ -1,12 +1,14 @@
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
 'use strict';
 import Chart from '../../../Core/Chart/Chart.js';
+import DataTableCore from '../../../Data/DataTableCore.js';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 const { line: LineSeries } = SeriesRegistry.seriesTypes;
 import { addEvent, extend, fireEvent, isArray, merge, pick } from '../../../Shared/Utilities.js';
@@ -15,7 +17,7 @@ import { error } from '../../../Core/Utilities.js';
  *
  * Return the parent series values in the legacy two-dimensional yData
  * format
- * @private
+ * @internal
  */
 const tableToMultiYData = (series, processed) => {
     const yData = [], pointArrayMap = series.pointArrayMap, table = processed && series.dataTable.getModified() || series.dataTable;
@@ -37,7 +39,7 @@ const tableToMultiYData = (series, processed) => {
 /**
  * The SMA series type.
  *
- * @private
+ * @internal
  */
 class SMAIndicator extends LineSeries {
     /* *
@@ -45,18 +47,14 @@ class SMAIndicator extends LineSeries {
      *  Functions
      *
      * */
-    /**
-     * @private
-     */
+    /** @internal */
     destroy() {
         this.dataEventsToUnbind.forEach(function (unbinder) {
             unbinder();
         });
         super.destroy.apply(this, arguments);
     }
-    /**
-     * @private
-     */
+    /** @internal */
     getName() {
         const params = [];
         let name = this.name;
@@ -70,9 +68,7 @@ class SMAIndicator extends LineSeries {
         }
         return name;
     }
-    /**
-     * @private
-     */
+    /** @internal */
     getValues(series, params) {
         const period = params.period, xVal = series.xData || [], yVal = series.yData, yValLen = yVal.length, SMA = [], xData = [], yData = [];
         let i, index = -1, range = 0, SMAPoint, sum = 0;
@@ -105,9 +101,7 @@ class SMAIndicator extends LineSeries {
             yData: yData
         };
     }
-    /**
-     * @private
-     */
+    /** @internal */
     init(chart, options) {
         const indicator = this;
         super.init.call(indicator, chart, options);
@@ -166,16 +160,14 @@ class SMAIndicator extends LineSeries {
         indicator.dataEventsToUnbind = [];
         indicator.eventsToUnbind.push(linkedSeriesUnbiner);
     }
-    /**
-     * @private
-     */
+    /** @internal */
     recalculateValues() {
-        const croppedDataValues = [], indicator = this, table = this.dataTable, oldData = indicator.points || [], oldDataLength = indicator.dataTable.rowCount, emptySet = {
+        const indicator = this, table = this.dataTable, oldDataLength = indicator.dataTable.rowCount, emptySet = {
             values: [],
             xData: [],
             yData: []
         };
-        let overwriteData = true, oldFirstPointIndex, oldLastPointIndex, min, max;
+        let overwriteData = true, min, max;
         // For the newer data table, temporarily set the parent series `yData`
         // to the legacy format that is documented for custom indicators, and
         // get the xData from the data table
@@ -193,6 +185,7 @@ class SMAIndicator extends LineSeries {
             // #18176, #18177 indicators should work with empty dataset
             indicator.linkedParent.dataTable.rowCount ?
             (indicator.getValues(indicator.linkedParent, indicator.options.params) || emptySet) : emptySet;
+        processedData.xData.length = processedData.values.length;
         // Reset
         delete indicator.linkedParent.xData;
         indicator.linkedParent.yData = yData;
@@ -223,37 +216,37 @@ class SMAIndicator extends LineSeries {
                     max = indicator.xAxis.max;
                 }
                 const croppedData = indicator.cropData(table, min, max);
-                const keys = ['x', ...(indicator.pointArrayMap || ['y'])];
-                for (let i = 0; i < (croppedData.modified?.rowCount || 0); i++) {
-                    const values = keys.map((key) => this.getColumn(key)[i] || 0);
-                    croppedDataValues.push(values);
-                }
-                const indicatorXData = indicator.getColumn('x');
-                oldFirstPointIndex = processedData.xData.indexOf(indicatorXData[0]);
-                oldLastPointIndex = processedData.xData.indexOf(indicatorXData[indicatorXData.length - 1]);
-                // Check if indicator points should be shifted (#8572)
-                if (oldFirstPointIndex === -1 &&
-                    oldLastPointIndex === processedData.xData.length - 2) {
-                    if (croppedDataValues[0][0] === oldData[0].x) {
-                        croppedDataValues.shift();
-                    }
-                }
-                indicator.updateData(croppedDataValues);
+                indicator.setData(croppedData.modified, false);
             }
             else if (indicator.updateAllPoints || // #18710
                 // Omit addPoint() and removePoint() cases
                 processedData.xData.length !== oldDataLength - 1 &&
                     processedData.xData.length !== oldDataLength + 1) {
                 overwriteData = false;
-                indicator.updateData(processedData.values);
+                this.setData(new DataTableCore({
+                    columns: {
+                        x: processedData.xData,
+                        ...valueColumns
+                    }
+                }), false);
             }
         }
         if (overwriteData) {
-            table.setColumns({
-                ...valueColumns,
-                x: processedData.xData
-            });
-            indicator.options.data = processedData.values;
+            const columns = valueColumns;
+            columns.x = processedData.xData;
+            // Add the processedData.values to the data table
+            processedData.values.reduce((columns, val, i) => {
+                Object.keys(val).forEach((key) => {
+                    if (!columns[key]) {
+                        columns[key] = [];
+                    }
+                    columns[key][i] = val[key];
+                });
+                return columns;
+            }, columns);
+            table.setColumns(columns);
+            delete indicator.xColumn;
+            delete indicator.xColumnIsNumbers;
         }
         if (indicator.calculateOn.xAxis &&
             indicator.getColumn('x', true).length) {
@@ -263,9 +256,7 @@ class SMAIndicator extends LineSeries {
         indicator.isDirtyData = !!indicator.linkedSeries.length;
         fireEvent(indicator, 'updatedData'); // #18689
     }
-    /**
-     * @private
-     */
+    /** @internal */
     processData() {
         const series = this, compareToMain = series.options.compareToMain, linkedParent = series.linkedParent;
         super.processData.apply(series, arguments);
@@ -286,21 +277,10 @@ class SMAIndicator extends LineSeries {
  *
  * */
 /**
- * The parameter allows setting line series type and use OHLC indicators.
- * Data in OHLC format is required.
- *
- * @sample {highstock} stock/indicators/use-ohlc-data
- *         Use OHLC data format to plot line chart
- *
- * @type      {boolean}
- * @product   highstock
- * @apioption plotOptions.line.useOhlcData
- */
-/**
  * Simple moving average indicator (SMA). This series requires `linkedTo`
  * option to be set.
  *
- * @sample stock/indicators/sma
+ * @sample {highstock} stock/indicators/sma
  *         Simple moving average indicator
  *
  * @extends      plotOptions.line
@@ -379,6 +359,7 @@ SeriesRegistry.registerSeriesType('sma', SMAIndicator);
  *  Default Export
  *
  * */
+/** @internal */
 export default SMAIndicator;
 /* *
  *

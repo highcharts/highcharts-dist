@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: LicenseRef-Highcharts
-/**
+/* *
  *
  *  (c) 2010-2026 Highsoft AS
  *  Author: Wojciech Chmiel
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -37,7 +37,7 @@ var MultipleLinesComposition;
      * Notice that linesApiNames should have decreased amount of elements
      * relative to pointArrayMap (without pointValKey).
      *
-     * @private
+     * @internal
      * @type {Array<string>}
      */
     const linesApiNames = ['bottomLine'];
@@ -48,7 +48,7 @@ var MultipleLinesComposition;
      * Also it should be consistent with amount of lines calculated in
      * getValues method from your implementation.
      *
-     * @private
+     * @internal
      * @type {Array<string>}
      */
     const pointArrayMap = ['top', 'bottom'];
@@ -58,14 +58,14 @@ var MultipleLinesComposition;
      * be disabled for some indicators, leave this option as an empty array.
      * Names should be the same as the names in the pointArrayMap.
      *
-     * @private
+     * @internal
      * @type {Array<string>}
      */
     const areaLinesNames = ['top'];
     /**
      * Main line id.
      *
-     * @private
+     * @internal
      * @type {string}
      */
     const pointValKey = 'top';
@@ -82,7 +82,7 @@ var MultipleLinesComposition;
      * should be consistent with the amount of lines calculated in the
      * `getValues` method.
      *
-     * @private
+     * @internal
      */
     function compose(IndicatorClass) {
         const proto = IndicatorClass.prototype;
@@ -104,7 +104,8 @@ var MultipleLinesComposition;
     /**
      * Generate the API name of the line
      *
-     * @private
+     * @internal
+     * @param {string} propertyName name of the line
      */
     function getLineName(propertyName) {
         return ('plot' +
@@ -114,7 +115,12 @@ var MultipleLinesComposition;
     /**
      * Create translatedLines Collection based on pointArrayMap.
      *
-     * @private
+     * @internal
+     * @param {SMAIndicator} indicator
+     * @param {string} [excludedValue]
+     *        Main line id
+     * @return {Array<string>}
+     *         Returns translated lines names without excluded value.
      */
     function getTranslatedLinesNames(indicator, excludedValue) {
         const translatedLines = [];
@@ -128,7 +134,7 @@ var MultipleLinesComposition;
     /**
      * Draw main and additional lines.
      *
-     * @private
+     * @internal
      */
     function indicatorDrawGraph() {
         const indicator = this, pointValKey = indicator.pointValKey, linesApiNames = indicator.linesApiNames, areaLinesNames = indicator.areaLinesNames, mainLinePoints = indicator.points, mainLineOptions = indicator.options, mainLinePath = indicator.graph, gappedExtend = {
@@ -205,7 +211,8 @@ var MultipleLinesComposition;
      * Create the path based on points provided as argument.
      * If indicator.nextPoints option is defined, create the areaFill.
      *
-     * @private
+     * @internal
+     * @param {Array<LinePoint>} points Points on which the path should be created
      */
     function indicatorGetGraphPath(points) {
         let areaPath, path = [], higherAreaPath = [];
@@ -229,7 +236,7 @@ var MultipleLinesComposition;
         return path;
     }
     /**
-     * @private
+     * @internal
      * @param {Highcharts.Point} point
      *        Indicator point
      * @return {Array<number>}
@@ -245,7 +252,7 @@ var MultipleLinesComposition;
     /**
      * Add lines plot pixel values.
      *
-     * @private
+     * @internal
      */
     function indicatorTranslate() {
         const pointArrayMap = this.pointArrayMap;

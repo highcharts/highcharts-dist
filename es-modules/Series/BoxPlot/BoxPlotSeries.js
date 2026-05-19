@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -23,7 +24,7 @@ import { crisp, extend, merge, pick, relativeLength } from '../../Shared/Utiliti
 /**
  * The boxplot series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes#boxplot
  *
@@ -37,8 +38,9 @@ class BoxPlotSeries extends ColumnSeries {
      * */
     // Get presentational attributes
     pointAttribs() {
-        // No attributes should be set on point.graphic which is the group
-        return {};
+        // No attributes should be set on point.graphic which is the group. The
+        // returned fill is for legend symbols.
+        return { fill: this.color };
     }
     // Get an SVGPath object for both whiskers
     getWhiskerPair(halfWidth, stemX, upperWhiskerLength, lowerWhiskerLength, point) {
@@ -78,7 +80,7 @@ class BoxPlotSeries extends ColumnSeries {
     }
     /**
      * Draw the data points
-     * @private
+     * @internal
      */
     drawPoints() {
         const series = this, points = series.points, options = series.options, chart = series.chart, renderer = chart.renderer, 
@@ -234,4 +236,7 @@ SeriesRegistry.registerSeriesType('boxplot', BoxPlotSeries);
  *  Default Export
  *
  * */
+/**
+ * @internal
+ */
 export default BoxPlotSeries;

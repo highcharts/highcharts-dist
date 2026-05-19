@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v12.6.0 (2026-04-13)
+ * @license Highcharts JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/modules/timeline
  * @requires highcharts
  *
@@ -9,8 +9,8 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Daniel Studencki
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
@@ -63,8 +63,9 @@ var external_highcharts_src_js_default_Point_default = /*#__PURE__*/__webpack_re
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1429,8 +1430,9 @@ function wrap(obj, method, func) {
  *
  *  Author: Daniel Studencki
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1540,9 +1542,7 @@ class TimelinePoint extends LinePoint {
         this.y = 1;
     }
     isValid() {
-        return (this.options.y !== null ||
-            this.series.options.nullInteraction ||
-            true);
+        return this.options.y !== null;
     }
     setState() {
         const proceed = super.setState;
@@ -1561,10 +1561,8 @@ class TimelinePoint extends LinePoint {
             series.chart.redraw();
         }
     }
-    applyOptions(options, x) {
-        const isNull = (this.isNull ||
-            options === null ||
-            options.y === null), series = this.series;
+    applyOptions(options, x, isMock) {
+        const series = this.series;
         if (!x && !options?.x) {
             if (isNumber(this.x)) {
                 x = this.x;
@@ -1574,11 +1572,11 @@ class TimelinePoint extends LinePoint {
                 series.autoIncrement();
             }
         }
-        options = external_highcharts_src_js_default_Point_default().prototype.optionsToObject.call(this, options ?? ((series.options.nullInteraction && { y: 0 }) ||
-            null));
-        const p = super.applyOptions(options, x);
-        this.userDLOptions = merge(this.userDLOptions, options.dataLabels);
-        p.isNull = isNull;
+        options = external_highcharts_src_js_default_Point_default().prototype.optionsToObject.call(this, options);
+        const p = super.applyOptions(options, x, isMock);
+        if (!isMock) {
+            this.userDLOptions = merge(this.userDLOptions, options.dataLabels);
+        }
         return p;
     }
 }
@@ -1598,8 +1596,9 @@ class TimelinePoint extends LinePoint {
  *
  *  Author: Daniel Studencki
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1669,11 +1668,11 @@ const TimelineSeriesDefaults = {
          *         Alternate disabled
          */
         alternate: true,
-        backgroundColor: "#ffffff" /* Palette.backgroundColor */,
+        backgroundColor: 'var(--highcharts-background-color)',
         borderWidth: 1,
-        borderColor: "#999999" /* Palette.neutralColor40 */,
+        borderColor: 'var(--highcharts-neutral-color-40)',
         borderRadius: 3,
-        color: "#333333" /* Palette.neutralColor80 */,
+        color: 'var(--highcharts-neutral-color-80)',
         /**
          * The color of the line connecting the data label to the point.
          * The default color is the same as the point's color.
@@ -1736,14 +1735,11 @@ const TimelineSeriesDefaults = {
                 (this.label || '');
             return format;
         },
+        padding: 5,
         style: {
-            /** @internal */
             textOutline: 'none',
-            /** @internal */
             fontWeight: 'normal',
-            /** @internal */
             fontSize: '0.8em',
-            /** @internal */
             textAlign: 'left'
         },
         /**
@@ -1810,6 +1806,7 @@ const TimelineSeriesDefaults = {
  * @sample {highcharts} highcharts/series-timeline/datetime-axis
  *         Real time intervals
  *
+ * @basic
  * @type      {Array<*>}
  * @extends   series.line.data
  * @excluding marker, y
@@ -1854,8 +1851,9 @@ const TimelineSeriesDefaults = {
  *
  *  Author: Daniel Studencki
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1948,6 +1946,8 @@ class TimelineSeries extends LineSeries {
                 point.options.dataLabels = merge(defaults, point.userDLOptions, 
                 // Forced. Point level limitations.
                 { zIndex: void 0 });
+                // Delete so it doesn't override anything on merge.
+                delete point.options.dataLabels.zIndex;
                 visibilityIndex++;
             }
         }
@@ -1956,8 +1956,7 @@ class TimelineSeries extends LineSeries {
         super.generatePoints();
         const series = this, points = series.points, pointsLen = points.length, xData = series.getColumn('x');
         for (let i = 0, iEnd = pointsLen; i < iEnd; ++i) {
-            const x = xData[i];
-            points[i].applyOptions({ x: x }, x);
+            points[i].x = xData[i];
         }
     }
     getVisibilityMap() {
@@ -2082,7 +2081,7 @@ class TimelineSeries extends LineSeries {
 TimelineSeries.defaultOptions = merge(LineSeries.defaultOptions, Timeline_TimelineSeriesDefaults);
 // Add series-specific properties after data is already processed, #17890
 addEvent(TimelineSeries, 'afterProcessData', function () {
-    const series = this, xData = series.getColumn('x');
+    const series = this, yData = series.getColumn('y');
     let visiblePoints = 0;
     series.visibilityMap = series.getVisibilityMap();
     // Calculate currently visible points.
@@ -2092,7 +2091,11 @@ addEvent(TimelineSeries, 'afterProcessData', function () {
         }
     }
     series.visiblePointsCount = visiblePoints;
-    this.dataTable.setColumn('y', new Array(xData.length).fill(1));
+    yData.length = series.dataTable.rowCount;
+    for (let i = 0; i < yData.length; ++i) {
+        yData[i] = yData[i] === null ? null : 1;
+    }
+    this.dataTable.setColumn('y', yData);
 });
 extend(TimelineSeries.prototype, {
     // Use a group of trackers from TrackerMixin

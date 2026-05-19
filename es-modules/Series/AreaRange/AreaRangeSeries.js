@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -544,7 +545,7 @@ addEvent(AreaRangeSeries, 'afterTranslate', function () {
             // Put the tooltip in the middle of the range
         }
         else {
-            const tooltipPos = point.pos(false, point.plotLow), posHigh = point.pos(false, point.plotHigh);
+            const tooltipPos = point.pos(false, void 0, point.plotLow), posHigh = point.pos(false, void 0, point.plotHigh);
             if (tooltipPos && posHigh) {
                 tooltipPos[0] = (tooltipPos[0] + posHigh[0]) / 2;
                 tooltipPos[1] = (tooltipPos[1] + posHigh[1]) / 2;

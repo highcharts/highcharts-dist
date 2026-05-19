@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v12.6.0 (2026-04-13)
+ * @license Highstock JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/indicators/dmi
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -10,8 +10,8 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Rafał Sebestjański
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -116,8 +116,9 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1474,14 +1475,14 @@ function wrap(obj, method, func) {
 }
 
 ;// ./code/es-modules/Stock/Indicators/MultipleLinesComposition.js
-// SPDX-License-Identifier: LicenseRef-Highcharts
-/**
+/* *
  *
  *  (c) 2010-2026 Highsoft AS
  *  Author: Wojciech Chmiel
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1513,7 +1514,7 @@ var MultipleLinesComposition;
      * Notice that linesApiNames should have decreased amount of elements
      * relative to pointArrayMap (without pointValKey).
      *
-     * @private
+     * @internal
      * @type {Array<string>}
      */
     const linesApiNames = ['bottomLine'];
@@ -1524,7 +1525,7 @@ var MultipleLinesComposition;
      * Also it should be consistent with amount of lines calculated in
      * getValues method from your implementation.
      *
-     * @private
+     * @internal
      * @type {Array<string>}
      */
     const pointArrayMap = ['top', 'bottom'];
@@ -1534,14 +1535,14 @@ var MultipleLinesComposition;
      * be disabled for some indicators, leave this option as an empty array.
      * Names should be the same as the names in the pointArrayMap.
      *
-     * @private
+     * @internal
      * @type {Array<string>}
      */
     const areaLinesNames = ['top'];
     /**
      * Main line id.
      *
-     * @private
+     * @internal
      * @type {string}
      */
     const pointValKey = 'top';
@@ -1558,7 +1559,7 @@ var MultipleLinesComposition;
      * should be consistent with the amount of lines calculated in the
      * `getValues` method.
      *
-     * @private
+     * @internal
      */
     function compose(IndicatorClass) {
         const proto = IndicatorClass.prototype;
@@ -1580,7 +1581,8 @@ var MultipleLinesComposition;
     /**
      * Generate the API name of the line
      *
-     * @private
+     * @internal
+     * @param {string} propertyName name of the line
      */
     function getLineName(propertyName) {
         return ('plot' +
@@ -1590,7 +1592,12 @@ var MultipleLinesComposition;
     /**
      * Create translatedLines Collection based on pointArrayMap.
      *
-     * @private
+     * @internal
+     * @param {SMAIndicator} indicator
+     * @param {string} [excludedValue]
+     *        Main line id
+     * @return {Array<string>}
+     *         Returns translated lines names without excluded value.
      */
     function getTranslatedLinesNames(indicator, excludedValue) {
         const translatedLines = [];
@@ -1604,7 +1611,7 @@ var MultipleLinesComposition;
     /**
      * Draw main and additional lines.
      *
-     * @private
+     * @internal
      */
     function indicatorDrawGraph() {
         const indicator = this, pointValKey = indicator.pointValKey, linesApiNames = indicator.linesApiNames, areaLinesNames = indicator.areaLinesNames, mainLinePoints = indicator.points, mainLineOptions = indicator.options, mainLinePath = indicator.graph, gappedExtend = {
@@ -1681,7 +1688,8 @@ var MultipleLinesComposition;
      * Create the path based on points provided as argument.
      * If indicator.nextPoints option is defined, create the areaFill.
      *
-     * @private
+     * @internal
+     * @param {Array<LinePoint>} points Points on which the path should be created
      */
     function indicatorGetGraphPath(points) {
         let areaPath, path = [], higherAreaPath = [];
@@ -1705,7 +1713,7 @@ var MultipleLinesComposition;
         return path;
     }
     /**
-     * @private
+     * @internal
      * @param {Highcharts.Point} point
      *        Indicator point
      * @return {Array<number>}
@@ -1721,7 +1729,7 @@ var MultipleLinesComposition;
     /**
      * Add lines plot pixel values.
      *
-     * @private
+     * @internal
      */
     function indicatorTranslate() {
         const pointArrayMap = this.pointArrayMap;
@@ -1757,8 +1765,9 @@ var MultipleLinesComposition;
  *
  *  Directional Movement Index (DMI) indicator for Highcharts Stock
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1775,7 +1784,7 @@ const { sma: SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_Ser
 /**
  * The Directional Movement Index (DMI) series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.dmi
  *
@@ -1892,7 +1901,7 @@ class DMIIndicator extends SMAIndicator {
  * This series requires the `linkedTo` option to be set and should
  * be loaded after the `stock/indicators/indicators.js` file.
  *
- * @sample stock/indicators/dmi
+ * @sample {highstock} stock/indicators/dmi
  *         DMI indicator
  *
  * @extends      plotOptions.sma
@@ -1943,7 +1952,7 @@ DMIIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
              *
              * @type {Highcharts.ColorString}
              */
-            lineColor: "#06b535" /* Palette.positiveColor */ // Green-ish
+            lineColor: 'var(--highcharts-positive-color)' // Green-ish
         }
     },
     /**
@@ -1963,7 +1972,7 @@ DMIIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
              *
              * @type {Highcharts.ColorString}
              */
-            lineColor: "#f21313" /* Palette.negativeColor */ // Red-ish
+            lineColor: 'var(--highcharts-negative-color)' // Red-ish
         }
     },
     dataGrouping: {
@@ -1985,6 +1994,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const DMI_DMIIndicator = ((/* unused pure expression or super */ null && (DMIIndicator)));
 /* *
  *

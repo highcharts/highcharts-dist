@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -54,8 +55,8 @@ class MapPoint extends ScatterPoint {
      * Extend the Point object to split paths.
      * @private
      */
-    applyOptions(options, x) {
-        const series = this.series, point = super.applyOptions(options, x), joinBy = series.joinBy;
+    applyOptions(options, x, isMock) {
+        const series = this.series, point = super.applyOptions(options, x, isMock), joinBy = series.joinBy;
         if (series.mapData && series.mapMap) {
             const joinKey = joinBy[1], mapKey = super.getNestedProperty(joinKey), mapPoint = typeof mapKey !== 'undefined' &&
                 series.mapMap[mapKey];

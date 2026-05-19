@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -13,6 +14,7 @@ import A from '../../Core/Animation/AnimationUtilities.js';
 const { animObject, stop } = A;
 import ColorMapComposition from '../ColorMapComposition.js';
 import CU from '../CenteredUtilities.js';
+import DataTableCore from '../../Data/DataTableCore.js';
 import H from '../../Core/Globals.js';
 const { noop } = H;
 import MapChart from '../../Core/Chart/MapChart.js';
@@ -45,7 +47,7 @@ class MapSeries extends ScatterSeries {
          *
          * */
         super(...arguments);
-        this.processedData = [];
+        this.tupleKey = 'hc-key';
     }
     /* *
      *
@@ -361,7 +363,7 @@ class MapSeries extends ScatterSeries {
      * @private
      */
     hasData() {
-        return !!this.dataTable.rowCount;
+        return !!this.dataTable.getModified().rowCount;
     }
     /**
      * Get presentational attributes. In the maps series this runs in both
@@ -370,19 +372,19 @@ class MapSeries extends ScatterSeries {
      * @private
      */
     pointAttribs(point, state) {
-        const { mapView, styledMode } = point.series.chart;
-        const attr = styledMode ?
+        const { mapView, styledMode } = (point?.series || this).chart;
+        const attr = styledMode && point ?
             this.colorAttribs(point) :
             ColumnSeries.prototype.pointAttribs.call(this, point, state);
         // Individual stroke width
-        let pointStrokeWidth = this.getStrokeWidth(point.options);
+        let pointStrokeWidth = this.getStrokeWidth(point?.options || {});
         // Handle state specific border or line width
         if (state) {
-            const stateOptions = merge(this.options.states?.[state], point.options.states?.[state] || {}), stateStrokeWidth = this.getStrokeWidth(stateOptions);
+            const stateOptions = merge(this.options.states?.[state], point?.options.states?.[state] || {}), stateStrokeWidth = this.getStrokeWidth(stateOptions);
             if (defined(stateStrokeWidth)) {
                 pointStrokeWidth = stateStrokeWidth;
             }
-            attr.stroke = stateOptions.borderColor ?? point.color;
+            attr.stroke = stateOptions.borderColor ?? point?.color;
         }
         if (pointStrokeWidth && mapView) {
             pointStrokeWidth /= mapView.getScale();
@@ -399,12 +401,12 @@ class MapSeries extends ScatterSeries {
         // map, but not the map area shape itself. Instead it is rendered like a
         // null point. To fully remove a map area, it should be removed from the
         // mapData.
-        if (!point.visible) {
+        if (point?.visible === false) {
             attr.fill = this.options.nullColor;
         }
         // Set opacity: if point is null and nullInteraction is true, force
         // opacity 1. Otherwise use point/series opacity or default 1 (#23019)
-        if (point.isNull && this.options.nullInteraction) {
+        if (point?.isNull && this.options.nullInteraction) {
             attr.opacity = 1;
         }
         if (defined(pointStrokeWidth)) {
@@ -416,12 +418,10 @@ class MapSeries extends ScatterSeries {
         attr['stroke-linecap'] = attr['stroke-linejoin'] = this.options.linecap;
         return attr;
     }
-    updateData() {
+    matchPoints() {
         // #16782
-        if (this.processedData) {
-            return false;
-        }
-        return super.updateData.apply(this, arguments);
+        return !this.hasProcessedDataTable &&
+            super.matchPoints.apply(this, arguments);
     }
     /**
      * Extend setData to call processData and generatePoints immediately.
@@ -436,19 +436,19 @@ class MapSeries extends ScatterSeries {
             this.chart.redraw(animation);
         }
     }
-    dataColumnKeys() {
+    getDataColumnKeys() {
         // No x data for maps
         return this.pointArrayMap;
     }
     /**
      * Extend processData to join in mapData. If the allAreas option is true,
      * all areas from the mapData are used, and those that don't correspond to a
-     * data value are given null values. The results are stored in
-     * `processedData` in order to avoid mutating `data`.
+     * data value are given null values. The results are stored in a modified
+     * data table in order to avoid mutating `data`.
      * @private
      */
     processData() {
-        const options = this.options, data = options.data, chart = this.chart, chartOptions = chart.options.chart, joinBy = this.joinBy, pointArrayMap = options.keys || this.pointArrayMap, dataUsed = [], mapMap = {}, mapView = this.chart.mapView, mapDataObject = mapView && (
+        const options = this.options, dataTable = this.dataTable, chart = this.chart, chartOptions = chart.options.chart, joinBy = this.joinBy, dataUsed = [], mapMap = {}, mapView = this.chart.mapView, mapDataObject = mapView && (
         // Get map either from series or global
         isObject(options.mapData, true) ?
             mapView.getGeoMap(options.mapData) : mapView.geoMap), 
@@ -456,7 +456,8 @@ class MapSeries extends ScatterSeries {
         mapTransforms = chart.mapTransforms =
             chartOptions.mapTransforms ||
                 mapDataObject?.['hc-transform'] ||
-                chart.mapTransforms;
+                chart.mapTransforms, modified = new DataTableCore();
+        this.hasProcessedDataTable = true;
         let mapPoint, props;
         // Cache cos/sin of transform rotation angle
         if (mapTransforms) {
@@ -471,57 +472,15 @@ class MapSeries extends ScatterSeries {
         if (isArray(options.mapData)) {
             mapData = options.mapData;
         }
-        else if (mapDataObject && mapDataObject.type === 'FeatureCollection') {
+        else if (mapDataObject?.type === 'FeatureCollection') {
             this.mapTitle = mapDataObject.title;
             mapData = H.geojson(mapDataObject, this.type, this);
         }
-        // Reset processedData
-        this.processedData = [];
-        const processedData = this.processedData;
-        // Pick up numeric values, add index. Convert Array point definitions to
-        // objects using pointArrayMap.
-        if (data) {
-            let val;
-            for (let i = 0, iEnd = data.length; i < iEnd; ++i) {
-                val = data[i];
-                if (isNumber(val)) {
-                    processedData[i] = {
-                        value: val
-                    };
-                }
-                else if (isArray(val)) {
-                    let ix = 0;
-                    processedData[i] = {};
-                    // Automatically copy first item to hc-key if there is
-                    // an extra leading string
-                    if (!options.keys &&
-                        val.length > pointArrayMap.length &&
-                        typeof val[0] === 'string') {
-                        processedData[i]['hc-key'] = val[0];
-                        ++ix;
-                    }
-                    // Run through pointArrayMap and what's left of the
-                    // point data array in parallel, copying over the values
-                    for (let j = 0; j < pointArrayMap.length; ++j, ++ix) {
-                        if (pointArrayMap[j] &&
-                            typeof val[ix] !== 'undefined') {
-                            if (pointArrayMap[j].indexOf('.') > 0) {
-                                MapPoint.prototype.setNestedProperty(processedData[i], val[ix], pointArrayMap[j]);
-                            }
-                            else {
-                                processedData[i][pointArrayMap[j]] = val[ix];
-                            }
-                        }
-                    }
-                }
-                else {
-                    processedData[i] = data[i];
-                }
-                if (joinBy &&
-                    joinBy[0] === '_i') {
-                    processedData[i]._i = i;
-                }
-            }
+        Object.entries(dataTable.columns).forEach(([key, column]) => {
+            modified.setColumn(key, column);
+        });
+        if (joinBy[0] === '_i') {
+            modified.setColumn('_i', Array.from({ length: modified.rowCount }, (x, i) => i));
         }
         if (mapData) {
             this.mapData = mapData;
@@ -540,21 +499,16 @@ class MapSeries extends ScatterSeries {
             // Registered the point codes that actually hold data
             if (joinBy[1]) {
                 const joinKey = joinBy[1];
-                processedData.forEach((pointOptions) => {
-                    const mapKey = getNestedProperty(joinKey, pointOptions);
+                for (let i = 0; i < modified.rowCount; i++) {
+                    const mapKey = joinKey === '_i' ?
+                        i :
+                        getNestedProperty(joinKey, modified.getRowObject(i));
                     if (mapMap[mapKey]) {
                         dataUsed.push(mapMap[mapKey]);
                     }
-                });
+                }
             }
             if (options.allAreas) {
-                // Register the point codes that actually hold data
-                if (joinBy[1]) {
-                    const joinKey = joinBy[1];
-                    processedData.forEach((pointOptions) => {
-                        dataUsed.push(getNestedProperty(joinKey, pointOptions));
-                    });
-                }
                 // Add those map points that don't correspond to data, which
                 // will be drawn as null points. Searching a string is faster
                 // than Array.indexOf
@@ -570,14 +524,12 @@ class MapSeries extends ScatterSeries {
                         dataUsedString.indexOf('|' +
                             mapPoint[joinBy[0]] +
                             '|') === -1) {
-                        processedData.push(merge(mapPoint, { value: null }));
+                        modified.setRow(merge(mapPoint, { value: null }));
                     }
                 });
             }
         }
-        // The processedXData array is used by general chart logic for checking
-        // data length in various scenarios.
-        this.dataTable.rowCount = processedData.length;
+        this.dataTable.modified = modified;
         return void 0;
     }
     /**

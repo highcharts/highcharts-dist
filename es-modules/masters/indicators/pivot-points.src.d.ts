@@ -1,2 +1,3 @@
-import * as Highcharts from '../../../indicators/pivot-points.src';
+import Highcharts from '../../Core/Globals.js';
+import '../../Stock/Indicators/PivotPoints/PivotPointsIndicator.js';
 export default Highcharts;

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v12.6.0 (2026-04-13)
+ * @license Highstock JS v13.0.0-beta.0 (2026-05-19)
  * @module highcharts/indicators/vwap
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -10,8 +10,8 @@
  * (c) 2010-2026 Highsoft AS
  * Author: Paweł Dalek
  *
- * A commercial license may be required depending on use.
- * See www.highcharts.com/license
+ * A commercial license may be required depending on use,
+ * see www.highcharts.com/license
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -116,8 +116,9 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1481,8 +1482,9 @@ function wrap(obj, method, func) {
  *
  *  Volume Weighted Average Price (VWAP) indicator for Highcharts Stock
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -1499,7 +1501,7 @@ const { sma: SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_Ser
 /**
  * The Volume Weighted Average Price (VWAP) series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.vwap
  *
@@ -1531,7 +1533,7 @@ class VWAPIndicator extends SMAIndicator {
      * Main algorithm used to calculate Volume Weighted Average Price (VWAP)
      * values
      *
-     * @private
+     * @internal
      *
      * @param {boolean} isOHLC
      * Says if data has OHLC format
@@ -1602,7 +1604,7 @@ class VWAPIndicator extends SMAIndicator {
  *
  * This series requires `linkedTo` option to be set.
  *
- * @sample stock/indicators/vwap
+ * @sample {highstock} stock/indicators/vwap
  *         Volume Weighted Average Price indicator
  *
  * @extends      plotOptions.sma
@@ -1633,6 +1635,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const VWAP_VWAPIndicator = ((/* unused pure expression or super */ null && (VWAPIndicator)));
 /* *
  *

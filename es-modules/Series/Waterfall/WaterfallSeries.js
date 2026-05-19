@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -14,7 +15,7 @@ const { column: ColumnSeries, line: LineSeries } = SeriesRegistry.seriesTypes;
 import WaterfallAxis from '../../Core/Axis/WaterfallAxis.js';
 import WaterfallPoint from './WaterfallPoint.js';
 import WaterfallSeriesDefaults from './WaterfallSeriesDefaults.js';
-import { addEvent, arrayMax, arrayMin, correctFloat, crisp, extend, isNumber, merge, objectEach, pick } from '../../Shared/Utilities.js';
+import { addEvent, arrayMax, arrayMin, correctFloat, crisp, extend, isNumber, isObject, merge, objectEach, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -66,19 +67,18 @@ class WaterfallSeries extends ColumnSeries {
     // Call default processData then override yData to reflect waterfall's
     // extremes on yAxis
     processData(force) {
-        const series = this, options = series.options, yData = series.getColumn('y'), 
+        const series = this, options = series.options, yData = series.getColumn('y'), isSumData = series.getColumn('isSum'), isIntermediateSumData = series.getColumn('isIntermediateSum'), 
         // #3710 Update point does not propagate to sum
-        points = options.data, dataLength = yData.length, threshold = options.threshold || 0;
-        let point, subSum, sum, dataMin, dataMax, y;
+        dataLength = yData.length, threshold = options.threshold || 0;
+        let subSum, sum, dataMin, dataMax, y;
         sum = subSum = dataMin = dataMax = 0;
         for (let i = 0; i < dataLength; i++) {
             y = yData[i];
-            point = points?.[i] || {};
-            if (y === 'sum' || point.isSum) {
+            if (y === 'sum' || isSumData[i]) {
                 yData[i] = correctFloat(sum);
             }
             else if (y === 'intermediateSum' ||
-                point.isIntermediateSum) {
+                isIntermediateSumData[i]) {
                 yData[i] = correctFloat(subSum);
                 subSum = 0;
             }
@@ -258,14 +258,15 @@ class WaterfallSeries extends ColumnSeries {
                             actualStackX.negTotal += yVal;
                         }
                         // Points do not exist yet, so raw data is used
-                        xPoint = options.data[i];
+                        xPoint = options.data?.[i];
                         posTotal = actualStackX.absolutePos =
                             actualStackX.posTotal;
                         negTotal = actualStackX.absoluteNeg =
                             actualStackX.negTotal;
                         actualStackX.stackTotal = posTotal + negTotal;
                         statesLen = actualStackX.stackState.length;
-                        if (xPoint?.isIntermediateSum) {
+                        if (isObject(xPoint, true) &&
+                            xPoint.isIntermediateSum) {
                             calculateStackState(prevSum, actualSum, 0, prevSum);
                             prevSum = actualSum;
                             actualSum = seriesThreshold;
@@ -274,7 +275,7 @@ class WaterfallSeries extends ColumnSeries {
                             interSum ^= stackThreshold;
                             stackThreshold ^= interSum;
                         }
-                        else if (xPoint?.isSum) {
+                        else if (isObject(xPoint, true) && xPoint.isSum) {
                             calculateStackState(seriesThreshold, totalYVal, statesLen, 0);
                             stackThreshold = seriesThreshold;
                         }

@@ -18,6 +18,7 @@ if (defaultOptions.annotations?.types) {
      *
      * @extends      annotations.types.crookedLine
      * @product      highstock
+     * @requires     modules/annotations-advanced
      * @optionparent annotations.types.elliottWave
      */
     {
@@ -44,7 +45,7 @@ if (defaultOptions.annotations?.types) {
             borderWidth: 0,
             y: -5,
             style: {
-                color: "#333333" /* Palette.neutralColor80 */
+                color: 'var(--highcharts-neutral-color-80)'
             }
         }
     });

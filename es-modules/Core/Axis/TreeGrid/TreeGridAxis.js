@@ -3,8 +3,9 @@
  *  (c) 2016-2026 Highsoft AS
  *  Authors: Jon Arild Nygård
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -15,7 +16,7 @@ import Tree from '../../../Gantt/Tree.js';
 import TreeGridTick from './TreeGridTick.js';
 import TU from '../../../Series/TreeUtilities.js';
 const { getLevelOptions } = TU;
-import { addEvent, find, fireEvent, isArray, isObject, isString, merge, removeEvent, splat, wrap } from '../../../Shared/Utilities.js';
+import { addEvent, find, fireEvent, isObject, isString, merge, removeEvent, wrap } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Variables
@@ -28,6 +29,13 @@ let TickConstructor;
  *  Functions
  *
  * */
+/**
+ * Returns the current data
+ */
+function getSeriesData(s) {
+    return new Array(s.dataTable.rowCount).fill(void 0)
+        .map((_, i) => s.dataTable.getRowObject(i));
+}
 /**
  * Creates a break object from a node.
  * @internal
@@ -149,9 +157,7 @@ function getTreeGridFromData(data, uniqueNames, numberOfSeries) {
                 const data = node.data;
                 if (isObject(data, true)) {
                     // Update point
-                    data.y = start + (data.seriesIndex || 0);
-                    // Remove the property once used
-                    delete data.seriesIndex;
+                    data.y = start + (data.yIndex || 0);
                 }
                 node.pos = pos;
             });
@@ -205,7 +211,7 @@ function onBeforeRender(e) {
             const seriesHasPrimitivePoints = [];
             // Concatenate data from all series assigned to this axis.
             data = axis.series.reduce(function (arr, s) {
-                const seriesData = (s.options.data || []), firstPoint = seriesData[0], 
+                const seriesData = getSeriesData(s), firstPoint = seriesData[0], 
                 // Check if the first point is a simple array of values.
                 // If so we assume that this is the case for all points.
                 foundPrimitivePoint = Array.isArray(firstPoint) &&
@@ -225,7 +231,8 @@ function onBeforeRender(e) {
                         if (isObject(pointOptions, true)) {
                             // Set series index on data. Removed again
                             // after use.
-                            pointOptions.seriesIndex = numberOfSeries;
+                            pointOptions.yIndex = numberOfSeries;
+                            pointOptions.seriesIndex = s.index;
                             arr.push(pointOptions);
                         }
                     });
@@ -256,21 +263,11 @@ function onBeforeRender(e) {
             axis.hasNames = true;
             axis.treeGrid.tree = treeGrid.tree;
             // Update yData now that we have calculated the y values
-            axis.series.forEach(function (series, index) {
-                const axisData = (series.options.data || []).map(function (d) {
-                    if (seriesHasPrimitivePoints[index] ||
-                        (isArray(d) && series.options.keys?.length)) {
-                        // Get the axisData from the data array used to
-                        // build the treeGrid where has been modified
-                        data.forEach(function (point) {
-                            const toArray = splat(d);
-                            if (toArray.indexOf(point.x || 0) >= 0 &&
-                                toArray.indexOf(point.x2 || 0) >= 0) {
-                                d = point;
-                            }
-                        });
-                    }
-                    return isObject(d, true) ? merge(d) : d;
+            axis.series.forEach((series) => {
+                const axisData = data.filter((point) => point.seriesIndex === series.index);
+                axisData.forEach((point) => {
+                    delete point.seriesIndex;
+                    delete point.yIndex;
                 });
                 // Avoid destroying points when series is not visible
                 if (series.visible) {
@@ -330,6 +327,7 @@ function wrapGenerateTick(proceed, pos) {
             tick.parameters.category = gridNode.name;
             tick.options = options;
             tick.addLabel();
+            axis.isDirty = true;
         }
     }
     else {
@@ -434,8 +432,6 @@ function wrapInit(proceed, chart, userOptions, coll) {
                  *
                  * @product      gantt
                  * @optionparent yAxis.labels.symbol
-                 *
-                 * @internal
                  */
                 symbol: {
                     /**
@@ -443,14 +439,12 @@ function wrapInit(proceed, chart, userOptions, coll) {
                      * the `Highcharts.Renderer.symbols` collection.
                      *
                      * @type {Highcharts.SymbolKeyValue}
-                     *
-                     * @internal
                      */
                     type: 'triangle',
                     x: -5,
-                    y: -5,
-                    height: 10,
-                    width: 10
+                    y: -3,
+                    height: 6,
+                    width: 8
                 }
             },
             uniqueNames: false
@@ -587,10 +581,11 @@ class TreeGridAxisAdditions {
     setCollapsedStatus(node) {
         const axis = this.axis, chart = axis.chart;
         axis.series.forEach(function (series) {
-            const data = series.options.data;
+            const data = getSeriesData(series);
             if (node.id && data) {
                 const point = chart.get(node.id), dataPoint = data[series.data.indexOf(point)];
-                if (point && dataPoint) {
+                series.dataTable.setRow({ collapsed: node.collapsed }, series.data.indexOf(point));
+                if (point && isObject(dataPoint, true)) {
                     point.collapsed = node.collapsed;
                     dataPoint.collapsed = node.collapsed;
                 }

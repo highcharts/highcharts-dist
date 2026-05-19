@@ -1,2 +1,2 @@
-import * as Highcharts from '../../../modules/pointandfigure.src';
+import Highcharts from '../../Core/Globals.js';
 export default Highcharts;
