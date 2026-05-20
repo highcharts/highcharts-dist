@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-beta.1 (2026-05-19)
+ * @license Highcharts JS v13.0.0-beta.2 (2026-05-20)
  * @module highcharts/standalone-navigator
  *
  * Standalone Navigator for Highcharts.
@@ -80,7 +80,7 @@ var Globals;
      *  Constants
      *
      * */
-    Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '13.0.0-beta.1', Globals.win = (typeof window !== 'undefined' ?
+    Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '13.0.0-beta.2', Globals.win = (typeof window !== 'undefined' ?
         window :
         {}), // eslint-disable-line node/no-unsupported-features/es-builtins
     Globals.doc = Globals.win.document, Globals.svg = !!Globals.doc?.createElementNS?.(Globals.SVG_NS, 'svg')?.createSVGRect, Globals.pageLang = Globals.doc?.documentElement?.closest('[lang]')?.lang, Globals.userAgent = Globals.win.navigator?.userAgent || '', Globals.isChrome = Globals.win.chrome, Globals.isFirefox = Globals.userAgent.indexOf('Firefox') !== -1, Globals.isMS = /(edge|msie|trident)/i.test(Globals.userAgent) && !Globals.win.opera, Globals.isSafari = !Globals.isChrome && Globals.userAgent.indexOf('Safari') !== -1, Globals.isTouchDevice = /(Mobile|Android|Windows Phone)/.test(Globals.userAgent), Globals.isWebKit = Globals.userAgent.indexOf('AppleWebKit') !== -1, Globals.deg2rad = Math.PI * 2 / 360, Globals.marginNames = [
@@ -13844,7 +13844,7 @@ class SVGRenderer {
         this.url = this.getReferenceURL();
         // Add description
         const desc = this.createElement('desc').add();
-        desc.element.appendChild(SVGRenderer_doc.createTextNode('Created with Highcharts 13.0.0-beta.1'));
+        desc.element.appendChild(SVGRenderer_doc.createTextNode('Created with Highcharts 13.0.0-beta.2'));
         this.defs = this.createElement('defs').add();
         this.allowHTML = allowHTML;
         this.forExport = forExport;
@@ -22319,7 +22319,7 @@ class Axis {
      * @function Highcharts.Axis#renderLine
      */
     renderLine() {
-        const { chart, options } = this;
+        const { chart, offset = 0, options } = this;
         this.axisLine || (this.axisLine = chart.renderer.path()
             .addClass('highcharts-axis-line')
             .attr(chart.styledMode ? {} : {
@@ -22327,7 +22327,7 @@ class Axis {
             'stroke-width': options.lineWidth,
             zIndex: 7
         })
-            .clip(this.clippable && this.offset <= 0 ?
+            .clip(this.clippable && offset <= 0 ?
             chart.plotClipOuter :
             void 0)
             .add(this.axisGroup));
@@ -35278,6 +35278,8 @@ class Series {
      *         Append point
      * @sample highcharts/members/series-addpoint-append-and-shift/
      *         Append and shift
+     * @sample highcharts/members/series-addpoint-shift-column/
+     *         Append and shift columns
      * @sample highcharts/datatable/live-chart/
      *         Append and shift with data table
      * @sample highcharts/members/series-addpoint-x-and-y/
@@ -48953,7 +48955,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-beta.1 (2026-05-19)
+ * @license Highcharts JS v13.0.0-beta.2 (2026-05-20)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -53149,7 +53151,7 @@ class StandaloneNavigator {
 ;// ./code/es-modules/masters/modules/navigator.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-beta.1 (2026-05-19)
+ * @license Highcharts JS v13.0.0-beta.2 (2026-05-20)
  * @module highcharts/modules/navigator
  * @requires highcharts
  *

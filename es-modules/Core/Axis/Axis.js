@@ -2483,7 +2483,7 @@ class Axis {
      * @function Highcharts.Axis#renderLine
      */
     renderLine() {
-        const { chart, options } = this;
+        const { chart, offset = 0, options } = this;
         this.axisLine || (this.axisLine = chart.renderer.path()
             .addClass('highcharts-axis-line')
             .attr(chart.styledMode ? {} : {
@@ -2491,7 +2491,7 @@ class Axis {
             'stroke-width': options.lineWidth,
             zIndex: 7
         })
-            .clip(this.clippable && this.offset <= 0 ?
+            .clip(this.clippable && offset <= 0 ?
             chart.plotClipOuter :
             void 0)
             .add(this.axisGroup));
