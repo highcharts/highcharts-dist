@@ -1102,6 +1102,9 @@ export class Exporting {
             // Allow fallback to server only for PDFs that failed locally
             await this.exportChart(exportingOptions);
         }
+        else {
+            error(err.message, false);
+        }
     }
     /**
      * Return the unfiltered innerHTML of the chart container. Used as hook for
@@ -1332,7 +1335,13 @@ export class Exporting {
         // Otherwise return a promise
         return new Promise((resolve) => new chart.constructor(options || {}, function (e) {
             chart.callback?.call(this, e);
-            resolve(postprocessAndGetSVG(this));
+            // `chart.events.render` is triggered after the callback in
+            // `Chart.onload`, so wait for it before serializing the
+            // chart copy (#24537)
+            const unbindRender = addEvent(this, 'render', function () {
+                unbindRender();
+                resolve(postprocessAndGetSVG(this));
+            });
         }));
     }
     /**

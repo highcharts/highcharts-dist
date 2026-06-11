@@ -242,7 +242,7 @@ class Fullscreen {
             if (exportDivElement) {
                 AST.setElementHTML(exportDivElement, !this.isOpen ?
                     (exportingOptions.menuItemDefinitions.viewFullscreen
-                        ?.textKey ||
+                        ?.text ||
                         lang.viewFullscreen) : lang.exitFullscreen);
             }
         }

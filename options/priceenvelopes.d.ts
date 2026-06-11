@@ -418,6 +418,11 @@ declare module "../highcharts" {
          */
         events?: Highcharts.SeriesEventsOptionsObject;
         /**
+         * (Highstock) Option for fill color between lines in Price Envelopes
+         * Indicator.
+         */
+        fillColor?: Highcharts.Color;
+        /**
          * (Highstock) Determines whether the series should look for the nearest
          * point in both dimensions or just the x-dimension when hovering the
          * series. Defaults to `'xy'` for scatter series and `'x'` for most
@@ -586,6 +591,8 @@ declare module "../highcharts" {
          *
          * Same as accessibility.point.descriptionFormat, but for an individual
          * series. Overrides the chart wide configuration.
+         *
+         * @deprecated 12.6.0
          */
         pointDescriptionFormat?: Function;
         /**

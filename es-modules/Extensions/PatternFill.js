@@ -654,7 +654,7 @@ function onPatternScaleCorrection() {
 *         Compare shared vs anchored pattern positioning
 * @name Highcharts.PatternOptionsObject#anchorToPoint
 * @type {boolean|undefined}
-* @since next
+* @since 12.6.0
 * @default false
 */ /**
 * Background color for the pattern if a `path` is set (not images).

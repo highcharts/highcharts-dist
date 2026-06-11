@@ -347,7 +347,7 @@ const rangeSelector = {
      * Deprecated. The height of the range selector. Currently it is
      * calculated dynamically.
      *
-     * @deprecated
+     * @deprecated 6.0.0
      * @type  {number|undefined}
      * @since 2.1.9
      */

@@ -188,31 +188,31 @@ function onAfterGetTitlePosition(e) {
     const gridOptions = options.grid || {};
     if (gridOptions.enabled === true) {
         // Compute anchor points for each of the title align options
-        const { axisTitle, height: axisHeight, horiz, left: axisLeft, offset, opposite, options, top: axisTop, width: axisWidth } = axis;
-        const tickSize = axis.tickSize();
-        const titleWidth = axisTitle?.getBBox().width;
-        const xOption = options.title.x;
-        const yOption = options.title.y;
-        const titleMargin = pick(options.title.margin, horiz ? 5 : 10);
-        const titleFontSize = axisTitle ? axis.chart.renderer.fontMetrics(axisTitle).f : 0;
-        const crispCorr = tickSize ? tickSize[0] / 2 : 0;
-        // TODO account for alignment
-        // the position in the perpendicular direction of the axis
-        const offAxis = ((horiz ? axisTop + axisHeight : axisLeft) +
+        const { axisTitle, height: axisHeight, horiz, left: axisLeft, offset, opposite, options, top: axisTop, width: axisWidth } = axis, tickSize = axis.tickSize(), titleWidth = axisTitle?.getBBox().width, title = options.title, { x, y } = title, margin = title.margin ?? (horiz ? 5 : 10), titleFontSize = axisTitle ? axis.chart.renderer.fontMetrics(axisTitle).f : 0, crispCorr = tickSize ? tickSize[0] / 2 : 0, offAxis = ((horiz ? axisTop + axisHeight : axisLeft) +
             (horiz ? 1 : -1) * // Horizontal axis reverses the margin
                 (opposite ? -1 : 1) * // So does opposite axes
                 crispCorr +
             (axis.side === GridAxisSide.bottom ? titleFontSize : 0));
         e.titlePosition.x = horiz ?
-            axisLeft - (titleWidth || 0) / 2 - titleMargin + xOption :
-            offAxis + (opposite ? axisWidth : 0) + offset + xOption;
+            axisLeft - (titleWidth || 0) / 2 - margin + x :
+            offAxis + (opposite ? axisWidth : 0) + offset + x;
         e.titlePosition.y = horiz ?
             (offAxis -
                 (opposite ? axisHeight : 0) +
                 (opposite ? titleFontSize : -titleFontSize) / 2 +
                 offset +
-                yOption) :
-            axisTop - titleMargin + yOption;
+                y) :
+            axisTop - margin + y;
+        // In a vertical grid axis, allow text alignment for column titles
+        if (!horiz) {
+            const [slotWidth = 0] = tickSize || [];
+            if (title.textAlign === 'left') {
+                e.titlePosition.x -= slotWidth / 2;
+            }
+            else if (title.textAlign === 'right') {
+                e.titlePosition.x += slotWidth / 2;
+            }
+        }
     }
 }
 /** @internal */
@@ -768,14 +768,21 @@ function onTickLabelFormat(ctx) {
     const { axis, value } = ctx;
     if (axis.options.grid?.enabled) {
         const tickPos = axis.tickPositions;
-        const series = (axis.linkedParent || axis).series[0];
+        const allSeries = (axis.linkedParent || axis).series;
+        const allSeriesData = allSeries
+            .reduce((acc, series) => {
+            if (series.is('gantt')) {
+                return acc?.concat(series.options?.data ?? []);
+            }
+            return acc;
+        }, []) ?? [];
         const isFirst = value === tickPos[0];
         const isLast = value === tickPos[tickPos.length - 1];
-        const point = series && find((series.options.data || []), function (p) {
+        const point = allSeries[0] && find(allSeriesData, function (p) {
             return p[axis.isXAxis ? 'x' : 'y'] === value;
         });
         let pointCopy;
-        if (point && series.is('gantt')) {
+        if (point) {
             // For the Gantt set point aliases to the pointCopy
             // to do not change the original point
             pointCopy = merge(point);

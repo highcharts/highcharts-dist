@@ -60,7 +60,7 @@ const OrganizationSeriesDefaults = {
      * @sample   highcharts/series-organization/link-options
      *           Square links
      *
-     * @deprecated
+     * @deprecated 10.3.0
      * @apioption series.organization.linkRadius
      */
     /**
@@ -280,7 +280,7 @@ const OrganizationSeriesDefaults = {
      * [link.color](#plotOptions.organization.link.color).
      *
      * @type {Highcharts.ColorString}
-     * @deprecated
+     * @deprecated 10.3.0
      * @apioption series.organization.linkColor
      * @private
      */
@@ -292,7 +292,7 @@ const OrganizationSeriesDefaults = {
      * @sample   highcharts/series-organization/link-options
      *           Square links
      *
-     * @deprecated
+     * @deprecated 10.3.0
      * @apioption series.organization.linkLineWidth
      * @private
      */

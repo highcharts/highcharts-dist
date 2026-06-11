@@ -492,6 +492,8 @@ declare module "../highcharts.src" {
          *
          * Same as accessibility.point.descriptionFormat, but for an individual
          * series. Overrides the chart wide configuration.
+         *
+         * @deprecated 12.6.0
          */
         pointDescriptionFormat?: Function;
         /**

@@ -505,7 +505,11 @@ class Series {
         const options = merge(typeOptions, plotOptions.series, 
         // #3881, chart instance plotOptions[type] should trump
         // plotOptions.series
-        userPlotOptionsType, seriesUserOptions);
+        userPlotOptionsType, seriesUserOptions), 
+        // Handle color zones
+        { negativeColor, negativeFillColor, zoneAxis = 'y', zones } = options, 
+        // #20440, create deep copy of zones options
+        zonesCopy = (zones || []).map((z) => ({ ...z }));
         // The tooltip options are merged between global and series specific
         // options. Importance in ascending order:
         // globals: (1)tooltip, (2)plotOptions.series,
@@ -529,10 +533,7 @@ class Series {
         if (typeOptions.marker === null) {
             delete options.marker;
         }
-        // Handle color zones
-        const { negativeColor, negativeFillColor, zoneAxis = 'y', zones } = options, 
-        // #20440, create deep copy of zones options
-        zonesCopy = this.zones = (zones || []).map((z) => ({ ...z }));
+        this.zones || (this.zones = zonesCopy);
         this.zoneAxis = zoneAxis;
         if ((negativeColor || negativeFillColor) &&
             !zones) {
@@ -759,22 +760,26 @@ class Series {
      * @internal
      * @function Highcharts.Series#matchPoints
      */
-    matchPoints(oldXColumn, oldIdColumn, oldNameColumn) {
+    matchPoints(oldXColumn, oldIdColumn, oldNameColumn, 
+    // Index matching is used by the data-sorting module
+    oldIndexColumn) {
         const { dataTable, options, requireSorting } = this, dataSorting = options.dataSorting, oldData = this.data, rowsToAdd = [], rowsToUpdate = [], equalLength = dataTable.rowCount === oldData.length;
         let hasUpdatedByKey, i, point, lastIndex = 0, succeeded = true;
         this.xIncrement = null;
         delete this.xColumn;
         const newXColumn = dataTable.getColumn('x'), newIdColumn = dataTable.getColumn('id'), newNameColumn = dataSorting?.matchByName ?
-            dataTable.getColumn('name') : void 0;
+            dataTable.getColumn('name') : void 0, newIndexColumn = dataTable.getColumn('index');
         // Iterate the new data
         for (i = 0; i < dataTable.rowCount; i++) {
-            const x = newXColumn?.[i], id = newIdColumn?.[i], name = newNameColumn?.[i], [needle, haystack] = id && oldIdColumn ?
+            const x = newXColumn?.[i], id = newIdColumn?.[i], name = newNameColumn?.[i], index = newIndexColumn?.[i], [needle, haystack] = id && oldIdColumn ?
                 [id, oldIdColumn] :
                 name && oldNameColumn ?
                     [name, oldNameColumn] :
-                    defined(x) && oldXColumn ?
-                        [x, oldXColumn] :
-                        [];
+                    defined(index) && oldIndexColumn ?
+                        [index, oldIndexColumn] :
+                        defined(x) && oldXColumn ?
+                            [x, oldXColumn] :
+                            [];
             let pointIndex = -1;
             // We have a needle and a haystack to search for matching points
             if (haystack) {
@@ -940,7 +945,12 @@ class Series {
      *        prevent.
      */
     setData(data, redraw = true, animation, updatePoints) {
-        const series = this, table = this.dataTable, oldData = series.points, oldDataLength = oldData?.length || 0, oldXColumn = table.getColumn('x'), oldIdColumn = table.getColumn('id'), oldNameColumn = table.getColumn('name'), options = series.options, chart = series.chart, xAxis = series.xAxis;
+        const series = this, table = this.dataTable, options = series.options, oldData = series.points, oldDataLength = oldData?.length || 0, oldXColumn = table.getColumn('x'), oldIdColumn = table.getColumn('id'), oldNameColumn = (
+        // To get the bar race right. When data sorting is enabled, the
+        // point order is not in sync with the table order. Could this
+        // be done in a better way, maybe in the data sorting module?
+        options.dataSorting?.matchByName &&
+            oldData?.map((point) => point.name)) || table.getColumn('name'), oldIndexColumn = table.getColumn('index'), chart = series.chart, xAxis = series.xAxis;
         let updatedData, i, copiedData;
         if (!chart.options.chart.allowMutatingData) { // #4259
             // Remove old reference
@@ -977,7 +987,7 @@ class Series {
             // Soft updating has no benefit in boost, and causes JS error
             // (#8355)
             !series.boosted) {
-            updatedData = this.matchPoints(oldXColumn, oldIdColumn, oldNameColumn);
+            updatedData = this.matchPoints(oldXColumn, oldIdColumn, oldNameColumn, oldIndexColumn);
         }
         if (!updatedData) {
             // Forgetting to cast strings to numbers is a common caveat when
@@ -2055,7 +2065,7 @@ class Series {
         while (i--) {
             data[i]?.destroy?.();
         }
-        for (const zone of series.zones) {
+        for (const zone of series.zones || []) {
             // Destroy SVGElement's but preserve primitive props (#20426)
             destroyObjectProperties(zone, void 0, true);
         }
@@ -2100,12 +2110,15 @@ class Series {
             if (inverted) {
                 plotY = len - plotY;
             }
-            const { translated = 0, lineClip } = zone, distance = plotY - translated;
+            const { translated = 0, lineClip, value } = zone, distance = plotY - translated;
             lineClip?.push([
                 'L',
                 plotX,
                 Math.abs(distance) < halfWidth ?
-                    plotY - halfWidth * (distance <= 0 ? -1 : 1) :
+                    plotY - halfWidth * (distance < 0 ||
+                        (distance === 0 && defined(value)) ?
+                        -1 :
+                        1) :
                     translated
             ]);
         };
@@ -2363,7 +2376,7 @@ class Series {
         // the clip is later applied. This is necessary to handle multi-pane
         // layouts and entrance animation.
         if (chart.plotClipInner) {
-            series.plotClipGroup = chart.renderer.g().add(chartSeriesGroup);
+            series.plotClipGroup || (series.plotClipGroup = chart.renderer.g().add(chartSeriesGroup));
         }
         // The group
         series.plotGroup('group', 'series', visibility, zIndex, series.plotClipGroup || chartSeriesGroup);
@@ -2988,6 +3001,7 @@ class Series {
             'dataLabelsParentGroups',
             'group',
             'markerGroup',
+            'plotClipGroup',
             'transformGroup'
         ], optionsToCheck = [
             'dataGrouping',
@@ -3024,6 +3038,9 @@ class Series {
             keepProps.push.apply(keepProps, Series.keepPropsForPoints);
             if (options.visible !== false) {
                 keepProps.push('area', 'graph');
+                if (!('zones' in options)) {
+                    keepProps.push('zones');
+                }
             }
             series.parallelArrays.forEach(function (key) {
                 keepProps.push(key + 'Data');
@@ -3643,7 +3660,7 @@ export default Series;
  * });
  *
  * @interface Highcharts.DataMappingOptionsObject
- * @since next
+ * @since 13.0.0
  */
 /**
  * Function callback when a series has been animated.

@@ -212,7 +212,7 @@ const langOptions = {
         /**
          * Stock tools language options for accessibility.
          *
-         * @since next
+         * @since 12.6.0
          */
         stockTools: {
             groupLabel: 'Stock chart tools',
@@ -351,7 +351,7 @@ const langOptions = {
          */
         exporting: {
             chartMenuLabel: 'Chart menu',
-            menuButtonLabel: 'View chart menu, {chartTitle}'
+            menuButtonLabel: 'View chart context menu, {chartTitle}'
         },
         /**
          * Lang configuration for different series types. For more dynamic

@@ -71,6 +71,8 @@ const exporting = {
      *         Added data labels
      * @sample {highstock} highcharts/exporting/chartoptions-data-labels/
      *         Added data labels
+     * @sample highcharts/palette/exporting-light
+     *         Dark chart with light export
      *
      * @type      {Highcharts.Options}
      * @apioption exporting.chartOptions
@@ -160,7 +162,7 @@ const exporting = {
      * modify the request, now use [fetchOptions](#exporting.fetchOptions)
      * instead.
      *
-     * @deprecated
+     * @deprecated 11.3.0
      * @type      {Highcharts.HTMLAttributes}
      * @since     3.0.8
      * @apioption exporting.formAttributes

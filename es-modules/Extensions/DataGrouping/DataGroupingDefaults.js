@@ -63,9 +63,9 @@ const common = {
             '-%[BY]'
         ],
         year: [
-            '%Y',
-            '%Y',
-            '-%Y'
+            '%[Y]',
+            '%[Y]',
+            '-%[Y]'
         ]
     }
     /// smoothed = false, // enable this for navigator series only

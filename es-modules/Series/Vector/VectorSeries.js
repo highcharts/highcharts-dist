@@ -171,17 +171,17 @@ class VectorSeries extends ScatterSeries {
 VectorSeries.defaultOptions = merge(ScatterSeries.defaultOptions, VectorSeriesDefaults);
 extend(VectorSeries.prototype, {
     /**
-     * @ignore
+     * @internal
      * @deprecated
      */
     drawGraph: H.noop,
     /**
-     * @ignore
+     * @internal
      * @deprecated
      */
     getSymbol: H.noop,
     /**
-     * @ignore
+     * @internal
      * @deprecated
      */
     markerAttribs: H.noop,

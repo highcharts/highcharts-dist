@@ -5300,7 +5300,7 @@ export interface AxisDateTimeLabelFormatsOptionsObject {
      * (Highcharts, Highstock, Gantt) List of possible format strings used for
      * this unit.
      */
-    list?: Array<string>;
+    list?: Array<(string|DateTimeFormatOptions)>;
     main?: string;
     /**
      * (Gantt) When `false`, this time unit is treated as a point in time rather
@@ -5844,6 +5844,15 @@ export interface Chart3dFrameOptions {
      */
     right?: Chart3dFrameRightOptions;
     /**
+     * (Highcharts) Note: As of v5.0.12, `frame.left` or `frame.right` should be
+     * used instead.
+     *
+     * The side for the frame around a 3D chart.
+     *
+     * @deprecated 5.0.12
+     */
+    side?: Chart3dFrameSideOptions;
+    /**
      * (Highcharts) General pixel thickness for the frame faces.
      */
     size?: number;
@@ -5875,6 +5884,28 @@ export interface Chart3dFrameRightOptions {
      * ignoring the point of view.
      */
     visible?: ("auto"|"default"|boolean);
+}
+/**
+ * (Highcharts) Note: As of v5.0.12, `frame.left` or `frame.right` should be
+ * used instead.
+ *
+ * The side for the frame around a 3D chart.
+ *
+ * @deprecated 5.0.12
+ */
+export interface Chart3dFrameSideOptions {
+    /**
+     * (Highcharts) The color of the panel.
+     *
+     * @deprecated 5.0.12
+     */
+    color?: ColorType;
+    /**
+     * (Highcharts) The thickness of the panel.
+     *
+     * @deprecated 5.0.12
+     */
+    size?: number;
 }
 /**
  * (Highcharts) The top of the frame around a 3D chart.
@@ -6784,6 +6815,15 @@ export interface ChartParallelAxesLabelsOptions {
      */
     formatter?: AxisLabelsFormatterCallbackFunction;
     /**
+     * (Highcharts) Horizontal axis only. When `staggerLines` is not set,
+     * `maxStaggerLines` defines how many lines the axis is allowed to add to
+     * automatically avoid overlapping X labels. Set to `1` to disable overlap
+     * detection.
+     *
+     * @deprecated 6.0.0
+     */
+    maxStaggerLines?: number;
+    /**
      * (Highcharts) How to handle overflowing labels on horizontal axis. If set
      * to `"allow"`, it will not be aligned at all. By default it `"justify"`
      * labels inside the chart area. If there is room to move it, it will be
@@ -7477,6 +7517,13 @@ export interface ChartParallelAxesTitleOptions {
      */
     align?: AxisTitleAlignValue;
     /**
+     * (Highcharts) Deprecated. Set the `text` to `undefined` to disable the
+     * title.
+     *
+     * @deprecated 3.0.0
+     */
+    enabled?: boolean;
+    /**
      * (Highcharts) The pixel distance between the axis labels and the title.
      * Positive values are outside the axis line, negative are inside.
      */
@@ -8057,6 +8104,15 @@ export interface ColorAxisLabelsOptions {
      * whether the axis is `category`, `datetime`, `numeric` or other.
      */
     formatter?: AxisLabelsFormatterCallbackFunction;
+    /**
+     * (Highcharts, Highstock, Highmaps) Horizontal axis only. When
+     * `staggerLines` is not set, `maxStaggerLines` defines how many lines the
+     * axis is allowed to add to automatically avoid overlapping X labels. Set
+     * to `1` to disable overlap detection.
+     *
+     * @deprecated 6.0.0
+     */
+    maxStaggerLines?: number;
     /**
      * (Highcharts, Highstock, Highmaps) How to handle overflowing labels on
      * horizontal color axis. If set to `"allow"`, it will not be aligned at
@@ -8705,6 +8761,13 @@ export interface ColorAxisTitleOptions {
      * axis values. Possible values are "low", "middle" or "high".
      */
     align?: AxisTitleAlignValue;
+    /**
+     * (Highcharts) Deprecated. Set the `text` to `undefined` to disable the
+     * title.
+     *
+     * @deprecated 3.0.0
+     */
+    enabled?: boolean;
     /**
      * (Highcharts, Highstock, Highmaps) The pixel distance between the axis
      * labels or line and the title. Defaults to 0 for horizontal axes, 10 for
@@ -9470,6 +9533,20 @@ export interface DataGroupingOptionsObject {
      */
     lastAnchor?: (string|DataGroupingAnchorExtremes);
     /**
+     * (Highstock) Deprecated. Use anchor, or firstAnchor and lastAnchor
+     * instead.
+     *
+     * Normally, a group is indexed by the start of that group, so for example
+     * when 30 daily values are grouped into one month, that month's x value
+     * will be the 1st of the month. This apparently shifts the data to the
+     * left. When the smoothed option is true, this is compensated for. The data
+     * is shifted to the middle of the group, and min and max values are
+     * preserved. Internally, this is used in the Navigator series.
+     *
+     * @deprecated 9.1.0
+     */
+    smoothed?: boolean;
+    /**
      * (Highstock) An array determining what time intervals the data is allowed
      * to be grouped to. Each array item is an array where the first value is
      * the time unit and the second value another array of allowed multiples.
@@ -9982,6 +10059,14 @@ export interface DataOptions {
      * and `endRow`. (see online documentation for example)
      */
     googleSpreadsheetRange?: (string|undefined);
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) No longer works since v9.2.2,
+     * that uses Google Sheets API v4. Instead, use the googleSpreadsheetRange
+     * option to load a specific sheet.
+     *
+     * @deprecated 9.2.2
+     */
+    googleSpreadsheetWorksheet?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Item or cell delimiter for
      * parsing CSV. Defaults to the tab character `\t` if a tab character is
@@ -11179,6 +11264,19 @@ export interface ExportingOptions {
      * to use for the exported chart.
      */
     filename?: string;
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Highcharts v11.2.0 and older. An
+     * object containing additional key value data for the POST form that sends
+     * the SVG to the export server. For example, a `target` can be set to make
+     * sure the generated image is received in another frame, or a custom
+     * `enctype` or `encoding` can be set.
+     *
+     * With Highcharts v11.3.0, the `fetch` API replaced the old HTML form. To
+     * modify the request, now use fetchOptions instead.
+     *
+     * @deprecated 11.3.0
+     */
+    formAttributes?: HTMLAttributes;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Path where Highcharts will look
      * for export module dependencies to load on demand if they don't already
@@ -13474,6 +13572,15 @@ export interface LegendOptions {
      */
     layout?: OptionsLayoutValue;
     /**
+     * (Highcharts, Gantt) Line height for the legend items. Deprecated as of
+     * 2.1\. Instead, the line height for each item can be set using
+     * `itemStyle.lineHeight`, and the padding between items using
+     * `itemMarginTop` and `itemMarginBottom`.
+     *
+     * @deprecated 2.1.0
+     */
+    lineHeight?: number;
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) If the plot area sized is
      * calculated automatically and the legend is not floating, the legend
      * margin is the space between the legend and the axis labels or plot area.
@@ -13527,6 +13634,15 @@ export interface LegendOptions {
      * defaults to the font size of the legend items.
      */
     squareSymbol?: boolean;
+    /**
+     * (Highcharts, Highstock) CSS styles for the legend area. In the 1.x
+     * versions the position of the legend area was determined by CSS. In 2.x,
+     * the position is determined by properties like `align`, `verticalAlign`,
+     * `x` and `y`, but the styles are still parsed for backwards compatibility.
+     *
+     * @deprecated 2.0.0
+     */
+    style?: CSSObject;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) The pixel height of the symbol
      * for series types that use a rectangle in the legend. Defaults to the font
@@ -89511,6 +89627,16 @@ export interface NavigatorOptions {
      */
     adaptToUpdatedData?: boolean;
     /**
+     * (Highstock, Gantt) An integer identifying the index to use for the base
+     * series, or a string representing the id of the series.
+     *
+     * **Note**: As of Highcharts 5.0, this is now a deprecated option. Prefer
+     * series.showInNavigator.
+     *
+     * @deprecated 5.0.0
+     */
+    baseSeries?: (number|string);
+    /**
      * (Highstock, Gantt) Enable or disable the navigator.
      */
     enabled?: boolean;
@@ -90237,6 +90363,15 @@ export interface NavigatorXAxisLabelsOptions {
      * axis.
      */
     indentation?: number;
+    /**
+     * (Highstock, Gantt) Horizontal axis only. When `staggerLines` is not set,
+     * `maxStaggerLines` defines how many lines the axis is allowed to add to
+     * automatically avoid overlapping X labels. Set to `1` to disable overlap
+     * detection.
+     *
+     * @deprecated 6.0.0
+     */
+    maxStaggerLines?: number;
     /**
      * (Highstock, Gantt) How to handle overflowing labels on horizontal axis.
      * If set to `"allow"`, it will not be aligned at all. By default it
@@ -91549,6 +91684,15 @@ export interface NavigatorYAxisLabelsOptions {
      * precedence over labels options.
      */
     levels?: Array<NavigatorYAxisLabelsLevelsOptions>;
+    /**
+     * (Highstock, Gantt) Horizontal axis only. When `staggerLines` is not set,
+     * `maxStaggerLines` defines how many lines the axis is allowed to add to
+     * automatically avoid overlapping X labels. Set to `1` to disable overlap
+     * detection.
+     *
+     * @deprecated 6.0.0
+     */
+    maxStaggerLines?: number;
     /**
      * (Highstock, Gantt) How to handle overflowing labels on horizontal axis.
      * If set to `"allow"`, it will not be aligned at all. By default it
@@ -94025,6 +94169,8 @@ export interface PlotAbandsOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -95313,6 +95459,8 @@ export interface PlotAoOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -100304,6 +100452,8 @@ export interface PlotBellcurveOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -102561,6 +102711,8 @@ export interface PlotChaikinOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -103835,6 +103987,8 @@ export interface PlotCmoOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -105007,6 +105161,8 @@ export interface PlotColumnOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -106097,6 +106253,8 @@ export interface PlotColumnrangeOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -106941,6 +107099,8 @@ export interface PlotContourOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -108252,6 +108412,8 @@ export interface PlotDependencywheelOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -108985,6 +109147,8 @@ export interface PlotDisparityindexOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -110262,6 +110426,8 @@ export interface PlotDpoOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -113034,6 +113200,8 @@ export interface PlotGanttOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -113619,7 +113787,7 @@ export interface PlotGaugeDialOptions {
      * the gauge itself. Accepts a pixel value if given as a number, or a
      * percentage value if given as a percentage string.
      */
-    radius?: string;
+    radius?: (number|string);
     /**
      * (Highcharts) The length of the dial's rear end, the part that extends out
      * on the other side of the pivot. Accepts a pixel value if given as a
@@ -114424,6 +114592,8 @@ export interface PlotGeoheatmapOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -115011,6 +115181,8 @@ export interface PlotHeatmapOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -116217,6 +116389,8 @@ export interface PlotHistogramOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -117545,6 +117719,8 @@ export interface PlotHollowcandlestickOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -118434,6 +118610,8 @@ export interface PlotIkhOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -119909,6 +120087,8 @@ export interface PlotKlingerOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -122054,6 +122234,8 @@ export interface PlotLinearregressionOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -125170,6 +125352,8 @@ export interface PlotMaplineOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -125679,6 +125863,8 @@ export interface PlotMapOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -126595,6 +126781,8 @@ export interface PlotMappointOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -127339,6 +127527,8 @@ export interface PlotMfiOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -128613,6 +128803,8 @@ export interface PlotNatrOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -133391,6 +133583,8 @@ export interface PlotOrganizationOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -134188,6 +134382,8 @@ export interface PlotParetoOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -134904,6 +135100,8 @@ export interface PlotPcOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -135908,6 +136106,8 @@ export interface PlotPictorialOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -136658,6 +136858,8 @@ export interface PlotPieOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -137400,6 +137602,8 @@ export interface PlotPivotpointsOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -138214,6 +138418,8 @@ export interface PlotPointandfigureOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -139049,6 +139255,8 @@ export interface PlotPolygonOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -139867,6 +140075,8 @@ export interface PlotPpoOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -141172,6 +141382,8 @@ export interface PlotPsarOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -143330,6 +143542,8 @@ export interface PlotRsiOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -144636,6 +144850,8 @@ export interface PlotScatter3dOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -145940,6 +146156,8 @@ export interface PlotScatterOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -146851,6 +147069,8 @@ export interface PlotSeriesOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -148245,6 +148465,8 @@ export interface PlotSmaOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -149173,6 +149395,8 @@ export interface PlotSolidgaugeOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -150962,6 +151186,8 @@ export interface PlotStreamgraphOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -151525,6 +151751,20 @@ export interface PlotSunburstTooltipHeaderOptions {
      * axis labels.
      */
     style?: object;
+}
+/**
+ * (Highcharts) Options for the button appearing when traversing down in a
+ * sunburst. Since v9.3.3 the `traverseUpButton` is replaced by `breadcrumbs`.
+ *
+ * @deprecated 9.3.3
+ */
+export interface PlotSunburstTraverseUpButtonOptions {
+    /**
+     * (Highcharts) The position of the button.
+     *
+     * @deprecated 9.3.3
+     */
+    position?: PlotSunburstTraverseUpButtonPositionOptions;
 }
 /**
  * (Highstock) Point accessibility options for a series.
@@ -152574,6 +152814,8 @@ export interface PlotTemaOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -153843,6 +154085,22 @@ export interface PlotTreegraphTooltipHeaderOptions {
     style?: object;
 }
 /**
+ * (Highcharts) Options for the button appearing when traversing down in a
+ * treemap.
+ *
+ * Since v9.3.3 the `traverseUpButton` is replaced by `breadcrumbs`.
+ *
+ * @deprecated 9.3.3
+ */
+export interface PlotTreegraphTraverseUpButtonOptions {
+    /**
+     * (Highcharts) The position of the button.
+     *
+     * @deprecated 9.3.3
+     */
+    position?: PlotTreegraphTraverseUpButtonPositionOptions;
+}
+/**
  * (Highcharts) Point accessibility options for a series.
  */
 export interface PlotTreemapAccessibilityPointOptions {
@@ -154536,6 +154794,22 @@ export interface PlotTreemapTooltipHeaderOptions {
      * same size as the axis labels.
      */
     style?: object;
+}
+/**
+ * (Highcharts) Options for the button appearing when traversing down in a
+ * treemap.
+ *
+ * Since v9.3.3 the `traverseUpButton` is replaced by `breadcrumbs`.
+ *
+ * @deprecated 9.3.3
+ */
+export interface PlotTreemapTraverseUpButtonOptions {
+    /**
+     * (Highcharts) The position of the button.
+     *
+     * @deprecated 9.3.3
+     */
+    position?: PlotTreemapTraverseUpButtonPositionOptions;
 }
 /**
  * (Highstock) Point accessibility options for a series.
@@ -155564,6 +155838,8 @@ export interface PlotTrixOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -156796,6 +157072,8 @@ export interface PlotVariwideOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -161110,6 +161388,8 @@ export interface PlotZigzagOptions {
      *
      * Same as accessibility.point.descriptionFormat, but for an individual
      * series. Overrides the chart wide configuration.
+     *
+     * @deprecated 12.6.0
      */
     pointDescriptionFormat?: Function;
     /**
@@ -162447,6 +162727,13 @@ export interface RangeSelectorOptions {
      * chart.
      */
     floating?: boolean;
+    /**
+     * (Highstock, Gantt) Deprecated. The height of the range selector.
+     * Currently it is calculated dynamically.
+     *
+     * @deprecated 6.0.0
+     */
+    height?: (number|undefined);
     /**
      * (Highstock, Gantt) The border color of the date input boxes.
      */
@@ -167857,6 +168144,27 @@ export interface SeriesOrganizationOptions extends PlotOrganizationOptions, Seri
      */
     data?: Array<SeriesSankeyPointOptionsObject>;
     /**
+     * (Highcharts) The color of the links between nodes. This option is moved
+     * to link.color.
+     *
+     * @deprecated 10.3.0
+     */
+    linkColor?: ColorString;
+    /**
+     * (Highcharts) The line width of the links connecting nodes, in pixels.
+     * This option is now deprecated and moved to the link.radius.
+     *
+     * @deprecated 10.3.0
+     */
+    linkLineWidth?: object;
+    /**
+     * (Highcharts) Radius for the rounded corners of the links between nodes.
+     * This option is now deprecated, and moved to link.radius.
+     *
+     * @deprecated 10.3.0
+     */
+    linkRadius?: object;
+    /**
      * (Highcharts) A collection of options for the individual nodes. The nodes
      * in an org chart are auto-generated instances of `Highcharts.Point`, but
      * options can be applied here and linked by the `id`.
@@ -169524,6 +169832,20 @@ Array<SeriesOrganizationDataLabelsOptionsObject>|Array<SeriesSankeyDataLabelsOpt
      */
     name?: string;
     /**
+     * (Highcharts) This option is deprecated, use offsetHorizontal and
+     * offsetVertical instead.
+     *
+     * In a horizontal layout, the vertical offset of a node in terms of weight.
+     * Positive values shift the node downwards, negative shift it upwards. In a
+     * vertical layout, like organization chart, the offset is horizontal.
+     *
+     * If a percentage string is given, the node is offset by the percentage of
+     * the node size plus `nodePadding`.
+     *
+     * @deprecated 9.3.0
+     */
+    offset?: (number|string);
+    /**
      * (Highcharts) The horizontal offset of a node. Positive values shift the
      * node right, negative shift it left.
      *
@@ -169648,6 +169970,11 @@ Array<SeriesArcDiagramDataLabelsOptionsObject>|Array<SeriesOrganizationDataLabel
      * (Highcharts) The weight of the link.
      */
     weight?: (number|null);
+    /**
+     * (Highcharts) The weight of the link to the node. When not specified, the
+     * `weight` is used.
+     */
+    weightTo?: (number|null);
 }
 /**
  * (Highcharts, Highstock) Animation when hovering over the marker.
@@ -170329,11 +170656,8 @@ Partial<AnimationOptionsObject>);
      */
     borderWidth?: number;
     /**
-     * (Highcharts, Highstock, Gantt) How much to brighten the point on
-     * interaction.
-     *
-     * In styled mode, the hover brightening is by default replaced with a
-     * fill-opacity set in the `.highcharts-point:hover` rule.
+     * (Highmaps) The relative brightness of the point when hovered, relative to
+     * the normal point color.
      */
     brightness?: number;
     /**
@@ -171722,10 +172046,6 @@ export interface SeriesTreegraphOptions extends PlotTreegraphOptions, SeriesOpti
     /**
      * Not available
      */
-    allowDrillToNode?: undefined;
-    /**
-     * Not available
-     */
     centerInCategory?: undefined;
     /**
      * Not available
@@ -171757,10 +172077,6 @@ export interface SeriesTreegraphOptions extends PlotTreegraphOptions, SeriesOpti
      * Not available
      */
     stack?: undefined;
-    /**
-     * Not available
-     */
-    traverseUpButton?: undefined;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) This property is only in
      * TypeScript non-optional and might be `undefined` in series objects from
@@ -174338,6 +174654,15 @@ export interface StockToolsGuiOptions {
      */
     enabled?: boolean;
     /**
+     * (Highstock) Path where Highcharts will look for icons. Change this to use
+     * icons from a different server.
+     *
+     * Since 7.1.3 use iconsURL for popup and stock tools.
+     *
+     * @deprecated 7.1.3
+     */
+    iconsURL?: object;
+    /**
      * (Highstock) A CSS class name to apply to the container of buttons,
      * allowing unique CSS styling for each chart.
      */
@@ -175037,6 +175362,21 @@ export interface TimeOptions {
      * @deprecated 11.4.2
      */
     timezoneOffset?: number;
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Whether to use UTC time for axis
+     * scaling, tickmark placement and time display in `Highcharts.dateFormat`.
+     * Advantages of using UTC is that the time displays equally regardless of
+     * the user agent's time zone settings. Local time can be used when the data
+     * is loaded in real time or when correct Daylight Saving Time transitions
+     * are required.
+     *
+     * Setting `useUTC` to true is equivalent to setting `time.timezone` to
+     * `"UTC"`. Setting `useUTC` to false is equivalent to setting
+     * `time.timezone` to `undefined`.
+     *
+     * @deprecated 12.0.0
+     */
+    useUTC?: string;
 }
 /**
  * Additional time tick information.
@@ -175294,6 +175634,14 @@ export interface TooltipOptions {
      * callback function and `point.isCluster` flag.
      */
     clusterFormat?: string;
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Since 4.1, the crosshair
+     * definitions are moved to the Axis object in order for a better separation
+     * from the tooltip. See xAxis.crosshair.
+     *
+     * @deprecated 4.1.0
+     */
+    crosshairs?: any;
     /**
      * (Highcharts, Highstock, Gantt) For series on datetime axes, the date
      * format in the tooltip's header will by default be guessed based on the
@@ -175979,6 +176327,15 @@ export interface XAxisLabelsOptions {
      */
     indentation?: number;
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Horizontal axis only. When
+     * `staggerLines` is not set, `maxStaggerLines` defines how many lines the
+     * axis is allowed to add to automatically avoid overlapping X labels. Set
+     * to `1` to disable overlap detection.
+     *
+     * @deprecated 6.0.0
+     */
+    maxStaggerLines?: number;
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) How to handle overflowing labels
      * on horizontal axis. If set to `"allow"`, it will not be aligned at all.
      * By default it `"justify"` labels inside the chart area. If there is room
@@ -176365,6 +176722,12 @@ export interface XAxisOptions {
      * handles. Opposite of xAxis.minRange.
      */
     maxRange?: number;
+    /**
+     * (Highcharts, Highstock) Deprecated. Use `minRange` instead.
+     *
+     * @deprecated 6.0.0
+     */
+    maxZoom?: number;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) The minimum value of the axis.
      * If `undefined`, the min value is automatically calculated.
@@ -177242,6 +177605,13 @@ export interface XAxisTitleOptions {
      */
     align?: AxisTitleAlignValue;
     /**
+     * (Highcharts) Deprecated. Set the `text` to `undefined` to disable the
+     * title.
+     *
+     * @deprecated 3.0.0
+     */
+    enabled?: boolean;
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) The pixel distance between the
      * axis labels or line and the title. Defaults to 0 for horizontal axes, 10
      * for vertical
@@ -177796,6 +178166,15 @@ export interface YAxisLabelsOptions {
      */
     levels?: Array<YAxisLabelsLevelsOptions>;
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Horizontal axis only. When
+     * `staggerLines` is not set, `maxStaggerLines` defines how many lines the
+     * axis is allowed to add to automatically avoid overlapping X labels. Set
+     * to `1` to disable overlap detection.
+     *
+     * @deprecated 6.0.0
+     */
+    maxStaggerLines?: number;
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) How to handle overflowing labels
      * on horizontal axis. If set to `"allow"`, it will not be aligned at all.
      * By default it `"justify"` labels inside the chart area. If there is room
@@ -178223,6 +178602,12 @@ export interface YAxisOptions {
      * handles. Opposite of xAxis.minRange.
      */
     maxRange?: number;
+    /**
+     * (Highcharts, Highstock) Deprecated. Use `minRange` instead.
+     *
+     * @deprecated 6.0.0
+     */
+    maxZoom?: number;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) The minimum value of the axis.
      * If `undefined`, the min value is automatically calculated.
@@ -179365,6 +179750,13 @@ export interface YAxisTitleOptions {
      */
     align?: AxisTitleAlignValue;
     /**
+     * (Highcharts) Deprecated. Set the `text` to `undefined` to disable the
+     * title.
+     *
+     * @deprecated 3.0.0
+     */
+    enabled?: boolean;
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) The pixel distance between the
      * axis labels and the title. Positive values are outside the axis line,
      * negative are inside.
@@ -179628,6 +180020,15 @@ export interface ZAxisLabelsOptions {
      * whether the axis is `category`, `datetime`, `numeric` or other.
      */
     formatter?: AxisLabelsFormatterCallbackFunction;
+    /**
+     * (Highcharts) Horizontal axis only. When `staggerLines` is not set,
+     * `maxStaggerLines` defines how many lines the axis is allowed to add to
+     * automatically avoid overlapping X labels. Set to `1` to disable overlap
+     * detection.
+     *
+     * @deprecated 6.0.0
+     */
+    maxStaggerLines?: number;
     /**
      * (Highcharts) How to handle overflowing labels on horizontal axis. If set
      * to `"allow"`, it will not be aligned at all. By default it `"justify"`
@@ -179936,6 +180337,12 @@ export interface ZAxisOptions {
      * `axis.setExtremes()`, the maxPadding will be ignored.
      */
     maxPadding?: number;
+    /**
+     * (Highcharts, Highstock) Deprecated. Use `minRange` instead.
+     *
+     * @deprecated 6.0.0
+     */
+    maxZoom?: number;
     /**
      * (Highcharts) The minimum value of the axis. If `undefined`, the min value
      * is automatically calculated.
@@ -180612,6 +181019,13 @@ export interface ZAxisTitleOptions {
      * values are "low", "middle" or "high".
      */
     align?: AxisTitleAlignValue;
+    /**
+     * (Highcharts) Deprecated. Set the `text` to `undefined` to disable the
+     * title.
+     *
+     * @deprecated 3.0.0
+     */
+    enabled?: boolean;
     /**
      * (Highcharts) The pixel distance between the axis labels or line and the
      * title. Defaults to 0 for horizontal axes, 10 for vertical

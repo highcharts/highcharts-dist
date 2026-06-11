@@ -383,7 +383,7 @@ const seriesDefaults = {
      * @sample {highcharts} highcharts/datatable/chart-datatable-multiple
      *         Chart with two data tables
      *
-     * @since     next
+     * @since     13.0.0
      * @apioption plotOptions.series.dataMapping
      */
     /**
@@ -556,7 +556,7 @@ const seriesDefaults = {
      * @type       {Function}
      * @requires   modules/accessibility
      * @since      11.1.0
-     * @deprecated next
+     * @deprecated 12.6.0
      * @apioption  plotOptions.series.pointDescriptionFormat
      */
     /**

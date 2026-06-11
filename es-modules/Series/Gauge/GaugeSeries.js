@@ -350,7 +350,7 @@ GaugeSeries.defaultOptions = merge(Series.defaultOptions, {
          *
          * @type      {number|string}
          * @default   9%
-         * @since     next
+         * @since     13.0.0
          * @product   highcharts
          * @apioption plotOptions.gauge.dial.borderRadius
          */
@@ -387,7 +387,7 @@ GaugeSeries.defaultOptions = merge(Series.defaultOptions, {
          * @sample {highcharts} highcharts/plotoptions/gauge-dial/
          *         Dial options demonstrated
          *
-         * @type      {string}
+         * @type      {number|string}
          * @default   70%
          * @since     2.3.0
          * @product   highcharts

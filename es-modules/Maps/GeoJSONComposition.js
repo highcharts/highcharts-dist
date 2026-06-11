@@ -31,7 +31,7 @@ var GeoJSONComposition;
     /**
      * Deprecated. Use `MapView.lonLatToProjectedUnits` instead.
      *
-     * @deprecated
+     * @deprecated 10.0.0
      *
      * @requires modules/map
      *
@@ -49,7 +49,7 @@ var GeoJSONComposition;
     /**
      * Deprecated. Use `MapView.projectedUnitsToLonLat` instead.
      *
-     * @deprecated
+     * @deprecated 10.0.0
      *
      * @requires modules/map
      *

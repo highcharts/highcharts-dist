@@ -309,19 +309,21 @@ class XRangeSeries extends ColumnSeries {
             'attr' : verb, pointAttr = this.pointAttribs(point, pointState), animation = pick(this.chart.options.chart.animation, stateOpts.animation);
         let graphic = point.graphic, pfOptions = point.partialFill;
         if (!point.isNull && point.visible !== false) {
+            const className = point.getClassName();
             // Original graphic
             if (graphic) { // Update
                 graphic.rect[verb](shapeArgs);
             }
             else {
                 point.graphic = graphic = renderer.g('point')
-                    .addClass(point.getClassName())
                     .add(point.group || this.group);
                 graphic.rect = renderer[type](merge(shapeArgs))
-                    .addClass(point.getClassName())
-                    .addClass('highcharts-partfill-original')
                     .add(graphic);
             }
+            graphic.addClass(className + (pointState && pointState !== 'select' ?
+                ' highcharts-point-' + pointState :
+                ''), true);
+            graphic.rect.addClass(className + ' highcharts-partfill-original', true);
             // Partial fill graphic
             if (partShapeArgs) {
                 if (graphic.partRect) {

@@ -134,9 +134,11 @@ var ConnectionComposition;
             case 'bottom':
                 y = 'yMax';
         }
+        x = x ? bb[x] : (bb.xMin + bb.xMax) / 2;
+        y = y ? bb[y] : (bb.yMin + bb.yMax) / 2;
         return {
-            x: x ? bb[x] : (bb.xMin + bb.xMax) / 2,
-            y: y ? bb[y] : (bb.yMin + bb.yMax) / 2
+            x: x + (markerOptions.xOffset || 0),
+            y: y + (markerOptions.yOffset || 0)
         };
     }
     /**

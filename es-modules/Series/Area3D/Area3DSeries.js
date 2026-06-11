@@ -62,7 +62,9 @@ function wrapAreaSeriesGetGraphPath(proceed) {
             series.markerGroup.add(series.group);
             series.markerGroup.attr({
                 translateX: 0,
-                translateY: 0
+                translateY: 0,
+                // Preserve the established 3D area paint order.
+                zIndex: 0
             });
         }
         series.group.attr({

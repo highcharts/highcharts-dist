@@ -83,7 +83,10 @@ const palette = {
      * closest parent element with a defined color scheme, or default to `light`
      * if none is found.
      *
-     * @sample     highcharts/palette/colorscheme Dark color scheme
+     * @sample     highcharts/palette/colorscheme
+     *             Dark color scheme
+     * @sample     highcharts/palette/exporting-light
+     *             Dark chart with light export
      *
      * @type       {'light dark'|'light'|'dark'|'inherit'}
      * @default    light dark

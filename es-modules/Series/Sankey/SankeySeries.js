@@ -262,21 +262,24 @@ class SankeySeries extends ColumnSeries {
         }
     }
     /**
-     * Run translation operations for one link.
-     * @private
+     * Get the Y position of a link.
+     * @internal
      */
-    translateLink(point) {
-        const getY = (node, fromOrTo) => {
-            const linkTop = (node.offset(point, fromOrTo) *
-                translationFactor);
-            const y = Math.min(node.nodeY + linkTop, 
-            // Prevent links from spilling below the node (#12014)
-            node.nodeY + (node.shapeArgs && node.shapeArgs.height || 0) - linkHeight);
-            return y;
-        };
+    getY(point, node, fromOrTo, linkHeight) {
+        const linkTop = (node.offset(point, fromOrTo) || 0) * this.translationFactor;
+        const y = Math.min(node.nodeY + linkTop, 
+        // Prevent links from spilling below the node (#12014)
+        node.nodeY + (node.shapeArgs && node.shapeArgs.height || 0) - linkHeight);
+        return y;
+    }
+    /**
+     * Run translation operations for one link.
+     * @internal
+     */
+    translateLink(point, linkToY) {
         const fromNode = point.fromNode, toNode = point.toNode, chart = this.chart, { inverted } = chart, translationFactor = this.translationFactor, options = this.options, linkColorMode = pick(point.linkColorMode, options.linkColorMode), curvy = ((chart.inverted ? -this.colDistance : this.colDistance) *
             options.curveFactor), nodeLeft = fromNode.nodeX, right = toNode.nodeX, outgoing = point.outgoing;
-        let linkHeight = Math.max(point.weight * translationFactor, this.options.minLinkWidth), fromY = getY(fromNode, 'linksFrom'), toY = getY(toNode, 'linksTo'), nodeW = this.nodeWidth, straight = right > nodeLeft + nodeW;
+        let linkHeight = Math.max((point.weight || 0) * translationFactor, this.options.minLinkWidth || 0), fromY = this.getY(point, fromNode, 'linksFrom', linkHeight), toY = linkToY || this.getY(point, toNode, 'linksTo', linkHeight), nodeW = this.nodeWidth, straight = right > nodeLeft + nodeW;
         if (chart.inverted) {
             fromY = chart.plotSizeY - fromY;
             toY = (chart.plotSizeY || 0) - toY;
@@ -395,7 +398,7 @@ class SankeySeries extends ColumnSeries {
     }
     /**
      * Run translation operations for one node.
-     * @private
+     * @internal
      */
     translateNode(node, column) {
         const translationFactor = this.translationFactor, chart = this.chart, options = this.options, { borderRadius, borderWidth = 0 } = options, sum = node.getSum(), nodeHeight = Math.max(Math.round(sum * translationFactor), this.options.minLinkWidth), nodeWidth = Math.round(this.nodeWidth), nodeOffset = column.sankeyColumn.offset(node, translationFactor), fromNodeTop = crisp(pick(nodeOffset.absoluteTop, (column.sankeyColumn.top(translationFactor) +
@@ -552,7 +555,7 @@ export default SankeySeries;
 * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/sankey-node-column/|Highcharts-Demo:}
 *         Specified node offset
 *
-* @deprecated
+* @deprecated 9.3.0
 * @name Highcharts.SankeyNodeObject#offset
 * @type {number|string}
 * @default 0

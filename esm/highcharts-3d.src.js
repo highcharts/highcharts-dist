@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-beta.2 (2026-05-20)
+ * @license Highcharts JS v13.0.0 (2026-06-11)
  * @module highcharts/highcharts-3d
  * @requires highcharts
  *
@@ -54,1369 +54,6 @@ var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require_
 ;// external ["./highcharts.src.js","default","Color"]
 const external_highcharts_src_js_default_Color_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_c57973fa__["default"].Color;
 var external_highcharts_src_js_default_Color_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Color_namespaceObject);
-;// ./code/es-modules/Shared/Utilities.js
-/* *
- *
- *  (c) 2009-2026 Highsoft AS
- *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
- *
- *
- * */
-
-const { doc, win } = (external_highcharts_src_js_default_default());
-/**
- * Add an event listener.
- *
- * @function Highcharts.addEvent<T>
- *
- * @param  {Highcharts.Class<T>|T} el
- *         The element or object to add a listener to. It can be a
- *         {@link HTMLDOMElement}, an {@link SVGElement} or any other object.
- *
- * @param  {string} type
- *         The event type.
- *
- * @param  {Highcharts.EventCallbackFunction<T>|Function} fn
- *         The function callback to execute when the event is fired.
- *
- * @param  {Highcharts.EventOptionsObject} [options]
- *         Options for adding the event.
- *
- * @sample highcharts/members/addevent
- *         Use a general `render` event to draw shapes on a chart
- *
- * @return {Function}
- *         A callback function to remove the added event.
- */
-function addEvent(el, type, fn, options = {}) {
-    // Add hcEvents to either the prototype (in case we're running addEvent on a
-    // class) or the instance. If hasOwnProperty('hcEvents') is false, it is
-    // inherited down the prototype chain, in which case we need to set the
-    // property on this instance (which may itself be a prototype).
-    const owner = typeof el === 'function' && el.prototype || el;
-    if (!Object.hasOwnProperty.call(owner, 'hcEvents')) {
-        owner.hcEvents = {};
-    }
-    const events = owner.hcEvents;
-    // Allow click events added to points, otherwise they will be prevented by
-    // the TouchPointer.pinch function after a pinch zoom operation (#7091).
-    if ((external_highcharts_src_js_default_default()).Point && // Without H a dependency loop occurs
-        el instanceof (external_highcharts_src_js_default_default()).Point &&
-        el.series &&
-        el.series.chart) {
-        el.series.chart.runTrackerClick = true;
-    }
-    // Handle DOM events
-    // If the browser supports passive events, add it to improve performance
-    // on touch events (#11353).
-    const addEventListener = el.addEventListener;
-    if (addEventListener) {
-        addEventListener.call(el, type, fn, (external_highcharts_src_js_default_default()).supportsPassiveEvents ? {
-            passive: options.passive === void 0 ?
-                type.indexOf('touch') !== -1 : options.passive,
-            capture: false
-        } : false);
-    }
-    if (!events[type]) {
-        events[type] = [];
-    }
-    const eventObject = {
-        fn,
-        order: typeof options.order === 'number' ? options.order : Infinity
-    };
-    events[type].push(eventObject);
-    // Order the calls
-    events[type].sort((a, b) => a.order - b.order);
-    // Return a function that can be called to remove this event.
-    return function () {
-        removeEvent(el, type, fn);
-    };
-}
-/**
- * Non-recursive method to find the lowest member of an array. `Math.min` raises
- * a maximum call stack size exceeded error in Chrome when trying to apply more
- * than 150.000 points. This method is slightly slower, but safe.
- *
- * @function Highcharts.arrayMin
- *
- * @param {Array<*>} data
- *        An array of numbers.
- *
- * @return {number}
- *         The lowest number.
- */
-function arrayMin(data) {
-    let i = data.length, min = data[0];
-    while (i--) {
-        if (data[i] < min) {
-            min = data[i];
-        }
-    }
-    return min;
-}
-/**
- * Non-recursive method to find the lowest member of an array. `Math.max` raises
- * a maximum call stack size exceeded error in Chrome when trying to apply more
- * than 150.000 points. This method is slightly slower, but safe.
- *
- * @function Highcharts.arrayMax
- *
- * @param {Array<*>} data
- *        An array of numbers.
- *
- * @return {number}
- *         The highest number.
- */
-function arrayMax(data) {
-    let i = data.length, max = data[0];
-    while (i--) {
-        if (data[i] > max) {
-            max = data[i];
-        }
-    }
-    return max;
-}
-/**
- * Set or get an attribute or an object of attributes.
- *
- * To use as a setter, pass a key and a value, or let the second argument be a
- * collection of keys and values. When using a collection, passing a value of
- * `null` or `undefined` will remove the attribute.
- *
- * To use as a getter, pass only a string as the second argument.
- *
- * @function Highcharts.attr
- *
- * @param {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement} elem
- *        The DOM element to receive the attribute(s).
- *
- * @param {string|Highcharts.HTMLAttributes|Highcharts.SVGAttributes} [keyOrAttribs]
- *        The property or an object of key-value pairs.
- *
- * @param {number|string} [value]
- *        The value if a single property is set.
- *
- * @return {string|null|undefined}
- *         When used as a getter, return the value.
- */
-function attr(elem, keyOrAttribs, value) {
-    const isGetter = isString(keyOrAttribs) && !defined(value);
-    let ret;
-    const attrSingle = (value, key) => {
-        // Set the value
-        if (defined(value)) {
-            elem.setAttribute(key, value);
-            // Get the value
-        }
-        else if (isGetter) {
-            ret = elem.getAttribute(key);
-            // IE7 and below cannot get class through getAttribute (#7850)
-            if (!ret && key === 'class') {
-                ret = elem.getAttribute(key + 'Name');
-            }
-            // Remove the value
-        }
-        else {
-            elem.removeAttribute(key);
-        }
-    };
-    // If keyOrAttribs is a string
-    if (isString(keyOrAttribs)) {
-        attrSingle(value, keyOrAttribs);
-        // Else if keyOrAttribs is defined, it is a hash of key/value pairs
-    }
-    else {
-        objectEach(keyOrAttribs, attrSingle);
-    }
-    return ret;
-}
-/**
- * Constrain a value to within a lower and upper threshold.
- *
- * @internal
- * @param {number} value The initial value
- * @param {number} min The lower threshold
- * @param {number} max The upper threshold
- * @return {number} Returns a number value within min and max.
- */
-function clamp(value, min, max) {
-    return value > min ? value < max ? value : max : min;
-}
-/**
- * Fix JS round off float errors.
- *
- * @function Highcharts.correctFloat
- *
- * @param {number} num
- *        A float number to fix.
- *
- * @param {number} [prec=14]
- *        The precision.
- *
- * @return {number}
- *         The corrected float number.
- */
-function correctFloat(num, prec) {
-    // When the number is higher than 1e14 use the number (#16275)
-    return num > 1e14 ? num : parseFloat(num.toPrecision(prec || 14));
-}
-/**
- * Utility function to create an HTML element with attributes and styles.
- *
- * @function Highcharts.createElement
- *
- * @param {string} tag
- *        The HTML tag.
- *
- * @param {Highcharts.HTMLAttributes} [attribs]
- *        Attributes as an object of key-value pairs.
- *
- * @param {Highcharts.CSSObject} [styles]
- *        Styles as an object of key-value pairs.
- *
- * @param {Highcharts.HTMLDOMElement} [parent]
- *        The parent HTML object.
- *
- * @param {boolean} [nopad=false]
- *        If true, remove all padding, border and margin.
- *
- * @return {Highcharts.HTMLDOMElement}
- *         The created DOM element.
- */
-function createElement(tag, attribs, styles, parent, nopad) {
-    const el = doc.createElement(tag);
-    if (attribs) {
-        extend(el, attribs);
-    }
-    if (nopad) {
-        css(el, { padding: '0', border: 'none', margin: '0' });
-    }
-    if (styles) {
-        css(el, styles);
-    }
-    if (parent) {
-        parent.appendChild(el);
-    }
-    return el;
-}
-/**
- * Utility for crisping a line position to the nearest full pixel depending on
- * the line width.
- *
- * @internal
- * @param {number} value       The raw pixel position
- * @param {number} lineWidth   The line width
- * @param {boolean} [inverted] Whether the containing group is inverted.
- *                             Crisping round numbers on the y-scale need to go
- *                             to the other side because the coordinate system
- *                             is flipped (scaleY is -1)
- * @return {number}            The pixel position to use for a crisp display
- */
-function crisp(value, lineWidth = 0, inverted) {
-    const mod = lineWidth % 2 / 2, inverter = inverted ? -1 : 1;
-    return (Math.round(value * inverter - mod) + mod) * inverter;
-}
-/**
- * Set CSS on a given element.
- *
- * @function Highcharts.css
- *
- * @param {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement} el
- *        An HTML DOM element.
- *
- * @param {Highcharts.CSSObject} styles
- *        Style object with camel case property names.
- *
- * @return {void}
- */
-function css(el, styles) {
-    extend(el.style, styles);
-}
-/**
- * Check if an object is null or undefined.
- *
- * @function Highcharts.defined
- *
- * @param {*} obj
- *        The object to check.
- *
- * @return {boolean}
- *         False if the object is null or undefined, otherwise true.
- */
-function defined(obj) {
-    return typeof obj !== 'undefined' && obj !== null;
-}
-/**
- * Utility method that destroys any SVGElement instances that are properties on
- * the given object. It loops all properties and invokes destroy if there is a
- * destroy method. The property is then delete.
- *
- * @function Highcharts.destroyObjectProperties
- *
- * @param {*} obj
- *        The object to destroy properties on.
- *
- * @param {*} [except]
- *        Exception, do not destroy this property, only delete it.
- */
-function destroyObjectProperties(obj, except, destructablesOnly) {
-    objectEach(obj, function (val, n) {
-        // If the object is non-null and destroy is defined
-        if (val !== except && val?.destroy) {
-            // Invoke the destroy
-            val.destroy();
-        }
-        // Delete the property from the object
-        if (val?.destroy || !destructablesOnly) {
-            delete obj[n];
-        }
-    });
-}
-/**
- * Discard a HTML element
- *
- * @function Highcharts.discardElement
- *
- * @param {Highcharts.HTMLDOMElement} element
- *        The HTML node to discard.
- */
-function discardElement(element) {
-    element?.parentElement?.removeChild(element);
-}
-// eslint-disable-next-line valid-jsdoc
-/**
- * Return the deep difference between two objects. It can either return the new
- * properties, or optionally return the old values of new properties.
- * @internal
- */
-function diffObjects(newer, older, keepOlder, collectionsWithUpdate) {
-    const ret = {};
-    /**
-     * Recurse over a set of options and its current values, and store the
-     * current values in the ret object.
-     */
-    function diff(newer, older, ret, depth) {
-        const keeper = keepOlder ? older : newer;
-        objectEach(newer, function (newerVal, key) {
-            if (!depth &&
-                collectionsWithUpdate &&
-                collectionsWithUpdate.indexOf(key) > -1 &&
-                older[key]) {
-                newerVal = splat(newerVal);
-                ret[key] = [];
-                // Iterate over collections like series, xAxis or yAxis and map
-                // the items by index.
-                for (let i = 0; i < Math.max(newerVal.length, older[key].length); i++) {
-                    // Item exists in current data (#6347)
-                    if (older[key][i]) {
-                        // If the item is missing from the new data, we need to
-                        // save the whole config structure. Like when
-                        // responsively updating from a dual axis layout to a
-                        // single axis and back (#13544).
-                        if (newerVal[i] === void 0) {
-                            ret[key][i] = older[key][i];
-                            // Otherwise, proceed
-                        }
-                        else {
-                            ret[key][i] = {};
-                            diff(newerVal[i], older[key][i], ret[key][i], depth + 1);
-                        }
-                    }
-                }
-            }
-            else if (isObject(newerVal, true) &&
-                !newerVal.nodeType // #10044
-            ) {
-                ret[key] = isArray(newerVal) ? [] : {};
-                diff(newerVal, older[key] || {}, ret[key], depth + 1);
-                // Delete empty nested objects
-                if (Object.keys(ret[key]).length === 0 &&
-                    // Except colorAxis which is a special case where the empty
-                    // object means it is enabled. Which is unfortunate and we
-                    // should try to find a better way.
-                    !(key === 'colorAxis' && depth === 0)) {
-                    delete ret[key];
-                }
-            }
-            else if (newer[key] !== older[key] ||
-                // If the newer key is explicitly undefined, keep it (#10525)
-                (key in newer && !(key in older))) {
-                if (key !== '__proto__' && key !== 'constructor') {
-                    ret[key] = keeper[key];
-                }
-            }
-        });
-    }
-    diff(newer, older, ret, 0);
-    return ret;
-}
-/**
- * Remove the last occurrence of an item from an array.
- *
- * @function Highcharts.erase
- *
- * @param {Array<*>} arr
- *        The array.
- *
- * @param {*} item
- *        The item to remove.
- *
- * @return {void}
- */
-function erase(arr, item) {
-    let i = arr.length;
-    while (i--) {
-        if (arr[i] === item) {
-            arr.splice(i, 1);
-            break;
-        }
-    }
-}
-/**
- * Utility function to extend an object with the members of another.
- *
- * @function Highcharts.extend<T>
- *
- * @param {T|undefined} a
- *        The object to be extended.
- *
- * @param {Partial<T>} b
- *        The object to add to the first one.
- *
- * @return {T}
- *         Object a, the original object.
- */
-function extend(a, b) {
-    let n;
-    if (!a) {
-        a = {};
-    }
-    for (n in b) { // eslint-disable-line guard-for-in
-        a[n] = b[n];
-    }
-    return a;
-}
-// eslint-disable-next-line valid-jsdoc
-/**
- * Extend a prototyped class by new members.
- *
- * @deprecated
- * @function Highcharts.extendClass<T>
- *
- * @param {Highcharts.Class<T>} parent
- *        The parent prototype to inherit.
- *
- * @param {Highcharts.Dictionary<*>} members
- *        A collection of prototype members to add or override compared to the
- *        parent prototype.
- *
- * @return {Highcharts.Class<T>}
- *         A new prototype.
- */
-function extendClass(parent, members) {
-    const obj = (function () { });
-    obj.prototype = new parent(); // eslint-disable-line new-cap
-    extend(obj.prototype, members);
-    return obj;
-}
-/**
- * Fire an event that was registered with {@link Highcharts#addEvent}.
- *
- * @function Highcharts.fireEvent<T>
- *
- * @param {T} el
- *        The object to fire the event on. It can be a {@link HTMLDOMElement},
- *        an {@link SVGElement} or any other object.
- *
- * @param {string} type
- *        The type of event.
- *
- * @param {Highcharts.Dictionary<*>|Event} [eventArguments]
- *        Custom event arguments that are passed on as an argument to the event
- *        handler.
- *
- * @param {Highcharts.EventCallbackFunction<T>|Function} [defaultFunction]
- *        The default function to execute if the other listeners haven't
- *        returned false.
- *
- * @return {void}
- */
-function fireEvent(el, type, eventArguments, defaultFunction) {
-    eventArguments = eventArguments || {};
-    if (doc?.createEvent &&
-        (el.dispatchEvent ||
-            (el.fireEvent &&
-                // Enable firing events on Highcharts instance.
-                el !== H))) {
-        const e = doc.createEvent('Events');
-        e.initEvent(type, true, true);
-        eventArguments = extend(e, eventArguments);
-        if (el.dispatchEvent) {
-            el.dispatchEvent(eventArguments);
-        }
-        else {
-            el.fireEvent(type, eventArguments);
-        }
-    }
-    else if (el.hcEvents) {
-        if (!eventArguments.target) {
-            // We're running a custom event
-            extend(eventArguments, {
-                // Attach a simple preventDefault function to skip
-                // default handler if called. The built-in
-                // defaultPrevented property is not overwritable (#5112)
-                preventDefault: function () {
-                    eventArguments.defaultPrevented = true;
-                },
-                // Setting target to native events fails with clicking
-                // the zoom-out button in Chrome.
-                target: el,
-                // If the type is not set, we're running a custom event
-                // (#2297). If it is set, we're running a browser event.
-                type: type
-            });
-        }
-        const events = [];
-        let object = el;
-        let multilevel = false;
-        // Recurse up the inheritance chain and collect hcEvents set as own
-        // objects on the prototypes.
-        while (object.hcEvents) {
-            if (Object.hasOwnProperty.call(object, 'hcEvents') &&
-                object.hcEvents[type]) {
-                if (events.length) {
-                    multilevel = true;
-                }
-                events.unshift.apply(events, object.hcEvents[type]);
-            }
-            object = Object.getPrototypeOf(object);
-        }
-        // For performance reasons, only sort the event handlers in case we are
-        // dealing with multiple levels in the prototype chain. Otherwise, the
-        // events are already sorted in the addEvent function.
-        if (multilevel) {
-            // Order the calls
-            events.sort((a, b) => a.order - b.order);
-        }
-        // Call the collected event handlers
-        events.forEach((obj) => {
-            // If the event handler returns false, prevent the default handler
-            // from executing
-            if (obj.fn.call(el, eventArguments, el) === false) {
-                eventArguments.preventDefault();
-            }
-        });
-    }
-    // Run the default if not prevented
-    if (defaultFunction && !eventArguments.defaultPrevented) {
-        defaultFunction.call(el, eventArguments);
-    }
-}
-/**
- * Convenience function to get the align factor, used several places for
- * computing positions
- * @internal
- */
-const getAlignFactor = (align = '') => ({
-    center: 0.5,
-    right: 1,
-    middle: 0.5,
-    bottom: 1
-}[align] || 0);
-/**
- * Find the closest distance between two values of a two-dimensional array
- * @internal
- * @function Highcharts.getClosestDistance
- *
- * @param {Array<Array<number>>} arrays
- *          An array of arrays of numbers
- *
- * @return {number | undefined}
- *          The closest distance between values
- */
-function getClosestDistance(arrays, onError) {
-    const allowNegative = !onError;
-    let closest, loopLength, distance, i;
-    arrays.forEach((xData) => {
-        if (xData.length > 1) {
-            loopLength = xData.length - 1;
-            for (i = loopLength; i > 0; i--) {
-                distance = xData[i] - xData[i - 1];
-                if (distance < 0 && !allowNegative) {
-                    onError?.();
-                    // Only one call
-                    onError = void 0;
-                }
-                else if (distance && (typeof closest === 'undefined' || distance < closest)) {
-                    closest = distance;
-                }
-            }
-        }
-    });
-    return closest;
-}
-/**
- * Get the magnitude of a number.
- *
- * @function Highcharts.getMagnitude
- *
- * @param {number} num
- *        The number.
- *
- * @return {number}
- *         The magnitude, where 1-9 are magnitude 1, 10-99 magnitude 2 etc.
- */
-function getMagnitude(num) {
-    return Math.pow(10, Math.floor(Math.log(num) / Math.LN10));
-}
-/**
- * Returns the value of a property path on a given object.
- *
- * @internal
- * @function getNestedProperty
- *
- * @param {string} path
- * Path to the property, for example `custom.myValue`.
- *
- * @param {unknown} parent
- * Instance containing the property on the specific path.
- *
- * @return {unknown}
- * The unknown property value.
- */
-function getNestedProperty(path, parent) {
-    const pathElements = path.split('.');
-    while (pathElements.length && defined(parent)) {
-        const pathElement = pathElements.shift();
-        // Filter on the key
-        if (typeof pathElement === 'undefined' ||
-            pathElement === '__proto__') {
-            return; // Undefined
-        }
-        if (pathElement === 'this') {
-            let thisProp;
-            if (isObject(parent)) {
-                thisProp = parent['@this'];
-            }
-            return thisProp ?? parent;
-        }
-        const child = parent[pathElement.replace(/[\\'"]/g, '')];
-        // Filter on the child
-        if (!defined(child) ||
-            typeof child === 'function' ||
-            typeof child.nodeType === 'number' ||
-            child === win) {
-            return; // Undefined
-        }
-        // Else, proceed
-        parent = child;
-    }
-    return parent;
-}
-/**
- * Get the computed CSS value for given element and property, only for numerical
- * properties. For width and height, the dimension of the inner box (excluding
- * padding) is returned. Used for fitting the chart within the container.
- *
- * @function Highcharts.getStyle
- *
- * @param {Highcharts.HTMLDOMElement} el
- * An HTML element.
- *
- * @param {string} prop
- * The property name.
- *
- * @param {boolean} [toInt=true]
- * Parse to integer.
- *
- * @return {number|string|undefined}
- * The style value.
- */
-function getStyle(el, prop, toInt) {
-    let style;
-    // For width and height, return the actual inner pixel size (#4913)
-    if (prop === 'width') {
-        let offsetWidth = Math.min(el.offsetWidth, el.scrollWidth);
-        // In flex boxes, we need to use getBoundingClientRect and floor it,
-        // because scrollWidth doesn't support subpixel precision (#6427) ...
-        const boundingClientRectWidth = el.getBoundingClientRect?.().width;
-        // ...unless if the containing div or its parents are transform-scaled
-        // down, in which case the boundingClientRect can't be used as it is
-        // also scaled down (#9871, #10498).
-        if (boundingClientRectWidth < offsetWidth &&
-            boundingClientRectWidth >= offsetWidth - 1) {
-            offsetWidth = Math.floor(boundingClientRectWidth);
-        }
-        return Math.max(0, // #8377
-        (offsetWidth -
-            (getStyle(el, 'padding-left', true) || 0) -
-            (getStyle(el, 'padding-right', true) || 0)));
-    }
-    if (prop === 'height') {
-        return Math.max(0, // #8377
-        (Math.min(el.offsetHeight, el.scrollHeight) -
-            (getStyle(el, 'padding-top', true) || 0) -
-            (getStyle(el, 'padding-bottom', true) || 0)));
-    }
-    // Otherwise, get the computed style
-    const css = win.getComputedStyle(el, void 0); // eslint-disable-line no-undefined
-    if (css) {
-        style = css.getPropertyValue(prop);
-        if (pick(toInt, prop !== 'opacity')) {
-            style = pInt(style);
-        }
-    }
-    return style;
-}
-/**
- * Return the value of the first element in the array that satisfies the
- * provided testing function.
- *
- * @function Highcharts.find<T>
- *
- * @param {Array<T>} arr
- *        The array to test.
- *
- * @param {Function} callback
- *        The callback function. The function receives the item as the first
- *        argument. Return `true` if this item satisfies the condition.
- *
- * @return {T|undefined}
- *         The value of the element.
- */
-const find = Array.prototype.find ?
-    function (arr, callback) {
-        return arr.find(callback);
-    } :
-    // Legacy implementation. PhantomJS, IE <= 11 etc. #7223.
-    function (arr, callback) {
-        let i;
-        const length = arr.length;
-        for (i = 0; i < length; i++) {
-            if (callback(arr[i], i)) { // eslint-disable-line node/callback-return
-                return arr[i];
-            }
-        }
-    };
-/**
- * Internal clear timeout. The function checks that the `id` was not removed
- * (e.g. by `chart.destroy()`). For the details see
- * [issue #7901](https://github.com/highcharts/highcharts/issues/7901).
- *
- * @internal
- *
- * @function Highcharts.clearTimeout
- *
- * @param {number|undefined} id
- * Id of a timeout.
- */
-function internalClearTimeout(id) {
-    if (defined(id)) {
-        clearTimeout(id);
-    }
-}
-/**
- * Utility function to check if an Object is a HTML Element.
- *
- * @function Highcharts.isDOMElement
- *
- * @param {*} obj
- *        The item to check.
- *
- * @return {boolean}
- *         True if the argument is a HTML Element.
- */
-function isDOMElement(obj) {
-    return isObject(obj) && typeof obj.nodeType === 'number';
-}
-/**
- * Utility function to check if an Object is a class.
- *
- * @function Highcharts.isClass
- *
- * @param {object|undefined} obj
- *        The item to check.
- *
- * @return {boolean}
- *         True if the argument is a class.
- */
-function isClass(obj) {
-    const c = obj?.constructor;
-    return !!(isObject(obj, true) &&
-        !isDOMElement(obj) &&
-        (c?.name && c.name !== 'Object'));
-}
-/**
- * Utility function to check if an item is a number and it is finite (not NaN,
- * Infinity or -Infinity).
- *
- * @function Highcharts.isNumber
- *
- * @param {*} n
- *        The item to check.
- *
- * @return {boolean}
- *         True if the item is a finite number
- */
-function isNumber(n) {
-    return typeof n === 'number' && !isNaN(n) && n < Infinity && n > -Infinity;
-}
-/**
- * Utility function to check for string type.
- *
- * @function Highcharts.isString
- *
- * @param {*} s
- *        The item to check.
- *
- * @return {boolean}
- *         True if the argument is a string.
- */
-function isString(s) {
-    return typeof s === 'string';
-}
-/**
- * Utility function to check if an item is an array.
- *
- * @function Highcharts.isArray
- *
- * @param {*} obj
- *        The item to check.
- *
- * @return {boolean}
- *         True if the argument is an array.
- */
-function isArray(obj) {
-    const str = Object.prototype.toString.call(obj);
-    return str === '[object Array]' || str === '[object Array Iterator]';
-}
-/**
- * Utility function to check if object is a function.
- *
- * @function Highcharts.isFunction
- *
- * @param {*} obj
- *        The item to check.
- *
- * @return {boolean}
- *         True if the argument is a function.
- */
-function isFunction(obj) {
-    return typeof obj === 'function';
-}
-/**
- * Utility function to check if an item is of type object.
- *
- * @function Highcharts.isObject
- *
- * @param {*} obj
- *        The item to check.
- *
- * @param {boolean} [strict=false]
- *        Also checks that the object is not an array.
- *
- * @return {boolean}
- *         True if the argument is an object.
- */
-function isObject(obj, strict) {
-    return (!!obj &&
-        typeof obj === 'object' &&
-        (!strict || !isArray(obj))); // eslint-disable-line @typescript-eslint/no-explicit-any
-}
-/**
- * Utility function to deep merge two or more objects and return a third object.
- * If the first argument is true, the contents of the second object is copied
- * into the first object. The merge function can also be used with a single
- * object argument to create a deep copy of an object.
- *
- * @function Highcharts.merge<T>
- *
- * @param {true | T} extendOrSource
- *        Whether to extend the left-side object,
- *        or the first object to merge as a deep copy.
- *
- * @param {...Array<object|undefined>} [sources]
- *        Object(s) to merge into the previous one.
- *
- * @return {T}
- *         The merged object. If the first argument is true, the return is the
- *         same as the second argument.
- */
-function merge(extendOrSource, ...sources) {
-    let i, args = [extendOrSource, ...sources], ret = {};
-    const doCopy = function (copy, original) {
-        // An object is replacing a primitive
-        if (typeof copy !== 'object') {
-            copy = {};
-        }
-        objectEach(original, function (value, key) {
-            // Prototype pollution (#14883)
-            if (key === '__proto__' || key === 'constructor') {
-                return;
-            }
-            // Copy the contents of objects, but not arrays or DOM nodes
-            if (isObject(value, true) &&
-                !isClass(value) &&
-                !isDOMElement(value)) {
-                copy[key] = doCopy(copy[key] || {}, value);
-                // Primitives and arrays are copied over directly
-            }
-            else {
-                copy[key] = original[key];
-            }
-        });
-        return copy;
-    };
-    // If first argument is true, copy into the existing object. Used in
-    // setOptions.
-    if (extendOrSource === true) {
-        ret = args[1];
-        args = Array.prototype.slice.call(args, 2);
-    }
-    // For each argument, extend the return
-    const len = args.length;
-    for (i = 0; i < len; i++) {
-        ret = doCopy(ret, args[i]);
-    }
-    return ret;
-}
-/**
- * Take an interval and normalize it to multiples of round numbers.
- *
- * @deprecated
- * @function Highcharts.normalizeTickInterval
- *
- * @param {number} interval
- *        The raw, un-rounded interval.
- *
- * @param {Array<*>} [multiples]
- *        Allowed multiples.
- *
- * @param {number} [magnitude]
- *        The magnitude of the number.
- *
- * @param {boolean} [allowDecimals]
- *        Whether to allow decimals.
- *
- * @param {boolean} [hasTickAmount]
- *        If it has tickAmount, avoid landing on tick intervals lower than
- *        original.
- *
- * @return {number}
- *         The normalized interval.
- *
- * @todo
- * Move this function to the Axis prototype. It is here only for historical
- * reasons.
- */
-function normalizeTickInterval(interval, multiples, magnitude, allowDecimals, hasTickAmount) {
-    let i, retInterval = interval;
-    // Round to a tenfold of 1, 2, 2.5 or 5
-    magnitude = pick(magnitude, getMagnitude(interval));
-    const normalized = interval / magnitude;
-    // Multiples for a linear scale
-    if (!multiples) {
-        multiples = hasTickAmount ?
-            // Finer grained ticks when the tick amount is hard set, including
-            // when alignTicks is true on multiple axes (#4580).
-            [1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10] :
-            // Else, let ticks fall on rounder numbers
-            [1, 2, 2.5, 5, 10];
-        // The allowDecimals option
-        if (allowDecimals === false) {
-            if (magnitude === 1) {
-                multiples = multiples.filter(function (num) {
-                    return num % 1 === 0;
-                });
-            }
-            else if (magnitude <= 0.1) {
-                multiples = [1 / magnitude];
-            }
-        }
-    }
-    // Normalize the interval to the nearest multiple
-    for (i = 0; i < multiples.length; i++) {
-        retInterval = multiples[i];
-        // Only allow tick amounts smaller than natural
-        if ((hasTickAmount &&
-            retInterval * magnitude >= interval) ||
-            (!hasTickAmount &&
-                (normalized <=
-                    (multiples[i] +
-                        (multiples[i + 1] || multiples[i])) / 2))) {
-            break;
-        }
-    }
-    // Multiply back to the correct magnitude. Correct floats to appropriate
-    // precision (#6085).
-    retInterval = correctFloat(retInterval * magnitude, -Math.round(Math.log(0.001) / Math.LN10));
-    return retInterval;
-}
-/**
- * Iterate over object key pairs in an object.
- *
- * @function Highcharts.objectEach<T>
- *
- * @param {*} obj
- *        The object to iterate over.
- *
- * @param {Highcharts.ObjectEachCallbackFunction<T>} fn
- *        The iterator callback. It passes three arguments:
- *        * value - The property value.
- *        * key - The property key.
- *        * obj - The object that objectEach is being applied to.
- *
- * @param {T} [ctx]
- *        The context.
- */
-function objectEach(obj, fn, ctx) {
-    for (const key in obj) {
-        if (Object.hasOwnProperty.call(obj, key)) {
-            fn.call(ctx || obj[key], obj[key], key, obj);
-        }
-    }
-}
-/**
- * Get the element's offset position, corrected for `overflow: auto`.
- *
- * @function Highcharts.offset
- *
- * @param {global.Element} el
- *        The DOM element.
- *
- * @return {Highcharts.OffsetObject}
- *         An object containing `left` and `top` properties for the position in
- *         the page.
- */
-function offset(el) {
-    const docElem = doc.documentElement, box = (el.parentElement || el.parentNode) ?
-        el.getBoundingClientRect() :
-        { top: 0, left: 0, width: 0, height: 0 };
-    return {
-        top: box.top + (win.pageYOffset || docElem.scrollTop) -
-            (docElem.clientTop || 0),
-        left: box.left + (win.pageXOffset || docElem.scrollLeft) -
-            (docElem.clientLeft || 0),
-        width: box.width,
-        height: box.height
-    };
-}
-/**
- * Left-pad a string to a given length by adding a character repetitively.
- *
- * @function Highcharts.pad
- *
- * @param {number} number
- *        The input string or number.
- *
- * @param {number} [length]
- *        The desired string length.
- *
- * @param {string} [padder=0]
- *        The character to pad with.
- *
- * @return {string}
- *         The padded string.
- */
-function pad(number, length, padder) {
-    return new Array((length || 2) +
-        1 -
-        String(number)
-            .replace('-', '')
-            .length).join(padder || '0') + number;
-}
-/* eslint-disable jsdoc/check-param-names */
-/**
- * Return the first value that is not null or undefined.
- *
- * @function Highcharts.pick<T>
- *
- * @param {...Array<T|null|undefined>} items
- *        Variable number of arguments to inspect.
- *
- * @return {T}
- *         The value of the first argument that is not null or undefined.
- */
-function pick() {
-    const args = arguments;
-    const length = args.length;
-    for (let i = 0; i < length; i++) {
-        const arg = args[i];
-        if (typeof arg !== 'undefined' && arg !== null) {
-            return arg;
-        }
-    }
-}
-/* eslint-enable jsdoc/check-param-names */
-/**
- * Shortcut for parseInt
- *
- * @internal
- * @function Highcharts.pInt
- *
- * @param {*} s
- *        any
- *
- * @param {number} [mag]
- *        Magnitude
- *
- * @return {number}
- *         number
- */
-function pInt(s, mag) {
-    return parseInt(s, mag || 10);
-}
-/**
- * Adds an item to an array, if it is not present in the array.
- *
- * @internal
- *
- * @function Highcharts.pushUnique
- *
- * @param {Array<unknown>} array
- * The array to add the item to.
- *
- * @param {unknown} item
- * The item to add.
- *
- * @return {boolean}
- * Returns true, if the item was not present and has been added.
- */
-function pushUnique(array, item) {
-    return array.indexOf(item) < 0 && !!array.push(item);
-}
-/**
- * Return a length based on either the integer value, or a percentage of a base.
- *
- * @function Highcharts.relativeLength
- *
- * @param {Highcharts.RelativeSize} value
- *        A percentage string or a number.
- *
- * @param {number} base
- *        The full length that represents 100%.
- *
- * @param {number} [offset=0]
- *        A pixel offset to apply for percentage values. Used internally in
- *        axis positioning.
- *
- * @return {number}
- *         The computed length.
- */
-function relativeLength(value, base, offset) {
-    return (/%$/).test(value) ?
-        (base * parseFloat(value) / 100) + (offset || 0) :
-        parseFloat(value);
-}
-/**
- * Replaces text in a string with a given replacement in a loop to catch nested
- * matches after previous replacements.
- *
- * @internal
- *
- * @function Highcharts.replaceNested
- *
- * @param {string} text
- * Text to search and modify.
- *
- * @param {...Array<(RegExp|string)>} replacements
- * One or multiple tuples with search pattern (`[0]: (string|RegExp)`) and
- * replacement (`[1]: string`) for matching text.
- *
- * @return {string}
- * Text with replacements.
- */
-function replaceNested(text, ...replacements) {
-    let previous, replacement;
-    do {
-        previous = text;
-        for (replacement of replacements) {
-            text = text.replace(replacement[0], replacement[1]);
-        }
-    } while (text !== previous);
-    return text;
-}
-/**
- * Remove an event that was added with {@link Highcharts#addEvent}.
- *
- * @function Highcharts.removeEvent<T>
- *
- * @param {Highcharts.Class<T>|T} el
- *        The element to remove events on.
- *
- * @param {string} [type]
- *        The type of events to remove. If undefined, all events are removed
- *        from the element.
- *
- * @param {Highcharts.EventCallbackFunction<T>} [fn]
- *        The specific callback to remove. If undefined, all events that match
- *        the element and optionally the type are removed.
- *
- * @return {void}
- */
-function removeEvent(el, type, fn) {
-    /** @internal */
-    function removeOneEvent(type, fn) {
-        const removeEventListener = el.removeEventListener;
-        if (removeEventListener) {
-            removeEventListener.call(el, type, fn, false);
-        }
-    }
-    /** @internal */
-    function removeAllEvents(eventCollection) {
-        let types, len;
-        if (!el.nodeName) {
-            return; // Break on non-DOM events
-        }
-        if (type) {
-            types = {};
-            types[type] = true;
-        }
-        else {
-            types = eventCollection;
-        }
-        objectEach(types, function (_val, n) {
-            if (eventCollection[n]) {
-                len = eventCollection[n].length;
-                while (len--) {
-                    removeOneEvent(n, eventCollection[n][len].fn);
-                }
-            }
-        });
-    }
-    const owner = typeof el === 'function' && el.prototype || el;
-    if (Object.hasOwnProperty.call(owner, 'hcEvents')) {
-        const events = owner.hcEvents;
-        if (type) {
-            const typeEvents = (events[type] || []);
-            if (fn) {
-                events[type] = typeEvents.filter(function (obj) {
-                    return fn !== obj.fn;
-                });
-                removeOneEvent(type, fn);
-            }
-            else {
-                removeAllEvents(events);
-                events[type] = [];
-            }
-        }
-        else {
-            removeAllEvents(events);
-            delete owner.hcEvents;
-        }
-    }
-}
-/**
- * Check if an element is an array, and if not, make it into an array.
- *
- * @function Highcharts.splat
- *
- * @param {*} obj
- *        The object to splat.
- *
- * @return {Array}
- *         The produced or original array.
- */
-function splat(obj) {
-    return isArray(obj) ? obj : [obj];
-}
-/**
- * Sort an object array and keep the order of equal items. The ECMAScript
- * standard does not specify the behavior when items are equal.
- *
- * @function Highcharts.stableSort
- *
- * @param {Array<*>} arr
- *        The array to sort.
- *
- * @param {Function} sortFunction
- *        The function to sort it with, like with regular Array.prototype.sort.
- */
-function stableSort(arr, sortFunction) {
-    // @todo It seems like Chrome since v70 sorts in a stable way internally,
-    // plus all other browsers do it, so over time we may be able to remove this
-    // function
-    const length = arr.length;
-    let sortValue, i;
-    // Add index to each item
-    for (i = 0; i < length; i++) {
-        arr[i].safeI = i; // Stable sort index
-    }
-    arr.sort(function (a, b) {
-        sortValue = sortFunction(a, b);
-        return sortValue === 0 ? a.safeI - b.safeI : sortValue;
-    });
-    // Remove index from items
-    for (i = 0; i < length; i++) {
-        delete arr[i].safeI; // Stable sort index
-    }
-}
-/**
- * Set a timeout if the delay is given, otherwise perform the function
- * synchronously.
- *
- * @function Highcharts.syncTimeout
- *
- * @param {Function} fn
- *        The function callback.
- *
- * @param {number} delay
- *        Delay in milliseconds.
- *
- * @param {*} [context]
- *        An optional context to send to the function callback.
- *
- * @return {number}
- *         An identifier for the timeout that can later be cleared with
- *         Highcharts.clearTimeout. Returns -1 if there is no timeout.
- */
-function syncTimeout(fn, delay, context) {
-    if (delay > 0) {
-        return setTimeout(fn, delay, context);
-    }
-    fn.call(0, context);
-    return -1;
-}
-/**
- * @internal
- */
-function ucfirst(s) {
-    return ((isString(s) ?
-        s.substring(0, 1).toUpperCase() + s.substring(1) :
-        String(s)));
-}
-/**
- * Wrap a method with extended functionality, preserving the original function.
- *
- * @function Highcharts.wrap
- *
- * @param {*} obj
- *        The context object that the method belongs to. In real cases, this is
- *        often a prototype.
- *
- * @param {string} method
- *        The name of the method to extend.
- *
- * @param {Highcharts.WrapProceedFunction} func
- *        A wrapper function callback. This function is called with the same
- *        arguments as the original function, except that the original function
- *        is unshifted and passed as the first argument.
- */
-function wrap(obj, method, func) {
-    const proceed = obj[method];
-    obj[method] = function () {
-        const outerArgs = arguments, scope = this;
-        return func.apply(this, [
-            function () {
-                return proceed.apply(scope, arguments.length ? arguments : outerArgs);
-            }
-        ].concat([].slice.call(arguments)));
-    };
-}
-
 ;// ./code/es-modules/Core/Math3D.js
 /* *
  *
@@ -1518,11 +155,11 @@ function perspective(points, chart, insidePlotArea, useInvertedPersp) {
     /* The useInvertedPersp argument is used for inverted charts with
      * already inverted elements, such as dataLabels or tooltip positions.
      */
-    inverted = pick(useInvertedPersp, insidePlotArea ? chart.inverted : false), origin = {
+    inverted = (0,external_highcharts_src_js_default_namespaceObject.pick)(useInvertedPersp, insidePlotArea ? chart.inverted : false), origin = {
         x: chart.plotWidth / 2,
         y: chart.plotHeight / 2,
         z: options3d.depth / 2,
-        vd: pick(options3d.depth, 1) * pick(options3d.viewDistance, 0)
+        vd: (0,external_highcharts_src_js_default_namespaceObject.pick)(options3d.depth, 1) * (0,external_highcharts_src_js_default_namespaceObject.pick)(options3d.viewDistance, 0)
     }, scale = chart.scale3d || 1, beta = deg2rad * options3d.beta * (inverted ? -1 : 1), alpha = deg2rad * options3d.alpha * (inverted ? -1 : 1), angles = {
         cosA: Math.cos(alpha),
         cosB: Math.cos(-beta),
@@ -1601,13 +238,13 @@ function pointCameraDistance(coordinates, chart) {
     const options3d = chart.options.chart.options3d, cameraPosition = {
         x: chart.plotWidth / 2,
         y: chart.plotHeight / 2,
-        z: pick(options3d.depth, 1) * pick(options3d.viewDistance, 0) +
+        z: (0,external_highcharts_src_js_default_namespaceObject.pick)(options3d.depth, 1) * (0,external_highcharts_src_js_default_namespaceObject.pick)(options3d.viewDistance, 0) +
             options3d.depth
     }, 
     // Added support for objects with plotX or x coordinates.
-    distance = Math.sqrt(Math.pow(cameraPosition.x - pick(coordinates.plotX, coordinates.x), 2) +
-        Math.pow(cameraPosition.y - pick(coordinates.plotY, coordinates.y), 2) +
-        Math.pow(cameraPosition.z - pick(coordinates.plotZ, coordinates.z), 2));
+    distance = Math.sqrt(Math.pow(cameraPosition.x - (0,external_highcharts_src_js_default_namespaceObject.pick)(coordinates.plotX, coordinates.x), 2) +
+        Math.pow(cameraPosition.y - (0,external_highcharts_src_js_default_namespaceObject.pick)(coordinates.plotY, coordinates.y), 2) +
+        Math.pow(cameraPosition.z - (0,external_highcharts_src_js_default_namespaceObject.pick)(coordinates.plotZ, coordinates.z), 2));
     return distance;
 }
 /**
@@ -1903,7 +540,7 @@ var Chart3D;
         fxProto.matrixSetter = function () {
             let interpolated;
             if (this.pos < 1 &&
-                (isArray(this.start) || isArray(this.end))) {
+                ((0,external_highcharts_src_js_default_namespaceObject.isArray)(this.start) || (0,external_highcharts_src_js_default_namespaceObject.isArray)(this.end))) {
                 const start = (this.start ||
                     [1, 0, 0, 1, 0, 0]), end = this.end || [1, 0, 0, 1, 0, 0];
                 interpolated = [];
@@ -1916,18 +553,18 @@ var Chart3D;
             }
             this.elem.attr(this.prop, interpolated, null, true);
         };
-        merge(true, genericDefaultOptions, Chart3D.defaultOptions);
-        addEvent(ChartClass, 'init', onInit);
-        addEvent(ChartClass, 'addSeries', onAddSeries);
-        addEvent(ChartClass, 'afterDrawChartBox', onAfterDrawChartBox);
-        addEvent(ChartClass, 'afterGetContainer', onAfterGetContainer);
-        addEvent(ChartClass, 'afterInit', onAfterInit);
-        addEvent(ChartClass, 'afterSetChartSize', onAfterSetChartSize);
-        addEvent(ChartClass, 'beforeRedraw', onBeforeRedraw);
-        addEvent(ChartClass, 'beforeRender', onBeforeRender);
-        wrap(chartProto, 'isInsidePlot', wrapIsInsidePlot);
-        wrap(chartProto, 'renderSeries', wrapRenderSeries);
-        wrap(chartProto, 'setClassName', wrapSetClassName);
+        (0,external_highcharts_src_js_default_namespaceObject.merge)(true, genericDefaultOptions, Chart3D.defaultOptions);
+        (0,external_highcharts_src_js_default_namespaceObject.addEvent)(ChartClass, 'init', onInit);
+        (0,external_highcharts_src_js_default_namespaceObject.addEvent)(ChartClass, 'addSeries', onAddSeries);
+        (0,external_highcharts_src_js_default_namespaceObject.addEvent)(ChartClass, 'afterDrawChartBox', onAfterDrawChartBox);
+        (0,external_highcharts_src_js_default_namespaceObject.addEvent)(ChartClass, 'afterGetContainer', onAfterGetContainer);
+        (0,external_highcharts_src_js_default_namespaceObject.addEvent)(ChartClass, 'afterInit', onAfterInit);
+        (0,external_highcharts_src_js_default_namespaceObject.addEvent)(ChartClass, 'afterSetChartSize', onAfterSetChartSize);
+        (0,external_highcharts_src_js_default_namespaceObject.addEvent)(ChartClass, 'beforeRedraw', onBeforeRedraw);
+        (0,external_highcharts_src_js_default_namespaceObject.addEvent)(ChartClass, 'beforeRender', onBeforeRender);
+        (0,external_highcharts_src_js_default_namespaceObject.wrap)(chartProto, 'isInsidePlot', wrapIsInsidePlot);
+        (0,external_highcharts_src_js_default_namespaceObject.wrap)(chartProto, 'renderSeries', wrapRenderSeries);
+        (0,external_highcharts_src_js_default_namespaceObject.wrap)(chartProto, 'setClassName', wrapSetClassName);
     }
     Chart3D.compose = compose;
     /**
@@ -2987,8 +1624,8 @@ var Chart3D;
                     isVisible = faceOrientation > 0;
                 }
                 return {
-                    size: pick(options.size, 1),
-                    color: pick(options.color, 'none'),
+                    size: (0,external_highcharts_src_js_default_namespaceObject.pick)(options.size, 1),
+                    color: (0,external_highcharts_src_js_default_namespaceObject.pick)(options.color, 'none'),
                     frontFacing: faceOrientation > 0,
                     visible: isVisible
                 };
@@ -3315,7 +1952,7 @@ var Chart3D;
  *
  * The side for the frame around a 3D chart.
  *
- * @deprecated
+ * @deprecated 5.0.12
  * @since     4.0
  * @product   highcharts
  * @requires  highcharts-3d
@@ -3324,7 +1961,7 @@ var Chart3D;
 /**
  * The color of the panel.
  *
- * @deprecated
+ * @deprecated 5.0.12
  * @type      {Highcharts.ColorType}
  * @default   transparent
  * @since     4.0
@@ -3334,7 +1971,7 @@ var Chart3D;
 /**
  * The thickness of the panel.
  *
- * @deprecated
+ * @deprecated 5.0.12
  * @type      {number}
  * @default   1
  * @since     4.0
@@ -3376,8 +2013,8 @@ const { line: { prototype: lineProto } } = (external_highcharts_src_js_default_S
  * @internal
  */
 function compose(AreaSeriesClass) {
-    if (pushUnique(composed, 'Area3DSeries')) {
-        wrap(AreaSeriesClass.prototype, 'getGraphPath', wrapAreaSeriesGetGraphPath);
+    if ((0,external_highcharts_src_js_default_namespaceObject.pushUnique)(composed, 'Area3DSeries')) {
+        (0,external_highcharts_src_js_default_namespaceObject.wrap)(AreaSeriesClass.prototype, 'getGraphPath', wrapAreaSeriesGetGraphPath);
     }
 }
 /**
@@ -3411,7 +2048,9 @@ function wrapAreaSeriesGetGraphPath(proceed) {
             series.markerGroup.add(series.group);
             series.markerGroup.attr({
                 translateX: 0,
-                translateY: 0
+                translateY: 0,
+                // Preserve the established 3D area paint order.
+                zIndex: 0
             });
         }
         series.group.attr({
@@ -3606,16 +2245,16 @@ const { composed: Tick3DComposition_composed } = (external_highcharts_src_js_def
  * */
 /** @internal */
 function Tick3DComposition_compose(TickClass) {
-    if (pushUnique(Tick3DComposition_composed, 'Axis.Tick3D')) {
-        addEvent(TickClass, 'afterGetLabelPosition', onTickAfterGetLabelPosition);
-        wrap(TickClass.prototype, 'getMarkPath', wrapTickGetMarkPath);
+    if ((0,external_highcharts_src_js_default_namespaceObject.pushUnique)(Tick3DComposition_composed, 'Axis.Tick3D')) {
+        (0,external_highcharts_src_js_default_namespaceObject.addEvent)(TickClass, 'afterGetLabelPosition', onTickAfterGetLabelPosition);
+        (0,external_highcharts_src_js_default_namespaceObject.wrap)(TickClass.prototype, 'getMarkPath', wrapTickGetMarkPath);
     }
 }
 /** @internal */
 function onTickAfterGetLabelPosition(e) {
     const axis3D = this.axis.axis3D;
     if (axis3D) {
-        extend(e.pos, axis3D.fix3dPosition(e.pos));
+        (0,external_highcharts_src_js_default_namespaceObject.extend)(e.pos, axis3D.fix3dPosition(e.pos));
     }
 }
 /** @internal */
@@ -3680,8 +2319,8 @@ function onAxisAfterSetOptions() {
     const axis = this, chart = axis.chart, options = axis.options;
     if (chart.is3d?.() && axis.coll !== 'colorAxis') {
         this.clippable = false;
-        options.tickWidth = pick(options.tickWidth, 0);
-        options.gridLineWidth = pick(options.gridLineWidth, 1);
+        options.tickWidth = (0,external_highcharts_src_js_default_namespaceObject.pick)(options.tickWidth, 0);
+        options.gridLineWidth = (0,external_highcharts_src_js_default_namespaceObject.pick)(options.gridLineWidth, 1);
     }
 }
 /** @internal */
@@ -3821,8 +2460,8 @@ function wrapAxisGetSlotWidth(proceed, tick) {
             x: chart.plotWidth / 2,
             y: chart.plotHeight / 2,
             z: options3d.depth / 2,
-            vd: (pick(options3d.depth, 1) *
-                pick(options3d.viewDistance, 0))
+            vd: ((0,external_highcharts_src_js_default_namespaceObject.pick)(options3d.depth, 1) *
+                (0,external_highcharts_src_js_default_namespaceObject.pick)(options3d.viewDistance, 0))
         }, index = tickPositions.indexOf(tick.pos), prevTick = ticks[tickPositions[index - 1]], nextTick = ticks[tickPositions[index + 1]];
         let labelPos, prevLabelPos, nextLabelPos;
         // Check whether the tick is not the first one and previous tick
@@ -3891,17 +2530,17 @@ class Axis3DAdditions {
     static compose(AxisClass, TickClass) {
         Tick3DComposition.compose(TickClass);
         if (!AxisClass.keepProps.includes('axis3D')) {
-            merge(true, defaultOptions.xAxis, Axis_Axis3DDefaults);
+            (0,external_highcharts_src_js_default_namespaceObject.merge)(true, defaultOptions.xAxis, Axis_Axis3DDefaults);
             AxisClass.keepProps.push('axis3D');
-            addEvent(AxisClass, 'init', onAxisInit);
-            addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
-            addEvent(AxisClass, 'drawCrosshair', onAxisDrawCrosshair);
+            (0,external_highcharts_src_js_default_namespaceObject.addEvent)(AxisClass, 'init', onAxisInit);
+            (0,external_highcharts_src_js_default_namespaceObject.addEvent)(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
+            (0,external_highcharts_src_js_default_namespaceObject.addEvent)(AxisClass, 'drawCrosshair', onAxisDrawCrosshair);
             const axisProto = AxisClass.prototype;
-            wrap(axisProto, 'getLinePath', wrapAxisGetLinePath);
-            wrap(axisProto, 'getPlotBandPath', wrapAxisGetPlotBandPath);
-            wrap(axisProto, 'getPlotLinePath', wrapAxisGetPlotLinePath);
-            wrap(axisProto, 'getSlotWidth', wrapAxisGetSlotWidth);
-            wrap(axisProto, 'getTitlePosition', wrapAxisGetTitlePosition);
+            (0,external_highcharts_src_js_default_namespaceObject.wrap)(axisProto, 'getLinePath', wrapAxisGetLinePath);
+            (0,external_highcharts_src_js_default_namespaceObject.wrap)(axisProto, 'getPlotBandPath', wrapAxisGetPlotBandPath);
+            (0,external_highcharts_src_js_default_namespaceObject.wrap)(axisProto, 'getPlotLinePath', wrapAxisGetPlotLinePath);
+            (0,external_highcharts_src_js_default_namespaceObject.wrap)(axisProto, 'getSlotWidth', wrapAxisGetSlotWidth);
+            (0,external_highcharts_src_js_default_namespaceObject.wrap)(axisProto, 'getTitlePosition', wrapAxisGetTitlePosition);
         }
     }
     /* *
@@ -3937,7 +2576,7 @@ class Axis3DAdditions {
             !chart.is3d()) {
             return pos;
         }
-        const alpha = Axis3DComposition_deg2rad * chart.options.chart.options3d.alpha, beta = Axis3DComposition_deg2rad * chart.options.chart.options3d.beta, positionMode = pick(isTitle && axis.options.title.position3d, axis.options.labels.position3d), skew = pick(isTitle && axis.options.title.skew3d, axis.options.labels.skew3d), frame = chart.chart3d.frame3d, plotLeft = chart.plotLeft, plotRight = chart.plotWidth + plotLeft, plotTop = chart.plotTop, plotBottom = chart.plotHeight + plotTop;
+        const alpha = Axis3DComposition_deg2rad * chart.options.chart.options3d.alpha, beta = Axis3DComposition_deg2rad * chart.options.chart.options3d.beta, positionMode = (0,external_highcharts_src_js_default_namespaceObject.pick)(isTitle && axis.options.title.position3d, axis.options.labels.position3d), skew = (0,external_highcharts_src_js_default_namespaceObject.pick)(isTitle && axis.options.title.skew3d, axis.options.labels.skew3d), frame = chart.chart3d.frame3d, plotLeft = chart.plotLeft, plotRight = chart.plotWidth + plotLeft, plotTop = chart.plotTop, plotBottom = chart.plotHeight + plotTop;
         let offsetX = 0, offsetY = 0, vecX, vecY = { x: 0, y: 1, z: 0 }, 
         // Indicates that we are labelling an X or Z axis on the "back" of
         // the chart
@@ -4159,13 +2798,13 @@ class Series3D extends (external_highcharts_src_js_default_Series_default()) {
      *
      * */
     static compose(SeriesClass) {
-        if (pushUnique(Series3D_composed, 'Core.Series3D')) {
-            addEvent(SeriesClass, 'afterTranslate', function () {
+        if ((0,external_highcharts_src_js_default_namespaceObject.pushUnique)(Series3D_composed, 'Core.Series3D')) {
+            (0,external_highcharts_src_js_default_namespaceObject.addEvent)(SeriesClass, 'afterTranslate', function () {
                 if (this.chart.is3d()) {
                     this.translate3dPoints();
                 }
             });
-            extend(SeriesClass.prototype, {
+            (0,external_highcharts_src_js_default_namespaceObject.extend)(SeriesClass.prototype, {
                 translate3dPoints: Series3D.prototype.translate3dPoints
             });
         }
@@ -4180,8 +2819,8 @@ class Series3D extends (external_highcharts_src_js_default_Series_default()) {
      * @internal
      */
     translate3dPoints() {
-        const series = this, seriesOptions = series.options, chart = series.chart, zAxis = pick(series.zAxis, chart.options.zAxis[0]), rawPoints = [], rawPointsX = [], stack = seriesOptions.stacking ?
-            (isNumber(seriesOptions.stack) ? seriesOptions.stack : 0) :
+        const series = this, seriesOptions = series.options, chart = series.chart, zAxis = (0,external_highcharts_src_js_default_namespaceObject.pick)(series.zAxis, chart.options.zAxis[0]), rawPoints = [], rawPointsX = [], stack = seriesOptions.stacking ?
+            ((0,external_highcharts_src_js_default_namespaceObject.isNumber)(seriesOptions.stack) ? seriesOptions.stack : 0) :
             series.index || 0;
         let projectedPoint, zValue;
         series.zPadding = stack *
@@ -4225,7 +2864,7 @@ class Series3D extends (external_highcharts_src_js_default_Series_default()) {
  *  Static Properties
  *
  * */
-Series3D.defaultOptions = merge((external_highcharts_src_js_default_Series_default()).defaultOptions);
+Series3D.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_highcharts_src_js_default_Series_default()).defaultOptions);
 /* *
  *
  *  Default Export
@@ -4359,7 +2998,7 @@ class SVGElement3D extends (external_highcharts_src_js_default_SVGElement_defaul
         for (const part of elem3d.parts) {
             // If different props for different parts
             if (partsProps) {
-                props = pick(partsProps[part], false);
+                props = (0,external_highcharts_src_js_default_namespaceObject.pick)(partsProps[part], false);
             }
             // Only if something to set, but allow undefined
             if (props !== false) {
@@ -4385,14 +3024,14 @@ class SVGElement3D extends (external_highcharts_src_js_default_SVGElement_defaul
             args = {};
             args[key] = val;
         }
-        if (args.shapeArgs || defined(args.x)) {
+        if (args.shapeArgs || (0,external_highcharts_src_js_default_namespaceObject.defined)(args.x)) {
             return this.singleSetterForParts('d', null, this.renderer[this.pathType + 'Path'](args.shapeArgs || args));
         }
         return super.attr(args, void 0, complete, continueAnimation);
     }
     /** @internal */
     animate(args, duration, complete) {
-        if (defined(args.x) && defined(args.y)) {
+        if ((0,external_highcharts_src_js_default_namespaceObject.defined)(args.x) && (0,external_highcharts_src_js_default_namespaceObject.defined)(args.y)) {
             const paths = this.renderer[this.pathType + 'Path'](args), forcedSides = paths.forcedSides;
             this.singleSetterForParts('d', null, paths, 'animate', duration, complete);
             this.attr({
@@ -4529,7 +3168,7 @@ var SVGRenderer3D;
     function compose(SVGRendererClass) {
         const rendererProto = SVGRendererClass.prototype;
         if (!rendererProto.element3d) {
-            extend(rendererProto, {
+            (0,external_highcharts_src_js_default_namespaceObject.extend)(rendererProto, {
                 Element3D: SVG_SVGElement3D,
                 arc3d,
                 arc3dPath,
@@ -4590,12 +3229,12 @@ var SVGRenderer3D;
         /* eslint-disable no-invalid-this */
         ret.attr = function (hash) {
             if (typeof hash === 'object' &&
-                (defined(hash.enabled) ||
-                    defined(hash.vertexes) ||
-                    defined(hash.insidePlotArea))) {
-                this.enabled = pick(hash.enabled, this.enabled);
-                this.vertexes = pick(hash.vertexes, this.vertexes);
-                this.insidePlotArea = pick(hash.insidePlotArea, this.insidePlotArea);
+                ((0,external_highcharts_src_js_default_namespaceObject.defined)(hash.enabled) ||
+                    (0,external_highcharts_src_js_default_namespaceObject.defined)(hash.vertexes) ||
+                    (0,external_highcharts_src_js_default_namespaceObject.defined)(hash.insidePlotArea))) {
+                this.enabled = (0,external_highcharts_src_js_default_namespaceObject.pick)(hash.enabled, this.enabled);
+                this.vertexes = (0,external_highcharts_src_js_default_namespaceObject.pick)(hash.vertexes, this.vertexes);
+                this.insidePlotArea = (0,external_highcharts_src_js_default_namespaceObject.pick)(hash.insidePlotArea, this.insidePlotArea);
                 delete hash.enabled;
                 delete hash.vertexes;
                 delete hash.insidePlotArea;
@@ -4608,12 +3247,12 @@ var SVGRenderer3D;
         };
         ret.animate = function (params) {
             if (typeof params === 'object' &&
-                (defined(params.enabled) ||
-                    defined(params.vertexes) ||
-                    defined(params.insidePlotArea))) {
-                this.enabled = pick(params.enabled, this.enabled);
-                this.vertexes = pick(params.vertexes, this.vertexes);
-                this.insidePlotArea = pick(params.insidePlotArea, this.insidePlotArea);
+                ((0,external_highcharts_src_js_default_namespaceObject.defined)(params.enabled) ||
+                    (0,external_highcharts_src_js_default_namespaceObject.defined)(params.vertexes) ||
+                    (0,external_highcharts_src_js_default_namespaceObject.defined)(params.insidePlotArea))) {
+                this.enabled = (0,external_highcharts_src_js_default_namespaceObject.pick)(params.enabled, this.enabled);
+                this.vertexes = (0,external_highcharts_src_js_default_namespaceObject.pick)(params.vertexes, this.vertexes);
+                this.insidePlotArea = (0,external_highcharts_src_js_default_namespaceObject.pick)(params.insidePlotArea, this.insidePlotArea);
                 delete params.enabled;
                 delete params.vertexes;
                 delete params.insidePlotArea;
@@ -4649,7 +3288,7 @@ var SVGRenderer3D;
             return destroy.call(this);
         };
         result.attr = function (hash, val, complete, continueAnimation) {
-            if (typeof hash === 'object' && defined(hash.faces)) {
+            if (typeof hash === 'object' && (0,external_highcharts_src_js_default_namespaceObject.defined)(hash.faces)) {
                 while (result.faces.length > hash.faces.length) {
                     result.faces.pop().destroy();
                 }
@@ -4905,7 +3544,7 @@ var SVGRenderer3D;
          */
         function extractCustom(params) {
             const ca = {};
-            params = merge(params); // Don't mutate the original object
+            params = (0,external_highcharts_src_js_default_namespaceObject.merge)(params); // Don't mutate the original object
             let key;
             for (key in params) {
                 if (customAttribs.indexOf(key) !== -1) {
@@ -4915,7 +3554,7 @@ var SVGRenderer3D;
             }
             return Object.keys(ca).length ? [ca, params] : false;
         }
-        attribs = merge(attribs);
+        attribs = (0,external_highcharts_src_js_default_namespaceObject.merge)(attribs);
         attribs.alpha = (attribs.alpha || 0) * SVGRenderer3D_deg2rad;
         attribs.beta = (attribs.beta || 0) * SVGRenderer3D_deg2rad;
         // Create the different sub sections of the shape
@@ -5009,7 +3648,7 @@ var SVGRenderer3D;
                     if (ca.beta !== void 0) {
                         ca.beta *= SVGRenderer3D_deg2rad;
                     }
-                    extend(wrapper.attribs, ca);
+                    (0,external_highcharts_src_js_default_namespaceObject.extend)(wrapper.attribs, ca);
                     if (wrapper.attribs) {
                         wrapper.setPaths(wrapper.attribs);
                     }
@@ -5027,7 +3666,7 @@ var SVGRenderer3D;
             // been in the attribs collection in the first place.
             delete params.center;
             delete params.z;
-            const anim = animObject(pick(animation, this.renderer.globalAnimation));
+            const anim = animObject((0,external_highcharts_src_js_default_namespaceObject.pick)(animation, this.renderer.globalAnimation));
             if (anim.duration) {
                 const paramArr = extractCustom(params);
                 // Params need to have a property in order for the step to run
@@ -5037,11 +3676,11 @@ var SVGRenderer3D;
                 wrapper[randomProp + 'Setter'] = (external_highcharts_src_js_default_default()).noop;
                 if (paramArr) {
                     const to = paramArr[0], // Custom attr
-                    interpolate = (key, pos) => (from[key] + (pick(to[key], from[key]) -
+                    interpolate = (key, pos) => (from[key] + ((0,external_highcharts_src_js_default_namespaceObject.pick)(to[key], from[key]) -
                         from[key]) * pos);
                     anim.step = function (a, fx) {
                         if (fx.prop === randomProp) {
-                            fx.elem.setPaths(merge(from, {
+                            fx.elem.setPaths((0,external_highcharts_src_js_default_namespaceObject.merge)(from, {
                                 x: interpolate('x', fx.pos),
                                 y: interpolate('y', fx.pos),
                                 r: interpolate('r', fx.pos),
@@ -5245,7 +3884,7 @@ var SVGRenderer3D;
         angleEnd = toZeroPIRange(angleEnd);
         angleStart = toZeroPIRange(angleStart);
         angleMid = toZeroPIRange(angleMid);
-        // *1e5 is to compensate pInt in zIndexSetter
+        // Keep angle-derived z-indices well spaced.
         const incPrecision = 1e5, a1 = angleMid * incPrecision, a2 = angleStart * incPrecision, a3 = angleEnd * incPrecision;
         return {
             top: top,
@@ -5305,7 +3944,7 @@ function chartAddZAxis(options) {
  * @internal
  */
 function onChartAfterCreateAxes() {
-    const zAxisOptions = this.options.zAxis = splat(this.options.zAxis || {});
+    const zAxisOptions = this.options.zAxis = (0,external_highcharts_src_js_default_namespaceObject.splat)(this.options.zAxis || {});
     if (!this.is3d()) {
         return;
     }
@@ -5336,14 +3975,14 @@ class ZAxis extends (external_highcharts_src_js_default_Axis_default()) {
     static compose(ChartClass) {
         const chartProto = ChartClass.prototype;
         if (!chartProto.addZAxis) {
-            ZAxis_defaultOptions.zAxis = merge(ZAxis_defaultOptions.xAxis, {
+            ZAxis_defaultOptions.zAxis = (0,external_highcharts_src_js_default_namespaceObject.merge)(ZAxis_defaultOptions.xAxis, {
                 offset: 0,
                 lineWidth: 0
             });
             chartProto.addZAxis = chartAddZAxis;
             chartProto.collectionsWithInit.zAxis = [chartProto.addZAxis];
             chartProto.collectionsWithUpdate.push('zAxis');
-            addEvent(ChartClass, 'afterCreateAxes', onChartAfterCreateAxes);
+            (0,external_highcharts_src_js_default_namespaceObject.addEvent)(ChartClass, 'afterCreateAxes', onChartAfterCreateAxes);
         }
     }
     /* *
@@ -5443,7 +4082,7 @@ function columnSeriesTranslate3dShapes() {
         // #7103 Reset outside3dPlot flag
         point.outside3dPlot = null;
         if (point.y !== null) {
-            const shapeArgs = extend({ x: 0, y: 0, width: 0, height: 0 }, point.shapeArgs || {}), 
+            const shapeArgs = (0,external_highcharts_src_js_default_namespaceObject.extend)({ x: 0, y: 0, width: 0, height: 0 }, point.shapeArgs || {}), 
             // Array for final shapeArgs calculation.
             // We are checking two dimensions (x and y).
             dimensions = [['x', 'width'], ['y', 'height']], tooltipPos = point.tooltipPos;
@@ -5486,7 +4125,7 @@ function columnSeriesTranslate3dShapes() {
             if (point.shapeType === 'roundedRect') {
                 point.shapeType = 'cuboid';
             }
-            point.shapeArgs = extend(shapeArgs, {
+            point.shapeArgs = (0,external_highcharts_src_js_default_namespaceObject.extend)(shapeArgs, {
                 z,
                 depth,
                 insidePlotArea: true
@@ -5525,31 +4164,31 @@ function columnSeriesTranslate3dShapes() {
 }
 /** @private */
 function Column3DComposition_compose(SeriesClass, StackItemClass) {
-    if (pushUnique(Column3DComposition_composed, 'Column3D')) {
+    if ((0,external_highcharts_src_js_default_namespaceObject.pushUnique)(Column3DComposition_composed, 'Column3D')) {
         const seriesProto = SeriesClass.prototype, stackItemProto = StackItemClass.prototype, { column: ColumnSeriesClass, columnRange: ColumnRangeSeriesClass } = SeriesClass.types;
-        wrap(seriesProto, 'alignDataLabel', wrapSeriesAlignDataLabel);
-        wrap(seriesProto, 'justifyDataLabel', wrapSeriesJustifyDataLabel);
-        wrap(stackItemProto, 'getStackBox', wrapStackItemGetStackBox);
+        (0,external_highcharts_src_js_default_namespaceObject.wrap)(seriesProto, 'alignDataLabel', wrapSeriesAlignDataLabel);
+        (0,external_highcharts_src_js_default_namespaceObject.wrap)(seriesProto, 'justifyDataLabel', wrapSeriesJustifyDataLabel);
+        (0,external_highcharts_src_js_default_namespaceObject.wrap)(stackItemProto, 'getStackBox', wrapStackItemGetStackBox);
         if (ColumnSeriesClass) {
             const columnSeriesProto = ColumnSeriesClass.prototype, columnPointProto = columnSeriesProto.pointClass.prototype;
             columnSeriesProto.translate3dPoints = () => void 0;
             columnSeriesProto.translate3dShapes = columnSeriesTranslate3dShapes;
-            addEvent(columnSeriesProto, 'afterInit', onColumnSeriesAfterInit);
-            wrap(columnPointProto, 'hasNewShapeType', wrapColumnPointHasNewShapeType);
-            wrap(columnSeriesProto, 'animate', wrapColumnSeriesAnimate);
-            wrap(columnSeriesProto, 'plotGroup', wrapColumnSeriesPlotGroup);
-            wrap(columnSeriesProto, 'pointAttribs', wrapColumnSeriesPointAttribs);
-            wrap(columnSeriesProto, 'setState', wrapColumnSeriesSetState);
-            wrap(columnSeriesProto, 'setVisible', wrapColumnSeriesSetVisible);
-            wrap(columnSeriesProto, 'translate', wrapColumnSeriesTranslate);
+            (0,external_highcharts_src_js_default_namespaceObject.addEvent)(columnSeriesProto, 'afterInit', onColumnSeriesAfterInit);
+            (0,external_highcharts_src_js_default_namespaceObject.wrap)(columnPointProto, 'hasNewShapeType', wrapColumnPointHasNewShapeType);
+            (0,external_highcharts_src_js_default_namespaceObject.wrap)(columnSeriesProto, 'animate', wrapColumnSeriesAnimate);
+            (0,external_highcharts_src_js_default_namespaceObject.wrap)(columnSeriesProto, 'plotGroup', wrapColumnSeriesPlotGroup);
+            (0,external_highcharts_src_js_default_namespaceObject.wrap)(columnSeriesProto, 'pointAttribs', wrapColumnSeriesPointAttribs);
+            (0,external_highcharts_src_js_default_namespaceObject.wrap)(columnSeriesProto, 'setState', wrapColumnSeriesSetState);
+            (0,external_highcharts_src_js_default_namespaceObject.wrap)(columnSeriesProto, 'setVisible', wrapColumnSeriesSetVisible);
+            (0,external_highcharts_src_js_default_namespaceObject.wrap)(columnSeriesProto, 'translate', wrapColumnSeriesTranslate);
         }
         if (ColumnRangeSeriesClass) {
             const columnRangeSeriesProto = ColumnRangeSeriesClass.prototype, columnRangePointProto = columnRangeSeriesProto.pointClass.prototype;
-            wrap(columnRangePointProto, 'hasNewShapeType', wrapColumnPointHasNewShapeType);
-            wrap(columnRangeSeriesProto, 'plotGroup', wrapColumnSeriesPlotGroup);
-            wrap(columnRangeSeriesProto, 'pointAttribs', wrapColumnSeriesPointAttribs);
-            wrap(columnRangeSeriesProto, 'setState', wrapColumnSeriesSetState);
-            wrap(columnRangeSeriesProto, 'setVisible', wrapColumnSeriesSetVisible);
+            (0,external_highcharts_src_js_default_namespaceObject.wrap)(columnRangePointProto, 'hasNewShapeType', wrapColumnPointHasNewShapeType);
+            (0,external_highcharts_src_js_default_namespaceObject.wrap)(columnRangeSeriesProto, 'plotGroup', wrapColumnSeriesPlotGroup);
+            (0,external_highcharts_src_js_default_namespaceObject.wrap)(columnRangeSeriesProto, 'pointAttribs', wrapColumnSeriesPointAttribs);
+            (0,external_highcharts_src_js_default_namespaceObject.wrap)(columnRangeSeriesProto, 'setState', wrapColumnSeriesSetState);
+            (0,external_highcharts_src_js_default_namespaceObject.wrap)(columnRangeSeriesProto, 'setVisible', wrapColumnSeriesSetVisible);
         }
     }
 }
@@ -5564,7 +4203,7 @@ function retrieveStacks(chart, stacking) {
     const series = chart.series, stacks = { totalStacks: 0 };
     let stackNumber, i = 1;
     series.forEach(function (s) {
-        stackNumber = pick(s.options.stack, (stacking ? 0 : series.length - 1 - s.index)); // #3841, #4532
+        stackNumber = (0,external_highcharts_src_js_default_namespaceObject.pick)(s.options.stack, (stacking ? 0 : series.length - 1 - s.index)); // #3841, #4532
         if (!stacks[stackNumber]) {
             stacks[stackNumber] = { series: [s], position: i };
             i++;
@@ -5696,7 +4335,7 @@ function wrapColumnSeriesPointAttribs(proceed) {
     if (this.chart.is3d && this.chart.is3d()) {
         // Set the fill color to the fill color to provide a smooth edge
         attr.stroke = this.options.edgeColor || attr.fill;
-        attr['stroke-width'] = pick(this.options.edgeWidth, 1); // #4055
+        attr['stroke-width'] = (0,external_highcharts_src_js_default_namespaceObject.pick)(this.options.edgeWidth, 1); // #4055
     }
     return attr;
 }
@@ -5726,7 +4365,7 @@ function wrapColumnSeriesSetVisible(proceed, vis) {
         for (const point of series.points) {
             point.visible = point.options.visible = vis =
                 typeof vis === 'undefined' ?
-                    !pick(series.visible, point.visible) : vis;
+                    !(0,external_highcharts_src_js_default_namespaceObject.pick)(series.visible, point.visible) : vis;
             if (series.options.data) {
                 series.options.data[series.data.indexOf(point)] = point.options;
             }
@@ -5754,7 +4393,7 @@ function wrapSeriesAlignDataLabel(proceed, point, _dataLabel, options, alignTo) 
     // Only do this for 3D columns and it's derived series
     if (chart.is3d() &&
         this.is('column')) {
-        const series = this, seriesOptions = series.options, inside = pick(options.inside, !!series.options.stacking), options3d = chart.options.chart.options3d, xOffset = (point.pointWidth || 0) / 2;
+        const series = this, seriesOptions = series.options, inside = (0,external_highcharts_src_js_default_namespaceObject.pick)(options.inside, !!series.options.stacking), options3d = chart.options.chart.options3d, xOffset = (point.pointWidth || 0) / 2;
         let dLPosition = {
             x: alignTo.x + xOffset,
             y: alignTo.y,
@@ -5963,7 +4602,7 @@ class Pie3DSeries extends PieSeries {
      *
      * */
     static compose(SeriesClass) {
-        if (pushUnique(Pie3DSeries_composed, 'Pie3D')) {
+        if ((0,external_highcharts_src_js_default_namespaceObject.pushUnique)(Pie3DSeries_composed, 'Pie3D')) {
             SeriesClass.types.pie = Pie3DSeries;
         }
     }
@@ -5998,8 +4637,8 @@ class Pie3DSeries extends PieSeries {
             // Initialize the animation
             if (init) {
                 // Scale down the group and place it in the center
-                group.oldtranslateX = pick(group.oldtranslateX, group.translateX);
-                group.oldtranslateY = pick(group.oldtranslateY, group.translateY);
+                group.oldtranslateX = (0,external_highcharts_src_js_default_namespaceObject.pick)(group.oldtranslateX, group.translateX);
+                group.oldtranslateY = (0,external_highcharts_src_js_default_namespaceObject.pick)(group.oldtranslateY, group.translateY);
                 attribs = {
                     translateX: center[0],
                     translateY: center[1],
@@ -6057,7 +4696,7 @@ class Pie3DSeries extends PieSeries {
         const attr = super.pointAttribs.apply(this, arguments), options = this.options;
         if (this.chart.is3d() && !this.chart.styledMode) {
             attr.stroke = options.edgeColor || point.color || this.color;
-            attr['stroke-width'] = pick(options.edgeWidth, 1);
+            attr['stroke-width'] = (0,external_highcharts_src_js_default_namespaceObject.pick)(options.edgeWidth, 1);
         }
         return attr;
     }
@@ -6117,7 +4756,7 @@ class Pie3DSeries extends PieSeries {
         }
     }
 }
-extend(Pie3DSeries.prototype, {
+(0,external_highcharts_src_js_default_namespaceObject.extend)(Pie3DSeries.prototype, {
     pointClass: Pie3D_Pie3DPoint
 });
 /* *
@@ -6177,7 +4816,7 @@ class Scatter3DPoint extends ScatterPoint {
      * */
     applyOptions() {
         super.applyOptions.apply(this, arguments);
-        if (!defined(this.z)) {
+        if (!(0,external_highcharts_src_js_default_namespaceObject.defined)(this.z)) {
             this.z = 0;
         }
         return this;
@@ -6365,8 +5004,8 @@ class Scatter3DSeries extends (external_highcharts_src_js_default_Series_types_s
  *  Static Properties
  *
  * */
-Scatter3DSeries.defaultOptions = merge((external_highcharts_src_js_default_Series_types_scatter_default()).defaultOptions, Scatter3D_Scatter3DSeriesDefaults);
-extend(Scatter3DSeries.prototype, {
+Scatter3DSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_highcharts_src_js_default_Series_types_scatter_default()).defaultOptions, Scatter3D_Scatter3DSeriesDefaults);
+(0,external_highcharts_src_js_default_namespaceObject.extend)(Scatter3DSeries.prototype, {
     axisTypes: ['xAxis', 'yAxis', 'zAxis'],
     // Require direct touch rather than using the k-d-tree, because the
     // k-d-tree currently doesn't take the xyz coordinate system into

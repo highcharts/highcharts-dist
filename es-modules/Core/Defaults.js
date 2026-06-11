@@ -101,7 +101,7 @@ const defaultOptions = {
      *         Data table from CSV
      *
      * @type {Highcharts.DataTable|Highcharts.DataTableOptionsObject|Array<Highcharts.DataTable|Highcharts.DataTableOptionsObject>}
-     * @since     next
+     * @since     13.0.0
      * @apioption dataTable
      */
     /**
@@ -542,7 +542,7 @@ const defaultOptions = {
          * @sample {highcharts} highcharts/time/useutc-false/
          *         False
          *
-         * @deprecated
+         * @deprecated 12.0.0
          */
         useUTC: void 0
     },
@@ -1221,7 +1221,7 @@ const defaultOptions = {
          * @sample {highcharts} highcharts/legend/lineheight/
          *         Setting padding
          *
-         * @deprecated
+         * @deprecated 2.1.0
          *
          * @type      {number}
          * @default   16
@@ -1447,7 +1447,7 @@ const defaultOptions = {
          * determined by properties like `align`, `verticalAlign`, `x` and `y`,
          * but the styles are still parsed for backwards compatibility.
          *
-         * @deprecated
+         * @deprecated 2.0.0
          *
          * @type      {Highcharts.CSSObject}
          * @product   highcharts highstock
@@ -1926,7 +1926,7 @@ const defaultOptions = {
          * @sample {highcharts} highcharts/tooltip/crosshairs-x/
          *         Enable a crosshair for the x value
          *
-         * @deprecated
+         * @deprecated 4.1.0
          *
          * @type      {*}
          * @default   true
@@ -2332,7 +2332,7 @@ const defaultOptions = {
             day: '%[AebY]',
             week: '%v %[AebY]',
             month: '%[BY]',
-            year: '%Y'
+            year: '%[Y]'
         },
         /**
          * A string to append to the tooltip format.
@@ -2374,7 +2374,7 @@ const defaultOptions = {
          *         Header options for split tooltip
          * @sample {highstock} stock/tooltip/header
          *         Header options for split tooltip
-         * @since v13.0.0
+         * @since  13.0.0
          */
         header: {
             /**
@@ -2856,7 +2856,7 @@ const defaultOptions = {
         /**
          * Whether to render the credits as HTML
          *
-         * @since     next
+         * @since     13.0.0
          * @sample    highcharts/palette/branding
          *            Branding with HTML credits
          * @type      {boolean}

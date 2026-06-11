@@ -1242,7 +1242,7 @@ class Data {
      *
      * @function Highcharts.Data#getDataTable
      *
-     * @since next
+     * @since 13.0.0
      * @return {Highcharts.DataTable} DataTable with the parsed data
      */
     getDataTable() {
@@ -1983,7 +1983,7 @@ export default Data;
  * the [googleSpreadsheetRange](#data.googleSpreadsheetRange) option to load a
  * specific sheet.
  *
- * @deprecated
+ * @deprecated 9.2.2
  * @type      {string}
  * @since     4.0
  * @apioption data.googleSpreadsheetWorksheet

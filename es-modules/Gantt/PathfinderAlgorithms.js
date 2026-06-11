@@ -290,7 +290,7 @@ const simpleConnect = function (start, end, options) {
         end: waypoint2
     });
     // Finally add the endSegment
-    segments.push(endSegment);
+    endSegment && segments.push(endSegment);
     const path = PathUtilities.applyRadius(pathFromSegments(segments), options.radius);
     return {
         path,

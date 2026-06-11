@@ -1,5 +1,5 @@
 /**
- * Highcharts Stock v13.0.0-beta.2 (2026-05-20)
+ * Highcharts Stock v13.0.0 (2026-06-11)
  * @module highcharts/highstock
  *
  * (c) 2009-2026 Highsoft AS

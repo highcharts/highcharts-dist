@@ -352,6 +352,14 @@ declare module "../highcharts.src" {
          */
         accessibility?: Highcharts.SeriesAccessibilityOptionsObject;
         /**
+         * (Highcharts) When enabled the user can click on a point which is a
+         * parent and zoom in on its children. Deprecated and replaced by
+         * allowTraversingTree.
+         *
+         * @deprecated 7.0.3
+         */
+        allowDrillToNode?: boolean;
+        /**
          * (Highcharts) Allow this series' points to be selected by clicking on
          * the graphic (columns, point markers, pie slices, map areas etc).
          *
@@ -638,6 +646,8 @@ declare module "../highcharts.src" {
          *
          * Same as accessibility.point.descriptionFormat, but for an individual
          * series. Overrides the chart wide configuration.
+         *
+         * @deprecated 12.6.0
          */
         pointDescriptionFormat?: Function;
         /**
@@ -756,6 +766,14 @@ declare module "../highcharts.src" {
          */
         tooltip?: Highcharts.SeriesTooltipOptionsObject;
         /**
+         * (Highcharts) Options for the button appearing when traversing down in
+         * a sunburst. Since v9.3.3 the `traverseUpButton` is replaced by
+         * `breadcrumbs`.
+         *
+         * @deprecated 9.3.3
+         */
+        traverseUpButton?: Highcharts.PlotSunburstTraverseUpButtonOptions;
+        /**
          * (Highcharts) Set the initial visibility of the series.
          */
         visible?: boolean;
@@ -822,6 +840,37 @@ declare module "../highcharts.src" {
          * (Highcharts) Y pixel offset from the given position. Can be used to
          * shy away from axis lines, grid lines etc to avoid the tooltip
          * overlapping other elements.
+         */
+        y?: number;
+    }
+    /**
+     * (Highcharts) The position of the button.
+     *
+     * @deprecated 9.3.3
+     */
+    interface PlotSunburstTraverseUpButtonPositionOptions {
+        /**
+         * (Highcharts) Horizontal alignment of the button.
+         *
+         * @deprecated 9.3.3
+         */
+        align?: Highcharts.AlignValue;
+        /**
+         * (Highcharts) Vertical alignment of the button.
+         *
+         * @deprecated 9.3.3
+         */
+        verticalAlign?: Highcharts.VerticalAlignValue;
+        /**
+         * (Highcharts) Horizontal offset of the button.
+         *
+         * @deprecated 9.3.3
+         */
+        x?: number;
+        /**
+         * (Highcharts) Vertical offset of the button.
+         *
+         * @deprecated 9.3.3
          */
         y?: number;
     }

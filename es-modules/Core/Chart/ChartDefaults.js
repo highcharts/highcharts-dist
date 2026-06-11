@@ -710,7 +710,7 @@ const ChartDefaults = {
      *
      * @type      {number}
      * @default   0
-     * @since     next
+     * @since     13.0.0
      * @apioption chart.plotBorderRadius
      */
     /**

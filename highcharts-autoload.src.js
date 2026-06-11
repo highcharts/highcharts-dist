@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v13.0.0-beta.2 (2026-05-20)
+ * @license Highcharts JS v13.0.0 (2026-06-11)
  * @module highcharts/highcharts-autoload
  *
  * (c) 2009-2024 Torstein Honsi
@@ -76,7 +76,7 @@ var Globals;
      *  Constants
      *
      * */
-    Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '13.0.0-beta.2', Globals.win = (typeof window !== 'undefined' ?
+    Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '13.0.0', Globals.win = (typeof window !== 'undefined' ?
         window :
         {}), // eslint-disable-line node/no-unsupported-features/es-builtins
     Globals.doc = Globals.win.document, Globals.svg = !!Globals.doc?.createElementNS?.(Globals.SVG_NS, 'svg')?.createSVGRect, Globals.pageLang = Globals.doc?.documentElement?.closest('[lang]')?.lang, Globals.userAgent = Globals.win.navigator?.userAgent || '', Globals.isChrome = Globals.win.chrome, Globals.isFirefox = Globals.userAgent.indexOf('Firefox') !== -1, Globals.isMS = /(edge|msie|trident)/i.test(Globals.userAgent) && !Globals.win.opera, Globals.isSafari = !Globals.isChrome && Globals.userAgent.indexOf('Safari') !== -1, Globals.isTouchDevice = /(Mobile|Android|Windows Phone)/.test(Globals.userAgent), Globals.isWebKit = Globals.userAgent.indexOf('AppleWebKit') !== -1, Globals.deg2rad = Math.PI * 2 / 360, Globals.marginNames = [
@@ -170,7 +170,7 @@ var Globals;
  * might not be possible to change this property because of read-only
  * restrictions, instead use {@link Highcharts.setOptions}.
  *
- * @deprecated
+ * @deprecated 9.1.2
  * @name Highcharts.theme
  * @type {Highcharts.Options}
  */
@@ -889,7 +889,7 @@ const ChartDefaults = {
      *
      * @type      {number}
      * @default   0
-     * @since     next
+     * @since     13.0.0
      * @apioption chart.plotBorderRadius
      */
     /**
@@ -1595,7 +1595,10 @@ const palette = {
      * closest parent element with a defined color scheme, or default to `light`
      * if none is found.
      *
-     * @sample     highcharts/palette/colorscheme Dark color scheme
+     * @sample     highcharts/palette/colorscheme
+     *             Dark color scheme
+     * @sample     highcharts/palette/exporting-light
+     *             Dark chart with light export
      *
      * @type       {'light dark'|'light'|'dark'|'inherit'}
      * @default    light dark
@@ -2152,7 +2155,7 @@ function extend(a, b) {
 /**
  * Extend a prototyped class by new members.
  *
- * @deprecated
+ * @deprecated 11.0.0
  * @function Highcharts.extendClass<T>
  *
  * @param {Highcharts.Class<T>} parent
@@ -2635,7 +2638,7 @@ function merge(extendOrSource, ...sources) {
 /**
  * Take an interval and normalize it to multiples of round numbers.
  *
- * @deprecated
+ * @deprecated 5.0.3
  * @function Highcharts.normalizeTickInterval
  *
  * @param {number} interval
@@ -3489,7 +3492,7 @@ if (Utilities_win.jQuery) {
  * Generic dictionary in TypeScript notation.
  * Use the native `AnyRecord` instead.
  *
- * @deprecated
+ * @deprecated 8.1.2
  * @interface Highcharts.Dictionary<T>
  */ /**
 * @name Highcharts.Dictionary<T>#[key:string]
@@ -4808,7 +4811,7 @@ const defaultOptions = {
      *         Data table from CSV
      *
      * @type {Highcharts.DataTable|Highcharts.DataTableOptionsObject|Array<Highcharts.DataTable|Highcharts.DataTableOptionsObject>}
-     * @since     next
+     * @since     13.0.0
      * @apioption dataTable
      */
     /**
@@ -5249,7 +5252,7 @@ const defaultOptions = {
          * @sample {highcharts} highcharts/time/useutc-false/
          *         False
          *
-         * @deprecated
+         * @deprecated 12.0.0
          */
         useUTC: void 0
     },
@@ -5928,7 +5931,7 @@ const defaultOptions = {
          * @sample {highcharts} highcharts/legend/lineheight/
          *         Setting padding
          *
-         * @deprecated
+         * @deprecated 2.1.0
          *
          * @type      {number}
          * @default   16
@@ -6154,7 +6157,7 @@ const defaultOptions = {
          * determined by properties like `align`, `verticalAlign`, `x` and `y`,
          * but the styles are still parsed for backwards compatibility.
          *
-         * @deprecated
+         * @deprecated 2.0.0
          *
          * @type      {Highcharts.CSSObject}
          * @product   highcharts highstock
@@ -6633,7 +6636,7 @@ const defaultOptions = {
          * @sample {highcharts} highcharts/tooltip/crosshairs-x/
          *         Enable a crosshair for the x value
          *
-         * @deprecated
+         * @deprecated 4.1.0
          *
          * @type      {*}
          * @default   true
@@ -7039,7 +7042,7 @@ const defaultOptions = {
             day: '%[AebY]',
             week: '%v %[AebY]',
             month: '%[BY]',
-            year: '%Y'
+            year: '%[Y]'
         },
         /**
          * A string to append to the tooltip format.
@@ -7081,7 +7084,7 @@ const defaultOptions = {
          *         Header options for split tooltip
          * @sample {highstock} stock/tooltip/header
          *         Header options for split tooltip
-         * @since v13.0.0
+         * @since  13.0.0
          */
         header: {
             /**
@@ -7563,7 +7566,7 @@ const defaultOptions = {
         /**
          * Whether to render the credits as HTML
          *
-         * @since     next
+         * @since     13.0.0
          * @sample    highcharts/palette/branding
          *            Branding with HTML credits
          * @type      {boolean}
@@ -9518,7 +9521,7 @@ const { pageLang: Templating_pageLang } = Core_Globals;
 const helpers = {
     // Built-in helpers
     add: (a, b) => a + b,
-    divide: (a, b) => (b !== 0 ? a / b : ''),
+    divide: (a, b) => (b !== 0 ? correctFloat(a / b) : ''),
     // eslint-disable-next-line eqeqeq
     eq: (a, b) => a == b,
     each: function (arr) {
@@ -9536,7 +9539,7 @@ const helpers = {
     'if': (condition) => !!condition,
     le: (a, b) => a <= b,
     lt: (a, b) => a < b,
-    multiply: (a, b) => a * b,
+    multiply: (a, b) => correctFloat(a * b, 15),
     // eslint-disable-next-line eqeqeq
     ne: (a, b) => a != b,
     subtract: (a, b) => a - b,
@@ -9631,13 +9634,11 @@ function dateFormat(format, timestamp, upperCaseFirst) {
  *         The formatted string.
  */
 function format(str = '', ctx, owner) {
-    // eslint-disable-next-line prefer-regex-literals
-    const regex = new RegExp('\\{([\\p{L}\\p{M}\\d:\\.,;\\-\\/<>\\[\\]%_@+"\'’= #\\(\\)]+)\\}', 'gu'), 
+    const regex = /\{([^{}]+)\}/g, 
     // The sub expression regex is the same as the top expression regex,
     // but except parens and block helpers (#), and surrounded by parens
     // instead of curly brackets.
-    // eslint-disable-next-line prefer-regex-literals
-    subRegex = new RegExp('\\(([\\p{L}\\p{M}\\d:\\.,;\\-\\/<>\\[\\]%_@+"\'= ]+)\\)', 'gu'), matches = [], floatRegex = /f$/, decRegex = /\.(\d)/, lang = owner?.options?.lang || Templating_defaultOptions.lang, time = owner?.time || Templating_defaultTime, numberFormatter = owner?.numberFormatter || numberFormat.bind(owner);
+    subRegex = /\(([^()]+)\)/g, matches = [], floatRegex = /f$/, decRegex = /\.(\d)/, lang = owner?.options?.lang || Templating_defaultOptions.lang, time = owner?.time || Templating_defaultTime, numberFormatter = owner?.numberFormatter || numberFormat.bind(owner);
     /*
      * Get a literal or variable value inside a template expression. May be
      * extended with other types like string or null if needed, but keep it
@@ -11734,7 +11735,7 @@ class SVGElement {
      * @function Highcharts.SVGElement#zIndexSetter
      */
     zIndexSetter(value, key) {
-        const renderer = this.renderer, parentGroup = this.parentGroup, parentWrapper = parentGroup || renderer, parentNode = parentWrapper.element || renderer.box, element = this.element, svgParent = parentNode === renderer.box;
+        const { element, parentGroup, renderer } = this, parentNode = parentGroup?.element || renderer.box, svgParent = parentNode === renderer.box;
         let childNodes, otherElement, otherZIndex, inserted = false, undefinedOtherZIndex, run = this.added, i;
         if (defined(value)) {
             // So we can read it for other elements in the group
@@ -11768,7 +11769,7 @@ class SVGElement {
                     // On all levels except the highest. If the parent is
                     // <svg>, then we don't want to put items before <desc>
                     // or <defs>
-                    value < 0 &&
+                    defined(value) && value < 0 &&
                         undefinedOtherZIndex &&
                         !svgParent &&
                         !i) {
@@ -11777,7 +11778,8 @@ class SVGElement {
                     }
                     else if (
                     // Insert after the first element with a lower zIndex
-                    pInt(otherZIndex) <= value ||
+                    (defined(value) &&
+                        parseFloat(otherZIndex || '') <= value) ||
                         // If negative zIndex, add this before first undefined
                         // zIndex element
                         (undefinedOtherZIndex &&
@@ -13840,7 +13842,7 @@ class SVGRenderer {
         this.url = this.getReferenceURL();
         // Add description
         const desc = this.createElement('desc').add();
-        desc.element.appendChild(SVGRenderer_doc.createTextNode('Created with Highcharts 13.0.0-beta.2'));
+        desc.element.appendChild(SVGRenderer_doc.createTextNode('Created with Highcharts 13.0.0'));
         this.defs = this.createElement('defs').add();
         this.allowHTML = allowHTML;
         this.forExport = forExport;
@@ -14903,7 +14905,7 @@ class SVGRenderer {
      * // Leave only the lower right quarter visible
      * circle.clip(clipRect);
      *
-     * @deprecated
+     * @deprecated 11.2.0
      *
      * @function Highcharts.SVGRenderer#clipRect
      *
@@ -15368,7 +15370,7 @@ extend(SVGRenderer.prototype, {
      * Dummy function for plugins, called every time the renderer is updated.
      * Prior to Highcharts 5, this was used for the canvg renderer.
      *
-     * @deprecated
+     * @deprecated 5.0.0
      * @function Highcharts.SVGRenderer#draw
      */
     draw: noop
@@ -16435,7 +16437,7 @@ var AxisDefaults;
                 /**
                  * List of possible format strings used for this unit.
                  *
-                 * @type {Array<string>}
+                 * @type {Array<string|Highcharts.DateTimeFormatOptions>}
                  * @apioption xAxis.dateTimeLabelFormats.millisecond.list
                  */
                 /**
@@ -16460,7 +16462,7 @@ var AxisDefaults;
                 /**
                  * List of possible format strings used for this unit.
                  *
-                 * @type {Array<string>}
+                 * @type {Array<string|Highcharts.DateTimeFormatOptions>}
                  * @apioption xAxis.dateTimeLabelFormats.second.list
                  */
                 /**
@@ -16485,7 +16487,7 @@ var AxisDefaults;
                 /**
                  * List of possible format strings used for this unit.
                  *
-                 * @type {Array<string>}
+                 * @type {Array<string|Highcharts.DateTimeFormatOptions>}
                  * @apioption xAxis.dateTimeLabelFormats.minute.list
                  */
                 /**
@@ -16510,7 +16512,7 @@ var AxisDefaults;
                 /**
                  * List of possible format strings used for this unit.
                  *
-                 * @type {Array<string>}
+                 * @type {Array<string|Highcharts.DateTimeFormatOptions>}
                  * @apioption xAxis.dateTimeLabelFormats.hour.list
                  */
                 /**
@@ -16542,7 +16544,7 @@ var AxisDefaults;
                 /**
                  * List of possible format strings used for this unit.
                  *
-                 * @type {Array<string>}
+                 * @type {Array<string|Highcharts.DateTimeFormatOptions>}
                  * @apioption xAxis.dateTimeLabelFormats.day.list
                  */
                 /**
@@ -16564,7 +16566,7 @@ var AxisDefaults;
                 /**
                  * List of possible format strings used for this unit.
                  *
-                 * @type {Array<string>}
+                 * @type {Array<string|Highcharts.DateTimeFormatOptions>}
                  * @apioption xAxis.dateTimeLabelFormats.week.list
                  */
                 /**
@@ -16579,7 +16581,7 @@ var AxisDefaults;
                 /**
                  * List of possible format strings used for this unit.
                  *
-                 * @type {Array<string>}
+                 * @type {Array<string|Highcharts.DateTimeFormatOptions>}
                  * @apioption xAxis.dateTimeLabelFormats.month.list
                  */
                 /**
@@ -16601,13 +16603,13 @@ var AxisDefaults;
                 /**
                  * List of possible format strings used for this unit.
                  *
-                 * @type {Array<string>}
+                 * @type {Array<string|Highcharts.DateTimeFormatOptions>}
                  * @apioption xAxis.dateTimeLabelFormats.year.list
                  */
                 /**
                  * @apioption xAxis.dateTimeLabelFormats.year.main
                  */
-                main: '%Y',
+                main: '%[Y]',
                 /**
                  * Label format that should be used when a tick is a boundary
                  * tick, e.g. start of day, start of year, etc.
@@ -16941,7 +16943,7 @@ var AxisDefaults;
              * add to automatically avoid overlapping X labels. Set to `1` to
              * disable overlap detection.
              *
-             * @deprecated
+             * @deprecated 6.0.0
              * @type      {number}
              * @default   5
              * @since     1.3.3
@@ -17186,7 +17188,7 @@ var AxisDefaults;
         /**
          * Deprecated. Use `minRange` instead.
          *
-         * @deprecated
+         * @deprecated 6.0.0
          * @type      {number}
          * @product   highcharts highstock
          * @apioption xAxis.maxZoom
@@ -17849,7 +17851,7 @@ var AxisDefaults;
             /**
              * Deprecated. Set the `text` to `undefined` to disable the title.
              *
-             * @deprecated
+             * @deprecated 3.0.0
              * @type      {boolean}
              * @product   highcharts
              * @apioption xAxis.title.enabled
@@ -19273,7 +19275,7 @@ class Tick {
                 const unitName = tickPositionInfo.unitName, boundaryKey = boundariesMap[unitName], format = !options.grid?.enabled &&
                     boundary &&
                     boundaryKey &&
-                    DTLFormats[boundaryKey].boundary ||
+                    DTLFormats[boundaryKey]?.boundary ||
                     DTLFormats[unitName];
                 dateTimeLabelFormats = chart.time.resolveDTLFormat(format);
                 dateTimeLabelFormat = dateTimeLabelFormats.main;
@@ -22125,6 +22127,7 @@ class Axis {
                     // Move tick instance
                     if (ticks[oldPos]) {
                         ticks[oldPos].pos = pos;
+                        this.isDirty = true; // Mark for redraw
                     }
                     // Check if the existing tick in the new position has a
                     // new place to go
@@ -22161,7 +22164,7 @@ class Axis {
     getOffset() {
         const axis = this, { chart, horiz, options, side, ticks, tickPositions, coll } = axis, hasData = axis.hasData(), axisTitleOptions = options.title, labelOptions = options.labels, hasCrossing = isNumber(options.crossing), axisOffset = chart.axisOffset, clipOffset = chart.clipOffset, directionFactor = [-1, 1, 1, -1][side];
         let tickRotCorr = axis.tickRotCorr || { x: 0, y: 0 }, absTickRotCorrX = 0, showAxis, titleOffset = 0, titleOffsetOption, titleMargin = 0, labelOffset = 0, // Reset
-        labelOffsetPadded, lineHeightCorrection;
+        labelOffsetPadded, lineHeightCorrection, reserveSpaceDefault;
         // For reuse in Axis.render
         axis.showAxis = showAxis = hasData || options.showEmpty;
         // Set/reset staggerLines
@@ -22177,10 +22180,13 @@ class Axis {
             absTickRotCorrX = Math.abs(tickRotCorr.x);
             // Left side must be align: right and right side must
             // have align: left for labels
-            axis.reserveSpaceDefault = (side === 0 ||
+            reserveSpaceDefault = axis.reserveSpaceDefault = (side === 0 ||
                 side === 2 ||
-                { 1: 'left', 3: 'right' }[side] === axis.labelAlign);
-            if (pick(labelOptions.reserveSpace, hasCrossing ? false : null, axis.labelAlign === 'center' ? true : null, axis.reserveSpaceDefault)) {
+                ({ 1: 'left', 3: 'right' })[side] === axis.labelAlign);
+            if (labelOptions.reserveSpace ??
+                (hasCrossing ? false : null) ??
+                (axis.labelAlign === 'center' ? true : null) ??
+                reserveSpaceDefault) {
                 tickPositions.forEach(function (pos) {
                     // Get the highest offset
                     labelOffset = Math.max(ticks[pos].getLabelSize(), labelOffset);
@@ -22189,7 +22195,9 @@ class Axis {
             if (axis.staggerLines) {
                 labelOffset *= axis.staggerLines;
             }
-            if (!horiz && isNumber(axis.labelRotation)) {
+            if (!horiz &&
+                isNumber(axis.labelRotation) &&
+                reserveSpaceDefault) {
                 labelOffset -= absTickRotCorrX;
             }
             axis.labelOffset = labelOffset * (axis.opposite ? -1 : 1);
@@ -22236,18 +22244,22 @@ class Axis {
         if (labelOffset) {
             labelOffsetPadded -= lineHeightCorrection;
             labelOffsetPadded += directionFactor * (horiz ?
-                pick(labelOptions.y, tickRotCorr.y + directionFactor * labelOptions.distance) :
-                pick(labelOptions.x, directionFactor * (labelOptions.distance - absTickRotCorrX)));
+                (labelOptions.y ??
+                    (tickRotCorr.y +
+                        directionFactor * labelOptions.distance)) :
+                (labelOptions.x ?? (reserveSpaceDefault ?
+                    directionFactor * (labelOptions.distance - absTickRotCorrX) :
+                    tickRotCorr.x +
+                        directionFactor * labelOptions.distance)));
             if (!horiz &&
+                !reserveSpaceDefault &&
                 axis.labelAlign === 'center' &&
                 isNumber(axis.labelRotation)) {
                 labelOffsetPadded += absTickRotCorrX;
             }
         }
-        axis.axisTitleMargin = pick(titleOffsetOption, labelOffsetPadded);
-        if (axis.getMaxLabelDimensions) {
-            axis.maxLabelDimensions = axis.getMaxLabelDimensions(ticks, tickPositions);
-        }
+        axis.axisTitleMargin = titleOffsetOption ?? labelOffsetPadded;
+        axis.maxLabelDimensions = axis.getMaxLabelDimensions?.(ticks, tickPositions);
         // Due to GridAxis.tickSize, tickSize should be calculated after ticks
         // has rendered.
         if (coll !== 'colorAxis' && clipOffset) {
@@ -22764,7 +22776,9 @@ class Axis {
                         .attr({
                         zIndex: pick(options.zIndex, 2)
                     })
-                        .clip(chart.plotClipInner)
+                        .clip(options.clip === false ?
+                        void 0 :
+                        chart.plotClipInner)
                         .add();
                     // Presentational attributes
                     if (!chart.styledMode) {
@@ -25799,12 +25813,16 @@ class Tooltip {
                     .add(tooltipLabel);
             }
             tt.isActive = true;
+            // Apply styles before text to ensure correct font metrics on
+            // first render. (#24293)
+            if (!styledMode) {
+                tt.css(specificOptions.style);
+            }
             tt.attr({
                 text: str
             });
             if (!styledMode) {
-                tt.css(specificOptions.style)
-                    .attr({
+                tt.attr({
                     stroke: (specificOptions.borderColor ||
                         point.color ||
                         series.color ||
@@ -26647,7 +26665,7 @@ class Point {
                 point.onMouseOut();
             }
             // Remove properties after animation
-            if (duration) {
+            if (duration && series.condemnedPoints) {
                 series.condemnedPoints.push(this);
                 this.graphic?.addClass('highcharts-point-condemned');
                 setTimeout(destroyPoint, duration);
@@ -28546,8 +28564,8 @@ class Pointer {
         // Normalize each touch
         (touch) => pointer.normalize(touch)), touchesLength = touches.length, fireClickEvent = touchesLength === 1 && ((pointer.inClass(e.target, 'highcharts-tracker') &&
             chart.runTrackerClick) ||
-            pointer.runChartClick), tooltip = chart.tooltip, followTouchMove = touchesLength === 1 &&
-            pick(tooltip?.options.followTouchMove, true);
+            pointer.runChartClick), followTouchMove = touchesLength === 1 &&
+            (chart.tooltip?.options.followTouchMove ?? true);
         // Don't initiate panning until the user has pinched. This prevents us
         // from blocking page scrolling as users scroll down a long page
         // (#4210).
@@ -29006,7 +29024,7 @@ class Pointer {
         if (!Pointer_isTouchDevice) {
             return;
         }
-        const pointer = this, events = pointer.pointerCaptureEventsToUnbind, chart = pointer.chart, container = chart.container, followTouchMove = pick(chart.options.tooltip?.followTouchMove, true), shouldHave = followTouchMove && chart.series.some((series) => series.options.findNearestPointBy
+        const pointer = this, events = pointer.pointerCaptureEventsToUnbind, chart = pointer.chart, container = chart.container, followTouchMove = chart.options.tooltip?.followTouchMove ?? true, shouldHave = followTouchMove && chart.series.some((series) => series.options.findNearestPointBy
             .indexOf('y') > -1);
         if (!pointer.hasPointerCapture && shouldHave) {
             // Add
@@ -29018,11 +29036,6 @@ class Pointer {
             }), addEvent(container, 'pointermove', (e) => {
                 chart.pointer?.getPointFromEvent(e)?.onMouseOver(e);
             }));
-            if (!chart.styledMode) {
-                css(container, { 'touch-action': 'none' });
-            }
-            // Mostly for styled mode
-            container.className += ' highcharts-no-touch-action';
             pointer.hasPointerCapture = true;
         }
         else if (pointer.hasPointerCapture && !shouldHave) {
@@ -29030,13 +29043,6 @@ class Pointer {
             // Unbind
             events.forEach((e) => e());
             events.length = 0;
-            if (!chart.styledMode) {
-                css(container, {
-                    'touch-action': pick(chart.options.chart.style?.['touch-action'], 'manipulation')
-                });
-            }
-            // Mostly for styled mode
-            container.className = container.className.replace(' highcharts-no-touch-action', '');
             pointer.hasPointerCapture = false;
         }
     }
@@ -29101,6 +29107,12 @@ class Pointer {
             else if (start) {
                 // Hide the tooltip on touching outside the plot area (#1203)
                 this.reset();
+            }
+            // If inside, capture touch-drag and display tooltip. If not inside,
+            // allow dragging the finger to scroll the page
+            if ((chart.tooltip?.options.followTouchMove ?? true) &&
+                isInside) {
+                e.preventDefault();
             }
         }
         else if (e.touches.length === 2) {
@@ -30314,7 +30326,7 @@ const seriesDefaults = {
      * @sample {highcharts} highcharts/datatable/chart-datatable-multiple
      *         Chart with two data tables
      *
-     * @since     next
+     * @since     13.0.0
      * @apioption plotOptions.series.dataMapping
      */
     /**
@@ -30487,7 +30499,7 @@ const seriesDefaults = {
      * @type       {Function}
      * @requires   modules/accessibility
      * @since      11.1.0
-     * @deprecated next
+     * @deprecated 12.6.0
      * @apioption  plotOptions.series.pointDescriptionFormat
      */
     /**
@@ -32483,7 +32495,7 @@ var SeriesRegistry;
     /**
      * Old factory to create new series prototypes.
      *
-     * @deprecated
+     * @deprecated 9.0.0
      * @function Highcharts.seriesType
      *
      * @param {string} type
@@ -33044,7 +33056,11 @@ class Series {
         const options = merge(typeOptions, plotOptions.series, 
         // #3881, chart instance plotOptions[type] should trump
         // plotOptions.series
-        userPlotOptionsType, seriesUserOptions);
+        userPlotOptionsType, seriesUserOptions), 
+        // Handle color zones
+        { negativeColor, negativeFillColor, zoneAxis = 'y', zones } = options, 
+        // #20440, create deep copy of zones options
+        zonesCopy = (zones || []).map((z) => ({ ...z }));
         // The tooltip options are merged between global and series specific
         // options. Importance in ascending order:
         // globals: (1)tooltip, (2)plotOptions.series,
@@ -33068,10 +33084,7 @@ class Series {
         if (typeOptions.marker === null) {
             delete options.marker;
         }
-        // Handle color zones
-        const { negativeColor, negativeFillColor, zoneAxis = 'y', zones } = options, 
-        // #20440, create deep copy of zones options
-        zonesCopy = this.zones = (zones || []).map((z) => ({ ...z }));
+        this.zones || (this.zones = zonesCopy);
         this.zoneAxis = zoneAxis;
         if ((negativeColor || negativeFillColor) &&
             !zones) {
@@ -33298,22 +33311,26 @@ class Series {
      * @internal
      * @function Highcharts.Series#matchPoints
      */
-    matchPoints(oldXColumn, oldIdColumn, oldNameColumn) {
+    matchPoints(oldXColumn, oldIdColumn, oldNameColumn, 
+    // Index matching is used by the data-sorting module
+    oldIndexColumn) {
         const { dataTable, options, requireSorting } = this, dataSorting = options.dataSorting, oldData = this.data, rowsToAdd = [], rowsToUpdate = [], equalLength = dataTable.rowCount === oldData.length;
         let hasUpdatedByKey, i, point, lastIndex = 0, succeeded = true;
         this.xIncrement = null;
         delete this.xColumn;
         const newXColumn = dataTable.getColumn('x'), newIdColumn = dataTable.getColumn('id'), newNameColumn = dataSorting?.matchByName ?
-            dataTable.getColumn('name') : void 0;
+            dataTable.getColumn('name') : void 0, newIndexColumn = dataTable.getColumn('index');
         // Iterate the new data
         for (i = 0; i < dataTable.rowCount; i++) {
-            const x = newXColumn?.[i], id = newIdColumn?.[i], name = newNameColumn?.[i], [needle, haystack] = id && oldIdColumn ?
+            const x = newXColumn?.[i], id = newIdColumn?.[i], name = newNameColumn?.[i], index = newIndexColumn?.[i], [needle, haystack] = id && oldIdColumn ?
                 [id, oldIdColumn] :
                 name && oldNameColumn ?
                     [name, oldNameColumn] :
-                    defined(x) && oldXColumn ?
-                        [x, oldXColumn] :
-                        [];
+                    defined(index) && oldIndexColumn ?
+                        [index, oldIndexColumn] :
+                        defined(x) && oldXColumn ?
+                            [x, oldXColumn] :
+                            [];
             let pointIndex = -1;
             // We have a needle and a haystack to search for matching points
             if (haystack) {
@@ -33479,7 +33496,12 @@ class Series {
      *        prevent.
      */
     setData(data, redraw = true, animation, updatePoints) {
-        const series = this, table = this.dataTable, oldData = series.points, oldDataLength = oldData?.length || 0, oldXColumn = table.getColumn('x'), oldIdColumn = table.getColumn('id'), oldNameColumn = table.getColumn('name'), options = series.options, chart = series.chart, xAxis = series.xAxis;
+        const series = this, table = this.dataTable, options = series.options, oldData = series.points, oldDataLength = oldData?.length || 0, oldXColumn = table.getColumn('x'), oldIdColumn = table.getColumn('id'), oldNameColumn = (
+        // To get the bar race right. When data sorting is enabled, the
+        // point order is not in sync with the table order. Could this
+        // be done in a better way, maybe in the data sorting module?
+        options.dataSorting?.matchByName &&
+            oldData?.map((point) => point.name)) || table.getColumn('name'), oldIndexColumn = table.getColumn('index'), chart = series.chart, xAxis = series.xAxis;
         let updatedData, i, copiedData;
         if (!chart.options.chart.allowMutatingData) { // #4259
             // Remove old reference
@@ -33516,7 +33538,7 @@ class Series {
             // Soft updating has no benefit in boost, and causes JS error
             // (#8355)
             !series.boosted) {
-            updatedData = this.matchPoints(oldXColumn, oldIdColumn, oldNameColumn);
+            updatedData = this.matchPoints(oldXColumn, oldIdColumn, oldNameColumn, oldIndexColumn);
         }
         if (!updatedData) {
             // Forgetting to cast strings to numbers is a common caveat when
@@ -34594,7 +34616,7 @@ class Series {
         while (i--) {
             data[i]?.destroy?.();
         }
-        for (const zone of series.zones) {
+        for (const zone of series.zones || []) {
             // Destroy SVGElement's but preserve primitive props (#20426)
             destroyObjectProperties(zone, void 0, true);
         }
@@ -34639,12 +34661,15 @@ class Series {
             if (inverted) {
                 plotY = len - plotY;
             }
-            const { translated = 0, lineClip } = zone, distance = plotY - translated;
+            const { translated = 0, lineClip, value } = zone, distance = plotY - translated;
             lineClip?.push([
                 'L',
                 plotX,
                 Math.abs(distance) < halfWidth ?
-                    plotY - halfWidth * (distance <= 0 ? -1 : 1) :
+                    plotY - halfWidth * (distance < 0 ||
+                        (distance === 0 && defined(value)) ?
+                        -1 :
+                        1) :
                     translated
             ]);
         };
@@ -34902,7 +34927,7 @@ class Series {
         // the clip is later applied. This is necessary to handle multi-pane
         // layouts and entrance animation.
         if (chart.plotClipInner) {
-            series.plotClipGroup = chart.renderer.g().add(chartSeriesGroup);
+            series.plotClipGroup || (series.plotClipGroup = chart.renderer.g().add(chartSeriesGroup));
         }
         // The group
         series.plotGroup('group', 'series', visibility, zIndex, series.plotClipGroup || chartSeriesGroup);
@@ -35527,6 +35552,7 @@ class Series {
             'dataLabelsParentGroups',
             'group',
             'markerGroup',
+            'plotClipGroup',
             'transformGroup'
         ], optionsToCheck = [
             'dataGrouping',
@@ -35563,6 +35589,9 @@ class Series {
             keepProps.push.apply(keepProps, Series.keepPropsForPoints);
             if (options.visible !== false) {
                 keepProps.push('area', 'graph');
+                if (!('zones' in options)) {
+                    keepProps.push('zones');
+                }
             }
             series.parallelArrays.forEach(function (key) {
                 keepProps.push(key + 'Data');
@@ -36182,7 +36211,7 @@ Series_SeriesRegistry.series = Series;
  * });
  *
  * @interface Highcharts.DataMappingOptionsObject
- * @since next
+ * @since 13.0.0
  */
 /**
  * Function callback when a series has been animated.
@@ -39547,7 +39576,7 @@ class Chart {
             chart.plotBorder = plotBorder = renderer.rect()
                 .addClass('highcharts-plot-border')
                 .attr({
-                zIndex: 1 // Above the grid
+                zIndex: 1.5 // Above the grid, below the axes, #24521.
             })
                 .add();
         }
@@ -48951,7 +48980,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-beta.2 (2026-05-20)
+ * @license Highcharts JS v13.0.0 (2026-06-11)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -49043,6 +49072,7 @@ G.color = Color_Color.parse;
 G.correctFloat = correctFloat;
 G.createElement = createElement;
 G.css = css;
+G.crisp = crisp;
 G.dateFormat = Core_Templating.dateFormat;
 G.defaultOptions = Defaults.defaultOptions;
 G.defined = defined;
@@ -49057,8 +49087,11 @@ G.extendClass = extendClass;
 G.find = find;
 G.fireEvent = fireEvent;
 G.format = Core_Templating.format;
+G.getAlignFactor = getAlignFactor;
+G.getClosestDistance = getClosestDistance;
 G.getDeferredAnimation = AnimationUtilities.getDeferredAnimation;
 G.getMagnitude = getMagnitude;
+G.getNestedProperty = getNestedProperty;
 G.getOptions = Defaults.getOptions;
 G.getStyle = getStyle;
 G.insertItem = insertItem;
@@ -49069,6 +49102,7 @@ G.isFunction = isFunction;
 G.isNumber = isNumber;
 G.isObject = isObject;
 G.isString = isString;
+G.internalClearTimeout = internalClearTimeout;
 G.merge = merge;
 G.normalizeTickInterval = normalizeTickInterval;
 G.numberFormat = Core_Templating.numberFormat;
@@ -49076,9 +49110,11 @@ G.objectEach = objectEach;
 G.offset = offset;
 G.pad = pad;
 G.pick = pick;
+G.pushUnique = pushUnique;
 G.pInt = pInt;
 G.relativeLength = relativeLength;
 G.removeEvent = removeEvent;
+G.replaceNested = replaceNested;
 G.seriesType = Series_SeriesRegistry.seriesType;
 G.setAnimation = AnimationUtilities.setAnimation;
 G.setOptions = Defaults.setOptions;
@@ -49087,6 +49123,7 @@ G.stableSort = stableSort;
 G.stop = AnimationUtilities.stop;
 G.syncTimeout = syncTimeout;
 G.time = Defaults.defaultTime;
+G.ucfirst = ucfirst;
 G.timers = Animation_Fx.timers;
 G.timeUnits = timeUnits;
 G.uniqueKey = uniqueKey;

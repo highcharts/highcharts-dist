@@ -80,6 +80,12 @@ class Esri {
                 minZoom: 0,
                 maxZoom: 16,
                 credits: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'
+            },
+            WorldDarkGrayCanvas: {
+                url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+                minZoom: 0,
+                maxZoom: 16,
+                credits: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'
             }
         };
     }

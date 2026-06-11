@@ -536,7 +536,7 @@ var AxisDefaults;
                 /**
                  * List of possible format strings used for this unit.
                  *
-                 * @type {Array<string>}
+                 * @type {Array<string|Highcharts.DateTimeFormatOptions>}
                  * @apioption xAxis.dateTimeLabelFormats.millisecond.list
                  */
                 /**
@@ -561,7 +561,7 @@ var AxisDefaults;
                 /**
                  * List of possible format strings used for this unit.
                  *
-                 * @type {Array<string>}
+                 * @type {Array<string|Highcharts.DateTimeFormatOptions>}
                  * @apioption xAxis.dateTimeLabelFormats.second.list
                  */
                 /**
@@ -586,7 +586,7 @@ var AxisDefaults;
                 /**
                  * List of possible format strings used for this unit.
                  *
-                 * @type {Array<string>}
+                 * @type {Array<string|Highcharts.DateTimeFormatOptions>}
                  * @apioption xAxis.dateTimeLabelFormats.minute.list
                  */
                 /**
@@ -611,7 +611,7 @@ var AxisDefaults;
                 /**
                  * List of possible format strings used for this unit.
                  *
-                 * @type {Array<string>}
+                 * @type {Array<string|Highcharts.DateTimeFormatOptions>}
                  * @apioption xAxis.dateTimeLabelFormats.hour.list
                  */
                 /**
@@ -643,7 +643,7 @@ var AxisDefaults;
                 /**
                  * List of possible format strings used for this unit.
                  *
-                 * @type {Array<string>}
+                 * @type {Array<string|Highcharts.DateTimeFormatOptions>}
                  * @apioption xAxis.dateTimeLabelFormats.day.list
                  */
                 /**
@@ -665,7 +665,7 @@ var AxisDefaults;
                 /**
                  * List of possible format strings used for this unit.
                  *
-                 * @type {Array<string>}
+                 * @type {Array<string|Highcharts.DateTimeFormatOptions>}
                  * @apioption xAxis.dateTimeLabelFormats.week.list
                  */
                 /**
@@ -680,7 +680,7 @@ var AxisDefaults;
                 /**
                  * List of possible format strings used for this unit.
                  *
-                 * @type {Array<string>}
+                 * @type {Array<string|Highcharts.DateTimeFormatOptions>}
                  * @apioption xAxis.dateTimeLabelFormats.month.list
                  */
                 /**
@@ -702,13 +702,13 @@ var AxisDefaults;
                 /**
                  * List of possible format strings used for this unit.
                  *
-                 * @type {Array<string>}
+                 * @type {Array<string|Highcharts.DateTimeFormatOptions>}
                  * @apioption xAxis.dateTimeLabelFormats.year.list
                  */
                 /**
                  * @apioption xAxis.dateTimeLabelFormats.year.main
                  */
-                main: '%Y',
+                main: '%[Y]',
                 /**
                  * Label format that should be used when a tick is a boundary
                  * tick, e.g. start of day, start of year, etc.
@@ -1042,7 +1042,7 @@ var AxisDefaults;
              * add to automatically avoid overlapping X labels. Set to `1` to
              * disable overlap detection.
              *
-             * @deprecated
+             * @deprecated 6.0.0
              * @type      {number}
              * @default   5
              * @since     1.3.3
@@ -1287,7 +1287,7 @@ var AxisDefaults;
         /**
          * Deprecated. Use `minRange` instead.
          *
-         * @deprecated
+         * @deprecated 6.0.0
          * @type      {number}
          * @product   highcharts highstock
          * @apioption xAxis.maxZoom
@@ -1950,7 +1950,7 @@ var AxisDefaults;
             /**
              * Deprecated. Set the `text` to `undefined` to disable the title.
              *
-             * @deprecated
+             * @deprecated 3.0.0
              * @type      {boolean}
              * @product   highcharts
              * @apioption xAxis.title.enabled

@@ -534,6 +534,14 @@ declare module "../highcharts" {
          */
         accessibility?: Highcharts.SeriesAccessibilityOptionsObject;
         /**
+         * (Highcharts) When enabled the user can click on a point which is a
+         * parent and zoom in on its children. Deprecated and replaced by
+         * allowTraversingTree.
+         *
+         * @deprecated 7.0.3
+         */
+        allowDrillToNode?: boolean;
+        /**
          * (Highcharts) Allow this series' points to be selected by clicking on
          * the graphic (columns, point markers, pie slices, map areas etc).
          *
@@ -1000,6 +1008,8 @@ declare module "../highcharts" {
          *
          * Same as accessibility.point.descriptionFormat, but for an individual
          * series. Overrides the chart wide configuration.
+         *
+         * @deprecated 12.6.0
          */
         pointDescriptionFormat?: Function;
         /**
@@ -1171,6 +1181,15 @@ declare module "../highcharts" {
          */
         traverseToLeaf?: boolean;
         /**
+         * (Highcharts) Options for the button appearing when traversing down in
+         * a treemap.
+         *
+         * Since v9.3.3 the `traverseUpButton` is replaced by `breadcrumbs`.
+         *
+         * @deprecated 9.3.3
+         */
+        traverseUpButton?: Highcharts.PlotTreemapTraverseUpButtonOptions;
+        /**
          * (Highcharts, Highstock, Gantt) When a series contains a `data` array
          * that is longer than this, the Series class looks for data
          * configurations of plain numbers or arrays of numbers. The first and
@@ -1276,6 +1295,37 @@ declare module "../highcharts" {
          * (Highcharts, Highstock, Highmaps) Y pixel offset from the given
          * position. Can be used to shy away from axis lines, grid lines etc to
          * avoid the tooltip overlapping other elements.
+         */
+        y?: number;
+    }
+    /**
+     * (Highcharts) The position of the button.
+     *
+     * @deprecated 9.3.3
+     */
+    interface PlotTreemapTraverseUpButtonPositionOptions {
+        /**
+         * (Highcharts) Horizontal alignment of the button.
+         *
+         * @deprecated 9.3.3
+         */
+        align?: Highcharts.AlignValue;
+        /**
+         * (Highcharts) Vertical alignment of the button.
+         *
+         * @deprecated 9.3.3
+         */
+        verticalAlign?: Highcharts.VerticalAlignValue;
+        /**
+         * (Highcharts) Horizontal offset of the button.
+         *
+         * @deprecated 9.3.3
+         */
+        x?: number;
+        /**
+         * (Highcharts) Vertical offset of the button.
+         *
+         * @deprecated 9.3.3
          */
         y?: number;
     }

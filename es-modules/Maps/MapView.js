@@ -926,7 +926,7 @@ class MapView {
             this.fitToBounds(void 0, void 0, false);
         }
         if (redraw) {
-            this.chart.redraw(animation);
+            this.redraw(animation);
         }
     }
     /**

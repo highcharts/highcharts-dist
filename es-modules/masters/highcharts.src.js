@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-beta.2 (2026-05-20)
+ * @license Highcharts JS v13.0.0 (2026-06-11)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -52,7 +52,7 @@ import { composeBorderRadius } from '../Extensions/BorderRadius.js';
 import Responsive from '../Core/Responsive.js';
 import Color from '../Core/Color/Color.js';
 import Time from '../Core/Time.js';
-import { addEvent, arrayMax, arrayMin, attr, clamp, correctFloat, createElement, css, defined, destroyObjectProperties, diffObjects, discardElement, erase, extend, extendClass, find, fireEvent, getMagnitude, getStyle, isArray, isClass, isDOMElement, isFunction, isNumber, isObject, isString, merge, normalizeTickInterval, objectEach, offset, pad, pick, pInt, relativeLength, removeEvent, splat, stableSort, syncTimeout, wrap } from '../Shared/Utilities.js';
+import { addEvent, arrayMax, arrayMin, attr, clamp, correctFloat, createElement, crisp, css, defined, destroyObjectProperties, diffObjects, discardElement, erase, extend, extendClass, find, fireEvent, getMagnitude, getAlignFactor, getClosestDistance, getNestedProperty, getStyle, isArray, isClass, isDOMElement, isFunction, isNumber, isObject, isString, internalClearTimeout, merge, normalizeTickInterval, objectEach, offset, pad, pick, pushUnique, pInt, relativeLength, removeEvent, replaceNested, splat, stableSort, syncTimeout, ucfirst, wrap } from '../Shared/Utilities.js';
 import { error, insertItem, timeUnits, uniqueKey, useSerialIds } from '../Core/Utilities.js';
 const G = Highcharts;
 // Classes
@@ -92,6 +92,7 @@ G.color = Color.parse;
 G.correctFloat = correctFloat;
 G.createElement = createElement;
 G.css = css;
+G.crisp = crisp;
 G.dateFormat = Templating.dateFormat;
 G.defaultOptions = Defaults.defaultOptions;
 G.defined = defined;
@@ -106,8 +107,11 @@ G.extendClass = extendClass;
 G.find = find;
 G.fireEvent = fireEvent;
 G.format = Templating.format;
+G.getAlignFactor = getAlignFactor;
+G.getClosestDistance = getClosestDistance;
 G.getDeferredAnimation = Animation.getDeferredAnimation;
 G.getMagnitude = getMagnitude;
+G.getNestedProperty = getNestedProperty;
 G.getOptions = Defaults.getOptions;
 G.getStyle = getStyle;
 G.insertItem = insertItem;
@@ -118,6 +122,7 @@ G.isFunction = isFunction;
 G.isNumber = isNumber;
 G.isObject = isObject;
 G.isString = isString;
+G.internalClearTimeout = internalClearTimeout;
 G.merge = merge;
 G.normalizeTickInterval = normalizeTickInterval;
 G.numberFormat = Templating.numberFormat;
@@ -125,9 +130,11 @@ G.objectEach = objectEach;
 G.offset = offset;
 G.pad = pad;
 G.pick = pick;
+G.pushUnique = pushUnique;
 G.pInt = pInt;
 G.relativeLength = relativeLength;
 G.removeEvent = removeEvent;
+G.replaceNested = replaceNested;
 G.seriesType = SeriesRegistry.seriesType;
 G.setAnimation = Animation.setAnimation;
 G.setOptions = Defaults.setOptions;
@@ -136,6 +143,7 @@ G.stableSort = stableSort;
 G.stop = Animation.stop;
 G.syncTimeout = syncTimeout;
 G.time = Defaults.defaultTime;
+G.ucfirst = ucfirst;
 G.timers = Fx.timers;
 G.timeUnits = timeUnits;
 G.uniqueKey = uniqueKey;

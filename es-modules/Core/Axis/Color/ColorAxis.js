@@ -377,7 +377,7 @@ class ColorAxis extends Axis {
      * @emits Highcharts.ColorAxis#event:drawCrosshair
      */
     drawCrosshair(e, point) {
-        const axis = this, legendItem = axis.legendItem || {}, plotX = point?.plotX, plotY = point?.plotY, axisPos = axis.pos, axisLen = axis.len;
+        const axis = this, legendItem = axis.legendItem || {}, plotX = point?.plotX, plotY = point?.plotY, axisPos = axis.pos, axisLen = axis.len, markerOptions = axis.options.marker || {};
         let crossPos;
         if (point) {
             crossPos = axis.toPixels(point.getNestedProperty(point.series.colorKey));
@@ -402,7 +402,9 @@ class ColorAxis extends Axis {
                 if (!axis.chart.styledMode &&
                     typeof axis.crosshair === 'object') {
                     axis.cross.attr({
-                        fill: axis.crosshair.color
+                        fill: markerOptions.color,
+                        stroke: markerOptions.lineColor,
+                        'stroke-width': markerOptions.lineWidth
                     });
                 }
             }
@@ -410,10 +412,15 @@ class ColorAxis extends Axis {
     }
     /** @internal */
     getPlotLinePath(options) {
-        const axis = this, left = axis.left, pos = options.translatedValue, top = axis.top;
+        const axis = this, left = axis.left, pos = options.translatedValue, { symbol } = this.options.marker || {}, top = axis.top;
         // Crosshairs only
-        return isNumber(pos) ? // `pos` can be 0 (#3969)
-            (axis.horiz ? [
+        if (isNumber(pos)) {
+            const x = left, w = axis.width, y = pos - w / 2, h = w;
+            if (symbol) {
+                return this.chart.renderer.symbols[symbol](x, y, w, h);
+            }
+            // Default to a triangle pointing to the value
+            return (axis.horiz ? [
                 ['M', pos - 4, top - 6],
                 ['L', pos + 4, top - 6],
                 ['L', pos, top],
@@ -423,8 +430,9 @@ class ColorAxis extends Axis {
                 ['L', left - 6, pos + 6],
                 ['L', left - 6, pos - 6],
                 ['Z']
-            ]) :
-            super.getPlotLinePath(options);
+            ]);
+        }
+        return super.getPlotLinePath(options);
     }
     /**
      * Updates a color axis instance with a new set of options. The options are

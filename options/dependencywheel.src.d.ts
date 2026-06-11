@@ -296,7 +296,9 @@ declare module "../highcharts.src" {
          * An array of objects with named values. The following snippet shows
          * only a few settings, see the complete options set below. If the total
          * number of data points exceeds the series' turboThreshold, this option
-         * is not available. (see online documentation for example)
+         * is not available. (see online documentation for example) When you
+         * provide the data as tuples, the keys option has to be set as well.
+         * (see online documentation for example)
          */
         data?: Array<([string, string, number]|Highcharts.SeriesSankeyPointOptionsObject)>;
         /**

@@ -2293,6 +2293,7 @@ class Axis {
                     // Move tick instance
                     if (ticks[oldPos]) {
                         ticks[oldPos].pos = pos;
+                        this.isDirty = true; // Mark for redraw
                     }
                     // Check if the existing tick in the new position has a
                     // new place to go
@@ -2329,7 +2330,7 @@ class Axis {
     getOffset() {
         const axis = this, { chart, horiz, options, side, ticks, tickPositions, coll } = axis, hasData = axis.hasData(), axisTitleOptions = options.title, labelOptions = options.labels, hasCrossing = isNumber(options.crossing), axisOffset = chart.axisOffset, clipOffset = chart.clipOffset, directionFactor = [-1, 1, 1, -1][side];
         let tickRotCorr = axis.tickRotCorr || { x: 0, y: 0 }, absTickRotCorrX = 0, showAxis, titleOffset = 0, titleOffsetOption, titleMargin = 0, labelOffset = 0, // Reset
-        labelOffsetPadded, lineHeightCorrection;
+        labelOffsetPadded, lineHeightCorrection, reserveSpaceDefault;
         // For reuse in Axis.render
         axis.showAxis = showAxis = hasData || options.showEmpty;
         // Set/reset staggerLines
@@ -2345,10 +2346,13 @@ class Axis {
             absTickRotCorrX = Math.abs(tickRotCorr.x);
             // Left side must be align: right and right side must
             // have align: left for labels
-            axis.reserveSpaceDefault = (side === 0 ||
+            reserveSpaceDefault = axis.reserveSpaceDefault = (side === 0 ||
                 side === 2 ||
-                { 1: 'left', 3: 'right' }[side] === axis.labelAlign);
-            if (pick(labelOptions.reserveSpace, hasCrossing ? false : null, axis.labelAlign === 'center' ? true : null, axis.reserveSpaceDefault)) {
+                ({ 1: 'left', 3: 'right' })[side] === axis.labelAlign);
+            if (labelOptions.reserveSpace ??
+                (hasCrossing ? false : null) ??
+                (axis.labelAlign === 'center' ? true : null) ??
+                reserveSpaceDefault) {
                 tickPositions.forEach(function (pos) {
                     // Get the highest offset
                     labelOffset = Math.max(ticks[pos].getLabelSize(), labelOffset);
@@ -2357,7 +2361,9 @@ class Axis {
             if (axis.staggerLines) {
                 labelOffset *= axis.staggerLines;
             }
-            if (!horiz && isNumber(axis.labelRotation)) {
+            if (!horiz &&
+                isNumber(axis.labelRotation) &&
+                reserveSpaceDefault) {
                 labelOffset -= absTickRotCorrX;
             }
             axis.labelOffset = labelOffset * (axis.opposite ? -1 : 1);
@@ -2404,18 +2410,22 @@ class Axis {
         if (labelOffset) {
             labelOffsetPadded -= lineHeightCorrection;
             labelOffsetPadded += directionFactor * (horiz ?
-                pick(labelOptions.y, tickRotCorr.y + directionFactor * labelOptions.distance) :
-                pick(labelOptions.x, directionFactor * (labelOptions.distance - absTickRotCorrX)));
+                (labelOptions.y ??
+                    (tickRotCorr.y +
+                        directionFactor * labelOptions.distance)) :
+                (labelOptions.x ?? (reserveSpaceDefault ?
+                    directionFactor * (labelOptions.distance - absTickRotCorrX) :
+                    tickRotCorr.x +
+                        directionFactor * labelOptions.distance)));
             if (!horiz &&
+                !reserveSpaceDefault &&
                 axis.labelAlign === 'center' &&
                 isNumber(axis.labelRotation)) {
                 labelOffsetPadded += absTickRotCorrX;
             }
         }
-        axis.axisTitleMargin = pick(titleOffsetOption, labelOffsetPadded);
-        if (axis.getMaxLabelDimensions) {
-            axis.maxLabelDimensions = axis.getMaxLabelDimensions(ticks, tickPositions);
-        }
+        axis.axisTitleMargin = titleOffsetOption ?? labelOffsetPadded;
+        axis.maxLabelDimensions = axis.getMaxLabelDimensions?.(ticks, tickPositions);
         // Due to GridAxis.tickSize, tickSize should be calculated after ticks
         // has rendered.
         if (coll !== 'colorAxis' && clipOffset) {
@@ -2932,7 +2942,9 @@ class Axis {
                         .attr({
                         zIndex: pick(options.zIndex, 2)
                     })
-                        .clip(chart.plotClipInner)
+                        .clip(options.clip === false ?
+                        void 0 :
+                        chart.plotClipInner)
                         .add();
                     // Presentational attributes
                     if (!chart.styledMode) {

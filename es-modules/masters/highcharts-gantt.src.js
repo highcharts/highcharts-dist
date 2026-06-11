@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.0.0-beta.2 (2026-05-20)
+ * @license Highcharts Gantt JS v13.0.0 (2026-06-11)
  * @module highcharts/highcharts-gantt
  *
  * (c) 2017-2026 Highsoft AS

@@ -123,6 +123,17 @@ PriceEnvelopesIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
         bottomBand: 0.1
     },
     /**
+     * Option for fill color between lines in Price Envelopes Indicator.
+     *
+     * @sample {highstock} stock/indicators/indicator-area-fill
+     *      Background fill between lines.
+     *
+     * @type      {Highcharts.Color}
+     * @since 11.0.0
+     * @apioption plotOptions.priceenvelopes.fillColor
+     *
+     */
+    /**
      * Bottom line options.
      */
     bottomLine: {
@@ -154,17 +165,6 @@ PriceEnvelopesIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     dataGrouping: {
         approximation: 'averages'
     }
-    /**
-     * Option for fill color between lines in Price Envelopes Indicator.
-     *
-     * @sample {highstock} stock/indicators/indicator-area-fill
-     *      Background fill between lines.
-     *
-     * @type      {Highcharts.Color}
-     * @since 11.0.0
-     * @apioption plotOptions.priceenvelopes.fillColor
-     *
-     */
 });
 extend(PriceEnvelopesIndicator.prototype, {
     areaLinesNames: ['top', 'bottom'],

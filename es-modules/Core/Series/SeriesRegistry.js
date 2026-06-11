@@ -69,7 +69,7 @@ var SeriesRegistry;
     /**
      * Old factory to create new series prototypes.
      *
-     * @deprecated
+     * @deprecated 9.0.0
      * @function Highcharts.seriesType
      *
      * @param {string} type

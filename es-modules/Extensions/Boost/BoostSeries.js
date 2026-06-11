@@ -580,14 +580,18 @@ function getPoint(series, boostPoint) {
         series.getColumn('x', true) ||
         false), yData = (series.getColumn('y', true) ||
         seriesOptions.yData ||
-        false), pointIndex = boostPoint.i, pointColor = data?.[pointIndex]
+        false), pointIndex = boostPoint.i, 
+    /// dataIndex = boostPoint.dataIndex ?? pointIndex,
+    pointColor = data?.[pointIndex]
         ?.color, point = new PointClass(series, (isScatter && xData && yData) ?
         [xData[pointIndex], yData[pointIndex]] :
         (isArray(data) ? data : [])[pointIndex], xData ? xData[pointIndex] : void 0);
     if (isScatter &&
         seriesOptions?.keys?.length) {
         const keys = seriesOptions.keys;
-        // Don't reassign X and Y properties as they're already handled above
+        /// pointData = data?.[dataIndex];
+        // Don't reassign X and Y properties as they're already handled
+        // above
         for (let keysIndex = keys.length - 1; keysIndex > -1; keysIndex--) {
             point[keys[keysIndex]] =
                 data[pointIndex][keysIndex];
@@ -602,7 +606,7 @@ function getPoint(series, boostPoint) {
     point.distX = boostPoint.distX;
     point.plotX = boostPoint.plotX;
     point.plotY = boostPoint.plotY;
-    point.index = pointIndex;
+    /// point.index = dataIndex;
     point.percentage = boostPoint.percentage;
     point.isInside = series.isPointInside(point);
     if (pointColor) {
@@ -624,6 +628,9 @@ function scatterProcessData(force) {
     // like `minPadding`, `maxPadding`, `startOnTick`, `endOnTick`.
     series.yAxis.setTickInterval();
     const boostThreshold = options.boostThreshold || 0, cropThreshold = options.cropThreshold, xData = series.getColumn('x'), xExtremes = xAxis.getExtremes(), xMax = xExtremes.max ?? Number.MAX_VALUE, xMin = xExtremes.min ?? -Number.MAX_VALUE, yData = series.getColumn('y'), yExtremes = yAxis.getExtremes(), yMax = yExtremes.max ?? Number.MAX_VALUE, yMin = yExtremes.min ?? -Number.MAX_VALUE;
+    /// if (series.boost) {
+    //     delete series.boost.pointDataIndices;
+    // }
     // Skip processing in non-boost zoom
     if (!series.boosted &&
         xAxis.old &&
@@ -654,7 +661,7 @@ function scatterProcessData(force) {
         return true;
     }
     // Filter unsorted scatter data for ranges
-    const processedXData = [], processedYData = [], xRangeNeeded = !(isNumber(xExtremes.max) || isNumber(xExtremes.min)), yRangeNeeded = !(isNumber(yExtremes.max) || isNumber(yExtremes.min));
+    const processedXData = [], processedYData = [], processedDataIndices = [], xRangeNeeded = !(isNumber(xExtremes.max) || isNumber(xExtremes.min)), yRangeNeeded = !(isNumber(yExtremes.max) || isNumber(yExtremes.min));
     let cropped = false, x, xDataMax = xData[0], xDataMin = xData[0], y, yDataMax = yData?.[0], yDataMin = yData?.[0];
     for (let i = 0, iEnd = xData.length; i < iEnd; ++i) {
         x = xData[i];
@@ -663,6 +670,7 @@ function scatterProcessData(force) {
             y >= yMin && y <= yMax) {
             processedXData.push(x);
             processedYData.push(y);
+            processedDataIndices.push(i);
             if (xRangeNeeded) {
                 xDataMax = Math.max(xDataMax, x);
                 xDataMin = Math.min(xDataMin, x);
@@ -692,11 +700,15 @@ function scatterProcessData(force) {
         // Calling setColumns with cropped data must be done on a new instance
         // to avoid modification of the original (complete) data
         series.dataTable.modified = new DataTableCore();
+        series.hasProcessedDataTable = true;
     }
     series.dataTable.getModified().setColumns({
         x: processedXData,
         y: processedYData
     });
+    /// if (series.boost && cropped) {
+    //     series.boost.pointDataIndices = processedDataIndices;
+    // }
     return true;
 }
 /**
@@ -707,7 +719,11 @@ function seriesRenderCanvas() {
     const options = this.options || {}, chart = this.chart, chartBoost = chart.boost, seriesBoost = this.boost, xAxis = this.xAxis, yAxis = this.yAxis, xData = options.xData || this.getColumn('x', true), yData = options.yData || this.getColumn('y', true), lowData = this.getColumn('low', true), highData = this.getColumn('high', true), rawData = options.data, xExtremes = xAxis.getExtremes(), 
     // Taking into account the offset of the min point #19497
     xMin = xExtremes.min - (xAxis.minPointOffset || 0), xMax = xExtremes.max + (xAxis.minPointOffset || 0), yExtremes = yAxis.getExtremes(), yMin = yExtremes.min - (yAxis.minPointOffset || 0), yMax = yExtremes.max + (yAxis.minPointOffset || 0), pointTaken = {}, sampling = !!this.sampling, enableMouseTracking = options.enableMouseTracking, threshold = options.threshold, isRange = this.pointArrayMap &&
-        this.pointArrayMap.join(',') === 'low,high', isStacked = !!options.stacking, cropStart = this.cropStart || 0, requireSorting = this.requireSorting, useRaw = !xData, compareX = options.findNearestPointBy === 'x', xDataFull = ((this.getColumn('x').length ?
+        this.pointArrayMap.join(',') === 'low,high', isStacked = !!options.stacking, cropStart = this.cropStart || 0, requireSorting = this.requireSorting, 
+    /// pointDataIndices = !requireSorting ?
+    //     seriesBoost?.pointDataIndices :
+    //     void 0,
+    useRaw = !xData, compareX = options.findNearestPointBy === 'x', xDataFull = ((this.getColumn('x').length ?
         this.getColumn('x') :
         void 0) ||
         this.options.xData ||
@@ -777,7 +793,8 @@ function seriesRenderCanvas() {
         }
     }
     const points = this.points = [], addKDPoint = (clientX, plotY, i, percentage) => {
-        const x = xDataFull ? xDataFull[cropStart + i] : false, pushPoint = (plotX) => {
+        const /// dataIndex = pointDataIndices?.[i] ?? (cropStart + i),
+        x = xDataFull ? xDataFull[cropStart + i] : false, pushPoint = (plotX) => {
             if (chart.inverted) {
                 plotX = xAxis.len - plotX;
                 plotY = yAxis.len - plotY;
@@ -789,6 +806,7 @@ function seriesRenderCanvas() {
                 plotX: plotX,
                 plotY: plotY,
                 i: cropStart + i,
+                /// dataIndex: dataIndex,
                 percentage: percentage
             });
         };

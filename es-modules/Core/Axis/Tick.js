@@ -122,7 +122,7 @@ class Tick {
                 const unitName = tickPositionInfo.unitName, boundaryKey = boundariesMap[unitName], format = !options.grid?.enabled &&
                     boundary &&
                     boundaryKey &&
-                    DTLFormats[boundaryKey].boundary ||
+                    DTLFormats[boundaryKey]?.boundary ||
                     DTLFormats[unitName];
                 dateTimeLabelFormats = chart.time.resolveDTLFormat(format);
                 dateTimeLabelFormat = dateTimeLabelFormats.main;

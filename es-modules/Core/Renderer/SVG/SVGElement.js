@@ -1609,7 +1609,7 @@ class SVGElement {
      * @function Highcharts.SVGElement#zIndexSetter
      */
     zIndexSetter(value, key) {
-        const renderer = this.renderer, parentGroup = this.parentGroup, parentWrapper = parentGroup || renderer, parentNode = parentWrapper.element || renderer.box, element = this.element, svgParent = parentNode === renderer.box;
+        const { element, parentGroup, renderer } = this, parentNode = parentGroup?.element || renderer.box, svgParent = parentNode === renderer.box;
         let childNodes, otherElement, otherZIndex, inserted = false, undefinedOtherZIndex, run = this.added, i;
         if (defined(value)) {
             // So we can read it for other elements in the group
@@ -1643,7 +1643,7 @@ class SVGElement {
                     // On all levels except the highest. If the parent is
                     // <svg>, then we don't want to put items before <desc>
                     // or <defs>
-                    value < 0 &&
+                    defined(value) && value < 0 &&
                         undefinedOtherZIndex &&
                         !svgParent &&
                         !i) {
@@ -1652,7 +1652,8 @@ class SVGElement {
                     }
                     else if (
                     // Insert after the first element with a lower zIndex
-                    pInt(otherZIndex) <= value ||
+                    (defined(value) &&
+                        parseFloat(otherZIndex || '') <= value) ||
                         // If negative zIndex, add this before first undefined
                         // zIndex element
                         (undefinedOtherZIndex &&
