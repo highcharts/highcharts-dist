@@ -10,8 +10,7 @@
  *
  * */
 'use strict';
-import A from '../../Animation/AnimationUtilities.js';
-const { animate, animObject, stop } = A;
+import { animate, animObject, stop } from '../../Animation/AnimationUtilities.js';
 import Color from '../../Color/Color.js';
 import H from '../../Globals.js';
 const { deg2rad, doc, svg, SVG_NS, win, isFirefox } = H;

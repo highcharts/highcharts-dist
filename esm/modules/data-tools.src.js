@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0 (2026-06-11)
+ * @license Highcharts JS v13.0.0-modified (2026-08-14)
  * @module highcharts/modules/data-tools
  * @requires highcharts
  *
@@ -13,14 +13,14 @@
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
-/******/ var __webpack_require__ = {};
+/******/ const __webpack_require__ = {};
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
 /******/ (() => {
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
 /******/ 	__webpack_require__.n = (module) => {
-/******/ 		var getter = module && module.__esModule ?
+/******/ 		const getter = module && module.__esModule ?
 /******/ 			() => (module['default']) :
 /******/ 			() => (module);
 /******/ 		__webpack_require__.d(getter, { a: getter });
@@ -30,11 +30,26 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /******/ /* webpack/runtime/define property getters */
 /******/ (() => {
-/******/ 	// define getter functions for harmony exports
+/******/ 	// define getter/value functions for harmony exports
 /******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		for(var key in definition) {
-/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 		if(Array.isArray(definition)) {
+/******/ 			var i = 0;
+/******/ 			while(i < definition.length) {
+/******/ 				var key = definition[i++];
+/******/ 				var binding = definition[i++];
+/******/ 				if(!__webpack_require__.o(exports, key)) {
+/******/ 					if(binding === 0) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 					} else {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 					}
+/******/ 				} else if(binding === 0) { i++; }
+/******/ 			}
+/******/ 		} else {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
 /******/ 			}
 /******/ 		}
 /******/ 	};
@@ -46,7 +61,6 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
-var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -497,7 +511,7 @@ class DataTableCore {
      * Fetches the given column by the canonical column ID. Simplified version
      * of the full `DataTable.getRow` method, always returning by reference.
      *
-     * @function Highcharts.DataTable#setColumn
+     * @function Highcharts.DataTable#getColumn
      *
      * @param {string} columnId
      * ID of the column to get.
@@ -5422,10 +5436,10 @@ Formula_FormulaProcessor.registerProcessorFunction('MODE.SNGL', SNGL);
  *  Default Export
  *
  * */
-const MODE = {
+const MODE = (/* unused pure expression or super */ null && ({
     MULT,
     SNGL
-};
+}));
 /* harmony default export */ const Functions_MODE = ((/* unused pure expression or super */ null && (MODE)));
 
 ;// ./code/es-modules/Data/Formula/Functions/NOT.js

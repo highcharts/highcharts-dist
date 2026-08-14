@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0 (2026-06-11)
+ * @license Highcharts JS v13.0.0-modified (2026-08-14)
  * @module highcharts/modules/geoheatmap
  * @requires highcharts
  *
@@ -23,34 +23,34 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 512:
-/***/ ((module) => {
+/***/ 512
+(module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
 
-/***/ }),
+/***/ },
 
-/***/ 944:
-/***/ ((module) => {
+/***/ 944
+(module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 
-/***/ })
+/***/ }
 
 /******/ 	});
 /************************************************************************/
 /******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
+/******/ 	const __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
 /******/ 		// Check if module is in cache
-/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		const cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
 /******/ 			return cachedModule.exports;
 /******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 		const module = __webpack_module_cache__[moduleId] = {
 /******/ 			// no module.id needed
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
@@ -68,7 +68,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	(() => {
 /******/ 		// getDefaultExport function for compatibility with non-harmony modules
 /******/ 		__webpack_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
+/******/ 			const getter = module && module.__esModule ?
 /******/ 				() => (module['default']) :
 /******/ 				() => (module);
 /******/ 			__webpack_require__.d(getter, { a: getter });
@@ -78,11 +78,26 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
+/******/ 		// define getter/value functions for harmony exports
 /******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 			if(Array.isArray(definition)) {
+/******/ 				var i = 0;
+/******/ 				while(i < definition.length) {
+/******/ 					var key = definition[i++];
+/******/ 					var binding = definition[i++];
+/******/ 					if(!__webpack_require__.o(exports, key)) {
+/******/ 						if(binding === 0) {
+/******/ 							Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 						} else {
+/******/ 							Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 						}
+/******/ 					} else if(binding === 0) { i++; }
+/******/ 				}
+/******/ 			} else {
+/******/ 				for(var key in definition) {
+/******/ 					if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 					}
 /******/ 				}
 /******/ 			}
 /******/ 		};
@@ -94,7 +109,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	})();
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
+let __webpack_exports__ = {};
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
@@ -257,7 +272,6 @@ const InterpolationUtilities = {
  * */
 
 
-const { animObject, stop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 
 const { noop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
@@ -446,7 +460,7 @@ class GeoHeatmapSeries extends MapSeries {
                                 height: (startHeight + (height - startHeight) * pos)
                             });
                         };
-                        const animOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(animObject(chart.renderer.globalAnimation)), userStep = animOptions.step;
+                        const animOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.animObject)(chart.renderer.globalAnimation)), userStep = animOptions.step;
                         animOptions.step =
                             function () {
                                 if (userStep) {
@@ -462,7 +476,7 @@ class GeoHeatmapSeries extends MapSeries {
                         // When dragging or first rendering, animation is off
                     }
                     else {
-                        stop(image);
+                        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.stop)(image);
                         image.attr((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(dimensions, series.isDirtyCanvas ? {
                             href: canvas.toDataURL('image/png', 1)
                         } : void 0));
@@ -653,9 +667,10 @@ GeoHeatmapSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_hi
      *         Advanced demo of GeoHeatmap interpolation with multiple
      *         datasets
      *
-     * @type      {boolean|Highcharts.InterpolationOptionsObject}
-     * @since     11.2.0
-     * @product   highmaps
+     * @declare Highcharts.InterpolationOptionsObject
+     * @product highmaps
+     * @since   11.2.0
+     * @type    {boolean|*}
      */
     interpolation: {
         /**

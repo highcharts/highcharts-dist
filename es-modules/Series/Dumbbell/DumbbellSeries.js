@@ -26,7 +26,7 @@ import { extend, merge, pick } from '../../Shared/Utilities.js';
 /**
  * The dumbbell series type
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.dumbbell
  *
@@ -41,7 +41,7 @@ class DumbbellSeries extends AreaRangeSeries {
     /**
      * Get connector line path and styles that connects dumbbell point's low and
      * high values.
-     * @private
+     * @internal
      *
      * @param {Highcharts.Point} point The point to inspect.
      *
@@ -107,7 +107,7 @@ class DumbbellSeries extends AreaRangeSeries {
     }
     /**
      * Draw connector line that connects dumbbell point's low and high values.
-     * @private
+     * @internal
      * @param {Highcharts.Point} point
      *        The point to inspect.
      */
@@ -127,7 +127,7 @@ class DumbbellSeries extends AreaRangeSeries {
     /**
      * Return the width and x offset of the dumbbell adjusted for grouping,
      * groupPadding, pointPadding, pointWidth etc.
-     * @private
+     * @internal
      */
     getColumnMetrics() {
         const metrics = ColumnSeries.prototype
@@ -138,7 +138,7 @@ class DumbbellSeries extends AreaRangeSeries {
     /**
      * Translate each point to the plot area coordinate system and find
      * shape positions
-     * @private
+     * @internal
      */
     translate() {
         const series = this, inverted = series.chart.inverted;
@@ -165,7 +165,7 @@ class DumbbellSeries extends AreaRangeSeries {
     /**
      * Extend the arearange series' drawPoints method by applying a connector
      * and coloring markers.
-     * @private
+     * @internal
      */
     drawPoints() {
         const series = this, chart = series.chart, pointLength = series.points.length, seriesLowColor = series.lowColor = series.options.lowColor, seriesLowMarker = series.options.lowMarker;
@@ -199,7 +199,7 @@ class DumbbellSeries extends AreaRangeSeries {
     /**
      * Get presentational attributes.
      *
-     * @private
+     * @internal
      * @function Highcharts.seriesTypes.column#pointAttribs
      *
      * @param {Highcharts.Point} point
@@ -220,7 +220,7 @@ class DumbbellSeries extends AreaRangeSeries {
     }
     /**
      * Set the shape arguments for dumbbells.
-     * @private
+     * @internal
      */
     setShapeArgs() {
         ColumnSeries.prototype.translate.apply(this);
@@ -248,4 +248,5 @@ SeriesRegistry.registerSeriesType('dumbbell', DumbbellSeries);
  *  Default Export
  *
  * */
+/** @internal */
 export default DumbbellSeries;

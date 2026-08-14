@@ -10,8 +10,7 @@
  *
  * */
 'use strict';
-import A from '../Animation/AnimationUtilities.js';
-const { animObject } = A;
+import { animObject } from '../Animation/AnimationUtilities.js';
 import AxisDefaults from './AxisDefaults.js';
 const { xAxis, yAxis } = AxisDefaults;
 import Color from '../Color/Color.js';

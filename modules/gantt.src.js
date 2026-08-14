@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.0.0 (2026-06-11)
+ * @license Highcharts Gantt JS v13.0.0-modified (2026-08-14)
  * @module highcharts/modules/gantt
  * @requires highcharts
  *
@@ -26,90 +26,90 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 28:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__28__;
-
-/***/ }),
-
-/***/ 184:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__184__;
-
-/***/ }),
-
-/***/ 260:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__260__;
-
-/***/ }),
-
-/***/ 512:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
-
-/***/ }),
-
-/***/ 532:
-/***/ ((module) => {
+/***/ 532
+(module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__532__;
 
-/***/ }),
+/***/ },
 
-/***/ 540:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__540__;
-
-/***/ }),
-
-/***/ 620:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__620__;
-
-/***/ }),
-
-/***/ 944:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
-
-/***/ }),
-
-/***/ 960:
-/***/ ((module) => {
+/***/ 960
+(module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__960__;
 
-/***/ }),
+/***/ },
 
-/***/ 984:
-/***/ ((module) => {
+/***/ 620
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__620__;
+
+/***/ },
+
+/***/ 260
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__260__;
+
+/***/ },
+
+/***/ 28
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__28__;
+
+/***/ },
+
+/***/ 540
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__540__;
+
+/***/ },
+
+/***/ 512
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
+
+/***/ },
+
+/***/ 184
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__184__;
+
+/***/ },
+
+/***/ 984
+(module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__984__;
 
-/***/ })
+/***/ },
+
+/***/ 944
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
+
+/***/ }
 
 /******/ 	});
 /************************************************************************/
 /******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
+/******/ 	const __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
 /******/ 		// Check if module is in cache
-/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		const cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
 /******/ 			return cachedModule.exports;
 /******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 		const module = __webpack_module_cache__[moduleId] = {
 /******/ 			// no module.id needed
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
@@ -127,7 +127,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__984__;
 /******/ 	(() => {
 /******/ 		// getDefaultExport function for compatibility with non-harmony modules
 /******/ 		__webpack_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
+/******/ 			const getter = module && module.__esModule ?
 /******/ 				() => (module['default']) :
 /******/ 				() => (module);
 /******/ 			__webpack_require__.d(getter, { a: getter });
@@ -137,11 +137,26 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__984__;
 /******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
+/******/ 		// define getter/value functions for harmony exports
 /******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 			if(Array.isArray(definition)) {
+/******/ 				var i = 0;
+/******/ 				while(i < definition.length) {
+/******/ 					var key = definition[i++];
+/******/ 					var binding = definition[i++];
+/******/ 					if(!__webpack_require__.o(exports, key)) {
+/******/ 						if(binding === 0) {
+/******/ 							Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 						} else {
+/******/ 							Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 						}
+/******/ 					} else if(binding === 0) { i++; }
+/******/ 				}
+/******/ 			} else {
+/******/ 				for(var key in definition) {
+/******/ 					if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 					}
 /******/ 				}
 /******/ 			}
 /******/ 		};
@@ -153,7 +168,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__984__;
 /******/ 	})();
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
+let __webpack_exports__ = {};
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
@@ -1524,7 +1539,7 @@ const NavigatorDefaults = {
      *
      * @type    {Highcharts.ColorType}
      */
-    maskFill: 'color-mix(var(--highcharts-highlight-color-60) 30%, transparent)',
+    maskFill: 'color-mix(in srgb, var(--highcharts-highlight-color-60) 30%, transparent)', // eslint-disable-line max-len
     /**
      * The color of the line marking the currently zoomed area in the
      * navigator.
@@ -1663,10 +1678,17 @@ const NavigatorDefaults = {
         id: 'highcharts-navigator-series',
         className: 'highcharts-navigator-series',
         /**
-         * Sets the fill color of the navigator series.
+         * Sets the color of the navigator series.
          *
          * @type      {Highcharts.ColorType}
          * @apioption navigator.series.color
+         */
+        /**
+         * Sets the fill color of the navigator series. Applies to series
+         * types with a filled area, like the default `areaspline`.
+         *
+         * @type      {Highcharts.ColorType}
+         * @apioption navigator.series.fillColor
          */
         /**
          * Line color for the navigator series. Allows setting the color
@@ -1852,6 +1874,401 @@ const NavigatorDefaults = {
  */
 (''); // Keeps doclets above in JS file
 
+;// ./code/es-modules/Extensions/BorderRadius.js
+/* unused harmony import specifier */ var relativeLength;
+/* unused harmony import specifier */ var isObject;
+/* unused harmony import specifier */ var extend;
+/* unused harmony import specifier */ var addEvent;
+/* *
+ *
+ *  Highcharts Border Radius module
+ *
+ *  Author: Torstein Hønsi
+ *
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
+ *
+ *
+ * */
+
+
+const { defaultOptions: BorderRadius_defaultOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+
+const { noop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+
+/* *
+ *
+ *  Constants
+ *
+ * */
+const defaultBorderRadiusOptions = {
+    radius: 0,
+    scope: 'stack',
+    where: void 0
+};
+/* *
+ *
+ *  Variables
+ *
+ * */
+let oldArc = (/* unused pure expression or super */ null && (noop));
+let oldRoundedRect = (/* unused pure expression or super */ null && (noop));
+/* *
+ *
+ *  Functions
+ *
+ * */
+/** @internal */
+function applyBorderRadius(path, i, r) {
+    const a = path[i];
+    let b = path[i + 1];
+    if (b[0] === 'Z') {
+        b = path[0];
+    }
+    let line, arc, fromLineToArc;
+    // From straight line to arc
+    if ((a[0] === 'M' || a[0] === 'L') && b[0] === 'A') {
+        line = a;
+        arc = b;
+        fromLineToArc = true;
+        // From arc to straight line
+    }
+    else if (a[0] === 'A' && (b[0] === 'M' || b[0] === 'L')) {
+        line = b;
+        arc = a;
+    }
+    if (line && arc && arc.params) {
+        const bigR = arc[1], 
+        // In our use cases, outer pie slice arcs are clockwise and inner
+        // arcs (donut/sunburst etc) are anti-clockwise
+        clockwise = arc[5], params = arc.params, { start, end, cx, cy } = params;
+        // Some geometric constants
+        const relativeR = clockwise ? (bigR - r) : (bigR + r), 
+        // The angle, on the big arc, that the border radius arc takes up
+        angleOfBorderRadius = relativeR ? Math.asin(r / relativeR) : 0, angleOffset = clockwise ?
+            angleOfBorderRadius :
+            -angleOfBorderRadius, 
+        // The distance along the radius of the big arc to the starting
+        // point of the small border radius arc
+        distanceBigCenterToStartArc = (Math.cos(angleOfBorderRadius) *
+            relativeR);
+        // From line to arc
+        if (fromLineToArc) {
+            // Update the cache
+            params.start = start + angleOffset;
+            // First move to the start position at the radial line. We want to
+            // start one borderRadius closer to the center.
+            line[1] = cx + distanceBigCenterToStartArc * Math.cos(start);
+            line[2] = cy + distanceBigCenterToStartArc * Math.sin(start);
+            // Now draw an arc towards the point where the small circle touches
+            // the great circle.
+            path.splice(i + 1, 0, [
+                'A',
+                r,
+                r,
+                0, // Slanting,
+                0, // Long arc
+                1, // Clockwise
+                cx + bigR * Math.cos(params.start),
+                cy + bigR * Math.sin(params.start)
+            ]);
+            // From arc to line
+        }
+        else {
+            // Update the cache
+            params.end = end - angleOffset;
+            // End the big arc a bit earlier
+            arc[6] = cx + bigR * Math.cos(params.end);
+            arc[7] = cy + bigR * Math.sin(params.end);
+            // Draw a small arc towards a point on the end angle, but one
+            // borderRadius closer to the center relative to the perimeter.
+            path.splice(i + 1, 0, [
+                'A',
+                r,
+                r,
+                0,
+                0,
+                1,
+                cx + distanceBigCenterToStartArc * Math.cos(end),
+                cy + distanceBigCenterToStartArc * Math.sin(end)
+            ]);
+        }
+        // Long or short arc must be reconsidered because we have modified the
+        // start and end points
+        arc[4] = Math.abs(params.end - params.start) < Math.PI ? 0 : 1;
+    }
+}
+/**
+ * Extend arc with borderRadius.
+ * @internal
+ */
+function arc(x, y, w, h, options = {}) {
+    const path = oldArc(x, y, w, h, options), { brStart = true, brEnd = true, innerR = 0, r = w, start = 0, end = 0 } = options;
+    if (options.open || !options.borderRadius) {
+        return path;
+    }
+    const alpha = end - start, sinHalfAlpha = Math.sin(alpha / 2), borderRadius = Math.max(Math.min(relativeLength(borderRadiusObject(options.borderRadius).radius, r - innerR), 
+    // Cap to half the sector radius
+    (r - innerR) / 2, 
+    // For smaller pie slices, cap to the largest small circle that
+    // can be fitted within the sector
+    (r * sinHalfAlpha) / (1 + sinHalfAlpha)), 0), 
+    // For the inner radius, we need an extra cap because the inner arc
+    // is shorter than the outer arc
+    innerBorderRadius = Math.min(borderRadius, 2 * (alpha / Math.PI) * innerR);
+    // Apply turn-by-turn border radius. Start at the end since we're
+    // splicing in arc segments.
+    let i = path.length - 1;
+    while (i--) {
+        if ((!brStart && (i === 0 || i === 3)) ||
+            (!brEnd && (i === 1 || i === 2))) {
+            continue;
+        }
+        applyBorderRadius(path, i, i > 1 ? innerBorderRadius : borderRadius);
+    }
+    return path;
+}
+/** @internal */
+function seriesOnAfterColumnTranslate() {
+    if (this.options.borderRadius &&
+        !(this.chart.is3d && this.chart.is3d())) {
+        const { options, yAxis } = this, percent = options.stacking === 'percent', seriesDefault = BorderRadius_defaultOptions.plotOptions?.[this.type]
+            ?.borderRadius, borderRadius = borderRadiusObject(options.borderRadius, isObject(seriesDefault) ? seriesDefault : {}), reversed = yAxis.options.reversed;
+        for (const point of this.points) {
+            const { shapeArgs } = point;
+            if (point.shapeType === 'roundedRect' && shapeArgs) {
+                const { width = 0, height = 0, y = 0 } = shapeArgs;
+                let brBoxY = y, brBoxHeight = height;
+                // It would be nice to refactor StackItem.getStackBox/
+                // setOffset so that we could get a reliable box out of
+                // it. Currently it is close if we remove the label
+                // offset, but we still need to run crispCol and also
+                // flip it if inverted, so atm it is simpler to do it
+                // like the below.
+                if (borderRadius.scope === 'stack' &&
+                    point.stackTotal) {
+                    const stackEnd = yAxis.translate(percent ? 100 : point.stackTotal, false, true, false, true), stackThreshold = yAxis.translate(options.threshold || 0, false, true, false, true), box = this.crispCol(0, Math.min(stackEnd, stackThreshold), 0, Math.abs(stackEnd - stackThreshold));
+                    brBoxY = box.y;
+                    brBoxHeight = box.height;
+                }
+                const flip = (point.negative ? -1 : 1) *
+                    (reversed ? -1 : 1) === -1;
+                // Handle the where option
+                let where = borderRadius.where;
+                // Waterfall, hanging columns should have rounding on
+                // all sides
+                if (!where &&
+                    this.is('waterfall') &&
+                    Math.abs((point.yBottom || 0) -
+                        (this.translatedThreshold || 0)) > this.borderWidth) {
+                    where = 'all';
+                }
+                if (!where) {
+                    where = 'end';
+                }
+                // Get the radius
+                const r = Math.min(relativeLength(borderRadius.radius, width), width / 2, 
+                // Cap to the height, but not if where is `end`
+                where === 'all' ? brBoxHeight / 2 : Infinity) || 0;
+                // If the `where` option is 'end', cut off the
+                // rectangles by making the border-radius box one r
+                // greater, so that the imaginary radius falls outside
+                // the rectangle.
+                if (where === 'end') {
+                    if (flip) {
+                        brBoxY -= r;
+                        brBoxHeight += r;
+                    }
+                    else {
+                        brBoxHeight += r;
+                    }
+                }
+                extend(shapeArgs, { brBoxHeight, brBoxY, r });
+            }
+        }
+    }
+}
+/** @internal */
+function composeBorderRadius(SeriesClass, SVGElementClass, SVGRendererClass) {
+    const PieSeriesClass = SeriesClass.types.pie;
+    if (!SVGElementClass.symbolCustomAttribs.includes('borderRadius')) {
+        const symbols = SVGRendererClass.prototype.symbols;
+        addEvent(SeriesClass, 'afterColumnTranslate', seriesOnAfterColumnTranslate, {
+            // After columnrange and polar column modifications
+            order: 9
+        });
+        addEvent(PieSeriesClass, 'afterTranslate', pieSeriesOnAfterTranslate);
+        SVGElementClass.symbolCustomAttribs.push('borderRadius', 'brBoxHeight', 'brBoxY', 'brEnd', 'brStart');
+        oldArc = symbols.arc;
+        oldRoundedRect = symbols.roundedRect;
+        symbols.arc = arc;
+        symbols.roundedRect = roundedRect;
+    }
+}
+/**
+ * Utility function to get the full border radius options object, from a simple
+ * number or a partial options object.
+ * @internal
+ */
+function borderRadiusObject(options, seriesBROptions) {
+    if (!(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isObject)(options)) {
+        options = { radius: options || 0 };
+    }
+    return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(defaultBorderRadiusOptions, seriesBROptions, options);
+}
+/** @internal */
+function pieSeriesOnAfterTranslate() {
+    const borderRadius = borderRadiusObject(this.options.borderRadius);
+    for (const point of this.points) {
+        const shapeArgs = point.shapeArgs;
+        if (shapeArgs) {
+            shapeArgs.borderRadius = relativeLength(borderRadius.radius, (shapeArgs.r || 0) - ((shapeArgs.innerR) || 0));
+        }
+    }
+}
+/**
+ * Extend roundedRect with individual cutting through rOffset.
+ * @internal
+ */
+function roundedRect(x, y, width, height, options = {}) {
+    const path = oldRoundedRect(x, y, width, height, options), { r = 0, brBoxHeight = height, brBoxY = y } = options, brOffsetTop = y - brBoxY, brOffsetBtm = (brBoxY + brBoxHeight) - (y + height), 
+    // When the distance to the border-radius box is greater than the r
+    // itself, it means no border radius. The -0.1 accounts for float
+    // rounding errors.
+    rTop = (brOffsetTop - r) > -0.1 ? 0 : r, rBtm = (brOffsetBtm - r) > -0.1 ? 0 : r, cutTop = Math.max(rTop && brOffsetTop, 0), cutBtm = Math.max(rBtm && brOffsetBtm, 0);
+    /*
+
+    The naming of control points:
+
+      / a -------- b \
+     /                \
+    h                  c
+    |                  |
+    |                  |
+    |                  |
+    g                  d
+     \                /
+      \ f -------- e /
+
+    */
+    const a = [x + rTop, y], b = [x + width - rTop, y], c = [x + width, y + rTop], d = [
+        x + width, y + height - rBtm
+    ], e = [
+        x + width - rBtm,
+        y + height
+    ], f = [x + rBtm, y + height], g = [x, y + height - rBtm], h = [x, y + rTop];
+    const applyPythagoras = (r, altitude) => Math.sqrt(Math.pow(r, 2) - Math.pow(altitude, 2));
+    // Inside stacks, cut off part of the top
+    if (cutTop) {
+        const base = applyPythagoras(rTop, rTop - cutTop);
+        a[0] -= base;
+        b[0] += base;
+        c[1] = h[1] = y + rTop - cutTop;
+    }
+    // Column is lower than the radius. Cut off bottom inside the top
+    // radius.
+    if (height < rTop - cutTop) {
+        const base = applyPythagoras(rTop, rTop - cutTop - height);
+        c[0] = d[0] = x + width - rTop + base;
+        e[0] = Math.min(c[0], e[0]);
+        f[0] = Math.max(d[0], f[0]);
+        g[0] = h[0] = x + rTop - base;
+        c[1] = h[1] = y + height;
+    }
+    // Inside stacks, cut off part of the bottom
+    if (cutBtm) {
+        const base = applyPythagoras(rBtm, rBtm - cutBtm);
+        e[0] += base;
+        f[0] -= base;
+        d[1] = g[1] = y + height - rBtm + cutBtm;
+    }
+    // Cut off top inside the bottom radius
+    if (height < rBtm - cutBtm) {
+        const base = applyPythagoras(rBtm, rBtm - cutBtm - height);
+        c[0] = d[0] = x + width - rBtm + base;
+        b[0] = Math.min(c[0], b[0]);
+        a[0] = Math.max(d[0], a[0]);
+        g[0] = h[0] = x + rBtm - base;
+        d[1] = g[1] = y;
+    }
+    // Preserve the box for data labels
+    path.length = 0;
+    path.push(['M', ...a], 
+    // Top side
+    ['L', ...b], 
+    // Top right corner
+    ['A', rTop, rTop, 0, 0, 1, ...c], 
+    // Right side
+    ['L', ...d], 
+    // Bottom right corner
+    ['A', rBtm, rBtm, 0, 0, 1, ...e], 
+    // Bottom side
+    ['L', ...f], 
+    // Bottom left corner
+    ['A', rBtm, rBtm, 0, 0, 1, ...g], 
+    // Left side
+    ['L', ...h], 
+    // Top left corner
+    ['A', rTop, rTop, 0, 0, 1, ...a], ['Z']);
+    return path;
+}
+/* *
+ *
+ *  API Declarations
+ *
+ * */
+/**
+ * Detailed options for border radius.
+ *
+ * @sample  {highcharts} highcharts/plotoptions/column-borderradius/
+ *          Rounded columns
+ * @sample  highcharts/plotoptions/series-border-radius
+ *          Column and pie with rounded border
+ *
+ * @interface Highcharts.BorderRadiusOptionsObject
+ */ /**
+* The border radius. A number signifies pixels. A percentage string, like for
+* example `50%`, signifies a relative size. For columns this is relative to the
+* column width, for pies it is relative to the radius and the inner radius.
+*
+* @sample  {highcharts} highcharts/plotoptions/column-borderradius/
+*          Rounded columns
+* @sample  highcharts/plotoptions/series-border-radius
+*          Column and pie with rounded border
+*
+* @name Highcharts.BorderRadiusOptionsObject#radius
+* @type {string|number|undefined}
+*/ /**
+* The scope of the rounding for column charts or plot bands. In a stacked
+* column chart, the value `point` means each single point will get rounded
+* corners. The value `stack` means the rounding will apply to the full
+* stack, so that only points close to the top or bottom will receive
+* rounding.
+*
+* Similarly, for plot bands, the `individual` value means each plot band
+* will get rounded corners.
+*
+* @sample  {highcharts} highcharts/plotoptions/column-borderradius/
+*          Rounded columns
+*
+* @name Highcharts.BorderRadiusOptionsObject#scope
+* @type {"individual"|"point"|"stack"|undefined}
+*/ /**
+* For column charts, where in the point or stack to apply rounding. The `end`
+* value means only those corners at the point value will be rounded, leaving
+* the corners at the base or threshold unrounded. This is the most intuitive
+* behavior. The `all` value means also the base will be rounded.
+*
+* @sample  {highcharts} highcharts/plotoptions/column-borderradius-where-all
+*          Rounding on all corners
+*
+* @name Highcharts.BorderRadiusOptionsObject#where
+* @type {"all"|"end"|undefined}
+* @default end
+*/
+(''); // Keeps doclets above in JS file
+
 ;// ./code/es-modules/Core/Renderer/SVG/Symbols.js
 /* *
  *
@@ -1888,7 +2305,7 @@ const NavigatorDefaults = {
  * @return {Highcharts.SVGPathArray}
  * Path
  */
-function arc(cx, cy, w, h, options) {
+function Symbols_arc(cx, cy, w, h, options) {
     const arc = [];
     if (options) {
         let start = options.start || 0, end = options.end || 0;
@@ -1976,7 +2393,7 @@ function arc(cx, cy, w, h, options) {
  */
 function callout(x, y, w, h, options) {
     const arrowLength = 6, halfDistance = 6, r = Math.min((options?.r) || 0, w, h), safeDistance = r + halfDistance, anchorX = options?.anchorX, anchorY = options?.anchorY || 0;
-    const path = roundedRect(x, y, w, h, { r });
+    const path = Symbols_roundedRect(x, y, w, h, { r });
     if (!(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(anchorX)) {
         return path;
     }
@@ -2048,7 +2465,7 @@ function callout(x, y, w, h, options) {
  */
 function circle(x, y, w, h) {
     // Return a full arc
-    return arc(x + w / 2, y + h / 2, w / 2, h / 2, {
+    return Symbols_arc(x + w / 2, y + h / 2, w / 2, h / 2, {
         start: Math.PI * 0.5,
         end: Math.PI * 2.5,
         open: false
@@ -2096,7 +2513,7 @@ function diamond(x, y, w, h) {
  */
 function rect(x, y, w, h, options) {
     if (options?.r) {
-        return roundedRect(x, y, w, h, options);
+        return Symbols_roundedRect(x, y, w, h, options);
     }
     return [
         ['M', x, y],
@@ -2122,7 +2539,7 @@ function rect(x, y, w, h, options) {
  * @return {Highcharts.SVGPathArray}
  * Path
  */
-function roundedRect(x, y, w, h, options) {
+function Symbols_roundedRect(x, y, w, h, options) {
     const r = options?.r || 0;
     return [
         ['M', x + r, y],
@@ -2198,7 +2615,7 @@ const Symbols = {
      * @return {Highcharts.SVGPathArray}
      * Path
      */
-    arc,
+    arc: Symbols_arc,
     /**
      * Callout shape used for default tooltips.
      *
@@ -2279,7 +2696,7 @@ const Symbols = {
      * @return {Highcharts.SVGPathArray}
      * Path
      */
-    roundedRect,
+    roundedRect: Symbols_roundedRect,
     /**
      * Rect symbol path.
      *
@@ -2404,6 +2821,7 @@ const Symbols = {
 
 
 
+
 /* *
  *
  *  Constants
@@ -2414,7 +2832,7 @@ const Symbols = {
  * @internal
  */
 function navigatorHandle(_x, _y, width, height, options = {}) {
-    const halfWidth = options.width ? options.width / 2 : width, markerPosition = 1.5, r = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.relativeLength)(options.borderRadius || 0, Math.min(halfWidth * 2, height));
+    const halfWidth = options.width ? options.width / 2 : width, markerPosition = 1.5, r = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.relativeLength)(borderRadiusObject(options.borderRadius).radius, Math.min(halfWidth * 2, height));
     height = options.height || height;
     return [
         ['M', -markerPosition, height / 2 - 3.5],
@@ -9419,9 +9837,10 @@ Pathfinder.prototype.algorithms = PathfinderAlgorithms;
 ''; // Keeps doclets above in JS file
 
 ;// ./code/es-modules/masters/modules/pathfinder.src.js
+/* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.0.0 (2026-06-11)
+ * @license Highcharts Gantt JS v13.0.0-modified (2026-08-14)
  * @module highcharts/modules/pathfinder
  * @requires highcharts
  *
@@ -9549,9 +9968,10 @@ function chartAdjustHeight() {
 ''; // Keeps doclets above in JS file
 
 ;// ./code/es-modules/masters/modules/static-scale.src.js
+/* unused harmony import specifier */ var static_scale_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.0.0 (2026-06-11)
+ * @license Highcharts Gantt JS v13.0.0-modified (2026-08-14)
  * @module highcharts/modules/static-scale
  * @requires highcharts
  *
@@ -9568,7 +9988,7 @@ function chartAdjustHeight() {
 
 const static_scale_src_G = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 composeStaticScale(static_scale_src_G.Axis, static_scale_src_G.Chart);
-/* harmony default export */ const static_scale_src = ((/* unused pure expression or super */ null && (Highcharts)));
+/* harmony default export */ const static_scale_src = ((/* unused pure expression or super */ null && (static_scale_src_Highcharts)));
 
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Color"],"commonjs":["highcharts","Color"],"commonjs2":["highcharts","Color"],"root":["Highcharts","Color"]}
 var highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_ = __webpack_require__(620);
@@ -9948,7 +10368,7 @@ class XRangePoint extends ColumnPoint {
  * */
 
 
-const { composed: XRangeSeries_composed, noop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { composed: XRangeSeries_composed, noop: XRangeSeries_noop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 const { parse: color } = (highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_default());
 
@@ -9969,7 +10389,7 @@ function onAxisAfterGetSeriesExtremes() {
     const time = this.chart.time;
     let dataMax, modMax;
     if (this.isXAxis) {
-        dataMax = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(this.dataMax, -Number.MAX_VALUE);
+        dataMax = this.dataMax ?? -Number.MAX_VALUE;
         for (const series of this.series) {
             const column = (series.dataTable.getColumn('x2', true) ||
                 series.dataTable.getColumn('end', true) ||
@@ -10094,7 +10514,7 @@ class XRangeSeries extends ColumnSeries {
     }
     alignDataLabel(point) {
         const oldPlotX = point.plotX;
-        point.plotX = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(point.dlBox?.centerX, point.plotX);
+        point.plotX = point.dlBox?.centerX ?? point.plotX;
         if (point.dataLabel && point.shapeArgs?.width) {
             point.dataLabel.css({
                 width: `${point.shapeArgs.width}px`
@@ -10107,9 +10527,9 @@ class XRangeSeries extends ColumnSeries {
      * @private
      */
     translatePoint(point) {
-        const xAxis = this.xAxis, yAxis = this.yAxis, metrics = this.columnMetrics, options = this.options, minPointLength = options.minPointLength || 0, oldColWidth = (point.shapeArgs?.width || 0) / 2, seriesXOffset = this.pointXOffset = metrics.offset, posX = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(point.x2, point.x + (point.len || 0)), borderRadius = options.borderRadius, plotTop = this.chart.plotTop, plotLeft = this.chart.plotLeft;
+        const xAxis = this.xAxis, yAxis = this.yAxis, metrics = this.columnMetrics, options = this.options, minPointLength = options.minPointLength || 0, oldColWidth = (point.shapeArgs?.width || 0) / 2, seriesXOffset = this.pointXOffset = metrics.offset, posX = point.x2 ?? (point.x + (point.len || 0)), borderRadius = options.borderRadius, plotTop = this.chart.plotTop, plotLeft = this.chart.plotLeft;
         let plotX = point.plotX, plotX2 = xAxis.translate(posX, 0, 0, 0, 1);
-        const length = Math.abs(plotX2 - plotX), inverted = this.chart.inverted, borderWidth = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.borderWidth, 1);
+        const length = Math.abs(plotX2 - plotX), inverted = this.chart.inverted, borderWidth = options.borderWidth ?? 1;
         let widthDifference, partialFill, yOffset = metrics.offset, pointHeight = Math.round(metrics.width), dlLeft, dlRight, dlWidth, clipRectWidth;
         if (minPointLength) {
             widthDifference = minPointLength - length;
@@ -10239,9 +10659,9 @@ class XRangeSeries extends ColumnSeries {
      *        'animate' (animates changes) or 'attr' (sets options)
      */
     drawPoint(point, verb) {
-        const seriesOpts = this.options, renderer = this.chart.renderer, type = point.shapeType, shapeArgs = point.shapeArgs, partShapeArgs = point.partShapeArgs, clipRectArgs = point.clipRectArgs, pointState = point.state, stateOpts = (seriesOpts.states[pointState || 'normal'] ||
-            {}), pointStateVerb = typeof pointState === 'undefined' ?
-            'attr' : verb, pointAttr = this.pointAttribs(point, pointState), animation = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(this.chart.options.chart.animation, stateOpts.animation);
+        const seriesOpts = this.options, renderer = this.chart.renderer, type = point.shapeType, shapeArgs = point.shapeArgs, partShapeArgs = point.partShapeArgs, clipRectArgs = point.clipRectArgs, pointState = point.state, stateOpts = seriesOpts.states?.[pointState || 'normal'] || {}, pointStateVerb = typeof pointState === 'undefined' ?
+            'attr' : verb, pointAttr = this.pointAttribs(point, pointState), animation = (this.chart.options.chart.animation ??
+            stateOpts.animation);
         let graphic = point.graphic, pfOptions = point.partialFill;
         if (!point.isNull && point.visible !== false) {
             const className = point.getClassName();
@@ -10355,8 +10775,8 @@ XRangeSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highch
     requireSorting: false,
     type: 'xrange',
     animate: (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).series.prototype.animate,
-    autoIncrement: noop,
-    buildKDTree: noop
+    autoIncrement: XRangeSeries_noop,
+    buildKDTree: XRangeSeries_noop
 });
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('xrange', XRangeSeries);
 /* *
@@ -10367,9 +10787,10 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 /* harmony default export */ const XRange_XRangeSeries = (XRangeSeries);
 
 ;// ./code/es-modules/masters/modules/xrange.src.js
+/* unused harmony import specifier */ var xrange_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0 (2026-06-11)
+ * @license Highcharts JS v13.0.0-modified (2026-08-14)
  * @module highcharts/modules/xrange
  * @requires highcharts
  *
@@ -10386,7 +10807,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 const xrange_src_G = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 XRange_XRangeSeries.compose(xrange_src_G.Axis);
-/* harmony default export */ const xrange_src = ((/* unused pure expression or super */ null && (Highcharts)));
+/* harmony default export */ const xrange_src = ((/* unused pure expression or super */ null && (xrange_src_Highcharts)));
 
 ;// ./code/es-modules/Series/Gantt/GanttPoint.js
 /* *
@@ -11364,7 +11785,7 @@ function argsToArray(args) {
     return Array.prototype.slice.call(args, 1);
 }
 /** @internal */
-function isObject(x) {
+function GridAxis_isObject(x) {
     // Always use strict mode
     return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isObject)(x, true);
 }
@@ -11447,8 +11868,8 @@ function getMaxLabelDimensions(ticks, tickPositions) {
     tickPositions.forEach(function (pos) {
         const tick = ticks[pos];
         let labelHeight = 0, labelWidth = 0, label;
-        if (isObject(tick)) {
-            label = isObject(tick.label) ? tick.label : {};
+        if (GridAxis_isObject(tick)) {
+            label = GridAxis_isObject(tick.label) ? tick.label : {};
             // Find width and height of label
             labelHeight = label.getBBox ? label.getBBox().height : 0;
             if (label.textStr && !(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(label.textPxLength)) {
@@ -11793,7 +12214,7 @@ function onAfterSetAxisTranslation() {
  * @internal
  */
 function onAfterSetOptions(e) {
-    const options = this.options, userOptions = e.userOptions, gridOptions = ((options && isObject(options.grid)) ? options.grid : {});
+    const options = this.options, userOptions = e.userOptions, gridOptions = ((options && GridAxis_isObject(options.grid)) ? options.grid : {});
     let gridAxisOptions;
     if (gridOptions.enabled === true) {
         // Merge the user options into default grid axis options so
@@ -11985,6 +12406,11 @@ function GridAxis_onChartAfterSetChartSize() {
 /** @internal */
 function onDestroy(e) {
     const { grid } = this;
+    // Axes created before the Gantt module was loaded have no grid
+    // additions to be destroyed (#24644).
+    if (!grid) {
+        return;
+    }
     (grid.columns || []).forEach((column) => column.destroy(e.keepEvents));
     grid.columns = void 0;
 }
@@ -12004,7 +12430,9 @@ function onInit(e) {
     }
     axis.hiddenLabels = [];
     axis.hiddenMarks = [];
-    axis.clippable = false;
+    if (gridOptions.enabled) {
+        axis.clippable = false;
+    }
 }
 /**
  * Center tick labels in cells.

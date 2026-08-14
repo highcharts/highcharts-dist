@@ -12,8 +12,7 @@
  *
  * */
 'use strict';
-import A from '../../Core/Animation/AnimationUtilities.js';
-const { animObject } = A;
+import { animObject } from '../../Core/Animation/AnimationUtilities.js';
 import H from '../../Core/Globals.js';
 const { doc } = H;
 import Legend from '../../Core/Legend/Legend.js';

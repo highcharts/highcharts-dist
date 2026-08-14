@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0 (2026-06-11)
+ * @license Highcharts JS v13.0.0-modified (2026-08-14)
  * @module highcharts/modules/pareto
  * @requires highcharts
  *
@@ -14,14 +14,14 @@
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
-/******/ var __webpack_require__ = {};
+/******/ const __webpack_require__ = {};
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
 /******/ (() => {
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
 /******/ 	__webpack_require__.n = (module) => {
-/******/ 		var getter = module && module.__esModule ?
+/******/ 		const getter = module && module.__esModule ?
 /******/ 			() => (module['default']) :
 /******/ 			() => (module);
 /******/ 		__webpack_require__.d(getter, { a: getter });
@@ -31,11 +31,26 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /******/ /* webpack/runtime/define property getters */
 /******/ (() => {
-/******/ 	// define getter functions for harmony exports
+/******/ 	// define getter/value functions for harmony exports
 /******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		for(var key in definition) {
-/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 		if(Array.isArray(definition)) {
+/******/ 			var i = 0;
+/******/ 			while(i < definition.length) {
+/******/ 				var key = definition[i++];
+/******/ 				var binding = definition[i++];
+/******/ 				if(!__webpack_require__.o(exports, key)) {
+/******/ 					if(binding === 0) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 					} else {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 					}
+/******/ 				} else if(binding === 0) { i++; }
+/******/ 			}
+/******/ 		} else {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
 /******/ 			}
 /******/ 		}
 /******/ 	};
@@ -47,7 +62,6 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
-var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -73,7 +87,7 @@ const { noop } = (external_highcharts_src_js_default_default());
 /**
  * Provides methods for auto setting/updating series data based on the based
  * series data.
- * @private
+ * @internal
  */
 var DerivedComposition;
 (function (DerivedComposition) {
@@ -93,7 +107,7 @@ var DerivedComposition;
      * access to the base series via m `this.baseSeries` and the bases data is
      * initialised. It should return data in the format accepted by
      * `Series.setData()` method
-     * @private
+     * @internal
      */
     DerivedComposition.setDerivedData = noop;
     /* *
@@ -102,7 +116,7 @@ var DerivedComposition;
      *
      * */
     /**
-     * @private
+     * @internal
      */
     function compose(SeriesClass) {
         const seriesProto = SeriesClass.prototype;
@@ -116,7 +130,7 @@ var DerivedComposition;
     DerivedComposition.compose = compose;
     /**
      * Initialise series
-     * @private
+     * @internal
      */
     function init() {
         external_highcharts_src_js_default_Series_default().prototype.init.apply(this, arguments);
@@ -128,7 +142,7 @@ var DerivedComposition;
     DerivedComposition.init = init;
     /**
      * Sets base series for the series
-     * @private
+     * @internal
      */
     function setBaseSeries() {
         const chart = this.chart, baseSeriesOptions = this.options.baseSeries, baseSeries = ((0,external_highcharts_src_js_default_namespaceObject.defined)(baseSeriesOptions) &&
@@ -139,7 +153,7 @@ var DerivedComposition;
     DerivedComposition.setBaseSeries = setBaseSeries;
     /**
      * Adds events for the series
-     * @private
+     * @internal
      */
     function addEvents() {
         this.eventRemovers.push((0,external_highcharts_src_js_default_namespaceObject.addEvent)(this.chart, 'afterLinkSeries', () => {
@@ -155,7 +169,7 @@ var DerivedComposition;
     /**
      * Adds events to the base series - it required for recalculating the data
      * in the series if the base series is updated / removed / etc.
-     * @private
+     * @internal
      */
     function addBaseSeriesEvents() {
         this.eventRemovers.push((0,external_highcharts_src_js_default_namespaceObject.addEvent)(this.baseSeries, 'updatedData', () => {
@@ -168,7 +182,7 @@ var DerivedComposition;
     DerivedComposition.addBaseSeriesEvents = addBaseSeriesEvents;
     /**
      * Destroys the series
-     * @private
+     * @internal
      */
     function destroy() {
         this.eventRemovers.forEach((remover) => {
@@ -183,6 +197,7 @@ var DerivedComposition;
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Series_DerivedComposition = (DerivedComposition);
 
 ;// ./code/es-modules/Series/ParetoSeries/ParetoSeriesDefaults.js

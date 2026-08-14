@@ -3,9 +3,8 @@
  *
  * */
 'use strict';
-import A from '../Core/Animation/AnimationUtilities.js';
+import { animObject } from '../Core/Animation/AnimationUtilities.js';
 import { syncTimeout } from '../Shared/Utilities.js';
-const { animObject } = A;
 /**
  * Create a setTimeout for the first drawDataLabels()
  * based on the dataLabels.animation.defer value

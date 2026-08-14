@@ -6,10 +6,14 @@
 import * as globals from "./globals";
 import * as _Highcharts from "./highcharts";
 declare module "./highcharts" {
+    /**
+     * The point key used to position a box plot data label.
+     */
+    type BoxPlotPointValKey = ("high"|"low"|"median"|"q1"|"q3");
     interface BorderRadiusOptionsObject {
-        radius: (number|string);
-        scope: ("individual"|"point"|"stack");
-        where: ("all"|"end");
+        radius?: (number|string);
+        scope?: ("individual"|"point"|"stack");
+        where?: ("all"|"end");
     }
     interface Point {
         /**

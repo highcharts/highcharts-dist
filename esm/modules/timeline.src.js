@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0 (2026-06-11)
+ * @license Highcharts JS v13.0.0-modified (2026-08-14)
  * @module highcharts/modules/timeline
  * @requires highcharts
  *
@@ -14,14 +14,14 @@
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
-/******/ var __webpack_require__ = {};
+/******/ const __webpack_require__ = {};
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
 /******/ (() => {
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
 /******/ 	__webpack_require__.n = (module) => {
-/******/ 		var getter = module && module.__esModule ?
+/******/ 		const getter = module && module.__esModule ?
 /******/ 			() => (module['default']) :
 /******/ 			() => (module);
 /******/ 		__webpack_require__.d(getter, { a: getter });
@@ -31,11 +31,26 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /******/ /* webpack/runtime/define property getters */
 /******/ (() => {
-/******/ 	// define getter functions for harmony exports
+/******/ 	// define getter/value functions for harmony exports
 /******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		for(var key in definition) {
-/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 		if(Array.isArray(definition)) {
+/******/ 			var i = 0;
+/******/ 			while(i < definition.length) {
+/******/ 				var key = definition[i++];
+/******/ 				var binding = definition[i++];
+/******/ 				if(!__webpack_require__.o(exports, key)) {
+/******/ 					if(binding === 0) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 					} else {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 					}
+/******/ 				} else if(binding === 0) { i++; }
+/******/ 			}
+/******/ 		} else {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
 /******/ 			}
 /******/ 		}
 /******/ 	};
@@ -47,7 +62,6 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
-var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -681,7 +695,11 @@ class TimelineSeries extends LineSeries {
         }));
     }
     markerAttribs(point, state) {
-        const series = this, seriesMarkerOptions = series.options.marker, pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol || seriesMarkerOptions?.symbol), width = (0,external_highcharts_src_js_default_namespaceObject.pick)(pointMarkerOptions.width, seriesMarkerOptions?.width, series.closestPointRangePx), height = (0,external_highcharts_src_js_default_namespaceObject.pick)(pointMarkerOptions.height, seriesMarkerOptions?.height);
+        const series = this, seriesMarkerOptions = series.options.marker, pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol ||
+            seriesMarkerOptions?.symbol), width = (pointMarkerOptions.width ??
+            seriesMarkerOptions?.width ??
+            (series.closestPointRangePx || 0)), height = (pointMarkerOptions.height ??
+            (seriesMarkerOptions?.height || 0));
         let seriesStateOptions, pointStateOptions, radius = 0;
         // Call default markerAttribs method, when the xAxis type
         // is set to datetime.
@@ -692,7 +710,9 @@ class TimelineSeries extends LineSeries {
         if (state) {
             seriesStateOptions = seriesMarkerOptions?.states?.[state];
             pointStateOptions = pointMarkerOptions.states?.[state];
-            radius = (0,external_highcharts_src_js_default_namespaceObject.pick)(pointStateOptions?.radius, seriesStateOptions?.radius, radius + (seriesStateOptions?.radiusPlus || 0));
+            radius = (pointStateOptions?.radius ??
+                seriesStateOptions?.radius ??
+                radius + (seriesStateOptions?.radiusPlus || 0));
         }
         point.hasImage = !!(symbol && symbol.indexOf('url') === 0);
         const attribs = {
@@ -704,7 +724,7 @@ class TimelineSeries extends LineSeries {
         return (series.chart.inverted) ? {
             y: (attribs.x && attribs.width) &&
                 series.xAxis.len - attribs.x - attribs.width,
-            x: attribs.y && attribs.y,
+            x: attribs.y,
             width: attribs.height,
             height: attribs.width
         } : attribs;

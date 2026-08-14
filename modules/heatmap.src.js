@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v13.0.0 (2026-06-11)
+ * @license Highmaps JS v13.0.0-modified (2026-08-14)
  * @module highcharts/modules/heatmap
  * @requires highcharts
  *
@@ -24,62 +24,62 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 28:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__28__;
-
-/***/ }),
-
-/***/ 512:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
-
-/***/ }),
-
-/***/ 532:
-/***/ ((module) => {
+/***/ 532
+(module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__532__;
 
-/***/ }),
+/***/ },
 
-/***/ 540:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__540__;
-
-/***/ }),
-
-/***/ 620:
-/***/ ((module) => {
+/***/ 620
+(module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__620__;
 
-/***/ }),
+/***/ },
 
-/***/ 944:
-/***/ ((module) => {
+/***/ 28
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__28__;
+
+/***/ },
+
+/***/ 540
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__540__;
+
+/***/ },
+
+/***/ 512
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
+
+/***/ },
+
+/***/ 944
+(module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 
-/***/ })
+/***/ }
 
 /******/ 	});
 /************************************************************************/
 /******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
+/******/ 	const __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
 /******/ 		// Check if module is in cache
-/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		const cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
 /******/ 			return cachedModule.exports;
 /******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 		const module = __webpack_module_cache__[moduleId] = {
 /******/ 			// no module.id needed
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
@@ -97,7 +97,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	(() => {
 /******/ 		// getDefaultExport function for compatibility with non-harmony modules
 /******/ 		__webpack_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
+/******/ 			const getter = module && module.__esModule ?
 /******/ 				() => (module['default']) :
 /******/ 				() => (module);
 /******/ 			__webpack_require__.d(getter, { a: getter });
@@ -107,11 +107,26 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
+/******/ 		// define getter/value functions for harmony exports
 /******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 			if(Array.isArray(definition)) {
+/******/ 				var i = 0;
+/******/ 				while(i < definition.length) {
+/******/ 					var key = definition[i++];
+/******/ 					var binding = definition[i++];
+/******/ 					if(!__webpack_require__.o(exports, key)) {
+/******/ 						if(binding === 0) {
+/******/ 							Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 						} else {
+/******/ 							Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 						}
+/******/ 					} else if(binding === 0) { i++; }
+/******/ 				}
+/******/ 			} else {
+/******/ 				for(var key in definition) {
+/******/ 					if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 					}
 /******/ 				}
 /******/ 			}
 /******/ 		};
@@ -123,7 +138,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	})();
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
+let __webpack_exports__ = {};
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
@@ -531,7 +546,7 @@ var ColorAxisComposition;
      * @internal
      */
     function wrapFxFillSetter() {
-        this.elem.attr('fill', ColorAxisComposition_color(this.start).tweenTo(ColorAxisComposition_color(this.end), this.pos), void 0, true);
+        (this.elem.attr)('fill', ColorAxisComposition_color(this.start).tweenTo(ColorAxisComposition_color(this.end), this.pos), void 0, true);
     }
     /**
      * Handle animation of the color attributes directly.
@@ -1489,9 +1504,14 @@ class ColorAxis extends (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_high
         const axis = this, left = axis.left, pos = options.translatedValue, { symbol } = this.options.marker || {}, top = axis.top;
         // Crosshairs only
         if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(pos)) {
-            const x = left, w = axis.width, y = pos - w / 2, h = w;
             if (symbol) {
-                return this.chart.renderer.symbols[symbol](x, y, w, h);
+                let w = axis.height, x = pos - w / 2, y = top;
+                if (!axis.horiz) {
+                    w = axis.width;
+                    x = left;
+                    y = pos - w / 2;
+                }
+                return this.chart.renderer.symbols[symbol](x, y, w, w);
             }
             // Default to a triangle pointing to the value
             return (axis.horiz ? [
@@ -1702,9 +1722,10 @@ Array.prototype.push.apply((highcharts_Axis_commonjs_highcharts_Axis_commonjs2_h
 ''; // Detach doclet above
 
 ;// ./code/es-modules/masters/modules/coloraxis.src.js
+/* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0 (2026-06-11)
+ * @license Highcharts JS v13.0.0-modified (2026-08-14)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -1756,11 +1777,13 @@ var ColorMapComposition;
      *  Constants
      *
      * */
+    /** @internal */
     ColorMapComposition.pointMembers = {
         dataLabelOnNull: true,
         moveToTopOnHover: true,
         isValid: pointIsValid
     };
+    /** @internal */
     ColorMapComposition.seriesMembers = {
         colorKey: 'value',
         axisTypes: ['xAxis', 'yAxis', 'colorAxis'],
@@ -1776,7 +1799,7 @@ var ColorMapComposition;
      *
      * */
     /**
-     * @private
+     * @internal
      */
     function compose(SeriesClass) {
         const PointClass = SeriesClass.prototype.pointClass;
@@ -1786,7 +1809,7 @@ var ColorMapComposition;
     ColorMapComposition.compose = compose;
     /**
      * Move points to the top of the z-index order when hovered.
-     * @private
+     * @internal
      */
     function onPointAfterSetState(e) {
         const point = this, series = point.series, renderer = series.chart.renderer;
@@ -1822,7 +1845,7 @@ var ColorMapComposition;
     /**
      * Color points have a value option that determines whether or not it is
      * a null point
-     * @private
+     * @internal
      */
     function pointIsValid() {
         return (this.value !== null &&
@@ -1833,7 +1856,7 @@ var ColorMapComposition;
     }
     /**
      * Get the color attributes to apply on the graphic
-     * @private
+     * @internal
      * @function Highcharts.colorMapSeriesMixin.colorAttribs
      * @param {Highcharts.Point} point
      * @return {Highcharts.SVGAttributes}
@@ -1854,6 +1877,7 @@ var ColorMapComposition;
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Series_ColorMapComposition = (ColorMapComposition);
 
 ;// ./code/es-modules/Series/Heatmap/HeatmapPoint.js

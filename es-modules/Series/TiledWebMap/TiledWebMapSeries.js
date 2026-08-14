@@ -10,6 +10,8 @@
  *
  * */
 'use strict';
+import { stop } from '../../Core/Animation/AnimationUtilities.js';
+import Fx from '../../Core/Animation/Fx.js';
 import H from '../../Core/Globals.js';
 const { composed } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
@@ -381,11 +383,15 @@ class TiledWebMapSeries extends MapSeries {
             for (const zoomKey of Object.keys(tiles)) {
                 for (const key of Object.keys(tiles[zoomKey].tiles)) {
                     if (mapView.projection && mapView.projection.def) {
+                        const tile = tiles[zoomKey].tiles[key];
+                        if (Fx.timers.length > 0) {
+                            stop(tile, 'animator');
+                        }
                         // Calculate group translations based on first loaded
                         // tile
                         const scale = ((tileSize / worldSize) *
                             Math.pow(2, zoom)) / ((tileSize / worldSize) *
-                            Math.pow(2, parseFloat(zoomKey))), scaledTileSize = scale * 256, firstTile = tiles[zoomKey].tiles[Object.keys(tiles[zoomKey].tiles)[0]], { posX, posY } = tiles[zoomKey].tiles[key];
+                            Math.pow(2, parseFloat(zoomKey))), scaledTileSize = scale * 256, firstTile = tiles[zoomKey].tiles[Object.keys(tiles[zoomKey].tiles)[0]], { posX, posY } = tile;
                         if (defined(posX) &&
                             defined(posY) &&
                             defined(firstTile.posX) &&
@@ -400,9 +406,9 @@ class TiledWebMapSeries extends MapSeries {
                                 firstTilePx.y;
                             if (chart.renderer.globalAnimation &&
                                 chart.hasRendered) {
-                                const startX = Number(tiles[zoomKey].tiles[key].attr('x')), startY = Number(tiles[zoomKey].tiles[key].attr('y')), startWidth = Number(tiles[zoomKey].tiles[key].attr('width')), startHeight = Number(tiles[zoomKey].tiles[key].attr('height'));
+                                const startX = Number(tile.attr('x')), startY = Number(tile.attr('y')), startWidth = Number(tile.attr('width')), startHeight = Number(tile.attr('height'));
                                 const step = (now, fx) => {
-                                    tiles[zoomKey].tiles[key].attr({
+                                    tile.attr({
                                         x: (startX + (((posX * scaledTileSize) -
                                             tilesOffsetX - startX) * fx.pos)),
                                         y: (startY + (((posY * scaledTileSize) -
@@ -414,7 +420,7 @@ class TiledWebMapSeries extends MapSeries {
                                     });
                                 };
                                 series.isAnimating = true;
-                                tiles[zoomKey].tiles[key]
+                                tile
                                     .attr({ animator: 0 })
                                     .animate({ animator: 1 }, { step }, function () {
                                     series.isAnimating = false;
@@ -440,7 +446,7 @@ class TiledWebMapSeries extends MapSeries {
                                     series.redrawTiles = false;
                                     animateTiles(duration);
                                 }
-                                tiles[zoomKey].tiles[key].attr({
+                                tile.attr({
                                     x: (posX * scaledTileSize) - tilesOffsetX,
                                     y: (posY * scaledTileSize) - tilesOffsetY,
                                     width: Math.ceil(scaledTileSize) + 1,
@@ -476,7 +482,7 @@ class TiledWebMapSeries extends MapSeries {
                     projection: {
                         name: (new ProviderDefinition()).initialProjectionName
                     }
-                });
+                }, false);
             }
         }
         super.update.apply(this, arguments);

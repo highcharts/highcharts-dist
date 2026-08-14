@@ -10,8 +10,7 @@
  *
  * */
 'use strict';
-import A from './Animation/AnimationUtilities.js';
-const { animObject } = A;
+import { animObject } from './Animation/AnimationUtilities.js';
 import F from './Templating.js';
 const { format } = F;
 import H from './Globals.js';

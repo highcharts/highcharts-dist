@@ -580,7 +580,7 @@ var ExportData;
      */
     function getTableAST(useLocalDecimalPoint) {
         let rowLength = 0;
-        const treeChildren = [], exporting = this, chart = exporting.chart, options = chart.options, decimalPoint = useLocalDecimalPoint ? (1.1).toLocaleString()[1] : '.', useMultiLevelHeaders = pick(exporting.options.useMultiLevelHeaders, true), rows = exporting.getDataRows(useMultiLevelHeaders), topHeaders = useMultiLevelHeaders ? rows.shift() : null, subHeaders = rows.shift(), 
+        const treeChildren = [], exporting = this, chart = exporting.chart, options = chart.options, decimalPoint = useLocalDecimalPoint ? (1.1).toLocaleString()[1] : void 0, useMultiLevelHeaders = pick(exporting.options.useMultiLevelHeaders, true), rows = exporting.getDataRows(useMultiLevelHeaders), topHeaders = useMultiLevelHeaders ? rows.shift() : null, subHeaders = rows.shift(), 
         // Compare two rows for equality
         isRowEqual = function (row1, row2) {
             let i = row1.length;
@@ -980,6 +980,10 @@ export default ExportData;
  *  API Declarations
  *
  * */
+/**
+ * @class
+ * @name Highcharts.Exporting
+ */
 /**
  * Function callback to execute while data rows are processed for exporting.
  * This allows the modification of data rows before processed into the final

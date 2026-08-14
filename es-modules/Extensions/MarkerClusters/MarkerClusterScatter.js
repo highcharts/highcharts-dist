@@ -13,8 +13,7 @@
  *
  * */
 'use strict';
-import A from '../../Core/Animation/AnimationUtilities.js';
-const { animObject } = A;
+import { animObject } from '../../Core/Animation/AnimationUtilities.js';
 import DataTableCore from '../../Data/DataTableCore.js';
 import MarkerClusterDefaults from './MarkerClusterDefaults.js';
 const { cluster: clusterDefaults } = MarkerClusterDefaults;

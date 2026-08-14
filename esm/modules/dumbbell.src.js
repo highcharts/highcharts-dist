@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0 (2026-06-11)
+ * @license Highcharts JS v13.0.0-modified (2026-08-14)
  * @module highcharts/modules/dumbbell
  * @requires highcharts
  *
@@ -12,14 +12,14 @@
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
-/******/ var __webpack_require__ = {};
+/******/ const __webpack_require__ = {};
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
 /******/ (() => {
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
 /******/ 	__webpack_require__.n = (module) => {
-/******/ 		var getter = module && module.__esModule ?
+/******/ 		const getter = module && module.__esModule ?
 /******/ 			() => (module['default']) :
 /******/ 			() => (module);
 /******/ 		__webpack_require__.d(getter, { a: getter });
@@ -29,11 +29,26 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /******/ /* webpack/runtime/define property getters */
 /******/ (() => {
-/******/ 	// define getter functions for harmony exports
+/******/ 	// define getter/value functions for harmony exports
 /******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		for(var key in definition) {
-/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 		if(Array.isArray(definition)) {
+/******/ 			var i = 0;
+/******/ 			while(i < definition.length) {
+/******/ 				var key = definition[i++];
+/******/ 				var binding = definition[i++];
+/******/ 				if(!__webpack_require__.o(exports, key)) {
+/******/ 					if(binding === 0) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 					} else {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 					}
+/******/ 				} else if(binding === 0) { i++; }
+/******/ 			}
+/******/ 		} else {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
 /******/ 			}
 /******/ 		}
 /******/ 	};
@@ -45,7 +60,6 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
-var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -193,6 +207,7 @@ class AreaRangePoint extends AreaPoint {
  *  Class
  *
  * */
+/** @internal */
 class DumbbellPoint extends AreaRange_AreaRangePoint {
     /* *
      *
@@ -203,7 +218,7 @@ class DumbbellPoint extends AreaRange_AreaRangePoint {
      * Set the point's state extended by have influence on the connector
      * (between low and high value).
      *
-     * @private
+     * @internal
      */
     setState() {
         const point = this, series = point.series, chart = series.chart, seriesLowColor = series.options.lowColor, seriesMarker = series.options.marker, seriesLowMarker = series.options.lowMarker, pointOptions = point.options, pointLowColor = pointOptions.lowColor, zoneColor = point.zone && point.zone.color, lowerGraphicColor = (0,external_highcharts_src_js_default_namespaceObject.pick)(pointLowColor, seriesLowMarker?.fillColor, seriesLowColor, pointOptions.color, zoneColor, point.color, series.color);
@@ -233,14 +248,14 @@ class DumbbellPoint extends AreaRange_AreaRangePoint {
         }
         point.connector?.[verb](series.getConnectorAttribs(point));
     }
-    destroy() {
+    destroy(sync) {
         const point = this;
         // #15560
         if (!point.graphic) {
             point.graphic = point.connector;
             point.connector = void 0;
         }
-        return super.destroy();
+        return super.destroy(sync);
     }
 }
 (0,external_highcharts_src_js_default_namespaceObject.extend)(DumbbellPoint.prototype, {
@@ -251,6 +266,7 @@ class DumbbellPoint extends AreaRange_AreaRangePoint {
  *  Default export
  *
  * */
+/** @internal */
 /* harmony default export */ const Dumbbell_DumbbellPoint = (DumbbellPoint);
 
 ;// ./code/es-modules/Series/Dumbbell/DumbbellSeriesDefaults.js
@@ -521,7 +537,7 @@ const { arearange: AreaRangeSeries, column: ColumnSeries, columnrange: ColumnRan
 /**
  * The dumbbell series type
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.dumbbell
  *
@@ -536,7 +552,7 @@ class DumbbellSeries extends AreaRangeSeries {
     /**
      * Get connector line path and styles that connects dumbbell point's low and
      * high values.
-     * @private
+     * @internal
      *
      * @param {Highcharts.Point} point The point to inspect.
      *
@@ -602,7 +618,7 @@ class DumbbellSeries extends AreaRangeSeries {
     }
     /**
      * Draw connector line that connects dumbbell point's low and high values.
-     * @private
+     * @internal
      * @param {Highcharts.Point} point
      *        The point to inspect.
      */
@@ -622,7 +638,7 @@ class DumbbellSeries extends AreaRangeSeries {
     /**
      * Return the width and x offset of the dumbbell adjusted for grouping,
      * groupPadding, pointPadding, pointWidth etc.
-     * @private
+     * @internal
      */
     getColumnMetrics() {
         const metrics = ColumnSeries.prototype
@@ -633,7 +649,7 @@ class DumbbellSeries extends AreaRangeSeries {
     /**
      * Translate each point to the plot area coordinate system and find
      * shape positions
-     * @private
+     * @internal
      */
     translate() {
         const series = this, inverted = series.chart.inverted;
@@ -660,7 +676,7 @@ class DumbbellSeries extends AreaRangeSeries {
     /**
      * Extend the arearange series' drawPoints method by applying a connector
      * and coloring markers.
-     * @private
+     * @internal
      */
     drawPoints() {
         const series = this, chart = series.chart, pointLength = series.points.length, seriesLowColor = series.lowColor = series.options.lowColor, seriesLowMarker = series.options.lowMarker;
@@ -694,7 +710,7 @@ class DumbbellSeries extends AreaRangeSeries {
     /**
      * Get presentational attributes.
      *
-     * @private
+     * @internal
      * @function Highcharts.seriesTypes.column#pointAttribs
      *
      * @param {Highcharts.Point} point
@@ -715,7 +731,7 @@ class DumbbellSeries extends AreaRangeSeries {
     }
     /**
      * Set the shape arguments for dumbbells.
-     * @private
+     * @internal
      */
     setShapeArgs() {
         ColumnSeries.prototype.translate.apply(this);
@@ -743,6 +759,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Dumbbell_DumbbellSeries = ((/* unused pure expression or super */ null && (DumbbellSeries)));
 
 ;// ./code/es-modules/masters/modules/dumbbell.src.js

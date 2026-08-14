@@ -28,7 +28,7 @@
  *         Error bars with data labels
  *
  * @extends      plotOptions.boxplot
- * @excluding    boostBlending, boostThreshold
+ * @excluding    borderRadius, boostBlending, boostThreshold
  * @product      highcharts
  * @requires     highcharts-more
  * @optionparent plotOptions.errorbar
@@ -47,6 +47,20 @@ const ErrorBarSeriesDefaults = {
      * @product highcharts
      */
     color: 'var(--highcharts-neutral-color-100)',
+    dataLabels: {
+    /**
+     * Callback JavaScript function to format the data label. Note that if
+     * a `format` is defined, the format takes precedence and the formatter
+     * is ignored.
+     *
+     * The default formatter renders the value of the point key the label
+     * is [aligned to](#plotOptions.errorbar.dataLabels.alignToKey). Define
+     * a [format](#plotOptions.errorbar.dataLabels.format) or `formatter`
+     * to display other values.
+     *
+     * @type {Highcharts.DataLabelsFormatterCallbackFunction}
+     */
+    },
     grouping: false,
     /**
      * The parent series of the error bar. The default value links it to

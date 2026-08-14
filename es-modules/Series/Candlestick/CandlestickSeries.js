@@ -49,11 +49,11 @@ class CandlestickSeries extends OHLCSeries {
             (isUp ? (options.upLineColor || stroke) : stroke);
         // Select or hover states
         if (state) {
-            const stateOptions = options.states[state];
+            const stateOptions = options.states?.[state] || {};
             attribs.fill = stateOptions.color || attribs.fill;
             attribs.stroke = stateOptions.lineColor || attribs.stroke;
-            attribs['stroke-width'] =
-                stateOptions.lineWidth || attribs['stroke-width'];
+            attribs['stroke-width'] = stateOptions.lineWidth ||
+                attribs['stroke-width'];
         }
         return attribs;
     }

@@ -18,6 +18,7 @@ import { extend, isNumber } from '../../Shared/Utilities.js';
  *  Class
  *
  * */
+/** @internal */
 class ColumnRangePoint extends AreaRangePoint {
     /* *
      *
@@ -36,4 +37,5 @@ extend(ColumnRangePoint.prototype, {
  *  Default Export
  *
  * */
+/** @internal */
 export default ColumnRangePoint;

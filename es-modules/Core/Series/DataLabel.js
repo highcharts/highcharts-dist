@@ -10,8 +10,7 @@
  *
  * */
 'use strict';
-import A from '../Animation/AnimationUtilities.js';
-const { getDeferredAnimation } = A;
+import { getDeferredAnimation } from '../Animation/AnimationUtilities.js';
 import F from '../Templating.js';
 const { format } = F;
 import { defined, extend, fireEvent, getAlignFactor, isArray, isNumber, isString, merge, objectEach, pick, pInt, splat } from '../../Shared/Utilities.js';

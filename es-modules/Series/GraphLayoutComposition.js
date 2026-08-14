@@ -12,11 +12,10 @@
  *
  * */
 'use strict';
-import A from '../Core/Animation/AnimationUtilities.js';
-const { setAnimation } = A;
+import { setAnimation } from '../Core/Animation/AnimationUtilities.js';
 import H from '../Core/Globals.js';
 const { composed } = H;
-import { addEvent, pushUnique } from '../Shared/Utilities.js';
+import { addEvent, fireEvent, pushUnique } from '../Shared/Utilities.js';
 /* *
  *
  *  Constants
@@ -114,6 +113,7 @@ function onChartRender() {
             this.series.forEach((series) => {
                 if (series && series.layout) {
                     series.render();
+                    fireEvent(series, 'afterSimulation');
                 }
             });
         }

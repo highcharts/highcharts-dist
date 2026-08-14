@@ -12,8 +12,7 @@
  *
  * */
 'use strict';
-import A from '../../Core/Animation/AnimationUtilities.js';
-const { animObject } = A;
+import { animObject } from '../../Core/Animation/AnimationUtilities.js';
 import ApproximationRegistry from '../../Extensions/DataGrouping/ApproximationRegistry.js';
 import H from '../../Core/Globals.js';
 import OnSeriesComposition from '../OnSeriesComposition.js';
@@ -75,15 +74,14 @@ class WindbarbSeries extends ColumnSeries {
     // Get presentational attributes.
     pointAttribs(point, state) {
         const options = this.options;
-        let stroke = point?.color || this.color, strokeWidth = this.options.lineWidth;
+        let stroke = point?.color || this.color, strokeWidth = options.lineWidth;
         if (state) {
-            stroke = options.states[state].color || stroke;
-            strokeWidth =
-                (options.states[state].lineWidth || strokeWidth) +
-                    (options.states[state].lineWidthPlus || 0);
+            stroke = options.states?.[state]?.color || stroke;
+            strokeWidth = (options.states?.[state]?.lineWidthPlus || 0) +
+                (options.states?.[state]?.lineWidth || strokeWidth || 0);
         }
         return {
-            'stroke': stroke,
+            stroke,
             'stroke-width': strokeWidth
         };
     }

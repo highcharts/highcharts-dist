@@ -16,7 +16,7 @@ const { defaultOptions } = D;
 import Color from '../../Color/Color.js';
 import H from '../../Globals.js';
 const { charts, deg2rad, doc, isFirefox, isMS, isWebKit, noop, SVG_NS, symbolSizes, win } = H;
-import Palette from '../../Color/Palette';
+import Palette from '../../Color/Palette.js';
 import SVGElement from './SVGElement.js';
 import SVGLabel from './SVGLabel.js';
 import Symbols from './Symbols.js';
@@ -172,7 +172,7 @@ class SVGRenderer {
         this.url = this.getReferenceURL();
         // Add description
         const desc = this.createElement('desc').add();
-        desc.element.appendChild(doc.createTextNode('Created with Highcharts 13.0.0'));
+        desc.element.appendChild(doc.createTextNode('Created with Highcharts 13.0.0-modified'));
         this.defs = this.createElement('defs').add();
         this.allowHTML = allowHTML;
         this.forExport = forExport;

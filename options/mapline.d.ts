@@ -74,87 +74,164 @@ declare module "../highcharts" {
         y?: number;
     }
     /**
-     * (Highmaps) Animation when not hovering over the marker.
+     * (Highcharts, Highstock, Gantt) For series on datetime axes, the date
+     * format in the tooltip's header will by default be guessed based on the
+     * closest data points. This member gives the default string representations
+     * used for each unit. For an overview of the string or object
+     * configuration, see dateFormat.
      */
-    interface PlotMaplineStatesInactiveAnimationOptions {
-        duration?: number;
+    interface PlotMaplineTooltipDateTimeLabelFormatsOptions {
+        day?: string;
+        hour?: string;
+        millisecond?: string;
+        minute?: string;
+        month?: string;
+        second?: string;
+        week?: string;
+        year?: string;
     }
     /**
-     * (Highcharts, Highstock, Highmaps) Options for the tooltip header when
-     * tooltip.split is enabled. The header is the box containing the X value in
-     * a split tooltip.
+     * (Highcharts, Highstock, Highmaps) Positioning options for fixed tooltip,
+     * taking effect only when tooltip.fixed is `true`.
      */
-    interface PlotMaplineTooltipHeaderOptions {
+    interface PlotMaplineTooltipPositionOptions {
         /**
-         * (Highcharts, Highstock, Highmaps) Background color for the tooltip
-         * header when tooltip.split is enabled.
+         * (Highcharts, Highstock, Highmaps) The horizontal alignment of the
+         * fixed tooltip.
          */
-        backgroundColor?: Highcharts.ColorType;
+        align?: Highcharts.AlignValue;
         /**
-         * (Highcharts, Highstock, Highmaps) Border color for the tooltip header
-         * when tooltip.split is enabled.
-         */
-        borderColor?: Highcharts.ColorType;
-        /**
-         * (Highcharts, Highstock, Highmaps) The width of the border for the
-         * tooltip header when tooltip.split is enabled.
-         */
-        borderWidth?: number;
-        /**
-         * (Highcharts, Highstock, Highmaps) Distance between the plot area and
-         * the header (except the chevron) in a split tooltip, in pixels. The
-         * default value makes the header text align with the axis labels.
-         */
-        distance?: number;
-        /**
-         * (Highcharts, Highstock, Highmaps) The name of a symbol to use for the
-         * border around the tooltip header. Applies only when tooltip.split is
-         * enabled.
+         * (Highcharts, Highstock, Highmaps) What the fixed tooltip alignment
+         * should be relative to.
          *
-         * Custom callbacks for symbol path generation can also be added to
-         * `Highcharts.SVGRenderer.prototype.symbols` the same way as for
-         * series.marker.symbol.
+         * The default, `pane`, means that it is aligned within the plot area
+         * for that given series. If the tooltip is split (as default in Stock
+         * charts), each partial tooltip is aligned within the series' pane.
          */
-        shape?: string;
+        relativeTo?: Highcharts.OptionsRelativeToValue;
         /**
-         * (Highcharts, Highstock, Highmaps) CSS styles for the tooltip header.
-         * The default is `{ fontSize: '1em' }`, ensuring that the header text
-         * is the same size as the axis labels.
+         * (Highcharts, Highstock, Highmaps) The vertical alignment of the fixed
+         * tooltip.
          */
-        style?: object;
+        verticalAlign?: Highcharts.VerticalAlignValue;
+        /**
+         * (Highcharts, Highstock, Highmaps) X pixel offset from the given
+         * position. Can be used to shy away from axis lines, grid lines etc to
+         * avoid the tooltip overlapping other elements.
+         */
+        x?: number;
+        /**
+         * (Highcharts, Highstock, Highmaps) Y pixel offset from the given
+         * position. Can be used to shy away from axis lines, grid lines etc to
+         * avoid the tooltip overlapping other elements.
+         */
+        y?: number;
     }
     /**
-     * (Highmaps) For map and mapline series types, the geometry of a point.
+     * (Highmaps) An array of data points for the series. For the `mapline`
+     * series type, points can be given in the following ways:
      *
-     * To achieve a better separation between the structure and the data, it is
-     * recommended to use `mapData` to define the geometry instead of defining
-     * it on the data points themselves.
+     * 1. An array of numerical values. In this case, the numerical values will
+     * be interpreted as `value` options. Example: (see online documentation for
+     * example)
      *
-     * The geometry object is compatible to that of a `feature` in GeoJSON, so
-     * features of GeoJSON can be passed directly into the `data`, optionally
-     * after first filtering and processing it.
+     * 2. An array of arrays with 2 values. In this case, the values correspond
+     * to `[hc-key, value]`. Example: (see online documentation for example)
      *
-     * For pre-projected maps (like GeoJSON maps from our map collection), user
-     * has to specify coordinates in `projectedUnits` for geometry type other
-     * than `Point`, instead of `[longitude, latitude]`.
+     * 3. An array of objects with named values. The following snippet shows
+     * only a few settings, see the complete options set below. If the total
+     * number of data points exceeds the series' turboThreshold, this option is
+     * not available. (see online documentation for example)
      */
-    interface SeriesMaplineDataGeometryOptions {
+    interface SeriesMaplineDataOptions {
         /**
-         * (Highmaps) The geometry coordinates in terms of arrays of
-         * `[longitude, latitude]`, or a two dimensional array of the same. The
-         * dimensionality must comply with the `type`.
+         * (Highmaps) Individual color for the point. By default the color is
+         * either used to denote the value, or pulled from the global `colors`
+         * array.
          */
-        coordinates?: (Array<Array<LonLatArray>>|Array<LonLatArray>);
+        color?: Highcharts.ColorType;
         /**
-         * (Highmaps) The geometry type. Can be one of `LineString`, `Polygon`,
-         * `MultiLineString` or `MultiPolygon`.
+         * (Highmaps) Individual data label for each point. The options are the
+         * same as the ones for plotOptions.series.dataLabels.
          */
-        type?: Highcharts.MapGeometryTypeValue;
-    }
-    /**
-     * (Highmaps) Animation when not hovering over the marker.
-     */
-    interface SeriesMaplineDataStatesInactiveAnimationOptions {
-        duration?: number;
+        dataLabels?: Highcharts.DataLabelsOptions;
+        /**
+         * (Highmaps) Individual point events
+         */
+        events?: Highcharts.PointEventsOptionsObject;
+        /**
+         * (Highmaps) For map and mapline series types, the geometry of a point.
+         *
+         * To achieve a better separation between the structure and the data, it
+         * is recommended to use `mapData` to define the geometry instead of
+         * defining it on the data points themselves.
+         *
+         * The geometry object is compatible to that of a `feature` in GeoJSON,
+         * so features of GeoJSON can be passed directly into the `data`,
+         * optionally after first filtering and processing it.
+         *
+         * For pre-projected maps (like GeoJSON maps from our map collection),
+         * user has to specify coordinates in `projectedUnits` for geometry type
+         * other than `Point`, instead of `[longitude, latitude]`.
+         */
+        geometry?: (object|Highcharts.SeriesMaplineDataGeometryOptions);
+        /**
+         * (Highmaps) An id for the point. This can be used after render time to
+         * get a pointer to the point object through `chart.get()`.
+         */
+        id?: string;
+        /**
+         * (Highmaps) When data labels are laid out on a map, Highmaps runs a
+         * simplified algorithm to detect collision. When two labels collide,
+         * the one with the lowest rank is hidden. By default the rank is
+         * computed from the area.
+         */
+        labelrank?: number;
+        /**
+         * (Highmaps) Pixel width of the mapline line.
+         */
+        lineWidth?: (number|undefined);
+        /**
+         * (Highmaps) The relative mid point of an area, used to place the data
+         * label. Ranges from 0 to 1\. When `mapData` is used, middleX can be
+         * defined there.
+         */
+        middleX?: number;
+        /**
+         * (Highmaps) The relative mid point of an area, used to place the data
+         * label. Ranges from 0 to 1\. When `mapData` is used, middleY can be
+         * defined there.
+         */
+        middleY?: number;
+        /**
+         * (Highmaps) The name of the point as shown in the legend, tooltip,
+         * dataLabel etc.
+         */
+        name?: string;
+        /**
+         * (Highmaps) For map and mapline series types, the SVG path for the
+         * shape. For compatibility with old IE, not all SVG path definitions
+         * are supported, but M, L and C operators are safe.
+         *
+         * To achieve a better separation between the structure and the data, it
+         * is recommended to use `mapData` to define that paths instead of
+         * defining them on the data points themselves.
+         *
+         * For providing true geographical shapes based on longitude and
+         * latitude, use the `geometry` option instead.
+         */
+        path?: string;
+        /**
+         * (Highmaps) A collection of options for different series states.
+         *
+         * In addition to the options documented under each state, any option
+         * from the parent series type can be set, with exception of `data` and
+         * `states`.
+         */
+        states?: Highcharts.SeriesStatesOptionsObject;
+        /**
+         * (Highmaps) The numeric value of the data point.
+         */
+        value?: (number|null);
     }
 }

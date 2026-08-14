@@ -82,6 +82,15 @@ declare module "../highcharts.src" {
          */
         dataMapping?: Highcharts.DataMappingOptionsObject;
         /**
+         * (Highmaps) Options for a specific series-level data table or an array
+         * of data tables. The `dataTable` option can be either a configuration
+         * object or an instance of the `DataTable` class. If a `DataTable`
+         * instance is passed, it will be used directly. If a configuration
+         * object or an array is passed, a new `DataTable` instance will be
+         * created based on the provided configuration.
+         */
+        dataTable?: (Highcharts.DataTable|Highcharts.DataTableOptionsObject|Array<(Highcharts.DataTable|Highcharts.DataTableOptionsObject)>);
+        /**
          * (Highmaps) Deprecated. Use
          * plotOptions.series.accessibility.description instead.
          *
@@ -162,6 +171,10 @@ declare module "../highcharts.src" {
         skipKeyboardNavigation?: boolean;
         /**
          * (Highmaps) A collection of options for different series states.
+         *
+         * In addition to the options documented under each state, any option
+         * from the parent series type can be set, with exception of `data` and
+         * `states`.
          */
         states?: Highcharts.SeriesStatesOptionsObject;
         /**
@@ -180,77 +193,5 @@ declare module "../highcharts.src" {
          * **Note**: This option works only for non-cartesian series.
          */
         zoomEnabled?: boolean;
-    }
-    /**
-     * (Highmaps) Animation when not hovering over the marker.
-     */
-    interface PlotTiledwebmapStatesInactiveAnimationOptions {
-        duration?: number;
-    }
-    /**
-     * (Highmaps) A `tiledwebmap` series. The type option is not specified, it
-     * is inherited from chart.type.
-     *
-     * Configuration options for the series are given in three levels:
-     *
-     * 1. Options for all series in a chart are defined in the
-     * plotOptions.series object.
-     *
-     * 2. Options for all `tiledwebmap` series are defined in
-     * plotOptions.tiledwebmap.
-     *
-     * 3. Options for one single series are given in the series instance array.
-     * (see online documentation for example)
-     *
-     * **TypeScript:**
-     *
-     * - type option should always be set, otherwise a broad set of unsupported
-     * options is allowed.
-     *
-     * - when accessing an array of series, the combined set of all series types
-     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
-     * specific type can be done by checking the `type` property. (see online
-     * documentation for example)
-     *
-     * You have to extend the `SeriesTiledwebmapOptions` via an interface to
-     * allow custom properties: ``` declare interface SeriesTiledwebmapOptions {
-     * customProperty: string; }
-     *
-     */
-    interface SeriesTiledwebmapOptions extends Highcharts.PlotTiledwebmapOptions, Highcharts.SeriesOptions {
-        /**
-         * Not available
-         */
-        affectsMapView?: undefined;
-        /**
-         * Not available
-         */
-        allAreas?: undefined;
-        /**
-         * Not available
-         */
-        colorByPoint?: undefined;
-        /**
-         * Not available
-         */
-        colors?: undefined;
-        /**
-         * Not available
-         */
-        dataParser?: undefined;
-        /**
-         * Not available
-         */
-        dataURL?: undefined;
-        /**
-         * Not available
-         */
-        nullColor?: undefined;
-        /**
-         * (Highcharts, Highstock, Highmaps, Gantt) This property is only in
-         * TypeScript non-optional and might be `undefined` in series objects
-         * from unknown sources.
-         */
-        type: "tiledwebmap";
     }
 }

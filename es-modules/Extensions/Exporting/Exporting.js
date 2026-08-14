@@ -186,8 +186,8 @@ export class Exporting {
     }
     /** @internal */
     /**
-     * Collects all unique font family names used inline
-     * within <text> and <tspan> elements of an SVG by inspecting
+     * Collects all unique font family names used inline within the root
+     * SVG element and its <text> and <tspan> elements by inspecting
      * their style attributes and font-family attributes.
      *
      * @param {SVGSVGElement} svg
@@ -196,8 +196,11 @@ export class Exporting {
      * The set to store and accumulate unique font family names.
      */
     static collectSVGInlineFonts(svg, usedFontFamilies) {
-        const textNodes = svg.querySelectorAll('text, tspan');
-        for (const textNode of Array.from(textNodes)) {
+        // Include the root SVG element itself, since the chart-wide
+        // `chart.style.fontFamily` is applied there rather than on the
+        // individual text nodes (#24722).
+        const nodes = [svg, ...Array.from(svg.querySelectorAll('text, tspan'))];
+        for (const textNode of nodes) {
             const styleAttr = textNode.getAttribute('style') || '';
             const inlineFontFamily = textNode.getAttribute('font-family') || '';
             if (styleAttr.indexOf('font-family') > -1) {
@@ -220,18 +223,6 @@ export class Exporting {
                 return;
             }
             visited.add(href);
-            try {
-                const sheetOrigin = new URL(href, doc.baseURI).origin;
-                if (sheetOrigin !== win.location.origin) {
-                    // We skip all cross-origin stylesheets on purpose.
-                    // This prevents DOM SecurityErrors and unhandled network
-                    // rejections when the browser blocks cssRules access.
-                    return;
-                }
-            }
-            catch {
-                // URL parsing failed, proceed to try/catch
-            }
         }
         try {
             for (const rule of Array.from(sheet.cssRules)) {
@@ -438,6 +429,12 @@ export class Exporting {
     static sanitizeSVG(svg, 
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     options) {
+        // Remove any HTML added to the container after the SVG, like the
+        // Stock Tools GUI wrapper (#894, #9087, #24754)
+        const split = svg.lastIndexOf('</svg>');
+        if (split > -1) {
+            svg = svg.substr(0, split + 6);
+        }
         svg = svg
             // Some tags needs to be closed in xhtml (#13726)
             .replace(/(<(?:img|br).*?(?=\>))>/g, '$1 />')
@@ -1198,6 +1195,7 @@ export class Exporting {
      * The SVG representation of the rendered chart.
      *
      * @emits Highcharts.Chart#event:getSVG
+     * @emits Highcharts.Chart#event:afterGetSVG
      *
      * @requires modules/exporting
      */
@@ -1316,11 +1314,12 @@ export class Exporting {
             if (exporting?.options.applyStyleSheets) {
                 this.applyShadowDOMStyles(chartCopy);
             }
+            fireEvent(chart, 'getSVG', { chartCopy });
             // Get the SVG from the container's innerHTML
             svg = exporting?.getChartHTML(chart.styledMode ||
                 options?.exporting?.applyStyleSheets) || '';
-            fireEvent(chart, 'getSVG', { chartCopy: chartCopy });
             svg = Exporting.sanitizeSVG(svg, options);
+            fireEvent(chart, 'afterGetSVG', { chartCopy, svg });
             // Free up memory
             options = void 0;
             chartCopy.destroy();
@@ -1373,11 +1372,11 @@ export class Exporting {
         // getComputedStyle sees them
         rootNode?.querySelectorAll('style').forEach((style) => {
             const clonedStyle = style.cloneNode(true);
-            chartCopy.container.appendChild(clonedStyle);
+            chartCopy.renderer.defs.element.appendChild(clonedStyle);
             // Store for the later removal
             shadowStyles.push(clonedStyle);
         });
-        addEvent(chart, 'getSVG', () => {
+        addEvent(chart, 'afterGetSVG', () => {
             // Remove temporary Shadow DOM styles
             shadowStyles.forEach((style) => {
                 style.remove();
@@ -1644,8 +1643,9 @@ export class Exporting {
             await this.fallbackToServer(exportingOptions, new Error('Image type not supported for this chart/browser.'));
             return;
         }
-        // Hook into getSVG to get a copy of the chart copy's container (#8273)
-        const unbindGetSVG = addEvent(chart, 'getSVG', (e) => {
+        // Hook into afterGetSVG to get a copy of the chart copy's container
+        // (#8273)
+        const unbindGetSVG = addEvent(chart, 'afterGetSVG', (e) => {
             chartCopyOptions = e.chartCopy.options;
             chartCopyContainer =
                 e.chartCopy.container.cloneNode(true);

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.0.0 (2026-06-11)
+ * @license Highstock JS v13.0.0-modified (2026-08-14)
  * @module highcharts/modules/stock-tools
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -27,48 +27,48 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 660:
-/***/ ((module) => {
+/***/ 660
+(module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__660__;
 
-/***/ }),
+/***/ },
 
-/***/ 820:
-/***/ ((module) => {
+/***/ 820
+(module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__820__;
 
-/***/ }),
+/***/ },
 
-/***/ 944:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
-
-/***/ }),
-
-/***/ 984:
-/***/ ((module) => {
+/***/ 984
+(module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__984__;
 
-/***/ })
+/***/ },
+
+/***/ 944
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
+
+/***/ }
 
 /******/ 	});
 /************************************************************************/
 /******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
+/******/ 	const __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
 /******/ 		// Check if module is in cache
-/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		const cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
 /******/ 			return cachedModule.exports;
 /******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 		const module = __webpack_module_cache__[moduleId] = {
 /******/ 			// no module.id needed
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
@@ -86,7 +86,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__984__;
 /******/ 	(() => {
 /******/ 		// getDefaultExport function for compatibility with non-harmony modules
 /******/ 		__webpack_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
+/******/ 			const getter = module && module.__esModule ?
 /******/ 				() => (module['default']) :
 /******/ 				() => (module);
 /******/ 			__webpack_require__.d(getter, { a: getter });
@@ -96,11 +96,26 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__984__;
 /******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
+/******/ 		// define getter/value functions for harmony exports
 /******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 			if(Array.isArray(definition)) {
+/******/ 				var i = 0;
+/******/ 				while(i < definition.length) {
+/******/ 					var key = definition[i++];
+/******/ 					var binding = definition[i++];
+/******/ 					if(!__webpack_require__.o(exports, key)) {
+/******/ 						if(binding === 0) {
+/******/ 							Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 						} else {
+/******/ 							Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 						}
+/******/ 					} else if(binding === 0) { i++; }
+/******/ 				}
+/******/ 			} else {
+/******/ 				for(var key in definition) {
+/******/ 					if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 					}
 /******/ 				}
 /******/ 			}
 /******/ 		};
@@ -112,7 +127,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__984__;
 /******/ 	})();
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
+let __webpack_exports__ = {};
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
@@ -285,6 +300,32 @@ function getAssignedAxis(coords) {
     })[0]; // If the axes overlap, return the first axis that was found.
 }
 /**
+ * Resolve an axis from an annotation option that can reference it either by its
+ * index (number) or by its id (string).
+ *
+ * @internal
+ *
+ * @param {Highcharts.Chart} chart
+ *        The chart instance.
+ *
+ * @param {'xAxis'|'yAxis'} coll
+ *        The axis collection to look in.
+ *
+ * @param {number|string|undefined} idOrIndex
+ *        The axis index or id.
+ *
+ * @return {Highcharts.Axis|undefined}
+ *         The matching axis, or `undefined` if none was found.
+ */
+function getAxisFromOptions(chart, coll, idOrIndex) {
+    if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(idOrIndex)) {
+        return chart[coll][idOrIndex];
+    }
+    return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(idOrIndex) ?
+        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.find)(chart[coll], (axis) => axis.options.id === idOrIndex) :
+        void 0;
+}
+/**
  * Get field type according to value
  *
  * @internal
@@ -311,13 +352,14 @@ function getFieldType(key, value) {
  *
  * */
 /** @internal */
-const NavigationBindingUtilities = {
+const NavigationBindingsUtilities = {
     annotationsFieldsTypes,
     getAssignedAxis,
+    getAxisFromOptions,
     getFieldType
 };
 /** @internal */
-/* harmony default export */ const NavigationBindingsUtilities = (NavigationBindingUtilities);
+/* harmony default export */ const Annotations_NavigationBindingsUtilities = (NavigationBindingsUtilities);
 
 ;// ./code/es-modules/Extensions/Annotations/NavigationBindingsDefaults.js
 /* *
@@ -333,7 +375,7 @@ const NavigationBindingUtilities = {
  * */
 
 
-const { getAssignedAxis: NavigationBindingsDefaults_getAssignedAxis } = NavigationBindingsUtilities;
+const { getAssignedAxis: NavigationBindingsDefaults_getAssignedAxis } = Annotations_NavigationBindingsUtilities;
 
 /* *
  *
@@ -767,7 +809,7 @@ const { format } = (highcharts_Templating_commonjs_highcharts_Templating_commonj
 const { composed, doc, win } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 
-const { getAssignedAxis: NavigationBindings_getAssignedAxis, getFieldType: NavigationBindings_getFieldType } = NavigationBindingsUtilities;
+const { getAssignedAxis: NavigationBindings_getAssignedAxis, getFieldType: NavigationBindings_getFieldType } = Annotations_NavigationBindingsUtilities;
 
 /* *
  *
@@ -1583,7 +1625,7 @@ var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_roo
 
 const { getOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { getAssignedAxis: StockToolsUtilities_getAssignedAxis, getFieldType: StockToolsUtilities_getFieldType } = NavigationBindingsUtilities;
+const { getAssignedAxis: StockToolsUtilities_getAssignedAxis, getFieldType: StockToolsUtilities_getFieldType } = Annotations_NavigationBindingsUtilities;
 
 
 
@@ -3811,7 +3853,7 @@ const StockToolsBindings = {
                 }
             }, navigation.annotationsOptions, navigation.bindings?.verticalCounter.annotationsOptions), annotation = this.chart.addAnnotation(options);
             this.verticalCounter++;
-            (annotation.options.events?.click).call(annotation, {});
+            annotation.options.events?.click?.call(annotation, {});
         }
     },
     /**
@@ -3850,7 +3892,7 @@ const StockToolsBindings = {
                         }]
                 }
             }, navigation.annotationsOptions, navigation.bindings?.timeCycles.annotationsOptions), annotation = this.chart.addAnnotation(options);
-            (annotation.options.events?.click).call(annotation, {});
+            annotation.options.events?.click?.call(annotation, {});
             return annotation;
         },
         steps: [
@@ -3889,7 +3931,7 @@ const StockToolsBindings = {
                     }
                 }
             }, navigation.annotationsOptions, navigation.bindings?.verticalLabel.annotationsOptions), annotation = this.chart.addAnnotation(options);
-            (annotation.options.events?.click).call(annotation, {});
+            annotation.options.events?.click?.call(annotation, {});
         }
     },
     /**
@@ -3942,7 +3984,7 @@ const StockToolsBindings = {
                     }
                 }
             }, navigation.annotationsOptions, navigation.bindings?.verticalArrow.annotationsOptions), annotation = this.chart.addAnnotation(options);
-            (annotation.options.events?.click).call(annotation, {});
+            annotation.options.events?.click?.call(annotation, {});
         }
     },
     /**
@@ -4349,7 +4391,7 @@ const StockToolsBindings = {
             (chart.annotations || []).forEach(function (annotation) {
                 annotation.setVisibility(!this.toggledAnnotations);
             }, this);
-            if (gui && gui.guiEnabled) {
+            if (gui?.guiEnabled) {
                 if (this.toggledAnnotations) {
                     button.firstChild.style['background-image'] =
                         BaseFormUtils('annotations-hidden.svg', gui.iconsURL, StockToolsIcons);

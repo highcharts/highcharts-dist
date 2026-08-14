@@ -10,10 +10,12 @@
  *
  * */
 'use strict';
+import { borderRadiusObject } from '../../Extensions/BorderRadius.js';
 import BoxPlotSeriesDefaults from './BoxPlotSeriesDefaults.js';
 import ColumnSeries from '../Column/ColumnSeries.js';
 import H from '../../Core/Globals.js';
 const { noop } = H;
+import RangeDataLabel from '../RangeDataLabel.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import { crisp, extend, merge, pick, relativeLength } from '../../Shared/Utilities.js';
 /* *
@@ -71,8 +73,9 @@ class BoxPlotSeries extends ColumnSeries {
         // Do the translation on each point dimension
         series.points.forEach(function (point) {
             pointArrayMap.forEach(function (key) {
-                if (point[key] !== null) {
-                    point[key + 'Plot'] = yAxis.translate(point[key], 0, 1, 0, 1);
+                const value = point[key];
+                if (value !== null) {
+                    point[`${key}Plot`] = yAxis.translate(value, false, true, false, true);
                 }
             });
             point.plotHigh = point.highPlot; // For data label validation
@@ -161,19 +164,19 @@ class BoxPlotSeries extends ColumnSeries {
                         options.dashStyle);
                     point.medianShape.attr(medianAttr);
                 }
-                let d;
                 // The stem
                 const stemX = crisp((point.plotX || 0) + (series.pointXOffset || 0) +
                     ((series.barW || 0) / 2), point.stem.strokeWidth());
-                d = [
-                    // Stem up
-                    ['M', stemX, q3Plot],
-                    ['L', stemX, highPlot],
-                    // Stem down
-                    ['M', stemX, q1Plot],
-                    ['L', stemX, lowPlot]
-                ];
-                point.stem[verb]({ d });
+                point.stem[verb]({
+                    d: [
+                        // Stem up
+                        ['M', stemX, q3Plot],
+                        ['L', stemX, highPlot],
+                        // Stem down
+                        ['M', stemX, q1Plot],
+                        ['L', stemX, lowPlot]
+                    ]
+                });
                 // The box
                 if (doQuartiles) {
                     const boxStrokeWidth = point.box.strokeWidth();
@@ -181,15 +184,11 @@ class BoxPlotSeries extends ColumnSeries {
                     q3Plot = crisp(q3Plot, boxStrokeWidth);
                     x = crisp(x, boxStrokeWidth);
                     right = crisp(right, boxStrokeWidth);
-                    d = [
-                        ['M', x, q3Plot],
-                        ['L', x, q1Plot],
-                        ['L', right, q1Plot],
-                        ['L', right, q3Plot],
-                        ['L', x, q3Plot],
-                        ['Z']
-                    ];
-                    point.box[verb]({ d });
+                    // Optionally round the corners of the box
+                    const r = Math.min(relativeLength(borderRadiusObject(options.borderRadius).radius, right - x), (right - x) / 2, Math.abs(q1Plot - q3Plot) / 2);
+                    point.box[verb]({
+                        d: renderer.symbols.roundedRect(x, Math.min(q1Plot, q3Plot), right - x, Math.abs(q1Plot - q3Plot), { r })
+                    });
                 }
                 // The whiskers
                 if (pointWhiskerLength) {
@@ -202,11 +201,12 @@ class BoxPlotSeries extends ColumnSeries {
                 }
                 // The median
                 medianPlot = crisp(point.medianPlot, point.medianShape.strokeWidth());
-                d = [
-                    ['M', x, medianPlot],
-                    ['L', right, medianPlot]
-                ];
-                point.medianShape[verb]({ d });
+                point.medianShape[verb]({
+                    d: [
+                        ['M', x, medianPlot],
+                        ['L', right, medianPlot]
+                    ]
+                });
             }
         }
     }
@@ -226,10 +226,9 @@ extend(BoxPlotSeries.prototype, {
     pointArrayMap: ['low', 'q1', 'median', 'q3', 'high'],
     // Defines the top of the tracker
     pointValKey: 'high',
-    // Disable data labels for box plot
-    drawDataLabels: noop,
     setStackedPoints: noop // #3890
 });
+RangeDataLabel.compose(BoxPlotSeries);
 SeriesRegistry.registerSeriesType('boxplot', BoxPlotSeries);
 /* *
  *

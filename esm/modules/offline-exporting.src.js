@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0 (2026-06-11)
+ * @license Highcharts JS v13.0.0-modified (2026-08-14)
  * @module highcharts/modules/offline-exporting
  * @requires highcharts
  * @requires highcharts/modules/exporting
@@ -15,14 +15,14 @@
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
-/******/ var __webpack_require__ = {};
+/******/ const __webpack_require__ = {};
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
 /******/ (() => {
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
 /******/ 	__webpack_require__.n = (module) => {
-/******/ 		var getter = module && module.__esModule ?
+/******/ 		const getter = module && module.__esModule ?
 /******/ 			() => (module['default']) :
 /******/ 			() => (module);
 /******/ 		__webpack_require__.d(getter, { a: getter });
@@ -32,11 +32,26 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /******/ /* webpack/runtime/define property getters */
 /******/ (() => {
-/******/ 	// define getter functions for harmony exports
+/******/ 	// define getter/value functions for harmony exports
 /******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		for(var key in definition) {
-/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 		if(Array.isArray(definition)) {
+/******/ 			var i = 0;
+/******/ 			while(i < definition.length) {
+/******/ 				var key = definition[i++];
+/******/ 				var binding = definition[i++];
+/******/ 				if(!__webpack_require__.o(exports, key)) {
+/******/ 					if(binding === 0) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 					} else {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 					}
+/******/ 				} else if(binding === 0) { i++; }
+/******/ 			}
+/******/ 		} else {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
 /******/ 			}
 /******/ 		}
 /******/ 	};
@@ -48,7 +63,6 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
-var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -691,17 +705,44 @@ var OfflineExporting;
             // nodes
             titleElements = el.getElementsByTagName('title');
             [].forEach.call(titleElements, function (titleElement) {
-                el.removeChild(titleElement);
+                titleElement.remove();
             });
             // Remove all .highcharts-text-outline elements, #17170
             outlineElements =
                 el.getElementsByClassName('highcharts-text-outline');
             while (outlineElements.length > 0) {
-                const outline = outlineElements[0];
-                if (outline.parentNode) {
-                    outline.parentNode.removeChild(outline);
+                outlineElements[0].remove();
+            }
+        });
+        // Work around jsPDF's missing support for color(srgb r g b) format
+        // (#25001)
+        const srgbColorRegex = /color\(\s*srgb\s+([\d.]+)[, ]+([\d.]+)[, ]+([\d.]+)(?:\s*\/\s*([\d.]+))?\s*\)/; // eslint-disable-line max-len
+        const convertColorSRGBToRGB = (srgbColor) => {
+            if (srgbColor?.startsWith('color(srgb')) {
+                const rgba = srgbColor.match(srgbColorRegex);
+                if (rgba) {
+                    const toChannel = (value) => Math.round(Math.max(0, Math.min(1, parseFloat(value))) *
+                        255), toAlpha = (value) => Math.max(0, Math.min(1, parseFloat(value))), r = toChannel(rgba[1]), g = toChannel(rgba[2]), b = toChannel(rgba[3]), alpha = rgba[4];
+                    if (alpha !== void 0) {
+                        return `rgba(${r}, ${g}, ${b}, ${toAlpha(alpha)})`;
+                    }
+                    return `rgb(${r}, ${g}, ${b})`;
                 }
             }
+        };
+        Array.from(dummySVGContainer.querySelectorAll('*')).forEach((el) => {
+            ['color', 'fill', 'stop-color', 'stroke'].forEach((prop) => {
+                // Handle attributes
+                const attrRGB = convertColorSRGBToRGB(el.getAttribute(prop));
+                if (attrRGB) {
+                    el.setAttribute(prop, attrRGB);
+                }
+                // Handle style properties
+                const styleRGB = convertColorSRGBToRGB(el.style?.[prop]);
+                if (styleRGB) {
+                    el.style[prop] = styleRGB;
+                }
+            });
         });
         return dummySVGContainer.querySelector('svg');
     }

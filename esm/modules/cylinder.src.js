@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0 (2026-06-11)
+ * @license Highcharts JS v13.0.0-modified (2026-08-14)
  * @module highcharts/modules/cylinder
  * @requires highcharts
  * @requires highcharts/highcharts-3d
@@ -15,14 +15,14 @@
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
-/******/ var __webpack_require__ = {};
+/******/ const __webpack_require__ = {};
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
 /******/ (() => {
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
 /******/ 	__webpack_require__.n = (module) => {
-/******/ 		var getter = module && module.__esModule ?
+/******/ 		const getter = module && module.__esModule ?
 /******/ 			() => (module['default']) :
 /******/ 			() => (module);
 /******/ 		__webpack_require__.d(getter, { a: getter });
@@ -32,11 +32,26 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /******/ /* webpack/runtime/define property getters */
 /******/ (() => {
-/******/ 	// define getter functions for harmony exports
+/******/ 	// define getter/value functions for harmony exports
 /******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		for(var key in definition) {
-/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 		if(Array.isArray(definition)) {
+/******/ 			var i = 0;
+/******/ 			while(i < definition.length) {
+/******/ 				var key = definition[i++];
+/******/ 				var binding = definition[i++];
+/******/ 				if(!__webpack_require__.o(exports, key)) {
+/******/ 					if(binding === 0) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 					} else {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 					}
+/******/ 				} else if(binding === 0) { i++; }
+/******/ 			}
+/******/ 		} else {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
 /******/ 			}
 /******/ 		}
 /******/ 	};
@@ -48,7 +63,6 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
-var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -536,6 +550,7 @@ const { parse: SVGElement3DCylinder_color } = (external_highcharts_src_js_defaul
  *  Class
  *
  * */
+/** @internal */
 class SVGElement3DCylinder extends SVG_SVGElement3D {
     constructor() {
         /* *
@@ -569,6 +584,7 @@ class SVGElement3DCylinder extends SVG_SVGElement3D {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Cylinder_SVGElement3DCylinder = (SVGElement3DCylinder);
 
 ;// ./code/es-modules/Series/Cylinder/CylinderComposition.js
@@ -598,9 +614,7 @@ const { perspective: CylinderComposition_perspective } = Core_Math3D;
  *  Functions
  *
  * */
-/**
- *
- */
+/** @internal */
 function compose(SVGRendererClass) {
     const rendererProto = SVGRendererClass.prototype;
     if (!rendererProto.cylinder) {
@@ -618,18 +632,18 @@ function compose(SVGRendererClass) {
 /**
  * Check if a path is simplified. The simplified path contains only lineTo
  * segments, whereas non-simplified contain curves.
- * @private
+ * @internal
  */
 function isSimplified(path) {
     return !path.some((seg) => seg[0] === 'C');
 }
-/** @private */
+/** @internal */
 function rendererCylinder(shapeArgs) {
     return this.element3d('cylinder', shapeArgs);
 }
 /**
  * Generates paths and zIndexes.
- * @private
+ * @internal
  */
 function rendererCylinderPath(shapeArgs) {
     const renderer = this, chart = charts[renderer.chartIndex], 
@@ -653,7 +667,7 @@ function rendererCylinderPath(shapeArgs) {
  * Returns curved path in format of:
  * [ M, x, y, ...[C, cp1x, cp2y, cp2x, cp2y, epx, epy]*n_times ]
  * (cp - control point, ep - end point)
- * @private
+ * @internal
  */
 function rendererGetCurvedPath(points) {
     const path = [['M', points[0].x, points[0].y]], limit = points.length - 2;
@@ -669,7 +683,7 @@ function rendererGetCurvedPath(points) {
 }
 /**
  * Returns cylinder Back path.
- * @private
+ * @internal
  */
 function rendererGetCylinderBack(topPath, bottomPath) {
     const path = [];
@@ -725,7 +739,7 @@ function rendererGetCylinderBack(topPath, bottomPath) {
 }
 /**
  * Returns cylinder path for top or bottom.
- * @private
+ * @internal
  */
 function rendererGetCylinderEnd(chart, shapeArgs, isBottom) {
     const { width = 0, height = 0, alphaCorrection = 0 } = shapeArgs, 
@@ -822,7 +836,7 @@ function rendererGetCylinderEnd(chart, shapeArgs, isBottom) {
 }
 /**
  * Returns cylinder Front path.
- * @private
+ * @internal
  */
 function rendererGetCylinderFront(topPath, bottomPath) {
     const path = topPath.slice(0, 3);
@@ -866,9 +880,11 @@ function rendererGetCylinderFront(topPath, bottomPath) {
  *  Default Export
  *
  * */
+/** @internal */
 const CylinderComposition = {
     compose
 };
+/** @internal */
 /* harmony default export */ const Cylinder_CylinderComposition = (CylinderComposition);
 
 ;// external ["../highcharts.src.js","default","SeriesRegistry"]
@@ -898,6 +914,7 @@ const { column: { prototype: { pointClass: ColumnPoint } } } = (external_highcha
  *  Class
  *
  * */
+/** @internal */
 class CylinderPoint extends ColumnPoint {
 }
 (0,external_highcharts_src_js_default_namespaceObject.extend)(CylinderPoint.prototype, {
@@ -908,6 +925,7 @@ class CylinderPoint extends ColumnPoint {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Cylinder_CylinderPoint = (CylinderPoint);
 
 ;// ./code/es-modules/Series/Cylinder/CylinderSeriesDefaults.js
@@ -1063,7 +1081,7 @@ const { column: ColumnSeries } = (external_highcharts_src_js_default_SeriesRegis
  * @requires highcharts-3d
  * @requires modules/cylinder
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.cylinder
  *
@@ -1087,6 +1105,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Cylinder_CylinderSeries = (CylinderSeries);
 
 ;// ./code/es-modules/masters/modules/cylinder.src.js

@@ -282,7 +282,7 @@ declare module "../highcharts.src" {
          * of two numbers repeats the values for the horizontal and vertical
          * sides.
          */
-        padding?: object;
+        padding?: (number|Array<number>);
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) Aligns data labels relative
          * to points. If `center` alignment is not possible, it defaults to
@@ -719,6 +719,15 @@ declare module "../highcharts.src" {
          */
         dataSorting?: Highcharts.PlotWindbarbDataSortingOptions;
         /**
+         * (Highcharts, Highstock) Options for a specific series-level data
+         * table or an array of data tables. The `dataTable` option can be
+         * either a configuration object or an instance of the `DataTable`
+         * class. If a `DataTable` instance is passed, it will be used directly.
+         * If a configuration object or an array is passed, a new `DataTable`
+         * instance will be created based on the provided configuration.
+         */
+        dataTable?: (Highcharts.DataTable|Highcharts.DataTableOptionsObject|Array<(Highcharts.DataTable|Highcharts.DataTableOptionsObject)>);
+        /**
          * (Highcharts) Depth of the columns in a 3D column chart.
          */
         depth?: number;
@@ -1103,6 +1112,10 @@ declare module "../highcharts.src" {
         /**
          * (Highcharts, Highstock) A collection of options for different series
          * states.
+         *
+         * In addition to the options documented under each state, any option
+         * from the parent series type can be set, with exception of `data` and
+         * `states`.
          */
         states?: Highcharts.SeriesStatesOptionsObject;
         /**
@@ -1204,6 +1217,11 @@ declare module "../highcharts.src" {
      * (Highcharts, Highstock) Animation when not hovering over the marker.
      */
     interface PlotWindbarbStatesInactiveAnimationOptions {
+        /**
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
+         */
         duration?: number;
     }
     /**
@@ -1260,9 +1278,28 @@ declare module "../highcharts.src" {
         y?: number;
     }
     /**
+     * (Highcharts, Highstock, Gantt) Enable or disable the initial animation
+     * when a series is displayed for the `dataLabels`. The animation can also
+     * be set as a configuration object. Please note that this option only
+     * applies to the initial animation.
+     *
+     * For other animations, see chart.animation and the animation parameter
+     * under the API methods. The following properties are supported:
+     *
+     * - `defer`: The animation delay time in milliseconds.
+     */
+    interface SeriesWindbarbDataDataLabelsAnimationOptions {
+        /**
+         * (Highcharts, Highstock, Gantt) The animation delay time in
+         * milliseconds. Set to `0` to render the data labels immediately. As
+         * `undefined` inherits defer time from the series.animation.defer.
+         */
+        defer?: number;
+    }
+    /**
      * (Highcharts, Highstock) Animation when hovering over the marker.
      */
-    interface SeriesWindbarbDataMarkerStatesHoverAnimationOptions {
+    interface SeriesWindbarbDataMarkerStatesSelectAnimationOptions {
         duration?: number;
     }
 }

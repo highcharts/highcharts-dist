@@ -241,7 +241,7 @@ export var ColorAxisComposition;
      * @internal
      */
     function wrapFxFillSetter() {
-        this.elem.attr('fill', color(this.start).tweenTo(color(this.end), this.pos), void 0, true);
+        (this.elem.attr)('fill', color(this.start).tweenTo(color(this.end), this.pos), void 0, true);
     }
     /**
      * Handle animation of the color attributes directly.

@@ -241,12 +241,12 @@ class FlagsSeries extends ColumnSeries {
      * @private
      */
     pointAttribs(point, state) {
-        const options = this.options, color = (point && point.color) || this.color;
-        let lineColor = options.lineColor, lineWidth = (point && point.lineWidth), fill = (point && point.fillColor) || options.fillColor;
+        const options = this.options, color = point?.color || this.color;
+        let lineColor = options.lineColor, lineWidth = point?.lineWidth, fill = point?.fillColor || options.fillColor;
         if (state) {
-            fill = options.states[state].fillColor;
-            lineColor = options.states[state].lineColor;
-            lineWidth = options.states[state].lineWidth;
+            fill = options.states?.[state]?.fillColor;
+            lineColor = options.states?.[state]?.lineColor;
+            lineWidth = options.states?.[state]?.lineWidth;
         }
         return {
             fill: fill || color,
@@ -297,12 +297,3 @@ SeriesRegistry.registerSeriesType('flags', FlagsSeries);
  *
  * */
 export default FlagsSeries;
-/* *
- *
- *  API Declarations
- *
- * */
-/**
- * @typedef {"circlepin"|"flag"|"squarepin"} Highcharts.FlagsShapeValue
- */
-''; // Detach doclets above

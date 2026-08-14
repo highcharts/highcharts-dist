@@ -40,8 +40,8 @@ class PolygonSeries extends ScatterSeries {
         return graphPath;
     }
     drawGraph() {
-        // Hack into the fill logic in area.drawGraph
-        this.options.fillColor = this.color;
+        // Borrow the fill logic from area.drawGraph, honoring `fillOpacity`
+        // and an optional `fillColor`
         AreaSeries.prototype.drawGraph.call(this);
     }
 }

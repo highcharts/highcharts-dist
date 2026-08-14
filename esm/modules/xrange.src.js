@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0 (2026-06-11)
+ * @license Highcharts JS v13.0.0-modified (2026-08-14)
  * @module highcharts/modules/xrange
  * @requires highcharts
  *
@@ -14,14 +14,14 @@
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
-/******/ var __webpack_require__ = {};
+/******/ const __webpack_require__ = {};
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
 /******/ (() => {
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
 /******/ 	__webpack_require__.n = (module) => {
-/******/ 		var getter = module && module.__esModule ?
+/******/ 		const getter = module && module.__esModule ?
 /******/ 			() => (module['default']) :
 /******/ 			() => (module);
 /******/ 		__webpack_require__.d(getter, { a: getter });
@@ -31,11 +31,26 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /******/ /* webpack/runtime/define property getters */
 /******/ (() => {
-/******/ 	// define getter functions for harmony exports
+/******/ 	// define getter/value functions for harmony exports
 /******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		for(var key in definition) {
-/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 		if(Array.isArray(definition)) {
+/******/ 			var i = 0;
+/******/ 			while(i < definition.length) {
+/******/ 				var key = definition[i++];
+/******/ 				var binding = definition[i++];
+/******/ 				if(!__webpack_require__.o(exports, key)) {
+/******/ 					if(binding === 0) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 					} else {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 					}
+/******/ 				} else if(binding === 0) { i++; }
+/******/ 			}
+/******/ 		} else {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
 /******/ 			}
 /******/ 		}
 /******/ 	};
@@ -47,7 +62,6 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
-var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -454,7 +468,7 @@ function onAxisAfterGetSeriesExtremes() {
     const time = this.chart.time;
     let dataMax, modMax;
     if (this.isXAxis) {
-        dataMax = (0,external_highcharts_src_js_default_namespaceObject.pick)(this.dataMax, -Number.MAX_VALUE);
+        dataMax = this.dataMax ?? -Number.MAX_VALUE;
         for (const series of this.series) {
             const column = (series.dataTable.getColumn('x2', true) ||
                 series.dataTable.getColumn('end', true) ||
@@ -579,7 +593,7 @@ class XRangeSeries extends ColumnSeries {
     }
     alignDataLabel(point) {
         const oldPlotX = point.plotX;
-        point.plotX = (0,external_highcharts_src_js_default_namespaceObject.pick)(point.dlBox?.centerX, point.plotX);
+        point.plotX = point.dlBox?.centerX ?? point.plotX;
         if (point.dataLabel && point.shapeArgs?.width) {
             point.dataLabel.css({
                 width: `${point.shapeArgs.width}px`
@@ -592,9 +606,9 @@ class XRangeSeries extends ColumnSeries {
      * @private
      */
     translatePoint(point) {
-        const xAxis = this.xAxis, yAxis = this.yAxis, metrics = this.columnMetrics, options = this.options, minPointLength = options.minPointLength || 0, oldColWidth = (point.shapeArgs?.width || 0) / 2, seriesXOffset = this.pointXOffset = metrics.offset, posX = (0,external_highcharts_src_js_default_namespaceObject.pick)(point.x2, point.x + (point.len || 0)), borderRadius = options.borderRadius, plotTop = this.chart.plotTop, plotLeft = this.chart.plotLeft;
+        const xAxis = this.xAxis, yAxis = this.yAxis, metrics = this.columnMetrics, options = this.options, minPointLength = options.minPointLength || 0, oldColWidth = (point.shapeArgs?.width || 0) / 2, seriesXOffset = this.pointXOffset = metrics.offset, posX = point.x2 ?? (point.x + (point.len || 0)), borderRadius = options.borderRadius, plotTop = this.chart.plotTop, plotLeft = this.chart.plotLeft;
         let plotX = point.plotX, plotX2 = xAxis.translate(posX, 0, 0, 0, 1);
-        const length = Math.abs(plotX2 - plotX), inverted = this.chart.inverted, borderWidth = (0,external_highcharts_src_js_default_namespaceObject.pick)(options.borderWidth, 1);
+        const length = Math.abs(plotX2 - plotX), inverted = this.chart.inverted, borderWidth = options.borderWidth ?? 1;
         let widthDifference, partialFill, yOffset = metrics.offset, pointHeight = Math.round(metrics.width), dlLeft, dlRight, dlWidth, clipRectWidth;
         if (minPointLength) {
             widthDifference = minPointLength - length;
@@ -724,9 +738,9 @@ class XRangeSeries extends ColumnSeries {
      *        'animate' (animates changes) or 'attr' (sets options)
      */
     drawPoint(point, verb) {
-        const seriesOpts = this.options, renderer = this.chart.renderer, type = point.shapeType, shapeArgs = point.shapeArgs, partShapeArgs = point.partShapeArgs, clipRectArgs = point.clipRectArgs, pointState = point.state, stateOpts = (seriesOpts.states[pointState || 'normal'] ||
-            {}), pointStateVerb = typeof pointState === 'undefined' ?
-            'attr' : verb, pointAttr = this.pointAttribs(point, pointState), animation = (0,external_highcharts_src_js_default_namespaceObject.pick)(this.chart.options.chart.animation, stateOpts.animation);
+        const seriesOpts = this.options, renderer = this.chart.renderer, type = point.shapeType, shapeArgs = point.shapeArgs, partShapeArgs = point.partShapeArgs, clipRectArgs = point.clipRectArgs, pointState = point.state, stateOpts = seriesOpts.states?.[pointState || 'normal'] || {}, pointStateVerb = typeof pointState === 'undefined' ?
+            'attr' : verb, pointAttr = this.pointAttribs(point, pointState), animation = (this.chart.options.chart.animation ??
+            stateOpts.animation);
         let graphic = point.graphic, pfOptions = point.partialFill;
         if (!point.isNull && point.visible !== false) {
             const className = point.getClassName();

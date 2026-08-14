@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0 (2026-06-11)
+ * @license Highcharts JS v13.0.0-modified (2026-08-14)
  * Treegraph chart series type
  * @module highcharts/modules/treegraph
  * @requires highcharts
@@ -26,62 +26,62 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 28:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__28__;
-
-/***/ }),
-
-/***/ 260:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__260__;
-
-/***/ }),
-
-/***/ 512:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
-
-/***/ }),
-
-/***/ 540:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__540__;
-
-/***/ }),
-
-/***/ 620:
-/***/ ((module) => {
+/***/ 620
+(module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__620__;
 
-/***/ }),
+/***/ },
 
-/***/ 944:
-/***/ ((module) => {
+/***/ 260
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__260__;
+
+/***/ },
+
+/***/ 28
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__28__;
+
+/***/ },
+
+/***/ 540
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__540__;
+
+/***/ },
+
+/***/ 512
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
+
+/***/ },
+
+/***/ 944
+(module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 
-/***/ })
+/***/ }
 
 /******/ 	});
 /************************************************************************/
 /******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
+/******/ 	const __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
 /******/ 		// Check if module is in cache
-/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		const cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
 /******/ 			return cachedModule.exports;
 /******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 		const module = __webpack_module_cache__[moduleId] = {
 /******/ 			// no module.id needed
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
@@ -99,7 +99,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	(() => {
 /******/ 		// getDefaultExport function for compatibility with non-harmony modules
 /******/ 		__webpack_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
+/******/ 			const getter = module && module.__esModule ?
 /******/ 				() => (module['default']) :
 /******/ 				() => (module);
 /******/ 			__webpack_require__.d(getter, { a: getter });
@@ -109,11 +109,26 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
+/******/ 		// define getter/value functions for harmony exports
 /******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 			if(Array.isArray(definition)) {
+/******/ 				var i = 0;
+/******/ 				while(i < definition.length) {
+/******/ 					var key = definition[i++];
+/******/ 					var binding = definition[i++];
+/******/ 					if(!__webpack_require__.o(exports, key)) {
+/******/ 						if(binding === 0) {
+/******/ 							Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 						} else {
+/******/ 							Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 						}
+/******/ 					} else if(binding === 0) { i++; }
+/******/ 				}
+/******/ 			} else {
+/******/ 				for(var key in definition) {
+/******/ 					if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 					}
 /******/ 				}
 /******/ 			}
 /******/ 		};
@@ -125,7 +140,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	})();
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
+let __webpack_exports__ = {};
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
@@ -2028,7 +2043,8 @@ class TreegraphSeries extends TreemapSeries {
                 }
                 else {
                     // #19552
-                    point.collapsed = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(point.collapsed, (this.mapOptionsToLevel[point.node.level] || {}).collapsed);
+                    point.collapsed = (point.collapsed ??
+                        (this.mapOptionsToLevel[point.node.level] || {}).collapsed);
                     point.linkToParent.visible =
                         point.linkToParent.toNode.visible;
                 }
@@ -2058,7 +2074,8 @@ class TreegraphSeries extends TreemapSeries {
         const point = node.point;
         if (point) {
             // Take the level options into account.
-            point.collapsed = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(point.collapsed, (this.mapOptionsToLevel[node.level] || {}).collapsed);
+            point.collapsed = (point.collapsed ??
+                (this.mapOptionsToLevel[node.level] || {}).collapsed);
             point.visible = visibility;
             visibility = visibility === false ? false : !point.collapsed;
         }
@@ -2114,8 +2131,10 @@ class TreegraphSeries extends TreemapSeries {
         }
     }
     translateLink(link) {
-        const fromNode = link.fromNode, toNode = link.toNode, linkWidth = this.options.link?.lineWidth || 0, factor = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(this.options.link?.curveFactor, 0.5), hasXData = toNode.x !== toNode.node.level ||
-            fromNode.x !== fromNode.node.level, type = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(link.options.link?.type, this.options.link?.type, 'default');
+        const fromNode = link.fromNode, toNode = link.toNode, linkWidth = this.options.link?.lineWidth || 0, factor = this.options.link?.curveFactor ?? 0.5, hasXData = toNode.x !== toNode.node.level ||
+            fromNode.x !== fromNode.node.level, type = (link.options.link?.type ??
+            this.options.link?.type ??
+            'default');
         if (fromNode.shapeArgs && toNode.shapeArgs) {
             const fromNodeWidth = (fromNode.shapeArgs.width || 0), inverted = this.chart.inverted, y1 = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.crisp)((fromNode.shapeArgs.y || 0) +
                 (fromNode.shapeArgs.height || 0) / 2, linkWidth), y2 = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.crisp)((toNode.shapeArgs.y || 0) +
@@ -2235,7 +2254,7 @@ class TreegraphSeries extends TreemapSeries {
         // Links must also be destroyed.
         if (this.links) {
             for (const link of this.links) {
-                link.destroy();
+                link.destroy(true);
             }
             this.links.length = 0;
         }
@@ -2247,15 +2266,18 @@ class TreegraphSeries extends TreemapSeries {
      */
     pointAttribs(point, state) {
         const series = this, levelOptions = point &&
-            series.mapOptionsToLevel[point.node.level ?? 0] || {}, options = point && point.options, stateOptions = (levelOptions.states &&
-            levelOptions.states[state]) ||
-            {};
+            series.mapOptionsToLevel[point.node.level] ||
+            {}, options = point?.options || {}, stateOptions = levelOptions.states?.[state || 'normal'] || {};
         if (point) {
             point.options.marker = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(series.options.marker, levelOptions.marker, point.options.marker);
         }
-        const linkColor = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(stateOptions && stateOptions.link && stateOptions.link.color, options && options.link && options.link.color, levelOptions && levelOptions.link && levelOptions.link.color, series.options.link && series.options.link.color), linkLineWidth = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(stateOptions && stateOptions.link &&
-            stateOptions.link.lineWidth, options && options.link && options.link.lineWidth, levelOptions && levelOptions.link &&
-            levelOptions.link.lineWidth, series.options.link && series.options.link.lineWidth), attribs = seriesProto.pointAttribs.call(series, point, state);
+        const linkColor = (stateOptions.link?.color ??
+            options.link?.color ??
+            levelOptions.link?.color ??
+            series.options.link?.color), linkLineWidth = (stateOptions.link?.lineWidth ??
+            options.link?.lineWidth ??
+            levelOptions.link?.lineWidth ??
+            series.options.link?.lineWidth), attribs = seriesProto.pointAttribs.call(series, point, state);
         if (point) {
             if (point.isLink) {
                 attribs.stroke = linkColor;
@@ -2285,7 +2307,9 @@ class TreegraphSeries extends TreemapSeries {
             plotSizeX - width / 2 - x :
             x - width / 2), nodeY = node.y = (!reversed ?
             plotSizeY - y - height / 2 :
-            y - height / 2), borderRadius = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(point.options.borderRadius, level.borderRadius, this.options.borderRadius), symbolFn = symbols[symbol || 'circle'];
+            y - height / 2), borderRadius = (point.options.borderRadius ??
+            level.borderRadius ??
+            this.options.borderRadius), symbolFn = symbols[symbol || 'circle'];
         if (symbolFn === void 0) {
             point.hasImage = true;
             point.shapeType = 'image';

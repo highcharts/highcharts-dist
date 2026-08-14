@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.0.0 (2026-06-11)
+ * @license Highstock JS v13.0.0-modified (2026-08-14)
  * @module highcharts/modules/hollowcandlestick
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -15,14 +15,14 @@
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
-/******/ var __webpack_require__ = {};
+/******/ const __webpack_require__ = {};
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
 /******/ (() => {
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
 /******/ 	__webpack_require__.n = (module) => {
-/******/ 		var getter = module && module.__esModule ?
+/******/ 		const getter = module && module.__esModule ?
 /******/ 			() => (module['default']) :
 /******/ 			() => (module);
 /******/ 		__webpack_require__.d(getter, { a: getter });
@@ -32,11 +32,26 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /******/ /* webpack/runtime/define property getters */
 /******/ (() => {
-/******/ 	// define getter functions for harmony exports
+/******/ 	// define getter/value functions for harmony exports
 /******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		for(var key in definition) {
-/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 		if(Array.isArray(definition)) {
+/******/ 			var i = 0;
+/******/ 			while(i < definition.length) {
+/******/ 				var key = definition[i++];
+/******/ 				var binding = definition[i++];
+/******/ 				if(!__webpack_require__.o(exports, key)) {
+/******/ 					if(binding === 0) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 					} else {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 					}
+/******/ 				} else if(binding === 0) { i++; }
+/******/ 			}
+/******/ 		} else {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
 /******/ 			}
 /******/ 		}
 /******/ 	};
@@ -48,7 +63,6 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
-var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -198,7 +212,7 @@ class HollowCandlestickSeries extends HollowCandlestickSeries_CandlestickSeries 
      * @param {string} trendDirection
      * Type of candle direction (bearish/bullish)(down/up).
      *
-     * @return {ColorType}
+     * @return {Highcharts.ColorType}
      * Line color
      */
     getLineColor(trendDirection) {
@@ -217,7 +231,7 @@ class HollowCandlestickSeries extends HollowCandlestickSeries_CandlestickSeries 
      * @param {HollowcandleInfo} hollowcandleInfo
      *        Information about the current candle.
      *
-     * @return {ColorType}
+     * @return {Highcharts.ColorType}
      * Point fill color
      */
     getPointFill(hollowcandleInfo) {
@@ -281,11 +295,11 @@ class HollowCandlestickSeries extends HollowCandlestickSeries_CandlestickSeries 
             attribs.stroke;
         // Select or hover states
         if (state) {
-            stateOptions = this.options.states[state];
+            stateOptions = this.options.states?.[state] || {};
             attribs.fill = stateOptions.color || attribs.fill;
             attribs.stroke = stateOptions.lineColor || attribs.stroke;
-            attribs['stroke-width'] =
-                stateOptions.lineWidth || attribs['stroke-width'];
+            attribs['stroke-width'] = stateOptions.lineWidth ||
+                attribs['stroke-width'];
         }
         return attribs;
     }
@@ -312,7 +326,7 @@ HollowCandlestickSeries.defaultOptions = (0,external_highcharts_src_js_default_n
      * @sample {highstock} highcharts/css/hollow-candlestick/
      *         Colors in styled mode
      *
-     * @type    {ColorType}
+     * @type    {Highcharts.ColorType}
      * @product highstock
      */
     color: 'var(--highcharts-negative-color)',
@@ -329,7 +343,7 @@ HollowCandlestickSeries.defaultOptions = (0,external_highcharts_src_js_default_n
      * @sample {highstock} highcharts/css/hollow-candlestick/
      *         Colors in styled mode
      *
-     * @type    {ColorType}
+     * @type    {Highcharts.ColorType}
      * @product highstock
      */
     lineColor: 'var(--highcharts-negative-color)',
@@ -342,7 +356,7 @@ HollowCandlestickSeries.defaultOptions = (0,external_highcharts_src_js_default_n
      * @sample {highstock} highcharts/css/hollow-candlestick/
      *         Colors in styled mode
      *
-     * @type    {ColorType}
+     * @type    {Highcharts.ColorType}
      * @product highstock
      */
     upColor: 'var(--highcharts-positive-color)',
@@ -355,7 +369,7 @@ HollowCandlestickSeries.defaultOptions = (0,external_highcharts_src_js_default_n
      * @sample {highstock} highcharts/css/hollow-candlestick/
      *         Colors in styled mode
      *
-     * @type    {ColorType}
+     * @type    {Highcharts.ColorType}
      * @product highstock
      */
     upLineColor: 'var(--highcharts-positive-color)'

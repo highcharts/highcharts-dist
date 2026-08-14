@@ -10,8 +10,7 @@
  *
  * */
 'use strict';
-import A from '../Animation/AnimationUtilities.js';
-const { animObject, setAnimation } = A;
+import { animObject, setAnimation } from '../Animation/AnimationUtilities.js';
 import F from '../Foundation.js';
 const { registerEventOptions } = F;
 import H from '../Globals.js';
@@ -1281,7 +1280,7 @@ export default Legend;
  */ /**
 * Related browser event.
 * @name Highcharts.LegendItemClickEventObject#browserEvent
-* @type {Highcharts.PointerEvent}
+* @type {PointerEvent}
 */ /**
 * Prevent the default action of toggle the visibility of the series or point.
 * @name Highcharts.LegendItemClickEventObject#preventDefault
@@ -1332,7 +1331,7 @@ export default Legend;
  */ /**
 * Related browser event.
 * @name Highcharts.PointLegendItemClickEventObject#browserEvent
-* @type {Highcharts.PointerEvent}
+* @type {PointerEvent}
 */ /**
 * Whether the default action has been prevented (`true`) or not.
 * @name Highcharts.PointLegendItemClickEventObject#defaultPrevented
@@ -1388,7 +1387,7 @@ export default Legend;
  */ /**
 * Related browser event.
 * @name Highcharts.SeriesLegendItemClickEventObject#browserEvent
-* @type {Highcharts.PointerEvent}
+* @type {PointerEvent}
 */ /**
 * Whether the default action has been prevented (`true`) or not.
 * @name Highcharts.SeriesLegendItemClickEventObject#defaultPrevented

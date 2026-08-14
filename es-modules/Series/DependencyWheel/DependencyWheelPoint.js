@@ -20,6 +20,7 @@ import { pInt, wrap } from '../../Shared/Utilities.js';
  *  Class
  *
  * */
+/** @internal */
 class DependencyWheelPoint extends SankeyPoint {
     /* *
      *
@@ -42,7 +43,7 @@ class DependencyWheelPoint extends SankeyPoint {
     }
     /**
      * Return a text path that the data label uses.
-     * @private
+     * @internal
      */
     getDataLabelPath(label) {
         const point = this, renderer = point.series.chart.renderer, shapeArgs = point.shapeArgs, upperHalf = point.angle < 0 || point.angle > Math.PI, start = shapeArgs.start || 0, end = shapeArgs.end || 0;
@@ -88,4 +89,5 @@ class DependencyWheelPoint extends SankeyPoint {
  *  Default Export
  *
  * */
+/** @internal */
 export default DependencyWheelPoint;

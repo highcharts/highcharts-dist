@@ -11,8 +11,7 @@
  *
  * */
 'use strict';
-import A from '../../Core/Animation/AnimationUtilities.js';
-const { animObject, stop } = A;
+import { animObject, stop } from '../../Core/Animation/AnimationUtilities.js';
 import GeoHeatmapPoint from './GeoHeatmapPoint.js';
 import H from '../../Core/Globals.js';
 const { noop } = H;
@@ -408,9 +407,10 @@ GeoHeatmapSeries.defaultOptions = merge(MapSeries.defaultOptions, {
      *         Advanced demo of GeoHeatmap interpolation with multiple
      *         datasets
      *
-     * @type      {boolean|Highcharts.InterpolationOptionsObject}
-     * @since     11.2.0
-     * @product   highmaps
+     * @declare Highcharts.InterpolationOptionsObject
+     * @product highmaps
+     * @since   11.2.0
+     * @type    {boolean|*}
      */
     interpolation: {
         /**

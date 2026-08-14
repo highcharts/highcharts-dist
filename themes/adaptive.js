@@ -1,5 +1,5 @@
 !/**
- * Highcharts JS v13.0.0 (2026-06-11)
+ * Highcharts JS v13.0.0-modified (2026-08-14)
  * @module highcharts/themes/adaptive
  * @requires highcharts
  *
@@ -8,7 +8,7 @@
  *
  * A commercial license may be required depending on use,
  * see www.highcharts.com/license
- */function(r,o){"object"==typeof exports&&"object"==typeof module?module.exports=o(r._Highcharts,r._Highcharts.Chart):"function"==typeof define&&define.amd?define("highcharts/themes/adaptive",["highcharts/highcharts"],function(r){return o(r,r.Chart)}):"object"==typeof exports?exports["highcharts/themes/adaptive"]=o(r._Highcharts,r._Highcharts.Chart):r.Highcharts=o(r.Highcharts,r.Highcharts.Chart)}("u"<typeof window?this:window,(r,o)=>(()=>{"use strict";var a,l,h={944:o=>{o.exports=r},960:r=>{r.exports=o}},t={};function c(r){var o=t[r];if(void 0!==o)return o.exports;var a=t[r]={exports:{}};return h[r](a,a.exports,c),a.exports}c.n=r=>{var o=r&&r.__esModule?()=>r.default:()=>r;return c.d(o,{a:o}),o},c.d=(r,o)=>{for(var a in o)c.o(o,a)&&!c.o(r,a)&&Object.defineProperty(r,a,{enumerable:!0,get:o[a]})},c.o=(r,o)=>Object.prototype.hasOwnProperty.call(r,o);var e={};c.d(e,{default:()=>k});var i=c(944),s=c.n(i),n=c(960),g=c.n(n);let{setOptions:u}=s(),v=`
+ */function(r,o){"object"==typeof exports&&"object"==typeof module?module.exports=o(r._Highcharts,r._Highcharts.Chart):"function"==typeof define&&define.amd?define("highcharts/themes/adaptive",["highcharts/highcharts"],function(r){return o(r,r.Chart)}):"object"==typeof exports?exports["highcharts/themes/adaptive"]=o(r._Highcharts,r._Highcharts.Chart):r.Highcharts=o(r.Highcharts,r.Highcharts.Chart)}("u"<typeof window?this:window,(r,o)=>(()=>{"use strict";var a,l,h={960(r){r.exports=o},944(o){o.exports=r}};let t={};function c(r){let o=t[r];if(void 0!==o)return o.exports;let a=t[r]={exports:{}};return h[r](a,a.exports,c),a.exports}c.n=r=>{let o=r&&r.__esModule?()=>r.default:()=>r;return c.d(o,{a:o}),o},c.d=(r,o)=>{if(Array.isArray(o))for(var a=0;a<o.length;){var l=o[a++],h=o[a++];c.o(r,l)?0===h&&a++:0===h?Object.defineProperty(r,l,{enumerable:!0,value:o[a++]}):Object.defineProperty(r,l,{enumerable:!0,get:h})}else for(var l in o)c.o(o,l)&&!c.o(r,l)&&Object.defineProperty(r,l,{enumerable:!0,get:o[l]})},c.o=(r,o)=>Object.prototype.hasOwnProperty.call(r,o);let e={};c.d(e,{default:()=>k});var i=c(944),s=c.n(i),n=c(960),g=c.n(n);let{setOptions:u}=s(),v=`
         /* Colors for data series and points */
         --highcharts-color-0: #2caffe;
         --highcharts-color-1: #544fc5;

@@ -530,6 +530,7 @@ var AxisDefaults;
          */
         dateTimeLabelFormats: {
             /**
+             * @type {Highcharts.AxisDateTimeLabelFormatsOptionsObject|string}
              * @declare Highcharts.AxisDateTimeLabelFormatsOptionsObject
              */
             millisecond: {
@@ -555,6 +556,7 @@ var AxisDefaults;
                 range: false
             },
             /**
+             * @type {Highcharts.AxisDateTimeLabelFormatsOptionsObject|string}
              * @declare Highcharts.AxisDateTimeLabelFormatsOptionsObject
              */
             second: {
@@ -580,6 +582,7 @@ var AxisDefaults;
                 range: false
             },
             /**
+             * @type {Highcharts.AxisDateTimeLabelFormatsOptionsObject|string}
              * @declare Highcharts.AxisDateTimeLabelFormatsOptionsObject
              */
             minute: {
@@ -605,6 +608,7 @@ var AxisDefaults;
                 range: false
             },
             /**
+             * @type {Highcharts.AxisDateTimeLabelFormatsOptionsObject|string}
              * @declare Highcharts.AxisDateTimeLabelFormatsOptionsObject
              */
             hour: {
@@ -637,6 +641,7 @@ var AxisDefaults;
                 range: false
             },
             /**
+             * @type {Highcharts.AxisDateTimeLabelFormatsOptionsObject|string}
              * @declare Highcharts.AxisDateTimeLabelFormatsOptionsObject
              */
             day: {
@@ -659,6 +664,7 @@ var AxisDefaults;
                 boundary: '%[eb]'
             },
             /**
+             * @type {Highcharts.AxisDateTimeLabelFormatsOptionsObject|string}
              * @declare Highcharts.AxisDateTimeLabelFormatsOptionsObject
              */
             week: {
@@ -674,6 +680,7 @@ var AxisDefaults;
                 main: '%[eb]'
             },
             /**
+             * @type {Highcharts.AxisDateTimeLabelFormatsOptionsObject|string}
              * @declare Highcharts.AxisDateTimeLabelFormatsOptionsObject
              */
             month: {
@@ -696,6 +703,7 @@ var AxisDefaults;
                 boundary: void 0
             },
             /**
+             * @type {Highcharts.AxisDateTimeLabelFormatsOptionsObject|string}
              * @declare Highcharts.AxisDateTimeLabelFormatsOptionsObject
              */
             year: {
@@ -1511,7 +1519,7 @@ var AxisDefaults;
          * @sample {highstock} stock/xaxis/offset/
          *         Y axis offset by 70 px
          *
-         * @type {number}
+         * @type {number|string}
          */
         offset: void 0,
         /**
@@ -3161,7 +3169,9 @@ var AxisDefaults;
              * @product highcharts
              */
             style: {
-                /** @type {Highcharts.ColorType} */
+                /**
+                 * @type {Highcharts.ColorType}
+                 */
                 color: 'var(--highcharts-neutral-color-100)',
                 /**
                  * @type {number|string}

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0 (2026-06-11)
+ * @license Highcharts JS v13.0.0-modified (2026-08-14)
  * @module highcharts/modules/funnel
  * @requires highcharts
  *
@@ -26,34 +26,34 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 512:
-/***/ ((module) => {
+/***/ 512
+(module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
 
-/***/ }),
+/***/ },
 
-/***/ 944:
-/***/ ((module) => {
+/***/ 944
+(module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 
-/***/ })
+/***/ }
 
 /******/ 	});
 /************************************************************************/
 /******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
+/******/ 	const __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
 /******/ 		// Check if module is in cache
-/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		const cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
 /******/ 			return cachedModule.exports;
 /******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 		const module = __webpack_module_cache__[moduleId] = {
 /******/ 			// no module.id needed
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
@@ -71,7 +71,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	(() => {
 /******/ 		// getDefaultExport function for compatibility with non-harmony modules
 /******/ 		__webpack_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
+/******/ 			const getter = module && module.__esModule ?
 /******/ 				() => (module['default']) :
 /******/ 				() => (module);
 /******/ 			__webpack_require__.d(getter, { a: getter });
@@ -81,11 +81,26 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
+/******/ 		// define getter/value functions for harmony exports
 /******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 			if(Array.isArray(definition)) {
+/******/ 				var i = 0;
+/******/ 				while(i < definition.length) {
+/******/ 					var key = definition[i++];
+/******/ 					var binding = definition[i++];
+/******/ 					if(!__webpack_require__.o(exports, key)) {
+/******/ 						if(binding === 0) {
+/******/ 							Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 						} else {
+/******/ 							Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 						}
+/******/ 					} else if(binding === 0) { i++; }
+/******/ 				}
+/******/ 			} else {
+/******/ 				for(var key in definition) {
+/******/ 					if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 					}
 /******/ 				}
 /******/ 			}
 /******/ 		};
@@ -97,7 +112,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	})();
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
+let __webpack_exports__ = {};
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
@@ -216,7 +231,19 @@ const FunnelSeriesDefaults = {
      * @ignore-option
      */
     size: true,
+    /**
+     * @declare Highcharts.SeriesFunnelDataLabelsOptionsObject
+     * @extends plotOptions.pie.dataLabels
+     */
     dataLabels: {
+        /**
+         * Whether to render the data label inside the funnel item instead of
+         * outside, connected by a connector line.
+         *
+         * @type      {boolean}
+         * @default   false
+         * @apioption plotOptions.funnel.dataLabels.inside
+         */
         connectorWidth: 1,
         verticalAlign: 'middle'
     },
@@ -315,6 +342,10 @@ const FunnelSeriesDefaults = {
 /* harmony default export */ const Funnel_FunnelSeriesDefaults = (FunnelSeriesDefaults);
 
 ;// ./code/es-modules/Extensions/BorderRadius.js
+/* unused harmony import specifier */ var relativeLength;
+/* unused harmony import specifier */ var isObject;
+/* unused harmony import specifier */ var extend;
+/* unused harmony import specifier */ var addEvent;
 /* *
  *
  *  Highcharts Border Radius module
@@ -444,7 +475,7 @@ function arc(x, y, w, h, options = {}) {
     if (options.open || !options.borderRadius) {
         return path;
     }
-    const alpha = end - start, sinHalfAlpha = Math.sin(alpha / 2), borderRadius = Math.max(Math.min(relativeLength(options.borderRadius || 0, r - innerR), 
+    const alpha = end - start, sinHalfAlpha = Math.sin(alpha / 2), borderRadius = Math.max(Math.min(relativeLength(borderRadiusObject(options.borderRadius).radius, r - innerR), 
     // Cap to half the sector radius
     (r - innerR) / 2, 
     // For smaller pie slices, cap to the largest small circle that
@@ -470,7 +501,7 @@ function seriesOnAfterColumnTranslate() {
     if (this.options.borderRadius &&
         !(this.chart.is3d && this.chart.is3d())) {
         const { options, yAxis } = this, percent = options.stacking === 'percent', seriesDefault = defaultOptions.plotOptions?.[this.type]
-            ?.borderRadius, borderRadius = optionsToObject(options.borderRadius, isObject(seriesDefault) ? seriesDefault : {}), reversed = yAxis.options.reversed;
+            ?.borderRadius, borderRadius = borderRadiusObject(options.borderRadius, isObject(seriesDefault) ? seriesDefault : {}), reversed = yAxis.options.reversed;
         for (const point of this.points) {
             const { shapeArgs } = point;
             if (point.shapeType === 'roundedRect' && shapeArgs) {
@@ -542,8 +573,12 @@ function composeBorderRadius(SeriesClass, SVGElementClass, SVGRendererClass) {
         symbols.roundedRect = roundedRect;
     }
 }
-/** @internal */
-function optionsToObject(options, seriesBROptions) {
+/**
+ * Utility function to get the full border radius options object, from a simple
+ * number or a partial options object.
+ * @internal
+ */
+function borderRadiusObject(options, seriesBROptions) {
     if (!(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isObject)(options)) {
         options = { radius: options || 0 };
     }
@@ -551,7 +586,7 @@ function optionsToObject(options, seriesBROptions) {
 }
 /** @internal */
 function pieSeriesOnAfterTranslate() {
-    const borderRadius = optionsToObject(this.options.borderRadius);
+    const borderRadius = borderRadiusObject(this.options.borderRadius);
     for (const point of this.points) {
         const shapeArgs = point.shapeArgs;
         if (shapeArgs) {
@@ -670,7 +705,7 @@ function roundedRect(x, y, width, height, options = {}) {
 *          Column and pie with rounded border
 *
 * @name Highcharts.BorderRadiusOptionsObject#radius
-* @type {string|number}
+* @type {string|number|undefined}
 */ /**
 * The scope of the rounding for column charts or plot bands. In a stacked
 * column chart, the value `point` means each single point will get rounded
@@ -685,8 +720,7 @@ function roundedRect(x, y, width, height, options = {}) {
 *          Rounded columns
 *
 * @name Highcharts.BorderRadiusOptionsObject#scope
-* @validvalue ["individual", "point", "stack"]
-* @type {string}
+* @type {"individual"|"point"|"stack"|undefined}
 */ /**
 * For column charts, where in the point or stack to apply rounding. The `end`
 * value means only those corners at the point value will be rounded, leaving
@@ -697,8 +731,7 @@ function roundedRect(x, y, width, height, options = {}) {
 *          Rounding on all corners
 *
 * @name Highcharts.BorderRadiusOptionsObject#where
-* @validvalue ["all", "end"]
-* @type {string}
+* @type {"all"|"end"|undefined}
 * @default end
 */
 (''); // Keeps doclets above in JS file
@@ -877,9 +910,9 @@ class FunnelSeries extends PieSeries {
      * @private
      */
     translate() {
-        const series = this, chart = series.chart, options = series.options, reversed = options.reversed, ignoreHiddenPoint = options.ignoreHiddenPoint, borderRadiusObject = optionsToObject(options.borderRadius), plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, center = options.center, centerX = getLength(center[0], plotWidth), centerY = getLength(center[1], plotHeight), width = getLength(options.width, plotWidth), height = getLength(options.height, plotHeight), neckWidth = getLength(options.neckWidth, plotWidth), neckHeight = getLength(options.neckHeight, plotHeight), neckY = (centerY - height / 2) + height - neckHeight, points = series.points, borderRadius = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.relativeLength)(borderRadiusObject.radius, width), radiusScope = borderRadiusObject.scope, half = (options.dataLabels.position === 'left' ?
+        const series = this, chart = series.chart, options = series.options, reversed = options.reversed, ignoreHiddenPoint = options.ignoreHiddenPoint, borderRadiusObj = borderRadiusObject(options.borderRadius), plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, center = options.center, centerX = getLength(center[0], plotWidth), centerY = getLength(center[1], plotHeight), width = getLength(options.width, plotWidth), height = getLength(options.height, plotHeight), neckWidth = getLength(options.neckWidth, plotWidth), neckHeight = getLength(options.neckHeight, plotHeight), neckY = (centerY - height / 2) + height - neckHeight, points = series.points, borderRadius = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.relativeLength)(borderRadiusObj.radius, width), radiusScope = borderRadiusObj.scope, half = (options.dataLabels.position === 'left' ?
             1 :
-            0), roundingFactors = (angle) => {
+            0), roundingFactors = (angle, maxT) => {
             const tan = Math.tan(angle / 2), cosA = Math.cos(alpha), sinA = Math.sin(alpha);
             let r = borderRadius, t = r / tan, k = Math.tan((Math.PI - angle) / 3.2104);
             if (t > maxT) {
@@ -894,8 +927,8 @@ class FunnelSeries extends PieSeries {
             };
         };
         let sum = 0, cumulative = 0, // Start at top
-        tempWidth, path, fraction, alpha, // The angle between top and left point's edges
-        maxT, x1, y1, x2, x3, y3, x4, y5;
+        firstIdx = -1, lastIdx = -1, tempWidth, path, fraction, alpha, // The angle between top and left point's edges
+        x1, y1, x2, x3, y3, x4, y5;
         series.getWidthAt = function (y) {
             const top = (centerY - height / 2);
             return (y > neckY || height === neckHeight) ?
@@ -931,11 +964,17 @@ class FunnelSeries extends PieSeries {
            x3,y5 _________ x4,y5
 
         */
-        // get the total sum
+        // Get the total sum and the first and last contributing points,
+        // which take the outer rounding regardless of trailing null, zero
+        // or hidden points (#24820)
         for (const point of points) {
             if (point.y && point.isValid() &&
                 (!ignoreHiddenPoint || point.visible !== false)) {
                 sum += point.y;
+                if (firstIdx === -1) {
+                    firstIdx = point.index;
+                }
+                lastIdx = point.index;
             }
         }
         for (const point of points) {
@@ -971,25 +1010,18 @@ class FunnelSeries extends PieSeries {
                 }
             }
             if (borderRadius && (radiusScope === 'point' ||
-                point.index === 0 ||
-                point.index === points.length - 1 ||
+                point.index === firstIdx ||
+                point.index === lastIdx ||
                 y5 !== null)) {
                 // Creating the path of funnel points with rounded corners
                 // (#18839)
-                const h = Math.abs(y3 - y1), xSide = x2 - x4, lBase = x4 - x3, lSide = Math.sqrt(xSide * xSide + h * h);
+                const h = Math.abs(y3 - y1), xSide = x2 - x4, lBase = x4 - x3, lSide = Math.sqrt(xSide * xSide + h * h), lTop = x2 - x1;
                 // If xSide equals zero, return Infinity to avoid dividing
                 // by zero (#20319)
                 alpha = Math.atan(xSide !== 0 ? h / xSide : Infinity);
-                maxT = lSide / 2;
-                if (y5 !== null) {
-                    maxT = Math.min(maxT, Math.abs(y5 - y3) / 2);
-                }
-                if (lBase >= 1) {
-                    maxT = Math.min(maxT, lBase / 2);
-                }
                 // Creating a point base
-                let f = roundingFactors(alpha);
-                if (radiusScope === 'stack' && point.index !== 0) {
+                let f = roundingFactors(alpha, Math.min(lTop, lSide) / 2);
+                if (radiusScope === 'stack' && point.index !== firstIdx) {
                     path = [
                         ['M', x1, y1],
                         ['L', x2, y1]
@@ -1015,8 +1047,8 @@ class FunnelSeries extends PieSeries {
                 }
                 if (y5 !== null) {
                     // Closure of point with extension
-                    const fr = roundingFactors(Math.PI / 2);
-                    f = roundingFactors(Math.PI / 2 + alpha);
+                    const lNeck = Math.abs(y5 - y3), fr = roundingFactors(Math.PI / 2, Math.min(lBase, lNeck) / 2);
+                    f = roundingFactors(Math.PI / 2 + alpha, Math.min(lSide, lNeck) / 2);
                     path.push(['L', x4 + f.dx[0], y3 - f.dy[0]], [
                         'C',
                         x4 + f.dx[1], y3 - f.dy[1],
@@ -1024,7 +1056,7 @@ class FunnelSeries extends PieSeries {
                         x4, y3 + f.dy[3]
                     ]);
                     if (radiusScope === 'stack' &&
-                        point.index !== points.length - 1) {
+                        point.index !== lastIdx) {
                         path.push(['L', x4, y5], ['L', x3, y5]);
                     }
                     else {
@@ -1049,8 +1081,8 @@ class FunnelSeries extends PieSeries {
                 }
                 else if (lBase >= 1) {
                     // Closure of point without extension
-                    f = roundingFactors(Math.PI - alpha);
-                    if (radiusScope === 'stack' && point.index === 0) {
+                    f = roundingFactors(Math.PI - alpha, Math.min(lSide, lBase) / 2);
+                    if (radiusScope === 'stack' && point.index !== lastIdx) {
                         path.push(['L', x4, y3], ['L', x3, y3]);
                     }
                     else {
@@ -1069,7 +1101,7 @@ class FunnelSeries extends PieSeries {
                 }
                 else {
                     // Creating a rounded tip of the "pyramid"
-                    f = roundingFactors(Math.PI - alpha * 2);
+                    f = roundingFactors(Math.PI - alpha * 2, lSide / 2);
                     path.push(['L', x3 + f.dx[0], y3 - f.dy[0]], [
                         'C',
                         x3 + f.dx[1], y3 - f.dy[1],

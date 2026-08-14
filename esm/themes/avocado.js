@@ -1,5 +1,5 @@
 /**
- * Highcharts JS v13.0.0 (2026-06-11)
+ * Highcharts JS v13.0.0-modified (2026-08-14)
  * @module highcharts/themes/avocado
  * @requires highcharts
  *
@@ -7,4 +7,4 @@
  *
  * A commercial license may be required depending on use,
  * see www.highcharts.com/license
- */import*as o from"../highcharts.js";var r,e,l={};l.n=o=>{var r=o&&o.__esModule?()=>o.default:()=>o;return l.d(r,{a:r}),r},l.d=(o,r)=>{for(var e in r)l.o(r,e)&&!l.o(o,e)&&Object.defineProperty(o,e,{enumerable:!0,get:r[e]})},l.o=(o,r)=>Object.prototype.hasOwnProperty.call(o,r);let t=o.default;var a=l.n(t);let{setOptions:n}=a();(r=e||(e={})).options={colors:["#F3E796","#95C471","#35729E","#251735"],colorAxis:{maxColor:"#05426E",minColor:"#F3E796"},plotOptions:{map:{nullColor:"#FCFEFE"}},navigator:{maskFill:"rgba(170, 205, 170, 0.5)",series:{color:"#95C471",lineColor:"#35729E"}}},r.apply=function(){n(r.options)};let s=e;a().theme=s.options,s.apply();let p=a();export{p as default};
+ */import*as e from"../highcharts.js";let o={};o.n=e=>{let r=e&&e.__esModule?()=>e.default:()=>e;return o.d(r,{a:r}),r},o.d=(e,r)=>{if(Array.isArray(r))for(var t=0;t<r.length;){var l=r[t++],a=r[t++];o.o(e,l)?0===a&&t++:0===a?Object.defineProperty(e,l,{enumerable:!0,value:r[t++]}):Object.defineProperty(e,l,{enumerable:!0,get:a})}else for(var l in r)o.o(r,l)&&!o.o(e,l)&&Object.defineProperty(e,l,{enumerable:!0,get:r[l]})},o.o=(e,o)=>Object.prototype.hasOwnProperty.call(e,o);let r=e.default;var t,l,a=o.n(r);let{setOptions:n}=a();(t=l||(l={})).options={colors:["#F3E796","#95C471","#35729E","#251735"],colorAxis:{maxColor:"#05426E",minColor:"#F3E796"},plotOptions:{map:{nullColor:"#FCFEFE"}},navigator:{maskFill:"rgba(170, 205, 170, 0.5)",series:{color:"#95C471",lineColor:"#35729E"}}},t.apply=function(){n(t.options)};let i=l;a().theme=i.options,i.apply();let s=a();export{s as default};

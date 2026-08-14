@@ -26,6 +26,7 @@ const { seriesTypes: { scatter: ScatterSeries } } = SeriesRegistry;
  *  Class
  *
  * */
+/** @internal */
 class ContourSeries extends ScatterSeries {
     static compose(SVGRendererClass) {
         CrossSymbol.compose(SVGRendererClass);

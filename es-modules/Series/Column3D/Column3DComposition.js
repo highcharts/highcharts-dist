@@ -20,7 +20,7 @@ import { addEvent, extend, pick, pushUnique, wrap } from '../../Shared/Utilities
  *  Functions
  *
  * */
-/** @private */
+/** @internal */
 function columnSeriesTranslate3dShapes() {
     const series = this, chart = series.chart, seriesOptions = series.options, depth = seriesOptions.depth, stack = seriesOptions.stacking ?
         (seriesOptions.stack || 0) :
@@ -117,7 +117,7 @@ function columnSeriesTranslate3dShapes() {
     // Store for later use #4067
     series.z = z;
 }
-/** @private */
+/** @internal */
 function compose(SeriesClass, StackItemClass) {
     if (pushUnique(composed, 'Column3D')) {
         const seriesProto = SeriesClass.prototype, stackItemProto = StackItemClass.prototype, { column: ColumnSeriesClass, columnRange: ColumnRangeSeriesClass } = SeriesClass.types;
@@ -148,7 +148,7 @@ function compose(SeriesClass, StackItemClass) {
     }
 }
 /**
- * @private
+ * @internal
  * @param {Highcharts.Chart} chart
  * Chart with stacks
  * @param {string} stacking
@@ -170,7 +170,7 @@ function retrieveStacks(chart, stacking) {
     stacks.totalStacks = i + 1;
     return stacks;
 }
-/** @private */
+/** @internal */
 function onColumnSeriesAfterInit() {
     if (this.chart.is3d()) {
         const series = this, seriesOptions = series.options, grouping = seriesOptions.grouping, stacking = seriesOptions.stacking, reversedStacks = series.yAxis.options.reversedStacks;
@@ -200,14 +200,14 @@ function onColumnSeriesAfterInit() {
 /**
  * In 3D mode, simple checking for a new shape to animate is not enough.
  * Additionally check if graphic is a group of elements
- * @private
+ * @internal
  */
 function wrapColumnPointHasNewShapeType(proceed, ...args) {
     return this.series.chart.is3d() ?
         this.graphic && this.graphic.element.nodeName !== 'g' :
         proceed.apply(this, args);
 }
-/** @private */
+/** @internal */
 function wrapColumnSeriesAnimate(proceed) {
     if (!this.chart.is3d()) {
         proceed.apply(this, [].slice.call(arguments, 1));
@@ -259,7 +259,7 @@ function wrapColumnSeriesAnimate(proceed) {
  * In case of 3d columns there is no sense to add these columns to a specific
  * series group. If a series is added to a group all columns will have the same
  * zIndex in comparison to another series.
- * @private
+ * @internal
  */
 function wrapColumnSeriesPlotGroup(proceed, prop, _name, _visibility, _zIndex, parent) {
     if (prop !== 'dataLabelsGroup' && prop !== 'markerGroup') {
@@ -284,7 +284,7 @@ function wrapColumnSeriesPlotGroup(proceed, prop, _name, _visibility, _zIndex, p
     }
     return proceed.apply(this, Array.prototype.slice.call(arguments, 1));
 }
-/** @private */
+/** @internal */
 function wrapColumnSeriesPointAttribs(proceed) {
     const attr = proceed.apply(this, [].slice.call(arguments, 1));
     if (this.chart.is3d && this.chart.is3d()) {
@@ -297,7 +297,7 @@ function wrapColumnSeriesPointAttribs(proceed) {
 /**
  * In 3D mode, all column-series are rendered in one main group. Because of that
  * we need to apply inactive state on all points.
- * @private
+ * @internal
  */
 function wrapColumnSeriesSetState(proceed, state, inherit) {
     const is3d = this.chart.is3d && this.chart.is3d();
@@ -312,7 +312,7 @@ function wrapColumnSeriesSetState(proceed, state, inherit) {
 /**
  * When series is not added to group it is needed to change setVisible method to
  * allow correct Legend functionality. This wrap is basing on pie chart series.
- * @private
+ * @internal
  */
 function wrapColumnSeriesSetVisible(proceed, vis) {
     const series = this;
@@ -331,7 +331,7 @@ function wrapColumnSeriesSetVisible(proceed, vis) {
     }
     proceed.apply(this, Array.prototype.slice.call(arguments, 1));
 }
-/** @private */
+/** @internal */
 function wrapColumnSeriesTranslate(proceed) {
     proceed.apply(this, [].slice.call(arguments, 1));
     // Do not do this if the chart is not 3D
@@ -339,7 +339,7 @@ function wrapColumnSeriesTranslate(proceed) {
         this.translate3dShapes();
     }
 }
-/** @private */
+/** @internal */
 function wrapSeriesAlignDataLabel(proceed, point, _dataLabel, options, alignTo) {
     const chart = this.chart;
     // In 3D we need to pass point.outsidePlot option to the justifyDataLabel
@@ -379,7 +379,7 @@ function wrapSeriesAlignDataLabel(proceed, point, _dataLabel, options, alignTo) 
 }
 /**
  * Don't use justifyDataLabel when point is outsidePlot.
- * @private
+ * @internal
  */
 function wrapSeriesJustifyDataLabel(proceed) {
     return (!(arguments[2].outside3dPlot) ?
@@ -388,7 +388,7 @@ function wrapSeriesJustifyDataLabel(proceed) {
 }
 /**
  * Added stackLabels position calculation for 3D charts.
- * @private
+ * @internal
  */
 function wrapStackItemGetStackBox(proceed, stackBoxProps) {
     const stackBox = proceed.apply(this, [].slice.call(arguments, 1));
@@ -432,9 +432,11 @@ function wrapStackItemGetStackBox(proceed, stackBoxProps) {
  *  Default Export
  *
  * */
+/** @internal */
 const Column3DComposition = {
     compose
 };
+/** @internal */
 export default Column3DComposition;
 /* *
  *

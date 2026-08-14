@@ -418,9 +418,9 @@ class SankeySeries extends ColumnSeries {
             let x = nodeLeft, y = fromNodeTop, width = node.options.width || options.width || nodeWidth, height = node.options.height || options.height || nodeHeight;
             // Border radius should not greater than half the height of the node
             // #18956
-            const r = clamp(relativeLength((typeof borderRadius === 'object' ?
+            const r = clamp(relativeLength((isObject(borderRadius) ?
                 borderRadius.radius :
-                borderRadius || 0), width), 0, nodeHeight / 2);
+                borderRadius) || 0, width), 0, nodeHeight / 2);
             if (chart.inverted) {
                 x = nodeLeft - nodeWidth;
                 y = chart.plotSizeY - fromNodeTop - nodeHeight;

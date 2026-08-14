@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v13.0.0 (2026-06-11)
+ * @license Highmaps JS v13.0.0-modified (2026-08-14)
  * @module highcharts/modules/contour
  * @requires highcharts
  * @requires highcharts/modules/coloraxis
@@ -22,48 +22,48 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 512:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
-
-/***/ }),
-
-/***/ 532:
-/***/ ((module) => {
+/***/ 532
+(module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__532__;
 
-/***/ }),
+/***/ },
 
-/***/ 620:
-/***/ ((module) => {
+/***/ 620
+(module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__620__;
 
-/***/ }),
+/***/ },
 
-/***/ 944:
-/***/ ((module) => {
+/***/ 512
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
+
+/***/ },
+
+/***/ 944
+(module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 
-/***/ })
+/***/ }
 
 /******/ 	});
 /************************************************************************/
 /******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
+/******/ 	const __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
 /******/ 		// Check if module is in cache
-/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		const cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
 /******/ 			return cachedModule.exports;
 /******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 		const module = __webpack_module_cache__[moduleId] = {
 /******/ 			// no module.id needed
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
@@ -81,7 +81,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	(() => {
 /******/ 		// getDefaultExport function for compatibility with non-harmony modules
 /******/ 		__webpack_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
+/******/ 			const getter = module && module.__esModule ?
 /******/ 				() => (module['default']) :
 /******/ 				() => (module);
 /******/ 			__webpack_require__.d(getter, { a: getter });
@@ -91,11 +91,26 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
+/******/ 		// define getter/value functions for harmony exports
 /******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 			if(Array.isArray(definition)) {
+/******/ 				var i = 0;
+/******/ 				while(i < definition.length) {
+/******/ 					var key = definition[i++];
+/******/ 					var binding = definition[i++];
+/******/ 					if(!__webpack_require__.o(exports, key)) {
+/******/ 						if(binding === 0) {
+/******/ 							Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 						} else {
+/******/ 							Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 						}
+/******/ 					} else if(binding === 0) { i++; }
+/******/ 				}
+/******/ 			} else {
+/******/ 				for(var key in definition) {
+/******/ 					if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 					}
 /******/ 				}
 /******/ 			}
 /******/ 		};
@@ -107,7 +122,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	})();
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
+let __webpack_exports__ = {};
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
@@ -515,7 +530,7 @@ var ColorAxisComposition;
      * @internal
      */
     function wrapFxFillSetter() {
-        this.elem.attr('fill', ColorAxisComposition_color(this.start).tweenTo(ColorAxisComposition_color(this.end), this.pos), void 0, true);
+        (this.elem.attr)('fill', ColorAxisComposition_color(this.start).tweenTo(ColorAxisComposition_color(this.end), this.pos), void 0, true);
     }
     /**
      * Handle animation of the color attributes directly.
@@ -1473,9 +1488,14 @@ class ColorAxis extends (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_high
         const axis = this, left = axis.left, pos = options.translatedValue, { symbol } = this.options.marker || {}, top = axis.top;
         // Crosshairs only
         if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(pos)) {
-            const x = left, w = axis.width, y = pos - w / 2, h = w;
             if (symbol) {
-                return this.chart.renderer.symbols[symbol](x, y, w, h);
+                let w = axis.height, x = pos - w / 2, y = top;
+                if (!axis.horiz) {
+                    w = axis.width;
+                    x = left;
+                    y = pos - w / 2;
+                }
+                return this.chart.renderer.symbols[symbol](x, y, w, w);
             }
             // Default to a triangle pointing to the value
             return (axis.horiz ? [
@@ -1686,9 +1706,10 @@ Array.prototype.push.apply((highcharts_Axis_commonjs_highcharts_Axis_commonjs2_h
 ''; // Detach doclet above
 
 ;// ./code/es-modules/masters/modules/coloraxis.src.js
+/* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0 (2026-06-11)
+ * @license Highcharts JS v13.0.0-modified (2026-08-14)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -1733,6 +1754,7 @@ const { scatter: { prototype: { pointClass: ScatterPoint } } } = (highcharts_Ser
  *  Class
  *
  * */
+/** @internal */
 class ContourPoint extends ScatterPoint {
 }
 /* *
@@ -1740,6 +1762,7 @@ class ContourPoint extends ScatterPoint {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Contour_ContourPoint = (ContourPoint);
 
 ;// ./code/es-modules/Series/Contour/ContourShader.js
@@ -1760,7 +1783,8 @@ class ContourPoint extends ScatterPoint {
  *  Shader Code
  *
  * */
-/* harmony default export */ const ContourShader = (`
+/** @internal */
+const ContourShader = `
 
 struct VertexInput {
     @location(0) pos: vec3f
@@ -1891,7 +1915,14 @@ fn fragmentMain(input: FragmentInput) -> @location(0) vec4f {
     return vec4(pixelColor, 1.0);
 }
 
-`);
+`;
+/* *
+ *
+ *  Default Export
+ *
+ * */
+/** @internal */
+/* harmony default export */ const Contour_ContourShader = (ContourShader);
 
 ;// ./code/es-modules/Series/Contour/ContourSeriesDefaults.js
 /* *
@@ -1946,6 +1977,13 @@ const ContourSeriesDefaults = {
      * @type      {boolean}
      * @default   false
      * @apioption plotOptions.contour.smoothColoring
+     */
+    /**
+     * The color of the contour lines.
+     *
+     * @type      {Highcharts.ColorType}
+     * @default   #000000
+     * @apioption plotOptions.contour.lineColor
      */
     /**
      * This setting controls the visibility and size of contour lines. For now,
@@ -2169,7 +2207,7 @@ var CrossSymbol;
     /**
      * Register the shared `cross` symbol on a renderer class.
      *
-     * @private
+     * @internal
      */
     function compose(SVGRendererClass) {
         if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pushUnique)(composed, 'Series.CrossSymbol')) {
@@ -2179,7 +2217,7 @@ var CrossSymbol;
     CrossSymbol.compose = compose;
     /**
      * Cross marker path.
-     * @private
+     * @internal
      */
     function cross(x, y, w, h) {
         return [
@@ -2196,6 +2234,7 @@ var CrossSymbol;
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Series_CrossSymbol = (CrossSymbol);
 
 ;// ./code/es-modules/Core/Delaunay.js
@@ -2542,6 +2581,7 @@ const { seriesTypes: { scatter: ScatterSeries } } = (highcharts_SeriesRegistry_c
  *  Class
  *
  * */
+/** @internal */
 class ContourSeries extends ScatterSeries {
     static compose(SVGRendererClass) {
         Series_CrossSymbol.compose(SVGRendererClass);
@@ -2725,7 +2765,7 @@ class ContourSeries extends ScatterSeries {
                         }]
                 };
                 const shaderModule = device.createShaderModule({
-                    code: ContourShader
+                    code: Contour_ContourShader
                 });
                 const pipeline = device.createRenderPipeline({
                     layout: 'auto',

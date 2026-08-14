@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0 (2026-06-11)
+ * @license Highcharts JS v13.0.0-modified (2026-08-14)
  * @module highcharts/modules/venn
  * @requires highcharts
  *
@@ -12,14 +12,14 @@
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
-/******/ var __webpack_require__ = {};
+/******/ const __webpack_require__ = {};
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
 /******/ (() => {
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
 /******/ 	__webpack_require__.n = (module) => {
-/******/ 		var getter = module && module.__esModule ?
+/******/ 		const getter = module && module.__esModule ?
 /******/ 			() => (module['default']) :
 /******/ 			() => (module);
 /******/ 		__webpack_require__.d(getter, { a: getter });
@@ -29,11 +29,26 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /******/ /* webpack/runtime/define property getters */
 /******/ (() => {
-/******/ 	// define getter functions for harmony exports
+/******/ 	// define getter/value functions for harmony exports
 /******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		for(var key in definition) {
-/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 		if(Array.isArray(definition)) {
+/******/ 			var i = 0;
+/******/ 			while(i < definition.length) {
+/******/ 				var key = definition[i++];
+/******/ 				var binding = definition[i++];
+/******/ 				if(!__webpack_require__.o(exports, key)) {
+/******/ 					if(binding === 0) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 					} else {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 					}
+/******/ 				} else if(binding === 0) { i++; }
+/******/ 			}
+/******/ 		} else {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
 /******/ 			}
 /******/ 		}
 /******/ 	};
@@ -45,7 +60,6 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
-var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -571,7 +585,7 @@ var CircleUtilities;
  * Can be used for any type of component that reserves the graphic property,
  * and provides a shouldDraw on its context.
  *
- * @private
+ * @internal
  *
  * @todo add type checking.
  * @todo export this function to enable usage
@@ -632,9 +646,11 @@ function draw(point, params) {
  *  Default Export
  *
  * */
+/** @internal */
 const DrawPointUtilities = {
     draw
 };
+/** @internal */
 /* harmony default export */ const Series_DrawPointUtilities = (DrawPointUtilities);
 
 ;// external ["../highcharts.src.js","default","SeriesRegistry"]
@@ -1550,7 +1566,6 @@ const VennUtils = {
  * */
 
 
-const { animObject } = (external_highcharts_src_js_default_default());
 
 const { parse: color } = (external_highcharts_src_js_default_Color_default());
 
@@ -1787,7 +1802,7 @@ class VennSeries extends ScatterSeries {
      * */
     animate(init) {
         if (!init) {
-            const series = this, animOptions = animObject(series.options.animation);
+            const series = this, animOptions = (0,external_highcharts_src_js_default_namespaceObject.animObject)(series.options.animation);
             for (const point of series.points) {
                 const args = point.shapeArgs;
                 if (point.graphic && args) {
@@ -1864,11 +1879,11 @@ class VennSeries extends ScatterSeries {
      * Returns the calculated attributes.
      */
     pointAttribs(point, state) {
-        const series = this, seriesOptions = series.options || {}, pointOptions = point?.options || {}, stateOptions = (state && seriesOptions.states[state]) || {}, options = (0,external_highcharts_src_js_default_namespaceObject.merge)(seriesOptions, pointOptions, stateOptions);
+        const series = this, seriesOptions = series.options || {}, pointOptions = point?.options || {}, stateOptions = (state && seriesOptions.states?.[state]) || {}, options = (0,external_highcharts_src_js_default_namespaceObject.merge)(seriesOptions, pointOptions, stateOptions);
         // Return resulting values for the attributes.
         return {
             'fill': color(options.color || point.color)
-                .brighten(options.brightness)
+                .brighten(options.brightness || 0)
                 .get(),
             // Set opacity directly to the SVG element, not to pattern #14372.
             opacity: options.opacity,

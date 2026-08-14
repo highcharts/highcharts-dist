@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0 (2026-06-11)
+ * @license Highcharts JS v13.0.0-modified (2026-08-14)
  * @module highcharts/highcharts-3d
  * @requires highcharts
  *
@@ -13,14 +13,14 @@
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_c57973fa__ from "./highcharts.src.js";
 /******/ // The require scope
-/******/ var __webpack_require__ = {};
+/******/ const __webpack_require__ = {};
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
 /******/ (() => {
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
 /******/ 	__webpack_require__.n = (module) => {
-/******/ 		var getter = module && module.__esModule ?
+/******/ 		const getter = module && module.__esModule ?
 /******/ 			() => (module['default']) :
 /******/ 			() => (module);
 /******/ 		__webpack_require__.d(getter, { a: getter });
@@ -30,11 +30,26 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_c57973fa__ from "./high
 /******/ 
 /******/ /* webpack/runtime/define property getters */
 /******/ (() => {
-/******/ 	// define getter functions for harmony exports
+/******/ 	// define getter/value functions for harmony exports
 /******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		for(var key in definition) {
-/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 		if(Array.isArray(definition)) {
+/******/ 			var i = 0;
+/******/ 			while(i < definition.length) {
+/******/ 				var key = definition[i++];
+/******/ 				var binding = definition[i++];
+/******/ 				if(!__webpack_require__.o(exports, key)) {
+/******/ 					if(binding === 0) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 					} else {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 					}
+/******/ 				} else if(binding === 0) { i++; }
+/******/ 			}
+/******/ 		} else {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
 /******/ 			}
 /******/ 		}
 /******/ 	};
@@ -46,7 +61,6 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_c57973fa__ from "./high
 /******/ })();
 /******/ 
 /************************************************************************/
-var __webpack_exports__ = {};
 
 ;// external ["./highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_c57973fa__["default"];
@@ -3093,7 +3107,6 @@ SVGElement3D.types = {
  * */
 
 
-const { animObject } = (external_highcharts_src_js_default_default());
 
 const { parse: SVGRenderer3D_color } = (external_highcharts_src_js_default_Color_default());
 
@@ -3666,7 +3679,7 @@ var SVGRenderer3D;
             // been in the attribs collection in the first place.
             delete params.center;
             delete params.z;
-            const anim = animObject((0,external_highcharts_src_js_default_namespaceObject.pick)(animation, this.renderer.globalAnimation));
+            const anim = (0,external_highcharts_src_js_default_namespaceObject.animObject)((0,external_highcharts_src_js_default_namespaceObject.pick)(animation, this.renderer.globalAnimation));
             if (anim.duration) {
                 const paramArr = extractCustom(params);
                 // Params need to have a property in order for the step to run
@@ -3679,7 +3692,7 @@ var SVGRenderer3D;
                     interpolate = (key, pos) => (from[key] + ((0,external_highcharts_src_js_default_namespaceObject.pick)(to[key], from[key]) -
                         from[key]) * pos);
                     anim.step = function (a, fx) {
-                        if (fx.prop === randomProp) {
+                        if (fx.prop === randomProp && fx.elem) {
                             fx.elem.setPaths((0,external_highcharts_src_js_default_namespaceObject.merge)(from, {
                                 x: interpolate('x', fx.pos),
                                 y: interpolate('y', fx.pos),
@@ -4065,7 +4078,7 @@ const { perspective: Column3DComposition_perspective } = Core_Math3D;
  *  Functions
  *
  * */
-/** @private */
+/** @internal */
 function columnSeriesTranslate3dShapes() {
     const series = this, chart = series.chart, seriesOptions = series.options, depth = seriesOptions.depth, stack = seriesOptions.stacking ?
         (seriesOptions.stack || 0) :
@@ -4162,7 +4175,7 @@ function columnSeriesTranslate3dShapes() {
     // Store for later use #4067
     series.z = z;
 }
-/** @private */
+/** @internal */
 function Column3DComposition_compose(SeriesClass, StackItemClass) {
     if ((0,external_highcharts_src_js_default_namespaceObject.pushUnique)(Column3DComposition_composed, 'Column3D')) {
         const seriesProto = SeriesClass.prototype, stackItemProto = StackItemClass.prototype, { column: ColumnSeriesClass, columnRange: ColumnRangeSeriesClass } = SeriesClass.types;
@@ -4193,7 +4206,7 @@ function Column3DComposition_compose(SeriesClass, StackItemClass) {
     }
 }
 /**
- * @private
+ * @internal
  * @param {Highcharts.Chart} chart
  * Chart with stacks
  * @param {string} stacking
@@ -4215,7 +4228,7 @@ function retrieveStacks(chart, stacking) {
     stacks.totalStacks = i + 1;
     return stacks;
 }
-/** @private */
+/** @internal */
 function onColumnSeriesAfterInit() {
     if (this.chart.is3d()) {
         const series = this, seriesOptions = series.options, grouping = seriesOptions.grouping, stacking = seriesOptions.stacking, reversedStacks = series.yAxis.options.reversedStacks;
@@ -4245,14 +4258,14 @@ function onColumnSeriesAfterInit() {
 /**
  * In 3D mode, simple checking for a new shape to animate is not enough.
  * Additionally check if graphic is a group of elements
- * @private
+ * @internal
  */
 function wrapColumnPointHasNewShapeType(proceed, ...args) {
     return this.series.chart.is3d() ?
         this.graphic && this.graphic.element.nodeName !== 'g' :
         proceed.apply(this, args);
 }
-/** @private */
+/** @internal */
 function wrapColumnSeriesAnimate(proceed) {
     if (!this.chart.is3d()) {
         proceed.apply(this, [].slice.call(arguments, 1));
@@ -4304,7 +4317,7 @@ function wrapColumnSeriesAnimate(proceed) {
  * In case of 3d columns there is no sense to add these columns to a specific
  * series group. If a series is added to a group all columns will have the same
  * zIndex in comparison to another series.
- * @private
+ * @internal
  */
 function wrapColumnSeriesPlotGroup(proceed, prop, _name, _visibility, _zIndex, parent) {
     if (prop !== 'dataLabelsGroup' && prop !== 'markerGroup') {
@@ -4329,7 +4342,7 @@ function wrapColumnSeriesPlotGroup(proceed, prop, _name, _visibility, _zIndex, p
     }
     return proceed.apply(this, Array.prototype.slice.call(arguments, 1));
 }
-/** @private */
+/** @internal */
 function wrapColumnSeriesPointAttribs(proceed) {
     const attr = proceed.apply(this, [].slice.call(arguments, 1));
     if (this.chart.is3d && this.chart.is3d()) {
@@ -4342,7 +4355,7 @@ function wrapColumnSeriesPointAttribs(proceed) {
 /**
  * In 3D mode, all column-series are rendered in one main group. Because of that
  * we need to apply inactive state on all points.
- * @private
+ * @internal
  */
 function wrapColumnSeriesSetState(proceed, state, inherit) {
     const is3d = this.chart.is3d && this.chart.is3d();
@@ -4357,7 +4370,7 @@ function wrapColumnSeriesSetState(proceed, state, inherit) {
 /**
  * When series is not added to group it is needed to change setVisible method to
  * allow correct Legend functionality. This wrap is basing on pie chart series.
- * @private
+ * @internal
  */
 function wrapColumnSeriesSetVisible(proceed, vis) {
     const series = this;
@@ -4376,7 +4389,7 @@ function wrapColumnSeriesSetVisible(proceed, vis) {
     }
     proceed.apply(this, Array.prototype.slice.call(arguments, 1));
 }
-/** @private */
+/** @internal */
 function wrapColumnSeriesTranslate(proceed) {
     proceed.apply(this, [].slice.call(arguments, 1));
     // Do not do this if the chart is not 3D
@@ -4384,7 +4397,7 @@ function wrapColumnSeriesTranslate(proceed) {
         this.translate3dShapes();
     }
 }
-/** @private */
+/** @internal */
 function wrapSeriesAlignDataLabel(proceed, point, _dataLabel, options, alignTo) {
     const chart = this.chart;
     // In 3D we need to pass point.outsidePlot option to the justifyDataLabel
@@ -4424,7 +4437,7 @@ function wrapSeriesAlignDataLabel(proceed, point, _dataLabel, options, alignTo) 
 }
 /**
  * Don't use justifyDataLabel when point is outsidePlot.
- * @private
+ * @internal
  */
 function wrapSeriesJustifyDataLabel(proceed) {
     return (!(arguments[2].outside3dPlot) ?
@@ -4433,7 +4446,7 @@ function wrapSeriesJustifyDataLabel(proceed) {
 }
 /**
  * Added stackLabels position calculation for 3D charts.
- * @private
+ * @internal
  */
 function wrapStackItemGetStackBox(proceed, stackBoxProps) {
     const stackBox = proceed.apply(this, [].slice.call(arguments, 1));
@@ -4477,9 +4490,11 @@ function wrapStackItemGetStackBox(proceed, stackBoxProps) {
  *  Default Export
  *
  * */
+/** @internal */
 const Column3DComposition = {
     compose: Column3DComposition_compose
 };
+/** @internal */
 /* harmony default export */ const Column3D_Column3DComposition = (Column3DComposition);
 /* *
  *

@@ -32,5 +32,6 @@
     "svg2pdf.js": {
       "optional": true
     }
-  }
+  },
+  "module": "esm/highcharts.js"
 }

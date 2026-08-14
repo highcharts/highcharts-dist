@@ -21,6 +21,7 @@ import SVGElement3D from '../../Core/Renderer/SVG/SVGElement3D.js';
  *  Class
  *
  * */
+/** @internal */
 class SVGElement3DCylinder extends SVGElement3D {
     constructor() {
         /* *
@@ -54,4 +55,5 @@ class SVGElement3DCylinder extends SVGElement3D {
  *  Default Export
  *
  * */
+/** @internal */
 export default SVGElement3DCylinder;

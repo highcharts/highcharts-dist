@@ -11,8 +11,7 @@
  * */
 'use strict';
 import AST from '../Renderer/HTML/AST.js';
-import A from '../Animation/AnimationUtilities.js';
-const { animObject } = A;
+import { animObject } from '../Animation/AnimationUtilities.js';
 import D from '../Defaults.js';
 const { defaultOptions } = D;
 import F from '../Templating.js';
@@ -352,9 +351,14 @@ class Point {
      *
      * @internal
      * @function Highcharts.Point#destroy
+     *
+     * @param {boolean} [sync]
+     *        Whether to destroy the point synchronously. Used internally from
+     *        series.destroy, where condemned points may cause animation errors
+     *        (#24976).
      */
-    destroy() {
-        if (!this.condemned) {
+    destroy(sync) {
+        if (!this.destroyed && !this.condemned) {
             const point = this, series = point.series, chart = series.chart, hoverPoints = chart.hoverPoints, globalAnimation = point.series.chart.renderer.globalAnimation, { duration } = animObject(globalAnimation);
             /**
              * Allow to call after animation.
@@ -372,6 +376,7 @@ class Point {
                 for (const prop in point) { // eslint-disable-line guard-for-in
                     delete point[prop];
                 }
+                this.destroyed = true;
             };
             if (point.legendItem) {
                 // Pies have legend items
@@ -388,7 +393,7 @@ class Point {
                 point.onMouseOut();
             }
             // Remove properties after animation
-            if (duration && series.condemnedPoints) {
+            if (duration && !sync && series.condemnedPoints) {
                 series.condemnedPoints.push(this);
                 this.graphic?.addClass('highcharts-point-condemned');
                 setTimeout(destroyPoint, duration);
@@ -511,14 +516,15 @@ class Point {
      *
      * @function Highcharts.Point#getZone
      *
-     * @return {Highcharts.SeriesZonesOptionsObject}
-     *         The zone item.
+     * @return {Highcharts.SeriesZonesOptionsObject|undefined}
+     *         The zone item, or `undefined` if the series has no zones.
      */
     getZone() {
         const series = this.series, zones = series.zones, zoneAxis = series.zoneAxis || 'y';
         let zone, i = 0;
         zone = zones[i];
-        while (this[zoneAxis] >= zone.value) {
+        while (i < zones.length &&
+            this[zoneAxis] >= zone.value) {
             zone = zones[++i];
         }
         // For resetting or reusing the point (#8100)
@@ -1058,9 +1064,8 @@ class Point {
      * @emits Highcharts.Point#event:afterSetState
      */
     setState(state, move) {
-        const point = this, series = point.series, previousState = point.state, stateOptions = (series.options.states[state || 'normal'] ||
-            {}), markerOptions = (defaultOptions.plotOptions[series.type].marker &&
-            series.options.marker), normalDisabled = (markerOptions && markerOptions.enabled === false), markerStateOptions = markerOptions?.states?.[state || 'normal'] ||
+        const point = this, series = point.series, previousState = point.state, stateOptions = series.options.states?.[state || 'normal'] || {}, markerOptions = (defaultOptions.plotOptions?.[series.type]?.marker &&
+            series.options.marker), normalDisabled = markerOptions?.enabled === false, markerStateOptions = markerOptions?.states?.[state || 'normal'] ||
             {}, stateDisabled = markerStateOptions.enabled === false, pointMarker = point.marker || {}, chart = series.chart, hasMarkers = (markerOptions && series.markerAttribs);
         let halo = series.halo, markerAttribs, pointAttribs, pointAttribsAnimation, stateMarkerGraphic = series.stateMarkerGraphic, newSymbol;
         state = state || ''; // Empty string
@@ -1073,13 +1078,10 @@ class Point {
             (stateOptions.enabled === false) ||
             // General point marker's state options is disabled
             (state && (stateDisabled ||
-                (normalDisabled &&
-                    markerStateOptions.enabled === false))) ||
+                (normalDisabled && markerStateOptions.enabled === false))) ||
             // Individual point marker's state options is disabled
             (state &&
-                pointMarker.states &&
-                pointMarker.states[state] &&
-                pointMarker.states[state].enabled === false) // #1610
+                pointMarker.states?.[state]?.enabled === false) // #1610
         ) {
             return;
         }
@@ -1098,7 +1100,8 @@ class Point {
             }
             if (!chart.styledMode) {
                 pointAttribs = series.pointAttribs(point, state);
-                pointAttribsAnimation = pick(chart.options.chart.animation, stateOptions.animation);
+                pointAttribsAnimation = (chart.options.chart.animation ??
+                    stateOptions.animation);
                 const opacity = pointAttribs.opacity;
                 // Some inactive points (e.g. slices in pie) should apply
                 // opacity also for their labels
@@ -1116,9 +1119,11 @@ class Point {
                 point.graphic.animate(pointAttribs, pointAttribsAnimation);
             }
             if (markerAttribs) {
-                point.graphic.animate(markerAttribs, pick(
+                point.graphic.animate(markerAttribs, (
                 // Turn off globally:
-                chart.options.chart.animation, markerStateOptions.animation, markerOptions.animation));
+                chart.options.chart.animation ??
+                    markerStateOptions.animation ??
+                    markerOptions.animation));
             }
             // Zooming in from a range with no markers to a range with markers
             if (stateMarkerGraphic) {
@@ -1167,10 +1172,12 @@ class Point {
             }
         }
         // Show me your halo
-        const haloOptions = stateOptions.halo;
+        const haloOptions = isObject(stateOptions.halo) ?
+            stateOptions.halo :
+            {};
         const markerGraphic = (point.graphic || stateMarkerGraphic);
         const markerVisibility = markerGraphic?.visibility || 'inherit';
-        if (haloOptions?.size &&
+        if (haloOptions.size &&
             markerGraphic &&
             markerVisibility !== 'hidden' &&
             !point.isCluster) {

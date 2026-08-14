@@ -62,8 +62,8 @@ class OHLCPoint extends HLCSeries.prototype.pointClass {
      * @private
      * @function Highcharts.seriesTypes.ohlc#getZone
      *
-     * @return {Highcharts.SeriesZonesOptionsObject}
-     *         The zone item.
+     * @return {Highcharts.SeriesZonesOptionsObject|undefined}
+     *         The zone item, or `undefined` if the series has no zones.
      */
     getZone() {
         const zone = super.getZone();

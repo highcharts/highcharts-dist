@@ -10,8 +10,7 @@
  *
  * */
 'use strict';
-import A from '../../Core/Animation/AnimationUtilities.js';
-const { animObject, stop } = A;
+import { animObject, stop } from '../../Core/Animation/AnimationUtilities.js';
 import ColorMapComposition from '../ColorMapComposition.js';
 import CU from '../CenteredUtilities.js';
 import DataTableCore from '../../Data/DataTableCore.js';

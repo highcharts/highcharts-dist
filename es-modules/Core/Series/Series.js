@@ -10,8 +10,7 @@
  *
  * */
 'use strict';
-import A from '../Animation/AnimationUtilities.js';
-const { animObject, setAnimation } = A;
+import { animObject, setAnimation } from '../Animation/AnimationUtilities.js';
 import DataTableCore from '../../Data/DataTableCore.js';
 import D from '../Defaults.js';
 const { defaultOptions } = D;
@@ -150,6 +149,13 @@ class Series {
      * @readonly
      */
     /**
+     * The main group for the series' graphics.
+     *
+     * @name Highcharts.Series#group
+     * @type {Highcharts.SVGElement}
+     * @readonly
+     */
+    /**
      * Contains the series' index in the `Chart.series` array.
      *
      * @name Highcharts.Series#index
@@ -281,10 +287,12 @@ class Series {
          */
         series.options = series.setOptions(userOptions);
         const options = series.options, visible = options.visible !== false;
-        // Create the data table
-        this.dataTable ?? (this.dataTable = options.dataTable?.isDataTable ?
-            options.dataTable :
-            new DataTableCore(options.dataTable));
+        // Create the data table or use the one passed as option
+        this.dataTable ?? (this.dataTable = isArray(options.dataTable) ?
+            new DataTableCore() :
+            options.dataTable?.isDataTable ?
+                options.dataTable :
+                new DataTableCore(options.dataTable));
         /**
          * All child series that are linked to the current series through the
          * [linkedTo](https://api.highcharts.com/highcharts/series.line.linkedTo)
@@ -666,7 +674,7 @@ class Series {
      */
     getSymbol() {
         const seriesMarkerOption = this.options.marker;
-        this.getCyclic('symbol', seriesMarkerOption.symbol, this.chart.options.symbols);
+        this.getCyclic('symbol', seriesMarkerOption?.symbol, this.chart.options.symbols);
     }
     /**
      * Shorthand to get one of the series' data columns from `Series.dataTable`.
@@ -862,9 +870,10 @@ class Series {
                 if (!oldData[i].destroyed && !oldData[i].condemned) {
                     const pOptions = dataTable.getRowObject(i);
                     if (pOptions) {
+                        // Remove undefined properties, but preserve explicit
+                        // nulls (#24872)
                         Object.keys(pOptions).forEach((key) => {
-                            if (!defined(pOptions[key]) /* ||
-                            pOptions[key] === oldData[i].options[key]*/) {
+                            if (pOptions[key] === void 0) {
                                 delete pOptions[key];
                             }
                         });
@@ -1269,8 +1278,12 @@ class Series {
                 }
             }
         }
-        // Find the closest distance between processed points
-        xData = this.getColumn('x', true);
+        // Find the closest distance between processed points. When the data was
+        // cropped (or set out of range), read x from the freshly cropped local
+        // `modified` table, #24858.
+        if (modified !== table) {
+            xData = modified.getColumn('x', true) || [];
+        }
         const closestPointRange = getClosestDistance([
             logarithmic ?
                 xData.map(logarithmic.log2lin) :
@@ -1475,9 +1488,9 @@ class Series {
      * Force getting extremes of a total series data range.
      */
     getExtremes(yData, forceExtremesFromAll) {
-        const { xAxis, yAxis } = this, getExtremesFromAll = forceExtremesFromAll ||
+        const { options, xAxis, yAxis } = this, getExtremesFromAll = forceExtremesFromAll ||
             this.getExtremesFromAll ||
-            this.options.getExtremesFromAll, // #4599, #21003
+            options.getExtremesFromAll, // #4599, #21003
         table = getExtremesFromAll && this.cropped ?
             this.dataTable :
             this.dataTable.getModified(), rowCount = table.rowCount, customData = yData || this.stackedYData, yAxisData = customData ?
@@ -1487,7 +1500,12 @@ class Series {
         // non-sorted data like scatter (#7639).
         shoulder = this.requireSorting && !this.is('column') ?
             1 : 0, 
-        // #2117, need to compensate for log X axis
+        // Used only for `cumulativeStart` (#24608)
+        excludeShoulder = options.cumulative &&
+            options.cumulativeStart &&
+            shoulder &&
+            !getExtremesFromAll, 
+        // Compensate for log X axis (#2117)
         positiveValuesOnly = yAxis ? yAxis.positiveValuesOnly : false, doAll = getExtremesFromAll ||
             this.cropped ||
             !xAxis; // For colorAxis support
@@ -1499,10 +1517,10 @@ class Series {
         }
         for (i = 0; i < rowCount; i++) {
             x = xData[i];
-            // Check if it is within the selected x axis range
-            if (doAll ||
+            // Check if it is within the selected x-axis range
+            if ((doAll ||
                 ((xData[i + shoulder] || x) >= xMin &&
-                    (xData[i - shoulder] || x) <= xMax)) {
+                    (xData[i - shoulder] || x) <= xMax)) && (!excludeShoulder || x >= xMin)) {
                 for (const values of yAxisData) {
                     const val = values[i];
                     // For points within the visible range, including the
@@ -1571,7 +1589,7 @@ class Series {
      */
     translate() {
         this.generatePoints();
-        const series = this, { options, xAxis, yAxis } = series, { stacking, threshold } = options, { hasRendered, polar } = series.chart, points = series.points.concat(series.condemnedPoints), dataLength = points.length, pointPlacement = series.pointPlacementToXValue(), // #7860
+        const series = this, { hasRendered, options, xAxis, yAxis } = series, { stacking, threshold } = options, { polar } = series.chart, points = series.points.concat(series.condemnedPoints), dataLength = points.length, pointPlacement = series.pointPlacementToXValue(), // #7860
         dynamicallyPlaced = Boolean(pointPlacement), stackThreshold = options.startFromThreshold ? threshold : 0, nullYSubstitute = (options?.nullInteraction &&
             yAxis.len);
         let i, plotX, lastPlotX, stackIndicator, closestPointRangePx = Number.MAX_VALUE;
@@ -1860,10 +1878,11 @@ class Series {
      */
     drawPoints(points) {
         points || (points = this.points.concat(this.condemnedPoints));
-        const series = this, chart = series.chart, styledMode = chart.styledMode, { colorAxis, options } = series, seriesMarkerOptions = options.marker, nullInteraction = options.nullInteraction, markerGroup = series[series.specialGroup || 'markerGroup'], xAxis = series.xAxis, globallyEnabled = pick(seriesMarkerOptions.enabled, !xAxis || xAxis.isRadial ? true : null, 
-        // Use larger or equal as radius is null in bubbles (#6321)
-        series.closestPointRangePx >= (seriesMarkerOptions.enabledThreshold *
-            seriesMarkerOptions.radius));
+        const series = this, chart = series.chart, styledMode = chart.styledMode, { colorAxis, options } = series, seriesMarkerOptions = options.marker || {}, nullInteraction = options.nullInteraction, markerGroup = series[series.specialGroup || 'markerGroup'], xAxis = series.xAxis, globallyEnabled = seriesMarkerOptions.enabled ??
+            (!xAxis || xAxis.isRadial ? true : null) ??
+            // Use larger or equal as radius is null in bubbles (#6321)
+            ((series.closestPointRangePx ?? -Infinity) >= ((seriesMarkerOptions.enabledThreshold ?? 2) *
+                seriesMarkerOptions.radius));
         let i, point, graphic, verb, pointMarkerOptions, hasPointMarker, markerAttribs;
         if (seriesMarkerOptions.enabled !== false ||
             series._hasPointMarkers) {
@@ -1881,7 +1900,7 @@ class Series {
                 if (shouldDrawMarker) {
                     // Shortcuts
                     const symbol = pick(pointMarkerOptions.symbol, series.symbol, 'rect');
-                    markerAttribs = series.markerAttribs(point, (point.selected && 'select'));
+                    markerAttribs = series.markerAttribs(point, point.selected ? 'select' : '');
                     const isInside = point.isInside !== false;
                     if (!graphic &&
                         isInside &&
@@ -1946,15 +1965,17 @@ class Series {
      * A hash containing those attributes that are not settable from CSS.
      */
     markerAttribs(point, state) {
-        const seriesOptions = this.options, seriesMarkerOptions = seriesOptions.marker, pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol ||
+        const seriesOptions = this.options, seriesMarkerOptions = seriesOptions.marker ?? {}, pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol ||
             seriesMarkerOptions.symbol), attribs = {};
-        let seriesStateOptions, pointStateOptions, radius = pick(pointMarkerOptions.radius, seriesMarkerOptions?.radius);
+        let seriesStateOptions, pointStateOptions, radius = pointMarkerOptions.radius ??
+            seriesMarkerOptions.radius;
         // Handle hover and select states
         if (state) {
-            seriesStateOptions = seriesMarkerOptions?.states?.[state];
+            seriesStateOptions = seriesMarkerOptions.states?.[state];
             pointStateOptions = pointMarkerOptions.states?.[state];
-            radius = pick(pointStateOptions?.radius, seriesStateOptions?.radius, radius && radius + (seriesStateOptions?.radiusPlus ||
-                0));
+            radius = pointStateOptions?.radius ??
+                seriesStateOptions?.radius ??
+                (radius && radius + (seriesStateOptions?.radiusPlus || 0));
         }
         point.hasImage = symbol && symbol.indexOf('url') === 0;
         if (point.hasImage) {
@@ -1967,7 +1988,7 @@ class Series {
                     0 :
                     symbol === 'rect' ?
                         // Rectangle symbols need crisp edges, others don't
-                        seriesMarkerOptions?.lineWidth || 0 :
+                        seriesMarkerOptions.lineWidth || 0 :
                         1);
             }
             attribs.x = pos[0] - radius;
@@ -1998,8 +2019,9 @@ class Series {
      * The presentational attributes to be set on the point.
      */
     pointAttribs(point, state) {
-        const options = this.options, seriesMarkerOptions = options.marker, pointOptions = point?.options, pointMarkerOptions = pointOptions?.marker || {}, pointColorOption = pointOptions?.color, pointColor = point?.color, zoneColor = point?.zone?.color;
-        let seriesStateOptions, pointStateOptions, color = this.color, fill, stroke, strokeWidth = pick(pointMarkerOptions.lineWidth, seriesMarkerOptions.lineWidth), opacity = (point?.isNull && options.nullInteraction) ? 0 : 1;
+        const options = this.options, seriesMarkerOptions = options.marker ?? {}, pointOptions = point?.options, pointMarkerOptions = pointOptions?.marker || {}, pointColorOption = pointOptions?.color, pointColor = point?.color, zoneColor = point?.zone?.color;
+        let color = this.color, fill, stroke, strokeWidth = pointMarkerOptions.lineWidth ??
+            seriesMarkerOptions.lineWidth, opacity = (point?.isNull && options.nullInteraction) ? 0 : 1;
         color = (pointColorOption ||
             zoneColor ||
             pointColor ||
@@ -2012,19 +2034,22 @@ class Series {
             color);
         // Handle hover and select states
         state = state || 'normal';
-        if (state) {
-            seriesStateOptions = (seriesMarkerOptions.states[state] || {});
-            pointStateOptions = (pointMarkerOptions.states &&
-                pointMarkerOptions.states[state]) || {};
-            strokeWidth = pick(pointStateOptions.lineWidth, seriesStateOptions.lineWidth, strokeWidth + pick(pointStateOptions.lineWidthPlus, seriesStateOptions.lineWidthPlus, 0));
-            fill = (pointStateOptions.fillColor ||
-                seriesStateOptions.fillColor ||
-                fill);
-            stroke = (pointStateOptions.lineColor ||
-                seriesStateOptions.lineColor ||
-                stroke);
-            opacity = pick(pointStateOptions.opacity, seriesStateOptions.opacity, opacity);
-        }
+        const seriesStateOptions = seriesMarkerOptions.states?.[state] || {};
+        const pointStateOptions = pointMarkerOptions.states?.[state] || {};
+        strokeWidth = pointStateOptions.lineWidth ??
+            seriesStateOptions.lineWidth ??
+            (strokeWidth || 0) + (pointStateOptions.lineWidthPlus ??
+                seriesStateOptions.lineWidthPlus ??
+                0);
+        fill = (pointStateOptions.fillColor ||
+            seriesStateOptions.fillColor ||
+            fill);
+        stroke = (pointStateOptions.lineColor ||
+            seriesStateOptions.lineColor ||
+            stroke);
+        opacity = (pointStateOptions.opacity ??
+            seriesStateOptions.opacity ??
+            opacity);
         return {
             'stroke': stroke,
             'stroke-width': strokeWidth,
@@ -2063,7 +2088,7 @@ class Series {
         // Destroy all points with their elements
         i = data.length;
         while (i--) {
-            data[i]?.destroy?.();
+            data[i]?.destroy?.(true);
         }
         for (const zone of series.zones || []) {
             // Destroy SVGElement's but preserve primitive props (#20426)
@@ -2090,7 +2115,7 @@ class Series {
         erase(chart.series, series);
         chart.orderItems('series');
         // Clear all members
-        objectEach(series, function (val, prop) {
+        objectEach(series, function (_val, prop) {
             if (!keepEventsForUpdate || prop !== 'hcEvents') {
                 delete series[prop];
             }
@@ -2468,7 +2493,7 @@ class Series {
      *
      * @function Highcharts.Series#searchPoint
      *
-     * @param {Highcharts.PointerEvent} e
+     * @param {PointerEvent} e
      *        The normalized pointer event
      * @param {boolean} [compareX=false]
      *        Search only by the X value, not Y
@@ -2500,7 +2525,7 @@ class Series {
         // Prevent multiple k-d-trees from being built simultaneously
         // (#6235)
         this.buildingKdTree = true;
-        const series = this, seriesOptions = series.options, dimensions = seriesOptions.findNearestPointBy
+        const series = this, seriesOptions = series.options, dimensions = (seriesOptions.findNearestPointBy ?? '')
             .indexOf('y') > -1 ? 2 : 1;
         /**
          * Internal function
@@ -2550,7 +2575,7 @@ class Series {
      *        The point to search for.
      * @param {boolean} [compareX=false]
      *        Search only by the X value, not Y.
-     * @param {Highcharts.PointerEvent} [e]
+     * @param {PointerEvent} [e]
      *        The normalized pointer event.
      * @param {Function} [suppliedPointEvaluator]
      *        A custom point evaluator function.
@@ -2756,11 +2781,13 @@ class Series {
      *         Both X and Y values given
      * @sample highcharts/members/series-addpoint-pie/
      *         Append pie slice
-     * @sample stock/members/series-addpoint/
+     * @sample highcharts/datatable/datamapping-dynamic
+     *         Alternative approach with data table
+     * @sample {highstock} stock/members/series-addpoint/
      *         Append 100 points in Highcharts Stock
-     * @sample stock/members/series-addpoint-shift/
+     * @sample {highstock} stock/members/series-addpoint-shift/
      *         Append and shift in Highcharts Stock
-     * @sample maps/members/series-addpoint/
+     * @sample {highmaps} maps/members/series-addpoint/
      *         Add a point in Highmaps
      *
      * @function Highcharts.Series#addPoint
@@ -3260,10 +3287,10 @@ class Series {
      *        Determines if state should be inherited by points too.
      */
     setState(state, inherit) {
-        const series = this, { graph, options } = series, { inactiveOtherPoints, states: stateOptions } = options, 
+        const series = this, { graph, options } = series, { inactiveOtherPoints, states: stateOptions = {} } = options, 
         // By default a quick animation to hover/inactive,
         // slower to un-hover
-        stateAnimation = pick(stateOptions?.[state || 'normal']?.animation, series.chart.options.chart.animation);
+        stateAnimation = pick(stateOptions[state || 'normal']?.animation, series.chart.options.chart.animation);
         let { lineWidth, opacity } = options;
         state = state || '';
         if (series.state !== state) {
@@ -3290,9 +3317,13 @@ class Series {
                     return;
                 }
                 if (state) {
-                    lineWidth = (stateOptions[state].lineWidth ||
-                        lineWidth + (stateOptions[state].lineWidthPlus || 0)); // #4035
-                    opacity = pick(stateOptions[state].opacity, opacity);
+                    lineWidth = stateOptions[state]?.lineWidth ?? (!isNumber(lineWidth) ?
+                        void 0 :
+                        // Increase by lineWidthPlus only when lineWidth
+                        // is a number.
+                        (lineWidth +
+                            (stateOptions?.[state]?.lineWidthPlus || 0))); // #4035
+                    opacity = stateOptions[state]?.opacity ?? opacity;
                 }
                 if (graph && !graph.dashstyle && isNumber(lineWidth)) {
                     // Animate the graph stroke-width
@@ -3336,11 +3367,7 @@ class Series {
      *        Can be either `hover` or undefined to set to normal state.
      */
     setAllPointsToState(state) {
-        this.points.forEach(function (point) {
-            if (point.setState) {
-                point.setState(state);
-            }
-        });
+        this.points.forEach((point) => point.setState?.(state));
     }
     /**
      * Show or hide the series.

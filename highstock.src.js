@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Stock v13.0.0 (2026-06-11)
+ * @license Highcharts Stock v13.0.0-modified (2026-08-14)
  * @module highcharts/highstock
  *
  * (c) 2009-2026 Highsoft AS
@@ -21,16 +21,31 @@
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	// The require scope
-/******/ 	var __webpack_require__ = {};
+/******/ 	const __webpack_require__ = {};
 /******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
+/******/ 		// define getter/value functions for harmony exports
 /******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 			if(Array.isArray(definition)) {
+/******/ 				var i = 0;
+/******/ 				while(i < definition.length) {
+/******/ 					var key = definition[i++];
+/******/ 					var binding = definition[i++];
+/******/ 					if(!__webpack_require__.o(exports, key)) {
+/******/ 						if(binding === 0) {
+/******/ 							Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 						} else {
+/******/ 							Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 						}
+/******/ 					} else if(binding === 0) { i++; }
+/******/ 				}
+/******/ 			} else {
+/******/ 				for(var key in definition) {
+/******/ 					if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 					}
 /******/ 				}
 /******/ 			}
 /******/ 		};
@@ -42,7 +57,7 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	})();
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
+let __webpack_exports__ = {};
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
@@ -78,7 +93,7 @@ var Globals;
      *  Constants
      *
      * */
-    Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '13.0.0', Globals.win = (typeof window !== 'undefined' ?
+    Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '13.0.0-modified', Globals.win = (typeof window !== 'undefined' ?
         window :
         {}), // eslint-disable-line node/no-unsupported-features/es-builtins
     Globals.doc = Globals.win.document, Globals.svg = !!Globals.doc?.createElementNS?.(Globals.SVG_NS, 'svg')?.createSVGRect, Globals.pageLang = Globals.doc?.documentElement?.closest('[lang]')?.lang, Globals.userAgent = Globals.win.navigator?.userAgent || '', Globals.isChrome = Globals.win.chrome, Globals.isFirefox = Globals.userAgent.indexOf('Firefox') !== -1, Globals.isMS = /(edge|msie|trident)/i.test(Globals.userAgent) && !Globals.win.opera, Globals.isSafari = !Globals.isChrome && Globals.userAgent.indexOf('Safari') !== -1, Globals.isTouchDevice = /(Mobile|Android|Windows Phone)/.test(Globals.userAgent), Globals.isWebKit = Globals.userAgent.indexOf('AppleWebKit') !== -1, Globals.deg2rad = Math.PI * 2 / 360, Globals.marginNames = [
@@ -993,7 +1008,7 @@ const ChartDefaults = {
      * @type      {Highcharts.ColorType}
      * @since     2.1.7
      */
-    selectionMarkerFill: 'color-mix(var(--highcharts-highlight-color-80) 25%, transparent)', // eslint-disable-line max-len
+    selectionMarkerFill: 'color-mix(in srgb, var(--highcharts-highlight-color-80) 25%, transparent)', // eslint-disable-line max-len
     /**
      * Whether to apply a drop shadow to the global series group. This causes
      * all the series to have the same shadow. Contrary to the `series.shadow`
@@ -3956,17 +3971,16 @@ class TimeBase {
         // eslint-disable-next-line new-cap
         let d = this.Date.UTC(year, month, date, hours, minutes || 0, seconds || 0, milliseconds || 0);
         if (this.timezone !== 'UTC') {
-            const offset = this.getTimezoneOffset(d);
+            const offset = this.getTimezoneOffset(d), localHours = (hours - offset / timeUnits.hour + 24) % 24;
             d += offset;
-            // Adjustments close to DST transitions
             if (
-            // Optimize for speed by limiting the number of calls to
-            // `getTimezoneOffset`. According to
+            // Limit the number of calls to `getTimezoneOffset` to months
+            // where DST changes may occur. According to
             // https://en.wikipedia.org/wiki/Daylight_saving_time_by_country,
             // DST change may only occur in these months.
             [2, 3, 8, 9, 10, 11].indexOf(month) !== -1 &&
-                // DST transitions occur only in the night-time
-                (hours < 5 || hours > 20)) {
+                // DST changes only occur at night (#24420)
+                (localHours < 5 || localHours > 20)) {
                 const newOffset = this.getTimezoneOffset(d);
                 if (offset !== newOffset) {
                     d += newOffset - offset;
@@ -7485,10 +7499,14 @@ const defaultOptions = {
          * @type {Highcharts.CSSObject}
          */
         style: {
-            /** @type {Highcharts.ColorType} */
+            /**
+             * @type {Highcharts.ColorType}
+             */
             color: 'var(--highcharts-neutral-color-80)',
             cursor: 'default',
-            /** @type {number|string} */
+            /**
+             * @type {number|string}
+             */
             fontSize: '0.8em'
         },
         /**
@@ -8411,24 +8429,22 @@ class Fx {
      */
     update() {
         const elem = this.elem, prop = this.prop, // If destroyed, it is null
-        now = this.now, step = this.options.step;
+        now = this.now ?? 1, step = this.options.step;
         // Animation setter defined from outside
         if (this[prop + 'Setter']) {
             this[prop + 'Setter']();
             // Other animations on SVGElement
         }
-        else if (elem.attr) {
+        else if (elem && elem.attr) {
             if (elem.element) {
-                elem.attr(prop, now, null, true);
+                elem.attr(prop, now, void 0, true);
             }
             // HTML styles, raw HTML content like container size
         }
-        else {
-            elem.style[prop] = now + this.unit;
+        else if (elem) {
+            elem.style[prop] = now + (this.unit || '');
         }
-        if (step) {
-            step.call(elem, now, this);
-        }
+        step?.call(elem, now, this);
     }
     /**
      * Run an animation.
@@ -8446,12 +8462,10 @@ class Fx {
      *
      */
     run(from, to, unit) {
-        const self = this, options = self.options, timer = function (gotoEnd) {
-            return timer.stopped ? false : self.step(gotoEnd);
-        }, requestAnimationFrame = Fx_win.requestAnimationFrame ||
+        const { elem, options } = this, { complete, curAnim = {} } = options, timer = (gotoEnd) => (timer.stopped ? false : this.step(gotoEnd)), requestAnimationFrame = Fx_win.requestAnimationFrame ||
             function (step) {
                 setTimeout(step, 13);
-            }, step = function () {
+            }, step = () => {
             for (let i = 0; i < Fx.timers.length; i++) {
                 if (!Fx.timers[i]()) {
                     Fx.timers.splice(i--, 1);
@@ -8461,11 +8475,11 @@ class Fx {
                 requestAnimationFrame(step);
             }
         };
-        if (from === to && !this.elem['forceAnimate:' + this.prop]) {
-            delete options.curAnim[this.prop];
-            if (options.complete &&
-                Object.keys(options.curAnim).length === 0) {
-                options.complete.call(this.elem);
+        if (from === to && !elem['forceAnimate:' + this.prop]) {
+            delete curAnim[this.prop];
+            if (complete &&
+                Object.keys(curAnim).length === 0) {
+                complete.call(elem);
             }
         }
         else { // #7166
@@ -8475,7 +8489,7 @@ class Fx {
             this.unit = unit;
             this.now = this.start;
             this.pos = 0;
-            timer.elem = this.elem;
+            timer.elem = elem;
             timer.prop = this.prop;
             if (timer() && Fx.timers.push(timer) === 1) {
                 requestAnimationFrame(step);
@@ -8496,7 +8510,8 @@ class Fx {
     step(gotoEnd) {
         const t = +new Date(), options = this.options, elem = this.elem, complete = options.complete, duration = options.duration, curAnim = options.curAnim;
         let ret, done;
-        if (!!elem.attr && !elem.element) { // #2616, element is destroyed
+        // #2616, element is destroyed
+        if (elem?.attr && !elem.element) {
             ret = false;
         }
         else if (gotoEnd || t >= duration + this.startTime) {
@@ -8786,6 +8801,11 @@ function getDeferredAnimation(chart, animation, series) {
 /**
  * The global animate method, which uses Fx to create individual animators.
  *
+ * @sample highcharts/members/renderer-basic
+ *         SVG elements with animation
+ * @sample highcharts/members/animate
+ *         Animation without an owner element
+ *
  * @function Highcharts.animate
  *
  * @param {Highcharts.HTMLDOMElement|Highcharts.SVGElement} el
@@ -8801,14 +8821,12 @@ function getDeferredAnimation(chart, animation, series) {
  *
  * @return {void}
  */
-function animate(el, params, opt) {
-    let start, unit = '', end, fx, args;
+function animate(el, params = { pos: 1 }, opt) {
     if (!isObject(opt)) { // Number or undefined/null
-        args = arguments;
         opt = {
-            duration: args[2],
-            easing: args[3],
-            complete: args[4]
+            duration: arguments[2],
+            easing: arguments[3],
+            complete: arguments[4]
         };
     }
     if (!isNumber(opt.duration)) {
@@ -8818,22 +8836,23 @@ function animate(el, params, opt) {
         opt.easing :
         (Math[opt.easing] || Math.easeInOutSine);
     opt.curAnim = merge(params);
-    objectEach(params, function (val, prop) {
+    objectEach(params, (val, prop) => {
         // Stop current running animation of this property
-        stop(el, prop);
-        fx = new Animation_Fx(el, opt, prop);
-        end = void 0;
-        if (prop === 'd' && isArray(params.d)) {
-            fx.paths = fx.initPath(el, el.pathArray, params.d);
-            fx.toD = params.d;
-            start = 0;
+        if (el) {
+            stop(el, prop);
+        }
+        const fx = new Animation_Fx(el, opt, prop), d = params.d;
+        let start = 0, end = void 0, unit = '';
+        if (prop === 'd' && isArray(d)) {
+            fx.paths = fx.initPath(el, el.pathArray, d);
+            fx.toD = d;
             end = 1;
         }
-        else if (el.attr) {
+        else if (el?.attr) {
             start = el.attr(prop);
         }
-        else {
-            start = parseFloat(getStyle(el, prop)) || 0;
+        else if (el) {
+            start = +(getStyle(el, prop) || 0);
             if (prop !== 'opacity') {
                 unit = 'px';
             }
@@ -8844,7 +8863,10 @@ function animate(el, params, opt) {
         if (typeof end === 'string' && end.match('px')) {
             end = end.replace(/px/g, ''); // #4351
         }
-        fx.run(start, end, unit);
+        // Empty dashstyle animation crashes treemap on hover
+        if (defined(end)) {
+            fx.run(start, end, unit);
+        }
     });
 }
 /**
@@ -8868,28 +8890,11 @@ function animate(el, params, opt) {
  * improvement in all cases where we stop the animation from .attr. Instead of
  * stopping everything, we can just stop the actual attributes we're setting.
  */
-function stop(el, prop) {
-    let i = Animation_Fx.timers.length;
-    // Remove timers related to this element (#4519)
-    while (i--) {
-        if (Animation_Fx.timers[i].elem === el && (!prop || prop === Animation_Fx.timers[i].prop)) {
-            Animation_Fx.timers[i].stopped = true; // #4667
-        }
+const stop = (el, prop) => Animation_Fx.timers.forEach((timer) => {
+    if (timer.elem === el && (!prop || prop === timer.prop)) {
+        timer.stopped = true; // #4667
     }
-}
-const animationExports = {
-    animate,
-    animObject,
-    getDeferredAnimation,
-    setAnimation,
-    stop
-};
-/* *
- *
- *  Default Export
- *
- * */
-/* harmony default export */ const AnimationUtilities = (animationExports);
+});
 /* *
  *
  *  API Options
@@ -9194,7 +9199,9 @@ class AST {
             doc = { body };
         }
         const appendChildNodes = (node, addTo) => {
-            const tagName = node.nodeName.toLowerCase();
+            // Preserve the camelCase of SVG tags via localName (#24702).
+            const tagName = node.localName ||
+                node.nodeName.toLowerCase();
             // Add allowed tags
             const astNode = {
                 tagName
@@ -9308,6 +9315,8 @@ AST.allowedAttributes = [
     'src',
     'startOffset',
     'stdDeviation',
+    'stop-color',
+    'stop-opacity',
     'stroke-linecap',
     'stroke-width',
     'stroke',
@@ -9911,9 +9920,7 @@ const Templating = {
  * API Declarations
  * */
 /**
- * @interface Highcharts.Templating
- *
- * The Highcharts.Templating interface provides a structure for defining
+ * The Highcharts.TemplatingObject interface provides a structure for defining
  * helpers. Helpers can be used as conditional blocks or functions within
  * expressions. Highcharts includes several built-in helpers and supports
  * the addition of custom helpers.
@@ -9921,16 +9928,21 @@ const Templating = {
  * @see [More information](
  * https://www.highcharts.com/docs/chart-concepts/templating#helpers)
  *
- * @example
- * // Define a custom helper to return the absolute value of a number
- * Highcharts.Templating.helpers.abs = value => Math.abs(value);
- *
- * // Usage in a format string
- * format: 'Absolute value: {abs point.y}'
- *
- * @name Highcharts.Templating#helpers
- * @type {Record<string, Function>}
- */
+ * @interface Highcharts.TemplatingObject
+ */ /**
+* @example
+* // Define a custom helper to return the absolute value of a number
+* Highcharts.Templating.helpers.abs = value => Math.abs(value);
+*
+* // Usage in a format string
+* format: 'Absolute value: {abs point.y}'
+*
+* @name Highcharts.TemplatingObject#helpers
+* @type {Record<string, Function>}
+*/ /**
+* @name Highcharts.Templating
+* @type {Highcharts.TemplatingObject}
+*/
 (''); // Keeps doclets above in file
 
 ;// ./code/es-modules/Core/Renderer/RendererUtilities.js
@@ -10139,7 +10151,6 @@ var RendererUtilities;
  * */
 
 
-const { animate: SVGElement_animate, animObject: SVGElement_animObject, stop: SVGElement_stop } = AnimationUtilities;
 
 
 const { deg2rad, doc: SVGElement_doc, svg, SVG_NS: SVGElement_SVG_NS, win: SVGElement_win, isFirefox } = Core_Globals;
@@ -10423,7 +10434,7 @@ class SVGElement {
      * Returns the SVGElement for chaining.
      */
     animate(params, options, complete) {
-        const animOptions = SVGElement_animObject(pick(options, this.renderer.globalAnimation, true)), deferTime = animOptions.defer;
+        const animOptions = animObject(pick(options, this.renderer.globalAnimation, true)), deferTime = animOptions.defer;
         // When the page is hidden save resources in the background by not
         // running animation at all (#9749).
         if (SVGElement_doc.hidden) {
@@ -10438,7 +10449,7 @@ class SVGElement {
             // If defer option is defined delay the animation #12901
             syncTimeout(() => {
                 if (this.element) {
-                    SVGElement_animate(this, params, animOptions);
+                    animate(this, params, animOptions);
                 }
             }, deferTime);
         }
@@ -10612,7 +10623,7 @@ class SVGElement {
                 // Unless .attr is from the animator update, stop current
                 // running animation of this property
                 if (!continueAnimation) {
-                    SVGElement_stop(this, key);
+                    stop(this, key);
                 }
                 // Special handling of symbol attributes
                 if (this.symbolName &&
@@ -10932,7 +10943,7 @@ class SVGElement {
         // Remove events
         element.onclick = element.onmouseout = element.onmouseover =
             element.onmousemove = element.point = null;
-        SVGElement_stop(wrapper); // Stop running animations
+        stop(wrapper); // Stop running animations
         if (wrapper.clipPath && ownerSVGElement) {
             const clipPath = wrapper.clipPath;
             // Look for existing references to this clipPath and remove them
@@ -13844,7 +13855,7 @@ class SVGRenderer {
         this.url = this.getReferenceURL();
         // Add description
         const desc = this.createElement('desc').add();
-        desc.element.appendChild(SVGRenderer_doc.createTextNode('Created with Highcharts 13.0.0'));
+        desc.element.appendChild(SVGRenderer_doc.createTextNode('Created with Highcharts 13.0.0-modified'));
         this.defs = this.createElement('defs').add();
         this.allowHTML = allowHTML;
         this.forExport = forExport;
@@ -15635,7 +15646,11 @@ class HTMLElement extends SVG_SVGElement {
                     .attr({
                     text: str,
                     x: Math.round(x),
-                    y: Math.round(y)
+                    y: Math.round(y),
+                    // The namespace attribute is required for serialization
+                    // (export and side-by-side comparison), otherwise it
+                    // inherits the SVG namespace from foreignObject.
+                    xmlns: 'http://www.w3.org/1999/xhtml'
                 });
             };
         }
@@ -15815,8 +15830,10 @@ class HTMLElement extends SVG_SVGElement {
             foreignObject.attr({
                 x: x + (this.xCorr || 0),
                 y: y + (this.yCorr || 0),
-                // Add 4px to avoid ellipsis, since the body adds 3 px right
-                // margin. We need one more because of rounding.
+                // Add 4px to avoid ellipsis. In v13.0.0 we had a body inside
+                // the foreignObject with a 3px right margin. This was later
+                // removed, but we still need to add a few pixels to avoid
+                // ellipsis.
                 width: element.offsetWidth + 4,
                 // Add 1px to account for subpixel bounding boxes
                 height: element.offsetHeight + 1,
@@ -15836,25 +15853,16 @@ class HTMLElement extends SVG_SVGElement {
         this.cTT = currentTextTransform;
     }
     /**
-     * Add the element to a group wrapper. For HTML elements, a parallel div
-     * will be created for each ancestor SVG `g` element.
+     * Add the element to the foreign object
      *
      * @internal
      */
     add(parentGroup) {
-        const { foreignObject, renderer } = this;
+        const { foreignObject } = this;
         // Foreign object
         foreignObject.add(parentGroup);
-        super.add(
-        // Create a body inside the foreignObject
-        renderer.createElement('body')
-            .attr({ xmlns: 'http://www.w3.org/1999/xhtml' })
-            .css({
-            background: 'transparent',
-            // 3px is to avoid clipping on the right
-            margin: '0 3px 0 0'
-        })
-            .add(foreignObject));
+        // Add this.element to the foreign objct
+        super.add(foreignObject);
         if (this.alignOnAdd) {
             this.updateTransform();
         }
@@ -15889,10 +15897,20 @@ class HTMLElement extends SVG_SVGElement {
         this[key] = value;
         this.doTransform = true;
     }
+    /**
+     * Apply visibility/opacity to the foreignObject; the HTML element
+     * ignores them.
+     * @internal
+     */
+    visibilitySetter(value, key) {
+        this.foreignObject.attr({ [key]: value });
+        this[key] = value;
+    }
 }
 // Some shared setters
 const proto = HTMLElement.prototype;
 proto.ySetter = proto.xSetter;
+proto.opacitySetter = proto.visibilitySetter;
 /* *
  *
  *  Default Export
@@ -16433,6 +16451,7 @@ var AxisDefaults;
          */
         dateTimeLabelFormats: {
             /**
+             * @type {Highcharts.AxisDateTimeLabelFormatsOptionsObject|string}
              * @declare Highcharts.AxisDateTimeLabelFormatsOptionsObject
              */
             millisecond: {
@@ -16458,6 +16477,7 @@ var AxisDefaults;
                 range: false
             },
             /**
+             * @type {Highcharts.AxisDateTimeLabelFormatsOptionsObject|string}
              * @declare Highcharts.AxisDateTimeLabelFormatsOptionsObject
              */
             second: {
@@ -16483,6 +16503,7 @@ var AxisDefaults;
                 range: false
             },
             /**
+             * @type {Highcharts.AxisDateTimeLabelFormatsOptionsObject|string}
              * @declare Highcharts.AxisDateTimeLabelFormatsOptionsObject
              */
             minute: {
@@ -16508,6 +16529,7 @@ var AxisDefaults;
                 range: false
             },
             /**
+             * @type {Highcharts.AxisDateTimeLabelFormatsOptionsObject|string}
              * @declare Highcharts.AxisDateTimeLabelFormatsOptionsObject
              */
             hour: {
@@ -16540,6 +16562,7 @@ var AxisDefaults;
                 range: false
             },
             /**
+             * @type {Highcharts.AxisDateTimeLabelFormatsOptionsObject|string}
              * @declare Highcharts.AxisDateTimeLabelFormatsOptionsObject
              */
             day: {
@@ -16562,6 +16585,7 @@ var AxisDefaults;
                 boundary: '%[eb]'
             },
             /**
+             * @type {Highcharts.AxisDateTimeLabelFormatsOptionsObject|string}
              * @declare Highcharts.AxisDateTimeLabelFormatsOptionsObject
              */
             week: {
@@ -16577,6 +16601,7 @@ var AxisDefaults;
                 main: '%[eb]'
             },
             /**
+             * @type {Highcharts.AxisDateTimeLabelFormatsOptionsObject|string}
              * @declare Highcharts.AxisDateTimeLabelFormatsOptionsObject
              */
             month: {
@@ -16599,6 +16624,7 @@ var AxisDefaults;
                 boundary: void 0
             },
             /**
+             * @type {Highcharts.AxisDateTimeLabelFormatsOptionsObject|string}
              * @declare Highcharts.AxisDateTimeLabelFormatsOptionsObject
              */
             year: {
@@ -17414,7 +17440,7 @@ var AxisDefaults;
          * @sample {highstock} stock/xaxis/offset/
          *         Y axis offset by 70 px
          *
-         * @type {number}
+         * @type {number|string}
          */
         offset: void 0,
         /**
@@ -19064,7 +19090,9 @@ var AxisDefaults;
              * @product highcharts
              */
             style: {
-                /** @type {Highcharts.ColorType} */
+                /**
+                 * @type {Highcharts.ColorType}
+                 */
                 color: 'var(--highcharts-neutral-color-100)',
                 /**
                  * @type {number|string}
@@ -19847,7 +19875,6 @@ class Tick {
  * */
 
 
-const { animObject: Axis_animObject } = AnimationUtilities;
 
 const { xAxis, yAxis } = Axis_AxisDefaults;
 
@@ -22453,7 +22480,7 @@ class Axis {
      * @emits Highcharts.Axis#event:afterRender
      */
     render() {
-        const axis = this, chart = axis.chart, log = axis.logarithmic, renderer = chart.renderer, options = axis.options, isLinked = axis.isLinked, tickPositions = axis.tickPositions, axisTitle = axis.axisTitle, ticks = axis.ticks, minorTicks = axis.minorTicks, alternateBands = axis.alternateBands, stackLabelOptions = options.stackLabels, alternateGridColor = options.alternateGridColor, crossing = options.crossing, tickmarkOffset = axis.tickmarkOffset, axisLine = axis.axisLine, showAxis = axis.showAxis, animation = Axis_animObject(renderer.globalAnimation);
+        const axis = this, chart = axis.chart, log = axis.logarithmic, renderer = chart.renderer, options = axis.options, isLinked = axis.isLinked, tickPositions = axis.tickPositions, axisTitle = axis.axisTitle, ticks = axis.ticks, minorTicks = axis.minorTicks, alternateBands = axis.alternateBands, stackLabelOptions = options.stackLabels, alternateGridColor = options.alternateGridColor, crossing = options.crossing, tickmarkOffset = axis.tickmarkOffset, axisLine = axis.axisLine, showAxis = axis.showAxis, animation = animObject(renderer.globalAnimation);
         let from, to;
         // Reset
         axis.labelEdge.length = 0;
@@ -22804,7 +22831,7 @@ class Axis {
                 }
                 cross
                     .show()
-                    .animate({ d: path }, Axis_animObject(options?.animation));
+                    .animate({ d: path }, animObject(options?.animation));
                 if (categorized && !options.width) {
                     cross.attr({
                         'stroke-width': this.transA
@@ -24842,7 +24869,6 @@ class PlotLineOrBand {
  * */
 
 
-const { animObject: Tooltip_animObject } = AnimationUtilities;
 
 const { format: Tooltip_format } = Core_Templating;
 
@@ -25543,7 +25569,7 @@ class Tooltip {
      * @param {number} anchorY
      */
     move(x, y, anchorX, anchorY) {
-        const { followPointer, options } = this, animation = Tooltip_animObject(!followPointer &&
+        const { followPointer, options } = this, animation = animObject(!followPointer &&
             !this.isHidden &&
             !options.fixed &&
             options.animation), skipAnchor = followPointer || (this.len || 0) > 1, attr = { x, y };
@@ -26291,7 +26317,6 @@ class Tooltip {
 
 
 
-const { animObject: Point_animObject } = AnimationUtilities;
 
 const { defaultOptions: Point_defaultOptions } = Defaults;
 
@@ -26631,10 +26656,15 @@ class Point {
      *
      * @internal
      * @function Highcharts.Point#destroy
+     *
+     * @param {boolean} [sync]
+     *        Whether to destroy the point synchronously. Used internally from
+     *        series.destroy, where condemned points may cause animation errors
+     *        (#24976).
      */
-    destroy() {
-        if (!this.condemned) {
-            const point = this, series = point.series, chart = series.chart, hoverPoints = chart.hoverPoints, globalAnimation = point.series.chart.renderer.globalAnimation, { duration } = Point_animObject(globalAnimation);
+    destroy(sync) {
+        if (!this.destroyed && !this.condemned) {
+            const point = this, series = point.series, chart = series.chart, hoverPoints = chart.hoverPoints, globalAnimation = point.series.chart.renderer.globalAnimation, { duration } = animObject(globalAnimation);
             /**
              * Allow to call after animation.
              * @internal
@@ -26651,6 +26681,7 @@ class Point {
                 for (const prop in point) { // eslint-disable-line guard-for-in
                     delete point[prop];
                 }
+                this.destroyed = true;
             };
             if (point.legendItem) {
                 // Pies have legend items
@@ -26667,7 +26698,7 @@ class Point {
                 point.onMouseOut();
             }
             // Remove properties after animation
-            if (duration && series.condemnedPoints) {
+            if (duration && !sync && series.condemnedPoints) {
                 series.condemnedPoints.push(this);
                 this.graphic?.addClass('highcharts-point-condemned');
                 setTimeout(destroyPoint, duration);
@@ -26790,14 +26821,15 @@ class Point {
      *
      * @function Highcharts.Point#getZone
      *
-     * @return {Highcharts.SeriesZonesOptionsObject}
-     *         The zone item.
+     * @return {Highcharts.SeriesZonesOptionsObject|undefined}
+     *         The zone item, or `undefined` if the series has no zones.
      */
     getZone() {
         const series = this.series, zones = series.zones, zoneAxis = series.zoneAxis || 'y';
         let zone, i = 0;
         zone = zones[i];
-        while (this[zoneAxis] >= zone.value) {
+        while (i < zones.length &&
+            this[zoneAxis] >= zone.value) {
             zone = zones[++i];
         }
         // For resetting or reusing the point (#8100)
@@ -27337,9 +27369,8 @@ class Point {
      * @emits Highcharts.Point#event:afterSetState
      */
     setState(state, move) {
-        const point = this, series = point.series, previousState = point.state, stateOptions = (series.options.states[state || 'normal'] ||
-            {}), markerOptions = (Point_defaultOptions.plotOptions[series.type].marker &&
-            series.options.marker), normalDisabled = (markerOptions && markerOptions.enabled === false), markerStateOptions = markerOptions?.states?.[state || 'normal'] ||
+        const point = this, series = point.series, previousState = point.state, stateOptions = series.options.states?.[state || 'normal'] || {}, markerOptions = (Point_defaultOptions.plotOptions?.[series.type]?.marker &&
+            series.options.marker), normalDisabled = markerOptions?.enabled === false, markerStateOptions = markerOptions?.states?.[state || 'normal'] ||
             {}, stateDisabled = markerStateOptions.enabled === false, pointMarker = point.marker || {}, chart = series.chart, hasMarkers = (markerOptions && series.markerAttribs);
         let halo = series.halo, markerAttribs, pointAttribs, pointAttribsAnimation, stateMarkerGraphic = series.stateMarkerGraphic, newSymbol;
         state = state || ''; // Empty string
@@ -27352,13 +27383,10 @@ class Point {
             (stateOptions.enabled === false) ||
             // General point marker's state options is disabled
             (state && (stateDisabled ||
-                (normalDisabled &&
-                    markerStateOptions.enabled === false))) ||
+                (normalDisabled && markerStateOptions.enabled === false))) ||
             // Individual point marker's state options is disabled
             (state &&
-                pointMarker.states &&
-                pointMarker.states[state] &&
-                pointMarker.states[state].enabled === false) // #1610
+                pointMarker.states?.[state]?.enabled === false) // #1610
         ) {
             return;
         }
@@ -27377,7 +27405,8 @@ class Point {
             }
             if (!chart.styledMode) {
                 pointAttribs = series.pointAttribs(point, state);
-                pointAttribsAnimation = pick(chart.options.chart.animation, stateOptions.animation);
+                pointAttribsAnimation = (chart.options.chart.animation ??
+                    stateOptions.animation);
                 const opacity = pointAttribs.opacity;
                 // Some inactive points (e.g. slices in pie) should apply
                 // opacity also for their labels
@@ -27395,9 +27424,11 @@ class Point {
                 point.graphic.animate(pointAttribs, pointAttribsAnimation);
             }
             if (markerAttribs) {
-                point.graphic.animate(markerAttribs, pick(
+                point.graphic.animate(markerAttribs, (
                 // Turn off globally:
-                chart.options.chart.animation, markerStateOptions.animation, markerOptions.animation));
+                chart.options.chart.animation ??
+                    markerStateOptions.animation ??
+                    markerOptions.animation));
             }
             // Zooming in from a range with no markers to a range with markers
             if (stateMarkerGraphic) {
@@ -27446,10 +27477,12 @@ class Point {
             }
         }
         // Show me your halo
-        const haloOptions = stateOptions.halo;
+        const haloOptions = isObject(stateOptions.halo) ?
+            stateOptions.halo :
+            {};
         const markerGraphic = (point.graphic || stateMarkerGraphic);
         const markerVisibility = markerGraphic?.visibility || 'inherit';
-        if (haloOptions?.size &&
+        if (haloOptions.size &&
             markerGraphic &&
             markerVisibility !== 'hidden' &&
             !point.isCluster) {
@@ -27978,6 +28011,11 @@ class Pointer {
                     redraw = true;
                 }
             }
+        }
+        // Run a final transform with a drop trigger to display the reset
+        // zoom button after a pinch gesture (#22128)
+        if (e?.type === 'touchend' && this.hasDragged) {
+            chart.transform({ trigger: 'drop' });
         }
         if (redraw) {
             chart.redraw();
@@ -28622,6 +28660,9 @@ class Pointer {
                     from: boxFromTouches(lastTouches),
                     trigger: e.type
                 });
+                // Record a truthy value in order to trigger the final transform
+                // in the drop function
+                pointer.hasDragged = 1;
             });
             if (pointer.res) {
                 pointer.res = false;
@@ -29113,7 +29154,8 @@ class Pointer {
             // If inside, capture touch-drag and display tooltip. If not inside,
             // allow dragging the finger to scroll the page
             if ((chart.tooltip?.options.followTouchMove ?? true) &&
-                isInside) {
+                isInside &&
+                !(chart.scrollablePixelsX || chart.scrollablePixelsY)) {
                 e.preventDefault();
             }
         }
@@ -29585,7 +29627,7 @@ class DataTableCore {
      * Fetches the given column by the canonical column ID. Simplified version
      * of the full `DataTable.getRow` method, always returning by reference.
      *
-     * @function Highcharts.DataTable#setColumn
+     * @function Highcharts.DataTable#getColumn
      *
      * @param {string} columnId
      * ID of the column to get.
@@ -30321,6 +30363,10 @@ const seriesDefaults = {
      * ```
      *
      * @type    {Highcharts.DataMappingOptionsObject}
+     * @sample highcharts/datatable/datamapping
+     *         Basic data mapping
+     * @sample highcharts/datatable/datamapping-dynamic
+     *         Data mapping with dynamic updates
      * @sample {highcharts} highcharts/datatable/series-datatable-multiple
      *         Series with two data tables
      * @sample {highcharts} highcharts/datatable/nested-keys
@@ -30330,6 +30376,29 @@ const seriesDefaults = {
      *
      * @since     13.0.0
      * @apioption plotOptions.series.dataMapping
+     */
+    /**
+     * Options for a specific series-level data table or an array of data
+     * tables. The `dataTable` option can be either a configuration object or an
+     * instance of the `DataTable` class. If a `DataTable` instance is passed,
+     * it will be used directly. If a configuration object or an array is
+     * passed, a new `DataTable` instance will be created based on the provided
+     * configuration.
+     *
+     * @type   {Highcharts.DataTable|Highcharts.DataTableOptionsObject|Array<Highcharts.DataTable|Highcharts.DataTableOptionsObject>}
+     * @sample {highcharts} highcharts/datatable/series-datatable/
+     *         Series with one data table each
+     * @sample {highcharts} highcharts/datatable/series-datatable-multiple/
+     *         Series with two data tables
+     * @sample {highstock} stock/datatable/series-datatable/
+     *         Series with one data table each
+     * @sample {highstock} stock/datatable/series-datatable-multiple/
+     *         Series with two data tables
+     * @sample {highmaps} maps/datatable/series-datatable
+     *         Series-level data table
+     *
+     * @since 13.0.0
+     * @apioption plotOptions.series.dataTable
      */
     /**
      * Enable or disable the mouse tracking for a specific series. This
@@ -31214,6 +31283,7 @@ const seriesDefaults = {
              * `series.allowPointSelect` option to true.
              *
              * @declare Highcharts.PointStatesSelectOptionsObject
+             * @extends plotOptions.series.marker.states.hover
              */
             select: {
                 /**
@@ -31790,6 +31860,7 @@ const seriesDefaults = {
          * @sample {highmaps} maps/plotoptions/series-datalabels-box/
          *         Data labels box options
          *
+         * @type  {number|Array<number>}
          * @since 2.2.1
          */
         padding: [1, 3],
@@ -31991,6 +32062,9 @@ const seriesDefaults = {
     /**
      * A collection of options for different series states.
      *
+     * In addition to the options documented under each state, any option from
+     * the parent series type can be set, with exception of `data` and `states`.
+     *
      * @declare Highcharts.SeriesStatesOptionsObject
      */
     states: {
@@ -32164,6 +32238,7 @@ const seriesDefaults = {
          *         Disabled inactive state
          *
          * @declare Highcharts.SeriesStatesInactiveOptionsObject
+         * @extends plotOptions.series.states.hover
          */
         inactive: {
             /**
@@ -32564,7 +32639,6 @@ var SeriesRegistry;
  * */
 
 
-const { animObject: Series_animObject, setAnimation: Series_setAnimation } = AnimationUtilities;
 
 
 const { defaultOptions: Series_defaultOptions } = Defaults;
@@ -32703,6 +32777,13 @@ class Series {
      * @readonly
      */
     /**
+     * The main group for the series' graphics.
+     *
+     * @name Highcharts.Series#group
+     * @type {Highcharts.SVGElement}
+     * @readonly
+     */
+    /**
      * Contains the series' index in the `Chart.series` array.
      *
      * @name Highcharts.Series#index
@@ -32834,10 +32915,12 @@ class Series {
          */
         series.options = series.setOptions(userOptions);
         const options = series.options, visible = options.visible !== false;
-        // Create the data table
-        this.dataTable ?? (this.dataTable = options.dataTable?.isDataTable ?
-            options.dataTable :
-            new Data_DataTableCore(options.dataTable));
+        // Create the data table or use the one passed as option
+        this.dataTable ?? (this.dataTable = isArray(options.dataTable) ?
+            new Data_DataTableCore() :
+            options.dataTable?.isDataTable ?
+                options.dataTable :
+                new Data_DataTableCore(options.dataTable));
         /**
          * All child series that are linked to the current series through the
          * [linkedTo](https://api.highcharts.com/highcharts/series.line.linkedTo)
@@ -33219,7 +33302,7 @@ class Series {
      */
     getSymbol() {
         const seriesMarkerOption = this.options.marker;
-        this.getCyclic('symbol', seriesMarkerOption.symbol, this.chart.options.symbols);
+        this.getCyclic('symbol', seriesMarkerOption?.symbol, this.chart.options.symbols);
     }
     /**
      * Shorthand to get one of the series' data columns from `Series.dataTable`.
@@ -33415,9 +33498,10 @@ class Series {
                 if (!oldData[i].destroyed && !oldData[i].condemned) {
                     const pOptions = dataTable.getRowObject(i);
                     if (pOptions) {
+                        // Remove undefined properties, but preserve explicit
+                        // nulls (#24872)
                         Object.keys(pOptions).forEach((key) => {
-                            if (!defined(pOptions[key]) /* ||
-                            pOptions[key] === oldData[i].options[key]*/) {
+                            if (pOptions[key] === void 0) {
                                 delete pOptions[key];
                             }
                         });
@@ -33822,8 +33906,12 @@ class Series {
                 }
             }
         }
-        // Find the closest distance between processed points
-        xData = this.getColumn('x', true);
+        // Find the closest distance between processed points. When the data was
+        // cropped (or set out of range), read x from the freshly cropped local
+        // `modified` table, #24858.
+        if (modified !== table) {
+            xData = modified.getColumn('x', true) || [];
+        }
         const closestPointRange = getClosestDistance([
             logarithmic ?
                 xData.map(logarithmic.log2lin) :
@@ -34028,9 +34116,9 @@ class Series {
      * Force getting extremes of a total series data range.
      */
     getExtremes(yData, forceExtremesFromAll) {
-        const { xAxis, yAxis } = this, getExtremesFromAll = forceExtremesFromAll ||
+        const { options, xAxis, yAxis } = this, getExtremesFromAll = forceExtremesFromAll ||
             this.getExtremesFromAll ||
-            this.options.getExtremesFromAll, // #4599, #21003
+            options.getExtremesFromAll, // #4599, #21003
         table = getExtremesFromAll && this.cropped ?
             this.dataTable :
             this.dataTable.getModified(), rowCount = table.rowCount, customData = yData || this.stackedYData, yAxisData = customData ?
@@ -34040,7 +34128,12 @@ class Series {
         // non-sorted data like scatter (#7639).
         shoulder = this.requireSorting && !this.is('column') ?
             1 : 0, 
-        // #2117, need to compensate for log X axis
+        // Used only for `cumulativeStart` (#24608)
+        excludeShoulder = options.cumulative &&
+            options.cumulativeStart &&
+            shoulder &&
+            !getExtremesFromAll, 
+        // Compensate for log X axis (#2117)
         positiveValuesOnly = yAxis ? yAxis.positiveValuesOnly : false, doAll = getExtremesFromAll ||
             this.cropped ||
             !xAxis; // For colorAxis support
@@ -34052,10 +34145,10 @@ class Series {
         }
         for (i = 0; i < rowCount; i++) {
             x = xData[i];
-            // Check if it is within the selected x axis range
-            if (doAll ||
+            // Check if it is within the selected x-axis range
+            if ((doAll ||
                 ((xData[i + shoulder] || x) >= xMin &&
-                    (xData[i - shoulder] || x) <= xMax)) {
+                    (xData[i - shoulder] || x) <= xMax)) && (!excludeShoulder || x >= xMin)) {
                 for (const values of yAxisData) {
                     const val = values[i];
                     // For points within the visible range, including the
@@ -34124,7 +34217,7 @@ class Series {
      */
     translate() {
         this.generatePoints();
-        const series = this, { options, xAxis, yAxis } = series, { stacking, threshold } = options, { hasRendered, polar } = series.chart, points = series.points.concat(series.condemnedPoints), dataLength = points.length, pointPlacement = series.pointPlacementToXValue(), // #7860
+        const series = this, { hasRendered, options, xAxis, yAxis } = series, { stacking, threshold } = options, { polar } = series.chart, points = series.points.concat(series.condemnedPoints), dataLength = points.length, pointPlacement = series.pointPlacementToXValue(), // #7860
         dynamicallyPlaced = Boolean(pointPlacement), stackThreshold = options.startFromThreshold ? threshold : 0, nullYSubstitute = (options?.nullInteraction &&
             yAxis.len);
         let i, plotX, lastPlotX, stackIndicator, closestPointRangePx = Number.MAX_VALUE;
@@ -34317,7 +34410,7 @@ class Series {
      * Initialize the animation.
      */
     animate(init) {
-        const { chart, group, markerGroup } = this, inverted = chart.inverted, animation = Series_animObject(this.options.animation), 
+        const { chart, group, markerGroup } = this, inverted = chart.inverted, animation = animObject(this.options.animation), 
         // The key for temporary animation clips
         animationClipKey = [
             this.getSharedClipKey(),
@@ -34413,10 +34506,11 @@ class Series {
      */
     drawPoints(points) {
         points || (points = this.points.concat(this.condemnedPoints));
-        const series = this, chart = series.chart, styledMode = chart.styledMode, { colorAxis, options } = series, seriesMarkerOptions = options.marker, nullInteraction = options.nullInteraction, markerGroup = series[series.specialGroup || 'markerGroup'], xAxis = series.xAxis, globallyEnabled = pick(seriesMarkerOptions.enabled, !xAxis || xAxis.isRadial ? true : null, 
-        // Use larger or equal as radius is null in bubbles (#6321)
-        series.closestPointRangePx >= (seriesMarkerOptions.enabledThreshold *
-            seriesMarkerOptions.radius));
+        const series = this, chart = series.chart, styledMode = chart.styledMode, { colorAxis, options } = series, seriesMarkerOptions = options.marker || {}, nullInteraction = options.nullInteraction, markerGroup = series[series.specialGroup || 'markerGroup'], xAxis = series.xAxis, globallyEnabled = seriesMarkerOptions.enabled ??
+            (!xAxis || xAxis.isRadial ? true : null) ??
+            // Use larger or equal as radius is null in bubbles (#6321)
+            ((series.closestPointRangePx ?? -Infinity) >= ((seriesMarkerOptions.enabledThreshold ?? 2) *
+                seriesMarkerOptions.radius));
         let i, point, graphic, verb, pointMarkerOptions, hasPointMarker, markerAttribs;
         if (seriesMarkerOptions.enabled !== false ||
             series._hasPointMarkers) {
@@ -34434,7 +34528,7 @@ class Series {
                 if (shouldDrawMarker) {
                     // Shortcuts
                     const symbol = pick(pointMarkerOptions.symbol, series.symbol, 'rect');
-                    markerAttribs = series.markerAttribs(point, (point.selected && 'select'));
+                    markerAttribs = series.markerAttribs(point, point.selected ? 'select' : '');
                     const isInside = point.isInside !== false;
                     if (!graphic &&
                         isInside &&
@@ -34499,15 +34593,17 @@ class Series {
      * A hash containing those attributes that are not settable from CSS.
      */
     markerAttribs(point, state) {
-        const seriesOptions = this.options, seriesMarkerOptions = seriesOptions.marker, pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol ||
+        const seriesOptions = this.options, seriesMarkerOptions = seriesOptions.marker ?? {}, pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol ||
             seriesMarkerOptions.symbol), attribs = {};
-        let seriesStateOptions, pointStateOptions, radius = pick(pointMarkerOptions.radius, seriesMarkerOptions?.radius);
+        let seriesStateOptions, pointStateOptions, radius = pointMarkerOptions.radius ??
+            seriesMarkerOptions.radius;
         // Handle hover and select states
         if (state) {
-            seriesStateOptions = seriesMarkerOptions?.states?.[state];
+            seriesStateOptions = seriesMarkerOptions.states?.[state];
             pointStateOptions = pointMarkerOptions.states?.[state];
-            radius = pick(pointStateOptions?.radius, seriesStateOptions?.radius, radius && radius + (seriesStateOptions?.radiusPlus ||
-                0));
+            radius = pointStateOptions?.radius ??
+                seriesStateOptions?.radius ??
+                (radius && radius + (seriesStateOptions?.radiusPlus || 0));
         }
         point.hasImage = symbol && symbol.indexOf('url') === 0;
         if (point.hasImage) {
@@ -34520,7 +34616,7 @@ class Series {
                     0 :
                     symbol === 'rect' ?
                         // Rectangle symbols need crisp edges, others don't
-                        seriesMarkerOptions?.lineWidth || 0 :
+                        seriesMarkerOptions.lineWidth || 0 :
                         1);
             }
             attribs.x = pos[0] - radius;
@@ -34551,8 +34647,9 @@ class Series {
      * The presentational attributes to be set on the point.
      */
     pointAttribs(point, state) {
-        const options = this.options, seriesMarkerOptions = options.marker, pointOptions = point?.options, pointMarkerOptions = pointOptions?.marker || {}, pointColorOption = pointOptions?.color, pointColor = point?.color, zoneColor = point?.zone?.color;
-        let seriesStateOptions, pointStateOptions, color = this.color, fill, stroke, strokeWidth = pick(pointMarkerOptions.lineWidth, seriesMarkerOptions.lineWidth), opacity = (point?.isNull && options.nullInteraction) ? 0 : 1;
+        const options = this.options, seriesMarkerOptions = options.marker ?? {}, pointOptions = point?.options, pointMarkerOptions = pointOptions?.marker || {}, pointColorOption = pointOptions?.color, pointColor = point?.color, zoneColor = point?.zone?.color;
+        let color = this.color, fill, stroke, strokeWidth = pointMarkerOptions.lineWidth ??
+            seriesMarkerOptions.lineWidth, opacity = (point?.isNull && options.nullInteraction) ? 0 : 1;
         color = (pointColorOption ||
             zoneColor ||
             pointColor ||
@@ -34565,19 +34662,22 @@ class Series {
             color);
         // Handle hover and select states
         state = state || 'normal';
-        if (state) {
-            seriesStateOptions = (seriesMarkerOptions.states[state] || {});
-            pointStateOptions = (pointMarkerOptions.states &&
-                pointMarkerOptions.states[state]) || {};
-            strokeWidth = pick(pointStateOptions.lineWidth, seriesStateOptions.lineWidth, strokeWidth + pick(pointStateOptions.lineWidthPlus, seriesStateOptions.lineWidthPlus, 0));
-            fill = (pointStateOptions.fillColor ||
-                seriesStateOptions.fillColor ||
-                fill);
-            stroke = (pointStateOptions.lineColor ||
-                seriesStateOptions.lineColor ||
-                stroke);
-            opacity = pick(pointStateOptions.opacity, seriesStateOptions.opacity, opacity);
-        }
+        const seriesStateOptions = seriesMarkerOptions.states?.[state] || {};
+        const pointStateOptions = pointMarkerOptions.states?.[state] || {};
+        strokeWidth = pointStateOptions.lineWidth ??
+            seriesStateOptions.lineWidth ??
+            (strokeWidth || 0) + (pointStateOptions.lineWidthPlus ??
+                seriesStateOptions.lineWidthPlus ??
+                0);
+        fill = (pointStateOptions.fillColor ||
+            seriesStateOptions.fillColor ||
+            fill);
+        stroke = (pointStateOptions.lineColor ||
+            seriesStateOptions.lineColor ||
+            stroke);
+        opacity = (pointStateOptions.opacity ??
+            seriesStateOptions.opacity ??
+            opacity);
         return {
             'stroke': stroke,
             'stroke-width': strokeWidth,
@@ -34616,7 +34716,7 @@ class Series {
         // Destroy all points with their elements
         i = data.length;
         while (i--) {
-            data[i]?.destroy?.();
+            data[i]?.destroy?.(true);
         }
         for (const zone of series.zones || []) {
             // Destroy SVGElement's but preserve primitive props (#20426)
@@ -34643,7 +34743,7 @@ class Series {
         erase(chart.series, series);
         chart.orderItems('series');
         // Clear all members
-        objectEach(series, function (val, prop) {
+        objectEach(series, function (_val, prop) {
             if (!keepEventsForUpdate || prop !== 'hcEvents') {
                 delete series[prop];
             }
@@ -34919,7 +35019,7 @@ class Series {
      * @emits Highcharts.Series#event:afterRender
      */
     render() {
-        const series = this, { chart, options, hasRendered } = series, animOptions = Series_animObject(options.animation), visibility = series.visible ?
+        const series = this, { chart, options, hasRendered } = series, animOptions = animObject(options.animation), visibility = series.visible ?
             'inherit' : 'hidden', // #2597
         zIndex = options.zIndex, chartSeriesGroup = chart.seriesGroup;
         let animDuration = series.finishedAnimating ?
@@ -35021,7 +35121,7 @@ class Series {
      *
      * @function Highcharts.Series#searchPoint
      *
-     * @param {Highcharts.PointerEvent} e
+     * @param {PointerEvent} e
      *        The normalized pointer event
      * @param {boolean} [compareX=false]
      *        Search only by the X value, not Y
@@ -35053,7 +35153,7 @@ class Series {
         // Prevent multiple k-d-trees from being built simultaneously
         // (#6235)
         this.buildingKdTree = true;
-        const series = this, seriesOptions = series.options, dimensions = seriesOptions.findNearestPointBy
+        const series = this, seriesOptions = series.options, dimensions = (seriesOptions.findNearestPointBy ?? '')
             .indexOf('y') > -1 ? 2 : 1;
         /**
          * Internal function
@@ -35103,7 +35203,7 @@ class Series {
      *        The point to search for.
      * @param {boolean} [compareX=false]
      *        Search only by the X value, not Y.
-     * @param {Highcharts.PointerEvent} [e]
+     * @param {PointerEvent} [e]
      *        The normalized pointer event.
      * @param {Function} [suppliedPointEvaluator]
      *        A custom point evaluator function.
@@ -35309,11 +35409,13 @@ class Series {
      *         Both X and Y values given
      * @sample highcharts/members/series-addpoint-pie/
      *         Append pie slice
-     * @sample stock/members/series-addpoint/
+     * @sample highcharts/datatable/datamapping-dynamic
+     *         Alternative approach with data table
+     * @sample {highstock} stock/members/series-addpoint/
      *         Append 100 points in Highcharts Stock
-     * @sample stock/members/series-addpoint-shift/
+     * @sample {highstock} stock/members/series-addpoint-shift/
      *         Append and shift in Highcharts Stock
-     * @sample maps/members/series-addpoint/
+     * @sample {highmaps} maps/members/series-addpoint/
      *         Add a point in Highmaps
      *
      * @function Highcharts.Series#addPoint
@@ -35459,7 +35561,7 @@ class Series {
                 chart.redraw();
             }
         };
-        Series_setAnimation(animation, chart);
+        setAnimation(animation, chart);
         redraw = pick(redraw, true);
         // Fire the event with a default handler of removing the point
         if (point) {
@@ -35813,10 +35915,10 @@ class Series {
      *        Determines if state should be inherited by points too.
      */
     setState(state, inherit) {
-        const series = this, { graph, options } = series, { inactiveOtherPoints, states: stateOptions } = options, 
+        const series = this, { graph, options } = series, { inactiveOtherPoints, states: stateOptions = {} } = options, 
         // By default a quick animation to hover/inactive,
         // slower to un-hover
-        stateAnimation = pick(stateOptions?.[state || 'normal']?.animation, series.chart.options.chart.animation);
+        stateAnimation = pick(stateOptions[state || 'normal']?.animation, series.chart.options.chart.animation);
         let { lineWidth, opacity } = options;
         state = state || '';
         if (series.state !== state) {
@@ -35843,9 +35945,13 @@ class Series {
                     return;
                 }
                 if (state) {
-                    lineWidth = (stateOptions[state].lineWidth ||
-                        lineWidth + (stateOptions[state].lineWidthPlus || 0)); // #4035
-                    opacity = pick(stateOptions[state].opacity, opacity);
+                    lineWidth = stateOptions[state]?.lineWidth ?? (!isNumber(lineWidth) ?
+                        void 0 :
+                        // Increase by lineWidthPlus only when lineWidth
+                        // is a number.
+                        (lineWidth +
+                            (stateOptions?.[state]?.lineWidthPlus || 0))); // #4035
+                    opacity = stateOptions[state]?.opacity ?? opacity;
                 }
                 if (graph && !graph.dashstyle && isNumber(lineWidth)) {
                     // Animate the graph stroke-width
@@ -35889,11 +35995,7 @@ class Series {
      *        Can be either `hover` or undefined to set to normal state.
      */
     setAllPointsToState(state) {
-        this.points.forEach(function (point) {
-            if (point.setState) {
-                point.setState(state);
-            }
-        });
+        this.points.forEach((point) => point.setState?.(state));
     }
     /**
      * Show or hide the series.
@@ -36574,7 +36676,6 @@ Series_SeriesRegistry.series = Series;
  * */
 
 
-const { animObject: Legend_animObject, setAnimation: Legend_setAnimation } = AnimationUtilities;
 
 const { registerEventOptions: Legend_registerEventOptions } = Core_Foundation;
 
@@ -37577,7 +37678,7 @@ class Legend {
         }
         if (currentPage > 0) {
             if (typeof animation !== 'undefined') {
-                Legend_setAnimation(animation, chart);
+                setAnimation(animation, chart);
             }
             this.nav.attr({
                 translateX: padding,
@@ -37634,7 +37735,7 @@ class Legend {
             this.currentPage = currentPage;
             this.positionCheckboxes();
             // Fire event after scroll animation is complete
-            const animOptions = Legend_animObject(pick(animation, chart.renderer.globalAnimation, true));
+            const animOptions = animObject(pick(animation, chart.renderer.globalAnimation, true));
             syncTimeout(() => {
                 fireEvent(this, 'afterScroll', { currentPage });
             }, animOptions.duration);
@@ -37844,7 +37945,7 @@ class Legend {
  */ /**
 * Related browser event.
 * @name Highcharts.LegendItemClickEventObject#browserEvent
-* @type {Highcharts.PointerEvent}
+* @type {PointerEvent}
 */ /**
 * Prevent the default action of toggle the visibility of the series or point.
 * @name Highcharts.LegendItemClickEventObject#preventDefault
@@ -37895,7 +37996,7 @@ class Legend {
  */ /**
 * Related browser event.
 * @name Highcharts.PointLegendItemClickEventObject#browserEvent
-* @type {Highcharts.PointerEvent}
+* @type {PointerEvent}
 */ /**
 * Whether the default action has been prevented (`true`) or not.
 * @name Highcharts.PointLegendItemClickEventObject#defaultPrevented
@@ -37951,7 +38052,7 @@ class Legend {
  */ /**
 * Related browser event.
 * @name Highcharts.SeriesLegendItemClickEventObject#browserEvent
-* @type {Highcharts.PointerEvent}
+* @type {PointerEvent}
 */ /**
 * Whether the default action has been prevented (`true`) or not.
 * @name Highcharts.SeriesLegendItemClickEventObject#defaultPrevented
@@ -37985,7 +38086,6 @@ class Legend {
  * */
 
 
-const { animate: Chart_animate, animObject: Chart_animObject, setAnimation: Chart_setAnimation } = AnimationUtilities;
 
 
 const { defaultOptions: Chart_defaultOptions } = Defaults;
@@ -38463,7 +38563,7 @@ class Chart {
     redraw(animation) {
         fireEvent(this, 'beforeRedraw');
         const chart = this, axes = chart.hasCartesianSeries ? chart.axes : chart.colorAxis || [], series = chart.series, pointer = chart.pointer, legend = chart.legend, legendUserOptions = chart.userOptions.legend, renderer = chart.renderer, isHiddenChart = renderer.isHidden(), afterRedraw = [];
-        let hasDirtyStacks, hasStackedSeries, i, isDirtyBox = chart.isDirtyBox, redrawLegend = chart.isDirtyLegend, serie;
+        let hasDirtyStacks, hasStackedSeries, i, redrawLegend = chart.isDirtyLegend, serie;
         renderer.rootFontSize = renderer.boxWrapper.getStyle('font-size');
         // Handle responsive rules, not only on resize (#6130)
         if (chart.setResponsive) {
@@ -38472,7 +38572,7 @@ class Chart {
         // Set the global animation. When chart.hasRendered is not true, the
         // redraw call comes from a responsive rule and animation should not
         // occur.
-        Chart_setAnimation(chart.hasRendered ? animation : false, chart);
+        setAnimation(chart.hasRendered ? animation : false, chart);
         if (isHiddenChart) {
             chart.temporaryDisplay();
         }
@@ -38535,6 +38635,7 @@ class Chart {
         });
         chart.getMargins(); // #3098
         // If one axis is dirty, all axes must be redrawn (#792, #2169)
+        let isDirtyBox = chart.isDirtyBox;
         axes.forEach(function (axis) {
             if (axis.isDirty) {
                 isDirtyBox = true;
@@ -39070,11 +39171,8 @@ class Chart {
         const chartHeight = chart.chartHeight;
         let chartWidth = chart.chartWidth;
         // Allow table cells and flex-boxes to shrink without the chart
-        // blocking them out (#6427) but skip in styled mode so inline styles
-        // don't override user CSS on renderTo
-        if (!chart.styledMode) {
-            css(renderTo, { overflow: 'hidden' });
-        }
+        // blocking them out (#6427)
+        css(renderTo, { overflow: 'hidden' });
         // Create the inner container
         if (!chart.styledMode) {
             containerStyle = extend({
@@ -39131,7 +39229,7 @@ class Chart {
         // first ResizeObserver reflow
         chart.containerBox = chart.getContainerBox();
         // Set the initial animation from the options
-        Chart_setAnimation(void 0, chart);
+        setAnimation(void 0, chart);
         chart.setClassName(optionsChart.className);
         if (!chart.styledMode) {
             chart.renderer.setStyle(optionsChart.style);
@@ -39326,7 +39424,7 @@ class Chart {
         // Handle the isResizing counter
         chart.isResizing += 1;
         // Set the animation for the current process
-        Chart_setAnimation(animation, chart);
+        setAnimation(animation, chart);
         const globalAnimation = renderer.globalAnimation;
         chart.oldChartHeight = chart.chartHeight;
         chart.oldChartWidth = chart.chartWidth;
@@ -39345,7 +39443,7 @@ class Chart {
             // Resize the container with the global animation applied if enabled
             // (#2503)
             if (!chart.styledMode) {
-                (globalAnimation ? Chart_animate : css)(chart.container, {
+                (globalAnimation ? animate : css)(chart.container, {
                     width: `${chartWidth + scrollablePixelsX}px`,
                     height: `${chartHeight + scrollablePixelsY}px`
                 }, globalAnimation);
@@ -39371,7 +39469,7 @@ class Chart {
                 if (chart) {
                     fireEvent(chart, 'endResize');
                 }
-            }, Chart_animObject(globalAnimation).duration);
+            }, animObject(globalAnimation).duration);
         }
         // Handle resizing counter even if we've re-rendered or not (#20548).
         chart.isResizing -= 1;
@@ -40240,7 +40338,7 @@ class Chart {
                     opacity: 0,
                     display: ''
                 });
-                Chart_animate(loadingDiv, {
+                animate(loadingDiv, {
                     opacity: loadingStyle.opacity ?? 0.5
                 }, {
                     duration: loadingOptions?.showDuration ?? 0
@@ -40268,7 +40366,7 @@ class Chart {
             loadingDiv.className =
                 'highcharts-loading highcharts-loading-hidden';
             if (!this.styledMode) {
-                Chart_animate(loadingDiv, {
+                animate(loadingDiv, {
                     opacity: 0
                 }, {
                     duration: options.loading?.hideDuration ?? 100,
@@ -40579,15 +40677,11 @@ class Chart {
     showResetZoom() {
         const chart = this, lang = chart.options.lang, btnOptions = chart.zooming.resetButton, theme = btnOptions.theme, alignTo = (btnOptions.relativeTo === 'chart' ||
             btnOptions.relativeTo === 'spacingBox' ?
-            null :
+            void 0 :
             'plotBox');
-        /** @internal */
-        function zoomOut() {
-            chart.zoomOut();
-        }
-        fireEvent(this, 'beforeShowResetZoom', null, function () {
+        fireEvent(this, 'beforeShowResetZoom', void 0, () => {
             chart.resetZoomButton = chart.renderer
-                .button(lang.resetZoom, null, null, zoomOut, theme)
+                .button(lang.resetZoom, 0, 0, () => chart.zoomOut(), theme)
                 .attr({
                 align: btnOptions.position.align,
                 title: lang.resetZoomTitle
@@ -40665,7 +40759,7 @@ class Chart {
      * @function Highcharts.Chart#transform
      */
     transform(params) {
-        const { axes = this.axes, event, from = {}, reset, selection, to = {}, trigger, allowResetButton = true } = params, { inverted, time } = this;
+        const { axes = this.axes, event, from = {}, reset, selection, to = {}, trigger, allowResetButton = true } = params, { time } = this;
         // Remove active points for shared tooltip
         this.hoverPoints?.forEach((point) => point.setState());
         fireEvent(this, 'transform', params);
@@ -40676,10 +40770,10 @@ class Chart {
             scale = Math.abs(toLength) < 10 ?
                 1 :
                 toLength / fromLength, fromCenter = (from[xy] || 0) + fromLength / 2 - axis.pos, toCenter = (to[xy] ?? axis.pos) +
-                toLength / 2 - axis.pos, move = fromCenter - toCenter / scale, pointRangeDirection = (reversed && !inverted) ||
-                (!reversed && inverted) ?
-                -1 :
-                1, minPx = move;
+                toLength / 2 - axis.pos, move = fromCenter - toCenter / scale, pointRangeDirection = ((horiz && !reversed) ||
+                (!horiz && reversed)) ?
+                1 :
+                -1, minPx = move;
             // Zooming in multiple panes, zoom only in the pane that receives
             // the input
             if (!reset && (fromCenter < 0 || fromCenter > axis.len)) {
@@ -40688,17 +40782,11 @@ class Chart {
             // Adjust offset to ensure selection zoom triggers correctly
             // (#22945)
             // Set offset to 0 for ordinal axis only when zooming out, (#24545).
-            const offset = (axis.chart.polar || (axis.isOrdinal && scale <= 1)) ?
+            const offset = (selection || axis.chart.polar ||
+                (axis.isOrdinal && scale <= 1)) ?
                 0 :
                 (minPointOffset * pointRangeDirection || 0), eventMin = axis.toValue(minPx, true), eventMax = axis.toValue(minPx + len / scale, true);
             let newMin = eventMin + offset, newMax = eventMax - offset, allExtremes = axis.allExtremes;
-            if (selection) {
-                selection[axis.coll].push({
-                    axis,
-                    min: Math.min(eventMin, eventMax),
-                    max: Math.max(eventMin, eventMax)
-                });
-            }
             if (newMin > newMax) {
                 [newMin, newMax] = [newMax, newMin];
             }
@@ -40755,14 +40843,15 @@ class Chart {
                 }
                 // Set new extremes if they are actually new
                 if (reset || (axis.series.length &&
-                    (newMin !== min || newMax !== max) &&
-                    newMin >= floor &&
-                    newMax <= ceiling)) {
+                    (selection ||
+                        ((newMin !== min || newMax !== max) &&
+                            newMin >= floor &&
+                            newMax <= ceiling)))) {
                     if (selection) {
                         selection[axis.coll].push({
                             axis,
-                            min: newMin,
-                            max: newMax
+                            min: Math.min(eventMin, eventMax),
+                            max: Math.max(eventMin, eventMax)
                         });
                     }
                     else {
@@ -40770,11 +40859,14 @@ class Chart {
                         // disallow certain axis padding options that would make
                         // panning/zooming hard. Reset and redraw after the
                         // operation has finished.
-                        axis.isPanning = trigger !== 'zoom';
+                        axis.isPanning = trigger !== 'zoom' &&
+                            trigger !== 'drop';
                         if (axis.isPanning && trigger !== 'mousewheel') {
                             isAnyAxisPanning = true; // #21319
                         }
-                        axis.setExtremes(reset ? void 0 : newMin, reset ? void 0 : newMax, false, false, { move, trigger, scale });
+                        if (trigger !== 'drop') {
+                            axis.setExtremes(reset ? void 0 : newMin, reset ? void 0 : newMax, false, false, { move, trigger, scale });
+                        }
                         if (!reset &&
                             (newMin > floor || newMax < ceiling)) {
                             displayButton = allowResetButton;
@@ -40805,7 +40897,8 @@ class Chart {
                 });
             }
             else {
-                // Show or hide the Reset zoom button, but not while panning
+                // Show or hide the Reset zoom button, but not while
+                // panning.
                 if (displayButton &&
                     !isAnyAxisPanning &&
                     !this.resetZoomButton) {
@@ -41047,7 +41140,6 @@ extend(Chart.prototype, {
  */
 
 
-const { stop: ScrollablePlotArea_stop } = AnimationUtilities;
 
 const { composed: ScrollablePlotArea_composed } = Core_Globals;
 
@@ -41213,7 +41305,7 @@ class ScrollablePlotArea {
             this.moveFixedElements();
         }
         // Increase the size of the scrollable renderer and background
-        ScrollablePlotArea_stop(chart.container);
+        stop(chart.container);
         css(container, {
             width: `${scrollableWidth}px`,
             height: `${scrollableHeight}px`
@@ -41369,6 +41461,13 @@ ScrollablePlotArea.fixedSelectors = [
  * Since v7.1.2, a scrollable plot area can be defined for either horizontal or
  * vertical scrolling, depending on whether the `minWidth` or `minHeight`
  * option is set.
+ *
+ * **Note:** Because native browser scrollbars are used, they may
+ * overlap with fixed chart elements such as credits or the chart
+ * border. To avoid this collision, it is recommended to manually add
+ * extra space to the corresponding side using `chart.spacingBottom`
+ * (for horizontal scrollbars) or `chart.spacingRight` (for vertical
+ * scrollbars).
  *
  * @sample highcharts/chart/scrollable-plotarea
  *         Scrollable plot area
@@ -41720,7 +41819,6 @@ class StackItem {
  * */
 
 
-const { getDeferredAnimation: StackingAxis_getDeferredAnimation } = AnimationUtilities;
 
 const { series: { prototype: seriesProto } } = Series_SeriesRegistry;
 
@@ -42064,7 +42162,7 @@ class AxisAdditions {
     }
     /** @internal */
     renderStackTotals() {
-        const stacking = this, axis = stacking.axis, chart = axis.chart, renderer = chart.renderer, stacks = stacking.stacks, stackLabelsAnim = axis.options.stackLabels?.animation, animationConfig = StackingAxis_getDeferredAnimation(chart, stackLabelsAnim || false), stackTotalGroup = stacking.stackTotalGroup = (stacking.stackTotalGroup ||
+        const stacking = this, axis = stacking.axis, chart = axis.chart, renderer = chart.renderer, stacks = stacking.stacks, stackLabelsAnim = axis.options.stackLabels?.animation, animationConfig = getDeferredAnimation(chart, stackLabelsAnim || false), stackTotalGroup = stacking.stackTotalGroup = (stacking.stackTotalGroup ||
             renderer
                 .g('stack-labels')
                 .attr({
@@ -43817,6 +43915,8 @@ const ColumnSeriesDefaults = {
      *          0.25
      * @sample {highcharts} highcharts/plotoptions/column-pointpadding-none/
      *         0 for tightly packed columns
+     * @sample {highcharts} highcharts/plotoptions/pie-pointpadding/
+     *         Pie point padding plugin
      *
      * @product highcharts highstock gantt
      */
@@ -44148,12 +44248,12 @@ const ColumnSeriesDefaults = {
  */
 /**
  * @excluding halo, lineWidth, lineWidthPlus, marker
- * @product   highcharts highstock
+ * @product   highcharts highstock gantt
  * @apioption series.column.states.hover
  */
 /**
  * @excluding halo, lineWidth, lineWidthPlus, marker
- * @product   highcharts highstock
+ * @product   highcharts highstock gantt
  * @apioption series.column.states.select
  */
 /**
@@ -44183,7 +44283,6 @@ const ColumnSeriesDefaults = {
  * */
 
 
-const { animObject: ColumnSeries_animObject } = AnimationUtilities;
 
 const { parse: ColumnSeries_color } = Color_Color;
 
@@ -44254,7 +44353,7 @@ class ColumnSeries extends Series_Series {
         }
         else { // Run the animation
             translateStart = Number(series.group.attr(translateProp));
-            series.group.animate({ scaleY: 1 }, extend(ColumnSeries_animObject(series.options.animation), {
+            series.group.animate({ scaleY: 1 }, extend(animObject(series.options.animation), {
                 // Do the scale synchronously to ensure smooth
                 // updating (#5030, #7228)
                 step: function (val, fx) {
@@ -44590,11 +44689,11 @@ class ColumnSeries extends Series_Series {
      */
     pointAttribs(point, state) {
         const options = this.options, p2o = this.pointAttrToOptions || {}, strokeOption = p2o.stroke || 'borderColor', strokeWidthOption = p2o['stroke-width'] || 'borderWidth';
-        let stateOptions, zone, brightness, fill = (point && point.color) || this.color, 
+        let stateOptions, zone, brightness, fill = point?.color || this.color, 
         // Set to fill when borderColor null:
-        stroke = ((point && point[strokeOption]) ||
+        stroke = (point?.[strokeOption] ||
             options[strokeOption] ||
-            fill), dashstyle = (point && point.options.dashStyle) || options.dashStyle, strokeWidth = (point?.[strokeWidthOption]) ??
+            fill), dashstyle = point?.options.dashStyle || options.dashStyle, strokeWidth = point?.[strokeWidthOption] ??
             options[strokeWidthOption] ??
             this[strokeWidthOption] ?? 1, opacity = (point?.isNull && options.nullInteraction) ?
             0 :
@@ -44615,7 +44714,7 @@ class ColumnSeries extends Series_Series {
         }
         // Select or hover states
         if (state && point) {
-            stateOptions = merge(options.states[state], 
+            stateOptions = merge(options.states?.[state], 
             // #6401
             point.options.states?.[state] || {});
             brightness = stateOptions.brightness;
@@ -44625,14 +44724,13 @@ class ColumnSeries extends Series_Series {
                         .brighten(stateOptions.brightness)
                         .get()) || fill;
             stroke = stateOptions[strokeOption] || stroke;
-            strokeWidth =
-                stateOptions[strokeWidthOption] || strokeWidth;
+            strokeWidth = stateOptions[strokeWidthOption] || strokeWidth;
             dashstyle = stateOptions.dashStyle || dashstyle;
-            opacity = pick(stateOptions.opacity, opacity);
+            opacity = stateOptions.opacity ?? opacity;
         }
         const ret = {
-            fill: fill,
-            stroke: stroke,
+            fill,
+            stroke,
             'stroke-width': strokeWidth,
             opacity: point?.condemned ? 0 : opacity
         };
@@ -44673,6 +44771,7 @@ class ColumnSeries extends Series_Series {
                         initialAttr = merge(shapeArgs, point.getOrigin(point.origin, shapeArgs));
                         if (!styledMode) {
                             initialAttr.opacity = 0;
+                            initialAttr['stroke-width'] = 0;
                         }
                         shouldUpdate = true;
                         verb = 'animate';
@@ -44688,7 +44787,7 @@ class ColumnSeries extends Series_Series {
                 }
                 // Presentational
                 if (!styledMode) {
-                    graphic[verb](series.pointAttribs(point, (point.selected && 'select')))
+                    graphic[verb](series.pointAttribs(point, point.selected ? 'select' : ''))
                         .shadow(point.allowShadow !== false && options.shadow);
                 }
                 graphic
@@ -44812,6 +44911,7 @@ Series_SeriesRegistry.registerSeriesType('column', ColumnSeries);
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Column_ColumnSeries = (ColumnSeries);
 /* *
  *
@@ -44848,7 +44948,6 @@ Series_SeriesRegistry.registerSeriesType('column', ColumnSeries);
  * */
 
 
-const { getDeferredAnimation: DataLabel_getDeferredAnimation } = AnimationUtilities;
 
 const { format: DataLabel_format } = Core_Templating;
 
@@ -45165,7 +45264,7 @@ var DataLabel;
             'var(--highcharts-background-color)'), groupByIndex = [], seriesDlOptions = mergedDataLabelOptions(series);
         // Resolve the animation
         const { animation, defer } = seriesDlOptions[0], animationConfig = defer ?
-            DataLabel_getDeferredAnimation(chart, animation, series) :
+            getDeferredAnimation(chart, animation, series) :
             { defer: 0, duration: 0 };
         fireEvent(this, 'drawDataLabels');
         if (series.hasDataLabels?.()) {
@@ -45931,6 +46030,8 @@ const ScatterSeriesDefaults = {
  *         Arrays of datetime x and y
  * @sample {highcharts} highcharts/series/data-array-of-name-value/
  *         Arrays of point.name and y
+ * @sample {highcharts} highcharts/series-scatter/scatter-cluster/
+ *         Computed clusters
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
@@ -46079,7 +46180,7 @@ Series_SeriesRegistry.registerSeriesType('scatter', ScatterSeries);
 const { deg2rad: CenteredUtilities_deg2rad } = Core_Globals;
 
 /**
- * @private
+ * @internal
  */
 var CenteredUtilities;
 (function (CenteredUtilities) {
@@ -46097,7 +46198,7 @@ var CenteredUtilities;
      * Get the center of the pie based on the size and center options relative
      * to the plot area. Borrowed by the polar and gauge series types.
      *
-     * @private
+     * @internal
      * @function Highcharts.CenteredSeriesMixin.getCenter
      */
     function getCenter() {
@@ -46142,7 +46243,7 @@ var CenteredUtilities;
      * GetStartAndEndRadians - Calculates start and end angles in radians.
      * Used in series types such as pie and sunburst.
      *
-     * @private
+     * @internal
      * @function Highcharts.CenteredSeriesMixin.getStartAndEndRadians
      *
      * @param {number} [start]
@@ -46174,6 +46275,7 @@ var CenteredUtilities;
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Series_CenteredUtilities = (CenteredUtilities);
 /* *
  *
@@ -46181,7 +46283,7 @@ var CenteredUtilities;
  *
  * */
 /**
- * @private
+ * @internal
  * @interface Highcharts.RadianAngles
  */ /**
 * @name Highcharts.RadianAngles#end
@@ -46206,7 +46308,6 @@ var CenteredUtilities;
  * */
 
 
-const { setAnimation: PiePoint_setAnimation } = AnimationUtilities;
 
 
 /* *
@@ -46314,7 +46415,7 @@ class PiePoint extends Series_Point {
      */
     slice(sliced, redraw, animation) {
         const series = this.series, chart = series.chart;
-        PiePoint_setAnimation(animation, chart);
+        setAnimation(animation, chart);
         // Redraw is true by default
         redraw = pick(redraw, true);
         this.sliced = this.options.sliced = sliced ?? !this.sliced;
@@ -48452,7 +48553,7 @@ function BorderRadius_arc(x, y, w, h, options = {}) {
     if (options.open || !options.borderRadius) {
         return path;
     }
-    const alpha = end - start, sinHalfAlpha = Math.sin(alpha / 2), borderRadius = Math.max(Math.min(relativeLength(options.borderRadius || 0, r - innerR), 
+    const alpha = end - start, sinHalfAlpha = Math.sin(alpha / 2), borderRadius = Math.max(Math.min(relativeLength(borderRadiusObject(options.borderRadius).radius, r - innerR), 
     // Cap to half the sector radius
     (r - innerR) / 2, 
     // For smaller pie slices, cap to the largest small circle that
@@ -48478,7 +48579,7 @@ function seriesOnAfterColumnTranslate() {
     if (this.options.borderRadius &&
         !(this.chart.is3d && this.chart.is3d())) {
         const { options, yAxis } = this, percent = options.stacking === 'percent', seriesDefault = BorderRadius_defaultOptions.plotOptions?.[this.type]
-            ?.borderRadius, borderRadius = optionsToObject(options.borderRadius, isObject(seriesDefault) ? seriesDefault : {}), reversed = yAxis.options.reversed;
+            ?.borderRadius, borderRadius = borderRadiusObject(options.borderRadius, isObject(seriesDefault) ? seriesDefault : {}), reversed = yAxis.options.reversed;
         for (const point of this.points) {
             const { shapeArgs } = point;
             if (point.shapeType === 'roundedRect' && shapeArgs) {
@@ -48550,8 +48651,12 @@ function composeBorderRadius(SeriesClass, SVGElementClass, SVGRendererClass) {
         symbols.roundedRect = BorderRadius_roundedRect;
     }
 }
-/** @internal */
-function optionsToObject(options, seriesBROptions) {
+/**
+ * Utility function to get the full border radius options object, from a simple
+ * number or a partial options object.
+ * @internal
+ */
+function borderRadiusObject(options, seriesBROptions) {
     if (!isObject(options)) {
         options = { radius: options || 0 };
     }
@@ -48559,7 +48664,7 @@ function optionsToObject(options, seriesBROptions) {
 }
 /** @internal */
 function pieSeriesOnAfterTranslate() {
-    const borderRadius = optionsToObject(this.options.borderRadius);
+    const borderRadius = borderRadiusObject(this.options.borderRadius);
     for (const point of this.points) {
         const shapeArgs = point.shapeArgs;
         if (shapeArgs) {
@@ -48678,7 +48783,7 @@ function BorderRadius_roundedRect(x, y, width, height, options = {}) {
 *          Column and pie with rounded border
 *
 * @name Highcharts.BorderRadiusOptionsObject#radius
-* @type {string|number}
+* @type {string|number|undefined}
 */ /**
 * The scope of the rounding for column charts or plot bands. In a stacked
 * column chart, the value `point` means each single point will get rounded
@@ -48693,8 +48798,7 @@ function BorderRadius_roundedRect(x, y, width, height, options = {}) {
 *          Rounded columns
 *
 * @name Highcharts.BorderRadiusOptionsObject#scope
-* @validvalue ["individual", "point", "stack"]
-* @type {string}
+* @type {"individual"|"point"|"stack"|undefined}
 */ /**
 * For column charts, where in the point or stack to apply rounding. The `end`
 * value means only those corners at the point value will be rounded, leaving
@@ -48705,8 +48809,7 @@ function BorderRadius_roundedRect(x, y, width, height, options = {}) {
 *          Rounding on all corners
 *
 * @name Highcharts.BorderRadiusOptionsObject#where
-* @validvalue ["all", "end"]
-* @type {string}
+* @type {"all"|"end"|undefined}
 * @default end
 */
 (''); // Keeps doclets above in JS file
@@ -48982,7 +49085,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0 (2026-06-11)
+ * @license Highcharts JS v13.0.0-modified (2026-08-14)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -49063,8 +49166,8 @@ G.Time = Core_Time;
 G.Tooltip = Core_Tooltip;
 // Utilities
 G.addEvent = addEvent;
-G.animObject = AnimationUtilities.animObject;
-G.animate = AnimationUtilities.animate;
+G.animObject = animObject;
+G.animate = animate;
 G.arrayMax = arrayMax;
 G.arrayMin = arrayMin;
 G.attr = attr;
@@ -49091,7 +49194,7 @@ G.fireEvent = fireEvent;
 G.format = Core_Templating.format;
 G.getAlignFactor = getAlignFactor;
 G.getClosestDistance = getClosestDistance;
-G.getDeferredAnimation = AnimationUtilities.getDeferredAnimation;
+G.getDeferredAnimation = getDeferredAnimation;
 G.getMagnitude = getMagnitude;
 G.getNestedProperty = getNestedProperty;
 G.getOptions = Defaults.getOptions;
@@ -49118,11 +49221,11 @@ G.relativeLength = relativeLength;
 G.removeEvent = removeEvent;
 G.replaceNested = replaceNested;
 G.seriesType = Series_SeriesRegistry.seriesType;
-G.setAnimation = AnimationUtilities.setAnimation;
+G.setAnimation = setAnimation;
 G.setOptions = Defaults.setOptions;
 G.splat = splat;
 G.stableSort = stableSort;
-G.stop = AnimationUtilities.stop;
+G.stop = stop;
 G.syncTimeout = syncTimeout;
 G.time = Defaults.defaultTime;
 G.ucfirst = ucfirst;
@@ -50227,7 +50330,7 @@ const NavigatorDefaults = {
      *
      * @type    {Highcharts.ColorType}
      */
-    maskFill: 'color-mix(var(--highcharts-highlight-color-60) 30%, transparent)',
+    maskFill: 'color-mix(in srgb, var(--highcharts-highlight-color-60) 30%, transparent)', // eslint-disable-line max-len
     /**
      * The color of the line marking the currently zoomed area in the
      * navigator.
@@ -50366,10 +50469,17 @@ const NavigatorDefaults = {
         id: 'highcharts-navigator-series',
         className: 'highcharts-navigator-series',
         /**
-         * Sets the fill color of the navigator series.
+         * Sets the color of the navigator series.
          *
          * @type      {Highcharts.ColorType}
          * @apioption navigator.series.color
+         */
+        /**
+         * Sets the fill color of the navigator series. Applies to series
+         * types with a filled area, like the default `areaspline`.
+         *
+         * @type      {Highcharts.ColorType}
+         * @apioption navigator.series.fillColor
          */
         /**
          * Line color for the navigator series. Allows setting the color
@@ -50570,6 +50680,7 @@ const NavigatorDefaults = {
 
 
 
+
 /* *
  *
  *  Constants
@@ -50580,7 +50691,7 @@ const NavigatorDefaults = {
  * @internal
  */
 function navigatorHandle(_x, _y, width, height, options = {}) {
-    const halfWidth = options.width ? options.width / 2 : width, markerPosition = 1.5, r = relativeLength(options.borderRadius || 0, Math.min(halfWidth * 2, height));
+    const halfWidth = options.width ? options.width / 2 : width, markerPosition = 1.5, r = relativeLength(borderRadiusObject(options.borderRadius).radius, Math.min(halfWidth * 2, height));
     height = options.height || height;
     return [
         ['M', -markerPosition, height / 2 - 3.5],
@@ -53704,11 +53815,19 @@ var OrdinalAxis;
             // Make sure panning to the edges does not decrease the zoomed range
             if ((min <= dataMin && movedUnits <= 0) ||
                 (max >= dataMax + overscroll && movedUnits >= 0)) {
-                e.preventDefault();
-                return;
+                // At the x-axis data edge, with vertical panning enabled, fall
+                // back to the base pan so the y-axis can still be panned,
+                // otherwise block panning past the edge, #24716
+                if (panning && /y/.test(panning.type)) {
+                    runBase = true;
+                }
+                else {
+                    e.preventDefault();
+                    return;
+                }
+                // We have an ordinal axis, but the data is equally spaced
             }
-            // We have an ordinal axis, but the data is equally spaced
-            if (!extendedAxis.ordinal.positions) {
+            else if (!extendedAxis.ordinal.positions) {
                 runBase = true;
             }
             else if (Math.abs(movedUnits) > 1) {
@@ -57980,8 +58099,8 @@ class OHLCPoint extends OHLCPoint_HLCSeries.prototype.pointClass {
      * @private
      * @function Highcharts.seriesTypes.ohlc#getZone
      *
-     * @return {Highcharts.SeriesZonesOptionsObject}
-     *         The zone item.
+     * @return {Highcharts.SeriesZonesOptionsObject|undefined}
+     *         The zone item, or `undefined` if the series has no zones.
      */
     getZone() {
         const zone = super.getZone();
@@ -58205,6 +58324,7 @@ const { hlc: OHLCSeries_HLCSeries } = Series_SeriesRegistry.seriesTypes;
 function onSeriesAfterSetOptions(e) {
     const options = e.options, dataGrouping = options.dataGrouping;
     if (dataGrouping &&
+        !dataGrouping.approximation &&
         options.useOhlcData &&
         options.id !== 'highcharts-navigator-series') {
         dataGrouping.approximation = 'ohlc';
@@ -58546,11 +58666,11 @@ class CandlestickSeries extends CandlestickSeries_OHLCSeries {
             (isUp ? (options.upLineColor || stroke) : stroke);
         // Select or hover states
         if (state) {
-            const stateOptions = options.states[state];
+            const stateOptions = options.states?.[state] || {};
             attribs.fill = stateOptions.color || attribs.fill;
             attribs.stroke = stateOptions.lineColor || attribs.stroke;
-            attribs['stroke-width'] =
-                stateOptions.lineWidth || attribs['stroke-width'];
+            attribs['stroke-width'] = stateOptions.lineWidth ||
+                attribs['stroke-width'];
         }
         return attribs;
     }
@@ -58766,8 +58886,9 @@ const FlagsSeriesDefaults = {
      * @sample {highstock} stock/plotoptions/flags/
      *         Different shapes
      *
-     * @type    {Highcharts.FlagsShapeValue}
+     * @declare Highcharts.FlagsShapeValue
      * @product highstock
+     * @type    {"circlepin"|"flag"|"squarepin"}
      */
     shape: 'flag',
     /**
@@ -59551,12 +59672,12 @@ class FlagsSeries extends FlagsSeries_ColumnSeries {
      * @private
      */
     pointAttribs(point, state) {
-        const options = this.options, color = (point && point.color) || this.color;
-        let lineColor = options.lineColor, lineWidth = (point && point.lineWidth), fill = (point && point.fillColor) || options.fillColor;
+        const options = this.options, color = point?.color || this.color;
+        let lineColor = options.lineColor, lineWidth = point?.lineWidth, fill = point?.fillColor || options.fillColor;
         if (state) {
-            fill = options.states[state].fillColor;
-            lineColor = options.states[state].lineColor;
-            lineWidth = options.states[state].lineWidth;
+            fill = options.states?.[state]?.fillColor;
+            lineColor = options.states?.[state]?.lineColor;
+            lineWidth = options.states?.[state]?.lineWidth;
         }
         return {
             fill: fill || color,
@@ -59607,15 +59728,6 @@ Series_SeriesRegistry.registerSeriesType('flags', FlagsSeries);
  *
  * */
 /* harmony default export */ const Flags_FlagsSeries = (FlagsSeries);
-/* *
- *
- *  API Declarations
- *
- * */
-/**
- * @typedef {"circlepin"|"flag"|"squarepin"} Highcharts.FlagsShapeValue
- */
-''; // Detach doclets above
 
 ;// ./code/es-modules/Core/Axis/BrokenAxis.js
 /* *
@@ -60239,9 +60351,10 @@ var BrokenAxis;
 /* harmony default export */ const Axis_BrokenAxis = (BrokenAxis);
 
 ;// ./code/es-modules/masters/modules/broken-axis.src.js
+/* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0 (2026-06-11)
+ * @license Highcharts JS v13.0.0-modified (2026-08-14)
  * @module highcharts/modules/broken-axis
  * @requires highcharts
  *
@@ -61724,9 +61837,10 @@ const DataGroupingComposition = {
 ''; // Required by JSDoc parsing
 
 ;// ./code/es-modules/masters/modules/datagrouping.src.js
+/* unused harmony import specifier */ var datagrouping_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.0.0 (2026-06-11)
+ * @license Highstock JS v13.0.0-modified (2026-08-14)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *
@@ -61750,7 +61864,7 @@ datagrouping_src_G.dataGrouping.approximationDefaults = (datagrouping_src_G.data
 datagrouping_src_G.dataGrouping.approximations = (datagrouping_src_G.dataGrouping.approximations ||
     DataGrouping_ApproximationRegistry);
 DataGrouping.compose(datagrouping_src_G.Axis, datagrouping_src_G.Series, datagrouping_src_G.Tooltip);
-/* harmony default export */ const datagrouping_src = ((/* unused pure expression or super */ null && (Highcharts)));
+/* harmony default export */ const datagrouping_src = ((/* unused pure expression or super */ null && (datagrouping_src_Highcharts)));
 
 ;// ./code/es-modules/Extensions/Annotations/NavigationBindingsUtilities.js
 /* *
@@ -61820,6 +61934,32 @@ function getAssignedAxis(coords) {
     })[0]; // If the axes overlap, return the first axis that was found.
 }
 /**
+ * Resolve an axis from an annotation option that can reference it either by its
+ * index (number) or by its id (string).
+ *
+ * @internal
+ *
+ * @param {Highcharts.Chart} chart
+ *        The chart instance.
+ *
+ * @param {'xAxis'|'yAxis'} coll
+ *        The axis collection to look in.
+ *
+ * @param {number|string|undefined} idOrIndex
+ *        The axis index or id.
+ *
+ * @return {Highcharts.Axis|undefined}
+ *         The matching axis, or `undefined` if none was found.
+ */
+function getAxisFromOptions(chart, coll, idOrIndex) {
+    if (isNumber(idOrIndex)) {
+        return chart[coll][idOrIndex];
+    }
+    return defined(idOrIndex) ?
+        find(chart[coll], (axis) => axis.options.id === idOrIndex) :
+        void 0;
+}
+/**
  * Get field type according to value
  *
  * @internal
@@ -61846,13 +61986,14 @@ function getFieldType(key, value) {
  *
  * */
 /** @internal */
-const NavigationBindingUtilities = {
+const NavigationBindingsUtilities = {
     annotationsFieldsTypes,
     getAssignedAxis,
+    getAxisFromOptions,
     getFieldType
 };
 /** @internal */
-/* harmony default export */ const NavigationBindingsUtilities = (NavigationBindingUtilities);
+/* harmony default export */ const Annotations_NavigationBindingsUtilities = (NavigationBindingsUtilities);
 
 ;// ./code/es-modules/Extensions/MouseWheelZoom/MouseWheelZoom.js
 /* *
@@ -61869,7 +62010,7 @@ const NavigationBindingUtilities = {
 
 
 
-const { getAssignedAxis: MouseWheelZoom_getAssignedAxis } = NavigationBindingsUtilities;
+const { getAssignedAxis: MouseWheelZoom_getAssignedAxis } = Annotations_NavigationBindingsUtilities;
 /* *
  *
  *  Constants
@@ -61887,7 +62028,7 @@ let wheelTimer;
  *
  * */
 /** @internal */
-const MouseWheelZoom_optionsToObject = (options) => {
+const optionsToObject = (options) => {
     if (!isObject(options)) {
         options = {
             enabled: options ?? true
@@ -61944,7 +62085,7 @@ const zoomBy = function (chart, howMuch, xAxis, yAxis, mouseX, mouseY, options) 
 };
 /** @internal */
 function onAfterGetContainer() {
-    const wheelZoomOptions = MouseWheelZoom_optionsToObject(this.zooming.mouseWheel);
+    const wheelZoomOptions = optionsToObject(this.zooming.mouseWheel);
     if (wheelZoomOptions.enabled) {
         addEvent(this.container, 'wheel', (e) => {
             e = this.pointer?.normalize(e) || e;
@@ -62061,9 +62202,10 @@ const MouseWheelZoomComposition = {
 (''); // Keeps doclets above in JS file
 
 ;// ./code/es-modules/masters/modules/mouse-wheel-zoom.src.js
+/* unused harmony import specifier */ var mouse_wheel_zoom_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0 (2026-06-11)
+ * @license Highcharts JS v13.0.0-modified (2026-08-14)
  * @module highcharts/modules/mouse-wheel-zoom
  * @requires highcharts
  *
@@ -62081,12 +62223,13 @@ const MouseWheelZoomComposition = {
 const mouse_wheel_zoom_src_G = Core_Globals;
 mouse_wheel_zoom_src_G.MouseWheelZoom = mouse_wheel_zoom_src_G.MouseWheelZoom || MouseWheelZoom;
 mouse_wheel_zoom_src_G.MouseWheelZoom.compose(mouse_wheel_zoom_src_G.Chart);
-/* harmony default export */ const mouse_wheel_zoom_src = ((/* unused pure expression or super */ null && (Highcharts)));
+/* harmony default export */ const mouse_wheel_zoom_src = ((/* unused pure expression or super */ null && (mouse_wheel_zoom_src_Highcharts)));
 
 ;// ./code/es-modules/masters/modules/stock.src.js
+/* unused harmony import specifier */ var stock_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.0.0 (2026-06-11)
+ * @license Highstock JS v13.0.0-modified (2026-08-14)
  * @module highcharts/modules/stock
  * @requires highcharts
  *
@@ -62134,7 +62277,7 @@ stock_src_G.OrdinalAxis.compose(stock_src_G.Axis, stock_src_G.Series, stock_src_
 stock_src_G.RangeSelector.compose(stock_src_G.Axis, stock_src_G.Chart);
 stock_src_G.Scrollbar.compose(stock_src_G.Axis);
 stock_src_G.StockChart.compose(stock_src_G.Chart, stock_src_G.Axis, stock_src_G.Series, stock_src_G.SVGRenderer);
-/* harmony default export */ const stock_src = ((/* unused pure expression or super */ null && (Highcharts)));
+/* harmony default export */ const stock_src = ((/* unused pure expression or super */ null && (stock_src_Highcharts)));
 
 ;// ./code/es-modules/masters/highstock.src.js
 

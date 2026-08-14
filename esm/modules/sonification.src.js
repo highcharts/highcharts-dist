@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0 (2026-06-11)
+ * @license Highcharts JS v13.0.0-modified (2026-08-14)
  * @module highcharts/modules/sonification
  * @requires highcharts
  *
@@ -14,14 +14,14 @@
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
-/******/ var __webpack_require__ = {};
+/******/ const __webpack_require__ = {};
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
 /******/ (() => {
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
 /******/ 	__webpack_require__.n = (module) => {
-/******/ 		var getter = module && module.__esModule ?
+/******/ 		const getter = module && module.__esModule ?
 /******/ 			() => (module['default']) :
 /******/ 			() => (module);
 /******/ 		__webpack_require__.d(getter, { a: getter });
@@ -31,11 +31,26 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /******/ /* webpack/runtime/define property getters */
 /******/ (() => {
-/******/ 	// define getter functions for harmony exports
+/******/ 	// define getter/value functions for harmony exports
 /******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		for(var key in definition) {
-/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 		if(Array.isArray(definition)) {
+/******/ 			var i = 0;
+/******/ 			while(i < definition.length) {
+/******/ 				var key = definition[i++];
+/******/ 				var binding = definition[i++];
+/******/ 				if(!__webpack_require__.o(exports, key)) {
+/******/ 					if(binding === 0) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 					} else {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 					}
+/******/ 				} else if(binding === 0) { i++; }
+/******/ 			}
+/******/ 		} else {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
 /******/ 			}
 /******/ 		}
 /******/ 	};
@@ -47,7 +62,6 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
-var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -1637,7 +1651,7 @@ SynthPatch.stopRampTime = 0.012; // Ramp time to 0 when stopping sound
 * @type {number|undefined}
 */
 /**
- * @typedef {Highcharts.Record<"t"|"vol",number>} Highcharts.SynthEnvelopePoint
+ * @typedef {Record<"t"|"vol",number>} Highcharts.SynthEnvelopePoint
  * @requires modules/sonification
  */
 /**
@@ -3459,6 +3473,7 @@ function toMIDI(channels) {
 /* harmony default export */ const MIDI = (toMIDI);
 
 ;// ./code/es-modules/Shared/DownloadURL.js
+/* unused harmony import specifier */ var error;
 /* *
  *
  *  (c) 2015-2026 Highsoft AS
@@ -3605,7 +3620,7 @@ function getScript(scriptLocation) {
         // Reject in case of fail
         script.onerror = () => {
             const msg = `Error loading script ${scriptLocation}`;
-            (0,external_highcharts_src_js_default_namespaceObject.error)(msg);
+            error(msg);
             reject(new Error(msg));
         };
         // Append the newly created script
@@ -3652,12 +3667,12 @@ function getBlobFromContent(content, type) {
  *
  * */
 /** @internal */
-const DownloadURL = {
+const DownloadURL = (/* unused pure expression or super */ null && ({
     dataURLtoBlob,
     downloadURL,
     getBlobFromContent,
     getScript
-};
+}));
 /** @internal */
 /* harmony default export */ const Shared_DownloadURL = ((/* unused pure expression or super */ null && (DownloadURL)));
 

@@ -12,7 +12,7 @@
  *
  * */
 'use strict';
-import { optionsToObject } from '../../Extensions/BorderRadius.js';
+import { borderRadiusObject } from '../../Extensions/BorderRadius.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { gauge: GaugeSeries, pie: PieSeries } = SeriesRegistry.seriesTypes;
 import SolidGaugeAxis from '../../Core/Axis/SolidGaugeAxis.js';
@@ -53,7 +53,7 @@ class SolidGaugeSeries extends GaugeSeries {
     }
     // Draw the points where each point is one needle.
     drawPoints() {
-        const series = this, yAxis = series.yAxis, center = yAxis.center, options = series.options, renderer = series.chart.renderer, overshoot = options.overshoot, rounded = options.rounded, borderRadius = optionsToObject(rounded ? '50%' : (options.borderRadius ??
+        const series = this, yAxis = series.yAxis, center = yAxis.center, options = series.options, renderer = series.chart.renderer, overshoot = options.overshoot, rounded = options.rounded, borderRadius = borderRadiusObject(rounded ? '50%' : (options.borderRadius ??
             yAxis.pane.options.borderRadius)).radius, overshootVal = isNumber(overshoot) ?
             overshoot / 180 * Math.PI :
             0;

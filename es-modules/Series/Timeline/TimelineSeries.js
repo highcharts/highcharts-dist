@@ -199,7 +199,11 @@ class TimelineSeries extends LineSeries {
         }));
     }
     markerAttribs(point, state) {
-        const series = this, seriesMarkerOptions = series.options.marker, pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol || seriesMarkerOptions?.symbol), width = pick(pointMarkerOptions.width, seriesMarkerOptions?.width, series.closestPointRangePx), height = pick(pointMarkerOptions.height, seriesMarkerOptions?.height);
+        const series = this, seriesMarkerOptions = series.options.marker, pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol ||
+            seriesMarkerOptions?.symbol), width = (pointMarkerOptions.width ??
+            seriesMarkerOptions?.width ??
+            (series.closestPointRangePx || 0)), height = (pointMarkerOptions.height ??
+            (seriesMarkerOptions?.height || 0));
         let seriesStateOptions, pointStateOptions, radius = 0;
         // Call default markerAttribs method, when the xAxis type
         // is set to datetime.
@@ -210,7 +214,9 @@ class TimelineSeries extends LineSeries {
         if (state) {
             seriesStateOptions = seriesMarkerOptions?.states?.[state];
             pointStateOptions = pointMarkerOptions.states?.[state];
-            radius = pick(pointStateOptions?.radius, seriesStateOptions?.radius, radius + (seriesStateOptions?.radiusPlus || 0));
+            radius = (pointStateOptions?.radius ??
+                seriesStateOptions?.radius ??
+                radius + (seriesStateOptions?.radiusPlus || 0));
         }
         point.hasImage = !!(symbol && symbol.indexOf('url') === 0);
         const attribs = {
@@ -222,7 +228,7 @@ class TimelineSeries extends LineSeries {
         return (series.chart.inverted) ? {
             y: (attribs.x && attribs.width) &&
                 series.xAxis.len - attribs.x - attribs.width,
-            x: attribs.y && attribs.y,
+            x: attribs.y,
             width: attribs.height,
             height: attribs.width
         } : attribs;

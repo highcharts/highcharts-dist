@@ -79,7 +79,7 @@ class HollowCandlestickSeries extends CandlestickSeries {
      * @param {string} trendDirection
      * Type of candle direction (bearish/bullish)(down/up).
      *
-     * @return {ColorType}
+     * @return {Highcharts.ColorType}
      * Line color
      */
     getLineColor(trendDirection) {
@@ -98,7 +98,7 @@ class HollowCandlestickSeries extends CandlestickSeries {
      * @param {HollowcandleInfo} hollowcandleInfo
      *        Information about the current candle.
      *
-     * @return {ColorType}
+     * @return {Highcharts.ColorType}
      * Point fill color
      */
     getPointFill(hollowcandleInfo) {
@@ -162,11 +162,11 @@ class HollowCandlestickSeries extends CandlestickSeries {
             attribs.stroke;
         // Select or hover states
         if (state) {
-            stateOptions = this.options.states[state];
+            stateOptions = this.options.states?.[state] || {};
             attribs.fill = stateOptions.color || attribs.fill;
             attribs.stroke = stateOptions.lineColor || attribs.stroke;
-            attribs['stroke-width'] =
-                stateOptions.lineWidth || attribs['stroke-width'];
+            attribs['stroke-width'] = stateOptions.lineWidth ||
+                attribs['stroke-width'];
         }
         return attribs;
     }
@@ -193,7 +193,7 @@ HollowCandlestickSeries.defaultOptions = merge(CandlestickSeries.defaultOptions,
      * @sample {highstock} highcharts/css/hollow-candlestick/
      *         Colors in styled mode
      *
-     * @type    {ColorType}
+     * @type    {Highcharts.ColorType}
      * @product highstock
      */
     color: 'var(--highcharts-negative-color)',
@@ -210,7 +210,7 @@ HollowCandlestickSeries.defaultOptions = merge(CandlestickSeries.defaultOptions,
      * @sample {highstock} highcharts/css/hollow-candlestick/
      *         Colors in styled mode
      *
-     * @type    {ColorType}
+     * @type    {Highcharts.ColorType}
      * @product highstock
      */
     lineColor: 'var(--highcharts-negative-color)',
@@ -223,7 +223,7 @@ HollowCandlestickSeries.defaultOptions = merge(CandlestickSeries.defaultOptions,
      * @sample {highstock} highcharts/css/hollow-candlestick/
      *         Colors in styled mode
      *
-     * @type    {ColorType}
+     * @type    {Highcharts.ColorType}
      * @product highstock
      */
     upColor: 'var(--highcharts-positive-color)',
@@ -236,7 +236,7 @@ HollowCandlestickSeries.defaultOptions = merge(CandlestickSeries.defaultOptions,
      * @sample {highstock} highcharts/css/hollow-candlestick/
      *         Colors in styled mode
      *
-     * @type    {ColorType}
+     * @type    {Highcharts.ColorType}
      * @product highstock
      */
     upLineColor: 'var(--highcharts-positive-color)'

@@ -10,8 +10,7 @@
  *
  * */
 'use strict';
-import A from '../../Core/Animation/AnimationUtilities.js';
-const { setAnimation } = A;
+import { setAnimation } from '../../Core/Animation/AnimationUtilities.js';
 import Point from '../../Core/Series/Point.js';
 import { addEvent, extend, isNumber, pick, relativeLength } from '../../Shared/Utilities.js';
 /* *

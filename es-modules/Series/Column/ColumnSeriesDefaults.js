@@ -149,6 +149,8 @@ const ColumnSeriesDefaults = {
      *          0.25
      * @sample {highcharts} highcharts/plotoptions/column-pointpadding-none/
      *         0 for tightly packed columns
+     * @sample {highcharts} highcharts/plotoptions/pie-pointpadding/
+     *         Pie point padding plugin
      *
      * @product highcharts highstock gantt
      */
@@ -480,12 +482,12 @@ const ColumnSeriesDefaults = {
  */
 /**
  * @excluding halo, lineWidth, lineWidthPlus, marker
- * @product   highcharts highstock
+ * @product   highcharts highstock gantt
  * @apioption series.column.states.hover
  */
 /**
  * @excluding halo, lineWidth, lineWidthPlus, marker
- * @product   highcharts highstock
+ * @product   highcharts highstock gantt
  * @apioption series.column.states.select
  */
 /**

@@ -69,9 +69,9 @@ declare module "./highcharts" {
         y: number;
     }
     interface BorderRadiusOptionsObject {
-        radius: (number|string);
-        scope: ("individual"|"point"|"stack");
-        where: ("all"|"end");
+        radius?: (number|string);
+        scope?: ("individual"|"point"|"stack");
+        where?: ("all"|"end");
     }
     interface CaptionObject extends SVGElement {
         /**
@@ -410,6 +410,9 @@ declare module "./highcharts" {
         r?: number;
         start?: number;
     }
+    interface TemplatingObject {
+        helpers: Record<string, Function>;
+    }
     interface TimeNormalizedObject {
         count?: number;
         unitRange: number;
@@ -495,6 +498,7 @@ declare module "./highcharts" {
     }
     let charts: Array<(Chart|undefined)>;
     let dateFormats: Record<string, TimeFormatCallbackFunction>;
+    let Templating: TemplatingObject;
     let theme: Options;
     /**
      * Add an event listener.

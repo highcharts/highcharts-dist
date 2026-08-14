@@ -26,11 +26,13 @@ var ColorMapComposition;
      *  Constants
      *
      * */
+    /** @internal */
     ColorMapComposition.pointMembers = {
         dataLabelOnNull: true,
         moveToTopOnHover: true,
         isValid: pointIsValid
     };
+    /** @internal */
     ColorMapComposition.seriesMembers = {
         colorKey: 'value',
         axisTypes: ['xAxis', 'yAxis', 'colorAxis'],
@@ -46,7 +48,7 @@ var ColorMapComposition;
      *
      * */
     /**
-     * @private
+     * @internal
      */
     function compose(SeriesClass) {
         const PointClass = SeriesClass.prototype.pointClass;
@@ -56,7 +58,7 @@ var ColorMapComposition;
     ColorMapComposition.compose = compose;
     /**
      * Move points to the top of the z-index order when hovered.
-     * @private
+     * @internal
      */
     function onPointAfterSetState(e) {
         const point = this, series = point.series, renderer = series.chart.renderer;
@@ -92,7 +94,7 @@ var ColorMapComposition;
     /**
      * Color points have a value option that determines whether or not it is
      * a null point
-     * @private
+     * @internal
      */
     function pointIsValid() {
         return (this.value !== null &&
@@ -103,7 +105,7 @@ var ColorMapComposition;
     }
     /**
      * Get the color attributes to apply on the graphic
-     * @private
+     * @internal
      * @function Highcharts.colorMapSeriesMixin.colorAttribs
      * @param {Highcharts.Point} point
      * @return {Highcharts.SVGAttributes}
@@ -124,4 +126,5 @@ var ColorMapComposition;
  *  Default Export
  *
  * */
+/** @internal */
 export default ColorMapComposition;

@@ -14,8 +14,8 @@
 'use strict';
 import H from '../../../Core/Globals.js';
 const { doc, isFirefox } = H;
-import BaseFormIcons from '../../../Shared/BaseFormIcons';
-import getIcon from '../../../Shared/BaseFormUtils';
+import BaseFormIcons from '../../../Shared/BaseFormIcons.js';
+import getIcon from '../../../Shared/BaseFormUtils.js';
 import { createElement, isArray, isObject, objectEach, pick, stableSort } from '../../../Shared/Utilities.js';
 /* *
  *

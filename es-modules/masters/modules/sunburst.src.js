@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0 (2026-06-11)
+ * @license Highcharts JS v13.0.0-modified (2026-08-14)
  * @module highcharts/modules/sunburst
  * @requires highcharts
  *
@@ -12,10 +12,11 @@
  */
 'use strict';
 import Highcharts from '../../Core/Globals.js';
-import '../../Series/Treemap/TreemapSeries.js';
+import TreemapSeries from '../../Series/Treemap/TreemapSeries.js';
 import '../../Series/Sunburst/SunburstSeries.js';
 import Breadcrumbs from '../../Extensions/Breadcrumbs/Breadcrumbs.js';
 const G = Highcharts;
 G.Breadcrumbs = G.Breadcrumbs || Breadcrumbs;
 G.Breadcrumbs.compose(G.Chart, G.defaultOptions);
+TreemapSeries.compose(G.Series);
 export default Highcharts;

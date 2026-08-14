@@ -6,86 +6,184 @@
 import * as Highcharts from "../highcharts.src";
 declare module "../highcharts.src" {
     /**
-     * (Highmaps) Point accessibility options for a series.
+     * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable the initial
+     * animation when a series is displayed for the `dataLabels`. The animation
+     * can also be set as a configuration object. Please note that this option
+     * only applies to the initial animation.
+     *
+     * For other animations, see chart.animation and the animation parameter
+     * under the API methods. The following properties are supported:
+     *
+     * - `defer`: The animation delay time in milliseconds.
      */
-    interface PlotMappointAccessibilityPointOptions {
+    interface PlotMappointClusterDataLabelsAnimationOptions {
         /**
-         * (Highmaps) Date format to use for points on datetime axes when
-         * describing them to screen reader users.
-         *
-         * Defaults to the same format as in tooltip.
-         *
-         * For an overview of the replacement codes, see dateFormat.
+         * (Highcharts, Highstock, Highmaps, Gantt) The animation delay time in
+         * milliseconds. Set to `0` to render the data labels immediately. As
+         * `undefined` inherits defer time from the series.animation.defer.
          */
-        dateFormat?: string;
-        /**
-         * (Highmaps) Formatter function to determine the date/time format used
-         * with points on datetime axes when describing them to screen reader
-         * users. Receives one argument, `point`, referring to the point to
-         * describe. Should return a date format string compatible with
-         * dateFormat.
-         */
-        dateFormatter?: Highcharts.ScreenReaderFormatterCallbackFunction<Highcharts.Point>;
-        /**
-         * (Highmaps) Whether or not to describe points with the value `null` to
-         * assistive technology, such as screen readers.
-         */
-        describeNull?: boolean;
-        /**
-         * (Highmaps) A format string to use instead of the default for point
-         * descriptions.
-         *
-         * The context of the format string is the point instance.
-         *
-         * As opposed to accessibility.point.valueDescriptionFormat, this option
-         * replaces the whole description.
-         */
-        descriptionFormat?: string;
-        /**
-         * (Highmaps) Formatter function to use instead of the default for point
-         * descriptions. Same as `accessibility.point.descriptionFormatter`, but
-         * applies to a series instead of the whole chart.
-         *
-         * Note: Prefer using accessibility.point.valueDescriptionFormat instead
-         * if possible, as default functionality such as describing annotations
-         * will be preserved.
-         */
-        descriptionFormatter?: Highcharts.ScreenReaderFormatterCallbackFunction<Highcharts.Point>;
-        /**
-         * (Highmaps) Decimals to use for the values in the point descriptions.
-         * Uses tooltip.valueDecimals if not defined.
-         */
-        valueDecimals?: number;
-        /**
-         * (Highmaps) Format to use for describing the values of data points to
-         * assistive technology - including screen readers. The point context is
-         * available as `{point}`.
-         *
-         * Other available context variables include `{index}`, `{value}`, and
-         * `{xDescription}`.
-         *
-         * Additionally, the series name, annotation info, and description added
-         * in `point.accessibility.description` is added by default if relevant.
-         * To override this, use the accessibility.point.descriptionFormatter
-         * option.
-         */
-        valueDescriptionFormat?: string;
-        /**
-         * (Highmaps) Prefix to add to the values in the point descriptions.
-         * Uses tooltip.valuePrefix if not defined.
-         */
-        valuePrefix?: string;
-        /**
-         * (Highmaps) Suffix to add to the values in the point descriptions.
-         * Uses tooltip.valueSuffix if not defined.
-         */
-        valueSuffix?: string;
+        defer?: number;
     }
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Options for the cluster data
-     * labels.
+     * (Highcharts, Highstock, Highmaps, Gantt) Styles for the label. The
+     * default `color` setting is `"contrast"`, which is a pseudo color that
+     * Highcharts picks up and applies the maximum contrast to the underlying
+     * point item, for example the bar in a bar chart.
+     *
+     * The `textOutline` is a pseudo property that applies an outline of the
+     * given width with the given color, which by default is the maximum
+     * contrast to the text. So a bright text color will result in a black text
+     * outline for maximum readability on a mixed background. In some cases,
+     * especially with grayscale text, the text outline doesn't work well, in
+     * which cases it can be disabled by setting it to `"none"`. When `useHTML`
+     * is true, the `textOutline` will not be picked up. In this, case, the same
+     * effect can be achieved through the `text-shadow` CSS property. As a
+     * complementary or alternative to the `textOutline`, a
+     * `dataLabels.backgroundColor` can be used. It provides a more calm
+     * impression and ensures readable text label, at the cost of a risk of
+     * overshadowing the underlying chart elements.
+     *
+     * For some series types, where each point has an extent, like for example
+     * tree maps, the data label may overflow the point. There are two
+     * strategies for handling overflow. By default, the text will wrap to
+     * multiple lines. The other strategy is to set `style.textOverflow` to
+     * `ellipsis`, which will keep the text on one line plus it will break
+     * inside long words.
      */
-    interface PlotMappointClusterDataLabelsOptions {
+    interface PlotMappointClusterDataLabelsStyleOptions {
+        color?: string;
+    }
+    /**
+     * (Highcharts, Highmaps) Options for layout algorithm. Inside there are
+     * options to change the type of the algorithm, gridSize, distance or
+     * iterations.
+     */
+    interface PlotMappointClusterLayoutAlgorithmOptions {
+        /**
+         * (Highcharts, Highmaps) When `type` is set to `kmeans`, `distance` is
+         * a maximum distance between point and cluster center so that this
+         * point will be inside the cluster. The distance is either a number
+         * defining pixels or a percentage defining a percentage of the plot
+         * area width.
+         */
+        distance?: (number|string);
+        /**
+         * (Highcharts, Highmaps) When `type` is set to the `grid`, `gridSize`
+         * is a size of a grid square element either as a number defining
+         * pixels, or a percentage defining a percentage of the plot area width.
+         */
+        gridSize?: (number|string);
+        /**
+         * (Highcharts, Highmaps) When `type` is set to `kmeans`, `iterations`
+         * are the number of iterations that this algorithm will be repeated to
+         * find clusters positions.
+         */
+        iterations?: number;
+        /**
+         * (Highcharts, Highmaps) When `type` is set to `undefined` and there
+         * are more visible points than the kmeansThreshold the `grid` algorithm
+         * is used to find clusters, otherwise `kmeans`. It ensures good
+         * performance on large datasets and better clusters arrangement after
+         * the zoom.
+         */
+        kmeansThreshold?: number;
+        /**
+         * (Highcharts, Highmaps) Type of the algorithm used to combine points
+         * into a cluster. There are three available algorithms:
+         *
+         * 1) `grid` - grid-based clustering technique. Points are assigned to
+         * squares of set size depending on their position on the plot area.
+         * Points inside the grid square are combined into a cluster. The grid
+         * size can be controlled by `gridSize` property (grid size changes at
+         * certain zoom levels).
+         *
+         * 2) `kmeans` - based on K-Means clustering technique. In the first
+         * step, points are divided using the grid method (distance property is
+         * a grid size) to find the initial amount of clusters. Next, each point
+         * is classified by computing the distance between each cluster center
+         * and that point. When the closest cluster distance is lower than
+         * distance property set by a user the point is added to this cluster
+         * otherwise is classified as `noise`. The algorithm is repeated until
+         * each cluster center not change its previous position more than one
+         * pixel. This technique is more accurate but also more time consuming
+         * than the `grid` algorithm, especially for big datasets.
+         *
+         * 3) `optimizedKmeans` - based on K-Means clustering technique. This
+         * algorithm uses k-means algorithm only on the chart initialization or
+         * when chart extremes have greater range than on initialization. When a
+         * chart is redrawn the algorithm checks only clustered points distance
+         * from the cluster center and rebuild it when the point is spaced
+         * enough to be outside the cluster. It provides performance improvement
+         * and more stable clusters position yet can be used rather on small and
+         * sparse datasets.
+         *
+         * By default, the algorithm depends on visible quantity of points and
+         * `kmeansThreshold`. When there are more visible points than the
+         * `kmeansThreshold` the `grid` algorithm is used, otherwise `kmeans`.
+         *
+         * The custom clustering algorithm can be added by assigning a callback
+         * function as the type property. This function takes an array of
+         * `processedXData`, `processedYData`, `processedXData` indexes and
+         * `layoutAlgorithm` options as arguments and should return an object
+         * with grouped data.
+         *
+         * The algorithm should return an object like that: (see online
+         * documentation for example)
+         *
+         * `clusterId` (example above - unique id of a cluster or noise) is an
+         * array of points belonging to a cluster. If the array has only one
+         * point or fewer points than set in `cluster.minimumClusterSize` it
+         * won't be combined into a cluster.
+         */
+        type?: (string|Function);
+    }
+    interface PlotMappointClusterStatesHoverOptions {
+        /**
+         * (Highcharts, Highmaps) The fill color of the cluster marker in hover
+         * state. When `undefined`, the series' or point's fillColor for normal
+         * state is used.
+         */
+        fillColor?: Highcharts.ColorType;
+    }
+    /**
+     * (Highcharts, Highmaps) An array defining zones within marker clusters.
+     *
+     * In styled mode, the color zones are styled with the
+     * `.highcharts-cluster-zone-{n}` class, or custom classed from the
+     * `className` option.
+     */
+    interface PlotMappointClusterZonesOptions {
+        /**
+         * (Highcharts, Highmaps) Styled mode only. A custom class name for the
+         * zone.
+         */
+        className?: string;
+        /**
+         * (Highcharts, Highmaps) The value where the zone starts.
+         */
+        from?: number;
+        /**
+         * (Highcharts, Highmaps) Settings for the cluster marker belonging to
+         * the zone.
+         */
+        marker?: Highcharts.PointMarkerOptionsObject;
+        /**
+         * (Highcharts, Highmaps) The value where the zone ends.
+         */
+        to?: number;
+    }
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Options for the series data
+     * labels, appearing next to each data point.
+     *
+     * Since v6.2.0, multiple data labels can be applied to each single point by
+     * defining them as an array of configs.
+     *
+     * In styled mode, the data labels can be styled with the
+     * `.highcharts-data-label-box` and `.highcharts-data-label` class names
+     * (see example).
+     */
+    interface PlotMappointDataLabelsOptions {
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) The alignment of the data
          * label compared to the point. If `right`, the right side of the label
@@ -94,7 +192,7 @@ declare module "../highcharts.src" {
          * as given with the inside option. Can be one of `left`, `center` or
          * `right`.
          */
-        align?: string;
+        align?: (Highcharts.AlignValue|null);
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
          * labels. If set to `plotEdges`, the labels are aligned within the plot
@@ -122,7 +220,7 @@ declare module "../highcharts.src" {
          *
          * - `defer`: The animation delay time in milliseconds.
          */
-        animation?: (boolean|Highcharts.PlotMappointClusterDataLabelsAnimationOptions|Partial<Highcharts.AnimationOptionsObject>);
+        animation?: (boolean|Highcharts.PlotMappointDataLabelsAnimationOptions|Partial<Highcharts.AnimationOptionsObject>);
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) The background color or
          * gradient for the data label. In addition to regular colors, there are
@@ -264,7 +362,7 @@ declare module "../highcharts.src" {
          * will be moved inside the bar. To display data labels outside the plot
          * area, set `crop` to `false` and `overflow` to `"allow"`.
          */
-        overflow?: Highcharts.DataLabelsOverflowValue;
+        overflow?: boolean;
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) When either the
          * `borderWidth` or the `backgroundColor` is set, this is the padding
@@ -274,7 +372,7 @@ declare module "../highcharts.src" {
          * of two numbers repeats the values for the horizontal and vertical
          * sides.
          */
-        padding?: object;
+        padding?: (number|Array<number>);
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) Aligns data labels relative
          * to points. If `center` alignment is not possible, it defaults to
@@ -326,7 +424,7 @@ declare module "../highcharts.src" {
          * to `ellipsis`, which will keep the text on one line plus it will
          * break inside long words.
          */
-        style?: (Highcharts.CSSObject|Highcharts.PlotMappointClusterDataLabelsStyleOptions);
+        style?: (Highcharts.CSSObject|Highcharts.PlotMappointDataLabelsStyleOptions);
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) Options for a label text
          * which should follow marker's shape. Border and background are
@@ -351,7 +449,7 @@ declare module "../highcharts.src" {
          * value depends on the data, for instance in a column chart, the label
          * is above positive values and below negative values.
          */
-        verticalAlign?: string;
+        verticalAlign?: (Highcharts.VerticalAlignValue|null);
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) The x position offset of the
          * label relative to the point in pixels.
@@ -371,129 +469,11 @@ declare module "../highcharts.src" {
          */
         zIndex?: number;
     }
-    interface PlotMappointClusterEventsOptions {
-        /**
-         * (Highcharts, Highmaps) Fires when the cluster point is clicked and
-         * `drillToCluster` is enabled. One parameter, `event`, is passed to the
-         * function. The default action is to zoom to the cluster points range.
-         * This can be prevented by calling `event.preventDefault()`.
-         */
-        drillToCluster?: Highcharts.MarkerClusterDrillCallbackFunction;
-    }
     /**
-     * (Highcharts, Highmaps) Options for marker clusters, the concept of
-     * sampling the data values into larger blocks in order to ease readability
-     * and increase performance of the JavaScript charts.
-     *
-     * Note: marker clusters module is not working with `boost` and
-     * `draggable-points` modules.
-     *
-     * The marker clusters feature requires the marker-clusters.js file to be
-     * loaded, found in the modules directory of the download package, or online
-     * at code.highcharts.com/modules/marker-clusters.js.
+     * (Highmaps) Animation when hovering over the marker.
      */
-    interface PlotMappointClusterOptions {
-        /**
-         * (Highcharts, Highmaps) When set to `false` prevent cluster
-         * overlapping - this option works only when `layoutAlgorithm.type =
-         * "grid"`.
-         */
-        allowOverlap?: boolean;
-        /**
-         * (Highcharts, Highmaps) Options for the cluster marker animation.
-         */
-        animation?: (boolean|Partial<Highcharts.AnimationOptionsObject>);
-        /**
-         * (Highcharts, Highstock, Highmaps, Gantt) Options for the cluster data
-         * labels.
-         */
-        dataLabels?: (Highcharts.DataLabelsOptions|Highcharts.PlotMappointClusterDataLabelsOptions);
-        /**
-         * (Highcharts, Highmaps) Zoom the plot area to the cluster points range
-         * when a cluster is clicked.
-         */
-        drillToCluster?: boolean;
-        /**
-         * (Highcharts, Highmaps) Whether to enable the marker-clusters module.
-         */
-        enabled?: boolean;
-        events?: Highcharts.PlotMappointClusterEventsOptions;
-        /**
-         * (Highcharts, Highmaps) Options for layout algorithm. Inside there are
-         * options to change the type of the algorithm, gridSize, distance or
-         * iterations.
-         */
-        layoutAlgorithm?: Highcharts.PlotMappointClusterLayoutAlgorithmOptions;
-        /**
-         * (Highcharts, Highmaps) Options for the cluster marker.
-         */
-        marker?: Highcharts.PointMarkerOptionsObject;
-        /**
-         * (Highcharts, Highmaps) The minimum amount of points to be combined
-         * into a cluster. This value has to be greater or equal to 2.
-         */
-        minimumClusterSize?: number;
-        states?: Highcharts.PlotMappointClusterStatesOptions;
-        /**
-         * (Highcharts, Highmaps) An array defining zones within marker
-         * clusters.
-         *
-         * In styled mode, the color zones are styled with the
-         * `.highcharts-cluster-zone-{n}` class, or custom classed from the
-         * `className` option.
-         */
-        zones?: Array<Highcharts.PlotMappointClusterZonesOptions>;
-    }
-    interface PlotMappointClusterStatesOptions {
-        hover?: Highcharts.PlotMappointClusterStatesHoverOptions;
-    }
-    /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable the initial
-     * animation when a series is displayed for the `dataLabels`. The animation
-     * can also be set as a configuration object. Please note that this option
-     * only applies to the initial animation.
-     *
-     * For other animations, see chart.animation and the animation parameter
-     * under the API methods. The following properties are supported:
-     *
-     * - `defer`: The animation delay time in milliseconds.
-     */
-    interface PlotMappointDataLabelsAnimationOptions {
-        /**
-         * (Highcharts, Highstock, Highmaps, Gantt) The animation delay time in
-         * milliseconds. Set to `0` to render the data labels immediately. As
-         * `undefined` inherits defer time from the series.animation.defer.
-         */
-        defer?: number;
-    }
-    /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Styles for the label. The
-     * default `color` setting is `"contrast"`, which is a pseudo color that
-     * Highcharts picks up and applies the maximum contrast to the underlying
-     * point item, for example the bar in a bar chart.
-     *
-     * The `textOutline` is a pseudo property that applies an outline of the
-     * given width with the given color, which by default is the maximum
-     * contrast to the text. So a bright text color will result in a black text
-     * outline for maximum readability on a mixed background. In some cases,
-     * especially with grayscale text, the text outline doesn't work well, in
-     * which cases it can be disabled by setting it to `"none"`. When `useHTML`
-     * is true, the `textOutline` will not be picked up. In this, case, the same
-     * effect can be achieved through the `text-shadow` CSS property. As a
-     * complementary or alternative to the `textOutline`, a
-     * `dataLabels.backgroundColor` can be used. It provides a more calm
-     * impression and ensures readable text label, at the cost of a risk of
-     * overshadowing the underlying chart elements.
-     *
-     * For some series types, where each point has an extent, like for example
-     * tree maps, the data label may overflow the point. There are two
-     * strategies for handling overflow. By default, the text will wrap to
-     * multiple lines. The other strategy is to set `style.textOverflow` to
-     * `ellipsis`, which will keep the text on one line plus it will break
-     * inside long words.
-     */
-    interface PlotMappointDataLabelsStyleOptions {
-        color?: string;
+    interface PlotMappointMarkerStatesHoverAnimationOptions {
+        duration?: number;
     }
     /**
      * (Highmaps) Options for the connector in the _Series on point_ feature.
@@ -545,54 +525,58 @@ declare module "../highcharts.src" {
         y?: number;
     }
     /**
-     * (Highmaps) Animation when not hovering over the marker.
+     * (Highcharts, Highstock, Gantt) For series on datetime axes, the date
+     * format in the tooltip's header will by default be guessed based on the
+     * closest data points. This member gives the default string representations
+     * used for each unit. For an overview of the string or object
+     * configuration, see dateFormat.
      */
-    interface PlotMappointStatesInactiveAnimationOptions {
-        duration?: number;
+    interface PlotMappointTooltipDateTimeLabelFormatsOptions {
+        day?: string;
+        hour?: string;
+        millisecond?: string;
+        minute?: string;
+        month?: string;
+        second?: string;
+        week?: string;
+        year?: string;
     }
     /**
-     * (Highcharts, Highstock, Highmaps) Options for the tooltip header when
-     * tooltip.split is enabled. The header is the box containing the X value in
-     * a split tooltip.
+     * (Highcharts, Highstock, Highmaps) Positioning options for fixed tooltip,
+     * taking effect only when tooltip.fixed is `true`.
      */
-    interface PlotMappointTooltipHeaderOptions {
+    interface PlotMappointTooltipPositionOptions {
         /**
-         * (Highcharts, Highstock, Highmaps) Background color for the tooltip
-         * header when tooltip.split is enabled.
+         * (Highcharts, Highstock, Highmaps) The horizontal alignment of the
+         * fixed tooltip.
          */
-        backgroundColor?: Highcharts.ColorType;
+        align?: Highcharts.AlignValue;
         /**
-         * (Highcharts, Highstock, Highmaps) Border color for the tooltip header
-         * when tooltip.split is enabled.
-         */
-        borderColor?: Highcharts.ColorType;
-        /**
-         * (Highcharts, Highstock, Highmaps) The width of the border for the
-         * tooltip header when tooltip.split is enabled.
-         */
-        borderWidth?: number;
-        /**
-         * (Highcharts, Highstock, Highmaps) Distance between the plot area and
-         * the header (except the chevron) in a split tooltip, in pixels. The
-         * default value makes the header text align with the axis labels.
-         */
-        distance?: number;
-        /**
-         * (Highcharts, Highstock, Highmaps) The name of a symbol to use for the
-         * border around the tooltip header. Applies only when tooltip.split is
-         * enabled.
+         * (Highcharts, Highstock, Highmaps) What the fixed tooltip alignment
+         * should be relative to.
          *
-         * Custom callbacks for symbol path generation can also be added to
-         * `Highcharts.SVGRenderer.prototype.symbols` the same way as for
-         * series.marker.symbol.
+         * The default, `pane`, means that it is aligned within the plot area
+         * for that given series. If the tooltip is split (as default in Stock
+         * charts), each partial tooltip is aligned within the series' pane.
          */
-        shape?: string;
+        relativeTo?: Highcharts.OptionsRelativeToValue;
         /**
-         * (Highcharts, Highstock, Highmaps) CSS styles for the tooltip header.
-         * The default is `{ fontSize: '1em' }`, ensuring that the header text
-         * is the same size as the axis labels.
+         * (Highcharts, Highstock, Highmaps) The vertical alignment of the fixed
+         * tooltip.
          */
-        style?: object;
+        verticalAlign?: Highcharts.VerticalAlignValue;
+        /**
+         * (Highcharts, Highstock, Highmaps) X pixel offset from the given
+         * position. Can be used to shy away from axis lines, grid lines etc to
+         * avoid the tooltip overlapping other elements.
+         */
+        x?: number;
+        /**
+         * (Highcharts, Highstock, Highmaps) Y pixel offset from the given
+         * position. Can be used to shy away from axis lines, grid lines etc to
+         * avoid the tooltip overlapping other elements.
+         */
+        y?: number;
     }
     /**
      * (Highmaps) An array of data points for the series. For the `mappoint`
@@ -668,6 +652,10 @@ declare module "../highcharts.src" {
         name?: string;
         /**
          * (Highmaps) A collection of options for different series states.
+         *
+         * In addition to the options documented under each state, any option
+         * from the parent series type can be set, with exception of `data` and
+         * `states`.
          */
         states?: Highcharts.SeriesStatesOptionsObject;
         /**
@@ -678,71 +666,5 @@ declare module "../highcharts.src" {
          * (Highmaps) The x coordinate of the point in terms of projected units.
          */
         y?: (number|null);
-    }
-    /**
-     * (Highmaps) A `mappoint` series. If the type option is not specified, it
-     * is inherited from chart.type.
-     *
-     * Configuration options for the series are given in three levels:
-     *
-     * 1. Options for all series in a chart are defined in the
-     * plotOptions.series object.
-     *
-     * 2. Options for all `mappoint` series are defined in plotOptions.mappoint.
-     *
-     * 3. Options for one single series are given in the series instance array.
-     * (see online documentation for example)
-     *
-     * **TypeScript:**
-     *
-     * - type option should always be set, otherwise a broad set of unsupported
-     * options is allowed.
-     *
-     * - when accessing an array of series, the combined set of all series types
-     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
-     * specific type can be done by checking the `type` property. (see online
-     * documentation for example)
-     *
-     * You have to extend the `SeriesMappointOptions` via an interface to allow
-     * custom properties: ``` declare interface SeriesMappointOptions {
-     * customProperty: string; }
-     *
-     */
-    interface SeriesMappointOptions extends Highcharts.PlotMappointOptions, Highcharts.SeriesOptions {
-        /**
-         * (Highmaps) An array of data points for the series. For the `mappoint`
-         * series type, points can be given in the following ways:
-         *
-         * 1. An array of numerical values. In this case, the numerical values
-         * will be interpreted as `y` options. The `x` values will be
-         * automatically calculated, either starting at 0 and incremented by 1,
-         * or from `pointStart` and `pointInterval` given in the series options.
-         * If the axis has categories, these will be used. Example: (see online
-         * documentation for example)
-         *
-         * 2. An array of arrays with 2 values. In this case, the values
-         * correspond to `[hc-key, value]`. Example: (see online documentation
-         * for example)
-         *
-         * 3. An array of objects with named values. The following snippet shows
-         * only a few settings, see the complete options set below. If the total
-         * number of data points exceeds the series' turboThreshold, this option
-         * is not available. (see online documentation for example)
-         */
-        data?: Array<(number|[number, (number|null)]|null|Highcharts.SeriesMappointDataOptions)>;
-        /**
-         * Not available
-         */
-        dataParser?: undefined;
-        /**
-         * Not available
-         */
-        dataURL?: undefined;
-        /**
-         * (Highcharts, Highstock, Highmaps, Gantt) This property is only in
-         * TypeScript non-optional and might be `undefined` in series objects
-         * from unknown sources.
-         */
-        type: "mappoint";
     }
 }

@@ -544,7 +544,7 @@ export default SynthPatch;
 * @type {number|undefined}
 */
 /**
- * @typedef {Highcharts.Record<"t"|"vol",number>} Highcharts.SynthEnvelopePoint
+ * @typedef {Record<"t"|"vol",number>} Highcharts.SynthEnvelopePoint
  * @requires modules/sonification
  */
 /**

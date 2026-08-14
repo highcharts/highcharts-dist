@@ -11,8 +11,7 @@
  *
  * */
 'use strict';
-import A from '../../Core/Animation/AnimationUtilities.js';
-const { animObject } = A;
+import { animObject } from '../../Core/Animation/AnimationUtilities.js';
 import { addEvent, extend, fireEvent, isString, merge, splat, syncTimeout } from '../../Shared/Utilities.js';
 /* *
  *

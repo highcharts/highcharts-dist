@@ -376,6 +376,10 @@ const seriesDefaults = {
      * ```
      *
      * @type    {Highcharts.DataMappingOptionsObject}
+     * @sample highcharts/datatable/datamapping
+     *         Basic data mapping
+     * @sample highcharts/datatable/datamapping-dynamic
+     *         Data mapping with dynamic updates
      * @sample {highcharts} highcharts/datatable/series-datatable-multiple
      *         Series with two data tables
      * @sample {highcharts} highcharts/datatable/nested-keys
@@ -385,6 +389,29 @@ const seriesDefaults = {
      *
      * @since     13.0.0
      * @apioption plotOptions.series.dataMapping
+     */
+    /**
+     * Options for a specific series-level data table or an array of data
+     * tables. The `dataTable` option can be either a configuration object or an
+     * instance of the `DataTable` class. If a `DataTable` instance is passed,
+     * it will be used directly. If a configuration object or an array is
+     * passed, a new `DataTable` instance will be created based on the provided
+     * configuration.
+     *
+     * @type   {Highcharts.DataTable|Highcharts.DataTableOptionsObject|Array<Highcharts.DataTable|Highcharts.DataTableOptionsObject>}
+     * @sample {highcharts} highcharts/datatable/series-datatable/
+     *         Series with one data table each
+     * @sample {highcharts} highcharts/datatable/series-datatable-multiple/
+     *         Series with two data tables
+     * @sample {highstock} stock/datatable/series-datatable/
+     *         Series with one data table each
+     * @sample {highstock} stock/datatable/series-datatable-multiple/
+     *         Series with two data tables
+     * @sample {highmaps} maps/datatable/series-datatable
+     *         Series-level data table
+     *
+     * @since 13.0.0
+     * @apioption plotOptions.series.dataTable
      */
     /**
      * Enable or disable the mouse tracking for a specific series. This
@@ -1269,6 +1296,7 @@ const seriesDefaults = {
              * `series.allowPointSelect` option to true.
              *
              * @declare Highcharts.PointStatesSelectOptionsObject
+             * @extends plotOptions.series.marker.states.hover
              */
             select: {
                 /**
@@ -1845,6 +1873,7 @@ const seriesDefaults = {
          * @sample {highmaps} maps/plotoptions/series-datalabels-box/
          *         Data labels box options
          *
+         * @type  {number|Array<number>}
          * @since 2.2.1
          */
         padding: [1, 3],
@@ -2046,6 +2075,9 @@ const seriesDefaults = {
     /**
      * A collection of options for different series states.
      *
+     * In addition to the options documented under each state, any option from
+     * the parent series type can be set, with exception of `data` and `states`.
+     *
      * @declare Highcharts.SeriesStatesOptionsObject
      */
     states: {
@@ -2219,6 +2251,7 @@ const seriesDefaults = {
          *         Disabled inactive state
          *
          * @declare Highcharts.SeriesStatesInactiveOptionsObject
+         * @extends plotOptions.series.states.hover
          */
         inactive: {
             /**
