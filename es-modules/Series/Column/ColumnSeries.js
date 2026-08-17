@@ -10,8 +10,7 @@
  *
  * */
 'use strict';
-import A from '../../Core/Animation/AnimationUtilities.js';
-const { animObject } = A;
+import { animObject } from '../../Core/Animation/AnimationUtilities.js';
 import Color from '../../Core/Color/Color.js';
 const { parse: color } = Color;
 import ColumnSeriesDefaults from './ColumnSeriesDefaults.js';
@@ -418,11 +417,11 @@ class ColumnSeries extends Series {
      */
     pointAttribs(point, state) {
         const options = this.options, p2o = this.pointAttrToOptions || {}, strokeOption = p2o.stroke || 'borderColor', strokeWidthOption = p2o['stroke-width'] || 'borderWidth';
-        let stateOptions, zone, brightness, fill = (point && point.color) || this.color, 
+        let stateOptions, zone, brightness, fill = point?.color || this.color, 
         // Set to fill when borderColor null:
-        stroke = ((point && point[strokeOption]) ||
+        stroke = (point?.[strokeOption] ||
             options[strokeOption] ||
-            fill), dashstyle = (point && point.options.dashStyle) || options.dashStyle, strokeWidth = (point?.[strokeWidthOption]) ??
+            fill), dashstyle = point?.options.dashStyle || options.dashStyle, strokeWidth = point?.[strokeWidthOption] ??
             options[strokeWidthOption] ??
             this[strokeWidthOption] ?? 1, opacity = (point?.isNull && options.nullInteraction) ?
             0 :
@@ -443,7 +442,7 @@ class ColumnSeries extends Series {
         }
         // Select or hover states
         if (state && point) {
-            stateOptions = merge(options.states[state], 
+            stateOptions = merge(options.states?.[state], 
             // #6401
             point.options.states?.[state] || {});
             brightness = stateOptions.brightness;
@@ -453,14 +452,13 @@ class ColumnSeries extends Series {
                         .brighten(stateOptions.brightness)
                         .get()) || fill;
             stroke = stateOptions[strokeOption] || stroke;
-            strokeWidth =
-                stateOptions[strokeWidthOption] || strokeWidth;
+            strokeWidth = stateOptions[strokeWidthOption] || strokeWidth;
             dashstyle = stateOptions.dashStyle || dashstyle;
-            opacity = pick(stateOptions.opacity, opacity);
+            opacity = stateOptions.opacity ?? opacity;
         }
         const ret = {
-            fill: fill,
-            stroke: stroke,
+            fill,
+            stroke,
             'stroke-width': strokeWidth,
             opacity: point?.condemned ? 0 : opacity
         };
@@ -501,6 +499,7 @@ class ColumnSeries extends Series {
                         initialAttr = merge(shapeArgs, point.getOrigin(point.origin, shapeArgs));
                         if (!styledMode) {
                             initialAttr.opacity = 0;
+                            initialAttr['stroke-width'] = 0;
                         }
                         shouldUpdate = true;
                         verb = 'animate';
@@ -516,7 +515,7 @@ class ColumnSeries extends Series {
                 }
                 // Presentational
                 if (!styledMode) {
-                    graphic[verb](series.pointAttribs(point, (point.selected && 'select')))
+                    graphic[verb](series.pointAttribs(point, point.selected ? 'select' : ''))
                         .shadow(point.allowShadow !== false && options.shadow);
                 }
                 graphic
@@ -640,6 +639,7 @@ SeriesRegistry.registerSeriesType('column', ColumnSeries);
  *  Default Export
  *
  * */
+/** @internal */
 export default ColumnSeries;
 /* *
  *

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0 (2026-06-11)
+ * @license Highcharts JS v13.0.1 (2026-08-17)
  * @module highcharts/modules/treemap
  * @requires highcharts
  *
@@ -24,62 +24,62 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 28:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__28__;
-
-/***/ }),
-
-/***/ 512:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
-
-/***/ }),
-
-/***/ 620:
-/***/ ((module) => {
+/***/ 620
+(module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__620__;
 
-/***/ }),
+/***/ },
 
-/***/ 820:
-/***/ ((module) => {
+/***/ 28
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__28__;
+
+/***/ },
+
+/***/ 820
+(module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__820__;
 
-/***/ }),
+/***/ },
 
-/***/ 944:
-/***/ ((module) => {
+/***/ 512
+(module) {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
+module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
 
-/***/ }),
+/***/ },
 
-/***/ 984:
-/***/ ((module) => {
+/***/ 984
+(module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__984__;
 
-/***/ })
+/***/ },
+
+/***/ 944
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
+
+/***/ }
 
 /******/ 	});
 /************************************************************************/
 /******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
+/******/ 	const __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
 /******/ 		// Check if module is in cache
-/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		const cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
 /******/ 			return cachedModule.exports;
 /******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 		const module = __webpack_module_cache__[moduleId] = {
 /******/ 			// no module.id needed
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
@@ -97,7 +97,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__984__;
 /******/ 	(() => {
 /******/ 		// getDefaultExport function for compatibility with non-harmony modules
 /******/ 		__webpack_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
+/******/ 			const getter = module && module.__esModule ?
 /******/ 				() => (module['default']) :
 /******/ 				() => (module);
 /******/ 			__webpack_require__.d(getter, { a: getter });
@@ -107,11 +107,26 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__984__;
 /******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
+/******/ 		// define getter/value functions for harmony exports
 /******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 			if(Array.isArray(definition)) {
+/******/ 				var i = 0;
+/******/ 				while(i < definition.length) {
+/******/ 					var key = definition[i++];
+/******/ 					var binding = definition[i++];
+/******/ 					if(!__webpack_require__.o(exports, key)) {
+/******/ 						if(binding === 0) {
+/******/ 							Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 						} else {
+/******/ 							Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 						}
+/******/ 					} else if(binding === 0) { i++; }
+/******/ 				}
+/******/ 			} else {
+/******/ 				for(var key in definition) {
+/******/ 					if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 					}
 /******/ 				}
 /******/ 			}
 /******/ 		};
@@ -123,7 +138,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__984__;
 /******/ 	})();
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
+let __webpack_exports__ = {};
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
@@ -958,7 +973,7 @@ Breadcrumbs.defaultOptions = Breadcrumbs_BreadcrumbsDefaults.options;
  *
  * @callback Highcharts.BreadcrumbsClickCallbackFunction
  *
- * @param {Highcharts.Event} event
+ * @param {Event} event
  * Event.
  *
  * @param {Highcharts.BreadcrumbOptions} breadcrumb
@@ -1057,11 +1072,13 @@ var ColorMapComposition;
      *  Constants
      *
      * */
+    /** @internal */
     ColorMapComposition.pointMembers = {
         dataLabelOnNull: true,
         moveToTopOnHover: true,
         isValid: pointIsValid
     };
+    /** @internal */
     ColorMapComposition.seriesMembers = {
         colorKey: 'value',
         axisTypes: ['xAxis', 'yAxis', 'colorAxis'],
@@ -1077,7 +1094,7 @@ var ColorMapComposition;
      *
      * */
     /**
-     * @private
+     * @internal
      */
     function compose(SeriesClass) {
         const PointClass = SeriesClass.prototype.pointClass;
@@ -1087,7 +1104,7 @@ var ColorMapComposition;
     ColorMapComposition.compose = compose;
     /**
      * Move points to the top of the z-index order when hovered.
-     * @private
+     * @internal
      */
     function onPointAfterSetState(e) {
         const point = this, series = point.series, renderer = series.chart.renderer;
@@ -1123,7 +1140,7 @@ var ColorMapComposition;
     /**
      * Color points have a value option that determines whether or not it is
      * a null point
-     * @private
+     * @internal
      */
     function pointIsValid() {
         return (this.value !== null &&
@@ -1134,7 +1151,7 @@ var ColorMapComposition;
     }
     /**
      * Get the color attributes to apply on the graphic
-     * @private
+     * @internal
      * @function Highcharts.colorMapSeriesMixin.colorAttribs
      * @param {Highcharts.Point} point
      * @return {Highcharts.SVGAttributes}
@@ -1155,6 +1172,7 @@ var ColorMapComposition;
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Series_ColorMapComposition = (ColorMapComposition);
 
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series"],"commonjs":["highcharts","Series"],"commonjs2":["highcharts","Series"],"root":["Highcharts","Series"]}
@@ -1321,7 +1339,7 @@ class TreemapNode {
  * Can be used for any type of component that reserves the graphic property,
  * and provides a shouldDraw on its context.
  *
- * @private
+ * @internal
  *
  * @todo add type checking.
  * @todo export this function to enable usage
@@ -1382,9 +1400,11 @@ function draw(point, params) {
  *  Default Export
  *
  * */
+/** @internal */
 const DrawPointUtilities = {
     draw
 };
+/** @internal */
 /* harmony default export */ const Series_DrawPointUtilities = (DrawPointUtilities);
 
 ;// ./code/es-modules/Series/Treemap/TreemapPoint.js
@@ -1899,6 +1919,15 @@ const TreemapSeriesDefaults = {
      * @apioption plotOptions.treemap.levels.dataLabels
      */
     /**
+     * Can set the group padding on a specific level. Overrides the series
+     * option of the same name.
+     *
+     * @type      {number}
+     * @since     12.2.0
+     * @product   highcharts
+     * @apioption plotOptions.treemap.levels.groupPadding
+     */
+    /**
      * Can set the layoutAlgorithm option on a specific level.
      *
      * @type       {string}
@@ -1928,15 +1957,27 @@ const TreemapSeriesDefaults = {
      * @product   highcharts
      * @apioption plotOptions.treemap.levels.level
      */
+    /**
+     * Whether the `level` number is absolute, or relative to the currently
+     * visible root. Overrides the series option of the same name for this
+     * level.
+     *
+     * @type      {boolean}
+     * @product   highcharts
+     * @apioption plotOptions.treemap.levels.levelIsConstant
+     */
     // Presentational options
     /**
      * The color of the border surrounding each tree map item.
      *
-     * @type {Highcharts.ColorString}
+     * @type    {Highcharts.ColorString}
+     * @product highcharts
      */
     borderColor: 'var(--highcharts-neutral-color-10)',
     /**
      * The width of the border surrounding each tree map item.
+     *
+     * @product highcharts
      */
     borderWidth: 1,
     colorKey: 'colorValue',

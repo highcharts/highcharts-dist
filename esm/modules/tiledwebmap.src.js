@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0 (2026-06-11)
+ * @license Highcharts JS v13.0.1 (2026-08-17)
  * @module highcharts/modules/tiledwebmap
  * @requires highcharts
  *
@@ -11,14 +11,14 @@
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
-/******/ var __webpack_require__ = {};
+/******/ const __webpack_require__ = {};
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
 /******/ (() => {
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
 /******/ 	__webpack_require__.n = (module) => {
-/******/ 		var getter = module && module.__esModule ?
+/******/ 		const getter = module && module.__esModule ?
 /******/ 			() => (module['default']) :
 /******/ 			() => (module);
 /******/ 		__webpack_require__.d(getter, { a: getter });
@@ -28,11 +28,26 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /******/ /* webpack/runtime/define property getters */
 /******/ (() => {
-/******/ 	// define getter functions for harmony exports
+/******/ 	// define getter/value functions for harmony exports
 /******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		for(var key in definition) {
-/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 		if(Array.isArray(definition)) {
+/******/ 			var i = 0;
+/******/ 			while(i < definition.length) {
+/******/ 				var key = definition[i++];
+/******/ 				var binding = definition[i++];
+/******/ 				if(!__webpack_require__.o(exports, key)) {
+/******/ 					if(binding === 0) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 					} else {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 					}
+/******/ 				} else if(binding === 0) { i++; }
+/******/ 			}
+/******/ 		} else {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
 /******/ 			}
 /******/ 		}
 /******/ 	};
@@ -44,7 +59,6 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
-var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -481,6 +495,9 @@ const tilesProviderRegistry = {
 /** @internal */
 /* harmony default export */ const TilesProviderRegistry = (tilesProviderRegistry);
 
+;// external ["../highcharts.src.js","default","Fx"]
+const external_highcharts_src_js_default_Fx_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Fx;
+var external_highcharts_src_js_default_Fx_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Fx_namespaceObject);
 ;// external ["../highcharts.src.js","default","SeriesRegistry"]
 const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
 var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
@@ -646,6 +663,8 @@ const TiledWebMapSeriesDefaults = {
  *
  *
  * */
+
+
 
 
 const { composed } = (external_highcharts_src_js_default_default());
@@ -1018,11 +1037,15 @@ class TiledWebMapSeries extends MapSeries {
             for (const zoomKey of Object.keys(tiles)) {
                 for (const key of Object.keys(tiles[zoomKey].tiles)) {
                     if (mapView.projection && mapView.projection.def) {
+                        const tile = tiles[zoomKey].tiles[key];
+                        if ((external_highcharts_src_js_default_Fx_default()).timers.length > 0) {
+                            (0,external_highcharts_src_js_default_namespaceObject.stop)(tile, 'animator');
+                        }
                         // Calculate group translations based on first loaded
                         // tile
                         const scale = ((tileSize / worldSize) *
                             Math.pow(2, zoom)) / ((tileSize / worldSize) *
-                            Math.pow(2, parseFloat(zoomKey))), scaledTileSize = scale * 256, firstTile = tiles[zoomKey].tiles[Object.keys(tiles[zoomKey].tiles)[0]], { posX, posY } = tiles[zoomKey].tiles[key];
+                            Math.pow(2, parseFloat(zoomKey))), scaledTileSize = scale * 256, firstTile = tiles[zoomKey].tiles[Object.keys(tiles[zoomKey].tiles)[0]], { posX, posY } = tile;
                         if ((0,external_highcharts_src_js_default_namespaceObject.defined)(posX) &&
                             (0,external_highcharts_src_js_default_namespaceObject.defined)(posY) &&
                             (0,external_highcharts_src_js_default_namespaceObject.defined)(firstTile.posX) &&
@@ -1037,9 +1060,9 @@ class TiledWebMapSeries extends MapSeries {
                                 firstTilePx.y;
                             if (chart.renderer.globalAnimation &&
                                 chart.hasRendered) {
-                                const startX = Number(tiles[zoomKey].tiles[key].attr('x')), startY = Number(tiles[zoomKey].tiles[key].attr('y')), startWidth = Number(tiles[zoomKey].tiles[key].attr('width')), startHeight = Number(tiles[zoomKey].tiles[key].attr('height'));
+                                const startX = Number(tile.attr('x')), startY = Number(tile.attr('y')), startWidth = Number(tile.attr('width')), startHeight = Number(tile.attr('height'));
                                 const step = (now, fx) => {
-                                    tiles[zoomKey].tiles[key].attr({
+                                    tile.attr({
                                         x: (startX + (((posX * scaledTileSize) -
                                             tilesOffsetX - startX) * fx.pos)),
                                         y: (startY + (((posY * scaledTileSize) -
@@ -1051,7 +1074,7 @@ class TiledWebMapSeries extends MapSeries {
                                     });
                                 };
                                 series.isAnimating = true;
-                                tiles[zoomKey].tiles[key]
+                                tile
                                     .attr({ animator: 0 })
                                     .animate({ animator: 1 }, { step }, function () {
                                     series.isAnimating = false;
@@ -1077,7 +1100,7 @@ class TiledWebMapSeries extends MapSeries {
                                     series.redrawTiles = false;
                                     animateTiles(duration);
                                 }
-                                tiles[zoomKey].tiles[key].attr({
+                                tile.attr({
                                     x: (posX * scaledTileSize) - tilesOffsetX,
                                     y: (posY * scaledTileSize) - tilesOffsetY,
                                     width: Math.ceil(scaledTileSize) + 1,
@@ -1113,7 +1136,7 @@ class TiledWebMapSeries extends MapSeries {
                     projection: {
                         name: (new ProviderDefinition()).initialProjectionName
                     }
-                });
+                }, false);
             }
         }
         super.update.apply(this, arguments);

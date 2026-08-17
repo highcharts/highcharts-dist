@@ -14,7 +14,7 @@
 'use strict';
 import AST from '../../Core/Renderer/HTML/AST.js';
 import StockToolsUtilities from './StockToolsUtilities.js';
-import getIcon from '../../Shared/BaseFormUtils';
+import getIcon from '../../Shared/BaseFormUtils.js';
 import StockToolsIcons from '../../Stock/StockTools/StockToolsIcons.js';
 import { addEvent, createElement, css, defined, fireEvent, getStyle, isArray, merge, pick } from '../../Shared/Utilities.js';
 const { shallowArraysEqual } = StockToolsUtilities;

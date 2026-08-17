@@ -10,9 +10,8 @@
  *
  * */
 'use strict';
-import A from '../Core/Animation/AnimationUtilities.js';
-const { animObject } = A;
-import { optionsToObject } from '../Extensions/BorderRadius.js';
+import { animObject } from '../Core/Animation/AnimationUtilities.js';
+import { borderRadiusObject } from '../Extensions/BorderRadius.js';
 import D from '../Core/Defaults.js';
 const { defaultOptions } = D;
 import H from '../Core/Globals.js';
@@ -338,7 +337,7 @@ function onSeriesAfterColumnTranslate() {
         chart.polar &&
         chart.inverted) {
         const seriesDefault = defaultOptions.plotOptions?.[this.type]
-            ?.borderRadius, { scope, where = 'end' } = optionsToObject(options.borderRadius, isObject(seriesDefault) ? seriesDefault : {});
+            ?.borderRadius, { scope, where = 'end' } = borderRadiusObject(options.borderRadius, isObject(seriesDefault) ? seriesDefault : {});
         for (const point of this.points) {
             const { shapeArgs } = point;
             if (point.shapeType === 'arc' && shapeArgs) {
@@ -540,7 +539,7 @@ function wrapColumnSeriesAlignDataLabel(proceed, point, dataLabel, options, alig
  * @private
  */
 function onAfterColumnTranslate() {
-    const series = this, options = series.options, stacking = options.stacking, chart = series.chart, xAxis = series.xAxis, yAxis = series.yAxis, reversed = yAxis.reversed, center = yAxis.center, startAngleRad = xAxis.startAngleRad, endAngleRad = xAxis.endAngleRad, visibleRange = endAngleRad - startAngleRad;
+    const series = this, { chart, options, xAxis, yAxis } = series, stacking = options.stacking, { center, reversed } = yAxis, { endAngleRad, startAngleRad } = xAxis, visibleRange = endAngleRad - startAngleRad;
     let threshold = options.threshold, thresholdAngleRad = 0, points, point, i, yMin, yMax, start = 0, end = 0, tooltipPos, pointX, pointY, stackValues, stack, barX, innerR, r;
     // Postprocess plot coordinates
     if (xAxis.isRadial) {
@@ -638,8 +637,7 @@ function onAfterColumnTranslate() {
                 innerR = Math.max(barX, 0);
                 r = Math.max(barX + (point.pointWidth || 0), 0);
                 // Handle border radius
-                const brOption = options.borderRadius, brValue = typeof brOption === 'object' ?
-                    brOption.radius : brOption, borderRadius = relativeLength(brValue || 0, r - innerR);
+                const brOption = borderRadiusObject(options.borderRadius), borderRadius = relativeLength(brOption.radius, r - innerR);
                 point.shapeArgs = {
                     x: center[0],
                     y: center[1],

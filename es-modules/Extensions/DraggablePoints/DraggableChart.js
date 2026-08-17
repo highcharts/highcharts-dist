@@ -11,8 +11,7 @@
  *
  * */
 'use strict';
-import A from '../../Core/Animation/AnimationUtilities.js';
-const { animObject } = A;
+import { animObject } from '../../Core/Animation/AnimationUtilities.js';
 import DDU from './DragDropUtilities.js';
 const { addEvents, countProps, getFirstProp, getNormalizedEvent } = DDU;
 import DragDropDefaults from './DragDropDefaults.js';

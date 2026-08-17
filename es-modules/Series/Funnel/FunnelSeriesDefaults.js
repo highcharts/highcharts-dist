@@ -106,7 +106,19 @@ const FunnelSeriesDefaults = {
      * @ignore-option
      */
     size: true,
+    /**
+     * @declare Highcharts.SeriesFunnelDataLabelsOptionsObject
+     * @extends plotOptions.pie.dataLabels
+     */
     dataLabels: {
+        /**
+         * Whether to render the data label inside the funnel item instead of
+         * outside, connected by a connector line.
+         *
+         * @type      {boolean}
+         * @default   false
+         * @apioption plotOptions.funnel.dataLabels.inside
+         */
         connectorWidth: 1,
         verticalAlign: 'middle'
     },

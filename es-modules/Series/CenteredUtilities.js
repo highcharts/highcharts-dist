@@ -14,7 +14,7 @@ import H from '../Core/Globals.js';
 const { deg2rad } = H;
 import { fireEvent, isNumber, pick, relativeLength } from '../Shared/Utilities.js';
 /**
- * @private
+ * @internal
  */
 var CenteredUtilities;
 (function (CenteredUtilities) {
@@ -32,7 +32,7 @@ var CenteredUtilities;
      * Get the center of the pie based on the size and center options relative
      * to the plot area. Borrowed by the polar and gauge series types.
      *
-     * @private
+     * @internal
      * @function Highcharts.CenteredSeriesMixin.getCenter
      */
     function getCenter() {
@@ -77,7 +77,7 @@ var CenteredUtilities;
      * GetStartAndEndRadians - Calculates start and end angles in radians.
      * Used in series types such as pie and sunburst.
      *
-     * @private
+     * @internal
      * @function Highcharts.CenteredSeriesMixin.getStartAndEndRadians
      *
      * @param {number} [start]
@@ -109,6 +109,7 @@ var CenteredUtilities;
  *  Default Export
  *
  * */
+/** @internal */
 export default CenteredUtilities;
 /* *
  *
@@ -116,7 +117,7 @@ export default CenteredUtilities;
  *
  * */
 /**
- * @private
+ * @internal
  * @interface Highcharts.RadianAngles
  */ /**
 * @name Highcharts.RadianAngles#end

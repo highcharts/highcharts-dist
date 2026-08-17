@@ -12,8 +12,7 @@
  *  horizontally on mobile devices. Supports left and right side axes.
  */
 'use strict';
-import A from '../Core/Animation/AnimationUtilities.js';
-const { stop } = A;
+import { stop } from '../Core/Animation/AnimationUtilities.js';
 import H from '../Core/Globals.js';
 const { composed } = H;
 import SVGRenderer from '../Core/Renderer/SVG/SVGRenderer.js';
@@ -335,6 +334,13 @@ ScrollablePlotArea.fixedSelectors = [
  * Since v7.1.2, a scrollable plot area can be defined for either horizontal or
  * vertical scrolling, depending on whether the `minWidth` or `minHeight`
  * option is set.
+ *
+ * **Note:** Because native browser scrollbars are used, they may
+ * overlap with fixed chart elements such as credits or the chart
+ * border. To avoid this collision, it is recommended to manually add
+ * extra space to the corresponding side using `chart.spacingBottom`
+ * (for horizontal scrollbars) or `chart.spacingRight` (for vertical
+ * scrollbars).
  *
  * @sample highcharts/chart/scrollable-plotarea
  *         Scrollable plot area

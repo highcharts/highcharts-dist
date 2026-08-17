@@ -22,7 +22,7 @@ import { clamp, merge, pick } from '../../Shared/Utilities.js';
 /**
  * The ColumnPyramidSeries class
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.columnpyramid
  *
@@ -36,7 +36,7 @@ class ColumnPyramidSeries extends ColumnSeries {
      * */
     /**
      * Overrides the column translate method
-     * @private
+     * @internal
      */
     translate() {
         const series = this, chart = series.chart, options = series.options, dense = series.dense =
@@ -177,4 +177,5 @@ SeriesRegistry.registerSeriesType('columnpyramid', ColumnPyramidSeries);
  *  Default Export
  *
  * */
+/** @internal */
 export default ColumnPyramidSeries;

@@ -12,7 +12,7 @@
  *
  * */
 /**
- * @private
+ * @internal
  * @todo
  * - Check update, remove etc.
  * - Custom icons like persons, carts etc. Either as images, font icons or
@@ -29,7 +29,7 @@ import { extend, isNumber, merge, pick } from '../../Shared/Utilities.js';
  *
  * */
 /**
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.dotplot
  *
@@ -136,4 +136,5 @@ SeriesRegistry.registerSeriesType('dotplot', DotPlotSeries);
  *  Default Export
  *
  * */
+/** @internal */
 export default DotPlotSeries;

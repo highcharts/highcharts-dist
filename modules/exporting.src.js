@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0 (2026-06-11)
+ * @license Highcharts JS v13.0.1 (2026-08-17)
  * @module highcharts/modules/exporting
  * @requires highcharts
  *
@@ -26,41 +26,41 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 660:
-/***/ ((module) => {
+/***/ 660
+(module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__660__;
 
-/***/ }),
+/***/ },
 
-/***/ 944:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
-
-/***/ }),
-
-/***/ 960:
-/***/ ((module) => {
+/***/ 960
+(module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__960__;
 
-/***/ })
+/***/ },
+
+/***/ 944
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
+
+/***/ }
 
 /******/ 	});
 /************************************************************************/
 /******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
+/******/ 	const __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
 /******/ 		// Check if module is in cache
-/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		const cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
 /******/ 			return cachedModule.exports;
 /******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 		const module = __webpack_module_cache__[moduleId] = {
 /******/ 			// no module.id needed
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
@@ -78,7 +78,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__960__;
 /******/ 	(() => {
 /******/ 		// getDefaultExport function for compatibility with non-harmony modules
 /******/ 		__webpack_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
+/******/ 			const getter = module && module.__esModule ?
 /******/ 				() => (module['default']) :
 /******/ 				() => (module);
 /******/ 			__webpack_require__.d(getter, { a: getter });
@@ -88,11 +88,26 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__960__;
 /******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
+/******/ 		// define getter/value functions for harmony exports
 /******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 			if(Array.isArray(definition)) {
+/******/ 				var i = 0;
+/******/ 				while(i < definition.length) {
+/******/ 					var key = definition[i++];
+/******/ 					var binding = definition[i++];
+/******/ 					if(!__webpack_require__.o(exports, key)) {
+/******/ 						if(binding === 0) {
+/******/ 							Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 						} else {
+/******/ 							Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 						}
+/******/ 					} else if(binding === 0) { i++; }
+/******/ 				}
+/******/ 			} else {
+/******/ 				for(var key in definition) {
+/******/ 					if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 					}
 /******/ 				}
 /******/ 			}
 /******/ 		};
@@ -104,7 +119,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__960__;
 /******/ 	})();
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
+let __webpack_exports__ = {};
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
@@ -406,12 +421,12 @@ function getBlobFromContent(content, type) {
  *
  * */
 /** @internal */
-const DownloadURL = {
+const DownloadURL = (/* unused pure expression or super */ null && ({
     dataURLtoBlob,
     downloadURL,
     getBlobFromContent,
     getScript
-};
+}));
 /** @internal */
 /* harmony default export */ const Shared_DownloadURL = ((/* unused pure expression or super */ null && (DownloadURL)));
 
@@ -1226,6 +1241,38 @@ const navigation = {
              * Padding for the button.
              */
             padding: 5,
+            /**
+             * Tri-state button styles.
+             *
+             * @sample highcharts/navigation/buttonoptions-theme/
+             *         Theming the buttons
+             *
+             * @apioption navigation.buttonOptions.theme.states
+             */
+            /**
+             * SVG attributes for the disabled state of the button.
+             *
+             * @type      {Highcharts.SVGAttributes}
+             * @apioption navigation.buttonOptions.theme.states.disabled
+             */
+            /**
+             * SVG attributes for the hovered state of the button.
+             *
+             * @type      {Highcharts.SVGAttributes}
+             * @apioption navigation.buttonOptions.theme.states.hover
+             */
+            /**
+             * SVG attributes for the selected state of the button.
+             *
+             * @type      {Highcharts.SVGAttributes}
+             * @apioption navigation.buttonOptions.theme.states.select
+             */
+            /**
+             * CSS styling for the button's text or symbol.
+             *
+             * @type      {Highcharts.CSSObject}
+             * @apioption navigation.buttonOptions.theme.style
+             */
             /**
              * Default stroke for the buttons.
              *
@@ -2152,8 +2199,8 @@ class Exporting {
     }
     /** @internal */
     /**
-     * Collects all unique font family names used inline
-     * within <text> and <tspan> elements of an SVG by inspecting
+     * Collects all unique font family names used inline within the root
+     * SVG element and its <text> and <tspan> elements by inspecting
      * their style attributes and font-family attributes.
      *
      * @param {SVGSVGElement} svg
@@ -2162,8 +2209,11 @@ class Exporting {
      * The set to store and accumulate unique font family names.
      */
     static collectSVGInlineFonts(svg, usedFontFamilies) {
-        const textNodes = svg.querySelectorAll('text, tspan');
-        for (const textNode of Array.from(textNodes)) {
+        // Include the root SVG element itself, since the chart-wide
+        // `chart.style.fontFamily` is applied there rather than on the
+        // individual text nodes (#24722).
+        const nodes = [svg, ...Array.from(svg.querySelectorAll('text, tspan'))];
+        for (const textNode of nodes) {
             const styleAttr = textNode.getAttribute('style') || '';
             const inlineFontFamily = textNode.getAttribute('font-family') || '';
             if (styleAttr.indexOf('font-family') > -1) {
@@ -2186,18 +2236,6 @@ class Exporting {
                 return;
             }
             visited.add(href);
-            try {
-                const sheetOrigin = new URL(href, Exporting_doc.baseURI).origin;
-                if (sheetOrigin !== Exporting_win.location.origin) {
-                    // We skip all cross-origin stylesheets on purpose.
-                    // This prevents DOM SecurityErrors and unhandled network
-                    // rejections when the browser blocks cssRules access.
-                    return;
-                }
-            }
-            catch {
-                // URL parsing failed, proceed to try/catch
-            }
         }
         try {
             for (const rule of Array.from(sheet.cssRules)) {
@@ -2404,6 +2442,12 @@ class Exporting {
     static sanitizeSVG(svg, 
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     options) {
+        // Remove any HTML added to the container after the SVG, like the
+        // Stock Tools GUI wrapper (#894, #9087, #24754)
+        const split = svg.lastIndexOf('</svg>');
+        if (split > -1) {
+            svg = svg.substr(0, split + 6);
+        }
         svg = svg
             // Some tags needs to be closed in xhtml (#13726)
             .replace(/(<(?:img|br).*?(?=\>))>/g, '$1 />')
@@ -3164,6 +3208,7 @@ class Exporting {
      * The SVG representation of the rendered chart.
      *
      * @emits Highcharts.Chart#event:getSVG
+     * @emits Highcharts.Chart#event:afterGetSVG
      *
      * @requires modules/exporting
      */
@@ -3282,11 +3327,12 @@ class Exporting {
             if (exporting?.options.applyStyleSheets) {
                 this.applyShadowDOMStyles(chartCopy);
             }
+            (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.fireEvent)(chart, 'getSVG', { chartCopy });
             // Get the SVG from the container's innerHTML
             svg = exporting?.getChartHTML(chart.styledMode ||
                 options?.exporting?.applyStyleSheets) || '';
-            (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.fireEvent)(chart, 'getSVG', { chartCopy: chartCopy });
             svg = Exporting.sanitizeSVG(svg, options);
+            (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.fireEvent)(chart, 'afterGetSVG', { chartCopy, svg });
             // Free up memory
             options = void 0;
             chartCopy.destroy();
@@ -3339,11 +3385,11 @@ class Exporting {
         // getComputedStyle sees them
         rootNode?.querySelectorAll('style').forEach((style) => {
             const clonedStyle = style.cloneNode(true);
-            chartCopy.container.appendChild(clonedStyle);
+            chartCopy.renderer.defs.element.appendChild(clonedStyle);
             // Store for the later removal
             shadowStyles.push(clonedStyle);
         });
-        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(chart, 'getSVG', () => {
+        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(chart, 'afterGetSVG', () => {
             // Remove temporary Shadow DOM styles
             shadowStyles.forEach((style) => {
                 style.remove();
@@ -3610,8 +3656,9 @@ class Exporting {
             await this.fallbackToServer(exportingOptions, new Error('Image type not supported for this chart/browser.'));
             return;
         }
-        // Hook into getSVG to get a copy of the chart copy's container (#8273)
-        const unbindGetSVG = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(chart, 'getSVG', (e) => {
+        // Hook into afterGetSVG to get a copy of the chart copy's container
+        // (#8273)
+        const unbindGetSVG = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(chart, 'afterGetSVG', (e) => {
             chartCopyOptions = e.chartCopy.options;
             chartCopyContainer =
                 e.chartCopy.container.cloneNode(true);

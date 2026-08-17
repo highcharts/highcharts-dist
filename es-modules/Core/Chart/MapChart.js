@@ -124,11 +124,6 @@ class MapChart extends Chart {
     /**
      * A wrapper for the chart's update function that will additionally run
      * recommendMapView on chart.map change.
-     *
-     * @function Highcharts.MapChart#update
-     *
-     * @param {Highcharts.Options} options
-     *        The chart options.
      */
     update(options) {
         // Calculate and set the recommended map view if map option is set

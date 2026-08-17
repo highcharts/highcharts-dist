@@ -151,6 +151,9 @@ var ParallelCoordinates;
      */
     function onChartUpdate(e) {
         const chart = this, options = e.options;
+        if (e.hasChanged === false) {
+            return;
+        }
         if (options.chart) {
             if (defined(options.chart.parallelCoordinates)) {
                 chart.hasParallelCoordinates =

@@ -82,9 +82,21 @@ const NetworkgraphSeriesDefaults = {
          */
         inactive: {
             /**
+             * Deprecated. Use
+             * [link.opacity](#series.networkgraph.states.inactive.link.opacity)
+             * instead.
+             *
              * Opacity of inactive links.
+             *
+             * @deprecated 13.0.1
              */
             linkOpacity: 0.3,
+            /**
+             * @extends plotOptions.networkgraph.link
+             */
+            link: {
+                opacity: 0.3
+            },
             /**
              * Animation when not hovering over the node.
              *

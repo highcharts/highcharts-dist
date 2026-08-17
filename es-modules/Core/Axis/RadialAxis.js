@@ -11,12 +11,12 @@
  * */
 'use strict';
 import RadialAxisDefaults from './RadialAxisDefaults.js';
-import { optionsToObject } from '../../Extensions/BorderRadius.js';
+import { borderRadiusObject } from '../../Extensions/BorderRadius.js';
 import D from '../Defaults.js';
 const { defaultOptions } = D;
 import H from '../Globals.js';
 const { composed, noop } = H;
-import { addEvent, correctFloat, defined, extend, fireEvent, isNumber, isObject, merge, pick, pushUnique, relativeLength, splat, wrap } from '../../Shared/Utilities.js';
+import { addEvent, clamp, correctFloat, defined, extend, fireEvent, isNumber, isObject, merge, pick, pushUnique, relativeLength, splat, wrap } from '../../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -238,7 +238,7 @@ var RadialAxis;
                 return r;
             }
             return radius;
-        }, center = this.center, { endAngleRad, startAngleRad } = this, borderRadius = optionsToObject(options.borderRadius ??
+        }, center = this.center, { endAngleRad, startAngleRad } = this, borderRadius = borderRadiusObject(options.borderRadius ??
             this.pane.options.borderRadius), fullRadius = center[2] / 2, offset = Math.min(this.offset || 0, 0), left = this.left || 0, top = this.top || 0, percentRegex = /%$/, isCircular = this.isCircular, // X axis in a polar chart
         trueBands = this.options.plotBands || [], index = trueBands.indexOf(options);
         let start, end, angle, xOnPerimeter, open, path, outerRadius = pick(radiusToPixels(options.outerRadius), fullRadius), innerRadius = radiusToPixels(options.innerRadius), thickness = radiusToPixels(options.thickness), brStart = true, brEnd = true;
@@ -374,17 +374,12 @@ var RadialAxis;
             // Concentric circles
         }
         else {
-            // Pick the right values depending if it is grid line or crosshair
-            let transValue = this.translate(value);
-            // This is required in case when xAxis is non-circular to
-            // prevent grid lines (or crosshairs, if enabled) from
-            // rendering above the center after they supposed to be
-            // displayed below the center point
-            if (transValue) {
-                if (transValue < 0 || transValue > height) {
-                    transValue = 0;
-                }
-            }
+            // Pick the right values depending if it is grid line or crosshair.
+            // Clamp is required in case when xAxis is non-circular to prevent
+            // grid lines (or crosshairs, if enabled) from rendering above the
+            // center after they supposed to be displayed below the center
+            // point.
+            let transValue = clamp(this.translate(value), 0, height);
             if (this.options.gridLineInterpolation === 'circle') {
                 // A value of 0 is in the center, so it won't be
                 // visible, but draw it anyway for update and animation

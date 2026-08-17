@@ -10,8 +10,7 @@
  *
  * */
 'use strict';
-import A from '../../Core/Animation/AnimationUtilities.js';
-const { getDeferredAnimation } = A;
+import { getDeferredAnimation } from '../../Core/Animation/AnimationUtilities.js';
 import AnnotationChart from './AnnotationChart.js';
 import AnnotationDefaults from './AnnotationDefaults.js';
 import ControllableRect from './Controllables/ControllableRect.js';

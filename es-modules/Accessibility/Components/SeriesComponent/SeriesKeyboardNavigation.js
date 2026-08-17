@@ -74,15 +74,19 @@ function isSkipSeries(series) {
  * @private
  */
 function isSkipPoint(point) {
-    const series = point.series, nullInteraction = series.options.nullInteraction, pointOptions = point.options, pointA11yOptions = pointOptions.accessibility, a11yOptions = series.chart.options.accessibility, pointA11yDisabled = pointA11yOptions?.enabled === false;
-    return a11yOptions
+    const series = point.series, nullInteraction = series.options.nullInteraction, pointOptions = point.options, pointA11yOptions = pointOptions.accessibility, a11yOptions = series.chart.options.accessibility, pointA11yDisabled = pointA11yOptions?.enabled === false, 
+    // Whether to skip null points. If the user did not set this
+    // option, use the opposite of nullInteraction as the default
+    // (#24650).
+    skipNullPoints = a11yOptions
         .keyboardNavigation
         .seriesNavigation
-        .skipNullPoints ?? (!(!point.isNull || nullInteraction) &&
+        .skipNullPoints ?? !nullInteraction;
+    return point.isNull && skipNullPoints ||
         point.visible === false ||
         point.isInside === false ||
         pointA11yDisabled ||
-        isSkipSeries(series));
+        isSkipSeries(series);
 }
 /**
  * Get the first point that is not a skip point in this series.

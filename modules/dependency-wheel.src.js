@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0 (2026-06-11)
+ * @license Highcharts JS v13.0.1 (2026-08-17)
  * @module highcharts/modules/dependency-wheel
  * @requires highcharts
  * @requires highcharts/modules/sankey
@@ -27,41 +27,41 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 28:
-/***/ ((module) => {
+/***/ 28
+(module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__28__;
 
-/***/ }),
+/***/ },
 
-/***/ 512:
-/***/ ((module) => {
+/***/ 512
+(module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
 
-/***/ }),
+/***/ },
 
-/***/ 944:
-/***/ ((module) => {
+/***/ 944
+(module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 
-/***/ })
+/***/ }
 
 /******/ 	});
 /************************************************************************/
 /******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
+/******/ 	const __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
 /******/ 		// Check if module is in cache
-/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		const cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
 /******/ 			return cachedModule.exports;
 /******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 		const module = __webpack_module_cache__[moduleId] = {
 /******/ 			// no module.id needed
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
@@ -79,7 +79,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	(() => {
 /******/ 		// getDefaultExport function for compatibility with non-harmony modules
 /******/ 		__webpack_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
+/******/ 			const getter = module && module.__esModule ?
 /******/ 				() => (module['default']) :
 /******/ 				() => (module);
 /******/ 			__webpack_require__.d(getter, { a: getter });
@@ -89,11 +89,26 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
+/******/ 		// define getter/value functions for harmony exports
 /******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 			if(Array.isArray(definition)) {
+/******/ 				var i = 0;
+/******/ 				while(i < definition.length) {
+/******/ 					var key = definition[i++];
+/******/ 					var binding = definition[i++];
+/******/ 					if(!__webpack_require__.o(exports, key)) {
+/******/ 						if(binding === 0) {
+/******/ 							Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 						} else {
+/******/ 							Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 						}
+/******/ 					} else if(binding === 0) { i++; }
+/******/ 				}
+/******/ 			} else {
+/******/ 				for(var key in definition) {
+/******/ 					if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 					}
 /******/ 				}
 /******/ 			}
 /******/ 		};
@@ -105,7 +120,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	})();
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
+let __webpack_exports__ = {};
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
@@ -115,6 +130,401 @@ __webpack_require__.d(__webpack_exports__, {
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts"],"commonjs":["highcharts"],"commonjs2":["highcharts"],"root":["Highcharts"]}
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_ = __webpack_require__(944);
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default = /*#__PURE__*/__webpack_require__.n(highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_);
+;// ./code/es-modules/Extensions/BorderRadius.js
+/* unused harmony import specifier */ var relativeLength;
+/* unused harmony import specifier */ var isObject;
+/* unused harmony import specifier */ var extend;
+/* unused harmony import specifier */ var addEvent;
+/* *
+ *
+ *  Highcharts Border Radius module
+ *
+ *  Author: Torstein Hønsi
+ *
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
+ *
+ *
+ * */
+
+
+const { defaultOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+
+const { noop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+
+/* *
+ *
+ *  Constants
+ *
+ * */
+const defaultBorderRadiusOptions = {
+    radius: 0,
+    scope: 'stack',
+    where: void 0
+};
+/* *
+ *
+ *  Variables
+ *
+ * */
+let oldArc = (/* unused pure expression or super */ null && (noop));
+let oldRoundedRect = (/* unused pure expression or super */ null && (noop));
+/* *
+ *
+ *  Functions
+ *
+ * */
+/** @internal */
+function applyBorderRadius(path, i, r) {
+    const a = path[i];
+    let b = path[i + 1];
+    if (b[0] === 'Z') {
+        b = path[0];
+    }
+    let line, arc, fromLineToArc;
+    // From straight line to arc
+    if ((a[0] === 'M' || a[0] === 'L') && b[0] === 'A') {
+        line = a;
+        arc = b;
+        fromLineToArc = true;
+        // From arc to straight line
+    }
+    else if (a[0] === 'A' && (b[0] === 'M' || b[0] === 'L')) {
+        line = b;
+        arc = a;
+    }
+    if (line && arc && arc.params) {
+        const bigR = arc[1], 
+        // In our use cases, outer pie slice arcs are clockwise and inner
+        // arcs (donut/sunburst etc) are anti-clockwise
+        clockwise = arc[5], params = arc.params, { start, end, cx, cy } = params;
+        // Some geometric constants
+        const relativeR = clockwise ? (bigR - r) : (bigR + r), 
+        // The angle, on the big arc, that the border radius arc takes up
+        angleOfBorderRadius = relativeR ? Math.asin(r / relativeR) : 0, angleOffset = clockwise ?
+            angleOfBorderRadius :
+            -angleOfBorderRadius, 
+        // The distance along the radius of the big arc to the starting
+        // point of the small border radius arc
+        distanceBigCenterToStartArc = (Math.cos(angleOfBorderRadius) *
+            relativeR);
+        // From line to arc
+        if (fromLineToArc) {
+            // Update the cache
+            params.start = start + angleOffset;
+            // First move to the start position at the radial line. We want to
+            // start one borderRadius closer to the center.
+            line[1] = cx + distanceBigCenterToStartArc * Math.cos(start);
+            line[2] = cy + distanceBigCenterToStartArc * Math.sin(start);
+            // Now draw an arc towards the point where the small circle touches
+            // the great circle.
+            path.splice(i + 1, 0, [
+                'A',
+                r,
+                r,
+                0, // Slanting,
+                0, // Long arc
+                1, // Clockwise
+                cx + bigR * Math.cos(params.start),
+                cy + bigR * Math.sin(params.start)
+            ]);
+            // From arc to line
+        }
+        else {
+            // Update the cache
+            params.end = end - angleOffset;
+            // End the big arc a bit earlier
+            arc[6] = cx + bigR * Math.cos(params.end);
+            arc[7] = cy + bigR * Math.sin(params.end);
+            // Draw a small arc towards a point on the end angle, but one
+            // borderRadius closer to the center relative to the perimeter.
+            path.splice(i + 1, 0, [
+                'A',
+                r,
+                r,
+                0,
+                0,
+                1,
+                cx + distanceBigCenterToStartArc * Math.cos(end),
+                cy + distanceBigCenterToStartArc * Math.sin(end)
+            ]);
+        }
+        // Long or short arc must be reconsidered because we have modified the
+        // start and end points
+        arc[4] = Math.abs(params.end - params.start) < Math.PI ? 0 : 1;
+    }
+}
+/**
+ * Extend arc with borderRadius.
+ * @internal
+ */
+function arc(x, y, w, h, options = {}) {
+    const path = oldArc(x, y, w, h, options), { brStart = true, brEnd = true, innerR = 0, r = w, start = 0, end = 0 } = options;
+    if (options.open || !options.borderRadius) {
+        return path;
+    }
+    const alpha = end - start, sinHalfAlpha = Math.sin(alpha / 2), borderRadius = Math.max(Math.min(relativeLength(borderRadiusObject(options.borderRadius).radius, r - innerR), 
+    // Cap to half the sector radius
+    (r - innerR) / 2, 
+    // For smaller pie slices, cap to the largest small circle that
+    // can be fitted within the sector
+    (r * sinHalfAlpha) / (1 + sinHalfAlpha)), 0), 
+    // For the inner radius, we need an extra cap because the inner arc
+    // is shorter than the outer arc
+    innerBorderRadius = Math.min(borderRadius, 2 * (alpha / Math.PI) * innerR);
+    // Apply turn-by-turn border radius. Start at the end since we're
+    // splicing in arc segments.
+    let i = path.length - 1;
+    while (i--) {
+        if ((!brStart && (i === 0 || i === 3)) ||
+            (!brEnd && (i === 1 || i === 2))) {
+            continue;
+        }
+        applyBorderRadius(path, i, i > 1 ? innerBorderRadius : borderRadius);
+    }
+    return path;
+}
+/** @internal */
+function seriesOnAfterColumnTranslate() {
+    if (this.options.borderRadius &&
+        !(this.chart.is3d && this.chart.is3d())) {
+        const { options, yAxis } = this, percent = options.stacking === 'percent', seriesDefault = defaultOptions.plotOptions?.[this.type]
+            ?.borderRadius, borderRadius = borderRadiusObject(options.borderRadius, isObject(seriesDefault) ? seriesDefault : {}), reversed = yAxis.options.reversed;
+        for (const point of this.points) {
+            const { shapeArgs } = point;
+            if (point.shapeType === 'roundedRect' && shapeArgs) {
+                const { width = 0, height = 0, y = 0 } = shapeArgs;
+                let brBoxY = y, brBoxHeight = height;
+                // It would be nice to refactor StackItem.getStackBox/
+                // setOffset so that we could get a reliable box out of
+                // it. Currently it is close if we remove the label
+                // offset, but we still need to run crispCol and also
+                // flip it if inverted, so atm it is simpler to do it
+                // like the below.
+                if (borderRadius.scope === 'stack' &&
+                    point.stackTotal) {
+                    const stackEnd = yAxis.translate(percent ? 100 : point.stackTotal, false, true, false, true), stackThreshold = yAxis.translate(options.threshold || 0, false, true, false, true), box = this.crispCol(0, Math.min(stackEnd, stackThreshold), 0, Math.abs(stackEnd - stackThreshold));
+                    brBoxY = box.y;
+                    brBoxHeight = box.height;
+                }
+                const flip = (point.negative ? -1 : 1) *
+                    (reversed ? -1 : 1) === -1;
+                // Handle the where option
+                let where = borderRadius.where;
+                // Waterfall, hanging columns should have rounding on
+                // all sides
+                if (!where &&
+                    this.is('waterfall') &&
+                    Math.abs((point.yBottom || 0) -
+                        (this.translatedThreshold || 0)) > this.borderWidth) {
+                    where = 'all';
+                }
+                if (!where) {
+                    where = 'end';
+                }
+                // Get the radius
+                const r = Math.min(relativeLength(borderRadius.radius, width), width / 2, 
+                // Cap to the height, but not if where is `end`
+                where === 'all' ? brBoxHeight / 2 : Infinity) || 0;
+                // If the `where` option is 'end', cut off the
+                // rectangles by making the border-radius box one r
+                // greater, so that the imaginary radius falls outside
+                // the rectangle.
+                if (where === 'end') {
+                    if (flip) {
+                        brBoxY -= r;
+                        brBoxHeight += r;
+                    }
+                    else {
+                        brBoxHeight += r;
+                    }
+                }
+                extend(shapeArgs, { brBoxHeight, brBoxY, r });
+            }
+        }
+    }
+}
+/** @internal */
+function composeBorderRadius(SeriesClass, SVGElementClass, SVGRendererClass) {
+    const PieSeriesClass = SeriesClass.types.pie;
+    if (!SVGElementClass.symbolCustomAttribs.includes('borderRadius')) {
+        const symbols = SVGRendererClass.prototype.symbols;
+        addEvent(SeriesClass, 'afterColumnTranslate', seriesOnAfterColumnTranslate, {
+            // After columnrange and polar column modifications
+            order: 9
+        });
+        addEvent(PieSeriesClass, 'afterTranslate', pieSeriesOnAfterTranslate);
+        SVGElementClass.symbolCustomAttribs.push('borderRadius', 'brBoxHeight', 'brBoxY', 'brEnd', 'brStart');
+        oldArc = symbols.arc;
+        oldRoundedRect = symbols.roundedRect;
+        symbols.arc = arc;
+        symbols.roundedRect = roundedRect;
+    }
+}
+/**
+ * Utility function to get the full border radius options object, from a simple
+ * number or a partial options object.
+ * @internal
+ */
+function borderRadiusObject(options, seriesBROptions) {
+    if (!(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isObject)(options)) {
+        options = { radius: options || 0 };
+    }
+    return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(defaultBorderRadiusOptions, seriesBROptions, options);
+}
+/** @internal */
+function pieSeriesOnAfterTranslate() {
+    const borderRadius = borderRadiusObject(this.options.borderRadius);
+    for (const point of this.points) {
+        const shapeArgs = point.shapeArgs;
+        if (shapeArgs) {
+            shapeArgs.borderRadius = relativeLength(borderRadius.radius, (shapeArgs.r || 0) - ((shapeArgs.innerR) || 0));
+        }
+    }
+}
+/**
+ * Extend roundedRect with individual cutting through rOffset.
+ * @internal
+ */
+function roundedRect(x, y, width, height, options = {}) {
+    const path = oldRoundedRect(x, y, width, height, options), { r = 0, brBoxHeight = height, brBoxY = y } = options, brOffsetTop = y - brBoxY, brOffsetBtm = (brBoxY + brBoxHeight) - (y + height), 
+    // When the distance to the border-radius box is greater than the r
+    // itself, it means no border radius. The -0.1 accounts for float
+    // rounding errors.
+    rTop = (brOffsetTop - r) > -0.1 ? 0 : r, rBtm = (brOffsetBtm - r) > -0.1 ? 0 : r, cutTop = Math.max(rTop && brOffsetTop, 0), cutBtm = Math.max(rBtm && brOffsetBtm, 0);
+    /*
+
+    The naming of control points:
+
+      / a -------- b \
+     /                \
+    h                  c
+    |                  |
+    |                  |
+    |                  |
+    g                  d
+     \                /
+      \ f -------- e /
+
+    */
+    const a = [x + rTop, y], b = [x + width - rTop, y], c = [x + width, y + rTop], d = [
+        x + width, y + height - rBtm
+    ], e = [
+        x + width - rBtm,
+        y + height
+    ], f = [x + rBtm, y + height], g = [x, y + height - rBtm], h = [x, y + rTop];
+    const applyPythagoras = (r, altitude) => Math.sqrt(Math.pow(r, 2) - Math.pow(altitude, 2));
+    // Inside stacks, cut off part of the top
+    if (cutTop) {
+        const base = applyPythagoras(rTop, rTop - cutTop);
+        a[0] -= base;
+        b[0] += base;
+        c[1] = h[1] = y + rTop - cutTop;
+    }
+    // Column is lower than the radius. Cut off bottom inside the top
+    // radius.
+    if (height < rTop - cutTop) {
+        const base = applyPythagoras(rTop, rTop - cutTop - height);
+        c[0] = d[0] = x + width - rTop + base;
+        e[0] = Math.min(c[0], e[0]);
+        f[0] = Math.max(d[0], f[0]);
+        g[0] = h[0] = x + rTop - base;
+        c[1] = h[1] = y + height;
+    }
+    // Inside stacks, cut off part of the bottom
+    if (cutBtm) {
+        const base = applyPythagoras(rBtm, rBtm - cutBtm);
+        e[0] += base;
+        f[0] -= base;
+        d[1] = g[1] = y + height - rBtm + cutBtm;
+    }
+    // Cut off top inside the bottom radius
+    if (height < rBtm - cutBtm) {
+        const base = applyPythagoras(rBtm, rBtm - cutBtm - height);
+        c[0] = d[0] = x + width - rBtm + base;
+        b[0] = Math.min(c[0], b[0]);
+        a[0] = Math.max(d[0], a[0]);
+        g[0] = h[0] = x + rBtm - base;
+        d[1] = g[1] = y;
+    }
+    // Preserve the box for data labels
+    path.length = 0;
+    path.push(['M', ...a], 
+    // Top side
+    ['L', ...b], 
+    // Top right corner
+    ['A', rTop, rTop, 0, 0, 1, ...c], 
+    // Right side
+    ['L', ...d], 
+    // Bottom right corner
+    ['A', rBtm, rBtm, 0, 0, 1, ...e], 
+    // Bottom side
+    ['L', ...f], 
+    // Bottom left corner
+    ['A', rBtm, rBtm, 0, 0, 1, ...g], 
+    // Left side
+    ['L', ...h], 
+    // Top left corner
+    ['A', rTop, rTop, 0, 0, 1, ...a], ['Z']);
+    return path;
+}
+/* *
+ *
+ *  API Declarations
+ *
+ * */
+/**
+ * Detailed options for border radius.
+ *
+ * @sample  {highcharts} highcharts/plotoptions/column-borderradius/
+ *          Rounded columns
+ * @sample  highcharts/plotoptions/series-border-radius
+ *          Column and pie with rounded border
+ *
+ * @interface Highcharts.BorderRadiusOptionsObject
+ */ /**
+* The border radius. A number signifies pixels. A percentage string, like for
+* example `50%`, signifies a relative size. For columns this is relative to the
+* column width, for pies it is relative to the radius and the inner radius.
+*
+* @sample  {highcharts} highcharts/plotoptions/column-borderradius/
+*          Rounded columns
+* @sample  highcharts/plotoptions/series-border-radius
+*          Column and pie with rounded border
+*
+* @name Highcharts.BorderRadiusOptionsObject#radius
+* @type {string|number|undefined}
+*/ /**
+* The scope of the rounding for column charts or plot bands. In a stacked
+* column chart, the value `point` means each single point will get rounded
+* corners. The value `stack` means the rounding will apply to the full
+* stack, so that only points close to the top or bottom will receive
+* rounding.
+*
+* Similarly, for plot bands, the `individual` value means each plot band
+* will get rounded corners.
+*
+* @sample  {highcharts} highcharts/plotoptions/column-borderradius/
+*          Rounded columns
+*
+* @name Highcharts.BorderRadiusOptionsObject#scope
+* @type {"individual"|"point"|"stack"|undefined}
+*/ /**
+* For column charts, where in the point or stack to apply rounding. The `end`
+* value means only those corners at the point value will be rounded, leaving
+* the corners at the base or threshold unrounded. This is the most intuitive
+* behavior. The `all` value means also the base will be rounded.
+*
+* @sample  {highcharts} highcharts/plotoptions/column-borderradius-where-all
+*          Rounding on all corners
+*
+* @name Highcharts.BorderRadiusOptionsObject#where
+* @type {"all"|"end"|undefined}
+* @default end
+*/
+(''); // Keeps doclets above in JS file
+
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
@@ -141,6 +551,7 @@ const { sankey: { prototype: { pointClass: SankeyPoint } } } = (highcharts_Serie
  *  Class
  *
  * */
+/** @internal */
 class DependencyWheelPoint extends SankeyPoint {
     /* *
      *
@@ -163,7 +574,7 @@ class DependencyWheelPoint extends SankeyPoint {
     }
     /**
      * Return a text path that the data label uses.
-     * @private
+     * @internal
      */
     getDataLabelPath(label) {
         const point = this, renderer = point.series.chart.renderer, shapeArgs = point.shapeArgs, upperHalf = point.angle < 0 || point.angle > Math.PI, start = shapeArgs.start || 0, end = shapeArgs.end || 0;
@@ -209,6 +620,7 @@ class DependencyWheelPoint extends SankeyPoint {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const DependencyWheel_DependencyWheelPoint = (DependencyWheelPoint);
 
 ;// ./code/es-modules/Series/DependencyWheel/DependencyWheelSeriesDefaults.js
@@ -945,7 +1357,7 @@ function composeTextPath(SVGElementClass) {
  * */
 
 
-const { animObject } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+
 
 
 
@@ -963,7 +1375,7 @@ composeTextPath((highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_
  *
  * */
 /**
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.dependencywheel
  *
@@ -978,7 +1390,7 @@ class DependencyWheelSeries extends SankeySeries {
     animate(init) {
         const series = this;
         if (!init) {
-            const duration = animObject(series.options.animation).duration, step = (duration / 2) / series.nodes.length;
+            const duration = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.animObject)(series.options.animation).duration, step = (duration / 2) / series.nodes.length;
             let i = 0;
             for (const point of series.nodes) {
                 const graphic = point.graphic;
@@ -1020,7 +1432,7 @@ class DependencyWheelSeries extends SankeySeries {
         };
         /**
          * Get the offset in weight values of a point/link.
-         * @private
+         * @internal
          */
         node.offset = (point) => {
             const otherNode = (link) => (link.fromNode === node ?
@@ -1054,7 +1466,7 @@ class DependencyWheelSeries extends SankeySeries {
     }
     /**
      * Dependency wheel has only one column, it runs along the perimeter.
-     * @private
+     * @internal
      */
     createNodeColumns() {
         const series = this, columns = [Sankey_SankeyColumnComposition.compose([], series)];
@@ -1066,7 +1478,7 @@ class DependencyWheelSeries extends SankeySeries {
     }
     /**
      * Translate from vertical pixels to perimeter.
-     * @private
+     * @internal
      */
     getNodePadding() {
         return this.options.nodePadding / Math.PI;
@@ -1078,8 +1490,7 @@ class DependencyWheelSeries extends SankeySeries {
      */
     translate() {
         const series = this, options = series.options, factor = 2 * Math.PI /
-            (series.chart.plotHeight + series.getNodePadding()), center = series.getCenter(), startAngle = ((options.startAngle || 0) - 90) * DependencyWheelSeries_deg2rad, brOption = options.borderRadius, borderRadius = typeof brOption === 'object' ?
-            brOption.radius : brOption;
+            (series.chart.plotHeight + series.getNodePadding()), center = series.getCenter(), startAngle = ((options.startAngle || 0) - 90) * DependencyWheelSeries_deg2rad, borderRadius = borderRadiusObject(options.borderRadius).radius;
         super.translate();
         for (const node of this.nodeColumns[0]) {
             // Don't render the nodes if sum is 0 #12453
@@ -1207,6 +1618,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const DependencyWheel_DependencyWheelSeries = ((/* unused pure expression or super */ null && (DependencyWheelSeries)));
 
 ;// ./code/es-modules/masters/modules/dependency-wheel.src.js

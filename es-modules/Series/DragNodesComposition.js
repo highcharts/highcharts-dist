@@ -14,14 +14,14 @@
 'use strict';
 import H from '../Core/Globals.js';
 const { composed } = H;
-import { addEvent, pushUnique } from '../Shared/Utilities.js';
+import { addEvent, isObject, pushUnique } from '../Shared/Utilities.js';
 /* *
  *
  *  Functions
  *
  * */
 /**
- * @private
+ * @internal
  */
 function compose(ChartClass) {
     if (pushUnique(composed, 'DragNodes')) {
@@ -30,7 +30,7 @@ function compose(ChartClass) {
 }
 /**
  * Draggable mode:
- * @private
+ * @internal
  */
 function onChartLoad() {
     const chart = this;
@@ -69,7 +69,7 @@ function onChartLoad() {
 /**
  * Mouse down action, initializing drag&drop mode.
  *
- * @private
+ * @internal
  * @param {Highcharts.Point} point
  *        The point that event occurred.
  * @param {Highcharts.PointerEventObject} event
@@ -92,7 +92,7 @@ function onMouseDown(point, event) {
 /**
  * Mouse move action during drag&drop.
  *
- * @private
+ * @internal
  *
  * @param {Highcharts.Point} point
  *        The point that event occurred.
@@ -122,7 +122,7 @@ function onMouseMove(point, event) {
 /**
  * Mouse up action, finalizing drag&drop.
  *
- * @private
+ * @internal
  * @param {Highcharts.Point} point
  *        The point that event occurred.
  */
@@ -145,14 +145,15 @@ function onMouseUp(point) {
 /**
  * Redraw halo on mousemove during the drag&drop action.
  *
- * @private
+ * @internal
  * @param {Highcharts.Point} point
  *        The point that should show halo.
  */
 function redrawHalo(point) {
     if (point && this.halo) {
         this.halo.attr({
-            d: point.haloPath(this.options.states.hover.halo.size)
+            d: point.haloPath(isObject(this.options.states?.hover?.halo) &&
+                this.options.states?.hover?.halo.size || 0)
         });
     }
 }
@@ -161,6 +162,7 @@ function redrawHalo(point) {
  *  Default Export
  *
  * */
+/** @internal */
 const DragNodesComposition = {
     compose,
     onMouseDown,
@@ -168,4 +170,5 @@ const DragNodesComposition = {
     onMouseUp,
     redrawHalo
 };
+/** @internal */
 export default DragNodesComposition;

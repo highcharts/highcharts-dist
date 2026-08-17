@@ -7,9 +7,9 @@ import * as globals from "../globals";
 import * as _Highcharts from "../highcharts";
 declare module "../highcharts" {
     interface BorderRadiusOptionsObject {
-        radius: (number|string);
-        scope: ("individual"|"point"|"stack");
-        where: ("all"|"end");
+        radius?: (number|string);
+        scope?: ("individual"|"point"|"stack");
+        where?: ("all"|"end");
     }
 }
 export default _Highcharts;

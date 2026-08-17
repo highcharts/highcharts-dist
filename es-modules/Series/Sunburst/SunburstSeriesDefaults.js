@@ -125,6 +125,14 @@ const SunburstSeriesDefaults = {
      * @apioption plotOptions.sunburst.levels.level
      */
     /**
+     * Whether the `level` number is absolute, or relative to the currently
+     * visible root. Overrides the series option of the same name for this
+     * level.
+     *
+     * @type      {boolean}
+     * @apioption plotOptions.sunburst.levels.levelIsConstant
+     */
+    /**
      * Can set a `levelSize` on all points which lies on the same level.
      *
      * @type      {Object}

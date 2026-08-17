@@ -62,7 +62,8 @@ class GanttSeries extends XRangeSeries {
         if (columnName === 'x') {
             const startColumn = super.getColumn('start');
             if (startColumn.length) {
-                return startColumn.map((val) => time.parse(val) || 0);
+                return startColumn.map((val) => time.parse(val) ?? NaN // #24849
+                );
             }
         }
         return super.getColumn.apply(this, arguments);

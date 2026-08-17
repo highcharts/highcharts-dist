@@ -33,7 +33,7 @@ import { defined, getStyle, isArray, isNumber, isObject, merge, objectEach, pick
  * This function always relates to a chart, and sets a property on the renderer,
  * so it should be moved to the SVGRenderer.
  */
-function setAnimation(animation, chart) {
+export function setAnimation(animation, chart) {
     chart.renderer.globalAnimation = pick(animation, chart.options.chart.animation, true);
 }
 /**
@@ -72,7 +72,7 @@ export function animObject(animation) {
  * @return {number}
  *        The numeric value.
  */
-function getDeferredAnimation(chart, animation, series) {
+export function getDeferredAnimation(chart, animation, series) {
     const labelAnimation = animObject(animation), s = series ? [series] : chart.series;
     let defer = 0, duration = 0;
     s.forEach((series) => {
@@ -95,6 +95,11 @@ function getDeferredAnimation(chart, animation, series) {
 /**
  * The global animate method, which uses Fx to create individual animators.
  *
+ * @sample highcharts/members/renderer-basic
+ *         SVG elements with animation
+ * @sample highcharts/members/animate
+ *         Animation without an owner element
+ *
  * @function Highcharts.animate
  *
  * @param {Highcharts.HTMLDOMElement|Highcharts.SVGElement} el
@@ -110,14 +115,12 @@ function getDeferredAnimation(chart, animation, series) {
  *
  * @return {void}
  */
-function animate(el, params, opt) {
-    let start, unit = '', end, fx, args;
+export function animate(el, params = { pos: 1 }, opt) {
     if (!isObject(opt)) { // Number or undefined/null
-        args = arguments;
         opt = {
-            duration: args[2],
-            easing: args[3],
-            complete: args[4]
+            duration: arguments[2],
+            easing: arguments[3],
+            complete: arguments[4]
         };
     }
     if (!isNumber(opt.duration)) {
@@ -127,22 +130,23 @@ function animate(el, params, opt) {
         opt.easing :
         (Math[opt.easing] || Math.easeInOutSine);
     opt.curAnim = merge(params);
-    objectEach(params, function (val, prop) {
+    objectEach(params, (val, prop) => {
         // Stop current running animation of this property
-        stop(el, prop);
-        fx = new Fx(el, opt, prop);
-        end = void 0;
-        if (prop === 'd' && isArray(params.d)) {
-            fx.paths = fx.initPath(el, el.pathArray, params.d);
-            fx.toD = params.d;
-            start = 0;
+        if (el) {
+            stop(el, prop);
+        }
+        const fx = new Fx(el, opt, prop), d = params.d;
+        let start = 0, end = void 0, unit = '';
+        if (prop === 'd' && isArray(d)) {
+            fx.paths = fx.initPath(el, el.pathArray, d);
+            fx.toD = d;
             end = 1;
         }
-        else if (el.attr) {
+        else if (el?.attr) {
             start = el.attr(prop);
         }
-        else {
-            start = parseFloat(getStyle(el, prop)) || 0;
+        else if (el) {
+            start = +(getStyle(el, prop) || 0);
             if (prop !== 'opacity') {
                 unit = 'px';
             }
@@ -153,7 +157,10 @@ function animate(el, params, opt) {
         if (typeof end === 'string' && end.match('px')) {
             end = end.replace(/px/g, ''); // #4351
         }
-        fx.run(start, end, unit);
+        // Empty dashstyle animation crashes treemap on hover
+        if (defined(end)) {
+            fx.run(start, end, unit);
+        }
     });
 }
 /**
@@ -177,28 +184,11 @@ function animate(el, params, opt) {
  * improvement in all cases where we stop the animation from .attr. Instead of
  * stopping everything, we can just stop the actual attributes we're setting.
  */
-function stop(el, prop) {
-    let i = Fx.timers.length;
-    // Remove timers related to this element (#4519)
-    while (i--) {
-        if (Fx.timers[i].elem === el && (!prop || prop === Fx.timers[i].prop)) {
-            Fx.timers[i].stopped = true; // #4667
-        }
+export const stop = (el, prop) => Fx.timers.forEach((timer) => {
+    if (timer.elem === el && (!prop || prop === timer.prop)) {
+        timer.stopped = true; // #4667
     }
-}
-const animationExports = {
-    animate,
-    animObject,
-    getDeferredAnimation,
-    setAnimation,
-    stop
-};
-/* *
- *
- *  Default Export
- *
- * */
-export default animationExports;
+});
 /* *
  *
  *  API Options

@@ -16,8 +16,7 @@
  *
  * */
 'use strict';
-import A from '../../Core/Animation/AnimationUtilities.js';
-const { animObject } = A;
+import { animObject } from '../../Core/Animation/AnimationUtilities.js';
 import Color from '../../Core/Color/Color.js';
 const { parse: color } = Color;
 import CU from '../../Core/Geometry/CircleUtilities.js';
@@ -331,11 +330,11 @@ class VennSeries extends ScatterSeries {
      * Returns the calculated attributes.
      */
     pointAttribs(point, state) {
-        const series = this, seriesOptions = series.options || {}, pointOptions = point?.options || {}, stateOptions = (state && seriesOptions.states[state]) || {}, options = merge(seriesOptions, pointOptions, stateOptions);
+        const series = this, seriesOptions = series.options || {}, pointOptions = point?.options || {}, stateOptions = (state && seriesOptions.states?.[state]) || {}, options = merge(seriesOptions, pointOptions, stateOptions);
         // Return resulting values for the attributes.
         return {
             'fill': color(options.color || point.color)
-                .brighten(options.brightness)
+                .brighten(options.brightness || 0)
                 .get(),
             // Set opacity directly to the SVG element, not to pattern #14372.
             opacity: options.opacity,

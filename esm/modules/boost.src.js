@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0 (2026-06-11)
+ * @license Highcharts JS v13.0.1 (2026-08-17)
  * @module highcharts/modules/boost
  * @requires highcharts
  *
@@ -15,14 +15,14 @@
  * */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
-/******/ var __webpack_require__ = {};
+/******/ const __webpack_require__ = {};
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
 /******/ (() => {
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
 /******/ 	__webpack_require__.n = (module) => {
-/******/ 		var getter = module && module.__esModule ?
+/******/ 		const getter = module && module.__esModule ?
 /******/ 			() => (module['default']) :
 /******/ 			() => (module);
 /******/ 		__webpack_require__.d(getter, { a: getter });
@@ -32,11 +32,26 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /******/ /* webpack/runtime/define property getters */
 /******/ (() => {
-/******/ 	// define getter functions for harmony exports
+/******/ 	// define getter/value functions for harmony exports
 /******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		for(var key in definition) {
-/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 		if(Array.isArray(definition)) {
+/******/ 			var i = 0;
+/******/ 			while(i < definition.length) {
+/******/ 				var key = definition[i++];
+/******/ 				var binding = definition[i++];
+/******/ 				if(!__webpack_require__.o(exports, key)) {
+/******/ 					if(binding === 0) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 					} else {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 					}
+/******/ 				} else if(binding === 0) { i++; }
+/******/ 			}
+/******/ 		} else {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
 /******/ 			}
 /******/ 		}
 /******/ 	};
@@ -48,7 +63,6 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
-var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -2628,7 +2642,7 @@ class DataTableCore {
      * Fetches the given column by the canonical column ID. Simplified version
      * of the full `DataTable.getRow` method, always returning by reference.
      *
-     * @function Highcharts.DataTable#setColumn
+     * @function Highcharts.DataTable#getColumn
      *
      * @param {string} columnId
      * ID of the column to get.
@@ -3497,7 +3511,14 @@ function scatterProcessData(force) {
     // Required to get tick-based zoom ranges that take options into account
     // like `minPadding`, `maxPadding`, `startOnTick`, `endOnTick`.
     series.yAxis.setTickInterval();
-    const boostThreshold = options.boostThreshold || 0, cropThreshold = options.cropThreshold, xData = series.getColumn('x'), xExtremes = xAxis.getExtremes(), xMax = xExtremes.max ?? Number.MAX_VALUE, xMin = xExtremes.min ?? -Number.MAX_VALUE, yData = series.getColumn('y'), yExtremes = yAxis.getExtremes(), yMax = yExtremes.max ?? Number.MAX_VALUE, yMin = yExtremes.min ?? -Number.MAX_VALUE;
+    const boostThreshold = options.boostThreshold || 0, cropThreshold = options.cropThreshold, xData = series.getColumn('x'), xExtremes = xAxis.getExtremes(), xMax = xExtremes.max ?? Number.MAX_VALUE, xMin = xExtremes.min ?? -Number.MAX_VALUE, yData = series.getColumn('y'), yExtremes = yAxis.getExtremes(), yMax = yExtremes.max ?? Number.MAX_VALUE, yMin = yExtremes.min ?? -Number.MAX_VALUE, 
+    // Crop on the Y axis only against the hard options bounds, not the
+    // auto-scaled `yAxis.min` and `yAxis.max`. Cropping against them would
+    // lock reset zoom to the old window and stop the data extremes from
+    // being restored (#24386).
+    yCropMin = yAxis.userMin ?? ((0,external_highcharts_src_js_default_namespaceObject.isNumber)(yAxis.options.min) ?
+        yAxis.options.min : -Number.MAX_VALUE), yCropMax = yAxis.userMax ?? ((0,external_highcharts_src_js_default_namespaceObject.isNumber)(yAxis.options.max) ?
+        yAxis.options.max : Number.MAX_VALUE);
     /// if (series.boost) {
     //     delete series.boost.pointDataIndices;
     // }
@@ -3537,7 +3558,7 @@ function scatterProcessData(force) {
         x = xData[i];
         y = yData?.[i];
         if (x >= xMin && x <= xMax &&
-            y >= yMin && y <= yMax) {
+            y >= yCropMin && y <= yCropMax) {
             processedXData.push(x);
             processedYData.push(y);
             processedDataIndices.push(i);
@@ -4277,6 +4298,19 @@ function Boost_compose(ChartClass, AxisClass, SeriesClass, seriesTypes, PointCla
                 filter,
                 opacity
             });
+        }
+        // Boosted scatter crops its data table on the Y axis, so it must be
+        // reprocessed when the axis extremes change (#24386).
+        if (!this.isPanning) {
+            for (const series of this.series) {
+                if (series.boost &&
+                    series.is('scatter') &&
+                    !series.is('bubble') &&
+                    !series.is('treemap') &&
+                    !series.is('heatmap')) {
+                    series.isDirty = true;
+                }
+            }
         }
     });
 }

@@ -627,7 +627,14 @@ function scatterProcessData(force) {
     // Required to get tick-based zoom ranges that take options into account
     // like `minPadding`, `maxPadding`, `startOnTick`, `endOnTick`.
     series.yAxis.setTickInterval();
-    const boostThreshold = options.boostThreshold || 0, cropThreshold = options.cropThreshold, xData = series.getColumn('x'), xExtremes = xAxis.getExtremes(), xMax = xExtremes.max ?? Number.MAX_VALUE, xMin = xExtremes.min ?? -Number.MAX_VALUE, yData = series.getColumn('y'), yExtremes = yAxis.getExtremes(), yMax = yExtremes.max ?? Number.MAX_VALUE, yMin = yExtremes.min ?? -Number.MAX_VALUE;
+    const boostThreshold = options.boostThreshold || 0, cropThreshold = options.cropThreshold, xData = series.getColumn('x'), xExtremes = xAxis.getExtremes(), xMax = xExtremes.max ?? Number.MAX_VALUE, xMin = xExtremes.min ?? -Number.MAX_VALUE, yData = series.getColumn('y'), yExtremes = yAxis.getExtremes(), yMax = yExtremes.max ?? Number.MAX_VALUE, yMin = yExtremes.min ?? -Number.MAX_VALUE, 
+    // Crop on the Y axis only against the hard options bounds, not the
+    // auto-scaled `yAxis.min` and `yAxis.max`. Cropping against them would
+    // lock reset zoom to the old window and stop the data extremes from
+    // being restored (#24386).
+    yCropMin = yAxis.userMin ?? (isNumber(yAxis.options.min) ?
+        yAxis.options.min : -Number.MAX_VALUE), yCropMax = yAxis.userMax ?? (isNumber(yAxis.options.max) ?
+        yAxis.options.max : Number.MAX_VALUE);
     /// if (series.boost) {
     //     delete series.boost.pointDataIndices;
     // }
@@ -667,7 +674,7 @@ function scatterProcessData(force) {
         x = xData[i];
         y = yData?.[i];
         if (x >= xMin && x <= xMax &&
-            y >= yMin && y <= yMax) {
+            y >= yCropMin && y <= yCropMax) {
             processedXData.push(x);
             processedYData.push(y);
             processedDataIndices.push(i);

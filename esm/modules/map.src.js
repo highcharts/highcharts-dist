@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v13.0.0 (2026-06-11)
+ * @license Highmaps JS v13.0.1 (2026-08-17)
  * @module highcharts/modules/map
  * @requires highcharts
  *
@@ -15,14 +15,14 @@
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 import "./coloraxis.src.js";
 /******/ // The require scope
-/******/ var __webpack_require__ = {};
+/******/ const __webpack_require__ = {};
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
 /******/ (() => {
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
 /******/ 	__webpack_require__.n = (module) => {
-/******/ 		var getter = module && module.__esModule ?
+/******/ 		const getter = module && module.__esModule ?
 /******/ 			() => (module['default']) :
 /******/ 			() => (module);
 /******/ 		__webpack_require__.d(getter, { a: getter });
@@ -32,11 +32,26 @@ import "./coloraxis.src.js";
 /******/ 
 /******/ /* webpack/runtime/define property getters */
 /******/ (() => {
-/******/ 	// define getter functions for harmony exports
+/******/ 	// define getter/value functions for harmony exports
 /******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		for(var key in definition) {
-/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 		if(Array.isArray(definition)) {
+/******/ 			var i = 0;
+/******/ 			while(i < definition.length) {
+/******/ 				var key = definition[i++];
+/******/ 				var binding = definition[i++];
+/******/ 				if(!__webpack_require__.o(exports, key)) {
+/******/ 					if(binding === 0) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 					} else {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 					}
+/******/ 				} else if(binding === 0) { i++; }
+/******/ 			}
+/******/ 		} else {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
 /******/ 			}
 /******/ 		}
 /******/ 	};
@@ -48,7 +63,6 @@ import "./coloraxis.src.js";
 /******/ })();
 /******/ 
 /************************************************************************/
-var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -838,11 +852,13 @@ var ColorMapComposition;
      *  Constants
      *
      * */
+    /** @internal */
     ColorMapComposition.pointMembers = {
         dataLabelOnNull: true,
         moveToTopOnHover: true,
         isValid: pointIsValid
     };
+    /** @internal */
     ColorMapComposition.seriesMembers = {
         colorKey: 'value',
         axisTypes: ['xAxis', 'yAxis', 'colorAxis'],
@@ -858,7 +874,7 @@ var ColorMapComposition;
      *
      * */
     /**
-     * @private
+     * @internal
      */
     function compose(SeriesClass) {
         const PointClass = SeriesClass.prototype.pointClass;
@@ -868,7 +884,7 @@ var ColorMapComposition;
     ColorMapComposition.compose = compose;
     /**
      * Move points to the top of the z-index order when hovered.
-     * @private
+     * @internal
      */
     function onPointAfterSetState(e) {
         const point = this, series = point.series, renderer = series.chart.renderer;
@@ -904,7 +920,7 @@ var ColorMapComposition;
     /**
      * Color points have a value option that determines whether or not it is
      * a null point
-     * @private
+     * @internal
      */
     function pointIsValid() {
         return (this.value !== null &&
@@ -915,7 +931,7 @@ var ColorMapComposition;
     }
     /**
      * Get the color attributes to apply on the graphic
-     * @private
+     * @internal
      * @function Highcharts.colorMapSeriesMixin.colorAttribs
      * @param {Highcharts.Point} point
      * @return {Highcharts.SVGAttributes}
@@ -936,6 +952,7 @@ var ColorMapComposition;
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Series_ColorMapComposition = (ColorMapComposition);
 
 ;// ./code/es-modules/Series/CenteredUtilities.js
@@ -955,7 +972,7 @@ var ColorMapComposition;
 const { deg2rad } = (external_highcharts_src_js_default_default());
 
 /**
- * @private
+ * @internal
  */
 var CenteredUtilities;
 (function (CenteredUtilities) {
@@ -973,7 +990,7 @@ var CenteredUtilities;
      * Get the center of the pie based on the size and center options relative
      * to the plot area. Borrowed by the polar and gauge series types.
      *
-     * @private
+     * @internal
      * @function Highcharts.CenteredSeriesMixin.getCenter
      */
     function getCenter() {
@@ -1018,7 +1035,7 @@ var CenteredUtilities;
      * GetStartAndEndRadians - Calculates start and end angles in radians.
      * Used in series types such as pie and sunburst.
      *
-     * @private
+     * @internal
      * @function Highcharts.CenteredSeriesMixin.getStartAndEndRadians
      *
      * @param {number} [start]
@@ -1050,6 +1067,7 @@ var CenteredUtilities;
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Series_CenteredUtilities = (CenteredUtilities);
 /* *
  *
@@ -1057,7 +1075,7 @@ var CenteredUtilities;
  *
  * */
 /**
- * @private
+ * @internal
  * @interface Highcharts.RadianAngles
  */ /**
 * @name Highcharts.RadianAngles#end
@@ -1331,7 +1349,7 @@ class DataTableCore {
      * Fetches the given column by the canonical column ID. Simplified version
      * of the full `DataTable.getRow` method, always returning by reference.
      *
-     * @function Highcharts.DataTable#setColumn
+     * @function Highcharts.DataTable#getColumn
      *
      * @param {string} columnId
      * ID of the column to get.
@@ -1703,11 +1721,6 @@ class MapChart extends (external_highcharts_src_js_default_Chart_default()) {
     /**
      * A wrapper for the chart's update function that will additionally run
      * recommendMapView on chart.map change.
-     *
-     * @function Highcharts.MapChart#update
-     *
-     * @param {Highcharts.Options} options
-     *        The chart options.
      */
     update(options) {
         // Calculate and set the recommended map view if map option is set
@@ -2454,6 +2467,16 @@ const MapSeriesDefaults = {
  * @apioption plotOptions.map.colors
  */
 /**
+ * Whether to apply a drop shadow to the map shapes. The shadow can be an
+ * object configuration containing `color`, `offsetX`, `offsetY`, `opacity`
+ * and `width`.
+ *
+ * @type      {boolean|Highcharts.ShadowOptionsObject}
+ * @default   false
+ * @product   highmaps
+ * @apioption plotOptions.map.shadow
+ */
+/**
  * Individual color for the point. By default the color is either used
  * to denote the value, or pulled from the global `colors` array.
  *
@@ -2529,7 +2552,7 @@ const MapSeriesDefaults = {
  * a two dimensional array of the same. The dimensionality must comply with the
  * `type`.
  *
- * @type      {Array<LonLatArray>|Array<Array<LonLatArray>>}
+ * @type      {Array<Highcharts.LonLatArray>|Array<Array<Highcharts.LonLatArray>>}
  * @since 9.3.0
  * @product   highmaps
  * @apioption series.map.data.geometry.coordinates
@@ -3496,7 +3519,20 @@ var GeoJSONComposition;
 * Second point's Y of the bounding box.
 * @name Highcharts.MapBounds#y2
 */
-''; // Detach doclets above
+/**
+ * A latitude/longitude object.
+ *
+ * @interface Highcharts.MapLonLatObject
+ */ /**
+* The latitude.
+* @name Highcharts.MapLonLatObject#lat
+* @type {number}
+*/ /**
+* The longitude.
+* @name Highcharts.MapLonLatObject#lon
+* @type {number}
+*/
+''; // Keep doclets above
 
 ;// ./code/es-modules/Core/Geometry/GeometryUtilities.js
 /* *
@@ -5019,7 +5055,7 @@ class MapView {
          * The current center of the view in terms of `[longitude, latitude]`.
          * @name Highcharts.MapView#center
          * @readonly
-         * @type {LonLatArray}
+         * @type {Highcharts.LonLatArray}
          */
         this.center = o.center;
         this.options = o;
@@ -5968,7 +6004,6 @@ class MapViewInset extends MapView {
  * */
 
 
-const { animObject, stop } = (external_highcharts_src_js_default_default());
 
 
 
@@ -6017,7 +6052,7 @@ class MapSeries extends ScatterSeries {
      * @private
      */
     animate(init) {
-        const { chart, group } = this, animation = animObject(this.options.animation);
+        const { chart, group } = this, animation = (0,external_highcharts_src_js_default_namespaceObject.animObject)(this.options.animation);
         // Initialize the animation
         if (init) {
             // Scale down the group and place it in the center
@@ -6215,7 +6250,7 @@ class MapSeries extends ScatterSeries {
                     });
                     animatePoints(scaleStep); // #18166
                 };
-                const animOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(animObject(renderer.globalAnimation)), userStep = animOptions.step;
+                const animOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((0,external_highcharts_src_js_default_namespaceObject.animObject)(renderer.globalAnimation)), userStep = animOptions.step;
                 animOptions.step = function () {
                     if (userStep) {
                         userStep.apply(this, arguments);
@@ -6237,7 +6272,7 @@ class MapSeries extends ScatterSeries {
                 // When dragging or first rendering, animation is off
             }
             else {
-                stop(transformGroup);
+                (0,external_highcharts_src_js_default_namespaceObject.stop)(transformGroup);
                 transformGroup.attr((0,external_highcharts_src_js_default_namespaceObject.merge)(svgTransform, { 'stroke-width': strokeWidth / scale }));
                 animatePoints(scale); // #18166
             }
@@ -7088,12 +7123,11 @@ const MapPointSeriesDefaults = {
 (''); // Keeps doclets above in JS file
 
 ;// external ["../highcharts.src.js","default","Series","types","scatter"]
-var x = (y) => {
-	var x = {}; __webpack_require__.d(x,
-    	y); return x
-    } 
-    var y = (x) => (() => (x))
-    const external_highcharts_src_js_default_Series_types_scatter_namespaceObject = x({  });
+const x = (y) => {
+	const x = {}; __webpack_require__.d(x, y); return x
+} 
+const y = (x) => (() => (x))
+const external_highcharts_src_js_default_Series_types_scatter_namespaceObject = x({  });
 ;// ./code/es-modules/Series/MapPoint/MapPointSeries.js
 /* *
  *
@@ -8735,6 +8769,21 @@ BubbleSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObj
      * @since 6.1.0
      */
     animationLimit: 250,
+    /**
+     * When using automatic point colors pulled from the global
+     * [colors](colors) or series-specific
+     * [plotOptions.bubble.colors](series.colors) collections, this option
+     * determines whether the chart should receive one color per series or
+     * one color per point.
+     *
+     * In styled mode, the `colors` or `series.colors` arrays are not
+     * supported, and instead this option gives the points individual color
+     * class names on the form `highcharts-color-{n}`.
+     *
+     * @type      {boolean}
+     * @default   false
+     * @apioption plotOptions.bubble.colorByPoint
+     */
     /**
      * Whether to display negative sized bubbles. The threshold is given
      * by the [zThreshold](#plotOptions.bubble.zThreshold) option, and negative

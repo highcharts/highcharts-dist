@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0 (2026-06-11)
+ * @license Highcharts JS v13.0.1 (2026-08-17)
  * @module highcharts/modules/networkgraph
  * @requires highcharts
  *
@@ -14,14 +14,14 @@
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
-/******/ var __webpack_require__ = {};
+/******/ const __webpack_require__ = {};
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
 /******/ (() => {
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
 /******/ 	__webpack_require__.n = (module) => {
-/******/ 		var getter = module && module.__esModule ?
+/******/ 		const getter = module && module.__esModule ?
 /******/ 			() => (module['default']) :
 /******/ 			() => (module);
 /******/ 		__webpack_require__.d(getter, { a: getter });
@@ -31,11 +31,26 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /******/ /* webpack/runtime/define property getters */
 /******/ (() => {
-/******/ 	// define getter functions for harmony exports
+/******/ 	// define getter/value functions for harmony exports
 /******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		for(var key in definition) {
-/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 		if(Array.isArray(definition)) {
+/******/ 			var i = 0;
+/******/ 			while(i < definition.length) {
+/******/ 				var key = definition[i++];
+/******/ 				var binding = definition[i++];
+/******/ 				if(!__webpack_require__.o(exports, key)) {
+/******/ 					if(binding === 0) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 					} else {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 					}
+/******/ 				} else if(binding === 0) { i++; }
+/******/ 			}
+/******/ 		} else {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
 /******/ 			}
 /******/ 		}
 /******/ 	};
@@ -47,7 +62,6 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
-var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -79,7 +93,7 @@ const { composed } = (external_highcharts_src_js_default_default());
  *
  * */
 /**
- * @private
+ * @internal
  */
 function compose(ChartClass) {
     if ((0,external_highcharts_src_js_default_namespaceObject.pushUnique)(composed, 'DragNodes')) {
@@ -88,7 +102,7 @@ function compose(ChartClass) {
 }
 /**
  * Draggable mode:
- * @private
+ * @internal
  */
 function onChartLoad() {
     const chart = this;
@@ -127,7 +141,7 @@ function onChartLoad() {
 /**
  * Mouse down action, initializing drag&drop mode.
  *
- * @private
+ * @internal
  * @param {Highcharts.Point} point
  *        The point that event occurred.
  * @param {Highcharts.PointerEventObject} event
@@ -150,7 +164,7 @@ function onMouseDown(point, event) {
 /**
  * Mouse move action during drag&drop.
  *
- * @private
+ * @internal
  *
  * @param {Highcharts.Point} point
  *        The point that event occurred.
@@ -180,7 +194,7 @@ function onMouseMove(point, event) {
 /**
  * Mouse up action, finalizing drag&drop.
  *
- * @private
+ * @internal
  * @param {Highcharts.Point} point
  *        The point that event occurred.
  */
@@ -203,14 +217,15 @@ function onMouseUp(point) {
 /**
  * Redraw halo on mousemove during the drag&drop action.
  *
- * @private
+ * @internal
  * @param {Highcharts.Point} point
  *        The point that should show halo.
  */
 function redrawHalo(point) {
     if (point && this.halo) {
         this.halo.attr({
-            d: point.haloPath(this.options.states.hover.halo.size)
+            d: point.haloPath((0,external_highcharts_src_js_default_namespaceObject.isObject)(this.options.states?.hover?.halo) &&
+                this.options.states?.hover?.halo.size || 0)
         });
     }
 }
@@ -219,6 +234,7 @@ function redrawHalo(point) {
  *  Default Export
  *
  * */
+/** @internal */
 const DragNodesComposition = {
     compose,
     onMouseDown,
@@ -226,6 +242,7 @@ const DragNodesComposition = {
     onMouseUp,
     redrawHalo
 };
+/** @internal */
 /* harmony default export */ const Series_DragNodesComposition = (DragNodesComposition);
 
 ;// ./code/es-modules/Series/GraphLayoutComposition.js
@@ -244,7 +261,6 @@ const DragNodesComposition = {
  * */
 
 
-const { setAnimation } = (external_highcharts_src_js_default_default());
 
 const { composed: GraphLayoutComposition_composed } = (external_highcharts_src_js_default_default());
 
@@ -332,7 +348,7 @@ function onChartRender() {
     };
     // Don't animate layout when series is dragged
     if (this.graphLayoutsLookup && !this.pointer?.hasDragged) {
-        setAnimation(false, this);
+        (0,external_highcharts_src_js_default_namespaceObject.setAnimation)(false, this);
         // Start simulation
         this.graphLayoutsLookup.forEach((layout) => layout.start());
         // Just one sync step, to run different layouts similar to
@@ -345,6 +361,7 @@ function onChartRender() {
             this.series.forEach((series) => {
                 if (series && series.layout) {
                     series.render();
+                    (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(series, 'afterSimulation');
                 }
             });
         }
@@ -1000,9 +1017,21 @@ const NetworkgraphSeriesDefaults = {
          */
         inactive: {
             /**
+             * Deprecated. Use
+             * [link.opacity](#series.networkgraph.states.inactive.link.opacity)
+             * instead.
+             *
              * Opacity of inactive links.
+             *
+             * @deprecated 13.0.1
              */
             linkOpacity: 0.3,
+            /**
+             * @extends plotOptions.networkgraph.link
+             */
+            link: {
+                opacity: 0.3
+            },
             /**
              * Animation when not hovering over the node.
              *
@@ -2820,7 +2849,6 @@ class ReingoldFruchtermanLayout {
 
 
 
-const { animObject } = (external_highcharts_src_js_default_default());
 /**
  * Create a setTimeout for the first drawDataLabels()
  * based on the dataLabels.animation.defer value
@@ -2840,7 +2868,7 @@ function initDataLabelsDefer() {
     else {
         (0,external_highcharts_src_js_default_namespaceObject.syncTimeout)(() => {
             this.deferDataLabels = false;
-        }, dlOptions ? animObject(dlOptions.animation).defer : 0);
+        }, dlOptions ? (0,external_highcharts_src_js_default_namespaceObject.animObject)(dlOptions.animation).defer : 0);
     }
 }
 /**
@@ -3405,18 +3433,21 @@ class NetworkgraphSeries extends Series {
      */
     pointAttribs(point, state) {
         // By default, only `selected` state is passed on
-        const pointState = state || point && point.state || 'normal', stateOptions = this.options.states[pointState];
+        const pointState = state || point && point.state || 'normal', stateOptions = this.options.states?.[pointState];
         let attribs = Series.prototype.pointAttribs.call(this, point, pointState);
         if (point && !point.isNode) {
             attribs = point.getLinkAttributes();
-            // For link, get prefixed names:
+            // For link, get nested names:
             if (stateOptions) {
                 attribs = {
-                    // TO DO: API?
-                    stroke: stateOptions.linkColor || attribs.stroke,
-                    dashstyle: (stateOptions.linkDashStyle || attribs.dashstyle),
-                    opacity: (0,external_highcharts_src_js_default_namespaceObject.pick)(stateOptions.linkOpacity, attribs.opacity),
-                    'stroke-width': stateOptions.linkColor ||
+                    stroke: stateOptions.link?.color || attribs.stroke,
+                    dashstyle: stateOptions.link?.dashStyle ||
+                        attribs.dashstyle,
+                    // Deprecated linkOpacity, but keep for backwards compat.
+                    opacity: stateOptions.linkOpacity ??
+                        stateOptions.link?.opacity ??
+                        attribs.opacity,
+                    'stroke-width': stateOptions.link?.width ||
                         attribs['stroke-width']
                 };
             }

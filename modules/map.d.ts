@@ -228,14 +228,6 @@ declare module "../highcharts" {
          * @fires Highcharts.MapChart#afterInit
          */
         init(userOptions: Options, callback?: (true|Function)): void;
-        /**
-         * A wrapper for the chart's update function that will additionally run
-         * recommendMapView on chart.map change.
-         *
-         * @param options
-         *        The chart options.
-         */
-        update(options: Options): void;
     }
     /**
      * The map view handles zooming and centering on the map, and various

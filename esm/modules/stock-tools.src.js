@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.0.0 (2026-06-11)
+ * @license Highstock JS v13.0.1 (2026-08-17)
  * @module highcharts/modules/stock-tools
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -15,14 +15,14 @@
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
-/******/ var __webpack_require__ = {};
+/******/ const __webpack_require__ = {};
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
 /******/ (() => {
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
 /******/ 	__webpack_require__.n = (module) => {
-/******/ 		var getter = module && module.__esModule ?
+/******/ 		const getter = module && module.__esModule ?
 /******/ 			() => (module['default']) :
 /******/ 			() => (module);
 /******/ 		__webpack_require__.d(getter, { a: getter });
@@ -32,11 +32,26 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /******/ /* webpack/runtime/define property getters */
 /******/ (() => {
-/******/ 	// define getter functions for harmony exports
+/******/ 	// define getter/value functions for harmony exports
 /******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		for(var key in definition) {
-/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 		if(Array.isArray(definition)) {
+/******/ 			var i = 0;
+/******/ 			while(i < definition.length) {
+/******/ 				var key = definition[i++];
+/******/ 				var binding = definition[i++];
+/******/ 				if(!__webpack_require__.o(exports, key)) {
+/******/ 					if(binding === 0) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 					} else {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 					}
+/******/ 				} else if(binding === 0) { i++; }
+/******/ 			}
+/******/ 		} else {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
 /******/ 			}
 /******/ 		}
 /******/ 	};
@@ -48,7 +63,6 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
-var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -216,6 +230,32 @@ function getAssignedAxis(coords) {
     })[0]; // If the axes overlap, return the first axis that was found.
 }
 /**
+ * Resolve an axis from an annotation option that can reference it either by its
+ * index (number) or by its id (string).
+ *
+ * @internal
+ *
+ * @param {Highcharts.Chart} chart
+ *        The chart instance.
+ *
+ * @param {'xAxis'|'yAxis'} coll
+ *        The axis collection to look in.
+ *
+ * @param {number|string|undefined} idOrIndex
+ *        The axis index or id.
+ *
+ * @return {Highcharts.Axis|undefined}
+ *         The matching axis, or `undefined` if none was found.
+ */
+function getAxisFromOptions(chart, coll, idOrIndex) {
+    if ((0,external_highcharts_src_js_default_namespaceObject.isNumber)(idOrIndex)) {
+        return chart[coll][idOrIndex];
+    }
+    return (0,external_highcharts_src_js_default_namespaceObject.defined)(idOrIndex) ?
+        (0,external_highcharts_src_js_default_namespaceObject.find)(chart[coll], (axis) => axis.options.id === idOrIndex) :
+        void 0;
+}
+/**
  * Get field type according to value
  *
  * @internal
@@ -242,13 +282,14 @@ function getFieldType(key, value) {
  *
  * */
 /** @internal */
-const NavigationBindingUtilities = {
+const NavigationBindingsUtilities = {
     annotationsFieldsTypes,
     getAssignedAxis,
+    getAxisFromOptions,
     getFieldType
 };
 /** @internal */
-/* harmony default export */ const NavigationBindingsUtilities = (NavigationBindingUtilities);
+/* harmony default export */ const Annotations_NavigationBindingsUtilities = (NavigationBindingsUtilities);
 
 ;// ./code/es-modules/Extensions/Annotations/NavigationBindingsDefaults.js
 /* *
@@ -264,7 +305,7 @@ const NavigationBindingUtilities = {
  * */
 
 
-const { getAssignedAxis: NavigationBindingsDefaults_getAssignedAxis } = NavigationBindingsUtilities;
+const { getAssignedAxis: NavigationBindingsDefaults_getAssignedAxis } = Annotations_NavigationBindingsUtilities;
 
 /* *
  *
@@ -698,7 +739,7 @@ const { format } = (external_highcharts_src_js_default_Templating_default());
 const { composed, doc, win } = (external_highcharts_src_js_default_default());
 
 
-const { getAssignedAxis: NavigationBindings_getAssignedAxis, getFieldType: NavigationBindings_getFieldType } = NavigationBindingsUtilities;
+const { getAssignedAxis: NavigationBindings_getAssignedAxis, getFieldType: NavigationBindings_getFieldType } = Annotations_NavigationBindingsUtilities;
 
 /* *
  *
@@ -1514,7 +1555,7 @@ var external_highcharts_src_js_default_Series_default = /*#__PURE__*/__webpack_r
 
 const { getOptions } = (external_highcharts_src_js_default_default());
 
-const { getAssignedAxis: StockToolsUtilities_getAssignedAxis, getFieldType: StockToolsUtilities_getFieldType } = NavigationBindingsUtilities;
+const { getAssignedAxis: StockToolsUtilities_getAssignedAxis, getFieldType: StockToolsUtilities_getFieldType } = Annotations_NavigationBindingsUtilities;
 
 
 
@@ -3742,7 +3783,7 @@ const StockToolsBindings = {
                 }
             }, navigation.annotationsOptions, navigation.bindings?.verticalCounter.annotationsOptions), annotation = this.chart.addAnnotation(options);
             this.verticalCounter++;
-            (annotation.options.events?.click).call(annotation, {});
+            annotation.options.events?.click?.call(annotation, {});
         }
     },
     /**
@@ -3781,7 +3822,7 @@ const StockToolsBindings = {
                         }]
                 }
             }, navigation.annotationsOptions, navigation.bindings?.timeCycles.annotationsOptions), annotation = this.chart.addAnnotation(options);
-            (annotation.options.events?.click).call(annotation, {});
+            annotation.options.events?.click?.call(annotation, {});
             return annotation;
         },
         steps: [
@@ -3820,7 +3861,7 @@ const StockToolsBindings = {
                     }
                 }
             }, navigation.annotationsOptions, navigation.bindings?.verticalLabel.annotationsOptions), annotation = this.chart.addAnnotation(options);
-            (annotation.options.events?.click).call(annotation, {});
+            annotation.options.events?.click?.call(annotation, {});
         }
     },
     /**
@@ -3873,7 +3914,7 @@ const StockToolsBindings = {
                     }
                 }
             }, navigation.annotationsOptions, navigation.bindings?.verticalArrow.annotationsOptions), annotation = this.chart.addAnnotation(options);
-            (annotation.options.events?.click).call(annotation, {});
+            annotation.options.events?.click?.call(annotation, {});
         }
     },
     /**
@@ -4280,7 +4321,7 @@ const StockToolsBindings = {
             (chart.annotations || []).forEach(function (annotation) {
                 annotation.setVisibility(!this.toggledAnnotations);
             }, this);
-            if (gui && gui.guiEnabled) {
+            if (gui?.guiEnabled) {
                 if (this.toggledAnnotations) {
                     button.firstChild.style['background-image'] =
                         BaseFormUtils('annotations-hidden.svg', gui.iconsURL, StockToolsIcons);

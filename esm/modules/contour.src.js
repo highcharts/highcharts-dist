@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v13.0.0 (2026-06-11)
+ * @license Highmaps JS v13.0.1 (2026-08-17)
  * @module highcharts/modules/contour
  * @requires highcharts
  * @requires highcharts/modules/coloraxis
@@ -11,14 +11,14 @@
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 import "./coloraxis.src.js";
 /******/ // The require scope
-/******/ var __webpack_require__ = {};
+/******/ const __webpack_require__ = {};
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
 /******/ (() => {
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
 /******/ 	__webpack_require__.n = (module) => {
-/******/ 		var getter = module && module.__esModule ?
+/******/ 		const getter = module && module.__esModule ?
 /******/ 			() => (module['default']) :
 /******/ 			() => (module);
 /******/ 		__webpack_require__.d(getter, { a: getter });
@@ -28,11 +28,26 @@ import "./coloraxis.src.js";
 /******/ 
 /******/ /* webpack/runtime/define property getters */
 /******/ (() => {
-/******/ 	// define getter functions for harmony exports
+/******/ 	// define getter/value functions for harmony exports
 /******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		for(var key in definition) {
-/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 		if(Array.isArray(definition)) {
+/******/ 			var i = 0;
+/******/ 			while(i < definition.length) {
+/******/ 				var key = definition[i++];
+/******/ 				var binding = definition[i++];
+/******/ 				if(!__webpack_require__.o(exports, key)) {
+/******/ 					if(binding === 0) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 					} else {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 					}
+/******/ 				} else if(binding === 0) { i++; }
+/******/ 			}
+/******/ 		} else {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
 /******/ 			}
 /******/ 		}
 /******/ 	};
@@ -44,7 +59,6 @@ import "./coloraxis.src.js";
 /******/ })();
 /******/ 
 /************************************************************************/
-var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -82,6 +96,7 @@ const { scatter: { prototype: { pointClass: ScatterPoint } } } = (external_highc
  *  Class
  *
  * */
+/** @internal */
 class ContourPoint extends ScatterPoint {
 }
 /* *
@@ -89,6 +104,7 @@ class ContourPoint extends ScatterPoint {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Contour_ContourPoint = (ContourPoint);
 
 ;// ./code/es-modules/Series/Contour/ContourShader.js
@@ -109,7 +125,8 @@ class ContourPoint extends ScatterPoint {
  *  Shader Code
  *
  * */
-/* harmony default export */ const ContourShader = (`
+/** @internal */
+const ContourShader = `
 
 struct VertexInput {
     @location(0) pos: vec3f
@@ -240,7 +257,14 @@ fn fragmentMain(input: FragmentInput) -> @location(0) vec4f {
     return vec4(pixelColor, 1.0);
 }
 
-`);
+`;
+/* *
+ *
+ *  Default Export
+ *
+ * */
+/** @internal */
+/* harmony default export */ const Contour_ContourShader = (ContourShader);
 
 ;// ./code/es-modules/Series/Contour/ContourSeriesDefaults.js
 /* *
@@ -295,6 +319,13 @@ const ContourSeriesDefaults = {
      * @type      {boolean}
      * @default   false
      * @apioption plotOptions.contour.smoothColoring
+     */
+    /**
+     * The color of the contour lines.
+     *
+     * @type      {Highcharts.ColorType}
+     * @default   #000000
+     * @apioption plotOptions.contour.lineColor
      */
     /**
      * This setting controls the visibility and size of contour lines. For now,
@@ -518,7 +549,7 @@ var CrossSymbol;
     /**
      * Register the shared `cross` symbol on a renderer class.
      *
-     * @private
+     * @internal
      */
     function compose(SVGRendererClass) {
         if ((0,external_highcharts_src_js_default_namespaceObject.pushUnique)(composed, 'Series.CrossSymbol')) {
@@ -528,7 +559,7 @@ var CrossSymbol;
     CrossSymbol.compose = compose;
     /**
      * Cross marker path.
-     * @private
+     * @internal
      */
     function cross(x, y, w, h) {
         return [
@@ -545,6 +576,7 @@ var CrossSymbol;
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Series_CrossSymbol = (CrossSymbol);
 
 ;// ./code/es-modules/Core/Delaunay.js
@@ -891,6 +923,7 @@ const { seriesTypes: { scatter: ScatterSeries } } = (external_highcharts_src_js_
  *  Class
  *
  * */
+/** @internal */
 class ContourSeries extends ScatterSeries {
     static compose(SVGRendererClass) {
         Series_CrossSymbol.compose(SVGRendererClass);
@@ -1074,7 +1107,7 @@ class ContourSeries extends ScatterSeries {
                         }]
                 };
                 const shaderModule = device.createShaderModule({
-                    code: ContourShader
+                    code: Contour_ContourShader
                 });
                 const pipeline = device.createRenderPipeline({
                     layout: 'auto',

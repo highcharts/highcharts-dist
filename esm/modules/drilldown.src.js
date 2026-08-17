@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0 (2026-06-11)
+ * @license Highcharts JS v13.0.1 (2026-08-17)
  * @module highcharts/modules/drilldown
  * @requires highcharts
  *
@@ -15,14 +15,14 @@
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
-/******/ var __webpack_require__ = {};
+/******/ const __webpack_require__ = {};
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
 /******/ (() => {
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
 /******/ 	__webpack_require__.n = (module) => {
-/******/ 		var getter = module && module.__esModule ?
+/******/ 		const getter = module && module.__esModule ?
 /******/ 			() => (module['default']) :
 /******/ 			() => (module);
 /******/ 		__webpack_require__.d(getter, { a: getter });
@@ -32,11 +32,26 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /******/ /* webpack/runtime/define property getters */
 /******/ (() => {
-/******/ 	// define getter functions for harmony exports
+/******/ 	// define getter/value functions for harmony exports
 /******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		for(var key in definition) {
-/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 		if(Array.isArray(definition)) {
+/******/ 			var i = 0;
+/******/ 			while(i < definition.length) {
+/******/ 				var key = definition[i++];
+/******/ 				var binding = definition[i++];
+/******/ 				if(!__webpack_require__.o(exports, key)) {
+/******/ 					if(binding === 0) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 					} else {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 					}
+/******/ 				} else if(binding === 0) { i++; }
+/******/ 			}
+/******/ 		} else {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
 /******/ 			}
 /******/ 		}
 /******/ 	};
@@ -48,7 +63,6 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
-var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -878,7 +892,7 @@ Breadcrumbs.defaultOptions = Breadcrumbs_BreadcrumbsDefaults.options;
  *
  * @callback Highcharts.BreadcrumbsClickCallbackFunction
  *
- * @param {Highcharts.Event} event
+ * @param {Event} event
  * Event.
  *
  * @param {Highcharts.BreadcrumbOptions} breadcrumb
@@ -1287,7 +1301,6 @@ const DrilldownDefaults = {
  * */
 
 
-const { animObject } = (external_highcharts_src_js_default_default());
 
 /* *
  *
@@ -1303,7 +1316,7 @@ function applyCursorCSS(element, cursor, addClass, styledMode) {
 }
 /** @internal */
 function columnAnimateDrilldown(init) {
-    const series = this, chart = series.chart, { drilldownLevels, styledMode } = chart, animationOptions = animObject(chart.options.drilldown?.animation), { xAxis, yAxis } = this;
+    const series = this, chart = series.chart, { drilldownLevels, styledMode } = chart, animationOptions = (0,external_highcharts_src_js_default_namespaceObject.animObject)(chart.options.drilldown?.animation), { xAxis, yAxis } = this;
     if (!init) {
         let animateFrom;
         drilldownLevels?.forEach((level) => {
@@ -1344,7 +1357,7 @@ function columnAnimateDrilldown(init) {
  * @return {void}
  */
 function columnAnimateDrillupFrom(level) {
-    const series = this, animationOptions = animObject((series.chart.options.drilldown || {}).animation);
+    const series = this, animationOptions = (0,external_highcharts_src_js_default_namespaceObject.animObject)((series.chart.options.drilldown || {}).animation);
     // Cancel mouse events on the series group (#2787)
     series.trackerGroups?.forEach((key) => {
         if (key === 'dataLabelsGroup') {
@@ -1396,7 +1409,7 @@ function columnAnimateDrillupFrom(level) {
  * Whether to initialize animation
  */
 function columnAnimateDrillupTo(init) {
-    const series = this, level = series.drilldownLevel, animation = animObject(series.chart.options.drilldown?.animation);
+    const series = this, level = series.drilldownLevel, animation = (0,external_highcharts_src_js_default_namespaceObject.animObject)(series.chart.options.drilldown?.animation);
     if (!init) {
         // First hide all items before animating in again
         series.points.forEach((point) => {
@@ -1638,7 +1651,7 @@ function onSeriesAfterDrawTracker() {
 }
 /** @internal */
 function pieAnimateDrilldown(init) {
-    const series = this, chart = series.chart, points = series.points, drilldownLevels = chart.drilldownLevels || [], level = drilldownLevels[drilldownLevels.length - 1], animation = animObject(chart.options.drilldown?.animation);
+    const series = this, chart = series.chart, points = series.points, drilldownLevels = chart.drilldownLevels || [], level = drilldownLevels[drilldownLevels.length - 1], animation = (0,external_highcharts_src_js_default_namespaceObject.animObject)(chart.options.drilldown?.animation);
     if (series.is('item')) {
         animation.duration = 0;
     }
@@ -1752,7 +1765,6 @@ const DrilldownSeries = {
  * */
 
 
-const { animObject: Drilldown_animObject, stop } = (external_highcharts_src_js_default_default());
 
 
 const { noop } = (external_highcharts_src_js_default_default());
@@ -1929,7 +1941,7 @@ class ChartAdditions {
                 chart.options.drilldown.mapZooming) {
                 // First zoomTo then crossfade series
                 chart.mapView.allowTransformAnimation = true;
-                const animOptions = Drilldown_animObject(chart.options.drilldown.animation);
+                const animOptions = (0,external_highcharts_src_js_default_namespaceObject.animObject)(chart.options.drilldown.animation);
                 if (typeof animOptions !== 'boolean') {
                     const userComplete = animOptions.complete, drilldownComplete = function (obj) {
                         if (obj && obj.applyDrilldown && chart.mapView) {
@@ -2087,12 +2099,12 @@ class ChartAdditions {
                             if (drilldownOptions) {
                                 animOptions = drilldownOptions.animation;
                             }
-                            const drillAnimOptions = Drilldown_animObject(animOptions);
+                            const drillAnimOptions = (0,external_highcharts_src_js_default_namespaceObject.animObject)(animOptions);
                             const hideDataLabels = () => {
                                 const hideGroup = (group) => {
                                     const element = group?.element;
                                     if (group && element) {
-                                        stop(group);
+                                        (0,external_highcharts_src_js_default_namespaceObject.stop)(group);
                                         element.setAttribute('opacity', '0');
                                         element.setAttribute('visibility', 'hidden');
                                     }
@@ -2108,14 +2120,14 @@ class ChartAdditions {
                                 seriesRemoved = true;
                                 if (series.chart) {
                                     if (series.group) {
-                                        stop(series.group);
+                                        (0,external_highcharts_src_js_default_namespaceObject.stop)(series.group);
                                     }
                                     if (series.dataLabelsGroup) {
-                                        stop(series.dataLabelsGroup);
+                                        (0,external_highcharts_src_js_default_namespaceObject.stop)(series.dataLabelsGroup);
                                     }
                                     series.dataLabelsGroups?.forEach((group) => {
                                         if (group) {
-                                            stop(group);
+                                            (0,external_highcharts_src_js_default_namespaceObject.stop)(group);
                                         }
                                     });
                                     series.remove(false);
@@ -2400,7 +2412,7 @@ class ChartAdditions {
      *        The SVG element to be faded in.
      */
     fadeInGroup(group) {
-        const animationOptions = Drilldown_animObject(this.chart.options.drilldown?.animation);
+        const animationOptions = (0,external_highcharts_src_js_default_namespaceObject.animObject)(this.chart.options.drilldown?.animation);
         if (group) {
             group.hide();
             (0,external_highcharts_src_js_default_namespaceObject.syncTimeout)(() => {

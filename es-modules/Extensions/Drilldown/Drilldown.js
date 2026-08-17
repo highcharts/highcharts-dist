@@ -11,8 +11,7 @@
  *
  * */
 'use strict';
-import A from '../../Core/Animation/AnimationUtilities.js';
-const { animObject, stop } = A;
+import { animObject, stop } from '../../Core/Animation/AnimationUtilities.js';
 import Breadcrumbs from '../Breadcrumbs/Breadcrumbs.js';
 import H from '../../Core/Globals.js';
 const { noop } = H;

@@ -28,6 +28,7 @@ import { addEvent, crisp, extend, merge, pushUnique } from '../../Shared/Utiliti
 function onSeriesAfterSetOptions(e) {
     const options = e.options, dataGrouping = options.dataGrouping;
     if (dataGrouping &&
+        !dataGrouping.approximation &&
         options.useOhlcData &&
         options.id !== 'highcharts-navigator-series') {
         dataGrouping.approximation = 'ohlc';

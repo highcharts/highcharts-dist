@@ -282,7 +282,7 @@ declare module "../highcharts.src" {
          * of two numbers repeats the values for the horizontal and vertical
          * sides.
          */
-        padding?: object;
+        padding?: (number|Array<number>);
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) Aligns data labels relative
          * to points. If `center` alignment is not possible, it defaults to
@@ -670,6 +670,15 @@ declare module "../highcharts.src" {
          */
         dataSorting?: Highcharts.PlotCylinderDataSortingOptions;
         /**
+         * (Highcharts) Options for a specific series-level data table or an
+         * array of data tables. The `dataTable` option can be either a
+         * configuration object or an instance of the `DataTable` class. If a
+         * `DataTable` instance is passed, it will be used directly. If a
+         * configuration object or an array is passed, a new `DataTable`
+         * instance will be created based on the provided configuration.
+         */
+        dataTable?: (Highcharts.DataTable|Highcharts.DataTableOptionsObject|Array<(Highcharts.DataTable|Highcharts.DataTableOptionsObject)>);
+        /**
          * (Highcharts) Depth of the columns in a 3D column chart.
          */
         depth?: number;
@@ -1043,6 +1052,10 @@ declare module "../highcharts.src" {
         stacking?: Highcharts.OptionsStackingValue;
         /**
          * (Highcharts) A collection of options for different series states.
+         *
+         * In addition to the options documented under each state, any option
+         * from the parent series type can be set, with exception of `data` and
+         * `states`.
          */
         states?: Highcharts.SeriesStatesOptionsObject;
         /**
@@ -1122,9 +1135,14 @@ declare module "../highcharts.src" {
         zoomEnabled?: boolean;
     }
     /**
-     * (Highcharts) Animation when not hovering over the marker.
+     * (Highcharts, Highstock) Animation when not hovering over the marker.
      */
     interface PlotCylinderStatesInactiveAnimationOptions {
+        /**
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
+         */
         duration?: number;
     }
     /**
@@ -1179,10 +1197,28 @@ declare module "../highcharts.src" {
         y?: number;
     }
     /**
-     * (Highcharts, Highstock) Animation setting for hovering the graph in
-     * line-type series.
+     * (Highcharts, Highstock, Gantt) Enable or disable the initial animation
+     * when a series is displayed for the `dataLabels`. The animation can also
+     * be set as a configuration object. Please note that this option only
+     * applies to the initial animation.
+     *
+     * For other animations, see chart.animation and the animation parameter
+     * under the API methods. The following properties are supported:
+     *
+     * - `defer`: The animation delay time in milliseconds.
      */
-    interface SeriesCylinderDataStatesHoverAnimationOptions {
+    interface SeriesCylinderDataDataLabelsAnimationOptions {
+        /**
+         * (Highcharts, Highstock, Gantt) The animation delay time in
+         * milliseconds. Set to `0` to render the data labels immediately. As
+         * `undefined` inherits defer time from the series.animation.defer.
+         */
+        defer?: number;
+    }
+    /**
+     * (Highcharts, Highstock) Animation when not hovering over the marker.
+     */
+    interface SeriesCylinderDataStatesInactiveAnimationOptions {
         /**
          * (Highcharts, Highstock) The duration of the hover animation in
          * milliseconds. By default the hover state animates quickly in, and
@@ -1191,15 +1227,67 @@ declare module "../highcharts.src" {
         duration?: number;
     }
     /**
-     * (Highcharts, Highstock) Animation setting for hovering the graph in
-     * line-type series.
+     * (Highcharts) A `cylinder` series. If the type option is not specified, it
+     * is inherited from chart.type.
+     *
+     * Configuration options for the series are given in three levels:
+     *
+     * 1. Options for all series in a chart are defined in the
+     * plotOptions.series object.
+     *
+     * 2. Options for all `cylinder` series are defined in plotOptions.cylinder.
+     *
+     * 3. Options for one single series are given in the series instance array.
+     * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - type option should always be set, otherwise a broad set of unsupported
+     * options is allowed.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
+     *
+     * You have to extend the `SeriesCylinderOptions` via an interface to allow
+     * custom properties: ``` declare interface SeriesCylinderOptions {
+     * customProperty: string; }
+     *
      */
-    interface SeriesCylinderDataStatesSelectAnimationOptions {
+    interface SeriesCylinderOptions extends Highcharts.PlotCylinderOptions, Highcharts.SeriesOptions {
         /**
-         * (Highcharts, Highstock) The duration of the hover animation in
-         * milliseconds. By default the hover state animates quickly in, and
-         * slowly back to normal.
+         * Not available
          */
-        duration?: number;
+        allAreas?: undefined;
+        /**
+         * (Highcharts, Highstock) An array of data points for the series. For
+         * the `cylinder` series type, points can be given in the following
+         * ways:
+         *
+         * 1. An array of numerical values. In this case, the numerical values
+         * will be interpreted as `y` options. The `x` values will be
+         * automatically calculated, either starting at 0 and incremented by 1,
+         * or from `pointStart` and `pointInterval` given in the series options.
+         * If the axis has categories, these will be used. Example: (see online
+         * documentation for example)
+         *
+         * 2. An array of arrays with 2 values. In this case, the values
+         * correspond to `x,y`. If the first value is a string, it is applied as
+         * the name of the point, and the `x` value is inferred. (see online
+         * documentation for example)
+         *
+         * 3. An array of objects with named values. The following snippet shows
+         * only a few settings, see the complete options set below. If the total
+         * number of data points exceeds the series' turboThreshold, this option
+         * is not available. (see online documentation for example)
+         */
+        data?: Array<(number|[(number|string), (number|null)]|null|Highcharts.PointOptionsObject)>;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) This property is only in
+         * TypeScript non-optional and might be `undefined` in series objects
+         * from unknown sources.
+         */
+        type: "cylinder";
     }
 }

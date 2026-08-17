@@ -6,6 +6,11 @@
 import * as globals from "../globals";
 import * as _Highcharts from "../highcharts";
 declare module "../highcharts" {
+    interface BorderRadiusOptionsObject {
+        radius?: (number|string);
+        scope?: ("individual"|"point"|"stack");
+        where?: ("all"|"end");
+    }
     interface Point {
         /**
          * The ending X value of the range point.
@@ -235,6 +240,48 @@ declare module "../highcharts" {
      * @return Path
      */
     function rect(x: number, y: number, w: number, h: number, options?: SymbolOptions): SVGPathArray;
+    /**
+     * Arc symbol path.
+     *
+     * @param cx
+     *        Center X
+     *
+     * @param cy
+     *        Center Y
+     *
+     * @param w
+     *        Width
+     *
+     * @param h
+     *        Height
+     *
+     * @param options
+     *        Options
+     *
+     * @return Path
+     */
+    function Symbols_arc(cx: number, cy: number, w: number, h: number, options?: SymbolOptions): SVGPathArray;
+    /**
+     * Rounded rectangle symbol path.
+     *
+     * @param x
+     *        X coordinate
+     *
+     * @param y
+     *        Y coordinate
+     *
+     * @param w
+     *        Width
+     *
+     * @param h
+     *        Height
+     *
+     * @param options
+     *        Options
+     *
+     * @return Path
+     */
+    function Symbols_roundedRect(x: number, y: number, w: number, h: number, options?: SymbolOptions): SVGPathArray;
     /**
      * Triangle symbol path.
      *

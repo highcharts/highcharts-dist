@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0 (2026-06-11)
+ * @license Highcharts JS v13.0.1 (2026-08-17)
  * @module highcharts/modules/solid-gauge
  * @requires highcharts
  * @requires highcharts/highcharts-more
@@ -15,14 +15,14 @@
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
-/******/ var __webpack_require__ = {};
+/******/ const __webpack_require__ = {};
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
 /******/ (() => {
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
 /******/ 	__webpack_require__.n = (module) => {
-/******/ 		var getter = module && module.__esModule ?
+/******/ 		const getter = module && module.__esModule ?
 /******/ 			() => (module['default']) :
 /******/ 			() => (module);
 /******/ 		__webpack_require__.d(getter, { a: getter });
@@ -32,11 +32,26 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /******/ /* webpack/runtime/define property getters */
 /******/ (() => {
-/******/ 	// define getter functions for harmony exports
+/******/ 	// define getter/value functions for harmony exports
 /******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		for(var key in definition) {
-/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 		if(Array.isArray(definition)) {
+/******/ 			var i = 0;
+/******/ 			while(i < definition.length) {
+/******/ 				var key = definition[i++];
+/******/ 				var binding = definition[i++];
+/******/ 				if(!__webpack_require__.o(exports, key)) {
+/******/ 					if(binding === 0) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 					} else {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 					}
+/******/ 				} else if(binding === 0) { i++; }
+/******/ 			}
+/******/ 		} else {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
 /******/ 			}
 /******/ 		}
 /******/ 	};
@@ -48,12 +63,15 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
-var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
 ;// ./code/es-modules/Extensions/BorderRadius.js
+/* unused harmony import specifier */ var relativeLength;
+/* unused harmony import specifier */ var isObject;
+/* unused harmony import specifier */ var extend;
+/* unused harmony import specifier */ var addEvent;
 /* *
  *
  *  Highcharts Border Radius module
@@ -183,7 +201,7 @@ function arc(x, y, w, h, options = {}) {
     if (options.open || !options.borderRadius) {
         return path;
     }
-    const alpha = end - start, sinHalfAlpha = Math.sin(alpha / 2), borderRadius = Math.max(Math.min(relativeLength(options.borderRadius || 0, r - innerR), 
+    const alpha = end - start, sinHalfAlpha = Math.sin(alpha / 2), borderRadius = Math.max(Math.min(relativeLength(borderRadiusObject(options.borderRadius).radius, r - innerR), 
     // Cap to half the sector radius
     (r - innerR) / 2, 
     // For smaller pie slices, cap to the largest small circle that
@@ -209,7 +227,7 @@ function seriesOnAfterColumnTranslate() {
     if (this.options.borderRadius &&
         !(this.chart.is3d && this.chart.is3d())) {
         const { options, yAxis } = this, percent = options.stacking === 'percent', seriesDefault = defaultOptions.plotOptions?.[this.type]
-            ?.borderRadius, borderRadius = optionsToObject(options.borderRadius, isObject(seriesDefault) ? seriesDefault : {}), reversed = yAxis.options.reversed;
+            ?.borderRadius, borderRadius = borderRadiusObject(options.borderRadius, isObject(seriesDefault) ? seriesDefault : {}), reversed = yAxis.options.reversed;
         for (const point of this.points) {
             const { shapeArgs } = point;
             if (point.shapeType === 'roundedRect' && shapeArgs) {
@@ -281,8 +299,12 @@ function composeBorderRadius(SeriesClass, SVGElementClass, SVGRendererClass) {
         symbols.roundedRect = roundedRect;
     }
 }
-/** @internal */
-function optionsToObject(options, seriesBROptions) {
+/**
+ * Utility function to get the full border radius options object, from a simple
+ * number or a partial options object.
+ * @internal
+ */
+function borderRadiusObject(options, seriesBROptions) {
     if (!(0,external_highcharts_src_js_default_namespaceObject.isObject)(options)) {
         options = { radius: options || 0 };
     }
@@ -290,7 +312,7 @@ function optionsToObject(options, seriesBROptions) {
 }
 /** @internal */
 function pieSeriesOnAfterTranslate() {
-    const borderRadius = optionsToObject(this.options.borderRadius);
+    const borderRadius = borderRadiusObject(this.options.borderRadius);
     for (const point of this.points) {
         const shapeArgs = point.shapeArgs;
         if (shapeArgs) {
@@ -409,7 +431,7 @@ function roundedRect(x, y, width, height, options = {}) {
 *          Column and pie with rounded border
 *
 * @name Highcharts.BorderRadiusOptionsObject#radius
-* @type {string|number}
+* @type {string|number|undefined}
 */ /**
 * The scope of the rounding for column charts or plot bands. In a stacked
 * column chart, the value `point` means each single point will get rounded
@@ -424,8 +446,7 @@ function roundedRect(x, y, width, height, options = {}) {
 *          Rounded columns
 *
 * @name Highcharts.BorderRadiusOptionsObject#scope
-* @validvalue ["individual", "point", "stack"]
-* @type {string}
+* @type {"individual"|"point"|"stack"|undefined}
 */ /**
 * For column charts, where in the point or stack to apply rounding. The `end`
 * value means only those corners at the point value will be rounded, leaving
@@ -436,8 +457,7 @@ function roundedRect(x, y, width, height, options = {}) {
 *          Rounding on all corners
 *
 * @name Highcharts.BorderRadiusOptionsObject#where
-* @validvalue ["all", "end"]
-* @type {string}
+* @type {"all"|"end"|undefined}
 * @default end
 */
 (''); // Keeps doclets above in JS file
@@ -915,7 +935,7 @@ class SolidGaugeSeries extends GaugeSeries {
     }
     // Draw the points where each point is one needle.
     drawPoints() {
-        const series = this, yAxis = series.yAxis, center = yAxis.center, options = series.options, renderer = series.chart.renderer, overshoot = options.overshoot, rounded = options.rounded, borderRadius = optionsToObject(rounded ? '50%' : (options.borderRadius ??
+        const series = this, yAxis = series.yAxis, center = yAxis.center, options = series.options, renderer = series.chart.renderer, overshoot = options.overshoot, rounded = options.rounded, borderRadius = borderRadiusObject(rounded ? '50%' : (options.borderRadius ??
             yAxis.pane.options.borderRadius)).radius, overshootVal = (0,external_highcharts_src_js_default_namespaceObject.isNumber)(overshoot) ?
             overshoot / 180 * Math.PI :
             0;

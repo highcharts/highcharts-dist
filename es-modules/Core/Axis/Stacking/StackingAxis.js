@@ -10,8 +10,7 @@
  *
  * */
 'use strict';
-import A from '../../Animation/AnimationUtilities.js';
-const { getDeferredAnimation } = A;
+import { getDeferredAnimation } from '../../Animation/AnimationUtilities.js';
 import SeriesRegistry from '../../Series/SeriesRegistry.js';
 const { series: { prototype: seriesProto } } = SeriesRegistry;
 import StackItem from './StackItem.js';

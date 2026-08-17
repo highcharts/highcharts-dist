@@ -12,8 +12,7 @@
  *
  * */
 'use strict';
-import A from '../../Animation/AnimationUtilities.js';
-const { animObject } = A;
+import { animObject } from '../../Animation/AnimationUtilities.js';
 import Color from '../../Color/Color.js';
 const { parse: color } = Color;
 import H from '../../Globals.js';
@@ -599,7 +598,7 @@ var SVGRenderer3D;
                     interpolate = (key, pos) => (from[key] + (pick(to[key], from[key]) -
                         from[key]) * pos);
                     anim.step = function (a, fx) {
-                        if (fx.prop === randomProp) {
+                        if (fx.prop === randomProp && fx.elem) {
                             fx.elem.setPaths(merge(from, {
                                 x: interpolate('x', fx.pos),
                                 y: interpolate('y', fx.pos),

@@ -10,6 +10,7 @@
  *
  * */
 'use strict';
+import { borderRadiusObject } from '../../Extensions/BorderRadius.js';
 import rect from '../../Core/Renderer/SVG/Symbols.js';
 import { relativeLength } from '../../Shared/Utilities.js';
 /* *
@@ -22,7 +23,7 @@ import { relativeLength } from '../../Shared/Utilities.js';
  * @internal
  */
 function navigatorHandle(_x, _y, width, height, options = {}) {
-    const halfWidth = options.width ? options.width / 2 : width, markerPosition = 1.5, r = relativeLength(options.borderRadius || 0, Math.min(halfWidth * 2, height));
+    const halfWidth = options.width ? options.width / 2 : width, markerPosition = 1.5, r = relativeLength(borderRadiusObject(options.borderRadius).radius, Math.min(halfWidth * 2, height));
     height = options.height || height;
     return [
         ['M', -markerPosition, height / 2 - 3.5],

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0 (2026-06-11)
+ * @license Highcharts JS v13.0.1 (2026-08-17)
  * @module highcharts/modules/series-label
  * @requires highcharts
  *
@@ -12,14 +12,14 @@
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
-/******/ var __webpack_require__ = {};
+/******/ const __webpack_require__ = {};
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
 /******/ (() => {
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
 /******/ 	__webpack_require__.n = (module) => {
-/******/ 		var getter = module && module.__esModule ?
+/******/ 		const getter = module && module.__esModule ?
 /******/ 			() => (module['default']) :
 /******/ 			() => (module);
 /******/ 		__webpack_require__.d(getter, { a: getter });
@@ -29,11 +29,26 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /******/ /* webpack/runtime/define property getters */
 /******/ (() => {
-/******/ 	// define getter functions for harmony exports
+/******/ 	// define getter/value functions for harmony exports
 /******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		for(var key in definition) {
-/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 		if(Array.isArray(definition)) {
+/******/ 			var i = 0;
+/******/ 			while(i < definition.length) {
+/******/ 				var key = definition[i++];
+/******/ 				var binding = definition[i++];
+/******/ 				if(!__webpack_require__.o(exports, key)) {
+/******/ 					if(binding === 0) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 					} else {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 					}
+/******/ 				} else if(binding === 0) { i++; }
+/******/ 			}
+/******/ 		} else {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
 /******/ 			}
 /******/ 		}
 /******/ 	};
@@ -45,7 +60,6 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
-var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -291,7 +305,6 @@ const SeriesLabelUtilities = {
  */
 
 
-const { animObject } = (external_highcharts_src_js_default_default());
 
 const { format } = (external_highcharts_src_js_default_Templating_default());
 
@@ -638,7 +651,7 @@ function drawSeriesLabels(chart) {
                     // animation (#9396)
                     let animationOptions;
                     if (isNew) {
-                        animationOptions = animObject(series.options.animation);
+                        animationOptions = (0,external_highcharts_src_js_default_namespaceObject.animObject)(series.options.animation);
                         animationOptions.duration *= 0.2;
                     }
                     series.labelBySeries
@@ -824,7 +837,7 @@ function labelFontSize(series, minFontSize, maxFontSize) {
 function onChartRedraw(e) {
     if (this.renderer) {
         const chart = this;
-        let delay = animObject(chart.renderer.globalAnimation).duration;
+        let delay = (0,external_highcharts_src_js_default_namespaceObject.animObject)(chart.renderer.globalAnimation).duration;
         chart.labelSeries = [];
         chart.labelSeriesMaxSum = 0;
         if (chart.seriesLabelTimer) {
@@ -848,7 +861,7 @@ function onChartRedraw(e) {
                 // The labels are processing heavy, wait until the animation is
                 // done
                 if (e.type === 'load') {
-                    delay = Math.max(delay, animObject(series.options.animation).duration);
+                    delay = Math.max(delay, (0,external_highcharts_src_js_default_namespaceObject.animObject)(series.options.animation).duration);
                 }
                 // Keep the position updated to the axis while redrawing
                 if (closest) {

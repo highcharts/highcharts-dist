@@ -282,7 +282,7 @@ declare module "../highcharts" {
          * of two numbers repeats the values for the horizontal and vertical
          * sides.
          */
-        padding?: object;
+        padding?: (number|Array<number>);
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) Aligns data labels relative
          * to points. If `center` alignment is not possible, it defaults to
@@ -733,6 +733,15 @@ declare module "../highcharts" {
          */
         dataSorting?: Highcharts.PlotHlcDataSortingOptions;
         /**
+         * (Highstock) Options for a specific series-level data table or an
+         * array of data tables. The `dataTable` option can be either a
+         * configuration object or an instance of the `DataTable` class. If a
+         * `DataTable` instance is passed, it will be used directly. If a
+         * configuration object or an array is passed, a new `DataTable`
+         * instance will be created based on the provided configuration.
+         */
+        dataTable?: (Highcharts.DataTable|Highcharts.DataTableOptionsObject|Array<(Highcharts.DataTable|Highcharts.DataTableOptionsObject)>);
+        /**
          * (Highstock) Deprecated. Use
          * plotOptions.series.accessibility.description instead.
          *
@@ -1117,6 +1126,10 @@ declare module "../highcharts" {
         sonification?: Highcharts.SeriesSonificationOptions;
         /**
          * (Highstock) A collection of options for different series states.
+         *
+         * In addition to the options documented under each state, any option
+         * from the parent series type can be set, with exception of `data` and
+         * `states`.
          */
         states?: Highcharts.SeriesStatesOptionsObject;
         /**
@@ -1190,9 +1203,14 @@ declare module "../highcharts" {
         zoomEnabled?: boolean;
     }
     /**
-     * (Highstock) Animation when not hovering over the marker.
+     * (Highcharts, Highstock) Animation when not hovering over the marker.
      */
     interface PlotHlcStatesInactiveAnimationOptions {
+        /**
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
+         */
         duration?: number;
     }
     /**

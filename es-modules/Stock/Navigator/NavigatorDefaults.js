@@ -196,7 +196,7 @@ const NavigatorDefaults = {
      *
      * @type    {Highcharts.ColorType}
      */
-    maskFill: 'color-mix(var(--highcharts-highlight-color-60) 30%, transparent)',
+    maskFill: 'color-mix(in srgb, var(--highcharts-highlight-color-60) 30%, transparent)', // eslint-disable-line max-len
     /**
      * The color of the line marking the currently zoomed area in the
      * navigator.
@@ -335,10 +335,17 @@ const NavigatorDefaults = {
         id: 'highcharts-navigator-series',
         className: 'highcharts-navigator-series',
         /**
-         * Sets the fill color of the navigator series.
+         * Sets the color of the navigator series.
          *
          * @type      {Highcharts.ColorType}
          * @apioption navigator.series.color
+         */
+        /**
+         * Sets the fill color of the navigator series. Applies to series
+         * types with a filled area, like the default `areaspline`.
+         *
+         * @type      {Highcharts.ColorType}
+         * @apioption navigator.series.fillColor
          */
         /**
          * Line color for the navigator series. Allows setting the color

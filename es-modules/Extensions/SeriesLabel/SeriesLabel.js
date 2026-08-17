@@ -22,8 +22,7 @@
  * https://jsfiddle.net/highcharts/y5A37/
  */
 'use strict';
-import A from '../../Core/Animation/AnimationUtilities.js';
-const { animObject } = A;
+import { animObject } from '../../Core/Animation/AnimationUtilities.js';
 import T from '../../Core/Templating.js';
 const { format } = T;
 import D from '../../Core/Defaults.js';

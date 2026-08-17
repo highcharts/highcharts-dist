@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0 (2026-06-11)
+ * @license Highcharts JS v13.0.1 (2026-08-17)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -12,7 +12,7 @@
 import Highcharts from '../Core/Globals.js';
 import Defaults from '../Core/Defaults.js';
 import Fx from '../Core/Animation/Fx.js';
-import Animation from '../Core/Animation/AnimationUtilities.js';
+import { animate, animObject, getDeferredAnimation, setAnimation, stop } from '../Core/Animation/AnimationUtilities.js';
 import AST from '../Core/Renderer/HTML/AST.js';
 import Templating from '../Core/Templating.js';
 import RendererUtilities from '../Core/Renderer/RendererUtilities.js';
@@ -81,8 +81,8 @@ G.Time = Time;
 G.Tooltip = Tooltip;
 // Utilities
 G.addEvent = addEvent;
-G.animObject = Animation.animObject;
-G.animate = Animation.animate;
+G.animObject = animObject;
+G.animate = animate;
 G.arrayMax = arrayMax;
 G.arrayMin = arrayMin;
 G.attr = attr;
@@ -109,7 +109,7 @@ G.fireEvent = fireEvent;
 G.format = Templating.format;
 G.getAlignFactor = getAlignFactor;
 G.getClosestDistance = getClosestDistance;
-G.getDeferredAnimation = Animation.getDeferredAnimation;
+G.getDeferredAnimation = getDeferredAnimation;
 G.getMagnitude = getMagnitude;
 G.getNestedProperty = getNestedProperty;
 G.getOptions = Defaults.getOptions;
@@ -136,11 +136,11 @@ G.relativeLength = relativeLength;
 G.removeEvent = removeEvent;
 G.replaceNested = replaceNested;
 G.seriesType = SeriesRegistry.seriesType;
-G.setAnimation = Animation.setAnimation;
+G.setAnimation = setAnimation;
 G.setOptions = Defaults.setOptions;
 G.splat = splat;
 G.stableSort = stableSort;
-G.stop = Animation.stop;
+G.stop = stop;
 G.syncTimeout = syncTimeout;
 G.time = Defaults.defaultTime;
 G.ucfirst = ucfirst;

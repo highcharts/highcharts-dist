@@ -15,7 +15,8 @@
  *  Shader Code
  *
  * */
-export default `
+/** @internal */
+const ContourShader = `
 
 struct VertexInput {
     @location(0) pos: vec3f
@@ -147,3 +148,10 @@ fn fragmentMain(input: FragmentInput) -> @location(0) vec4f {
 }
 
 `;
+/* *
+ *
+ *  Default Export
+ *
+ * */
+/** @internal */
+export default ContourShader;

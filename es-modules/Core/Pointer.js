@@ -283,6 +283,11 @@ class Pointer {
                 }
             }
         }
+        // Run a final transform with a drop trigger to display the reset
+        // zoom button after a pinch gesture (#22128)
+        if (e?.type === 'touchend' && this.hasDragged) {
+            chart.transform({ trigger: 'drop' });
+        }
         if (redraw) {
             chart.redraw();
         }
@@ -926,6 +931,9 @@ class Pointer {
                     from: boxFromTouches(lastTouches),
                     trigger: e.type
                 });
+                // Record a truthy value in order to trigger the final transform
+                // in the drop function
+                pointer.hasDragged = 1;
             });
             if (pointer.res) {
                 pointer.res = false;
@@ -1417,7 +1425,9 @@ class Pointer {
             // If inside, capture touch-drag and display tooltip. If not inside,
             // allow dragging the finger to scroll the page
             if ((chart.tooltip?.options.followTouchMove ?? true) &&
-                isInside) {
+                isInside &&
+                e.type === 'touchmove' &&
+                !(chart.scrollablePixelsX || chart.scrollablePixelsY)) {
                 e.preventDefault();
             }
         }

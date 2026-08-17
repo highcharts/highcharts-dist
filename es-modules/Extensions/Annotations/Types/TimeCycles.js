@@ -10,6 +10,8 @@ import CrookedLine from './CrookedLine.js';
 import D from '../../../Core/Defaults.js';
 const { defaultOptions } = D;
 import ControlPoint from '../ControlPoint.js';
+import NBU from '../NavigationBindingsUtilities.js';
+const { getAxisFromOptions } = NBU;
 import { defined, isNumber, merge } from '../../../Shared/Utilities.js';
 if (defaultOptions.annotations?.types) {
     defaultOptions.annotations.types.timeCycles = merge(defaultOptions.annotations.types.crookedLine, 
@@ -166,8 +168,8 @@ class TimeCycles extends CrookedLine {
         if (!points) {
             return;
         }
-        const point1 = points[0], point2 = points[1], xAxisNumber = options.xAxis || 0, yAxisNumber = options.yAxis || 0, xAxis = this.chart.xAxis[xAxisNumber], yAxis = this.chart.yAxis[yAxisNumber], xValue1 = point1.x, yValue = point1.y, xValue2 = point2.x;
-        if (!xValue1 || !xValue2) {
+        const point1 = points[0], point2 = points[1], xAxis = getAxisFromOptions(this.chart, 'xAxis', options.xAxis ?? 0), yAxis = getAxisFromOptions(this.chart, 'yAxis', options.yAxis ?? 0), xValue1 = point1.x, yValue = point1.y, xValue2 = point2.x;
+        if (!xValue1 || !xValue2 || !xAxis || !yAxis) {
             return;
         }
         const y = isNumber(yValue) ?

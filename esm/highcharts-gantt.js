@@ -1,5 +1,5 @@
 /**
- * Highcharts Gantt JS v13.0.0 (2026-06-11)
+ * Highcharts Gantt JS v13.0.1 (2026-08-17)
  * @module highcharts/highcharts-gantt
  *
  * (c) 2017-2026 Highsoft AS
@@ -12,4 +12,4 @@
  * - Torstein Hønsi
  * - Jon Arild Nygård
  * - Øystein Moseng
- */import t from"./highcharts.js";import"./modules/gantt.js";var r={};r.d=(t,e)=>{for(var o in e)r.o(e,o)&&!r.o(t,o)&&Object.defineProperty(t,o,{enumerable:!0,get:e[o]})},r.o=(t,r)=>Object.prototype.hasOwnProperty.call(t,r),t.product="Highcharts Gantt";let e=t;export{e as default};
+ */import t from"./highcharts.js";import"./modules/gantt.js";t.product="Highcharts Gantt";let r=t;export{r as default};

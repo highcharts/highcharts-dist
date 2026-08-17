@@ -12,13 +12,12 @@
  *
  * */
 'use strict';
-import A from '../../Core/Animation/AnimationUtilities.js';
-const { animObject } = A;
+import { animObject } from '../../Core/Animation/AnimationUtilities.js';
 import H from '../../Core/Globals.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: Series, seriesTypes: { scatter: ScatterSeries } } = SeriesRegistry;
 import VectorSeriesDefaults from './VectorSeriesDefaults.js';
-import { arrayMax, extend, merge, pick } from '../../Shared/Utilities.js';
+import { arrayMax, extend, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -118,7 +117,7 @@ class VectorSeries extends ScatterSeries {
                         .add(this.markerGroup)
                         .addClass('highcharts-point ' +
                         'highcharts-color-' +
-                        pick(point.colorIndex, point.series.colorIndex));
+                        (point.colorIndex ?? point.series.colorIndex));
                 }
                 point.graphic
                     .attr({
@@ -145,13 +144,12 @@ class VectorSeries extends ScatterSeries {
         const options = this.options;
         let stroke = point?.color || this.color, strokeWidth = this.options.lineWidth;
         if (state) {
-            stroke = options.states[state].color || stroke;
-            strokeWidth =
-                (options.states[state].lineWidth || strokeWidth) +
-                    (options.states[state].lineWidthPlus || 0);
+            stroke = options.states?.[state]?.color || stroke;
+            strokeWidth = (options.states?.[state]?.lineWidthPlus || 0) +
+                (options.states?.[state]?.lineWidth || strokeWidth || 0);
         }
         return {
-            'stroke': stroke,
+            stroke,
             'stroke-width': strokeWidth
         };
     }

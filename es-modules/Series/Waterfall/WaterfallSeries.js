@@ -111,7 +111,7 @@ class WaterfallSeries extends ColumnSeries {
     pointAttribs(point, state) {
         const upColor = this.options.upColor;
         // Set or reset up color (#3710, update to negative)
-        if (upColor && !point.options.color && isNumber(point.y)) {
+        if (upColor && point && !point.options.color && isNumber(point.y)) {
             point.color = point.y > 0 ? upColor : void 0;
         }
         const attr = ColumnSeries.prototype.pointAttribs.call(this, point, state);

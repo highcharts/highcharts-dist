@@ -12,8 +12,8 @@
  *
  * */
 'use strict';
-import A from '../../Core/Animation/AnimationUtilities.js';
-const { animObject } = A;
+import { animObject } from '../../Core/Animation/AnimationUtilities.js';
+import { borderRadiusObject } from '../../Extensions/BorderRadius.js';
 import DependencyWheelPoint from './DependencyWheelPoint.js';
 import DependencyWheelSeriesDefaults from './DependencyWheelSeriesDefaults.js';
 import H from '../../Core/Globals.js';
@@ -31,7 +31,7 @@ composeTextPath(SVGElement);
  *
  * */
 /**
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.dependencywheel
  *
@@ -88,7 +88,7 @@ class DependencyWheelSeries extends SankeySeries {
         };
         /**
          * Get the offset in weight values of a point/link.
-         * @private
+         * @internal
          */
         node.offset = (point) => {
             const otherNode = (link) => (link.fromNode === node ?
@@ -122,7 +122,7 @@ class DependencyWheelSeries extends SankeySeries {
     }
     /**
      * Dependency wheel has only one column, it runs along the perimeter.
-     * @private
+     * @internal
      */
     createNodeColumns() {
         const series = this, columns = [SankeyColumnComposition.compose([], series)];
@@ -134,7 +134,7 @@ class DependencyWheelSeries extends SankeySeries {
     }
     /**
      * Translate from vertical pixels to perimeter.
-     * @private
+     * @internal
      */
     getNodePadding() {
         return this.options.nodePadding / Math.PI;
@@ -146,8 +146,7 @@ class DependencyWheelSeries extends SankeySeries {
      */
     translate() {
         const series = this, options = series.options, factor = 2 * Math.PI /
-            (series.chart.plotHeight + series.getNodePadding()), center = series.getCenter(), startAngle = ((options.startAngle || 0) - 90) * deg2rad, brOption = options.borderRadius, borderRadius = typeof brOption === 'object' ?
-            brOption.radius : brOption;
+            (series.chart.plotHeight + series.getNodePadding()), center = series.getCenter(), startAngle = ((options.startAngle || 0) - 90) * deg2rad, borderRadius = borderRadiusObject(options.borderRadius).radius;
         super.translate();
         for (const node of this.nodeColumns[0]) {
             // Don't render the nodes if sum is 0 #12453
@@ -275,4 +274,5 @@ SeriesRegistry.registerSeriesType('dependencywheel', DependencyWheelSeries);
  *  Default Export
  *
  * */
+/** @internal */
 export default DependencyWheelSeries;

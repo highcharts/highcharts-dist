@@ -17,6 +17,7 @@ import { extend, pick } from '../../Shared/Utilities.js';
  *  Class
  *
  * */
+/** @internal */
 class DumbbellPoint extends AreaRangePoint {
     /* *
      *
@@ -27,7 +28,7 @@ class DumbbellPoint extends AreaRangePoint {
      * Set the point's state extended by have influence on the connector
      * (between low and high value).
      *
-     * @private
+     * @internal
      */
     setState() {
         const point = this, series = point.series, chart = series.chart, seriesLowColor = series.options.lowColor, seriesMarker = series.options.marker, seriesLowMarker = series.options.lowMarker, pointOptions = point.options, pointLowColor = pointOptions.lowColor, zoneColor = point.zone && point.zone.color, lowerGraphicColor = pick(pointLowColor, seriesLowMarker?.fillColor, seriesLowColor, pointOptions.color, zoneColor, point.color, series.color);
@@ -57,14 +58,14 @@ class DumbbellPoint extends AreaRangePoint {
         }
         point.connector?.[verb](series.getConnectorAttribs(point));
     }
-    destroy() {
+    destroy(sync) {
         const point = this;
         // #15560
         if (!point.graphic) {
             point.graphic = point.connector;
             point.connector = void 0;
         }
-        return super.destroy();
+        return super.destroy(sync);
     }
 }
 extend(DumbbellPoint.prototype, {
@@ -75,4 +76,5 @@ extend(DumbbellPoint.prototype, {
  *  Default export
  *
  * */
+/** @internal */
 export default DumbbellPoint;

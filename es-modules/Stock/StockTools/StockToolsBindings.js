@@ -15,8 +15,8 @@
 import H from '../../Core/Globals.js';
 import STU from './StockToolsUtilities.js';
 const { addFlagFromForm, attractToPoint, isNotNavigatorYAxis, isPriceIndicatorEnabled, manageIndicators, updateHeight, updateNthPoint, updateRectSize } = STU;
-import getIcon from '../../Shared/BaseFormUtils';
-import StockToolsIcons from './StockToolsIcons';
+import getIcon from '../../Shared/BaseFormUtils.js';
+import StockToolsIcons from './StockToolsIcons.js';
 import { fireEvent, merge } from '../../Shared/Utilities.js';
 /* *
  *
@@ -965,7 +965,7 @@ const StockToolsBindings = {
                 }
             }, navigation.annotationsOptions, navigation.bindings?.verticalCounter.annotationsOptions), annotation = this.chart.addAnnotation(options);
             this.verticalCounter++;
-            (annotation.options.events?.click).call(annotation, {});
+            annotation.options.events?.click?.call(annotation, {});
         }
     },
     /**
@@ -1004,7 +1004,7 @@ const StockToolsBindings = {
                         }]
                 }
             }, navigation.annotationsOptions, navigation.bindings?.timeCycles.annotationsOptions), annotation = this.chart.addAnnotation(options);
-            (annotation.options.events?.click).call(annotation, {});
+            annotation.options.events?.click?.call(annotation, {});
             return annotation;
         },
         steps: [
@@ -1043,7 +1043,7 @@ const StockToolsBindings = {
                     }
                 }
             }, navigation.annotationsOptions, navigation.bindings?.verticalLabel.annotationsOptions), annotation = this.chart.addAnnotation(options);
-            (annotation.options.events?.click).call(annotation, {});
+            annotation.options.events?.click?.call(annotation, {});
         }
     },
     /**
@@ -1096,7 +1096,7 @@ const StockToolsBindings = {
                     }
                 }
             }, navigation.annotationsOptions, navigation.bindings?.verticalArrow.annotationsOptions), annotation = this.chart.addAnnotation(options);
-            (annotation.options.events?.click).call(annotation, {});
+            annotation.options.events?.click?.call(annotation, {});
         }
     },
     /**
@@ -1503,7 +1503,7 @@ const StockToolsBindings = {
             (chart.annotations || []).forEach(function (annotation) {
                 annotation.setVisibility(!this.toggledAnnotations);
             }, this);
-            if (gui && gui.guiEnabled) {
+            if (gui?.guiEnabled) {
                 if (this.toggledAnnotations) {
                     button.firstChild.style['background-image'] =
                         getIcon('annotations-hidden.svg', gui.iconsURL, StockToolsIcons);

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0 (2026-06-11)
+ * @license Highcharts JS v13.0.1 (2026-08-17)
  * @module highcharts/modules/annotations
  * @requires highcharts
  *
@@ -26,55 +26,55 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 512:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
-
-/***/ }),
-
-/***/ 620:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__620__;
-
-/***/ }),
-
-/***/ 660:
-/***/ ((module) => {
+/***/ 660
+(module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__660__;
 
-/***/ }),
+/***/ },
 
-/***/ 944:
-/***/ ((module) => {
+/***/ 620
+(module) {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
+module.exports = __WEBPACK_EXTERNAL_MODULE__620__;
 
-/***/ }),
+/***/ },
 
-/***/ 984:
-/***/ ((module) => {
+/***/ 512
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
+
+/***/ },
+
+/***/ 984
+(module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__984__;
 
-/***/ })
+/***/ },
+
+/***/ 944
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
+
+/***/ }
 
 /******/ 	});
 /************************************************************************/
 /******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
+/******/ 	const __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
 /******/ 		// Check if module is in cache
-/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		const cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
 /******/ 			return cachedModule.exports;
 /******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 		const module = __webpack_module_cache__[moduleId] = {
 /******/ 			// no module.id needed
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
@@ -92,7 +92,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__984__;
 /******/ 	(() => {
 /******/ 		// getDefaultExport function for compatibility with non-harmony modules
 /******/ 		__webpack_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
+/******/ 			const getter = module && module.__esModule ?
 /******/ 				() => (module['default']) :
 /******/ 				() => (module);
 /******/ 			__webpack_require__.d(getter, { a: getter });
@@ -102,11 +102,26 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__984__;
 /******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
+/******/ 		// define getter/value functions for harmony exports
 /******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 			if(Array.isArray(definition)) {
+/******/ 				var i = 0;
+/******/ 				while(i < definition.length) {
+/******/ 					var key = definition[i++];
+/******/ 					var binding = definition[i++];
+/******/ 					if(!__webpack_require__.o(exports, key)) {
+/******/ 						if(binding === 0) {
+/******/ 							Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 						} else {
+/******/ 							Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 						}
+/******/ 					} else if(binding === 0) { i++; }
+/******/ 				}
+/******/ 			} else {
+/******/ 				for(var key in definition) {
+/******/ 					if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 					}
 /******/ 				}
 /******/ 			}
 /******/ 		};
@@ -118,7 +133,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__984__;
 /******/ 	})();
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
+let __webpack_exports__ = {};
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
@@ -1121,19 +1136,19 @@ const AnnotationDefaults = {
      * @apioption annotations.typeOptions.type
      */
     /**
-     * This number defines which `xAxis` the point is connected to.
+     * This option defines which `xAxis` the point is connected to.
      * It refers to either the axis id or the index of the axis
      * in the `xAxis` array.
      *
-     * @type {number}
+     * @type {number|string}
      * @apioption annotations.typeOptions.xAxis
      */
     /**
-     * This number defines which `yAxis` the point is connected to.
+     * This option defines which `yAxis` the point is connected to.
      * It refers to either the axis id or the index of the axis
      * in the `yAxis` array.
      *
-     * @type {number}
+     * @type {number|string}
      * @apioption annotations.typeOptions.yAxis
      */
     },
@@ -1556,6 +1571,135 @@ class ControlPoint extends Annotations_EventEmitter {
  */
 (''); // Keeps doclets above in JS file
 
+;// ./code/es-modules/Extensions/Annotations/NavigationBindingsUtilities.js
+/* *
+ *
+ *  (c) 2009-2026 Highsoft AS
+ *  Author: Highsoft, Black Label
+ *
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
+ *
+ *
+ * */
+
+
+/* *
+ *
+ *  Constants
+ *
+ * */
+/**
+ * Define types for editable fields per annotation. There is no need to define
+ * numbers, because they won't change their type to string.
+ * @internal
+ */
+const annotationsFieldsTypes = {
+    backgroundColor: 'color',
+    backgroundColors: 'color',
+    borderColor: 'color',
+    borderRadius: 'string',
+    color: 'color',
+    fill: 'color',
+    fontSize: 'string',
+    labels: 'string',
+    name: 'string',
+    stroke: 'color',
+    title: 'string'
+};
+/* *
+ *
+ *  Functions
+ *
+ * */
+/**
+ * Returns the first xAxis or yAxis that was clicked with its value.
+ *
+ * @internal
+ *
+ * @param {Array<Highcharts.PointerAxisCoordinateObject>} coords
+ *        All the chart's x or y axes with a current pointer's axis value.
+ *
+ * @return {Highcharts.PointerAxisCoordinateObject}
+ *         Object with a first found axis and its value that pointer
+ *         is currently pointing.
+ */
+function getAssignedAxis(coords) {
+    return coords.filter((coord) => {
+        const extremes = coord.axis.getExtremes(), axisMin = extremes.min, axisMax = extremes.max, 
+        // Correct axis edges when axis has series
+        // with pointRange (like column)
+        minPointOffset = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(coord.axis.minPointOffset, 0);
+        return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(axisMin) && (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(axisMax) &&
+            coord.value >= (axisMin - minPointOffset) &&
+            coord.value <= (axisMax + minPointOffset) &&
+            // Don't count navigator axis
+            !coord.axis.options.isInternal;
+    })[0]; // If the axes overlap, return the first axis that was found.
+}
+/**
+ * Resolve an axis from an annotation option that can reference it either by its
+ * index (number) or by its id (string).
+ *
+ * @internal
+ *
+ * @param {Highcharts.Chart} chart
+ *        The chart instance.
+ *
+ * @param {'xAxis'|'yAxis'} coll
+ *        The axis collection to look in.
+ *
+ * @param {number|string|undefined} idOrIndex
+ *        The axis index or id.
+ *
+ * @return {Highcharts.Axis|undefined}
+ *         The matching axis, or `undefined` if none was found.
+ */
+function getAxisFromOptions(chart, coll, idOrIndex) {
+    if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(idOrIndex)) {
+        return chart[coll][idOrIndex];
+    }
+    return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(idOrIndex) ?
+        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.find)(chart[coll], (axis) => axis.options.id === idOrIndex) :
+        void 0;
+}
+/**
+ * Get field type according to value
+ *
+ * @internal
+ *
+ * @return {'checkbox'|'color'|'number'|'text'}
+ * Field type (one of: text, number, checkbox, color)
+ */
+function getFieldType(key, value) {
+    const predefinedType = annotationsFieldsTypes[key];
+    let fieldType = typeof value;
+    if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(predefinedType)) {
+        fieldType = predefinedType;
+    }
+    return {
+        'string': 'text',
+        'number': 'number',
+        'boolean': 'checkbox',
+        'color': 'color'
+    }[fieldType];
+}
+/* *
+ *
+ *  Default Export
+ *
+ * */
+/** @internal */
+const NavigationBindingsUtilities = {
+    annotationsFieldsTypes,
+    getAssignedAxis,
+    getAxisFromOptions,
+    getFieldType
+};
+/** @internal */
+/* harmony default export */ const Annotations_NavigationBindingsUtilities = (NavigationBindingsUtilities);
+
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
@@ -1565,6 +1709,8 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  *
  * */
 
+
+const { getAxisFromOptions: MockPoint_getAxisFromOptions } = Annotations_NavigationBindingsUtilities;
 
 const { series: { prototype: seriesProto } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
 
@@ -1903,11 +2049,7 @@ class MockPoint {
         this.series[axisName] =
             typeof axisOptions === 'object' ?
                 axisOptions :
-                (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(axisOptions) ?
-                    (chart[axisName][axisOptions] ||
-                        // @todo v--- (axisName)[axisOptions] ?
-                        chart.get(axisOptions)) :
-                    null;
+                MockPoint_getAxisFromOptions(chart, axisName, axisOptions) || null;
     }
     /**
      * Transform the mock point to an anchor (relative position on the chart).
@@ -1981,18 +2123,18 @@ class MockPoint {
 * @type      {number}
 * @name      Highcharts.AnnotationMockPointOptionsObject.y
 */ /**
-* This number defines which xAxis the point is connected to.
+* This option defines which `xAxis` the point is connected to.
 * It refers to either the axis id or the index of the axis in
-* the xAxis array. If the option is not configured or the axis
+* the `xAxis` array. If the option is not configured or the axis
 * is not found the point's x coordinate refers to the chart
 * pixels.
 *
 * @type      {number|string|null}
 * @name      Highcharts.AnnotationMockPointOptionsObject.xAxis
 */ /**
-* This number defines which yAxis the point is connected to.
+* This option defines which `yAxis` the point is connected to.
 * It refers to either the axis id or the index of the axis in
-* the yAxis array. If the option is not configured or the axis
+* the `yAxis` array. If the option is not configured or the axis
 * is not found the point's y coordinate refers to the chart
 * pixels.
 *
@@ -5561,7 +5703,6 @@ const PopupComposition = {
  * */
 
 
-const { getDeferredAnimation } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 
 
@@ -5846,7 +5987,7 @@ class Annotation extends Annotations_EventEmitter {
         this.addShapes();
         this.addLabels();
         this.setLabelCollector();
-        this.animationConfig = getDeferredAnimation(chart, animOptions);
+        this.animationConfig = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.getDeferredAnimation)(chart, animOptions);
     }
     /**
      * Initialization of a single label.
@@ -6273,108 +6414,6 @@ var ChartNavigationComposition;
 /** @internal */
 /* harmony default export */ const Chart_ChartNavigationComposition = (ChartNavigationComposition);
 
-;// ./code/es-modules/Extensions/Annotations/NavigationBindingsUtilities.js
-/* *
- *
- *  (c) 2009-2026 Highsoft AS
- *  Author: Highsoft, Black Label
- *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
- *
- *
- * */
-
-
-/* *
- *
- *  Constants
- *
- * */
-/**
- * Define types for editable fields per annotation. There is no need to define
- * numbers, because they won't change their type to string.
- * @internal
- */
-const annotationsFieldsTypes = {
-    backgroundColor: 'color',
-    backgroundColors: 'color',
-    borderColor: 'color',
-    borderRadius: 'string',
-    color: 'color',
-    fill: 'color',
-    fontSize: 'string',
-    labels: 'string',
-    name: 'string',
-    stroke: 'color',
-    title: 'string'
-};
-/* *
- *
- *  Functions
- *
- * */
-/**
- * Returns the first xAxis or yAxis that was clicked with its value.
- *
- * @internal
- *
- * @param {Array<Highcharts.PointerAxisCoordinateObject>} coords
- *        All the chart's x or y axes with a current pointer's axis value.
- *
- * @return {Highcharts.PointerAxisCoordinateObject}
- *         Object with a first found axis and its value that pointer
- *         is currently pointing.
- */
-function getAssignedAxis(coords) {
-    return coords.filter((coord) => {
-        const extremes = coord.axis.getExtremes(), axisMin = extremes.min, axisMax = extremes.max, 
-        // Correct axis edges when axis has series
-        // with pointRange (like column)
-        minPointOffset = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(coord.axis.minPointOffset, 0);
-        return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(axisMin) && (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(axisMax) &&
-            coord.value >= (axisMin - minPointOffset) &&
-            coord.value <= (axisMax + minPointOffset) &&
-            // Don't count navigator axis
-            !coord.axis.options.isInternal;
-    })[0]; // If the axes overlap, return the first axis that was found.
-}
-/**
- * Get field type according to value
- *
- * @internal
- *
- * @return {'checkbox'|'color'|'number'|'text'}
- * Field type (one of: text, number, checkbox, color)
- */
-function getFieldType(key, value) {
-    const predefinedType = annotationsFieldsTypes[key];
-    let fieldType = typeof value;
-    if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(predefinedType)) {
-        fieldType = predefinedType;
-    }
-    return {
-        'string': 'text',
-        'number': 'number',
-        'boolean': 'checkbox',
-        'color': 'color'
-    }[fieldType];
-}
-/* *
- *
- *  Default Export
- *
- * */
-/** @internal */
-const NavigationBindingUtilities = {
-    annotationsFieldsTypes,
-    getAssignedAxis,
-    getFieldType
-};
-/** @internal */
-/* harmony default export */ const NavigationBindingsUtilities = (NavigationBindingUtilities);
-
 ;// ./code/es-modules/Extensions/Annotations/NavigationBindingsDefaults.js
 /* *
  *
@@ -6389,7 +6428,7 @@ const NavigationBindingUtilities = {
  * */
 
 
-const { getAssignedAxis: NavigationBindingsDefaults_getAssignedAxis } = NavigationBindingsUtilities;
+const { getAssignedAxis: NavigationBindingsDefaults_getAssignedAxis } = Annotations_NavigationBindingsUtilities;
 
 /* *
  *
@@ -6823,7 +6862,7 @@ const { format: NavigationBindings_format } = (highcharts_Templating_commonjs_hi
 const { composed: NavigationBindings_composed, doc: NavigationBindings_doc, win } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 
-const { getAssignedAxis: NavigationBindings_getAssignedAxis, getFieldType: NavigationBindings_getFieldType } = NavigationBindingsUtilities;
+const { getAssignedAxis: NavigationBindings_getAssignedAxis, getFieldType: NavigationBindings_getFieldType } = Annotations_NavigationBindingsUtilities;
 
 /* *
  *

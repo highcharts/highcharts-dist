@@ -24,9 +24,7 @@ import { extend, pick } from '../../Shared/Utilities.js';
  *  Functions
  *
  * */
-/**
- *
- */
+/** @internal */
 function compose(SVGRendererClass) {
     const rendererProto = SVGRendererClass.prototype;
     if (!rendererProto.cylinder) {
@@ -44,18 +42,18 @@ function compose(SVGRendererClass) {
 /**
  * Check if a path is simplified. The simplified path contains only lineTo
  * segments, whereas non-simplified contain curves.
- * @private
+ * @internal
  */
 function isSimplified(path) {
     return !path.some((seg) => seg[0] === 'C');
 }
-/** @private */
+/** @internal */
 function rendererCylinder(shapeArgs) {
     return this.element3d('cylinder', shapeArgs);
 }
 /**
  * Generates paths and zIndexes.
- * @private
+ * @internal
  */
 function rendererCylinderPath(shapeArgs) {
     const renderer = this, chart = charts[renderer.chartIndex], 
@@ -79,7 +77,7 @@ function rendererCylinderPath(shapeArgs) {
  * Returns curved path in format of:
  * [ M, x, y, ...[C, cp1x, cp2y, cp2x, cp2y, epx, epy]*n_times ]
  * (cp - control point, ep - end point)
- * @private
+ * @internal
  */
 function rendererGetCurvedPath(points) {
     const path = [['M', points[0].x, points[0].y]], limit = points.length - 2;
@@ -95,7 +93,7 @@ function rendererGetCurvedPath(points) {
 }
 /**
  * Returns cylinder Back path.
- * @private
+ * @internal
  */
 function rendererGetCylinderBack(topPath, bottomPath) {
     const path = [];
@@ -151,7 +149,7 @@ function rendererGetCylinderBack(topPath, bottomPath) {
 }
 /**
  * Returns cylinder path for top or bottom.
- * @private
+ * @internal
  */
 function rendererGetCylinderEnd(chart, shapeArgs, isBottom) {
     const { width = 0, height = 0, alphaCorrection = 0 } = shapeArgs, 
@@ -248,7 +246,7 @@ function rendererGetCylinderEnd(chart, shapeArgs, isBottom) {
 }
 /**
  * Returns cylinder Front path.
- * @private
+ * @internal
  */
 function rendererGetCylinderFront(topPath, bottomPath) {
     const path = topPath.slice(0, 3);
@@ -292,7 +290,9 @@ function rendererGetCylinderFront(topPath, bottomPath) {
  *  Default Export
  *
  * */
+/** @internal */
 const CylinderComposition = {
     compose
 };
+/** @internal */
 export default CylinderComposition;

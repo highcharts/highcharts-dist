@@ -35,7 +35,13 @@ declare module "../highcharts" {
     /**
      * (Highcharts, Highstock) Animation when hovering over the marker.
      */
-    interface PlotArearangeMarkerStatesHoverAnimationOptions {
+    interface PlotArearangeLowMarkerStatesSelectAnimationOptions {
+        duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock) Animation when hovering over the marker.
+     */
+    interface PlotArearangeMarkerStatesSelectAnimationOptions {
         duration?: number;
     }
     /**
@@ -338,9 +344,8 @@ declare module "../highcharts" {
         dataGrouping?: Highcharts.DataGroupingOptionsObject;
         /**
          * (Highcharts, Highstock) Extended data labels for range series types.
-         * Range series data labels use no `x` and `y` options. Instead, they
-         * have `xLow`, `xHigh`, `yLow` and `yHigh` options to allow the higher
-         * and lower data label sets individually.
+         * Range series data labels can be positioned individually by defining
+         * them as an array and setting `alignToKey` to `high` or `low`.
          */
         dataLabels?: (Highcharts.SeriesAreaRangeDataLabelsOptionsObject|Array<Highcharts.SeriesAreaRangeDataLabelsOptionsObject>);
         /**
@@ -380,6 +385,15 @@ declare module "../highcharts" {
          * (Highcharts, Highstock) Options for series data sorting.
          */
         dataSorting?: Highcharts.PlotArearangeDataSortingOptions;
+        /**
+         * (Highcharts, Highstock) Options for a specific series-level data
+         * table or an array of data tables. The `dataTable` option can be
+         * either a configuration object or an instance of the `DataTable`
+         * class. If a `DataTable` instance is passed, it will be used directly.
+         * If a configuration object or an array is passed, a new `DataTable`
+         * instance will be created based on the provided configuration.
+         */
+        dataTable?: (Highcharts.DataTable|Highcharts.DataTableOptionsObject|Array<(Highcharts.DataTable|Highcharts.DataTableOptionsObject)>);
         /**
          * (Highcharts, Highstock) Deprecated. Use
          * plotOptions.series.accessibility.description instead.
@@ -803,6 +817,10 @@ declare module "../highcharts" {
         /**
          * (Highcharts, Highstock) A collection of options for different series
          * states.
+         *
+         * In addition to the options documented under each state, any option
+         * from the parent series type can be set, with exception of `data` and
+         * `states`.
          */
         states?: Highcharts.SeriesStatesOptionsObject;
         /**
@@ -905,6 +923,11 @@ declare module "../highcharts" {
      * (Highcharts, Highstock) Animation when not hovering over the marker.
      */
     interface PlotArearangeStatesInactiveAnimationOptions {
+        /**
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
+         */
         duration?: number;
     }
     /**
@@ -959,6 +982,25 @@ declare module "../highcharts" {
          * tooltip overlapping other elements.
          */
         y?: number;
+    }
+    /**
+     * (Highcharts, Highstock) Enable or disable the initial animation when a
+     * series is displayed for the `dataLabels`. The animation can also be set
+     * as a configuration object. Please note that this option only applies to
+     * the initial animation.
+     *
+     * For other animations, see chart.animation and the animation parameter
+     * under the API methods. The following properties are supported:
+     *
+     * - `defer`: The animation delay time in milliseconds.
+     */
+    interface SeriesArearangeDataDataLabelsAnimationOptions {
+        /**
+         * (Highcharts, Highstock) The animation delay time in milliseconds. Set
+         * to `0` to render the data labels immediately. As `undefined` inherits
+         * defer time from the series.animation.defer.
+         */
+        defer?: number;
     }
     /**
      * (Highcharts, Highstock) A `arearange` series. If the type option is not

@@ -76,7 +76,7 @@ class HistogramSeries extends ColumnSeries {
                 binsNumberFormulas['square-root'](data)));
     }
     setData(data, redraw = true, animation, updatePoints) {
-        let alteredData;
+        let alteredData = [];
         if (typeof data !== 'undefined' && data.length > 0) {
             // Support data array of objects (#24073).
             data = data.map(function (item) {

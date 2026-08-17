@@ -662,6 +662,11 @@ function onChartAfterSetChartSize() {
 /** @internal */
 function onDestroy(e) {
     const { grid } = this;
+    // Axes created before the Gantt module was loaded have no grid
+    // additions to be destroyed (#24644).
+    if (!grid) {
+        return;
+    }
     (grid.columns || []).forEach((column) => column.destroy(e.keepEvents));
     grid.columns = void 0;
 }
@@ -681,7 +686,9 @@ function onInit(e) {
     }
     axis.hiddenLabels = [];
     axis.hiddenMarks = [];
-    axis.clippable = false;
+    if (gridOptions.enabled) {
+        axis.clippable = false;
+    }
 }
 /**
  * Center tick labels in cells.

@@ -114,6 +114,11 @@ declare module "../highcharts.src" {
          */
         alignTo?: string;
         /**
+         * (Highcharts) The point key to use for positioning this data label.
+         * Possible values are `low`, `q1`, `median`, `q3` and `high`.
+         */
+        alignToKey?: Highcharts.OptionsAlignToKeyValue;
+        /**
          * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels
          * to overlap. To make the labels less sensitive for overlapping, the
          * dataLabels.padding can be set to 0.
@@ -282,7 +287,7 @@ declare module "../highcharts.src" {
          * of two numbers repeats the values for the horizontal and vertical
          * sides.
          */
-        padding?: object;
+        padding?: (number|Array<number>);
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) Aligns data labels relative
          * to points. If `center` alignment is not possible, it defaults to
@@ -485,6 +490,12 @@ declare module "../highcharts.src" {
          */
         animationLimit?: number;
         /**
+         * (Highcharts) The corner radius of the border surrounding the box. A
+         * number signifies pixels. A percentage string, like for example `50%`,
+         * signifies a size relative to the box width.
+         */
+        borderRadius?: (number|string|Highcharts.BorderRadiusOptionsObject);
+        /**
          * (Highcharts) The dash style of the box.
          */
         boxDashStyle?: Highcharts.DashStyleValue;
@@ -661,6 +672,15 @@ declare module "../highcharts.src" {
          * (Highcharts, Highstock) Options for series data sorting.
          */
         dataSorting?: Highcharts.PlotBoxplotDataSortingOptions;
+        /**
+         * (Highcharts) Options for a specific series-level data table or an
+         * array of data tables. The `dataTable` option can be either a
+         * configuration object or an instance of the `DataTable` class. If a
+         * `DataTable` instance is passed, it will be used directly. If a
+         * configuration object or an array is passed, a new `DataTable`
+         * instance will be created based on the provided configuration.
+         */
+        dataTable?: (Highcharts.DataTable|Highcharts.DataTableOptionsObject|Array<(Highcharts.DataTable|Highcharts.DataTableOptionsObject)>);
         /**
          * (Highcharts) Depth of the columns in a 3D column chart.
          */
@@ -1238,22 +1258,71 @@ declare module "../highcharts.src" {
         style?: object;
     }
     /**
-     * (Highcharts, Highstock, Gantt) Enable or disable the initial animation
-     * when a series is displayed for the `dataLabels`. The animation can also
-     * be set as a configuration object. Please note that this option only
-     * applies to the initial animation.
+     * (Highcharts) A `boxplot` series. If the type option is not specified, it
+     * is inherited from chart.type.
      *
-     * For other animations, see chart.animation and the animation parameter
-     * under the API methods. The following properties are supported:
+     * Configuration options for the series are given in three levels:
      *
-     * - `defer`: The animation delay time in milliseconds.
+     * 1. Options for all series in a chart are defined in the
+     * plotOptions.series object.
+     *
+     * 2. Options for all `boxplot` series are defined in plotOptions.boxplot.
+     *
+     * 3. Options for one single series are given in the series instance array.
+     * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - type option should always be set, otherwise a broad set of unsupported
+     * options is allowed.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
+     *
+     * You have to extend the `SeriesBoxplotOptions` via an interface to allow
+     * custom properties: ``` declare interface SeriesBoxplotOptions {
+     * customProperty: string; }
+     *
      */
-    interface SeriesBoxplotDataDataLabelsAnimationOptions {
+    interface SeriesBoxplotOptions extends Highcharts.PlotBoxplotOptions, Highcharts.SeriesOptions {
         /**
-         * (Highcharts, Highstock, Gantt) The animation delay time in
-         * milliseconds. Set to `0` to render the data labels immediately. As
-         * `undefined` inherits defer time from the series.animation.defer.
+         * (Highcharts) An array of data points for the series. For the
+         * `boxplot` series type, points can be given in the following ways:
+         *
+         * 1. An array of arrays with 6 or 5 values. In this case, the values
+         * correspond to `x,low,q1,median,q3,high`. If the first value is a
+         * string, it is applied as the name of the point, and the `x` value is
+         * inferred. The `x` value can also be omitted, in which case the inner
+         * arrays should be of length 5. Then the `x` value is automatically
+         * calculated, either starting at 0 and incremented by 1, or from
+         * `pointStart` and `pointInterval` given in the series options. (see
+         * online documentation for example)
+         *
+         * 2. An array of objects with named values. The following snippet shows
+         * only a few settings, see the complete options set below. If the total
+         * number of data points exceeds the series' turboThreshold, this option
+         * is not available. (see online documentation for example)
          */
-        defer?: number;
+        data?: Array<([(number|string), number, number, number, number]|[(number|string), number, number, number, number, number]|Highcharts.PointOptionsObject)>;
+        /**
+         * Not available
+         */
+        dataParser?: undefined;
+        /**
+         * Not available
+         */
+        dataURL?: undefined;
+        /**
+         * Not available
+         */
+        stack?: undefined;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) This property is only in
+         * TypeScript non-optional and might be `undefined` in series objects
+         * from unknown sources.
+         */
+        type: "boxplot";
     }
 }

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0 (2026-06-11)
+ * @license Highcharts JS v13.0.1 (2026-08-17)
  * Organization chart series type
  * @module highcharts/modules/organization
  * @requires highcharts
@@ -14,14 +14,14 @@
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
-/******/ var __webpack_require__ = {};
+/******/ const __webpack_require__ = {};
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
 /******/ (() => {
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
 /******/ 	__webpack_require__.n = (module) => {
-/******/ 		var getter = module && module.__esModule ?
+/******/ 		const getter = module && module.__esModule ?
 /******/ 			() => (module['default']) :
 /******/ 			() => (module);
 /******/ 		__webpack_require__.d(getter, { a: getter });
@@ -31,11 +31,26 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /******/ /* webpack/runtime/define property getters */
 /******/ (() => {
-/******/ 	// define getter functions for harmony exports
+/******/ 	// define getter/value functions for harmony exports
 /******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		for(var key in definition) {
-/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 		if(Array.isArray(definition)) {
+/******/ 			var i = 0;
+/******/ 			while(i < definition.length) {
+/******/ 				var key = definition[i++];
+/******/ 				var binding = definition[i++];
+/******/ 				if(!__webpack_require__.o(exports, key)) {
+/******/ 					if(binding === 0) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 					} else {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 					}
+/******/ 				} else if(binding === 0) { i++; }
+/******/ 			}
+/******/ 		} else {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
 /******/ 			}
 /******/ 		}
 /******/ 	};
@@ -47,7 +62,6 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ })();
 /******/ 
 /************************************************************************/
-var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -371,8 +385,14 @@ const OrganizationSeriesDefaults = {
                     this.point.name + '</h4>';
             }
             if (title) {
-                html += '<p ' + styleAttr(titleStyle) + '>' +
-                    (title || '') + '</p>';
+                html += '<p ' + styleAttr(titleStyle) + '>' + title + '</p>';
+            }
+            else {
+                // Required to prevent a glitch in iOS Safari, where text would
+                // flow outside the box if the title is missing (#25043)
+                html += `<p aria-hidden="true"
+                        style="line-height:0;margin:1px;font-size:1px;opacity:0"
+                    >.</p>`;
             }
             if (description) {
                 html += '<p ' + styleAttr(descriptionStyle) + '>' +
@@ -430,9 +450,10 @@ const OrganizationSeriesDefaults = {
      * @sample highcharts/series-organization/hanging-shrink
      *         Every indent decreases the nodes' width
      *
-     * @type {Highcharts.OrganizationHangingIndentTranslationValue}
-     * @since 10.0.0
+     * @declare Highcharts.OrganizationHangingIndentTranslationValue
      * @default inherit
+     * @since   10.0.0
+     * @type    {"inherit"|"cumulative"|"shrink"}
      *
      * @private
      */
@@ -1162,9 +1183,31 @@ class OrganizationSeries extends SankeySeries {
         return node;
     }
     pointAttribs(point, state) {
-        const series = this, attribs = SankeySeries.prototype.pointAttribs.call(series, point, state), level = point.isNode ? point.level : point.fromNode.level, levelOptions = series.mapOptionsToLevel[level || 0] || {}, options = point.options, stateOptions = (levelOptions.states &&
-            levelOptions.states[state]) ||
-            {}, borderRadius = (0,external_highcharts_src_js_default_namespaceObject.pick)(stateOptions.borderRadius, options.borderRadius, levelOptions.borderRadius, series.options.borderRadius), linkColor = (0,external_highcharts_src_js_default_namespaceObject.pick)(stateOptions.linkColor, options.linkColor, levelOptions.linkColor, series.options.linkColor, stateOptions.link && stateOptions.link.color, options.link && options.link.color, levelOptions.link && levelOptions.link.color, series.options.link && series.options.link.color), linkLineWidth = (0,external_highcharts_src_js_default_namespaceObject.pick)(stateOptions.linkLineWidth, options.linkLineWidth, levelOptions.linkLineWidth, series.options.linkLineWidth, stateOptions.link && stateOptions.link.lineWidth, options.link && options.link.lineWidth, levelOptions.link && levelOptions.link.lineWidth, series.options.link && series.options.link.lineWidth), linkOpacity = (0,external_highcharts_src_js_default_namespaceObject.pick)(stateOptions.linkOpacity, options.linkOpacity, levelOptions.linkOpacity, series.options.linkOpacity, stateOptions.link && stateOptions.link.linkOpacity, options.link && options.link.linkOpacity, levelOptions.link && levelOptions.link.linkOpacity, series.options.link && series.options.link.linkOpacity);
+        const series = this, attribs = SankeySeries.prototype.pointAttribs.call(series, point, state), level = point.isNode ? point.level : point.fromNode.level, levelOptions = series.mapOptionsToLevel[level || 0] || {}, options = point.options, stateOptions = levelOptions.states?.[state || 'normal'] || {}, borderRadius = (stateOptions.borderRadius ??
+            options.borderRadius ??
+            levelOptions.borderRadius ??
+            series.options.borderRadius), linkColor = (stateOptions.linkColor ??
+            options.linkColor ??
+            levelOptions.linkColor ??
+            series.options.linkColor ??
+            stateOptions.link?.color ??
+            options.link?.color ??
+            levelOptions.link?.color ??
+            series.options.link?.color), linkLineWidth = (stateOptions.linkLineWidth ??
+            options.linkLineWidth ??
+            levelOptions.linkLineWidth ??
+            series.options.linkLineWidth ??
+            stateOptions.link?.lineWidth ??
+            options.link?.lineWidth ??
+            levelOptions.link?.lineWidth ??
+            series.options.link?.lineWidth), linkOpacity = (stateOptions.linkOpacity ??
+            options.linkOpacity ??
+            levelOptions.linkOpacity ??
+            series.options.linkOpacity ??
+            stateOptions.link?.linkOpacity ??
+            options.link?.linkOpacity ??
+            levelOptions.link?.linkOpacity ??
+            series.options.link?.linkOpacity);
         if (!point.isNode) {
             attribs.stroke = linkColor;
             attribs['stroke-width'] = linkLineWidth;
@@ -1179,9 +1222,9 @@ class OrganizationSeries extends SankeySeries {
         return attribs;
     }
     translateLink(point) {
-        const chart = this.chart, options = this.options, fromNode = point.fromNode, toNode = point.toNode, linkWidth = (0,external_highcharts_src_js_default_namespaceObject.pick)(options.linkLineWidth, options.link.lineWidth, 0), factor = (0,external_highcharts_src_js_default_namespaceObject.pick)(options.link.offset, 0.5), type = (0,external_highcharts_src_js_default_namespaceObject.pick)(point.options.link && point.options.link.type, options.link.type);
+        const { chart, options } = this, fromNode = point.fromNode, toNode = point.toNode, linkWidth = options.linkLineWidth ?? options.link.lineWidth ?? 0, factor = options.link.offset ?? 0.5, type = point.options.link?.type ?? options.link.type;
         if (fromNode.shapeArgs && toNode.shapeArgs) {
-            const hangingIndent = options.hangingIndent, hangingRight = options.hangingSide === 'right', toOffset = toNode.options.offset, percentOffset = /%$/.test(toOffset) && parseInt(toOffset, 10), inverted = chart.inverted;
+            const hangingIndent = options.hangingIndent || 0, hangingRight = options.hangingSide === 'right', toOffset = toNode.options.offset, percentOffset = /%$/.test(toOffset) && parseInt(toOffset, 10), inverted = chart.inverted;
             let x1 = (0,external_highcharts_src_js_default_namespaceObject.crisp)((fromNode.shapeArgs.x || 0) +
                 (fromNode.shapeArgs.width || 0), linkWidth), y1 = (0,external_highcharts_src_js_default_namespaceObject.crisp)((fromNode.shapeArgs.y || 0) +
                 (fromNode.shapeArgs.height || 0) / 2, linkWidth), x2 = (0,external_highcharts_src_js_default_namespaceObject.crisp)(toNode.shapeArgs.x || 0, linkWidth), y2 = (0,external_highcharts_src_js_default_namespaceObject.crisp)((toNode.shapeArgs.y || 0) +
@@ -1250,7 +1293,7 @@ class OrganizationSeries extends SankeySeries {
                         ['L', xMiddle, y1],
                         ['L', xMiddle, y2],
                         ['L', x2, y2]
-                    ], (0,external_highcharts_src_js_default_namespaceObject.pick)(options.linkRadius, options.link.radius))
+                    ], options.linkRadius ?? options.link.radius)
                 };
             }
             point.dlBox = {

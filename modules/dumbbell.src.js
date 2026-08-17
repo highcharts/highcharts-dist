@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0 (2026-06-11)
+ * @license Highcharts JS v13.0.1 (2026-08-17)
  * @module highcharts/modules/dumbbell
  * @requires highcharts
  *
@@ -24,41 +24,41 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 512:
-/***/ ((module) => {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
-
-/***/ }),
-
-/***/ 540:
-/***/ ((module) => {
+/***/ 540
+(module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__540__;
 
-/***/ }),
+/***/ },
 
-/***/ 944:
-/***/ ((module) => {
+/***/ 512
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
+
+/***/ },
+
+/***/ 944
+(module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 
-/***/ })
+/***/ }
 
 /******/ 	});
 /************************************************************************/
 /******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
+/******/ 	const __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
 /******/ 		// Check if module is in cache
-/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		const cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
 /******/ 			return cachedModule.exports;
 /******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 		const module = __webpack_module_cache__[moduleId] = {
 /******/ 			// no module.id needed
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
@@ -76,7 +76,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	(() => {
 /******/ 		// getDefaultExport function for compatibility with non-harmony modules
 /******/ 		__webpack_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
+/******/ 			const getter = module && module.__esModule ?
 /******/ 				() => (module['default']) :
 /******/ 				() => (module);
 /******/ 			__webpack_require__.d(getter, { a: getter });
@@ -86,11 +86,26 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
+/******/ 		// define getter/value functions for harmony exports
 /******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 			if(Array.isArray(definition)) {
+/******/ 				var i = 0;
+/******/ 				while(i < definition.length) {
+/******/ 					var key = definition[i++];
+/******/ 					var binding = definition[i++];
+/******/ 					if(!__webpack_require__.o(exports, key)) {
+/******/ 						if(binding === 0) {
+/******/ 							Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
+/******/ 						} else {
+/******/ 							Object.defineProperty(exports, key, { enumerable: true, get: binding });
+/******/ 						}
+/******/ 					} else if(binding === 0) { i++; }
+/******/ 				}
+/******/ 			} else {
+/******/ 				for(var key in definition) {
+/******/ 					if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 					}
 /******/ 				}
 /******/ 			}
 /******/ 		};
@@ -102,7 +117,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	})();
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
+let __webpack_exports__ = {};
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
@@ -255,6 +270,7 @@ class AreaRangePoint extends AreaPoint {
  *  Class
  *
  * */
+/** @internal */
 class DumbbellPoint extends AreaRange_AreaRangePoint {
     /* *
      *
@@ -265,7 +281,7 @@ class DumbbellPoint extends AreaRange_AreaRangePoint {
      * Set the point's state extended by have influence on the connector
      * (between low and high value).
      *
-     * @private
+     * @internal
      */
     setState() {
         const point = this, series = point.series, chart = series.chart, seriesLowColor = series.options.lowColor, seriesMarker = series.options.marker, seriesLowMarker = series.options.lowMarker, pointOptions = point.options, pointLowColor = pointOptions.lowColor, zoneColor = point.zone && point.zone.color, lowerGraphicColor = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(pointLowColor, seriesLowMarker?.fillColor, seriesLowColor, pointOptions.color, zoneColor, point.color, series.color);
@@ -295,14 +311,14 @@ class DumbbellPoint extends AreaRange_AreaRangePoint {
         }
         point.connector?.[verb](series.getConnectorAttribs(point));
     }
-    destroy() {
+    destroy(sync) {
         const point = this;
         // #15560
         if (!point.graphic) {
             point.graphic = point.connector;
             point.connector = void 0;
         }
-        return super.destroy();
+        return super.destroy(sync);
     }
 }
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(DumbbellPoint.prototype, {
@@ -313,6 +329,7 @@ class DumbbellPoint extends AreaRange_AreaRangePoint {
  *  Default export
  *
  * */
+/** @internal */
 /* harmony default export */ const Dumbbell_DumbbellPoint = (DumbbellPoint);
 
 ;// ./code/es-modules/Series/Dumbbell/DumbbellSeriesDefaults.js
@@ -583,7 +600,7 @@ const { arearange: AreaRangeSeries, column: ColumnSeries, columnrange: ColumnRan
 /**
  * The dumbbell series type
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.dumbbell
  *
@@ -598,7 +615,7 @@ class DumbbellSeries extends AreaRangeSeries {
     /**
      * Get connector line path and styles that connects dumbbell point's low and
      * high values.
-     * @private
+     * @internal
      *
      * @param {Highcharts.Point} point The point to inspect.
      *
@@ -664,7 +681,7 @@ class DumbbellSeries extends AreaRangeSeries {
     }
     /**
      * Draw connector line that connects dumbbell point's low and high values.
-     * @private
+     * @internal
      * @param {Highcharts.Point} point
      *        The point to inspect.
      */
@@ -684,7 +701,7 @@ class DumbbellSeries extends AreaRangeSeries {
     /**
      * Return the width and x offset of the dumbbell adjusted for grouping,
      * groupPadding, pointPadding, pointWidth etc.
-     * @private
+     * @internal
      */
     getColumnMetrics() {
         const metrics = ColumnSeries.prototype
@@ -695,7 +712,7 @@ class DumbbellSeries extends AreaRangeSeries {
     /**
      * Translate each point to the plot area coordinate system and find
      * shape positions
-     * @private
+     * @internal
      */
     translate() {
         const series = this, inverted = series.chart.inverted;
@@ -722,7 +739,7 @@ class DumbbellSeries extends AreaRangeSeries {
     /**
      * Extend the arearange series' drawPoints method by applying a connector
      * and coloring markers.
-     * @private
+     * @internal
      */
     drawPoints() {
         const series = this, chart = series.chart, pointLength = series.points.length, seriesLowColor = series.lowColor = series.options.lowColor, seriesLowMarker = series.options.lowMarker;
@@ -756,7 +773,7 @@ class DumbbellSeries extends AreaRangeSeries {
     /**
      * Get presentational attributes.
      *
-     * @private
+     * @internal
      * @function Highcharts.seriesTypes.column#pointAttribs
      *
      * @param {Highcharts.Point} point
@@ -777,7 +794,7 @@ class DumbbellSeries extends AreaRangeSeries {
     }
     /**
      * Set the shape arguments for dumbbells.
-     * @private
+     * @internal
      */
     setShapeArgs() {
         ColumnSeries.prototype.translate.apply(this);
@@ -805,6 +822,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Dumbbell_DumbbellSeries = ((/* unused pure expression or super */ null && (DumbbellSeries)));
 
 ;// ./code/es-modules/masters/modules/dumbbell.src.js

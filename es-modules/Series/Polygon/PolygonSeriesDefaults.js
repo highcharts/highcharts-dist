@@ -34,6 +34,26 @@
  * @optionparent plotOptions.polygon
  */
 const PolygonSeriesDefaults = {
+    /**
+     * Fill opacity for the polygon. When you set an explicit `fillColor`,
+     * the `fillOpacity` is not applied. Instead, you should define the
+     * opacity in the `fillColor` with an rgba color definition.
+     *
+     * In styled mode, the fill opacity can be set with the
+     * `.highcharts-area` class name.
+     *
+     * @see [color](#plotOptions.polygon.color)
+     * @see [fillColor](#plotOptions.polygon.fillColor)
+     *
+     * @sample {highcharts} highcharts/demo/violin-plot/
+     *         Translucent violins
+     *
+     * @type    {number}
+     * @default 1
+     * @since   13.0.1
+     * @product highcharts highstock
+     */
+    fillOpacity: 1,
     marker: {
         enabled: false,
         states: {

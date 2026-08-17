@@ -313,6 +313,15 @@ declare module "../highcharts" {
          */
         dataMapping?: Highcharts.DataMappingOptionsObject;
         /**
+         * (Highcharts) Options for a specific series-level data table or an
+         * array of data tables. The `dataTable` option can be either a
+         * configuration object or an instance of the `DataTable` class. If a
+         * `DataTable` instance is passed, it will be used directly. If a
+         * configuration object or an array is passed, a new `DataTable`
+         * instance will be created based on the provided configuration.
+         */
+        dataTable?: (Highcharts.DataTable|Highcharts.DataTableOptionsObject|Array<(Highcharts.DataTable|Highcharts.DataTableOptionsObject)>);
+        /**
          * (Highcharts) Depth of the columns in a 3D column chart.
          */
         depth?: number;
@@ -706,6 +715,10 @@ declare module "../highcharts" {
         stacking?: Highcharts.OptionsStackingValue;
         /**
          * (Highcharts) A collection of options for different series states.
+         *
+         * In addition to the options documented under each state, any option
+         * from the parent series type can be set, with exception of `data` and
+         * `states`.
          */
         states?: Highcharts.SeriesStatesOptionsObject;
         /**
@@ -790,9 +803,14 @@ declare module "../highcharts" {
         zoomEnabled?: boolean;
     }
     /**
-     * (Highcharts) Animation when not hovering over the marker.
+     * (Highcharts, Highstock) Animation when not hovering over the marker.
      */
     interface PlotPyramid3dStatesInactiveAnimationOptions {
+        /**
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
+         */
         duration?: number;
     }
     /**
@@ -1064,7 +1082,7 @@ declare module "../highcharts" {
          * `.highcharts-data-label-box` and `.highcharts-data-label` class names
          * (see example).
          */
-        dataLabels?: (Highcharts.SeriesPieDataLabelsOptionsObject|Array<Highcharts.SeriesPieDataLabelsOptionsObject>);
+        dataLabels?: (Highcharts.SeriesFunnelDataLabelsOptionsObject|Array<Highcharts.SeriesFunnelDataLabelsOptionsObject>);
         /**
          * (Highcharts) The mapping between the data table and the series data
          * points. This is used in conjunction with the `dataTable` option (on
@@ -1098,6 +1116,15 @@ declare module "../highcharts" {
          * documentation for example)
          */
         dataMapping?: Highcharts.DataMappingOptionsObject;
+        /**
+         * (Highcharts) Options for a specific series-level data table or an
+         * array of data tables. The `dataTable` option can be either a
+         * configuration object or an instance of the `DataTable` class. If a
+         * `DataTable` instance is passed, it will be used directly. If a
+         * configuration object or an array is passed, a new `DataTable`
+         * instance will be created based on the provided configuration.
+         */
+        dataTable?: (Highcharts.DataTable|Highcharts.DataTableOptionsObject|Array<(Highcharts.DataTable|Highcharts.DataTableOptionsObject)>);
         /**
          * (Highcharts) The thickness of a 3D pie.
          */
@@ -1394,9 +1421,14 @@ declare module "../highcharts" {
         zoomEnabled?: boolean;
     }
     /**
-     * (Highcharts) Animation when not hovering over the marker.
+     * (Highcharts, Highstock) Animation when not hovering over the marker.
      */
     interface PlotPyramidStatesInactiveAnimationOptions {
+        /**
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
+         */
         duration?: number;
     }
     /**

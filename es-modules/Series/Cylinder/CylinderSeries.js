@@ -30,7 +30,7 @@ import { extend, merge } from '../../Shared/Utilities.js';
  * @requires highcharts-3d
  * @requires modules/cylinder
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.cylinder
  *
@@ -54,4 +54,5 @@ SeriesRegistry.registerSeriesType('cylinder', CylinderSeries);
  *  Default Export
  *
  * */
+/** @internal */
 export default CylinderSeries;

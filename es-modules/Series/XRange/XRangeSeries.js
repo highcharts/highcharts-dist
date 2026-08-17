@@ -20,7 +20,7 @@ import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
 import XRangeSeriesDefaults from './XRangeSeriesDefaults.js';
 import XRangePoint from './XRangePoint.js';
-import { addEvent, clamp, crisp, defined, extend, find, isNumber, isObject, merge, pick, pushUnique, relativeLength } from '../../Shared/Utilities.js';
+import { addEvent, clamp, crisp, defined, extend, find, isNumber, isObject, merge, pushUnique, relativeLength } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -34,7 +34,7 @@ function onAxisAfterGetSeriesExtremes() {
     const time = this.chart.time;
     let dataMax, modMax;
     if (this.isXAxis) {
-        dataMax = pick(this.dataMax, -Number.MAX_VALUE);
+        dataMax = this.dataMax ?? -Number.MAX_VALUE;
         for (const series of this.series) {
             const column = (series.dataTable.getColumn('x2', true) ||
                 series.dataTable.getColumn('end', true) ||
@@ -159,7 +159,7 @@ class XRangeSeries extends ColumnSeries {
     }
     alignDataLabel(point) {
         const oldPlotX = point.plotX;
-        point.plotX = pick(point.dlBox?.centerX, point.plotX);
+        point.plotX = point.dlBox?.centerX ?? point.plotX;
         if (point.dataLabel && point.shapeArgs?.width) {
             point.dataLabel.css({
                 width: `${point.shapeArgs.width}px`
@@ -172,9 +172,9 @@ class XRangeSeries extends ColumnSeries {
      * @private
      */
     translatePoint(point) {
-        const xAxis = this.xAxis, yAxis = this.yAxis, metrics = this.columnMetrics, options = this.options, minPointLength = options.minPointLength || 0, oldColWidth = (point.shapeArgs?.width || 0) / 2, seriesXOffset = this.pointXOffset = metrics.offset, posX = pick(point.x2, point.x + (point.len || 0)), borderRadius = options.borderRadius, plotTop = this.chart.plotTop, plotLeft = this.chart.plotLeft;
+        const xAxis = this.xAxis, yAxis = this.yAxis, metrics = this.columnMetrics, options = this.options, minPointLength = options.minPointLength || 0, oldColWidth = (point.shapeArgs?.width || 0) / 2, seriesXOffset = this.pointXOffset = metrics.offset, posX = point.x2 ?? (point.x + (point.len || 0)), borderRadius = options.borderRadius, plotTop = this.chart.plotTop, plotLeft = this.chart.plotLeft;
         let plotX = point.plotX, plotX2 = xAxis.translate(posX, 0, 0, 0, 1);
-        const length = Math.abs(plotX2 - plotX), inverted = this.chart.inverted, borderWidth = pick(options.borderWidth, 1);
+        const length = Math.abs(plotX2 - plotX), inverted = this.chart.inverted, borderWidth = options.borderWidth ?? 1;
         let widthDifference, partialFill, yOffset = metrics.offset, pointHeight = Math.round(metrics.width), dlLeft, dlRight, dlWidth, clipRectWidth;
         if (minPointLength) {
             widthDifference = minPointLength - length;
@@ -304,9 +304,9 @@ class XRangeSeries extends ColumnSeries {
      *        'animate' (animates changes) or 'attr' (sets options)
      */
     drawPoint(point, verb) {
-        const seriesOpts = this.options, renderer = this.chart.renderer, type = point.shapeType, shapeArgs = point.shapeArgs, partShapeArgs = point.partShapeArgs, clipRectArgs = point.clipRectArgs, pointState = point.state, stateOpts = (seriesOpts.states[pointState || 'normal'] ||
-            {}), pointStateVerb = typeof pointState === 'undefined' ?
-            'attr' : verb, pointAttr = this.pointAttribs(point, pointState), animation = pick(this.chart.options.chart.animation, stateOpts.animation);
+        const seriesOpts = this.options, renderer = this.chart.renderer, type = point.shapeType, shapeArgs = point.shapeArgs, partShapeArgs = point.partShapeArgs, clipRectArgs = point.clipRectArgs, pointState = point.state, stateOpts = seriesOpts.states?.[pointState || 'normal'] || {}, pointStateVerb = typeof pointState === 'undefined' ?
+            'attr' : verb, pointAttr = this.pointAttribs(point, pointState), animation = (this.chart.options.chart.animation ??
+            stateOpts.animation);
         let graphic = point.graphic, pfOptions = point.partialFill;
         if (!point.isNull && point.visible !== false) {
             const className = point.getClassName();

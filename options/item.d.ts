@@ -6,86 +6,28 @@
 import * as Highcharts from "../highcharts";
 declare module "../highcharts" {
     /**
-     * (Highcharts) Point accessibility options for a series.
+     * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable the initial
+     * animation when a series is displayed for the `dataLabels`. The animation
+     * can also be set as a configuration object. Please note that this option
+     * only applies to the initial animation.
+     *
+     * For other animations, see chart.animation and the animation parameter
+     * under the API methods. The following properties are supported:
+     *
+     * - `defer`: The animation delay time in milliseconds.
      */
-    interface PlotItemAccessibilityPointOptions {
+    interface PlotItemDataLabelsAnimationOptions {
         /**
-         * (Highcharts) Date format to use for points on datetime axes when
-         * describing them to screen reader users.
-         *
-         * Defaults to the same format as in tooltip.
-         *
-         * For an overview of the replacement codes, see dateFormat.
+         * (Highcharts, Highstock, Highmaps, Gantt) The animation delay time in
+         * milliseconds. Set to `0` to render the data labels immediately. As
+         * `undefined` inherits defer time from the series.animation.defer.
          */
-        dateFormat?: string;
-        /**
-         * (Highcharts) Formatter function to determine the date/time format
-         * used with points on datetime axes when describing them to screen
-         * reader users. Receives one argument, `point`, referring to the point
-         * to describe. Should return a date format string compatible with
-         * dateFormat.
-         */
-        dateFormatter?: Highcharts.ScreenReaderFormatterCallbackFunction<Highcharts.Point>;
-        /**
-         * (Highcharts) Whether or not to describe points with the value `null`
-         * to assistive technology, such as screen readers.
-         */
-        describeNull?: boolean;
-        /**
-         * (Highcharts) A format string to use instead of the default for point
-         * descriptions.
-         *
-         * The context of the format string is the point instance.
-         *
-         * As opposed to accessibility.point.valueDescriptionFormat, this option
-         * replaces the whole description.
-         */
-        descriptionFormat?: string;
-        /**
-         * (Highcharts) Formatter function to use instead of the default for
-         * point descriptions. Same as
-         * `accessibility.point.descriptionFormatter`, but applies to a series
-         * instead of the whole chart.
-         *
-         * Note: Prefer using accessibility.point.valueDescriptionFormat instead
-         * if possible, as default functionality such as describing annotations
-         * will be preserved.
-         */
-        descriptionFormatter?: Highcharts.ScreenReaderFormatterCallbackFunction<Highcharts.Point>;
-        /**
-         * (Highcharts) Decimals to use for the values in the point
-         * descriptions. Uses tooltip.valueDecimals if not defined.
-         */
-        valueDecimals?: number;
-        /**
-         * (Highcharts) Format to use for describing the values of data points
-         * to assistive technology - including screen readers. The point context
-         * is available as `{point}`.
-         *
-         * Other available context variables include `{index}`, `{value}`, and
-         * `{xDescription}`.
-         *
-         * Additionally, the series name, annotation info, and description added
-         * in `point.accessibility.description` is added by default if relevant.
-         * To override this, use the accessibility.point.descriptionFormatter
-         * option.
-         */
-        valueDescriptionFormat?: string;
-        /**
-         * (Highcharts) Prefix to add to the values in the point descriptions.
-         * Uses tooltip.valuePrefix if not defined.
-         */
-        valuePrefix?: string;
-        /**
-         * (Highcharts) Suffix to add to the values in the point descriptions.
-         * Uses tooltip.valueSuffix if not defined.
-         */
-        valueSuffix?: string;
+        defer?: number;
     }
     /**
      * (Highcharts) Animation when hovering over the marker.
      */
-    interface PlotItemMarkerStatesHoverAnimationOptions {
+    interface PlotItemMarkerStatesSelectAnimationOptions {
         duration?: number;
     }
     /**
@@ -324,6 +266,15 @@ declare module "../highcharts" {
          * documentation for example)
          */
         dataMapping?: Highcharts.DataMappingOptionsObject;
+        /**
+         * (Highcharts) Options for a specific series-level data table or an
+         * array of data tables. The `dataTable` option can be either a
+         * configuration object or an instance of the `DataTable` class. If a
+         * `DataTable` instance is passed, it will be used directly. If a
+         * configuration object or an array is passed, a new `DataTable`
+         * instance will be created based on the provided configuration.
+         */
+        dataTable?: (Highcharts.DataTable|Highcharts.DataTableOptionsObject|Array<(Highcharts.DataTable|Highcharts.DataTableOptionsObject)>);
         /**
          * (Highcharts) Deprecated. Use
          * plotOptions.series.accessibility.description instead.
@@ -577,6 +528,10 @@ declare module "../highcharts" {
         startAngle?: (number|undefined);
         /**
          * (Highcharts) A collection of options for different series states.
+         *
+         * In addition to the options documented under each state, any option
+         * from the parent series type can be set, with exception of `data` and
+         * `states`.
          */
         states?: Highcharts.SeriesStatesOptionsObject;
         /**
@@ -615,9 +570,14 @@ declare module "../highcharts" {
         zoomEnabled?: boolean;
     }
     /**
-     * (Highcharts) Animation when not hovering over the marker.
+     * (Highcharts, Highstock) Animation when not hovering over the marker.
      */
     interface PlotItemStatesInactiveAnimationOptions {
+        /**
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
+         */
         duration?: number;
     }
     /**

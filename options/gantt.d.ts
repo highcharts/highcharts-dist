@@ -114,60 +114,57 @@ declare module "../highcharts" {
         fill?: Highcharts.ColorType;
     }
     /**
-     * (Gantt) Animation when not hovering over the marker.
+     * (Highcharts, Highstock) Animation setting for hovering the graph in
+     * line-type series.
      */
-    interface PlotGanttStatesInactiveAnimationOptions {
+    interface PlotGanttStatesSelectAnimationOptions {
+        /**
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
+         */
         duration?: number;
     }
     /**
-     * (Highcharts, Highstock, Gantt) For series on datetime axes, the date
-     * format in the tooltip's header will by default be guessed based on the
-     * closest data points. This member gives the default string representations
-     * used for each unit. For an overview of the string or object
-     * configuration, see dateFormat.
+     * (Gantt) Options for the tooltip header when tooltip.split is enabled. The
+     * header is the box containing the X value in a split tooltip.
      */
-    interface PlotGanttTooltipDateTimeLabelFormatsOptions {
-        day?: string;
-        hour?: string;
-        millisecond?: string;
-        minute?: string;
-        month?: string;
-        second?: string;
-        week?: string;
-        year?: string;
-    }
-    /**
-     * (Gantt) Positioning options for fixed tooltip, taking effect only when
-     * tooltip.fixed is `true`.
-     */
-    interface PlotGanttTooltipPositionOptions {
+    interface PlotGanttTooltipHeaderOptions {
         /**
-         * (Gantt) The horizontal alignment of the fixed tooltip.
+         * (Gantt) Background color for the tooltip header when tooltip.split is
+         * enabled.
          */
-        align?: Highcharts.AlignValue;
+        backgroundColor?: Highcharts.ColorType;
         /**
-         * (Gantt) What the fixed tooltip alignment should be relative to.
+         * (Gantt) Border color for the tooltip header when tooltip.split is
+         * enabled.
+         */
+        borderColor?: Highcharts.ColorType;
+        /**
+         * (Gantt) The width of the border for the tooltip header when
+         * tooltip.split is enabled.
+         */
+        borderWidth?: number;
+        /**
+         * (Gantt) Distance between the plot area and the header (except the
+         * chevron) in a split tooltip, in pixels. The default value makes the
+         * header text align with the axis labels.
+         */
+        distance?: number;
+        /**
+         * (Gantt) The name of a symbol to use for the border around the tooltip
+         * header. Applies only when tooltip.split is enabled.
          *
-         * The default, `pane`, means that it is aligned within the plot area
-         * for that given series. If the tooltip is split (as default in Stock
-         * charts), each partial tooltip is aligned within the series' pane.
+         * Custom callbacks for symbol path generation can also be added to
+         * `Highcharts.SVGRenderer.prototype.symbols` the same way as for
+         * series.marker.symbol.
          */
-        relativeTo?: Highcharts.OptionsRelativeToValue;
+        shape?: string;
         /**
-         * (Gantt) The vertical alignment of the fixed tooltip.
+         * (Gantt) CSS styles for the tooltip header. The default is `{
+         * fontSize: '1em' }`, ensuring that the header text is the same size as
+         * the axis labels.
          */
-        verticalAlign?: Highcharts.VerticalAlignValue;
-        /**
-         * (Gantt) X pixel offset from the given position. Can be used to shy
-         * away from axis lines, grid lines etc to avoid the tooltip overlapping
-         * other elements.
-         */
-        x?: number;
-        /**
-         * (Gantt) Y pixel offset from the given position. Can be used to shy
-         * away from axis lines, grid lines etc to avoid the tooltip overlapping
-         * other elements.
-         */
-        y?: number;
+        style?: object;
     }
 }

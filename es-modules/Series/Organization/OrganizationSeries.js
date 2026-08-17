@@ -18,7 +18,7 @@ import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import PathUtilities from '../PathUtilities.js';
 const { sankey: SankeySeries } = SeriesRegistry.seriesTypes;
 import SVGElement from '../../Core/Renderer/SVG/SVGElement.js';
-import { crisp, css, extend, isNumber, merge, pick, splat } from '../../Shared/Utilities.js';
+import { crisp, css, extend, isNumber, merge, splat } from '../../Shared/Utilities.js';
 import { composeTextPath } from '../../Extensions/TextPath.js';
 composeTextPath(SVGElement);
 /* *
@@ -87,9 +87,31 @@ class OrganizationSeries extends SankeySeries {
         return node;
     }
     pointAttribs(point, state) {
-        const series = this, attribs = SankeySeries.prototype.pointAttribs.call(series, point, state), level = point.isNode ? point.level : point.fromNode.level, levelOptions = series.mapOptionsToLevel[level || 0] || {}, options = point.options, stateOptions = (levelOptions.states &&
-            levelOptions.states[state]) ||
-            {}, borderRadius = pick(stateOptions.borderRadius, options.borderRadius, levelOptions.borderRadius, series.options.borderRadius), linkColor = pick(stateOptions.linkColor, options.linkColor, levelOptions.linkColor, series.options.linkColor, stateOptions.link && stateOptions.link.color, options.link && options.link.color, levelOptions.link && levelOptions.link.color, series.options.link && series.options.link.color), linkLineWidth = pick(stateOptions.linkLineWidth, options.linkLineWidth, levelOptions.linkLineWidth, series.options.linkLineWidth, stateOptions.link && stateOptions.link.lineWidth, options.link && options.link.lineWidth, levelOptions.link && levelOptions.link.lineWidth, series.options.link && series.options.link.lineWidth), linkOpacity = pick(stateOptions.linkOpacity, options.linkOpacity, levelOptions.linkOpacity, series.options.linkOpacity, stateOptions.link && stateOptions.link.linkOpacity, options.link && options.link.linkOpacity, levelOptions.link && levelOptions.link.linkOpacity, series.options.link && series.options.link.linkOpacity);
+        const series = this, attribs = SankeySeries.prototype.pointAttribs.call(series, point, state), level = point.isNode ? point.level : point.fromNode.level, levelOptions = series.mapOptionsToLevel[level || 0] || {}, options = point.options, stateOptions = levelOptions.states?.[state || 'normal'] || {}, borderRadius = (stateOptions.borderRadius ??
+            options.borderRadius ??
+            levelOptions.borderRadius ??
+            series.options.borderRadius), linkColor = (stateOptions.linkColor ??
+            options.linkColor ??
+            levelOptions.linkColor ??
+            series.options.linkColor ??
+            stateOptions.link?.color ??
+            options.link?.color ??
+            levelOptions.link?.color ??
+            series.options.link?.color), linkLineWidth = (stateOptions.linkLineWidth ??
+            options.linkLineWidth ??
+            levelOptions.linkLineWidth ??
+            series.options.linkLineWidth ??
+            stateOptions.link?.lineWidth ??
+            options.link?.lineWidth ??
+            levelOptions.link?.lineWidth ??
+            series.options.link?.lineWidth), linkOpacity = (stateOptions.linkOpacity ??
+            options.linkOpacity ??
+            levelOptions.linkOpacity ??
+            series.options.linkOpacity ??
+            stateOptions.link?.linkOpacity ??
+            options.link?.linkOpacity ??
+            levelOptions.link?.linkOpacity ??
+            series.options.link?.linkOpacity);
         if (!point.isNode) {
             attribs.stroke = linkColor;
             attribs['stroke-width'] = linkLineWidth;
@@ -104,9 +126,9 @@ class OrganizationSeries extends SankeySeries {
         return attribs;
     }
     translateLink(point) {
-        const chart = this.chart, options = this.options, fromNode = point.fromNode, toNode = point.toNode, linkWidth = pick(options.linkLineWidth, options.link.lineWidth, 0), factor = pick(options.link.offset, 0.5), type = pick(point.options.link && point.options.link.type, options.link.type);
+        const { chart, options } = this, fromNode = point.fromNode, toNode = point.toNode, linkWidth = options.linkLineWidth ?? options.link.lineWidth ?? 0, factor = options.link.offset ?? 0.5, type = point.options.link?.type ?? options.link.type;
         if (fromNode.shapeArgs && toNode.shapeArgs) {
-            const hangingIndent = options.hangingIndent, hangingRight = options.hangingSide === 'right', toOffset = toNode.options.offset, percentOffset = /%$/.test(toOffset) && parseInt(toOffset, 10), inverted = chart.inverted;
+            const hangingIndent = options.hangingIndent || 0, hangingRight = options.hangingSide === 'right', toOffset = toNode.options.offset, percentOffset = /%$/.test(toOffset) && parseInt(toOffset, 10), inverted = chart.inverted;
             let x1 = crisp((fromNode.shapeArgs.x || 0) +
                 (fromNode.shapeArgs.width || 0), linkWidth), y1 = crisp((fromNode.shapeArgs.y || 0) +
                 (fromNode.shapeArgs.height || 0) / 2, linkWidth), x2 = crisp(toNode.shapeArgs.x || 0, linkWidth), y2 = crisp((toNode.shapeArgs.y || 0) +
@@ -175,7 +197,7 @@ class OrganizationSeries extends SankeySeries {
                         ['L', xMiddle, y1],
                         ['L', xMiddle, y2],
                         ['L', x2, y2]
-                    ], pick(options.linkRadius, options.link.radius))
+                    ], options.linkRadius ?? options.link.radius)
                 };
             }
             point.dlBox = {

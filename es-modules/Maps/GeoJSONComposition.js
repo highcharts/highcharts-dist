@@ -549,4 +549,17 @@ export default GeoJSONComposition;
 * Second point's Y of the bounding box.
 * @name Highcharts.MapBounds#y2
 */
-''; // Detach doclets above
+/**
+ * A latitude/longitude object.
+ *
+ * @interface Highcharts.MapLonLatObject
+ */ /**
+* The latitude.
+* @name Highcharts.MapLonLatObject#lat
+* @type {number}
+*/ /**
+* The longitude.
+* @name Highcharts.MapLonLatObject#lon
+* @type {number}
+*/
+''; // Keep doclets above

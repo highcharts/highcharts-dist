@@ -66,7 +66,7 @@ class BellcurveSeries extends AreaSplineSeries {
      *
      * */
     setData(data, redraw = true, animation, updatePoints) {
-        let alteredData;
+        let alteredData = [];
         if (typeof data !== 'undefined' && data.length > 0) {
             // Support data array of objects (#24073).
             data = data
@@ -76,7 +76,11 @@ class BellcurveSeries extends AreaSplineSeries {
                 .filter(isNumber);
             this.setMean(data);
             this.setStandardDeviation(data);
-            alteredData = this.derivedData(this.mean || 0, this.standardDeviation || 0);
+            if (isNumber(this.mean) &&
+                isNumber(this.standardDeviation) &&
+                this.standardDeviation > 0) {
+                alteredData = this.derivedData(this.mean, this.standardDeviation);
+            }
         }
         super.setData.call(this, alteredData, redraw, animation, updatePoints);
     }
@@ -96,12 +100,12 @@ class BellcurveSeries extends AreaSplineSeries {
         }
     }
     setMean(data) {
-        const series = this;
-        series.mean = correctFloat(BellcurveSeries.mean(data || []));
+        const mean = BellcurveSeries.mean(data || []);
+        this.mean = isNumber(mean) ? correctFloat(mean) : void 0;
     }
     setStandardDeviation(data) {
-        const series = this;
-        series.standardDeviation = correctFloat(BellcurveSeries.standardDeviation(data || [], series.mean));
+        const sd = BellcurveSeries.standardDeviation(data || [], this.mean);
+        this.standardDeviation = isNumber(sd) ? correctFloat(sd) : void 0;
     }
 }
 /* *
